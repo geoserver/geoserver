@@ -99,39 +99,19 @@ Both the 2 configurations should define the following parameters:
 Here can be found an example file:
 
 > ``` xml
-> <hazelcast xmlns="http://www.hazelcast.com/schema/config"
->            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->            xsi:schemaLocation="http://www.hazelcast.com/schema/config
->                                https://hazelcast.com/schema/config/hazelcast-config-5.3.xsd">
->   <cluster-name>gsCacheCluster</cluster-name>
+> ```
 >
->   <network>
->     <!--
->         Typical usage: multicast enabled with port auto-increment enabled
->         or tcp-ip enabled with port auto-increment disabled. Note that you 
->         must choose between multicast and tcp-ip. Another option could be
->         aws, but will not be described here.
+> <hazelcast xmlns="<http://www.hazelcast.com/schema/config>"
 >
->     -->
->     <port auto-increment="false">5701</port>
->         <join>
->              <multicast enabled="false">
->                 <multicast-group>224.2.2.3</multicast-group>
->                 <multicast-port>54327</multicast-port>
->             </multicast>
->             <tcp-ip enabled="true">
->                 <interface>192.168.1.32</interface>     
->                 <interface>192.168.1.110</interface> 
->             </tcp-ip>
->         </join>
->   </network>
+> :   xmlns:xsi="<http://www.w3.org/2001/XMLSchema-instance>" xsi:schemaLocation="<http://www.hazelcast.com/schema/config> <https://hazelcast.com/schema/config/hazelcast-config-5.3.xsd>"> <cluster-name>gsCacheCluster</cluster-name>
 >
->   <map name="CacheProviderMap">
->         <eviction eviction-policy="LRU" max-size-policy="USED_HEAP_SIZE" size="16" />
->   </map>
+>     <network> <!--Typical usage: multicast enabled with port auto-increment enabled or tcp-ip enabled with port auto-increment disabled. Note that you must choose between multicast and tcp-ip. Another option could be aws, but will not be described here.
+>
+>     --> <port auto-increment="false">5701</port> <join> <multicast enabled="false"> <multicast-group>224.2.2.3</multicast-group> <multicast-port>54327</multicast-port> </multicast> <tcp-ip enabled="true"> <interface>192.168.1.32</interface> <interface>192.168.1.110</interface> </tcp-ip> </join> </network>
+>
+>     <map name="CacheProviderMap"> <eviction eviction-policy="LRU" max-size-policy="USED_HEAP_SIZE" size="16" /> </map>
 >
 > </hazelcast>
-> ```
 
 #### Configuration with ApplicationContext
 
@@ -139,30 +119,30 @@ For configuring caching directly from the GeoServer application context, the use
 
 > ``` xml
 > <hz:hazelcast id="instance1">
->     <hz:config>
->         <hz:group name="dev" password="password" />
->         <hz:network port="5701" port-auto-increment="true">
->             <hz:join>
->                 <hz:multicast enabled="true" multicast-group="224.2.2.3"
->                     multicast-port="54327" />
->             <hz:tcp-ip enabled="false">
->               <hz:members>10.10.1.2, 10.10.1.3</hz:members>
->             </hz:tcp-ip>
->             </hz:join>
->         </hz:network>
->         <hz:map name="CacheProviderMap" max-size="16" eviction-policy="LRU"
->             max-size-policy="USED_HEAP_SIZE" />
->     </hz:config>
+>    <hz:config>
+>       <hz:group name="dev" password="password" />
+>       <hz:network port="5701" port-auto-increment="true">
+>          <hz:join>
+>             <hz:multicast enabled="true" multicast-group="224.2.2.3"
+>                multicast-port="54327" />
+>          <hz:tcp-ip enabled="false">
+>            <hz:members>10.10.1.2, 10.10.1.3</hz:members>
+>          </hz:tcp-ip>
+>          </hz:join>
+>       </hz:network>
+>       <hz:map name="CacheProviderMap" max-size="16" eviction-policy="LRU"
+>          max-size-policy="USED_HEAP_SIZE" />
+>    </hz:config>
 > </hz:hazelcast>
 >
 > <bean id="HazelCastLoader1"
->     class="org.geowebcache.storage.blobstore.memory.distributed.HazelcastLoader">
->     <property name="instance" ref="instance1" />
+>    class="org.geowebcache.storage.blobstore.memory.distributed.HazelcastLoader">
+>    <property name="instance" ref="instance1" />
 > </bean>
 >
 > <bean id="HazelCastCacheProvider1"
->     class="org.geowebcache.storage.blobstore.memory.distributed.HazelcastCacheProvider">
->     <constructor-arg ref="HazelCastLoader1" />
+>    class="org.geowebcache.storage.blobstore.memory.distributed.HazelcastCacheProvider">
+>    <constructor-arg ref="HazelCastLoader1" />
 > </bean>
 > ```
 
@@ -173,52 +153,35 @@ In this section are described other available configuration parameters to config
 > -   Cache expiration time:
 >
 >     > ``` xml
->     > <map name="CacheProviderMap">
->     > ...
->     >
->     >     <time-to-live-seconds>0</time-to-live-seconds>
->     >     <max-idle-seconds>0</max-idle-seconds>
->     >
->     > </map>
 >     > ```
 >     >
->     > Where *time-to-live-seconds* indicates how many seconds an entry can stay in cache and *max-idle-seconds* indicates how many seconds an entry may be not accessed before being evicted.
+>     > <map name="CacheProviderMap"> \...
+>     >
+>     > <time-to-live-seconds>0</time-to-live-seconds> <max-idle-seconds>0</max-idle-seconds>
+>     >
+>     > </map>
+>
+> Where *time-to-live-seconds* indicates how many seconds an entry can stay in cache and *max-idle-seconds* indicates how many seconds an entry may be not accessed before being evicted.
 >
 > -   Near Cache.
 >
 >     > ``` xml
->     > <map name="CacheProviderMap">
->     > ...
->     > <near-cache>
->     >   <!--
->     >     Same configuration parameters of the Hazelcast Map. Note that size indicates the maximum number of 
->     >     entries in the near cache. A value of Integer.MAX_VALUE indicates no limit on the maximum 
->     >     size.
->     >   -->
->     >   <time-to-live-seconds>0</time-to-live-seconds>
->     >   <max-idle-seconds>60</max-idle-seconds>
->     >   <eviction eviction-policy="LRU" size="5000" />
->     >
->     >   <!--
->     >     Indicates if a cached entry can be evicted if the same value is modified in the Hazelcast Map. Default is true.
->     >   -->
->     >   <invalidate-on-change>true</invalidate-on-change>
->     >
->     >   <!--
->     >     Indicates if local entries must be cached. Default is false.
->     >   -->
->     >   <cache-local-entries>false</cache-local-entries>
->     > </near-cache>
->     >
->     > </map>  
 >     > ```
 >     >
->     > Near Cache is a local cache for each cluster instance which is used for caching entries in the other cluster instances. This behaviour avoids requesting those entries each time by executing a remote call. This feature could be helpful in order to improve Hazelcast Cache performance.
+>     > <map name="CacheProviderMap"> \... <near-cache> <!--Same configuration parameters of the Hazelcast Map. Note that size indicates the maximum number of entries in the near cache. A value of Integer.MAX_VALUE indicates no limit on the maximum size. --> <time-to-live-seconds>0</time-to-live-seconds> <max-idle-seconds>60</max-idle-seconds> <eviction eviction-policy="LRU" size="5000" />
 >     >
->     > ::: note
->     > ::: title
->     > Note
->     > :::
+>     > <!--Indicates if a cached entry can be evicted if the same value is modified in the Hazelcast Map. Default is true. --> <invalidate-on-change>true</invalidate-on-change>
 >     >
->     > A value of *max-size* bigger or equal to Integer.MAX_VALUE cannot be used in order to avoid an uncontrollable growth of the cache size.
->     > :::
+>     > <!--Indicates if local entries must be cached. Default is false. --> <cache-local-entries>false</cache-local-entries> </near-cache>
+>     >
+>     > </map>
+>
+> Near Cache is a local cache for each cluster instance which is used for caching entries in the other cluster instances. This behaviour avoids requesting those entries each time by executing a remote call. This feature could be helpful in order to improve Hazelcast Cache performance.
+>
+> ::: note
+> ::: title
+> Note
+> :::
+>
+> A value of *max-size* bigger or equal to Integer.MAX_VALUE cannot be used in order to avoid an uncontrollable growth of the cache size.
+> :::

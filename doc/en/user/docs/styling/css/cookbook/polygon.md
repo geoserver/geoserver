@@ -29,7 +29,7 @@ This example shows a polygon filled in blue.
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: #000080; 
 }
@@ -52,7 +52,7 @@ This example adds a 2 pixel white stroke to the [Simple polygon](polygon.md#css_
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: #000080; 
   stroke: #FFFFFF;
@@ -73,7 +73,7 @@ This example builds on the [Simple polygon with stroke](polygon.md#css_cookbook_
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: #000080; 
   fill-opacity: 0.5;
@@ -95,7 +95,7 @@ This example fills the polygons with a tiled graphic.
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: url("colorblocks1.png");
   fill-mime: 'image/png';
@@ -118,7 +118,7 @@ This example fills the polygons with a hatching pattern.
 
 ### Code
 
-``` {.scss linenos=""}
+``` scss
 * { 
   fill: symbol("shape://times");
   :fill {
@@ -144,7 +144,7 @@ This example shows a text label on the polygon. In the absence of any other cust
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: #40FF40;
   stroke: white;
@@ -167,7 +167,7 @@ This example alters the look of the [Polygon with default label](polygon.md#css_
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: #40FF40;
   stroke: white;
@@ -192,7 +192,7 @@ This example improves the label style from the [Polygon with default label](poly
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * { 
   fill: #40FF40;
   stroke: white;
@@ -228,7 +228,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 [parseLong(pop) < 200000] {
   fill: #66FF66;
 }
@@ -280,7 +280,7 @@ This example alters the style of the polygon at different zoom levels.
 
 ### Code
 
-``` {.css linenos=""}
+``` css
 * {
   fill: #0000CC;
   stroke: black;

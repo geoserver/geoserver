@@ -22,29 +22,12 @@ The request limit options allow the administrator to limit the resources consume
 
 The request limits limit the size of the image read from the source and the size of the image returned to the client. Both of these limits are to be considered a worst case scenario and are setup to make sure the server never gets asked to deal with too much data.
 
-**Option**
-
-:   **Description**
-
-    **Version**
-
-**Maximum input memory**
-
-:   Sets the maximum amount of memory, in kilobytes, a GetCovearge request might use, at most, to read a coverage from the data source. The memory is computed as `rw * rh * pixelsize`, where `rw` and `rh` are the size of the raster to be read and `pixelsize` is the dimension or a pixel (e.g., a RGBA image will have 32bit pixels, a batimetry might have 16bit signed int ones)
-
-    2.0.3
-
-**Maximum output memory**
-
-:   Sets the maximum amount of memory, in kilobytes, a GetCoverage request might use, at most, to host the resulting raster. The memory is computed as `ow * oh * pixelsize`, where `ow` and `oh` are the size of the raster to be generated in output.
-
-    2.0.3
-
-**Max number of dimension values**
-
-:   Sets the maximum number of dimension (time, at least for now) values that a client can request in a GetCoverage request (the work to be done is usually proportional to said number of times, and the list of values is kept in memory during the processing)
-
-    2.14.0
+|                                    |                                                                                                                                                                                                                                                                                                                                                                                      |             |
+|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| **Option**                         | **Description**                                                                                                                                                                                                                                                                                                                                                                      | **Version** |
+| **Maximum input memory**           | Sets the maximum amount of memory, in kilobytes, a GetCovearge request might use, at most, to read a coverage from the data source. The memory is computed as `rw * rh * pixelsize`, where `rw` and `rh` are the size of the raster to be read and `pixelsize` is the dimension or a pixel (e.g., a RGBA image will have 32bit pixels, a batimetry might have 16bit signed int ones) | 2.0.3       |
+| **Maximum output memory**          | Sets the maximum amount of memory, in kilobytes, a GetCoverage request might use, at most, to host the resulting raster. The memory is computed as `ow * oh * pixelsize`, where `ow` and `oh` are the size of the raster to be generated in output.                                                                                                                                  | 2.0.3       |
+| **Max number of dimension values** | Sets the maximum number of dimension (time, at least for now) values that a client can request in a GetCoverage request (the work to be done is usually proportional to said number of times, and the list of values is kept in memory during the processing)                                                                                                                        | 2.14.0      |
 
 To understand the limits let's consider a very simplified example in which no tiles and overviews enter the game:
 

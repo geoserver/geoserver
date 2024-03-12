@@ -1,4 +1,4 @@
-# Importer interface reference {: #extensions_importer_guireference }
+# Importer interface reference
 
 The Layer Importer user interface is a component of the GeoServer web interface. You can access it from the GeoServer web interface by clicking the **Import Data** link, found on the left side of the screen after logging in.
 

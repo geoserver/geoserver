@@ -50,7 +50,7 @@ Replace the fields in between brackets with the following values:
 
 Read [GetMap](../../services/wms/reference.md#wms_getmap) for general information on the GetMap request. Read [Styling](../../styling/index.md) for general information on how to style WMS maps with SLD files. When styling complex features, you can use XPaths to specify nested properties in your filters, as explained in `app-schema.filtering-nested`{.interpreted-text role="ref"}. However, in WMS styling filters X-paths do not support handling referenced features (see `app-schema.feature-chaining-by-reference`{.interpreted-text role="ref"}) as if they were actual nested features (because the filters are applied after building the features rather than before.) The prefix/namespace context that is used in the XPath expression is defined locally in the XML tags of the style file. This is an example of a Style file for complex features:
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <StyledLayerDescriptor version="1.0.0" 
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 

@@ -48,13 +48,13 @@
 :   By default, the browser's configured locale is used. You can force another locale in the print widget configuration:
 
     ``` yaml
-    {
-      ...
-      configUrl: 'print/info.json',
-      serviceParams: { locale: 'fr_CH' },
-      ...
-    }
     ```
+
+    {
+
+    :   \... configUrl: 'print/info.json', serviceParams: { locale: 'fr_CH' }, \...
+
+    }
 
 **I copied the examples and the print widgets are not working.**
 

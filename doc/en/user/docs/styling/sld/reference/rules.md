@@ -6,77 +6,20 @@ Styling **rules** define the portrayal of features. A rule combines a [filter](f
 
 The `<Rule>` element contains the following elements:
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<Name>`
-
-:   No
-
-    Specifies a name for the rule.
-
-`<Title>`
-
-:   No
-
-    Specifies a title for the rule. The title is used in display lists and legends.
-
-`<Abstract>`
-
-:   No
-
-    Specifies an abstract describing the rule.
-
-`<Filter>`
-
-:   No
-
-    Specifies a filter controlling when the rule is applied. See [Filters](filters.md)
-
-`<MinScaleDenominator>`
-
-:   No
-
-    Specifies the minimum scale denominator (inclusive) for the scale range in which this rule applies. If present, the rule applies at the given scale and all smaller scales.
-
-`<MaxScaleDenominator>`
-
-:   No
-
-    Specifies the maximum scale denominator (exclusive) for the scale range in which this rule applies. If present, the rule applies at scales larger than the given scale.
-
-`<PointSymbolizer>`
-
-:   0..N
-
-    Specifies styling as points. See [PointSymbolizer](pointsymbolizer.md)
-
-`<LineSymbolizer>`
-
-:   0..N
-
-    Specifies styling as lines. See [LineSymbolizer](linesymbolizer.md)
-
-`<PolygonSymbolizer>`
-
-:   0..N
-
-    Specifies styling as polygons. See [PolygonSymbolizer](polygonsymbolizer.md)
-
-`<TextSymbolizer>`
-
-:   0..N
-
-    Specifies styling for text labels. See [TextSymbolizer](textsymbolizer.md)
-
-`<RasterSymbolizer>`
-
-:   0..N
-
-    Specifies styling for raster data. See [RasterSymbolizer](rastersymbolizer.md)
+|                         |               |                                                                                                                                                                             |
+|-------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Tag**                 | **Required?** | **Description**                                                                                                                                                             |
+| `<Name>`                | No            | Specifies a name for the rule.                                                                                                                                              |
+| `<Title>`               | No            | Specifies a title for the rule. The title is used in display lists and legends.                                                                                             |
+| `<Abstract>`            | No            | Specifies an abstract describing the rule.                                                                                                                                  |
+| `<Filter>`              | No            | Specifies a filter controlling when the rule is applied. See [Filters](filters.md)                                                                                         |
+| `<MinScaleDenominator>` | No            | Specifies the minimum scale denominator (inclusive) for the scale range in which this rule applies. If present, the rule applies at the given scale and all smaller scales. |
+| `<MaxScaleDenominator>` | No            | Specifies the maximum scale denominator (exclusive) for the scale range in which this rule applies. If present, the rule applies at scales larger than the given scale.     |
+| `<PointSymbolizer>`     | 0..N          | Specifies styling as points. See [PointSymbolizer](pointsymbolizer.md)                                                                                                     |
+| `<LineSymbolizer>`      | 0..N          | Specifies styling as lines. See [LineSymbolizer](linesymbolizer.md)                                                                                                        |
+| `<PolygonSymbolizer>`   | 0..N          | Specifies styling as polygons. See [PolygonSymbolizer](polygonsymbolizer.md)                                                                                               |
+| `<TextSymbolizer>`      | 0..N          | Specifies styling for text labels. See [TextSymbolizer](textsymbolizer.md)                                                                                                 |
+| `<RasterSymbolizer>`    | 0..N          | Specifies styling for raster data. See [RasterSymbolizer](rastersymbolizer.md)                                                                                             |
 
 ## Scale Selection
 

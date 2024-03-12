@@ -41,13 +41,19 @@ This exercise makes use of the `ne:populated_places` layer.
 4.  Replace the initial YSLD definition with the following and click **apply**:
 
     ``` yaml
-    symbolizers:
-    - point:
-        symbols:
-        - mark:
-            shape: circle
-            stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        point:
+        :   symbols:
+            -   
+
+                mark:
+
+                :   shape: circle stroke-width: 1
 
 5.  And use the **Layer Preview** tab to preview the result.
 
@@ -64,13 +70,19 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
 1.  Change the symbol used by the style to a square:
 
     ``` {.yaml emphasize-lines="5"}
-    symbolizers:
-    - point:
-        symbols:
-        - mark:
-            shape: square
-            stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        point:
+        :   symbols:
+            -   
+
+                mark:
+
+                :   shape: square stroke-width: 1
 
 2.  Map Preview:
 
@@ -79,16 +91,20 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
 3.  Before we continue we will use a filter to cut down the amount of data shown to a reasonable level.
 
     ``` {.yaml emphasize-lines="1,2,3"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          symbols:
-          - mark:
-              shape: square
-              stroke-width: 1
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: square stroke-width: 1
 
 !!! note
 
@@ -107,18 +123,20 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
     Trying these two settings together:
 
     ``` {.yaml emphasize-lines="6,7"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          size: 8
-          rotation: 45.0
-          symbols:
-          - mark:
-              shape: square
-              stroke-width: 1
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   size: 8 rotation: 45.0 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: square stroke-width: 1
 
 3.  Results in each location being marked with a diamond:
 
@@ -127,20 +145,20 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
 4.  The **mark** property provides parameters to style the point symbol. Let's change the **fill-color** to gray.
 
     ``` {.yaml emphasize-lines="13"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          size: 8
-          rotation: 45.0
-          symbols:
-          - mark:
-              shape: square
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   size: 8 rotation: 45.0 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: square stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
 
 5.  Updating the mark to a gray square with a black outline.
 
@@ -151,28 +169,30 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
     Using this approach marks can be composed of multiple symbols, each with its own settings:
 
     ``` {.yaml emphasize-lines="6,12,13,14,15,16,17,18,19,20,21"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          size: 16
-          symbols:
-          - mark:
-              shape: square
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'red'
-      - point:
-          size: 14
-          rotation: 45.0
-          symbols:
-          - mark:
-              shape: cross
-              stroke-color: 'white'
-              stroke-width: 1
-              fill-color: 'black'
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   size: 16 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: square stroke-color: 'black' stroke-width: 1 fill-color: 'red'
+
+        -   
+
+            point:
+            :   size: 14 rotation: 45.0 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: cross stroke-color: 'white' stroke-width: 1 fill-color: 'black'
 
 7.  Producing an interesting compound symbol effect:
 
@@ -195,16 +215,20 @@ This technique was shown with the initial **`airport.svg`** YSLD example.
     This technique is used to reference files placed in the styles directory.
 
     ``` yaml
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          symbols:
-          - external:
-              url: file:/path/to/geoserver/data_dir/styles/port.svg
-              format: image/svg
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    external:
+
+                    :   url: <file:/path/to/geoserver/data_dir/styles/port.svg> format: image/svg
 
 2.  Drawing the provided shape in each location:
 
@@ -213,17 +237,20 @@ This technique was shown with the initial **`airport.svg`** YSLD example.
 3.  The property **url** reference can also be used to reference external images. We can make use of the GeoServer logo.
 
     ``` {.yaml emphasize-lines="6,9"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          size: 16
-          symbols:
-          - external:
-              url: http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png
-              format: image/png
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   size: 16 symbols:
+                -   
+
+                    external:
+
+                    :   url: <http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png> format: image/png
 
 4.  As shown in the map preview.
 
@@ -240,22 +267,26 @@ The **text** symbolizer with the **label** property are required to label Point 
 1.  Replace `point_example` with the following:
 
     ``` yaml
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          symbols:
-          - mark:
-              shape: circle
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-      - text:
-          label: ${NAME}
-          fill-color: 'gray'
-          placement: point
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+        -   
+
+            text:
+
+            :   label: \${NAME} fill-color: 'gray' placement: point
 
 2.  Confirm the result in `Layer Preview` preview.
 
@@ -274,25 +305,26 @@ The **text** symbolizer with the **label** property are required to label Point 
     Using these two facilities together we can center our labels below the symbol, taking care that the displacement used provides an offset just outside the area required for the symbol size.
 
     ``` {.yaml emphasize-lines="6,15,17,18"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          size: 10
-          symbols:
-          - mark:
-              shape: circle
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-      - text:
-          label: ${NAME}
-          fill-color: 'black'
-          placement: point
-          anchor: [0.5, 1.0]
-          displacement: [0, -12]
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   size: 10 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+        -   
+
+            text:
+
+            :   label: \${NAME} fill-color: 'black' placement: point anchor: [0.5, 1.0] displacement: [0, -12]
 
 4.  Each label is now placed under the mark.
 
@@ -311,28 +343,27 @@ The **text** symbolizer with the **label** property are required to label Point 
     Update our example to use these settings:
 
     ``` {.yaml emphasize-lines="13,20,21"}
-    rules:
-    - filter: ${SCALERANK < '1'}
-      scale: [min, max]
-      symbolizers:
-      - point:
-          size: 10
-          symbols:
-          - mark:
-              shape: circle
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-          x-labelObstacle: true
-      - text:
-          label: ${NAME}
-          fill-color: 'black'
-          placement: point
-          anchor: [0.5, 1.0]
-          displacement: [0, -12]
-          x-maxDisplacement: 100
-          x-spaceAround: 2
     ```
+
+    rules:
+
+    -   filter: \${SCALERANK < '1'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   size: 10 symbols:
+
+                - mark:
+
+                :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+                x-labelObstacle: true
+
+        -   
+
+            text:
+
+            :   label: \${NAME} fill-color: 'black' placement: point anchor: [0.5, 1.0] displacement: [0, -12] x-maxDisplacement: 100 x-spaceAround: 2
 
 6.  Resulting in a considerably cleaner image:
 
@@ -343,50 +374,60 @@ The **text** symbolizer with the **label** property are required to label Point 
 1.  We will quickly use **scalerank** to select content based on @scale filters.
 
     ``` yaml
-    define: &point
-      size: 6
-      symbols:
-      - mark:
-          shape: circle
-          stroke-color: 'black'
-          stroke-width: 1
-          fill-color: 'gray'
-    rules:
-    - filter: ${SCALERANK < '7'}
-      scale: ['4000000.0', '8000000.0']
-      symbolizers:
-      - point:
-          <<: *point
-    - filter: ${SCALERANK < '5'}
-      scale: ['8000000.0', '1.7E7']
-      symbolizers:
-      - point:
-          <<: *point
-    - filter: ${SCALERANK < '4'}
-      scale: ['1.7E7', '3.5E7']
-      symbolizers:
-      - point:
-          <<: *point
-    - filter: ${SCALERANK < '3'}
-      scale: ['3.5E7', '7.0E7']
-      symbolizers:
-      - point:
-          <<: *point
-    - filter: ${SCALERANK < '2'}
-      scale: ['7.0E7', '1.4E8']
-      symbolizers:
-      - point:
-          <<: *point
-    - filter: ${SCALERANK < '1'}
-      scale: ['1.4E8', max]
-      symbolizers:
-      - point:
-          <<: *point
-    - scale: [min, '4000000.0']
-      symbolizers:
-      - point:
-          <<: *point
     ```
+
+    define: &point
+    :   size: 6 symbols:
+        -   
+
+            mark:
+
+            :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+    rules:
+
+    -   filter: \${SCALERANK < '7'} scale: ['4000000.0', '8000000.0'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+    -   filter: \${SCALERANK < '5'} scale: ['8000000.0', '1.7E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+    -   filter: \${SCALERANK < '4'} scale: ['1.7E7', '3.5E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+    -   filter: \${SCALERANK < '3'} scale: ['3.5E7', '7.0E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+    -   filter: \${SCALERANK < '2'} scale: ['7.0E7', '1.4E8'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+    -   filter: \${SCALERANK < '1'} scale: ['1.4E8', max] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+    -   scale: [min, '4000000.0'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
 
 2.  Click **Apply** to update the **Layer Preview** after each step.
 
@@ -397,87 +438,122 @@ The **text** symbolizer with the **label** property are required to label Point 
         This YSLD makes use of a **define** to avoid repeating the point symbolizer content multiple times. As an example the [scale: [min, '4000000.0']]{.title-ref} rule, combined with the ``define:`` results in the following collection of properties:
     
         ``` yaml
-        - scale: [min, '4000000.0']
-          symbolizers:
-          - point:
-              size: 6
-              symbols:
-              - mark:
-                  shape: circle
-                  stroke-color: 'black'
-                  stroke-width: 1
-                  fill-color: 'gray'
         ```
+
+    -   scale: [min, '4000000.0'] symbolizers:
+        -   
+
+            point:
+            :   size: 6 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
 
 3.  To add labeling we must use both a point and text symbolizer in each scale filter.
 
     ``` yaml
-    define: &point
-      size: 6
-      symbols:
-      - mark:
-          shape: circle
-          stroke-color: 'black'
-          stroke-width: 1
-          fill-color: 'gray'
-    define: &label
-      label: ${NAME}
-      fill-color: 'black'
-      font-family: Arial
-      font-size: 10
-      font-style: normal
-      font-weight: normal
-      placement: point
-    rules:
-    - filter: ${SCALERANK < '7'}
-      scale: ['4000000.0', '8000000.0']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '5'}
-      scale: ['8000000.0', '1.7E7']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '4'}
-      scale: ['1.7E7', '3.5E7']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '3'}
-      scale: ['3.5E7', '7.0E7']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '2'}
-      scale: ['7.0E7', '1.4E8']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '1'}
-      scale: ['1.4E8', max]
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - scale: [min, '4000000.0']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
     ```
+
+    define: &point
+    :   size: 6 symbols:
+        -   
+
+            mark:
+
+            :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+    define: &label
+
+    :   label: \${NAME} fill-color: 'black' font-family: Arial font-size: 10 font-style: normal font-weight: normal placement: point
+
+    rules:
+
+    -   filter: \${SCALERANK < '7'} scale: ['4000000.0', '8000000.0'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '5'} scale: ['8000000.0', '1.7E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '4'} scale: ['1.7E7', '3.5E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '3'} scale: ['3.5E7', '7.0E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '2'} scale: ['7.0E7', '1.4E8'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '1'} scale: ['1.4E8', max] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   scale: [min, '4000000.0'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
 
     ![image](../style/img/point_05_label.png)
 
@@ -486,17 +562,11 @@ The **text** symbolizer with the **label** property are required to label Point 
     Add the following two lines to the ``label`` define:
 
     ``` {.yaml emphasize-lines="9,10"}
-    define: &label
-      label: ${NAME}
-      fill-color: 'black'
-      font-family: Arial
-      font-size: 10
-      font-style: normal
-      font-weight: normal
-      placement: point
-      anchor: [0.5, 0]
-      displacement: [0, 6]
     ```
+
+    define: &label
+
+    :   label: \${NAME} fill-color: 'black' font-family: Arial font-size: 10 font-style: normal font-weight: normal placement: point anchor: [0.5, 0] displacement: [0, 6]
 
     ![image](../style/img/point_05_align.png)
 
@@ -505,33 +575,25 @@ The **text** symbolizer with the **label** property are required to label Point 
     Add the following vendor options to the ``label`` define:
 
     ``` {.yaml emphasize-lines="11,12"}
-    define: &label
-      label: ${NAME}
-      fill-color: 'black'
-      font-family: Arial
-      font-size: 10
-      font-style: normal
-      font-weight: normal
-      placement: point
-      anchor: [0.5, 0]
-      displacement: [0, 6]
-      x-maxDisplacement: 90
-      x-spaceAround: 2
     ```
+
+    define: &label
+
+    :   label: \${NAME} fill-color: 'black' font-family: Arial font-size: 10 font-style: normal font-weight: normal placement: point anchor: [0.5, 0] displacement: [0, 6] x-maxDisplacement: 90 x-spaceAround: 2
 
     Add the following vendor option to the ``point`` define:
 
     ``` {.yaml emphasize-lines="9"}
-    define: &point
-      size: 6
-      symbols:
-      - mark:
-          shape: circle
-          stroke-color: 'black'
-          stroke-width: 1
-          fill-color: 'gray'
-      x-labelObstacle: true
     ```
+
+    define: &point
+    :   size: 6 symbols:
+
+        - mark:
+
+        :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+        x-labelObstacle: true
 
     ![image](../style/img/point_06_relocate.png)
 
@@ -560,29 +622,20 @@ The **text** symbolizer with the **label** property are required to label Point 
     This expression will result in values between 0 and 10 and will be used for the **priority**.
 
     ``` {.yaml emphasize-lines="2,19,20"}
-    define: &point
-      size: ${10-(SCALERANK/2)}
-      symbols:
-      - mark:
-          shape: circle
-          stroke-color: 'black'
-          stroke-width: 1
-          fill-color: 'gray'
-      x-labelObstacle: true
-    define: &label
-      label: ${NAME}
-      fill-color: 'black'
-      font-family: Arial
-      font-size: 10
-      font-style: normal
-      font-weight: normal
-      placement: point
-      anchor: [0.5, 0]
-      displacement: [0, '${''10'' - SCALERANK / ''2''}']
-      priority: ${'10' - LABELRANK}
-      x-maxDisplacement: 90
-      x-spaceAround: 2
     ```
+
+    define: &point
+    :   size: \${10-(SCALERANK/2)} symbols:
+
+        - mark:
+
+        :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+        x-labelObstacle: true
+
+    define: &label
+
+    :   label: \${NAME} fill-color: 'black' font-family: Arial font-size: 10 font-style: normal font-weight: normal placement: point anchor: [0.5, 0] displacement: [0, '\${''10'' - SCALERANK / ''2''}'] priority: \${'10' - LABELRANK} x-maxDisplacement: 90 x-spaceAround: 2
 
     ![image](../style/img/point_07_expression.png)
 
@@ -591,90 +644,130 @@ The **text** symbolizer with the **label** property are required to label Point 
     Adding a filter for capital cities at the top of the **rules** list:
 
     ``` yaml
-    - filter: ${SCALERANK < '2' AND FEATURECLA = 'Admin-0 capital'}
-      scale: ['7.0E7', max]
-      name: capitals
-      symbolizers:
-      - point:
-          symbols:
-          - mark:
-              shape: star
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-      - text:
-          label: ${NAME}
-          fill-color: 'gray'
-          placement: point
-    - filter: ${FEATURECLA = 'Admin-0 capital'}
-      scale: [min, '7.0E7']
-      name: capitals
-      symbolizers:
-      - point:
-          symbols:
-          - mark:
-              shape: star
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
-      - text:
-          label: ${NAME}
-          fill-color: 'gray'
-          placement: point
     ```
+
+    -   filter: \${SCALERANK < '2' AND FEATURECLA = 'Admin-0 capital'} scale: ['7.0E7', max] name: capitals symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: star stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+        -   
+
+            text:
+
+            :   label: \${NAME} fill-color: 'gray' placement: point
+    -   filter: \${FEATURECLA = 'Admin-0 capital'} scale: [min, '7.0E7'] name: capitals symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: star stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+
+        -   
+
+            text:
+
+            :   label: \${NAME} fill-color: 'gray' placement: point
 
     And updating the populated places filters to ignore capital cities:
 
     ``` yaml
-    - filter: ${SCALERANK < '7' AND FEATURECLA <> 'Admin-0 capital'}
-      scale: ['4000000.0', '8000000.0']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '5' AND FEATURECLA <> 'Admin-0 capital'}
-      scale: ['8000000.0', '1.7E7']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '4' AND FEATURECLA <> 'Admin-0 capital'}
-      scale: ['1.7E7', '3.5E7']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '3' AND FEATURECLA <> 'Admin-0 capital'}
-      scale: ['3.5E7', '7.0E7']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '2' AND FEATURECLA <> 'Admin-0 capital'}
-      scale: ['7.0E7', '1.4E8']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - filter: ${SCALERANK < '1' AND FEATURECLA <> 'Admin-0 capital'}
-      scale: ['1.4E8', max]
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
-    - scale: [min, '4000000.0']
-      symbolizers:
-      - point:
-          <<: *point
-      - text:
-          <<: *label
     ```
+
+    -   filter: \${SCALERANK < '7' AND FEATURECLA <> 'Admin-0 capital'} scale: ['4000000.0', '8000000.0'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '5' AND FEATURECLA <> 'Admin-0 capital'} scale: ['8000000.0', '1.7E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '4' AND FEATURECLA <> 'Admin-0 capital'} scale: ['1.7E7', '3.5E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '3' AND FEATURECLA <> 'Admin-0 capital'} scale: ['3.5E7', '7.0E7'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '2' AND FEATURECLA <> 'Admin-0 capital'} scale: ['7.0E7', '1.4E8'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   filter: \${SCALERANK < '1' AND FEATURECLA <> 'Admin-0 capital'} scale: ['1.4E8', max] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
+    -   scale: [min, '4000000.0'] symbolizers:
+        -   
+
+            point:
+
+            :   <<: *point
+
+        -   
+
+            text:
+
+            :   <<: *label
 
     ![image](../style/img/point_09_fill.png)
 
@@ -713,46 +806,50 @@ The **text** symbolizer with the **label** property are required to label Point 
     This approach is straightforward when applied in isolation:
 
     > ``` yaml
-    > rules:
-    > - filter: ${FEATURECLA = 'Admin-0 capital'}
-    >   scale: [min, max]
-    >   symbolizers:
-    >   - point:
-    >       symbols:
-    >       - mark:
-    >           shape: star
-    >           stroke-color: 'black'
-    >           stroke-width: 1
-    >           fill-color: 'gray'
-    > - filter: ${FEATURECLA <> 'Admin-0 capital'}
-    >   scale: [min, max]
-    >   symbolizers:
-    >   - point:
-    >       symbols:
-    >       - mark:
-    >           shape: circle
-    >           stroke-color: 'black'
-    >           stroke-width: 1
-    >           fill-color: 'gray'
     > ```
+
+    rules:
+
+    -   filter: \${FEATURECLA = 'Admin-0 capital'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: star stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
+    -   filter: \${FEATURECLA <> 'Admin-0 capital'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: circle stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
 
     When combined with checking another attribute, or checking @scale as in our example, this approach can quickly lead to many rules which can be difficult to keep straight.
 
 2.  Taking a closer look, `shape` can actually be expressed using a string:
 
     > ``` yaml
-    > rules:
-    > - filter: ${FEATURECLA = 'Admin-0 capital'}
-    >   scale: [min, max]
-    >   symbolizers:
-    >   - point:
-    >       symbols:
-    >       - mark:
-    >           shape: 'star'
-    >           stroke-color: 'black'
-    >           stroke-width: 1
-    >           fill-color: 'gray'
     > ```
+
+    rules:
+
+    -   filter: \${FEATURECLA = 'Admin-0 capital'} scale: [min, max] symbolizers:
+        -   
+
+            point:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: 'star' stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
 
     Which is represented in SLD as:
 
@@ -765,19 +862,26 @@ The **text** symbolizer with the **label** property are required to label Point 
             <sld:Stroke/>
          </sld:Mark>
       </sld:Graphic>
-    </sld:PointSymbolizer>
     ```
+
+    </sld:PointSymbolizer>
 
 3.  GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
 
     This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
 
     > ``` yaml
-    > - point:
-    >     symbols:
-    >     - mark:
-    >         shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
     > ```
+
+    -   
+
+        point:
+        :   symbols:
+            -   
+
+                mark:
+
+                :   shape: \${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
 
     Which is represented in SLD as:
 
@@ -790,8 +894,9 @@ The **text** symbolizer with the **label** property are required to label Point 
             <sld:Stroke/>
          </sld:Mark>
       </sld:Graphic>
-    </sld:PointSymbolizer>
     ```
+
+    </sld:PointSymbolizer>
 
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
@@ -812,20 +917,21 @@ The **text** symbolizer with the **label** property are required to label Point 
 2.  To help start things out here is a style for `ne:states_provinces_shp`:
 
     > ``` yaml
-    > symbolizers:
-    > - polygon:
-    >     stroke-color: 'black'
-    >     stroke-width: 0.25
-    >     stroke-opacity: 0.5
-    >     fill-color: 'white'
-    >     fill-opacity: 0.05
-    > - polygon:
-    >     stroke-color: 'black'
-    >     stroke-width: 0.25
-    >     stroke-opacity: 0.5
-    >     fill-color: ${Recode(mapcolor9,'1','#8dd3c7','2','#ffffb3','3','#bebada','4','#fb8072','5','#80b1d3','6','#fdb462','7','#b3de69','8','#fccde5','9','#d9d9d9')}
-    >     fill-opacity: 0.5
     > ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 0.25 stroke-opacity: 0.5 fill-color: 'white' fill-opacity: 0.05
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 0.25 stroke-opacity: 0.5 fill-color: \${Recode(mapcolor9,'1','#8dd3c7','2','#ffffb3','3','#bebada','4','#fb8072','5','#80b1d3','6','#fdb462','7','#b3de69','8','#fccde5','9','#d9d9d9')} fill-opacity: 0.5
 
 3.  This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.
 
@@ -864,11 +970,16 @@ The **text** symbolizer with the **label** property are required to label Point 
 2.  Support has been added for custom graphics using the WKT Geometry representation.
 
     > ``` yaml
-    > symbolizers:
-    > - point:
-    >     symbols:
-    >     - mark:
-    >         shape: wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))
-    >         stroke-color: 'blue'
-    >         stroke-width: 1
     > ```
+
+    symbolizers:
+
+    -   
+
+        point:
+        :   symbols:
+            -   
+
+                mark:
+
+                :   shape: wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25)) stroke-color: 'blue' stroke-width: 1

@@ -27,21 +27,12 @@ Parameter mappings configured as CQL expressions are evaluated for each request 
 
 The context contains the following properties that may be used in the expressions:
 
-**Property name**
-
-:   **Explanation**
-
-`bboxMinX` `bboxMinY` `bboxMaxX` `bboxMaxY`
-
-:   Evaluates to a corner coordinate of the full extent of the query
-
-`defaultSRS`
-
-:   Evaluates to the default SRS of the feature type
-
-`viewparam:name`
-
-:   Evaluates to the value of the view parameter *name* in this query
+|                                             |                                                                   |
+|---------------------------------------------|-------------------------------------------------------------------|
+| **Property name**                           | **Explanation**                                                   |
+| `bboxMinX` `bboxMinY` `bboxMaxX` `bboxMaxY` | Evaluates to a corner coordinate of the full extent of the query  |
+| `defaultSRS`                                | Evaluates to the default SRS of the feature type                  |
+| `viewparam:name`                            | Evaluates to the value of the view parameter *name* in this query |
 
 ## Configuring a cascaded stored query layer
 

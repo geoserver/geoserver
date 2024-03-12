@@ -24,33 +24,14 @@ To add a new XML user/group service, click the **Add new** link. XML is the defa
 ![](images/ugr_ugxmlsettings.png)
 *Adding an XML user/group service*
 
-Option
-
-:   Description
-
-Name
-
-:   The name of the user/group service
-
-Password encryption
-
-:   Sets the type of [Password encryption](../passwd.md#security_passwd_encryption). Options are **Plain text**, **Weak PBE**, **Strong PBE**, and **Digest**.
-
-Password policy
-
-:   Sets the [password policy](../passwd.md#security_passwd_policy). Options are any active password policies as set in the [Passwords](passwords.md) section.
-
-XML filename
-
-:   Name of the file that will contain the user and group information. Default is **`users.xml`** in the `security/usergroup/<name_of_usergroupservice>` directory.
-
-Enable schema validation
-
-:   If selected, forces schema validation to occur every time the XML file is read. This option is useful when editing the XML file by hand.
-
-File reload interval
-
-:   Defines the frequency (in milliseconds) in which GeoServer will check for changes to the XML file. If the file is found to have been modified, GeoServer will recreate the user/group database based on the current state of the file. This value is meant to be set in cases where the XML file contents might change "out of process" and not directly through the web admin interface. The value is specified in milliseconds. A value of 0 disables any checking of the file.
+| Option                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name                     | The name of the user/group service                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Password encryption      | Sets the type of [Password encryption](../passwd.md#security_passwd_encryption). Options are **Plain text**, **Weak PBE**, **Strong PBE**, and **Digest**.                                                                                                                                                                                                                                                                                                                         |
+| Password policy          | Sets the [password policy](../passwd.md#security_passwd_policy). Options are any active password policies as set in the [Passwords](passwords.md) section.                                                                                                                                                                                                                                                                                                                        |
+| XML filename             | Name of the file that will contain the user and group information. Default is **`users.xml`** in the `security/usergroup/<name_of_usergroupservice>` directory.                                                                                                                                                                                                                                                                                                                   |
+| Enable schema validation | If selected, forces schema validation to occur every time the XML file is read. This option is useful when editing the XML file by hand.                                                                                                                                                                                                                                                                                                                                            |
+| File reload interval     | Defines the frequency (in milliseconds) in which GeoServer will check for changes to the XML file. If the file is found to have been modified, GeoServer will recreate the user/group database based on the current state of the file. This value is meant to be set in cases where the XML file contents might change "out of process" and not directly through the web admin interface. The value is specified in milliseconds. A value of 0 disables any checking of the file. |
 
 ## Add new JDBC user/group service
 
@@ -78,13 +59,9 @@ In addition to the parameters listed above, the following additional parameter w
 ![](images/ugr_ugjdbcjndisettings.png)
 *Adding a user/group service via JDBC with JNDI*
 
-Option
-
-:   Description
-
-JNDI resource name
-
-:   JNDI name used to locate the database connection.
+| Option             | Description                                       |
+|--------------------|---------------------------------------------------|
+| JNDI resource name | JNDI name used to locate the database connection. |
 
 ## Add new LDAP user/group service
 
@@ -240,25 +217,12 @@ There are two related buttons that are responsible for removing users: **Remove 
 ![](images/ugr_newgroup.png)
 *Creating or editing a group*
 
-Option
-
-:   Description
-
-Group name
-
-:   The name of the group
-
-Enabled
-
-:   When selected the group will be active
-
-Role list
-
-:   Full list of roles, including a list of roles to which the group is associated. Association can be toggled here via the arrow buttons.
-
-Add a new role
-
-:   Shortcut to adding a new role
+| Option         | Description                                                                                                                            |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| Group name     | The name of the group                                                                                                                  |
+| Enabled        | When selected the group will be active                                                                                                 |
+| Role list      | Full list of roles, including a list of roles to which the group is associated. Association can be toggled here via the arrow buttons. |
+| Add a new role | Shortcut to adding a new role                                                                                                          |
 
 In this menu, user/group services can be added, removed, or edited. By default, there is one user/group service in GeoServer, which is [XML-based](../usergrouprole/usergroupservices.md#security_rolesystem_usergroupxml). It is encrypted with [Weak PBE](../passwd.md#security_passwd_encryption) and uses the default [password policy](../passwd.md#security_passwd_policy). It is also possible to have a user/group service based on [JDBC](../usergrouprole/usergroupservices.md#security_rolesystem_usergroupjdbc) with or without JNDI.
 

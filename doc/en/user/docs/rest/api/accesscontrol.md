@@ -49,47 +49,12 @@ API for administering access control for
 > -   Services
 > -   The REST API
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Fetch all rules
-
-    200,403
-
-    XML, JSON
-
-POST
-
-:   Add a set of rules
-
-    200,403,409
-
-    XML, JSON
-
-PUT
-
-:   Modify a set of rules
-
-    200,403,409
-
-    XML, JSON
-
-DELETE
-
-:   Delete a specific rule
-
-    200,404,409
-
-    XML, JSON
+| Method | Action                 | Status code | Formats   | Default Format |
+|--------|------------------------|-------------|-----------|----------------|
+| GET    | Fetch all rules        | 200,403     | XML, JSON |                |
+| POST   | Add a set of rules     | 200,403,409 | XML, JSON |                |
+| PUT    | Modify a set of rules  | 200,403,409 | XML, JSON |                |
+| DELETE | Delete a specific rule | 200,404,409 | XML, JSON |                |
 
 Format for DELETE:
 

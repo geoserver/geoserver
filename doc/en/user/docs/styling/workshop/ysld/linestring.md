@@ -79,52 +79,54 @@ line:
 3.  You can see the equivalent SLD by requesting ``http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true`` which will currently show the default line symbolizer we created.
 
     ``` xml
-    <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
-     <sld:NamedLayer>
-      <sld:Name>line_example</sld:Name>
-      <sld:UserStyle>
-        <sld:Name>line_example</sld:Name>
-        <sld:Title>dark yellow line</sld:Title>
-        <sld:FeatureTypeStyle>
-          <sld:Name>name</sld:Name>
-          <sld:Rule>
-            <sld:LineSymbolizer>
-              <sld:Stroke>
-                <sld:CssParameter name="stroke">#99CC00</sld:CssParameter>
-              </sld:Stroke>
-            </sld:LineSymbolizer>
-          </sld:Rule>
-        </sld:FeatureTypeStyle>
-      </sld:UserStyle>
-     </sld:NamedLayer>
-    </sld:StyledLayerDescriptor>
     ```
+
+> <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="<http://www.opengis.net/sld>" xmlns:sld="<http://www.opengis.net/sld>" xmlns:gml="<http://www.opengis.net/gml>" xmlns:ogc="<http://www.opengis.net/ogc>" version="1.0.0">
+>
+> :   
+>
+>     <sld:NamedLayer>
+>
+>     :   <sld:Name>line_example</sld:Name> <sld:UserStyle> <sld:Name>line_example</sld:Name> <sld:Title>dark yellow line</sld:Title> <sld:FeatureTypeStyle> <sld:Name>name</sld:Name> <sld:Rule> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#99CC00</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer> </sld:Rule> </sld:FeatureTypeStyle> </sld:UserStyle>
+>
+>     </sld:NamedLayer>
+>
+> </sld:StyledLayerDescriptor>
 
 We only specified the line symbolizer, so all of the boilerplate around was generated for us.
 
 1.  Additional properties can be used fine-tune appearance. Use **stroke-color** to specify the colour of the line.
 
     ``` {.yaml emphasize-lines="2"}
-    line:
-      stroke-color: blue
     ```
+
+    line:
+
+    :   stroke-color: blue
 
 2.  **stroke-width** lets us make the line wider
 
     ``` {.yaml emphasize-lines="3"}
-    line:
-      stroke-color: blue
-    stroke-width: 2px
     ```
+
+    line:
+
+    :   stroke-color: blue
+
+    stroke-width: 2px
 
 3.  **stroke-dasharray** applies a dot dash pattern.
 
     ``` {.yaml emphasize-lines="4"}
-    line:
-      stroke-color: blue
-    stroke-width: 2px
-      stroke-dasharray: 5 2
     ```
+
+    line:
+
+    :   stroke-color: blue
+
+    stroke-width: 2px
+
+    :   stroke-dasharray: 5 2
 
 4.  Check the **Layer Preview** tab to preview the result.
 
@@ -143,29 +145,40 @@ Providing two strokes is often used to provide a contrasting edge (called casing
 1.  Start by filling in a bit of boilerplate that we'll be using
 
     ``` yaml
-    feature-styles:
-    - rules:
-      - symbolizers:
-        - line:
-            stroke-color: '#8080E6'
-            stroke-width: 3px
     ```
+
+    feature-styles:
+
+    -   rules:
+        -   symbolizers:
+            -   
+
+                line:
+
+                :   stroke-color: '#8080E6' stroke-width: 3px
 
     The line symbolizer is inside a rule, which is inside a feature style.
 
 2.  Add a second symbolizer to the rule
 
     ``` {.yaml emphasize-lines="4,5,6"}
-    feature-styles:
-    - rules:
-      - symbolizers:
-        - line:
-            stroke-color: black
-            stroke-width: 5px
-        - line:
-            stroke-color: '#8080E6'
-            stroke-width: 3px
     ```
+
+    feature-styles:
+
+    -   rules:
+        -   symbolizers:
+            -   
+
+                line:
+
+                :   stroke-color: black stroke-width: 5px
+
+            -   
+
+                line:
+
+                :   stroke-color: '#8080E6' stroke-width: 3px
 
     The wider black line is first so it is drawn first, then the thinner blue line drawn second and so over top of the black line. This is called the painter's algorithm.
 
@@ -178,18 +191,24 @@ Providing two strokes is often used to provide a contrasting edge (called casing
 4.  Create a new feature style and move the second symbolizer there.
 
     ``` {.yaml emphasize-lines="2,3,4,5,6"}
-    feature-styles:
-    - rules:
-      - symbolizers:
-        - line:
-            stroke-color: black
-            stroke-width: 5px
-    - rules:
-      - symbolizers:
-        - line:
-            stroke-color: '#8080E6'
-            stroke-width: 3px
     ```
+
+    feature-styles:
+
+    -   rules:
+        -   symbolizers:
+            -   
+
+                line:
+
+                :   stroke-color: black stroke-width: 5px
+    -   rules:
+        -   symbolizers:
+            -   
+
+                line:
+
+                :   stroke-color: '#8080E6' stroke-width: 3px
 
     Again we are using painter's algorithm order: the first feature style is drawn first then the second so the second is drawn on top of the first. The difference is that for each feature style, all of the features are drawn before the next feature style is drawn.
 
@@ -248,9 +267,11 @@ This is also our first example making use of a dynamic style (where a value come
     - text:
         label: ${name}
         fill-color: black
-    placement: line
-        offset: 7px
     ```
+
+    placement: line
+
+    :   offset: 7px
 
 5.  The **fill-color** property is set to ``black`` to provide the colour of the text.
 
@@ -317,8 +338,9 @@ To take greater control over the GeoServer rendering engine we can use "vendor s
         fill-color: black
         placement: line
         offset: 7px
-    x-label-padding: 10
     ```
+
+    x-label-padding: 10
 
 2.  The parameter **x-label-padding** provides additional space around our label for use in collision avoidance.
 
@@ -332,8 +354,9 @@ To take greater control over the GeoServer rendering engine we can use "vendor s
         fill-color: black
         placement: line
         offset: 7px
-    x-label-padding: 10
     ```
+
+    x-label-padding: 10
 
 3.  Each label is now separated from its neighbor, improving legibility.
 
@@ -346,13 +369,16 @@ This section explores the use of rules with filters and scale restrictions.
 1.  Replace the ``line_example`` YSLD definition with:
 
     ``` yaml
-    rules:
-    - filter: ${scalerank < 4}
-      symbolizers:
-      - line:
-          stroke-color: black
-          stroke-width: 1
     ```
+
+    rules:
+
+    -   filter: \${scalerank < 4} symbolizers:
+        -   
+
+            line:
+
+            :   stroke-color: black stroke-width: 1
 
 2.  And use the **Layer Preview** tab to preview the result.
 
@@ -365,18 +391,22 @@ This section explores the use of rules with filters and scale restrictions.
     Replace your YSLD with the following:
 
     ``` yaml
-    rules:
-    - scale: [35000000, max]
-      symbolizers:
-      - line:
-          stroke-color: black
-          stroke-width: 1
-    - scale: [min, 35000000]
-      symbolizers:
-      - line:
-          stroke-color: blue
-          stroke-width: 1
     ```
+
+    rules:
+
+    -   scale: [35000000, max] symbolizers:
+        -   
+
+            line:
+
+            :   stroke-color: black stroke-width: 1
+    -   scale: [min, 35000000] symbolizers:
+        -   
+
+            line:
+
+            :   stroke-color: blue stroke-width: 1
 
 5.  As you adjust the scale in the **Layer Preview** (using the mouse scroll wheel) the color will change between black and blue. You can read the current scale in the bottom right corner, and the legend will change to reflect the current style.
 
@@ -385,69 +415,70 @@ This section explores the use of rules with filters and scale restrictions.
 6.  Putting these two ideas together allows control of level detail based on scale:
 
     ``` yaml
+    ```
+
     define: &primaryStyle
-      stroke-color: black
-    define: &primaryFilter ${scalerank <= 4}
+
+    :   stroke-color: black
+
+    define: &primaryFilter \${scalerank <= 4}
 
     define: &secondaryStyle
-      stroke-color: '#000055'
-    define: &secondaryFilter ${scalerank = 5}
+
+    :   stroke-color: '#000055'
+
+    define: &secondaryFilter \${scalerank = 5}
 
     rules:
 
-      - else: true
-        scale: [min, 9000000]
-        symbolizers:
-        - line:
-            stroke-color: '#888888'
-            stroke-width: 1
-
-      - filter: ${scalerank = 7}
-        scale: [min, 17000000]
-        symbolizers:
-        - line:
-            stroke-color: '#777777'
-            stroke-width: 1
-
-      - filter: ${scalerank = 6}
-        scale: [min, 35000000]
-        symbolizers:
-        - line:
-            stroke-color: '#444444'
-            stroke-width: 1
-
-      - filter: *secondaryFilter
-        scale: [9000000, 70000000]
-        symbolizers:
-        - line:
-            <<: *secondaryStyle
-            stroke-width: 1
-      - filter: *secondaryFilter
-        scale: [min, 9000000]
-        symbolizers:
-        - line:
-            <<: *secondaryStyle
-            stroke-width: 2
-
-      - filter: *primaryFilter
-        scale: [35000000, max]
-        symbolizers:
-        - line:
-            <<: *primaryStyle
-            stroke-width: 1
-      - filter: *primaryFilter
-        scale: [9000000, 35000000]
-        symbolizers:
-        - line:
-            <<: *primaryStyle
-            stroke-width: 2
-      - filter: *primaryFilter
-        scale: [min, 9000000]
-        symbolizers:
-        - line:
-            <<: *primaryStyle
-            stroke-width: 4
-    ```
+    > -   else: true scale: [min, 9000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   stroke-color: '#888888' stroke-width: 1
+    > -   filter: \${scalerank = 7} scale: [min, 17000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   stroke-color: '#777777' stroke-width: 1
+    > -   filter: \${scalerank = 6} scale: [min, 35000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   stroke-color: '#444444' stroke-width: 1
+    > -   filter: *secondaryFilter scale: [9000000, 70000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   <<: *secondaryStyle stroke-width: 1
+    > -   filter: *secondaryFilter scale: [min, 9000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   <<: *secondaryStyle stroke-width: 2
+    > -   filter: *primaryFilter scale: [35000000, max] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   <<: *primaryStyle stroke-width: 1
+    > -   filter: *primaryFilter scale: [9000000, 35000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   <<: *primaryStyle stroke-width: 2
+    > -   filter: *primaryFilter scale: [min, 9000000] symbolizers:
+    >     -   
+    >
+    >         line:
+    >
+    >         :   <<: *primaryStyle stroke-width: 4
 
 7.  When a rule has both a filter and a scale, it will trigger when both are true.
 
@@ -476,44 +507,61 @@ Vendor options can be used to enable some quite spectacular effects, while still
 1.  Update ``line_example`` with the following:
 
     ``` yaml
-    symbolizers:
-    - line:
-        stroke-color: '#EDEDFF'
-        stroke-width: 10
-    - text:
-        label: '${level} #${name}'
-        fill-color: '#000000'
-        x-followLine: true
     ```
+
+    symbolizers:
+
+    -   
+
+        line:
+
+        :   stroke-color: '#EDEDFF' stroke-width: 10
+
+    -   
+
+        text:
+
+        :   label: '\${level} #\${name}' fill-color: '#000000' x-followLine: true
 
     The ``\#`` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
 
 2.  The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label.
 
     ``` {.yaml emphasize-lines="4"}
-    symbolizers:
-    - line:
-        stroke-color: '#EDEDFF'
-        stroke-width: 10
-    - text:
-        label: '${level} #${name}'
-        fill-color: '#000000'
-        placement: point
-        x-followLine: true
     ```
+
+    symbolizers:
+
+    -   
+
+        line:
+
+        :   stroke-color: '#EDEDFF' stroke-width: 10
+
+    -   
+
+        text:
+
+        :   label: '\${level} #\${name}' fill-color: '#000000' placement: point x-followLine: true
 
 3.  The **label** property combine several CQL expressions together for a longer label.
 
     ``` {.yaml emphasize-lines="4"}
-    symbolizers:
-    - line:
-        stroke-color: '#EDEDFF'
-        stroke-width: 10
-    - text:
-        label: '${level} #${name}'
-        fill-color: '#000000'
-        x-followLine: true
     ```
+
+    symbolizers:
+
+    -   
+
+        line:
+
+        :   stroke-color: '#EDEDFF' stroke-width: 10
+
+    -   
+
+        text:
+
+        :   label: '\${level} #\${name}' fill-color: '#000000' x-followLine: true
 
     The expressions in the **label** property:
 
@@ -528,15 +576,21 @@ Vendor options can be used to enable some quite spectacular effects, while still
 4.  The property **x-followLine** provides the ability of have a label exactly follow a LineString character by character.
 
     ``` {.yaml emphasize-lines="8"}
-    symbolizers:
-    - line:
-        stroke-color: '#EDEDFF'
-        stroke-width: 10
-    - text:
-        label: ${level}  ${name}
-        fill-color: '#000000'
-        x-followLine: true
     ```
+
+    symbolizers:
+
+    -   
+
+        line:
+
+        :   stroke-color: '#EDEDFF' stroke-width: 10
+
+    -   
+
+        text:
+
+        :   label: \${level} \${name} fill-color: '#000000' x-followLine: true
 
 5.  The result is a new appearance for our roads.
 

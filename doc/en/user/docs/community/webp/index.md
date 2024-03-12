@@ -35,7 +35,7 @@ function check_webp_feature(feature, callback) {
 check_webp_feature('lossless', function (feature, isSupported) {
   let wmsoutputformat = 'image/webp'
   if (!isSupported) {
-     wmsoutputformat = 'image/png'
+    wmsoutputformat = 'image/png'
   }
   var wmsLayerSource = new ImageWMS({
     params: {'LAYERS': 'yourLayerName','FORMAT': wmsoutputformat},

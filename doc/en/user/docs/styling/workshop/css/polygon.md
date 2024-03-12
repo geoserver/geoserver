@@ -50,8 +50,9 @@ This exercise makes use of the `ne:states_provinces_shp` layer.
 3.  Enter the following style and click ****Apply`` to save:
 
     ``` css
-    * { fill: lightgrey; }
     ```
+
+    -   { fill: lightgrey; }
 
 4.  Click on the tab **Layer Preview** to preview.
 
@@ -72,10 +73,13 @@ The **fill** property is used to provide the color, or pattern, used to draw the
 1.  Replace the contents of `polygon_example` with the following **fill** example:
 
     ``` css
-    * {
-       fill: gray;
-    }
     ```
+
+    * {
+
+    :   fill: gray;
+
+    }
 
 2.  The **Map** tab can be used preview the change:
 
@@ -86,12 +90,13 @@ The **fill** property is used to provide the color, or pattern, used to draw the
     The **stroke** property is used to provide the color, or pattern, for the polygon boundary. It is effected by the same parameters (and vendor specific parameters) as used for LineStrings.
 
     ``` {.css emphasize-lines="3,4"}
-    * {
-       fill: gray;
-       stroke: black;
-       stroke-width: 2;
-    }
     ```
+
+    * {
+
+    :   fill: gray; stroke: black; stroke-width: 2;
+
+    }
 
     !!! note
 
@@ -108,14 +113,13 @@ The **fill** property is used to provide the color, or pattern, used to draw the
     The **stroke-opacity** property is used in a similar fashion, as a range from 0.0 to 1.0.
 
     ``` {.css emphasize-lines="3,6"}
-    * {
-       fill: white;
-       fill-opacity: 50%;
-       stroke: lightgrey;
-       stroke-width: 0.25;
-       stroke-opacity: 50%;
-    }
     ```
+
+    * {
+
+    :   fill: white; fill-opacity: 50%; stroke: lightgrey; stroke-width: 0.25; stroke-opacity: 50%;
+
+    }
 
 6.  As shown in the map preview:
 
@@ -152,10 +156,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Update ``polygon_example`` with the following built-in symbol as a repeating fill pattern:
 
     ``` {.css emphasize-lines="2"}
-    * {
-       fill: symbol(square);
-    }
     ```
+
+    * {
+
+    :   fill: symbol(square);
+
+    }
 
 2.  The map preview (and legend) will show the result:
 
@@ -164,11 +171,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 3.  Add a black stroke:
 
     ``` {.css emphasize-lines="3"}
-    * {
-       fill: symbol(square);
-       stroke: black;
-    }
     ```
+
+    * {
+
+    :   fill: symbol(square); stroke: black;
+
+    }
 
 4.  To outline the individual shapes:
 
@@ -183,13 +192,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Adjust the size and rotation as shown:
 
     ``` {.css emphasize-lines="3,4"}
-    * {
-       fill: symbol(square);
-       fill-size: 22px;
-       fill-rotation: 45;
-       stroke: black;
-    }
     ```
+
+    * {
+
+    :   fill: symbol(square); fill-size: 22px; fill-rotation: 45; stroke: black;
+
+    }
 
 6.  The size of each symbol is increased, and each symbol rotated by 45 degrees.
 
@@ -204,12 +213,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
         Prior to GeoServer 2.5 a **toRadians** call was required as described in [GEOT-4641](https://jira.codehaus.org/browse/GEOT-4641).
     
         ``` css
-        * {
-           fill: symbol(square);
-           fill-size: 22px;
-           fill-rotation: [toRadians(45)];
-        }
         ```
+
+    * {
+
+    :   fill: symbol(square); fill-size: 22px; fill-rotation: [toRadians(45)];
+
+    }
 
 7.  The size and rotation properties just affect the size and placement of the symbol, but do not alter the symbol's design. In order to control the color we need to make use of a **pseudo-selector**. We have two options for referencing to our symbol above:
 
@@ -220,14 +230,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 8.  Replace the contents of `polygon_example` with the following:
 
     ``` css
-    * {
-       fill: symbol(square);
-    }
-    :fill {
-       fill: green;
-       stroke: darkgreen;
-    }
     ```
+
+    * {
+
+    :   fill: symbol(square);
+
+    } :fill { fill: green; stroke: darkgreen; }
 
 9.  This change adjusts the appearance of our grid of squares.
 
@@ -242,14 +251,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     To rewrite our example to use this approach:
 
     ``` css
-    * {
-       fill: symbol(square);
-    }
-    :nth-fill(1) {
-       fill: green;
-       stroke: darkgreen;
-    }
     ```
+
+    * {
+
+    :   fill: symbol(square);
+
+    } :nth-fill(1) { fill: green; stroke: darkgreen; }
 
 11. Since we only have one fill in our CSS document the map preview looks identical.
 
@@ -269,14 +277,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Update the example to use **shape://slash** for a pattern of left hatching.
 
     ``` css
-    * {
-       fill: symbol('shape://slash');
-       stroke: black;
-    }
-    :fill {
-      stroke: gray;
-    }
     ```
+
+    * {
+
+    :   fill: symbol('shape://slash'); stroke: black;
+
+    } :fill { stroke: gray; }
 
 13. This approach is well suited to printed output or low color devices.
 
@@ -285,15 +292,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 14. To control the size of the symbol produced use the **fill-size** property.
 
     ``` css
-    * {
-       fill: symbol('shape://slash');
-       fill-size: 8;
-       stroke: black;
-    }
-    :fill {
-       stroke: green;
-    }
     ```
+
+    * {
+
+    :   fill: symbol('shape://slash'); fill-size: 8; stroke: black;
+
+    } :fill { stroke: green; }
 
 15. This results in a tighter pattern shown:
 
@@ -302,15 +307,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 16. Another approach (producing the same result is to use the **size** property on the appropriate pseudo-selector.
 
     ``` css
-    * {
-       fill: symbol('shape://slash');
-       stroke: black;
-    }
-    :fill {
-       stroke: green;
-       size: 8;
-    }
     ```
+
+    * {
+
+    :   fill: symbol('shape://slash'); stroke: black;
+
+    } :fill { stroke: green; size: 8; }
 
 17. This produces the same visual result:
 
@@ -321,16 +324,13 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Note the use of a comma to separate fill-size values (including the first fill-size value which is empty). This was the same approach used when combining strokes.
 
     ``` css
-    * {
-       fill: #DDDDFF, symbol('shape://slash');
-       fill-size: '','8';
-       stroke: black;
-    }
-    :fill {
-       stroke: black;
-       stroke-width: 0.5;
-    }
     ```
+
+    * {
+
+    :   fill: #DDDDFF, symbol('shape://slash'); fill-size: '','8'; stroke: black;
+
+    } :fill { stroke: black; stroke-width: 0.5; }
 
 19. The resulting image has a solid fill, with a pattern drawn overtop.
 
@@ -351,13 +351,13 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 2.  Try out **label** and **fill** together by replacing our `polygon_example` with the following:
 
     ``` css
-    * {
-      stroke: blue;
-      fill: #7EB5D3;
-      label: [name];
-      font-fill: black;
-    }
     ```
+
+    * {
+
+    :   stroke: blue; fill: #7EB5D3; label: [name]; font-fill: black;
+
+    }
 
 3.  Each label is drawn from the lower-left corner as shown in the `Map` preview.
 
@@ -369,15 +369,15 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 
     The property **label-anchor** provides two numbers expressing how a label is aligned with respect to the centroid. The first value controls the horizontal alignment, while the second value controls the vertical alignment. Alignment is expressed between 0.0 and 1.0 as shown in the following table.
 
-      ---------- --------- --------- ---------
-                 Left      Center    Right
-
-      Top        0.0 1.0   0.5 1.0   1.0 1.0
-
-      Middle     0.0 0.5   0.5 0.5   1.0 0.5
-
-      Bottom     0.0 0.0   0.5 0.0   1.0 0.0
-      ---------- --------- --------- ---------
+    +----------+---------+---------+---------+
+    |          | Left    | Center  | Right   |
+    +----------+---------+---------+---------+
+    | Top      | 0.0 1.0 | 0.5 1.0 | 1.0 1.0 |
+    +----------+---------+---------+---------+
+    | Middle   | 0.0 0.5 | 0.5 0.5 | 1.0 0.5 |
+    +----------+---------+---------+---------+
+    | Bottom   | 0.0 0.0 | 0.5 0.0 | 1.0 0.0 |
+    +----------+---------+---------+---------+
 
     Adjusting the **label-anchor** is the recommended approach to positioning your labels.
 
@@ -386,13 +386,13 @@ The key properties **fill** and **label** are used to enable Polygon label gener
     To align the center of our label we select 50% horizontally and 50% vertically, by filling in 0.5 and 0.5 below:
 
     ``` {.css emphasize-lines="5"}
-    * {  stroke: blue;
-         fill: #7EB5D3;
-         label: [name];
-         font-fill: black;
-         label-anchor: 0.5 0.5;
-    }
     ```
+
+    * { stroke: blue;
+
+    :   fill: #7EB5D3; label: [name]; font-fill: black; label-anchor: 0.5 0.5;
+
+    }
 
 6.  The labeling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.
 
@@ -405,13 +405,13 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 8.  This offset is used to adjust the label position relative to the geometry centroid resulting in the starting label position.
 
     ``` {.css emphasize-lines="5"}
-    * {  stroke: blue;
-         fill: #7EB5D3;
-         label: [name];
-         font-fill: black;
-         label-offset: 0 7;
-    }
     ```
+
+    * { stroke: blue;
+
+    :   fill: #7EB5D3; label: [name]; font-fill: black; label-offset: 0 7;
+
+    }
 
 9.  Confirm this result in the map preview.
 
@@ -430,14 +430,11 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 11. To move our labels down (allowing readers to focus on each shape) we can use displacement combined with followed by horizontal alignment.
 
     ``` {.css emphasize-lines="5,6"}
-    * {  stroke: blue;
-         fill: #7EB5D3;
-         label: [name];
-         font-fill: black;
-         label-anchor: 0.5 1;
-         label-offset: 0 -7;
-     }
     ```
+
+    * { stroke: blue;
+
+    :   fill: #7EB5D3; label: [name]; font-fill: black; label-anchor: 0.5 1; label-offset: 0 -7; }
 
 12. As shown in the map preview.
 
@@ -460,16 +457,15 @@ When working with labels a map can become busy very quickly, and difficult to re
 3.  Using these together we can make a small improvement in our example:
 
     ``` {.css emphasize-lines="7,8"}
-    * {  stroke: blue;
-         fill: #7EB5D3;
-         label: [name];
-         font-fill: black;
-         label-anchor: 0.5 0.5;
-
-         label-max-displacement: 40;
-         label-auto-wrap: 70;
-       }
     ```
+
+    -   
+
+        { stroke: blue;
+
+        :   fill: #7EB5D3; label: [name]; font-fill: black; label-anchor: 0.5 0.5;
+
+            label-max-displacement: 40; label-auto-wrap: 70; }
 
 4.  As shown in the following preview.
 
@@ -480,21 +476,15 @@ When working with labels a map can become busy very quickly, and difficult to re
     Use of a halo to outline labels allows the text to stand out from an otherwise busy background. In this case we will make use of the fill color, to provide some space around our labels. We will also change the font to Arial.
 
     ``` {.css emphasize-lines="8-10"}
-    * {  stroke: blue;
-         fill: #7EB5D3;
-         label: [name];
-         label-anchor: 0.5 0.5;
-         font-fill: black;
-         font-family: "Arial";
-         font-size: 14;
-         halo-radius: 2;
-         halo-color: #7EB5D3;
-         halo-opacity:0.8;
-
-         label-max-displacement: 40;
-         label-auto-wrap: 70;
-       }
     ```
+
+    -   
+
+        { stroke: blue;
+
+        :   fill: #7EB5D3; label: [name]; label-anchor: 0.5 0.5; font-fill: black; font-family: "Arial"; font-size: 14; halo-radius: 2; halo-color: #7EB5D3; halo-opacity:0.8;
+
+            label-max-displacement: 40; label-auto-wrap: 70; }
 
 6.  By making use of **halo-opacity** we still allow stroke information to show through, but prevent the stroke information from making the text hard to read.
 
@@ -509,22 +499,15 @@ When working with labels a map can become busy very quickly, and difficult to re
     The values for **labelrank** go from 0 (for zoomed out) to 20 (for zoomed in). To use this value for **label-priority** we need to swap the values around so a **scalerank** of 1 is given the highest priority.
 
     ``` {.css emphasize-lines="14"}
-    * {  stroke: blue;
-         fill: #7EB5D3;
-         label: [name];
-         label-anchor: 0.5 0.5;
-         font-fill: black;
-         font-family: "Arial";
-         font-size: 14;
-         halo-radius: 2;
-         halo-color: #7EB5D3;
-         halo-opacity:0.8;
-
-         label-max-displacement: 40;
-         label-auto-wrap: 70;
-         label-priority: [20-labelrank];
-       }
     ```
+
+    -   
+
+        { stroke: blue;
+
+        :   fill: #7EB5D3; label: [name]; label-anchor: 0.5 0.5; font-fill: black; font-family: "Arial"; font-size: 14; halo-radius: 2; halo-color: #7EB5D3; halo-opacity:0.8;
+
+            label-max-displacement: 40; label-auto-wrap: 70; label-priority: [20-labelrank]; }
 
 9.  In the following map `East Flanders` will take priority over `Zeeland` when the two labels overlap.
 
@@ -570,38 +553,19 @@ A thematic map (rather than focusing on representing the shape of the world) use
 3.  The first approach we will take is to directly select content based on **colormap**, providing a color based on the **9-class Set3** palette above:
 
     ``` css
-    [mapcolor9=1] {
-       fill: #8dd3c7;
-    }
-    [mapcolor9=2] {
-       fill: #ffffb3;
-    }
-    [mapcolor9=3] {
-       fill: #bebada;
-    }
-    [mapcolor9=4] {
-       fill: #fb8072;
-    }
-    [mapcolor9=5] {
-       fill: #80b1d3;
-    }
-    [mapcolor9=6] {
-       fill: #fdb462;
-    }
-    [mapcolor9=7] {
-       fill: #b3de69;
-    }
-    [mapcolor9=8] {
-       fill: #fccde5;
-    }
-    [mapcolor9=9] {
-       fill: #d9d9d9;
-    }
-    * {
-      stroke: gray;
-      stroke-width: 0.5;
-    }
     ```
+
+    [mapcolor9=1] {
+
+    :   fill: #8dd3c7;
+
+    } [mapcolor9=2] { fill: #ffffb3; } [mapcolor9=3] { fill: #bebada; } [mapcolor9=4] { fill: #fb8072; } [mapcolor9=5] { fill: #80b1d3; } [mapcolor9=6] { fill: #fdb462; } [mapcolor9=7] { fill: #b3de69; } [mapcolor9=8] { fill: #fccde5; } [mapcolor9=9] { fill: #d9d9d9; }
+
+    * {
+
+    :   stroke: gray; stroke-width: 0.5;
+
+    }
 
 4.  The **Map** tab can be used to preview this result.
 
@@ -612,36 +576,36 @@ A thematic map (rather than focusing on representing the shape of the world) use
     As an example the ``mapcolor9=2`` rule, combined with the ``*`` rule results in the following collection of properties:
 
     ``` css
-    [mapcolor9=2] {
-      fill: #ffffb3;
-      stroke: gray;
-      stroke-width: 0.5;
-    }
     ```
+
+    [mapcolor9=2] {
+
+    :   fill: #ffffb3; stroke: gray; stroke-width: 0.5;
+
+    }
 
 6.  Reviewing the generated SLD shows us this representation:
 
     ``` xml
-    <sld:Rule>
-       <ogc:Filter>
-          <ogc:PropertyIsEqualTo>
-             <ogc:PropertyName>mapcolor9</ogc:PropertyName>
-             <ogc:Literal>2</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-       </ogc:Filter>
-       <sld:PolygonSymbolizer>
-          <sld:Fill>
-             <sld:CssParameter name="fill">#ffffb3</sld:CssParameter>
-          </sld:Fill>
-       </sld:PolygonSymbolizer>
-       <sld:LineSymbolizer>
-          <sld:Stroke>
-             <sld:CssParameter name="stroke">#808080</sld:CssParameter>
-             <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
-          </sld:Stroke>
-       </sld:LineSymbolizer>
-    </sld:Rule>
     ```
+
+    <sld:Rule>
+
+    :   
+
+        <ogc:Filter>
+
+        :   
+
+            <ogc:PropertyIsEqualTo>
+
+            :   <ogc:PropertyName>mapcolor9</ogc:PropertyName> <ogc:Literal>2</ogc:Literal>
+
+            </ogc:PropertyIsEqualTo>
+
+        </ogc:Filter> <sld:PolygonSymbolizer> <sld:Fill> <sld:CssParameter name="fill">#ffffb3</sld:CssParameter> </sld:Fill> </sld:PolygonSymbolizer> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#808080</sld:CssParameter> <sld:CssParameter name="stroke-width">0.5</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer>
+
+    </sld:Rule>
 
 7.  There are three important functions, defined by the Symbology Encoding specification, that are often easier to use for theming than using rules.
 
@@ -654,17 +618,23 @@ A thematic map (rather than focusing on representing the shape of the world) use
 8.  Swap out **mapcolor9** theme to use the **Recode** function:
 
     ``` css
-    * {
-      fill:[
-        recode(mapcolor9,
-          1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada',
-          4,'#fb8072', 5,'#80b1d3', 6,'#fdb462',
-          7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
-      ]; 
-      stroke: gray;
-      stroke-width: 0.5;
-    }
     ```
+
+    * {
+
+    :   
+
+        fill:[
+
+        :   
+
+            recode(mapcolor9,
+
+            :   1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada', 4,'#fb8072', 5,'#80b1d3', 6,'#fdb462', 7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
+
+        ]; stroke: gray; stroke-width: 0.5;
+
+    }
 
 9.  The **Map** tab provides the same preview.
 
@@ -673,42 +643,35 @@ A thematic map (rather than focusing on representing the shape of the world) use
 10. The **Generated SLD** tab shows where things get interesting. Our generated style now consists of a single **Rule**:
 
     ``` xml
-    <sld:Rule>
-       <sld:PolygonSymbolizer>
-          <sld:Fill>
-             <sld:CssParameter name="fill">
-                <ogc:Function name="Recode">
-                   <ogc:PropertyName>mapcolor9</ogc:PropertyName>
-                   <ogc:Literal>1</ogc:Literal>
-                      <ogc:Literal>#8dd3c7</ogc:Literal>
-                   <ogc:Literal>2</ogc:Literal>
-                      <ogc:Literal>#ffffb3</ogc:Literal>
-                   <ogc:Literal>3</ogc:Literal>
-                      <ogc:Literal>#bebada</ogc:Literal>
-                   <ogc:Literal>4</ogc:Literal>
-                      <ogc:Literal>#fb8072</ogc:Literal>
-                   <ogc:Literal>5</ogc:Literal>
-                      <ogc:Literal>#80b1d3</ogc:Literal>
-                   <ogc:Literal>6</ogc:Literal>
-                      <ogc:Literal>#fdb462</ogc:Literal>
-                   <ogc:Literal>7</ogc:Literal>
-                      <ogc:Literal>#b3de69</ogc:Literal>
-                   <ogc:Literal>8</ogc:Literal>
-                      <ogc:Literal>#fccde5</ogc:Literal>
-                   <ogc:Literal>9</ogc:Literal>
-                      <ogc:Literal>#d9d9d9</ogc:Literal>
-             </ogc:Function>
-             </sld:CssParameter>
-          </sld:Fill>
-       </sld:PolygonSymbolizer>
-       <sld:LineSymbolizer>
-          <sld:Stroke>
-             <sld:CssParameter name="stroke">#808080</sld:CssParameter>
-             <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
-          </sld:Stroke>
-       </sld:LineSymbolizer>
-    </sld:Rule>
     ```
+
+    <sld:Rule>
+
+    :   
+
+        <sld:PolygonSymbolizer>
+
+        :   
+
+            <sld:Fill>
+
+            :   
+
+                <sld:CssParameter name="fill">
+
+                :   
+
+                    <ogc:Function name="Recode">
+
+                    :   <ogc:PropertyName>mapcolor9</ogc:PropertyName> <ogc:Literal>1</ogc:Literal> <ogc:Literal>#8dd3c7</ogc:Literal> <ogc:Literal>2</ogc:Literal> <ogc:Literal>#ffffb3</ogc:Literal> <ogc:Literal>3</ogc:Literal> <ogc:Literal>#bebada</ogc:Literal> <ogc:Literal>4</ogc:Literal> <ogc:Literal>#fb8072</ogc:Literal> <ogc:Literal>5</ogc:Literal> <ogc:Literal>#80b1d3</ogc:Literal> <ogc:Literal>6</ogc:Literal> <ogc:Literal>#fdb462</ogc:Literal> <ogc:Literal>7</ogc:Literal> <ogc:Literal>#b3de69</ogc:Literal> <ogc:Literal>8</ogc:Literal> <ogc:Literal>#fccde5</ogc:Literal> <ogc:Literal>9</ogc:Literal> <ogc:Literal>#d9d9d9</ogc:Literal>
+
+                </ogc:Function> </sld:CssParameter>
+
+            </sld:Fill>
+
+        </sld:PolygonSymbolizer> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#808080</sld:CssParameter> <sld:CssParameter name="stroke-width">0.5</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer>
+
+    </sld:Rule>
 
 ## Bonus
 
@@ -751,18 +714,23 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 1.  The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
 
     ``` css
-    * {
-       fill: [
-          Categorize(Shape_Area,
-             '#08519c', 0.5,
-             '#3182bd', 1,
-             '#6baed6', 5,
-             '#9ecae1', 60,
-             '#c6dbef', 80,
-             '#eff3ff')
-       ];
-    }
     ```
+
+    * {
+
+    :   
+
+        fill: [
+
+        :   
+
+            Categorize(Shape_Area,
+
+            :   '#08519c', 0.5, '#3182bd', 1, '#6baed6', 5, '#9ecae1', 60, '#c6dbef', 80, '#eff3ff')
+
+        ];
+
+    }
 
     ![image](../style/img/polygon_area.png)
 

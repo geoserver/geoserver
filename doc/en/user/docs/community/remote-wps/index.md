@@ -47,30 +47,15 @@ Runtime discovery of new remote executable will be supported through adding new 
 An example of such a properties file can be like below:
 
 > ``` xml
-> [Description]
-> service = Service
-> namespace = default
-> description = A dummy service, replace with your own description
-> executable = process.py
-> process_buffer = 0
-> result_size = 0
-> active = True
->
-> [Options]
-> customargs = --path=D:\user\
-> argformat = --key=value
-> debug = True
->
-> [Input]
-> name = {"type": "string", "description": "A person name", "enum": ["Hans", "Peter", "Alex", "Michi"],
-> "default": "Hans", "max": 1}
-> surname = {"type": "string", "description": "A persons surname", "max": 1, "default": "Meier"}
-> child = {"type": "string", "description": "A child name", "min": 0, "max": 10}
->
-> [Output]
-> welcome = {"type": "string", "description": "A welcome message"}
-> goodbye = {"type": "string", "description": "A goodbye message"}
 > ```
+>
+> [Description] service = Service namespace = default description = A dummy service, replace with your own description executable = process.py process_buffer = 0 result_size = 0 active = True
+>
+> [Options] customargs = --path=D:userargformat = --key=value debug = True
+>
+> [Input] name = {"type": "string", "description": "A person name", "enum": ["Hans", "Peter", "Alex", "Michi"], "default": "Hans", "max": 1} surname = {"type": "string", "description": "A persons surname", "max": 1, "default": "Meier"} child = {"type": "string", "description": "A child name", "min": 0, "max": 10}
+>
+> [Output] welcome = {"type": "string", "description": "A welcome message"} goodbye = {"type": "string", "description": "A goodbye message"}
 
 !!! warning
 

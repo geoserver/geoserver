@@ -22,83 +22,21 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Comparison functions
 
-**Name**
-
-:   **Arguments**
-
-    **Description**
-
-between
-
-:   `num`:Number, `low`:Number, `high`:Number
-
-    returns true if `low` <= `num` <= `high`
-
-equalTo
-
-:   `a`:Object, `b`:Object
-
-    Can be used to compare for equality two numbers, two strings, two dates, and so on
-
-greaterEqualThan
-
-:   `x`:Object, `y`:Object
-
-    Returns true if `x` >= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)
-
-greaterThan
-
-:   `x`:Object, `y`:Object
-
-    Returns true if `x` > `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)
-
-in2, in3, in4, in5, in6, in7, in8, in9, in10
-
-:   `candidate`:Object, `v1`:Object, \..., `v9`:Object
-
-    Returns true if `candidate` is equal to one of the `v1`, \..., `v9` values. Use the function name matching the number of arguments specified.
-
-in
-
-:   `candidate`:Object, `v1`:Object, `v2`:Object, \...
-
-    Works exactly the same as the in2, \..., in10 functions described above, but takes any number of values as input.
-
-isLike
-
-:   `string`:String, `pattern`:String
-
-    Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html)
-
-isNull
-
-:   `obj`:Object
-
-    Returns true the passed parameter is `null`, false otherwise
-
-lessThan
-
-:   `x`:Object, `y`:Object
-
-    Returns true if `x` < `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used
-
-lessEqualThan
-
-:   `x`:Object, `y`:Object
-
-    Returns true if `x` <= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used
-
-not
-
-:   `bool`:Boolean
-
-    Returns the negation of `bool`
-
-notEqualTo
-
-:   `x`:Object, `y`:Object
-
-    Returns true if `x` and `y` are equal, false otherwise
+|                                              |                                                    |                                                                                                                                                                                                                      |
+|----------------------------------------------|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Name**                                     | **Arguments**                                      | **Description**                                                                                                                                                                                                      |
+| between                                      | `num`:Number, `low`:Number, `high`:Number          | returns true if `low` <= `num` <= `high`                                                                                                                                                                           |
+| equalTo                                      | `a`:Object, `b`:Object                             | Can be used to compare for equality two numbers, two strings, two dates, and so on                                                                                                                                   |
+| greaterEqualThan                             | `x`:Object, `y`:Object                             | Returns true if `x` >= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)                                                                                         |
+| greaterThan                                  | `x`:Object, `y`:Object                             | Returns true if `x` > `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used)                                                                                          |
+| in2, in3, in4, in5, in6, in7, in8, in9, in10 | `candidate`:Object, `v1`:Object, \..., `v9`:Object | Returns true if `candidate` is equal to one of the `v1`, \..., `v9` values. Use the function name matching the number of arguments specified.                                                                        |
+| in                                           | `candidate`:Object, `v1`:Object, `v2`:Object, \... | Works exactly the same as the in2, \..., in10 functions described above, but takes any number of values as input.                                                                                                    |
+| isLike                                       | `string`:String, `pattern`:String                  | Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html) |
+| isNull                                       | `obj`:Object                                       | Returns true the passed parameter is `null`, false otherwise                                                                                                                                                         |
+| lessThan                                     | `x`:Object, `y`:Object                             | Returns true if `x` < `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used                                                                                           |
+| lessEqualThan                                | `x`:Object, `y`:Object                             | Returns true if `x` <= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used                                                                                          |
+| not                                          | `bool`:Boolean                                     | Returns the negation of `bool`                                                                                                                                                                                       |
+| notEqualTo                                   | `x`:Object, `y`:Object                             | Returns true if `x` and `y` are equal, false otherwise                                                                                                                                                               |
 
 ## Control functions
 
@@ -155,83 +93,21 @@ env
 
 For more information about the precise meaning of the spatial relationships consult the [OGC Simple Feature Specification for SQL](http://www.opengeospatial.org/standards/sfs)
 
-**Name**
-
-:   **Arguments**
-
-    **Description**
-
-contains
-
-:   `a`:Geometry, `b`:Geometry
-
-    Returns true if the geometry `a` contains `b`
-
-crosses
-
-:   `a`:Geometry, `b`:Geometry
-
-    Returns true if `a` crosses `b`
-
-disjoint
-
-:   `a`:Geometry, `b`:Geometry
-
-    Returns true if the two geometries are disjoint, false otherwise
-
-equalsExact
-
-:   `a`:Geometry, `b`:Geometry
-
-    Returns true if the two geometries are exactly equal, same coordinates in the same order
-
-equalsExactTolerance
-
-:   `a`:Geometry, `b`:Geometry, `tol`:Double
-
-    Returns true if the two geometries are exactly equal, same coordinates in the same order, allowing for a `tol` distance in the corresponding points
-
-intersects
-
-:   `a`:Geometry, `b`:Geometry
-
-    Returns true if `a` intersects `b`
-
-isWithinDistance
-
-:   `a`: Geometry, `b`:Geometry, `distance`: Double
-
-    Returns true if the distance between `a` and `b` is less than `distance` (measured as an euclidean distance)
-
-overlaps
-
-:   `a`: Geometry, `b`:Geometry
-
-    Returns true `a` overlaps with `b`
-
-relate
-
-:   `a`: Geometry, `b`:Geometry
-
-    Returns the DE-9IM intersection matrix for `a` and `b`
-
-relatePattern
-
-:   `a`: Geometry, `b`:Geometry, `pattern`:String
-
-    Returns true if the DE-9IM intersection matrix for `a` and `b` matches the specified pattern
-
-touches
-
-:   `a`: Geometry, `b`: Geometry
-
-    Returns true if `a` touches `b` according to the SQL simple feature specification rules
-
-within
-
-:   `a`: Geometry, `b`:Geometry
-
-    Returns true is fully contained inside `b`
+|                      |                                                 |                                                                                                                                                     |
+|----------------------|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Name**             | **Arguments**                                   | **Description**                                                                                                                                     |
+| contains             | `a`:Geometry, `b`:Geometry                      | Returns true if the geometry `a` contains `b`                                                                                                       |
+| crosses              | `a`:Geometry, `b`:Geometry                      | Returns true if `a` crosses `b`                                                                                                                     |
+| disjoint             | `a`:Geometry, `b`:Geometry                      | Returns true if the two geometries are disjoint, false otherwise                                                                                    |
+| equalsExact          | `a`:Geometry, `b`:Geometry                      | Returns true if the two geometries are exactly equal, same coordinates in the same order                                                            |
+| equalsExactTolerance | `a`:Geometry, `b`:Geometry, `tol`:Double        | Returns true if the two geometries are exactly equal, same coordinates in the same order, allowing for a `tol` distance in the corresponding points |
+| intersects           | `a`:Geometry, `b`:Geometry                      | Returns true if `a` intersects `b`                                                                                                                  |
+| isWithinDistance     | `a`: Geometry, `b`:Geometry, `distance`: Double | Returns true if the distance between `a` and `b` is less than `distance` (measured as an euclidean distance)                                        |
+| overlaps             | `a`: Geometry, `b`:Geometry                     | Returns true `a` overlaps with `b`                                                                                                                  |
+| relate               | `a`: Geometry, `b`:Geometry                     | Returns the DE-9IM intersection matrix for `a` and `b`                                                                                              |
+| relatePattern        | `a`: Geometry, `b`:Geometry, `pattern`:String   | Returns true if the DE-9IM intersection matrix for `a` and `b` matches the specified pattern                                                        |
+| touches              | `a`: Geometry, `b`: Geometry                    | Returns true if `a` touches `b` according to the SQL simple feature specification rules                                                             |
+| within               | `a`: Geometry, `b`:Geometry                     | Returns true is fully contained inside `b`                                                                                                          |
 
 ## Geometric functions
 
@@ -489,191 +365,39 @@ vertices
 
 ## Math functions
 
-**Name**
-
-:   **Arguments**
-
-    **Description**
-
-abs
-
-:   `value`:Integer
-
-    The absolute value of the specified Integer `value`
-
-abs_2
-
-:   `value`:Long
-
-    The absolute value of the specified Long `value`
-
-abs_3
-
-:   `value`:Float
-
-    The absolute value of the specified Float `value`
-
-abs_4
-
-:   `value`:Double
-
-    The absolute value of the specified Double `value`
-
-acos
-
-:   `angle`:Double
-
-    Returns the arc cosine of an `angle` in radians, in the range of 0.0 through `PI`
-
-asin
-
-:   `angle`:Double
-
-    Returns the arc sine of an `angle` in radians, in the range of `-PI / 2` through `PI / 2`
-
-atan
-
-:   `angle`:Double
-
-    Returns the arc tangent of an angle in radians, in the range of `-PI/2` through `PI/2`
-
-atan2
-
-:   `x`:Double, `y`:Double
-
-    Converts a rectangular coordinate `(x, y)` to polar **(r, theta)** and returns **theta**.
-
-ceil
-
-:   `x`: Double
-
-    Returns the smallest (closest to negative infinity) double value that is greater than or equal to `x` and is equal to a mathematical integer.
-
-cos
-
-:   `angle`: Double
-
-    Returns the cosine of an `angle` expressed in radians
-
-double2bool
-
-:   `x`: Double
-
-    Returns `true` if `x` is zero, `false` otherwise
-
-exp
-
-:   `x`: Double
-
-    Returns Euler's number **e** raised to the power of `x`
-
-floor
-
-:   `x`: Double
-
-    Returns the largest (closest to positive infinity) value that is less than or equal to `x` and is equal to a mathematical integer
-
-IEEERemainder
-
-:   `x`: Double, `y`:Double
-
-    Computes the remainder of `x` divided by `y` as prescribed by the IEEE 754 standard
-
-int2bbool
-
-:   `x`: Integer
-
-    Returns true if `x` is zero, false otherwise
-
-int2ddouble
-
-:   `x`: Integer
-
-    Converts `x` to a Double
-
-log
-
-:   `x`: Integer
-
-    Returns the natural logarithm (base `e`) of `x`
-
-max, max_3, max_4
-
-:   `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double
-
-    Returns the maximum between `x1`, \..., `x4`
-
-min, min_3, min_4
-
-:   `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double
-
-    Returns the minimum between `x1`, \..., `x4`
-
-pi
-
-:   None
-
-    Returns an approximation of `pi`, the ratio of the circumference of a circle to its diameter
-
-pow
-
-:   `base`:Double, `exponent`:Double
-
-    Returns the value of `base` raised to the power of `exponent`
-
-random
-
-:   None
-
-    Returns a Double value with a positive sign, greater than or equal to `0.0` and less than `1.0`. Returned values are chosen pseudo-randomly with (approximately) uniform distribution from that range.
-
-rint
-
-:   `x`:Double
-
-    > Returns the Double value that is closest in value to the argument and is equal to a mathematical integer. If two double values that are mathematical integers are equally close, the result is the integer value that is even.
-
-round_2
-
-:   `x`:Double
-
-    > Same as `round`, but returns a Long
-
-round
-
-:   `x`:Double
-
-    > Returns the closest Integer to `x`. The result is rounded to an integer by adding 1/2, taking the floor of the result, and casting the result to type Integer. In other words, the result is equal to the value of the expression `(int)floor(a + 0.5)`
-
-roundDouble
-
-:   `x`:Double
-
-    Returns the closest Long to `x`
-
-sin
-
-:   `angle`: Double
-
-    Returns the sine of an `angle` expressed in radians
-
-tan
-
-:   `angle`:Double
-
-    Returns the trigonometric tangent of `angle` expressed in radians
-
-toDegrees
-
-:   `angle`:Double
-
-    Converts an angle expressed in radians into degrees
-
-toRadians
-
-:   `angle`:Double
-
-    Converts an angle expressed in radians into degrees
+|                   |                                                     |                                                                                                                                                                                                                                                         |
+|-------------------|-----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Name**          | **Arguments**                                       | **Description**                                                                                                                                                                                                                                         |
+| abs               | `value`:Integer                                     | The absolute value of the specified Integer `value`                                                                                                                                                                                                     |
+| abs_2             | `value`:Long                                        | The absolute value of the specified Long `value`                                                                                                                                                                                                        |
+| abs_3             | `value`:Float                                       | The absolute value of the specified Float `value`                                                                                                                                                                                                       |
+| abs_4             | `value`:Double                                      | The absolute value of the specified Double `value`                                                                                                                                                                                                      |
+| acos              | `angle`:Double                                      | Returns the arc cosine of an `angle` in radians, in the range of 0.0 through `PI`                                                                                                                                                                       |
+| asin              | `angle`:Double                                      | Returns the arc sine of an `angle` in radians, in the range of `-PI / 2` through `PI / 2`                                                                                                                                                               |
+| atan              | `angle`:Double                                      | Returns the arc tangent of an angle in radians, in the range of `-PI/2` through `PI/2`                                                                                                                                                                  |
+| atan2             | `x`:Double, `y`:Double                              | Converts a rectangular coordinate `(x, y)` to polar **(r, theta)** and returns **theta**.                                                                                                                                                               |
+| ceil              | `x`: Double                                         | Returns the smallest (closest to negative infinity) double value that is greater than or equal to `x` and is equal to a mathematical integer.                                                                                                           |
+| cos               | `angle`: Double                                     | Returns the cosine of an `angle` expressed in radians                                                                                                                                                                                                   |
+| double2bool       | `x`: Double                                         | Returns `true` if `x` is zero, `false` otherwise                                                                                                                                                                                                        |
+| exp               | `x`: Double                                         | Returns Euler's number **e** raised to the power of `x`                                                                                                                                                                                                |
+| floor             | `x`: Double                                         | Returns the largest (closest to positive infinity) value that is less than or equal to `x` and is equal to a mathematical integer                                                                                                                       |
+| IEEERemainder     | `x`: Double, `y`:Double                             | Computes the remainder of `x` divided by `y` as prescribed by the IEEE 754 standard                                                                                                                                                                     |
+| int2bbool         | `x`: Integer                                        | Returns true if `x` is zero, false otherwise                                                                                                                                                                                                            |
+| int2ddouble       | `x`: Integer                                        | Converts `x` to a Double                                                                                                                                                                                                                                |
+| log               | `x`: Integer                                        | Returns the natural logarithm (base `e`) of `x`                                                                                                                                                                                                         |
+| max, max_3, max_4 | `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double | Returns the maximum between `x1`, \..., `x4`                                                                                                                                                                                                            |
+| min, min_3, min_4 | `x1`: Double, `x2`:Double, `x3`:Double, `x4`:Double | Returns the minimum between `x1`, \..., `x4`                                                                                                                                                                                                            |
+| pi                | None                                                | Returns an approximation of `pi`, the ratio of the circumference of a circle to its diameter                                                                                                                                                            |
+| pow               | `base`:Double, `exponent`:Double                    | Returns the value of `base` raised to the power of `exponent`                                                                                                                                                                                           |
+| random            | None                                                | Returns a Double value with a positive sign, greater than or equal to `0.0` and less than `1.0`. Returned values are chosen pseudo-randomly with (approximately) uniform distribution from that range.                                                  |
+| rint              | `x`:Double                                          | Returns the Double value that is closest in value to the argument and is equal to a mathematical integer. If two double values that are mathematical integers are equally close, the result is the integer value that is even.                          |
+| round_2           | `x`:Double                                          | Same as `round`, but returns a Long                                                                                                                                                                                                                     |
+| round             | `x`:Double                                          | Returns the closest Integer to `x`. The result is rounded to an integer by adding 1/2, taking the floor of the result, and casting the result to type Integer. In other words, the result is equal to the value of the expression `(int)floor(a + 0.5)` |
+| roundDouble       | `x`:Double                                          | Returns the closest Long to `x`                                                                                                                                                                                                                         |
+| sin               | `angle`: Double                                     | Returns the sine of an `angle` expressed in radians                                                                                                                                                                                                     |
+| tan               | `angle`:Double                                      | Returns the trigonometric tangent of `angle` expressed in radians                                                                                                                                                                                       |
+| toDegrees         | `angle`:Double                                      | Converts an angle expressed in radians into degrees                                                                                                                                                                                                     |
+| toRadians         | `angle`:Double                                      | Converts an angle expressed in radians into degrees                                                                                                                                                                                                     |
 
 ## String functions
 

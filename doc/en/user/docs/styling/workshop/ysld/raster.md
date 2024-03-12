@@ -56,10 +56,15 @@ The **raster** symbolizer controls the display of raster data. By default, the r
 4.  Replace the initial YSLD definition with:
 
     ``` yaml
-    symbolizers:
-    - raster:
-        opacity: 1.0
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0
 
 5.  And use the **Layer Preview** tab to preview the result.
 
@@ -68,13 +73,15 @@ The **raster** symbolizer controls the display of raster data. By default, the r
 6.  The **channels** property can be used to provide a list three band numbers (for images recording in several wavelengths) or a single band number can be used to view a grayscale image.
 
     ``` {.yaml emphasize-lines="4,5,6"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        channels:
-          gray:
-            name: '2'
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 channels: gray: name: '2'
 
 7.  Isolating just the green band (it will be drawn as a grayscale image):
 
@@ -107,10 +114,15 @@ The `usgs:dem` layer used for this exercise:
 4.  The rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
 
     ``` yaml
-    symbolizers:
-    - raster:
-        opacity: 1.0
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0
 
 5.  Use the **Layer Preview** tab to preview the result. The range produced in this case from the highest and lowest values.
 
@@ -119,15 +131,15 @@ The `usgs:dem` layer used for this exercise:
 6.  We can use a bit of image processing to emphasis the generated color mapping by making use of **contrast-enhancement**.
 
     ``` {.yaml emphasize-lines="4,5,6,7,8"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        channels:
-          gray:
-            name: '1'
-            contrast-enhancement:
-              mode: histogram
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 channels: gray: name: '1' contrast-enhancement: mode: histogram
 
 7.  Image processing of this sort should be used with caution as it does distort the presentation (in this case making the landscape look more varied then it is in reality.
 
@@ -146,17 +158,15 @@ For qualitative data (such as land use) or simply to use color, we need a differ
 1.  Apply the following YAML to our ``usgs:DEM`` layer:
 
     ``` {.yaml emphasize-lines="4,5,6,7,8,9,10"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: ramp
-          entries:
-          - ['#9080DB', 1.0, 0, null]
-          - ['#008000', 1.0, 1, null]
-          - ['#105020', 1.0, 255, null]
-          - ['#FFFFFF', 1.0, 4000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: ramp entries: - ['#9080DB', 1.0, 0, null] - ['#008000', 1.0, 1, null] - ['#105020', 1.0, 255, null] - ['#FFFFFF', 1.0, 4000, null]
 
 2.  Resulting in this artificial color image:
 
@@ -165,17 +175,15 @@ For qualitative data (such as land use) or simply to use color, we need a differ
 3.  An opacity value can also be used with each **color-map** entry.
 
     ``` {.yaml emphasize-lines="7"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: ramp
-          entries:
-          - ['#9080DB', 0.0, 0, null]
-          - ['#008000', 1.0, 1, null]
-          - ['#105020', 1.0, 255, null]
-          - ['#FFFFFF', 1.0, 4000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: ramp entries: - ['#9080DB', 0.0, 0, null] - ['#008000', 1.0, 1, null] - ['#105020', 1.0, 255, null] - ['#FFFFFF', 1.0, 4000, null]
 
 4.  Allowing the areas of zero height to be transparent:
 
@@ -194,10 +202,15 @@ This exploration focuses on accurately communicating differences in value, rathe
 1.  Restore the `raster_example` YSLD style to the following:
 
     ``` yaml
-    symbolizers:
-    - raster:
-        opacity: 1.0
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0
 
 2.  Producing the following map preview.
 
@@ -206,15 +219,15 @@ This exploration focuses on accurately communicating differences in value, rathe
 3.  To start with we can provide our own grayscale using two color map entries.
 
     ``` {.yaml emphasize-lines="4,5,6,7,8"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: ramp
-          entries:
-          - ['#000000', 1.0, 0, null]
-          - ['#FFFFFF', 1.0, 4000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: ramp entries: - ['#000000', 1.0, 0, null] - ['#FFFFFF', 1.0, 4000, null]
 
 4.  Use the **Layer Preview** tab to zoom in and take a look.
 
@@ -231,45 +244,30 @@ This exploration focuses on accurately communicating differences in value, rathe
 6.  Update your style with the following:
 
     ``` {.yaml emphasize-lines="8,9,10,11,12,13,14,15"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: ramp
-          entries:
-          - ['#014636', 1.0, 0, null]
-          - ['#016C59', 1.0, 500, null]
-          - ['#02818A', 1.0, 1000, null]
-          - ['#3690C0', 1.0, 1500, null]
-          - ['#67A9CF', 1.0, 2000, null]
-          - ['#A6BDDB', 1.0, 2500, null]
-          - ['#D0D1E6', 1.0, 3000, null]
-          - ['#ECE2F0', 1.0, 3500, null]
-          - ['#FFF7FB', 1.0, 4000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: ramp entries: - ['#014636', 1.0, 0, null] - ['#016C59', 1.0, 500, null] - ['#02818A', 1.0, 1000, null] - ['#3690C0', 1.0, 1500, null] - ['#67A9CF', 1.0, 2000, null] - ['#A6BDDB', 1.0, 2500, null] - ['#D0D1E6', 1.0, 3000, null] - ['#ECE2F0', 1.0, 3500, null] - ['#FFF7FB', 1.0, 4000, null]
 
     ![image](../style/img/raster_04_PuBuGn.png)
 
 7.  A little bit of work with alpha (to mark the ocean as a no-data section):
 
     ``` {.yaml emphasize-lines="7,8"}
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: ramp
-          entries:
-          - ['#014636', 0, 0, null]
-          - ['#014636', 1.0, 1, null]
-          - ['#016C59', 1.0, 500, null]
-          - ['#02818A', 1.0, 1000, null]
-          - ['#3690C0', 1.0, 1500, null]
-          - ['#67A9CF', 1.0, 2000, null]
-          - ['#A6BDDB', 1.0, 2500, null]
-          - ['#D0D1E6', 1.0, 3000, null]
-          - ['#ECE2F0', 1.0, 3500, null]
-          - ['#FFF7FB', 1.0, 4000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: ramp entries: - ['#014636', 0, 0, null] - ['#014636', 1.0, 1, null] - ['#016C59', 1.0, 500, null] - ['#02818A', 1.0, 1000, null] - ['#3690C0', 1.0, 1500, null] - ['#67A9CF', 1.0, 2000, null] - ['#A6BDDB', 1.0, 2500, null] - ['#D0D1E6', 1.0, 3000, null] - ['#ECE2F0', 1.0, 3500, null] - ['#FFF7FB', 1.0, 4000, null]
 
 8.  And we are done:
 

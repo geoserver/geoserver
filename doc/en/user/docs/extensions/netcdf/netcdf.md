@@ -43,17 +43,12 @@ The NetCDF plugin fully supports datasets where each variable's axis is identifi
 
 Two-dimension coordinate variables are exposed in GeoServer as single dimensions. Their domain is exposed in GetCapabilities as a flat list of possible values. However, they imply an interdependence between the different dimensions, where some combinations of values exist (have data) and other combinations do not. For example:
 
-+-----------+----------+----------+----------+----------+
 | > Runtime |          | > Time   |          |          |
-+===========+==========+==========+==========+==========+
+| --------- | -------- | -------- | -------- | -------- |
 |           |          | > 0      | > 1      | > 2      |
-+-----------+----------+----------+----------+----------+
 | 0         | 1/1/2017 | 1/1/2017 | 1/2/2017 | 1/4/2017 |
-+-----------+----------+----------+----------+----------+
 | 1         | 1/2/2017 | 1/2/2017 | 1/3/2017 | > XXXX   |
-+-----------+----------+----------+----------+----------+
 | 2         | 1/3/2017 | 1/3/2017 | > XXXX   | > XXXX   |
-+-----------+----------+----------+----------+----------+
 
 The time dimension would thus be exposed in GeoServer as {1/1/2017, 1/2/2017, 1/3/2017, 1/4/2017}. However, the combinations (runtime=1/1/2017, time=1/3/2017), (runtime=1/2/2017, time=1/1/2017), (runtime=1/2/2017, time=1/4/2017) , (runtime=1/3/2017, time=1/1/2017), (runtime=1/3/2017, time=1/2/2017) and (runtime=1/3/2017, time=1/4/2017) do not exist.
 

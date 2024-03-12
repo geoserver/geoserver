@@ -102,22 +102,22 @@ Given this underlying GML template:
 <st:name>${st:common_name}</st:name>
 <st:geometry>${st:position}</st:geometry>
 <st:temperature gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'">
-  <st:Temperature>
-      <st:time>${st:time}</st:time>
-      <st:value>${st:value}</st:value>
-  </st:Temperature>
+ <st:Temperature>
+    <st:time>${st:time}</st:time>
+    <st:value>${st:value}</st:value>
+ </st:Temperature>
 </st:temperature>
 <st:pressure gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature"  gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'pressure'">
-  <st:Pressure>
-      <st:time>${st:time}</st:time>
-      <st:value>${st:value}</st:value>
-  </st:Pressure>
+ <st:Pressure>
+    <st:time>${st:time}</st:time>
+    <st:value>${st:value}</st:value>
+ </st:Pressure>
 </st:pressure>
 <st:wind_speed gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature"  gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'">
-  <st:Wind_speed>
-      <st:time>${st:time}</st:time>
-      <st:value>${st:value}</st:value>
-  </st:Wind_speed>
+ <st:Wind_speed>
+    <st:time>${st:time}</st:time>
+    <st:value>${st:value}</st:value>
+ </st:Wind_speed>
 </st:wind_speed>
 </st:MeteoStations>
 </gft:Template>

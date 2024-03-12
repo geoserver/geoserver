@@ -45,29 +45,12 @@ The parameters for the GetCapabilities operation are:
 
 GeoServer provides the following vendor-specific parameters for the GetCapabilities operation. They are fully documented in the [WMS vendor parameters](vendor.md) section.
 
-**Parameter**
-
-:   **Required?**
-
-    **Description**
-
-`namespace`
-
-:   No
-
-    limits response to layers in a given namespace
-
-`format`
-
-:   No
-
-    request the capabilities document in a certain format
-
-`rootLayer`
-
-:   No
-
-    Flag to enable/disable the standard Root top level Layer element. Values are true or false. When false, the Root element will be included only if there are multiple top level layers, if there is only one, it will be the root layer itself. When specified, will override the global WMS setting or layer / group setting for the same behaviour.
+|               |               |                                                                                                                                                                                                                                                                                                                                                      |
+|---------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Parameter** | **Required?** | **Description**                                                                                                                                                                                                                                                                                                                                      |
+| `namespace`   | No            | limits response to layers in a given namespace                                                                                                                                                                                                                                                                                                       |
+| `format`      | No            | request the capabilities document in a certain format                                                                                                                                                                                                                                                                                                |
+| `rootLayer`   | No            | Flag to enable/disable the standard Root top level Layer element. Values are true or false. When false, the Root element will be included only if there are multiple top level layers, if there is only one, it will be the root layer itself. When specified, will override the global WMS setting or layer / group setting for the same behaviour. |
 
 A example GetCapabilities request is: :
 
@@ -94,107 +77,25 @@ The response is a map image, or other map output artifact, depending on the form
 
 The standard parameters for the GetMap operation are:
 
-**Parameter**
-
-:   **Required?**
-
-    **Description**
-
-`service`
-
-:   Yes
-
-    Service name. Value is `WMS`.
-
-`version`
-
-:   Yes
-
-    Service version. Value is one of `1.0.0`, `1.1.0`, `1.1.1`, `1.3.0`.
-
-`request`
-
-:   Yes
-
-    Operation name. Value is `GetMap`.
-
-`layers`
-
-:   Yes
-
-    Layers to display on map. Value is a comma-separated list of layer names.
-
-`styles`
-
-:   Yes
-
-    Styles in which layers are to be rendered. Value is a comma-separated list of style names, or empty if default styling is required. Style names may be empty in the list, to use default layer styling.
-
-`srs` *or* `crs`
-
-:   Yes
-
-    Spatial Reference System for map output. Value is in form `EPSG:nnn`. `crs` is the parameter key used in WMS 1.3.0.
-
-`bbox`
-
-:   Yes
-
-    Bounding box for map extent. Value is `minx,miny,maxx,maxy` in units of the SRS.
-
-`width`
-
-:   Yes
-
-    Width of map output, in pixels.
-
-`height`
-
-:   Yes
-
-    Height of map output, in pixels.
-
-`format`
-
-:   Yes
-
-    Format for the map output. See [WMS output formats](outputformats.md) for supported values.
-
-`transparent`
-
-:   No
-
-    Whether the map background should be transparent. Values are `true` or `false`. Default is `false`
-
-`bgcolor`
-
-:   No
-
-    Background color for the map image. Value is in the form `RRGGBB`. Default is `FFFFFF` (white).
-
-`exceptions`
-
-:   No
-
-    Format in which to report exceptions. Default value is `application/vnd.ogc.se_xml`.
-
-`time`
-
-:   No
-
-    Time value or range for map data. See [Time Support in GeoServer WMS](time.md) for more information.
-
-`sld`
-
-:   No
-
-    A URL referencing a [StyledLayerDescriptor](../../styling/index.md) XML file which controls or enhances map layers and styling
-
-`sld_body`
-
-:   No
-
-    A URL-encoded [StyledLayerDescriptor](../../styling/index.md) XML document which controls or enhances map layers and styling
+|                  |               |                                                                                                                                                                                                         |
+|------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Parameter**    | **Required?** | **Description**                                                                                                                                                                                         |
+| `service`        | Yes           | Service name. Value is `WMS`.                                                                                                                                                                           |
+| `version`        | Yes           | Service version. Value is one of `1.0.0`, `1.1.0`, `1.1.1`, `1.3.0`.                                                                                                                                    |
+| `request`        | Yes           | Operation name. Value is `GetMap`.                                                                                                                                                                      |
+| `layers`         | Yes           | Layers to display on map. Value is a comma-separated list of layer names.                                                                                                                               |
+| `styles`         | Yes           | Styles in which layers are to be rendered. Value is a comma-separated list of style names, or empty if default styling is required. Style names may be empty in the list, to use default layer styling. |
+| `srs` *or* `crs` | Yes           | Spatial Reference System for map output. Value is in form `EPSG:nnn`. `crs` is the parameter key used in WMS 1.3.0.                                                                                     |
+| `bbox`           | Yes           | Bounding box for map extent. Value is `minx,miny,maxx,maxy` in units of the SRS.                                                                                                                        |
+| `width`          | Yes           | Width of map output, in pixels.                                                                                                                                                                         |
+| `height`         | Yes           | Height of map output, in pixels.                                                                                                                                                                        |
+| `format`         | Yes           | Format for the map output. See [WMS output formats](outputformats.md) for supported values.                                                                                                            |
+| `transparent`    | No            | Whether the map background should be transparent. Values are `true` or `false`. Default is `false`                                                                                                      |
+| `bgcolor`        | No            | Background color for the map image. Value is in the form `RRGGBB`. Default is `FFFFFF` (white).                                                                                                         |
+| `exceptions`     | No            | Format in which to report exceptions. Default value is `application/vnd.ogc.se_xml`.                                                                                                                    |
+| `time`           | No            | Time value or range for map data. See [Time Support in GeoServer WMS](time.md) for more information.                                                                                                   |
+| `sld`            | No            | A URL referencing a [StyledLayerDescriptor](../../styling/index.md) XML file which controls or enhances map layers and styling                                                                         |
+| `sld_body`       | No            | A URL-encoded [StyledLayerDescriptor](../../styling/index.md) XML document which controls or enhances map layers and styling                                                                           |
 
 GeoServer provides a number of useful vendor-specific parameters for the GetMap operation. These are documented in the [WMS vendor parameters](vendor.md) section.
 
@@ -404,35 +305,13 @@ The standard parameters for the DescribeLayer operation are:
 
 GeoServer supports a number of output formats for the `DescribeLayer` response. Server-styled HTML is the most commonly-used format. The supported formats are:
 
-**Format**
-
-:   **Syntax**
-
-    **Notes**
-
-TEXT
-
-:   `output_format=text/xml`
-
-    Same as default.
-
-GML 2
-
-:   `output_format=application/vnd.ogc.wms_xml`
-
-    The default format.
-
-JSON
-
-:   `output_format=application/json`
-
-    Simple JSON representation.
-
-JSONP
-
-:   `output_format=text/javascript`
-
-    Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)).
+|            |                                             |                                                                                                                                                                                                                               |
+|------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Format** | **Syntax**                                  | **Notes**                                                                                                                                                                                                                     |
+| TEXT       | `output_format=text/xml`                    | Same as default.                                                                                                                                                                                                              |
+| GML 2      | `output_format=application/vnd.ogc.wms_xml` | The default format.                                                                                                                                                                                                           |
+| JSON       | `output_format=application/json`            | Simple JSON representation.                                                                                                                                                                                                   |
+| JSONP      | `output_format=text/javascript`             | Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)). |
 
 An example request in XML (default) format on a layer is: :
 
@@ -489,44 +368,12 @@ The **GetLegendGraphic** operation provides a mechanism for generating legend gr
 
 Formats in which WMS can report exceptions. The supported values for exceptions are:
 
-**Format**
-
-:   **Syntax**
-
-    **Notes**
-
-XML
-
-:   `EXCEPTIONS=application/vnd.ogc.se_xml`
-
-    XML output. (The default format)
-
-INIMAGE
-
-:   `EXCEPTIONS=application/vnd.ogc.se_inimage`
-
-    Generates an image
-
-BLANK
-
-:   `EXCEPTIONS=application/vnd.ogc.se_blank`
-
-    Generates a blank image
-
-PARTIALMAP
-
-:   `EXCEPTIONS=application/vnd.gs.wms_partial`
-
-    This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the [WMS Configuration Limits](configuration.md#wms_configuration_limits) to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the `timeout` [vendor parameter](vendor.md).
-
-JSON
-
-:   `EXCEPTIONS=application/json`
-
-    Simple JSON representation.
-
-JSONP
-
-:   `EXCEPTIONS=text/javascript`
-
-    Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)).
+|            |                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Format** | **Syntax**                                  | **Notes**                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| XML        | `EXCEPTIONS=application/vnd.ogc.se_xml`     | XML output. (The default format)                                                                                                                                                                                                                                                                                                                                                                                                     |
+| INIMAGE    | `EXCEPTIONS=application/vnd.ogc.se_inimage` | Generates an image                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| BLANK      | `EXCEPTIONS=application/vnd.ogc.se_blank`   | Generates a blank image                                                                                                                                                                                                                                                                                                                                                                                                              |
+| PARTIALMAP | `EXCEPTIONS=application/vnd.gs.wms_partial` | This is a GeoServer vendor parameter and only applicable for GetMap requests. Returns everything that was rendered at the time the rendering process threw an exception. Can be used with the [WMS Configuration Limits](configuration.md#wms_configuration_limits) to return a partial image even if the request is terminated for exceeding one of these limits. It also works with the `timeout` [vendor parameter](vendor.md). |
+| JSON       | `EXCEPTIONS=application/json`               | Simple JSON representation.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| JSONP      | `EXCEPTIONS=text/javascript`                | Return JSONP in the form: paddingOutput(\...jsonp\...). See [WMS vendor parameters](vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](global.md)).                                                                                                                                                                                                        |

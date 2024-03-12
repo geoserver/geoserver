@@ -38,8 +38,8 @@ Here is the complete WPS request in XML format:
   <wps:DataInputs>
     <wps:Input>
       <ows:Identifier>geom</ows:Identifier>
-  <wps:Reference mimeType="text/xml; subtype=gml/3.1.1"
-              xlink:href="http://geoserver/wps" method="POST">
+ <wps:Reference mimeType="text/xml; subtype=gml/3.1.1"
+            xlink:href="http://geoserver/wps" method="POST">
       <wps:Body>
         <wps:Execute version="1.0.0" service="WPS">
           <ows:Identifier>gs:CollectGeometries</ows:Identifier>
@@ -86,7 +86,7 @@ Here is the complete WPS request in XML format:
                     </wps:DataInputs>
                     <wps:ResponseForm>
                       <wps:RawDataOutput mimeType="text/xml;
-                     subtype=wfs-collection/1.0">
+                subtype=wfs-collection/1.0">
                         <ows:Identifier>result</ows:Identifier>
                       </wps:RawDataOutput>
                     </wps:ResponseForm>

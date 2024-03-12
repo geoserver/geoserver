@@ -46,8 +46,8 @@ For example, a simple ColorMap can define a color gradient from color #323232 to
 
 ``` xml
 <ColorMap>
-    <ColorMapEntry color="#323232" quantity="-300" label="label1" opacity="1"/>
-    <ColorMapEntry color="#BBBBBB" quantity="200" label="label2" opacity="1"/>
+      <ColorMapEntry color="#323232" quantity="-300" label="label1" opacity="1"/>
+      <ColorMapEntry color="#BBBBBB" quantity="200" label="label2" opacity="1"/>
 </ColorMap>
 ```
 
@@ -57,10 +57,10 @@ A more refined example defines a color gradient from color #FFCC32 through color
 
 ``` xml
 <ColorMap>
-    <ColorMapEntry color="#FFCC32" quantity="-300" label="label1" opacity="0"/>
-    <ColorMapEntry color="#3645CC" quantity="0" label="label2" opacity="1"/>
-    <ColorMapEntry color="#CC3636" quantity="100" label="label3" opacity="1"/>
-    <ColorMapEntry color="#BBBBBB" quantity="200" label="label4" opacity="1"/>
+      <ColorMapEntry color="#FFCC32" quantity="-300" label="label1" opacity="0"/>
+      <ColorMapEntry color="#3645CC" quantity="0" label="label2" opacity="1"/>
+      <ColorMapEntry color="#CC3636" quantity="100" label="label3" opacity="1"/>
+      <ColorMapEntry color="#BBBBBB" quantity="200" label="label4" opacity="1"/>
 </ColorMap>
 ```
 
@@ -76,17 +76,17 @@ The `<ColorMap>` `type` attribute specifies the kind of ColorMap to use. There a
 
 ``` xml
 <ColorMap type="ramp">
-        <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
-        <ColorMapEntry color="#2851CC" quantity="0" label="values" opacity="1"/>
-        <ColorMapEntry color="#211F1F" quantity="50" label="label" opacity="1"/>
-        <ColorMapEntry color="#EE0F0F" quantity="100" label="label" opacity="1"/>
-        <ColorMapEntry color="#AAAAAA" quantity="200" label="label" opacity="1"/>
-        <ColorMapEntry color="#6FEE4F" quantity="250" label="label" opacity="1"/>
-        <ColorMapEntry color="#3ECC1B" quantity="300" label="label" opacity="1"/>
-        <ColorMapEntry color="#886363" quantity="350" label="label" opacity="1"/>
-        <ColorMapEntry color="#5194CC" quantity="400" label="label" opacity="1"/>
-        <ColorMapEntry color="#2C58DD" quantity="450" label="label" opacity="1"/>
-        <ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
+       <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
+       <ColorMapEntry color="#2851CC" quantity="0" label="values" opacity="1"/>
+       <ColorMapEntry color="#211F1F" quantity="50" label="label" opacity="1"/>
+       <ColorMapEntry color="#EE0F0F" quantity="100" label="label" opacity="1"/>
+       <ColorMapEntry color="#AAAAAA" quantity="200" label="label" opacity="1"/>
+       <ColorMapEntry color="#6FEE4F" quantity="250" label="label" opacity="1"/>
+       <ColorMapEntry color="#3ECC1B" quantity="300" label="label" opacity="1"/>
+       <ColorMapEntry color="#886363" quantity="350" label="label" opacity="1"/>
+       <ColorMapEntry color="#5194CC" quantity="400" label="label" opacity="1"/>
+       <ColorMapEntry color="#2C58DD" quantity="450" label="label" opacity="1"/>
+       <ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
 </ColorMap>
 ```
 
@@ -96,9 +96,9 @@ The `<ColorMap>` `type` attribute specifies the kind of ColorMap to use. There a
 
 ``` xml
 <ColorMap type="values">
-        <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
-        ...
-        <ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
+       <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
+       ...
+       <ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
 </ColorMap>
 ```
 
@@ -110,9 +110,9 @@ The result image is:
 
 ``` xml
 <ColorMap type="intervals" extended="true">
-        <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
-        ...
-        <ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
+       <ColorMapEntry color="#EEBE2F" quantity="-300" label="label" opacity="0"/>
+       ...
+       <ColorMapEntry color="#DDB02C" quantity="600" label="label" opacity="1"/>
 </ColorMap>   
 ```
 
@@ -158,15 +158,15 @@ The following example maps source channels 1, 2 and 3 to the red, green, and blu
 
 ``` xml
 <ChannelSelection>
-  <RedChannel>
-        <SourceChannelName>1</SourceChannelName>
-  </RedChannel>
-  <GreenChannel>
-        <SourceChannelName>2</SourceChannelName>
-  </GreenChannel>
-  <BlueChannel>
-        <SourceChannelName>3</SourceChannelName>
-  </BlueChannel>
+     <RedChannel>
+          <SourceChannelName>1</SourceChannelName>
+     </RedChannel>
+     <GreenChannel>
+          <SourceChannelName>2</SourceChannelName>
+     </GreenChannel>
+     <BlueChannel>
+          <SourceChannelName>3</SourceChannelName>
+     </BlueChannel>
 </ChannelSelection>
 ```
 
@@ -176,18 +176,18 @@ The next example shows selecting a single band of an RGB image as a grayscale ch
 
 ``` xml
 <RasterSymbolizer>
-        <Opacity>1.0</Opacity>
-        <ChannelSelection>
-            <GrayChannel>
-                <SourceChannelName>1</SourceChannelName>
-            </GrayChannel>
-        </ChannelSelection>
-        <ColorMap extended="true">
-            <ColorMapEntry color="#0000ff" quantity="3189.0"/>
-            <ColorMapEntry color="#009933" quantity="6000.0"/>
-            <ColorMapEntry color="#ff9900" quantity="9000.0" />
-            <ColorMapEntry color="#ff0000" quantity="14265.0"/>
-        </ColorMap>
+       <Opacity>1.0</Opacity>
+       <ChannelSelection>
+           <GrayChannel>
+              <SourceChannelName>1</SourceChannelName>
+           </GrayChannel>
+       </ChannelSelection>
+       <ColorMap extended="true">
+           <ColorMapEntry color="#0000ff" quantity="3189.0"/>
+           <ColorMapEntry color="#009933" quantity="6000.0"/>
+           <ColorMapEntry color="#ff9900" quantity="9000.0" />
+           <ColorMapEntry color="#ff0000" quantity="14265.0"/>
+       </ColorMap>
 </RasterSymbolizer>
 ```
 
@@ -204,30 +204,30 @@ The following example shows how to set the Red, Green and Blue channels and to m
 ``` xml
 <RasterSymbolizer>
 <ChannelSelection>
-    <RedChannel>
-    <SourceChannelName>
-        <ogc:Function name="env">
-            <ogc:Literal>B1</ogc:Literal>
-            <ogc:Literal>1</ogc:Literal>
-        </ogc:Function>
-    </SourceChannelName>
-    </RedChannel>
-    <GreenChannel>
-    <SourceChannelName>
-        <ogc:Function name="env">
-            <ogc:Literal>B2</ogc:Literal>
-            <ogc:Literal>2</ogc:Literal>
-        </ogc:Function>
-    </SourceChannelName>
-    </GreenChannel>
-    <BlueChannel>
-    <SourceChannelName>
-        <ogc:Function name="env">
-            <ogc:Literal>B3</ogc:Literal>
-            <ogc:Literal>3</ogc:Literal>
-        </ogc:Function>
-    </SourceChannelName>
-    </BlueChannel>
+   <RedChannel>
+   <SourceChannelName>
+      <ogc:Function name="env">
+         <ogc:Literal>B1</ogc:Literal>
+         <ogc:Literal>1</ogc:Literal>
+      </ogc:Function>
+   </SourceChannelName>
+   </RedChannel>
+   <GreenChannel>
+   <SourceChannelName>
+      <ogc:Function name="env">
+         <ogc:Literal>B2</ogc:Literal>
+         <ogc:Literal>2</ogc:Literal>
+      </ogc:Function>
+   </SourceChannelName>
+   </GreenChannel>
+   <BlueChannel>
+   <SourceChannelName>
+      <ogc:Function name="env">
+         <ogc:Literal>B3</ogc:Literal>
+         <ogc:Literal>3</ogc:Literal>
+      </ogc:Function>
+   </SourceChannelName>
+   </BlueChannel>
 </ChannelSelection>
 <RasterSymbolizer>
 ```
@@ -256,7 +256,7 @@ Now let us suppose that we want to work on a single band and to exclude all the 
   <ChannelSelection>
     <GrayChannel>
       <SourceChannelName>
-            <Function name="env">
+           <Function name="env">
              <ogc:Literal>B1</ogc:Literal>
              <ogc:Literal>7</ogc:Literal>
           </ogc:Function>
@@ -282,7 +282,7 @@ Finally, you can add a ColorMap on the selected channel as the following:
  <ChannelSelection>
    <GrayChannel>
      <SourceChannelName>
-        <ogc:Function name="env">
+          <ogc:Function name="env">
             <ogc:Literal>B1</ogc:Literal>
             <ogc:Literal>7</ogc:Literal>
          </ogc:Function>
@@ -295,7 +295,7 @@ Finally, you can add a ColorMap on the selected channel as the following:
      <ColorMapEntry color="#ff9900" quantity="150.0" />
      <ColorMapEntry color="#ff0000" quantity="200.0"/>
  </ColorMap>
-</RasterSymbolizer>     
+</RasterSymbolizer>    
 ```
 
 ![](img/channelsexpression5.png)
@@ -320,13 +320,13 @@ These examples turn on Normalize and Histogram, respectively:
 
 ``` xml
 <ContrastEnhancement>
-    <Normalize/>
+      <Normalize/>
 </ContrastEnhancement>
 ```
 
 ``` xml
 <ContrastEnhancement>
-    <Histogram/>
+      <Histogram/>
 </ContrastEnhancement>
 ```
 
@@ -334,7 +334,7 @@ This example increases the brightness of the image by a factor of two.
 
 ``` xml
 <ContrastEnhancement>
-    <GammaValue>2</GammaValue>
+      <GammaValue>2</GammaValue>
 </ContrastEnhancement>
 ```
 
@@ -385,7 +385,7 @@ This example will apply a Normalized ContrastEnhancement by linearly stretch fro
    <VendorOption name="minValue">50</VendorOption>
    <VendorOption name="maxValue">100</VendorOption>
   </Normalize>
-</ContrastEnhancement>  
+</ContrastEnhancement>   
 ```
 
 Here below a more complex example that shows the possibility to control the values from a client using env functions. This is extremely interesting for interactive applications.
@@ -393,26 +393,26 @@ Here below a more complex example that shows the possibility to control the valu
 ``` xml
 ...
 <ContrastEnhancement>
-    <Normalize>
-     <VendorOption name="algorithm">
-       <ogc:Function name="env">
-         <ogc:Literal>algorithm</ogc:Literal>
-         <ogc:Literal>StretchToMinimumMaximum</ogc:Literal>
-       </ogc:Function>                                       
-     </VendorOption>
-     <VendorOption name='minValue'>
-       <ogc:Function name="env">
-         <ogc:Literal>minValue</ogc:Literal>
-         <ogc:Literal>10</ogc:Literal>
-       </ogc:Function>
-     </VendorOption>
-     <VendorOption name='maxValue'>
-       <ogc:Function name="env">
-         <ogc:Literal>maxValue</ogc:Literal>
-         <ogc:Literal>1200</ogc:Literal>
-       </ogc:Function>                                       
-     </VendorOption>
-    </Normalize>
+   <Normalize>
+    <VendorOption name="algorithm">
+      <ogc:Function name="env">
+       <ogc:Literal>algorithm</ogc:Literal>
+       <ogc:Literal>StretchToMinimumMaximum</ogc:Literal>
+      </ogc:Function>                                       
+    </VendorOption>
+    <VendorOption name='minValue'>
+      <ogc:Function name="env">
+       <ogc:Literal>minValue</ogc:Literal>
+       <ogc:Literal>10</ogc:Literal>
+      </ogc:Function>
+    </VendorOption>
+    <VendorOption name='maxValue'>
+      <ogc:Function name="env">
+       <ogc:Literal>maxValue</ogc:Literal>
+       <ogc:Literal>1200</ogc:Literal>
+      </ogc:Function>                                       
+    </VendorOption>
+   </Normalize>
 </ContrastEnhancement>
 ...
 ```
@@ -432,8 +432,8 @@ BrightnessOnly, which takes no parameters, applies shading in WHAT WAY? ReliefFa
 
 ``` xml
 <ShadedRelief>
-    <BrightnessOnly />
-    <ReliefFactor>55</ReliefFactor>
+      <BrightnessOnly />
+      <ReliefFactor>55</ReliefFactor>
 </ShadedRelief>
 ```
 
@@ -456,7 +456,7 @@ Sometimes raster data is comprised of multiple image sets. Take, for example, a 
 
 ``` xml
 <OverlapBehavior>
-    <AVERAGE />
+      <AVERAGE />
 </OverlapBehavior>
 ```
 
@@ -472,11 +472,11 @@ Given the situation mentioned previously of the image composite, it is possible 
 
 ``` xml
 <ImageOutline>
-    <LineSymbolizer>
-        <Stroke>
-                <CssParameter name="stroke">#0000ff</CssParameter>
-        </Stroke>
-    </LineSymbolizer>
+      <LineSymbolizer>
+         <Stroke>
+               <CssParameter name="stroke">#0000ff</CssParameter>
+         </Stroke>
+      </LineSymbolizer>
 </ImageOutline>
 ```
 

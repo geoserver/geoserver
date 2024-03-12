@@ -50,33 +50,15 @@ Once the layer name is chosen, the usual layer configuration panel will appear, 
 ![](images/solr_fieldlist.png)
 *The layer field list configuration*
 
-`Is empty`
-
-:   Read only fields, checked if the field has no values in the documents associated to this layer
-
-`Use`
-
-:   Used to select the fields that will make up this layer features
-
-`Name`
-
-:   Name of the field
-
-`Type`
-
-:   Type of the field, as derived from the SOLR schema. For geometry types, you have the option to provide a more specific data type
-
-`SRID`
-
-:   Native spatial reference ID of the geometries
-
-`Default geometry`
-
-:   Indicates if the geometry field is the default one. Useful if the documents contain more than one geometry field, as SLDs and spatial filters will hit the default geometry field unless otherwise specified
-
-`Identifier`
-
-:   Check if the field can be used as the feature identifier
+|                    |                                                                                                                                                                                                              |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Is empty`         | Read only fields, checked if the field has no values in the documents associated to this layer                                                                                                               |
+| `Use`              | Used to select the fields that will make up this layer features                                                                                                                                              |
+| `Name`             | Name of the field                                                                                                                                                                                            |
+| `Type`             | Type of the field, as derived from the SOLR schema. For geometry types, you have the option to provide a more specific data type                                                                             |
+| `SRID`             | Native spatial reference ID of the geometries                                                                                                                                                                |
+| `Default geometry` | Indicates if the geometry field is the default one. Useful if the documents contain more than one geometry field, as SLDs and spatial filters will hit the default geometry field unless otherwise specified |
+| `Identifier`       | Check if the field can be used as the feature identifier                                                                                                                                                     |
 
 By default the list will contain only the fields that have at least one non null value in the documents associated to the layer, but it is possible to get the full list by un-checking the "Hide field if empty" check-box:
 

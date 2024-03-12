@@ -19,49 +19,52 @@ In order to write NetCDF-4 files, you must have the NetCDF-4 C library (version 
     As an instance:
 
     :   ``` bash
-        wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz
-        wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz
         ```
 
-2.  Download the latest NetCDF-C source code from [here](https://github.com/Unidata/netcdf-c/releases/).
+> wget <ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz> wget <ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz>
+
+1.  Download the latest NetCDF-C source code from [here](https://github.com/Unidata/netcdf-c/releases/).
 
     As an instance:
 
     :   ``` bash
-        wget https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz
         ```
 
-3.  Build and install the required dependencies (The following instructions assume that you will install all NetCDF4 C libs on `/work/libs/nc4libs`, as an instance).
+> wget <https://github.com/Unidata/netcdf-c/archive/v4.3.3.1.tar.gz>
 
+1.  Build and install the required dependencies (The following instructions assume that you will install all NetCDF4 C libs on `/work/libs/nc4libs`, as an instance).
     1.  
 
         ZLIB
 
         :   ``` bash
-            ./configure --prefix=/work/libs/nc4libs
-
-            make check install
             ```
 
-    2.  
+> ./configure --prefix=/work/libs/nc4libs
+>
+> make check install
+>
+> > 1.  
+> >
+> >     HDF5
+> >
+> >     :   ``` bash
+> >         ```
+>
+> ./configure --with-zlib=/work/libs/nc4libs --prefix=/work/libs/nc4libs --enable-threadsafe --with-pthread=/DIR/TO/PTHREAD
+>
+> make check install
 
-        HDF5
-
-        :   ``` bash
-            ./configure --with-zlib=/work/libs/nc4libs --prefix=/work/libs/nc4libs --enable-threadsafe --with-pthread=/DIR/TO/PTHREAD
-
-            make check install
-            ```
-
-4.  Build the NetCDF C Library.
+1.  Build the NetCDF C Library.
 
     > ``` bash
-    > CPPFLAGS=-I/work/libs/nc4libs/include LDFLAGS=-L/work/libs/nc4libs/lib ./configure --prefix=/work/libs/nc4libs
-    >
-    > make check install
     > ```
 
-5.  Make sure to add the *lib* folder of the package you have extracted, to the `PATH` environment variable.
+    CPPFLAGS=-I/work/libs/nc4libs/include LDFLAGS=-L/work/libs/nc4libs/lib ./configure --prefix=/work/libs/nc4libs
+
+    make check install
+
+2.  Make sure to add the *lib* folder of the package you have extracted, to the `PATH` environment variable.
 
 ## GeoServer startup checks
 

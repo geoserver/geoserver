@@ -226,73 +226,74 @@ The files can also be downloaded from the GitHub source repository.
 To clone the RemoteWPS Python Framework into a working folder, e.g.:
 
 > ``` bash
-> $> cd C:\work
->
-> $> git clone https://github.com/geoserver/wps-remote RemoteWPS
 > ```
+>
+> \$> cd C:work
+>
+> \$> git clone <https://github.com/geoserver/wps-remote> RemoteWPS
 
 **Setting Up The** `remote.config`
 
 ``` bash
 # Edit the file xmpp_data/configs/remote.config
 
-  [DEFAULT]
+ [DEFAULT]
 
-  bus_class_name = xmppBus.XMPPBus
+ bus_class_name = xmppBus.XMPPBus
 
-  port = 5223
-  address =  127.0.0.1
-  domain = geoserver.org
+ port = 5223
+ address =  127.0.0.1
+ domain = geoserver.org
 
-  # . Those are the connection parameters to the XMPP Server.
-  # . The user must exists on the Server and its name must be
-  # . equal to the service name.
-  user = default.GdalContour
-  password = R3m0T3wP5
+ # . Those are the connection parameters to the XMPP Server.
+ # . The user must exists on the Server and its name must be
+ # . equal to the service name.
+ user = default.GdalContour
+ password = R3m0T3wP5
 
-  mucService = conference.%(domain)s
-  mucServicePassword = admin
+ mucService = conference.%(domain)s
+ mucServicePassword = admin
 
-  resource_file_dir = /share/xmpp_data/resource_dir
+ resource_file_dir = /share/xmpp_data/resource_dir
 
-  # . Configure this option (along with 'backup_on_wps_execution_shared_dir' 
-  # . on single outputs of 'service.config') in order to make a copy
-  # . of the results into a shared folder before sending messages to XMPP
-  # . WARNING: this option takes precedence on "UPLOADER" option
-  # wps_execution_shared_dir = /share/xmpp_data/share
+ # . Configure this option (along with 'backup_on_wps_execution_shared_dir' 
+ # . on single outputs of 'service.config') in order to make a copy
+ # . of the results into a shared folder before sending messages to XMPP
+ # . WARNING: this option takes precedence on "UPLOADER" option
+ # wps_execution_shared_dir = /share/xmpp_data/share
 
-  # . This section is used to configure the uploader class and connection
-  # . parameters.
-  # . This is necessary in order to let the 'upload_data' option work on
-  # . single outputs of 'service.config'
-  [UPLOADER]
-  # There are different implementations of the FTP Uploader available right now:
-  # . Plain standard FTP Protocol (based on ftplib)
-  #       ftpUpload.FtpUpload
-  # . FTP over TLS (FTPS) Protocol (based on ftplib)
-  #       ftpsUpload.FtpsUpload
-  # . S-FTP Protocol (based on paramiko Python lib)
-  #       sftpUpload.SFtpUpload
-  uploader_class_name = ftpUpload.FtpUpload
-  uploader_host = ftp.<your_host_here>:<your_port_here_default_21>
-  uploader_username = <ftp_username>
-  uploader_password = <ftp_password_encrypted>
+ # . This section is used to configure the uploader class and connection
+ # . parameters.
+ # . This is necessary in order to let the 'upload_data' option work on
+ # . single outputs of 'service.config'
+ [UPLOADER]
+ # There are different implementations of the FTP Uploader available right now:
+ # . Plain standard FTP Protocol (based on ftplib)
+ #       ftpUpload.FtpUpload
+ # . FTP over TLS (FTPS) Protocol (based on ftplib)
+ #       ftpsUpload.FtpsUpload
+ # . S-FTP Protocol (based on paramiko Python lib)
+ #       sftpUpload.SFtpUpload
+ uploader_class_name = ftpUpload.FtpUpload
+ uploader_host = ftp.<your_host_here>:<your_port_here_default_21>
+ uploader_username = <ftp_username>
+ uploader_password = <ftp_password_encrypted>
 
-  # . "encryptor" you can use encrypted passwords with a private/public key couple
-  #
-  # . To generate a new private key use the following command:
-  #     openssl genrsa -out myTestKey.pem -passout pass:"f00bar" -des3 2048
-  #
-  # . To generate a new public key use the following command:
-  #     openssl rsa -pubout -in myTestKey.pem -passin pass:"f00bar" -out myTestKey.pub
-  #
-  # . To encrypt your password use the following utility
-  #     python encrypt.py password path/to/rsakey.pub passphrase
-  #
-  # . To double check the password is correct use the following utility
-  #     python decrypt.py password path/to/rsakey.pem passphrase
-  uploader_private_rsa_key = /share/xmpp_data/ssl/myTestKey.pem
-  uploader_passphrase = f00bar
+ # . "encryptor" you can use encrypted passwords with a private/public key couple
+ #
+ # . To generate a new private key use the following command:
+ #     openssl genrsa -out myTestKey.pem -passout pass:"f00bar" -des3 2048
+ #
+ # . To generate a new public key use the following command:
+ #     openssl rsa -pubout -in myTestKey.pem -passin pass:"f00bar" -out myTestKey.pub
+ #
+ # . To encrypt your password use the following utility
+ #     python encrypt.py password path/to/rsakey.pub passphrase
+ #
+ # . To double check the password is correct use the following utility
+ #     python decrypt.py password path/to/rsakey.pem passphrase
+ uploader_private_rsa_key = /share/xmpp_data/ssl/myTestKey.pem
+ uploader_passphrase = f00bar
 ```
 
 The requisites for this configuration to work properly are:
@@ -356,138 +357,138 @@ The requisites for this configuration to work properly are:
 ``` bash
 # Edit the file xmpp_data/configs/myservice/service.config
 
-  # This is a INI file to be read with python ConfigParser (https://docs.python.org/2/library/configparser.html)
-  # Is possible to reference another variable in the ini file using the format %(<variable name>)s (note the 's' at the end)
+ # This is a INI file to be read with python ConfigParser (https://docs.python.org/2/library/configparser.html)
+ # Is possible to reference another variable in the ini file using the format %(<variable name>)s (note the 's' at the end)
 
-  # ########################################### #
-  # Default Service Params                      #
-  # ########################################### #
+ # ########################################### #
+ # Default Service Params                      #
+ # ########################################### #
 
-  [DEFAULT]
-  service = GdalContour
-  namespace = default
-  description = GDAL Contour Remote Service
-  executable_path = /share/xmpp_data/configs/myservice/code
-  executable_cmd = python %(executable_path)s/test.py
-  output_dir = /share/xmpp_data/output/
-  unique_execution_id = %(unique_exe_id)s
-  workdir = %(output_dir)s/%(unique_execution_id)s
-  active = True
-  max_running_time_seconds = 300
+ [DEFAULT]
+ service = GdalContour
+ namespace = default
+ description = GDAL Contour Remote Service
+ executable_path = /share/xmpp_data/configs/myservice/code
+ executable_cmd = python %(executable_path)s/test.py
+ output_dir = /share/xmpp_data/output/
+ unique_execution_id = %(unique_exe_id)s
+ workdir = %(output_dir)s/%(unique_execution_id)s
+ active = True
+ max_running_time_seconds = 300
 
-  # . This option allows you to set the CPU and Memory average load scan time.
-  # . It is espressed in 'minutes' and if disabled here it will be set by default
-  # . to 15 minutes.
-  load_average_scan_minutes = 1
+ # . This option allows you to set the CPU and Memory average load scan time.
+ # . It is espressed in 'minutes' and if disabled here it will be set by default
+ # . to 15 minutes.
+ load_average_scan_minutes = 1
 
-  # . Use this option to completely avoid using this host (and prevent starting a new
-  # . 'processbot') whenever one of the following process names are running.
-  # . In other words, if one of the following processes are currently running on this machine,
-  # . GeoServer won't send any WPS execute request until they are finished.
-  process_blacklist = [resource consuming process name1, resource consuming process name2]
+ # . Use this option to completely avoid using this host (and prevent starting a new
+ # . 'processbot') whenever one of the following process names are running.
+ # . In other words, if one of the following processes are currently running on this machine,
+ # . GeoServer won't send any WPS execute request until they are finished.
+ process_blacklist = [resource consuming process name1, resource consuming process name2]
 
-  # ########################################### #
-  # Inputs and Actions Declaration              #
-  # ########################################### #
+ # ########################################### #
+ # Inputs and Actions Declaration              #
+ # ########################################### #
 
-  [Input1]
-  class = param
-  name = interval
-  title = Elevation Interval
-  type = int
-  description = Elevation interval between contours.
-  min = 1
-  max = 1
-  default = 200
+ [Input1]
+ class = param
+ name = interval
+ title = Elevation Interval
+ type = int
+ description = Elevation interval between contours.
+ min = 1
+ max = 1
+ default = 200
 
-  [Action1]
-  class = cmdline
-  input_ref = interval
-  alias = i
-  template = -name value
+ [Action1]
+ class = cmdline
+ input_ref = interval
+ alias = i
+ template = -name value
 
-  [Const1]
-  class = const
-  name = workdir
-  type = string
-  description = Remote process sandbox working directory
-  value = %(workdir)s
+ [Const1]
+ class = const
+ name = workdir
+ type = string
+ description = Remote process sandbox working directory
+ value = %(workdir)s
 
 
-  [Action2]
-  class = cmdline
-  input_ref = workdir
-  alias = w
-  template = -name value
+ [Action2]
+ class = cmdline
+ input_ref = workdir
+ alias = w
+ template = -name value
 
-  # ########################################### #
-  # Output Parameters Declaration               #
-  # ########################################### #
+ # ########################################### #
+ # Output Parameters Declaration               #
+ # ########################################### #
 
-  [Output1]
-  name = result1
-  type = application/zip
-  description = WPS Resource Binary File
-  title = SRTM
-  filepath = %(workdir)s/contour.zip
-  publish_as_layer = true
-  publish_default_style = polygon
-  publish_target_workspace = it.geosolutions
-  publish_layer_name = contour
+ [Output1]
+ name = result1
+ type = application/zip
+ description = WPS Resource Binary File
+ title = SRTM
+ filepath = %(workdir)s/contour.zip
+ publish_as_layer = true
+ publish_default_style = polygon
+ publish_target_workspace = it.geosolutions
+ publish_layer_name = contour
 
-  # . Enable this option in order to perform a backup of this output
-  # . before sending it to GeoServer.
-  # . WARNING: This option works only along with 'wps_execution_shared_dir'
-  # .          option on 'remote.config', and takes precedence on 'upload_data'
-  # backup_on_wps_execution_shared_dir = true
+ # . Enable this option in order to perform a backup of this output
+ # . before sending it to GeoServer.
+ # . WARNING: This option works only along with 'wps_execution_shared_dir'
+ # .          option on 'remote.config', and takes precedence on 'upload_data'
+ # backup_on_wps_execution_shared_dir = true
 
-  # . Enable this option if you want the output to be uploaded on remote host.
-  # . Notice that you must also configure uploader parameters on 'remote.config'
-  # upload_data = true
+ # . Enable this option if you want the output to be uploaded on remote host.
+ # . Notice that you must also configure uploader parameters on 'remote.config'
+ # upload_data = true
 
-  # . Optionally it is possible to specify a root folder if the uploader class supports it.
-  # upload_data_root = /remote-wps/default
+ # . Optionally it is possible to specify a root folder if the uploader class supports it.
+ # upload_data_root = /remote-wps/default
 
-  [Output2]
-  name = result2
-  type = application/x-netcdf
-  description = NetCDF Binary File
-  title = flexpart
-  filepath = %(output_dir)s/flexpart.nc
-  publish_as_layer = true
-  publish_default_style = raster
-  publish_target_workspace = it.geosolutions
-  publish_layer_name = flexpart
+ [Output2]
+ name = result2
+ type = application/x-netcdf
+ description = NetCDF Binary File
+ title = flexpart
+ filepath = %(output_dir)s/flexpart.nc
+ publish_as_layer = true
+ publish_default_style = raster
+ publish_target_workspace = it.geosolutions
+ publish_layer_name = flexpart
 
-  # . Enable this option in order to perform a backup of this output
-  # . before sending it to GeoServer.
-  # . WARNING: This option works only along with 'wps_execution_shared_dir'
-  # .          option on 'remote.config', and takes precedence on 'upload_data'
-  # backup_on_wps_execution_shared_dir = true
+ # . Enable this option in order to perform a backup of this output
+ # . before sending it to GeoServer.
+ # . WARNING: This option works only along with 'wps_execution_shared_dir'
+ # .          option on 'remote.config', and takes precedence on 'upload_data'
+ # backup_on_wps_execution_shared_dir = true
 
-  # . Enable this option if you want the output to be uploaded on remote host.
-  # . Notice that you must also configure uploader parameters on 'remote.config'
-  # upload_data = true
+ # . Enable this option if you want the output to be uploaded on remote host.
+ # . Notice that you must also configure uploader parameters on 'remote.config'
+ # upload_data = true
 
-  # . Optionally it is possible to specify a root folder if the uploader class supports it.
-  # upload_data_root = /remote-wps/default
+ # . Optionally it is possible to specify a root folder if the uploader class supports it.
+ # upload_data_root = /remote-wps/default
 
-  [Output3]
-  name = result3
-  type = application/owc
-  description = WPS OWC Json MapContext
-  layers_to_publish = result2
-  publish_as_layer = true
-  publish_layer_name = owc_json_ctx
-  publish_metadata = /share/xmpp_data/resource_dir/owc_json_ctx.json
+ [Output3]
+ name = result3
+ type = application/owc
+ description = WPS OWC Json MapContext
+ layers_to_publish = result2
+ publish_as_layer = true
+ publish_layer_name = owc_json_ctx
+ publish_metadata = /share/xmpp_data/resource_dir/owc_json_ctx.json
 
-  # ########################################### #
-  # Logging Options Declaration                 #
-  # ########################################### #
+ # ########################################### #
+ # Logging Options Declaration                 #
+ # ########################################### #
 
-  [Logging]
-  stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
-  stdout_action = [ignore,          progress,                                          log,              log,              abort,               abort]
+ [Logging]
+ stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
+ stdout_action = [ignore,          progress,                                          log,              log,              abort,               abort]
 ```
 
 The requisites for this configuration to work properly are:
@@ -519,116 +520,96 @@ The requisites for this configuration to work properly are:
 > 6.  Make sure the inputs have been configured correctly for the command line execution
 >
 >     ``` bash
->     [Input1]
->     class = param
->     name = interval
->     title = Elevation Interval
->     type = int
->     description = Elevation interval between contours.
->     min = 1
->     max = 1
->     default = 200
->
->     [Action1]
->     class = cmdline
->     input_ref = interval
->     alias = i
->     template = -name value
 >     ```
 >
->     The configuration above sets an input of type `int` (the expected value will be interpreted as text and declared as Literal to the WPS), which is mandatory (**min = 1**) and can have a single value (**max = 1**).
+> [Input1] class = param name = interval title = Elevation Interval type = int description = Elevation interval between contours. min = 1 max = 1 default = 200
 >
->     The `[Action1]` is connected to the input through the `input_ref` which is equal to the `[Input1].name`.
+> [Action1] class = cmdline input_ref = interval alias = i template = -name value
 >
->     In the example above the action simply gets the input value specified by the user and forward it to the command line.
->
->     The final result will be something lihe this:
->
->         $> /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py <input_value_here>
->
->     The `[Action1].template` property allows to specify the name of the option if required by the executable.
->
->     As an instance the following value for the `[Action1].template`:
->
->         alias = i
->         template = -name value
->
->     will result in something like this:
->
->         $> /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py -i <input_value>
->
->     There exists other types of input and actions.
->
->     As an instance it is possible to specify `constant` input types like the following one:
->
->         [Const1]
->         class = const
->         name = workdir
->         type = string
->         description = Remote process sandbox working directory
->         value = %(workdir)s
->
->         [Action2]
->         class = cmdline
->         input_ref = workdir
->         alias = w
->         template = -name value
->
->     The `[Const1].value` can be a constant value or a reference to the configuration file properties.
->
->     In the example above we are going to pass to the command line the full path of the process workind directory, which is a unique folder created at runtime where the RemoteWPS framework stores temporary and intermediate results of the process execution.
->
->     Enabling the constant input above, the resulting command line will be something like the following one:
->
->         $> /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py -i <input_value> -w /share/xmpp_data/output/<exec_id>
->
->     ::: note
->     ::: title
->     Note
->     :::
->
->     The **<exec_id>** is known at runtime only.
->     :::
+> > The configuration above sets an input of type `int` (the expected value will be interpreted as text and declared as Literal to the WPS), which is mandatory (**min = 1**) and can have a single value (**max = 1**).
+> >
+> > The `[Action1]` is connected to the input through the `input_ref` which is equal to the `[Input1].name`.
+> >
+> > In the example above the action simply gets the input value specified by the user and forward it to the command line.
+> >
+> > The final result will be something lihe this:
+> >
+> >     $> /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py <input_value_here>
+> >
+> > The `[Action1].template` property allows to specify the name of the option if required by the executable.
+> >
+> > As an instance the following value for the `[Action1].template`:
+> >
+> >     alias = i
+> >     template = -name value
+> >
+> > will result in something like this:
+> >
+> >     $> /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py -i <input_value>
+> >
+> > There exists other types of input and actions.
+> >
+> > As an instance it is possible to specify `constant` input types like the following one:
+> >
+> >     [Const1]
+> >     class = const
+> >     name = workdir
+> >     type = string
+> >     description = Remote process sandbox working directory
+> >     value = %(workdir)s
+> >
+> >     [Action2]
+> >     class = cmdline
+> >     input_ref = workdir
+> >     alias = w
+> >     template = -name value
+> >
+> > The `[Const1].value` can be a constant value or a reference to the configuration file properties.
+> >
+> > In the example above we are going to pass to the command line the full path of the process workind directory, which is a unique folder created at runtime where the RemoteWPS framework stores temporary and intermediate results of the process execution.
+> >
+> > Enabling the constant input above, the resulting command line will be something like the following one:
+> >
+> >     $> /work/RemoteWPS/xmpp_data/configs/myservice/code/test.py -i <input_value> -w /share/xmpp_data/output/<exec_id>
+> >
+> > ::: note
+> > ::: title
+> > Note
+> > :::
+> >
+> > The **<exec_id>** is known at runtime only.
+> > :::
 >
 > 7.  Make sure the outputs have been configured correctly for the command line execution
 >
 >     ``` bash
->     [Output1]
->     name = result1
->     type = application/zip
->     description = WPS Resource Binary File
->     title = SRTM
->     filepath = %(workdir)s/contour.zip
->     publish_as_layer = true
->     publish_default_style = polygon
->     publish_target_workspace = it.geosolutions
->     publish_layer_name = contour
 >     ```
 >
->     In the example above we declare to the WPS only **one** output of type `application/zip`.
+> [Output1] name = result1 type = application/zip description = WPS Resource Binary File title = SRTM filepath = %(workdir)s/contour.zip publish_as_layer = true publish_default_style = polygon publish_target_workspace = it.geosolutions publish_layer_name = contour
 >
->     In this case the RemoteWPS framework expects to find a `contour.zip` file at the end of the execution into the working directory (see above).
->
->     There are many kind of possible outputs which can be defined here. As an instance it is possible to define an output of type `string` which can read the outcome from a file and stream it out as plain text.
->
->     It is also possible to define several kind of binary outputs depending on the executable outcomes. For more details please refer to the Remote WPS Python framework specific documentation at the end of this section.
+> > In the example above we declare to the WPS only **one** output of type `application/zip`.
+> >
+> > In this case the RemoteWPS framework expects to find a `contour.zip` file at the end of the execution into the working directory (see above).
+> >
+> > There are many kind of possible outputs which can be defined here. As an instance it is possible to define an output of type `string` which can read the outcome from a file and stream it out as plain text.
+> >
+> > It is also possible to define several kind of binary outputs depending on the executable outcomes. For more details please refer to the Remote WPS Python framework specific documentation at the end of this section.
 >
 > 8.  Make sure the regular expressions of the "stdout_parser" are correct and valid accordingly to the output of the executable
 >
 >     ``` bash
->     [Logging]
->     stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
->     stdout_action = [ignore,          progress,                                          log,              log,              log,               abort]
 >     ```
 >
->     The example configuration above:
+> [Logging] stdout_parser = [.*[DEBUG](.*), .*[INFO] ProgressInfo:([-+]?[0-9]*.?[0-9]*)%, .*[(INFO)](.*), .*[(WARN)](.*), .*[(ERROR)](.*), .*[(CRITICAL)](.*)] stdout_action = [ignore, progress, log, log, log, abort]
 >
->     > -   Ignores all `STDOUT` debug logs received from `test.py`
->     > -   Translates **as** *progress info message* any number parsed by the regex from `STDOUT` and sends it to GeoServer WPS.
->     > -   Logs all `STDOUT` info, warn and error logs received from `test.py`
->     > -   Translates **as** *abort message* any keyword **CRITICAL** parsed by the regex from `STDOUT` and sends it to GeoServer WPS.
->
->     At least **progress** and **abort** messages are mandatory in order to take track of the process execution progress and fault state.
+> > The example configuration above:
+> >
+> > > -   Ignores all `STDOUT` debug logs received from `test.py`
+> > > -   Translates **as** *progress info message* any number parsed by the regex from `STDOUT` and sends it to GeoServer WPS.
+> > > -   Logs all `STDOUT` info, warn and error logs received from `test.py`
+> > > -   Translates **as** *abort message* any keyword **CRITICAL** parsed by the regex from `STDOUT` and sends it to GeoServer WPS.
+> >
+> > At least **progress** and **abort** messages are mandatory in order to take track of the process execution progress and fault state.
 
 ## A Running Example
 
@@ -808,7 +789,7 @@ The *Inputs Section* can contain three type of objects:
 
 # WARNING: the name must start with the keyword "result"
 
-[Output1]     
+[Output1]      
 name = result1
 type = string
 description = WPS Resource Plain Text
@@ -951,173 +932,40 @@ The examples above represents all the possible types of Outputs currently suppor
 >     > In order to activate this funcionality, update the GeoServer `remoteProcess.properties` on the `GEOSERVER_DATA_DIR` with a new option:
 >     >
 >     > ``` bash
->     > # full path to the template used to generate the OWS WMC Json output
->     >
->     > owc_wms_json_template = /tmp/resource_dir/wmc_template.json
 >     > ```
->     >
->     > *Sample* `wmc_template.json`
->     >
->     > ``` text
->     > {
->     >   "type": "FeatureCollection",
->     >   "id": "GeoServer OWC Map Context: version of 2015-07-14",
->     >   "geometry": {
->     >               "type":"Polygon",
->     >               "coordinates": ${renderingArea}
->     >     },
->     >     "features" : [
->     >             <#list featureList?keys as key>
->     >             {
->     >                 "type": "Feature",
->     >                 "id": "${featureList[key].name}",
->     >                 "geometry": 
->     >                 {
->     >                 "type" : "Polygon",
->     >                 "coordinates" : ${featureList[key].geometryCoords}
->     >             },
->     >             "properties": {
->     >                 <#if featureList[key].owcProperties != "">${featureList[key].owcProperties},</#if>
->     >                 "offerings" : [
->     >                     {
->     >                       "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wms",
->     >                       "operations" : [{
->     >                           "code" : "GetCapabilities",
->     >                           "method" : "GET",
->     >                           "type" : "application/xml",
->     >                           "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities",
->     >                           "request":{},
->     >                           "result":{}
->     >                         },{
->     >                           "code" : "GetMap",
->     >                           "method" : "GET",
->     >                           "type" : "image/png",
->     >                           "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=${featureList[key].srs}&BBOX=${featureList[key].bbox}&WIDTH=500&HEIGHT=500&LAYERS=${featureList[key].layers}&STYLES=${featureList[key].styles}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml",
->     >                           "request":{},
->     >                           "result":{}
->     >                         }],
->     >                       "contents" : []
->     >                     }
->     >                 <#if featureList[key].type == "VECTOR">
->     >                     ,{
->     >                       "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wfs",
->     >                       "operations" : [{
->     >                           "code" : "DescribeFeatureType",
->     >                           "method" : "GET",
->     >                           "type" : "application/xml",
->     >                           "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=${featureList[key].layers}",
->     >                           "request":{},
->     >                           "result":{}
->     >                         },{
->     >                           "code" : "GetFeature",
->     >                           "method" : "GET",
->     >                           "type" : "application/xml",
->     >                           "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=${featureList[key].layers}",
->     >                           "request":{},
->     >                           "result":{}
->     >                         }],
->     >                       "contents" : []
->     >                     }
->     >             <#elseif featureList[key].type == "RASTER">
->     >                     ,{
->     >                       "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wcs",
->     >                       "operations" : [{
->     >                           "code" : "DescribeCoverage",
->     >                           "method" : "GET",
->     >                           "type" : "application/xml",
->     >                           "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCapabilities&IDENTIFIER=${featureList[key].layers}",
->     >                           "request":{},
->     >                           "result":{}
->     >                         },{
->     >                           "code" : "GetCoverage",
->     >                           "method" : "GET",
->     >                           "type" : "image/tiff",
->     >                           "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCoverage&IDENTIFIER=${featureList[key].layers}&BOUNDINGBOX=${featureList[key].bbox}&FORMAT=GeoTIFF",
->     >                           "request":{},
->     >                           "result":{}
->     >                         }],
->     >                       "contents" : []
->     >                     }
->     >             </#if>
->     >             ]
->     >            }
->     >          }<#if key_has_next>,</#if>
->     >      </#list>
->     >      ]
->     >   , 
->     >
->     >   "properties" : {
->     >             ${owcProperties}
->     >       }      
->     >
->     > }
->     > ```
->     >
->     > *Sample* `owc_json_ctx.json`
->     >
->     > ``` text
->     > "lang" : "en",
->     > "title" : "Sample Title goes here",
->     > "subtitle" : "Sample sub-title goes here",
->     > "generator" : "Sample generator",
->     > "rights" : "Sample Legal Constraints and CopyRights (C)",
->     > "authors" : [{"name" : "Author1 Name"}, {"name" : "Author2 Name"}],
->     > "contributors" : [{"name" : "Contrib1 Name"}, {"name" : "Contrib2 Name"}],
->     > "categories" : [{
->     >         "term" : "wms",
->     >         "label" : "This file is compliant with version 1.0 of OGC Context"
->     >     },{
->     >         "term" : "maps",
->     >         "label" : "This file contains maps"
->     > }],
->     > "links" : [{
->     >         "rel" : "profile",
->     >         "href" : "http://www.opengis.net/spec/owc-atom/1.0/req/core",
->     >         "title" : "This file is compliant with version 1.0 of OGC Context"
->     >     },{
->     >         "rel" : "via",
->     >         "type" : "application/xml",
->     >         "href" : "http://www.opengis.uab.cat/wms/satcat/metadades/EPSG_23031/Cat_20110301.htm",
->     >         "title" : "HMTL metadata in Catalan"
->     >     }]
->     > ```
->     >
->     > *Sample* `result#.json`
->     >
->     > ``` text
->     > "title" : "Result 2",
->     > "updated" : "${lastUpdated}",
->     > "content" : "Sample Content Description for result 2 goes here",
->     > "authors" : [
->     >     {
->     >       "name" : "GeoServer Administrator",
->     >       "email" : "info@sample.author.com"
->     >     }
->     > ],
->     > "authors" : [{"name" : "Author2.1 Name"}, {"name" : "Author2.2 Name"}],
->     > "contributors" : [{"name" : "Contrib2.1 Name"}, {"name" : "Contrib2.2 Name"}],
->     > "categories" : [{"name" : "Category2.1 Name"}, {"name" : "Category2.2 Name"}],
->     > "links" : [
->     >     {
->     >      "rel" : "enclosure",
->     >      "type" : "image/png",
->     >      "title" : "WMS output for ${title}",
->     >      "href" : "${getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=${srs}&BBOX=${bbox}&WIDTH=500&HEIGHT=500&LAYERS=${layers}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml"
->     >     },
->     >     {
->     >      "rel" : "icon",
->     >      "type" : "image/png",
->     >      "title" : "Preview for ${title}",
->     >      "href" : "${getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=${srs}&BBOX=${bbox}&WIDTH=100&HEIGHT=100&LAYERS=${layers}&STYLES=${styles}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml"
->     >     },
->     >     {
->     >      "rel" : "via",
->     >      "type" : "application/vnd.ogc.wms_xml",
->     >      "title" : "Original GetCapabilities document",
->     >      "href" : "${getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities"
->     >     }
->     > ]
->     > ```
+>
+> \# full path to the template used to generate the OWS WMC Json output
+>
+> owc_wms_json_template = /tmp/resource_dir/wmc_template.json
+>
+> > *Sample* `wmc_template.json`
+> >
+> > ``` text
+> > ```
+>
+> {
+>
+> :   "type": "FeatureCollection", "id": "GeoServer OWC Map Context: version of 2015-07-14", "geometry": { "type":"Polygon", "coordinates": \${renderingArea} }, "features" : [ <#list featureList?keys as key> { "type": "Feature", "id": "\${featureList[key].name}", "geometry": { "type" : "Polygon", "coordinates" : \${featureList[key].geometryCoords} }, "properties": { <#if featureList[key].owcProperties != "">\${featureList[key].owcProperties},</#if> "offerings" : [ { "code" : "<http://www.opengis.net/spec/owc-atom/1.0/req/wms>", "operations" : [{ "code" : "GetCapabilities", "method" : "GET", "type" : "application/xml", "href" : "\${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities", "request":{}, "result":{} },{ "code" : "GetMap", "method" : "GET", "type" : "image/png", "href" : "\${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=\${featureList[key].srs}&BBOX=\${featureList[key].bbox}&WIDTH=500&HEIGHT=500&LAYERS=\${featureList[key].layers}&STYLES=\${featureList[key].styles}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml", "request":{}, "result":{} }], "contents" : [] } <#if featureList[key].type == "VECTOR"> ,{ "code" : "<http://www.opengis.net/spec/owc-atom/1.0/req/wfs>", "operations" : [{ "code" : "DescribeFeatureType", "method" : "GET", "type" : "application/xml", "href" : "\${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=\${featureList[key].layers}", "request":{}, "result":{} },{ "code" : "GetFeature", "method" : "GET", "type" : "application/xml", "href" : "\${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=\${featureList[key].layers}", "request":{}, "result":{} }], "contents" : [] } <#elseif featureList[key].type == "RASTER"> ,{ "code" : "<http://www.opengis.net/spec/owc-atom/1.0/req/wcs>", "operations" : [{ "code" : "DescribeCoverage", "method" : "GET", "type" : "application/xml", "href" : "\${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCapabilities&IDENTIFIER=\${featureList[key].layers}", "request":{}, "result":{} },{ "code" : "GetCoverage", "method" : "GET", "type" : "image/tiff", "href" : "\${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCoverage&IDENTIFIER=\${featureList[key].layers}&BOUNDINGBOX=\${featureList[key].bbox}&FORMAT=GeoTIFF", "request":{}, "result":{} }], "contents" : [] } </#if> ] } }<#if key_has_next>,</#if> </#list> ] ,
+>
+>     "properties" : {
+>
+>     :   \${owcProperties} }
+>
+> }
+>
+> > *Sample* `owc_json_ctx.json`
+> >
+> > ``` text
+> > ```
+>
+> "lang" : "en", "title" : "Sample Title goes here", "subtitle" : "Sample sub-title goes here", "generator" : "Sample generator", "rights" : "Sample Legal Constraints and CopyRights (C)", "authors" : [{"name" : "Author1 Name"}, {"name" : "Author2 Name"}], "contributors" : [{"name" : "Contrib1 Name"}, {"name" : "Contrib2 Name"}], "categories" : [{ "term" : "wms", "label" : "This file is compliant with version 1.0 of OGC Context" },{ "term" : "maps", "label" : "This file contains maps" }], "links" : [{ "rel" : "profile", "href" : "<http://www.opengis.net/spec/owc-atom/1.0/req/core>", "title" : "This file is compliant with version 1.0 of OGC Context" },{ "rel" : "via", "type" : "application/xml", "href" : "<http://www.opengis.uab.cat/wms/satcat/metadades/EPSG_23031/Cat_20110301.htm>", "title" : "HMTL metadata in Catalan" }]
+>
+> > *Sample* `result#.json`
+> >
+> > ``` text
+> > ```
+>
+> "title" : "Result 2", "updated" : "\${lastUpdated}", "content" : "Sample Content Description for result 2 goes here", "authors" : [ { "name" : "GeoServer Administrator", "email" : "<info@sample.author.com>" } ], "authors" : [{"name" : "Author2.1 Name"}, {"name" : "Author2.2 Name"}], "contributors" : [{"name" : "Contrib2.1 Name"}, {"name" : "Contrib2.2 Name"}], "categories" : [{"name" : "Category2.1 Name"}, {"name" : "Category2.2 Name"}], "links" : [ { "rel" : "enclosure", "type" : "image/png", "title" : "WMS output for \${title}", "href" : "\${getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=\${srs}&BBOX=\${bbox}&WIDTH=500&HEIGHT=500&LAYERS=\${layers}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml" }, { "rel" : "icon", "type" : "image/png", "title" : "Preview for \${title}", "href" : "\${getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=\${srs}&BBOX=\${bbox}&WIDTH=100&HEIGHT=100&LAYERS=\${layers}&STYLES=\${styles}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml" }, { "rel" : "via", "type" : "application/vnd.ogc.wms_xml", "title" : "Original GetCapabilities document", "href" : "\${getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetCapabilities" } ]
 
 **Other options for the Outputs**
 
@@ -1160,9 +1008,10 @@ stdout_action = [ignore,          progress,                                     
     > As an instance
     >
     > ``` text
-    > .*\[DEBUG\](.*)
     > ```
-    >
+
+    .*[DEBUG](.*)
+
     > Matches all the messages containing the keyword `[DEBUG]` and forwards to the corresponding **stdout_action** (*see below*) the content of the first matching group `(.*)`
     >
     > In this case everything after `[DEBUG]` is forwarded to the action.
@@ -1170,9 +1019,10 @@ stdout_action = [ignore,          progress,                                     
     > Another example
     >
     > ``` text
-    > .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%
     > ```
-    >
+
+    .*[INFO] ProgressInfo:([-+]?[0-9]*.?[0-9]*)%
+
     > Matches all the messages containing the keyword `[INFO] ProgressInfo:<any_number>%` and forwards to the corresponding **stdout_action** (*see below*) the content of the first matching group `([-+]?[0-9]*\.?[0-9]*)`
     >
     > In this case the expression extracts a float number form the text along with the sign `[-+]`

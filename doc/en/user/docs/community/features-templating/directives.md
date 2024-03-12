@@ -12,75 +12,31 @@ The following constitutes a summary of all the template directives and it is mea
 
 The following are the directives available in JSON based templates.
 
-**Usage**
-
-:   **Syntax**
-
-    **Description**
-
-property interpolation
-
-:   \${property}
-
-    specify it as an attribute value (`"json_attribute":"${property}"`)
-
-cql evaluation
-
-:   \$\${cql}
-
-    specify it as an element value (`"json_attribute":"$${cql}"`)
-
-setting the evaluation context for child attributes.
-
-:   \${source}.
-
-    specify it as the first nested object in arrays (`{"$source":"property"}`) or as an attribute in objects (`"$source":"property"`)
-
-filter the array, object, attribute
-
-:   \$filter
-
-    specify it inside the first nested object in arrays (`{"$filter":"condition"}`) or as an attribute in objects (`"$filter":"condition"`) or in an attribute next to the attribute value separated by a `,` (`"attribute":"$filter{condition}, ${property}"`)
-
-defines options to customize the output outside of a feature scope
-
-:   \$options
-
-    specify it at the top of the JSON template as a JSON object (GeoJSON options: `"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: `"$options":{"@context": "the context json", "encode_as_string": true, "@type":"schema:SpecialAnnouncement", "collection_name":"customCollectionName"}`).
-
-allows including a template into another
-
-:   \$include, \$includeFlat
-
-    specify the `$include` option as an attribute value (`"attribute":"$include{subProperty.json}"`) and the `$includeFlat` as an attribute name with the included template path as a value (`"$includeFlat":"included.json"`)
-
-allows a template to extend another template
-
-:   \$merge
-
-    specify the `$merge` directive as an attribute name containing the path to the extended template (:code: ``"\$merged":"base_template.json"``).
-
-allows null values to be encoded. default is not encoded.
-
-:   \${property}! or \$\${expression}!
-
-    ! at the end of a property interpolation or cql directive (`"attribute":"${property}!"` or `"attribute":"$${expression}!"`).
+| **Usage**                                                          | **Syntax**                          | **Description**                                                                                                                                                                                                                                                                                              |
+|--------------------------------------------------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| property interpolation                                             | `${property}`                       | specify it as an attribute value (`"json_attribute":"${property}"`)                                                                                                                                                                                                                                          |
+| cql evaluation                                                     | `$${cql}`                           | specify it as an element value (`"json_attribute":"$${cql}"`)                                                                                                                                                                                                                                                |
+| setting the evaluation context for child attributes.               | `${source}.`                        | specify it as the first nested object in arrays (`{"$source":"property"}`) or as an attribute in objects (`"$source":"property"`)                                                                                                                                                                            |
+| filter the array, object, attribute                                | `$filter`                           | specify it inside the first nested object in arrays (`{"$filter":"condition"}`) or as an attribute in objects (`"$filter":"condition"`) or in an attribute next to the attribute value separated by a `,` (`"attribute":"$filter{condition}, ${property}"`)                                                  |
+| defines options to customize the output outside of a feature scope | `$options`                          | specify it at the top of the JSON template as a JSON object (GeoJSON options: `"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: `"$options":{"@context": "the context json", "encode_as_string": true, "@type":"schema:SpecialAnnouncement", "collection_name":"customCollectionName"}`). |
+| allows including a template into another                           | `$include`, `$includeFlat`          | specify the `$include` option as an attribute value (`"attribute":"$include{subProperty.json}"`) and the `$includeFlat` as an attribute name with the included template path as a value (`"$includeFlat":"included.json"`)                                                                                   |
+| allows a template to extend another template                       | `$merge`                            | specify the `$merge` directive as an attribute name containing the path to the extended template (:code: ``"\$merged":"base_template.json"``).                                                                                                                                                 |
+| allows null values to be encoded. default is not encoded.          | `${property}!` or `$${expression}!` | ! at the end of a property interpolation or cql directive (`"attribute":"${property}!"` or `"attribute":"$${expression}!"`).                                                                                                                                                                                 |
 
 ### XML based templates
 
 The following are the directives available in XML based templates.
 
-|                                                                                                 |                            |                                                                                                                                                                                                                                                                                                                          |
-|-------------------------------------------------------------------------------------------------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Usage**                                                                                       | **Syntax**                 | **Description**                                                                                                                                                                                                                                                                                                          |
-| property interpolation                                                                          | \${property}               | specify it either as an element value (`<element>${property}</element>`) or as an xml attribute value (`<element attribute:"${property}"/>`)                                                                                                                                                                             |
-| cql evaluation                                                                                  | \$\${cql}                  | specify them either as an element value (`<element>$${cql}</element>`) or as an xml attribute value (`<element attribute:"$${cql}"/>`)                                                                                                                                                                                   |
-| setting the evaluation context for property interpolation and cql evaluation in child elements. | gft:source                 | specify it as an xml attribute (`<element gft:source:"property">`)                                                                                                                                                                                                                                                       |
-| filter the element to which is applied based on the defined condition                           | gft:filter                 | specify it as an XML attribute on the element to be filtered (`<element gft:filter:"condition">`)                                                                                                                                                                                                                        |
-| marks the beginning of an XML template.                                                         | gft:Template               | It has to be the root element of an XML template (`<gft:Template> Template content</gft:Template>`)                                                                                                                                                                                                                      |
-| defines options to customize the output outside of a feature scope                              | gft:Options                | specify it as an element at the beginning of the xml document after the `<gft:Template>` one (`<gft:Options></gft:Options>`). GML options: `<gtf:Namespaces>`,`<gtf:SchemaLocation>`. HTML options: `<script>`, :code: ``<script type="application/ld+json"/>``, `<style>`, :code: ``<link>``. |
-| allows including a template into another                                                        | \$include, gft:includeFlat | specify the `$include` option as an element value (`<element>$include{included.xml}</element>`) and the `gft:includeFlat` as an element having the included template as text content (`<gft:includeFlat>included.xml</gft:includeFlat>`)                                                                                 |
-| allows null values to be encoded. default is not encoded.                                       | \${property}!              | specify it either as an element value (`<element>${property}!</element>`) or as an xml attribute value (`<element attribute:"${property}!"/>`)                                                                                                                                                                           |
+| **Usage**                                                                                       | **Syntax**                    | **Description**                                                                                                                                                                                                                                                               |
+|-------------------------------------------------------------------------------------------------|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| property interpolation                                                                          | `${property}`                 | specify it either as an element value (`<element>${property}</element>`) or as an xml attribute value (`<element attribute:"${property}"/>`)                                                                                                                                  |
+| cql evaluation                                                                                  | `$${cql}`                     | specify them either as an element value (`<element>$${cql}</element>`) or as an xml attribute value (`<element attribute:"$${cql}"/>`)                                                                                                                                        |
+| setting the evaluation context for property interpolation and cql evaluation in child elements. | `gft:source`                  | specify it as an xml attribute (`<element gft:source:"property">`)                                                                                                                                                                                                            |
+| filter the element to which is applied based on the defined condition                           | `gft:filter`                  | specify it as an XML attribute on the element to be filtered (`<element gft:filter:"condition">`)                                                                                                                                                                             |
+| marks the beginning of an XML template.                                                         | `gft:Template`                | It has to be the root element of an XML template (`<gft:Template> Template content</gft:Template>`)                                                                                                                                                                           |
+| defines options to customize the output outside of a feature scope                              | `gft:Options`                 | specify it as an element at the beginning of the xml document after the `<gft:Template>` one (`<gft:Options></gft:Options>`). GML options: `<gtf:Namespaces>`, `<gtf:SchemaLocation>`. HTML options: `<script>`, `<script type="application/ld+json"/>`, `<style>`, `<link>`. |
+| allows including a template into another                                                        | `$include`, `gft:includeFlat` | specify the `$include` option as an element value (`<element>$include{included.xml}</element>`) and the `gft:includeFlat` as an element having the included template as text content (`<gft:includeFlat>included.xml</gft:includeFlat>`)                                      |
+| allows null values to be encoded. default is not encoded.                                       | `${property}!`                | specify it either as an element value (`<element>${property}!</element>`) or as an xml attribute value (`<element attribute:"${property}!"/>`)                                                                                                                                |
 
 ## A step by step introduction to features-templating syntax
 
@@ -89,7 +45,7 @@ This introduction is meant to illustrate the different directives that can be us
 -   A `@context` needs to be specified (see the `options` section below).
 -   The standard mandates that attributes' values are all strings.
 
-### \${property} and \$\${cql} directive (Simple Feature example)
+### `${property}` and `$${cql}` directive (Simple Feature example)
 
 #### GeoJSON
 
@@ -847,15 +803,8 @@ GML output has two `options`: Namespaces and SchemaLocation, that define the nam
 HTML templates can use several `options`:
 
 -   `<script>` allows defining whatever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
-
--   
-
-    code
-
-    :   ``<script type="application/ld+json"/>`` allows to inject the JSON-LD representation of the features being templated in the ``<head>``. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error message.
-
+-   `<script type="application/ld+json"/>` allows to inject the JSON-LD representation of the features being templated in the ``<head>``. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error message.
 -   `<style>` allows defining css content.
-
 -   `<link>` allows linking to external resources.
 
 The content of `<script>` and `<style>` needs to be provided as `<![CDATA[`.
@@ -1023,7 +972,7 @@ Regarding the `$includeFlat` option is worth mentioning that in a JSON context:
 
 The following JSON snippet shows the four possible syntax options for template inclusion:
 
-``` {.json linenos=""}
+``` json
 {
    "aProperty": "$include{subProperty.json}", 
    "$includeFlat": "propsInAnObject.json", 
@@ -1046,7 +995,7 @@ In case an includeFlat directive is specified and it's attribute value is a prop
 
 including json:
 
-``` {.json linenos=""}
+``` json
 {
    "property":"${property}", 
    "bProperty":"15",
@@ -1054,9 +1003,9 @@ including json:
 }
 ```
 
-\${property} value:
+`${property}` value:
 
-``` {.json linenos=""}
+``` json
 {
    "aProperty": "10", 
    "bProperty": "20"
@@ -1065,7 +1014,7 @@ including json:
 
 result:
 
-``` {.json linenos=""}
+``` json
 {
    "aProperty":"10", 
    "bProperty":"20",
@@ -1077,7 +1026,7 @@ The `${property}` directive evaluates to a JSON that will be merged with the inc
 
 In case an includeFlat directive is specified inside a JSON Array with a Feature property and the property evaluate to a JSON Array, the container array will be stripped and its values included directly inside the container Array:
 
-``` {.json linenos=""}
+``` json
 [
    "value1",
    "value2",
@@ -1086,9 +1035,9 @@ In case an includeFlat directive is specified inside a JSON Array with a Feature
 ]
 ```
 
-\${property} value:
+`${property}`value:
 
-``` {.json linenos=""}
+``` json
 [
    "value4", 
    "value5"
@@ -1097,7 +1046,7 @@ In case an includeFlat directive is specified inside a JSON Array with a Feature
 
 result:
 
-``` {.json linenos=""}
+``` json
 [
    "value1",
    "value2",
@@ -1199,7 +1148,7 @@ It is also possible to pick a JSON attribute and use the `jsonPointer` function 
 
 Here is an example of using JSON properties:
 
-``` {.json linenos=""}
+``` json
 {
    "assets": "${assets}",
    "links": [
@@ -1226,7 +1175,7 @@ Along JSON properties, it's not rare to find support for array based attributes 
 
 The array properties can be used as-is, and they will be expanded into a JSON array. Let's assume the `keywords` database column contains a list of strings, then the following template:
 
-``` {.json linenos=""}
+``` json
 {
    "keywords": "${keywords}"
 }
@@ -1234,7 +1183,7 @@ The array properties can be used as-is, and they will be expanded into a JSON ar
 
 May expand into:
 
-``` {.json linenos=""}
+``` json
 {
    "keywords": ["features", "templating"]
 }
@@ -1242,7 +1191,7 @@ May expand into:
 
 It is also possible to use an array as the source of iteration, referencing the current array item using the `${.}` XPath. For example:
 
-``` {.json linenos=""}
+``` json
 {
    "metadata": [
       {
@@ -1258,7 +1207,7 @@ It is also possible to use an array as the source of iteration, referencing the 
 
 The above may expand into:
 
-``` {.json linenos=""}
+``` json
 {
    "metadata": [
       {
@@ -1275,7 +1224,7 @@ The above may expand into:
 
 In case a specific item of an array needs to be retrieved, the `item` function can be used, for example, the following template extracts the second item in an array (would fail if not present):
 
-``` {.json linenos=""}
+``` json
 {
    "second": "$${item(keywords, 1)}"
 }
@@ -1334,7 +1283,7 @@ The following is a GeoJSON template that directly reference table names and colu
 As it is possible to see this template has some differences comparing to the one seen above:
 
 -   Property interpolation (`${property}`) and cql evaluation (`$${cql}`) directives are referencing the column name of the attribute that is meant to be included in the final output. The names match the ones of the columns and no namespaces prefix is being used.
--   Inside the \$\${cql} directive instead of using an `xpath` function the `propertyPath` function is being use. It must be used when the property references domain names inside a `$${cql}` directive. Paths in this case are no more separated by a `/` but by a `.` dot.
+-   Inside the `$${cql}` directive instead of using an `xpath` function the `propertyPath` function is being use. It must be used when the property references domain names inside a `$${cql}` directive. Paths in this case are no more separated by a `/` but by a `.` dot.
 -   The `$source` directive references the table names.
 -   When a `column/property` in a `table/source` is referenced from the context of the upper `table/source`, as in all the filters in the template, the table name needs to be prefixed with a `->` symbol, and column name can come next separated by a `.` dot. Putting it in another way: the `->` signals that the next path part is a table joined to the last source defined.
 
@@ -1349,17 +1298,13 @@ This functionality is particularly useful when defining templates on top of Smar
 When a property interpolation targets an attribute with multiple cardinality in a Complex Feature, feature templating will output the result as an array. This default behaviour can be controlled and modified with the usage of a set of CQL functions that are available in the plug-in, which allow to control how the list should be encoded in the template.
 
 -   `aggregate`: takes as arguments an expression (a property name or a function) that returns a list of values and a literal with the aggregation type eg. `aggregate(my.property.name,'MIN')`. The supported aggregation type are the following:
-
-    > -   `MIN` will return the minimum value from a list of numeric values.
-    > -   `MAX` will return the max value from a list of numeric values.
-    > -   `AVG` will return the average value from a list of numeric values.
-    > -   `UNIQUE` will remove duplicates values from a list of values.
-    > -   `JOIN` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: `aggregate(my.property.name,'JOIN(,)')` .
-
+    -   `MIN` will return the minimum value from a list of numeric values.
+    -   `MAX` will return the max value from a list of numeric values.
+    -   `AVG` will return the average value from a list of numeric values.
+    -   `UNIQUE` will remove duplicates values from a list of values.
+    -   `JOIN` will concatenate the list of values in a single string. It accepts a parameter to specify the separator that by default is blank space: `aggregate(my.property.name,'JOIN(,)')` .
 -   `stream`: takes an undefined number of expressions as parameters and chain them so that each expression evaluate on top of the output of the previous expression: eg. `stream(aPropertyName,aFunction,anotherPropertyName)` while evaluate the `aFunction` on the output of `aPropertyName` evaluation and finally `anotherPropertyName` will evaluate on top of the result of `aFunction`.
-
 -   `filter`: takes a literal cql filter as a parameter and evaluates it. Every string literal value in the cql filter must be between double quotes escaped: eg. `filter('aProperty = "someValue"')`.
-
 -   `sort`: sort the list of values in ascending or descending order. It accepts as a parameter the sort order (`ASC`,`DESC`) and optionally a property name to target the property on which the sorting should be executed. If no property name is defined the sorting will be applied on the current node on which the function evaluates: `sort('DESC',nested.property)`, `sort('ASC')`.
 
 The above functions can be combined allowing fine grained control over the encoding of list values in a template. Assuming to write a template for the [meteo stations use case](#source-and-filter-complex-feature-example), these are some example of the usage of the functions (simplified property access is used in the example below):

@@ -110,29 +110,10 @@ workspaceAny
 
 Query all adminrules or add a new adminrule.
 
-Method
-
-:   Action
-
-    Supported parameters
-
-    Response
-
-GET
-
-:   List all adminrules, with respect to any added filters
-
-    page, entries, userName, userAny, roleName, roleAny, workspace, workspaceAny
-
-    200 OK. List of adminrules in XML.
-
-POST
-
-:   Add a new adminrule
-
-    None
-
-    201 Inserted. Created `ID` header.
+| Method | Action                                                 | Supported parameters                                                         | Response                           |
+|--------|--------------------------------------------------------|------------------------------------------------------------------------------|------------------------------------|
+| GET    | List all adminrules, with respect to any added filters | page, entries, userName, userAny, roleName, roleAny, workspace, workspaceAny | 200 OK. List of adminrules in XML. |
+| POST   | Add a new adminrule                                    | None                                                                         | 201 Inserted. Created `ID` header. |
 
 ### `/geofence/rest/adminrules/count`
 

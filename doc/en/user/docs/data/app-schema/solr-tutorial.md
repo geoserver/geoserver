@@ -179,7 +179,7 @@ To link a solr core field as index for an AttributeMapping you only need to add 
 </AttributeMapping>
 ```
 
--   \${SOLR_FIELD_NAME} : The field name from solr core to use in index layer.
+-   `${SOLR_FIELD_NAME}` : The field name from solr core to use in index layer.
 
 For example if you need to use solr fields: station_id and station_name; you will write on mapping:
 

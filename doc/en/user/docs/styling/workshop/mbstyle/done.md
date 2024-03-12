@@ -79,8 +79,9 @@ Answer for `Challenge Classification <mbstyle.line.q1>`{.interpreted-text role="
          }
        }
      ]
-    }
     ```
+
+    }
 
 ### One Rule Classification {: #mbstyle.line.a2 }
 
@@ -101,55 +102,17 @@ Answer for `Challenge Label Shields <mbstyle.line.q3>`{.interpreted-text role="r
 2.  The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding which symbol layout parameters give the desired behavior, mainly **icon-text-fit** but also the various placement and overlap parameters to allow the text to be drawn atop the labels ( see [symbol layer](https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-symbol)).
 
     ``` json
-    {
-      "version": 8,
-      "name": "line_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites",
-      "layers": [
-        {
-          "id": "line_casing",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "#000000",
-            "line-width": 3,
-          }
-        },
-        {
-          "id": "line_inner",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "#D3D3D3",
-            "line-width": 2,
-          }
-        },
-        {
-          "id": "label",
-          "source-layer": "ne:roads",
-          "type": "symbol",
-          "layout": {
-            "icon-image": "white_square16",
-            "icon-text-fit": "width",
-            "icon-text-fit-padding": [2, 2, 2, 2],
-            "text-field": "{name}",
-            "text-font": ["Ariel"],
-            "text-font-size": 10,
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "icon-ignore-placement": true,
-            "icon-allow-overlap": true,
-            "symbol-placement": "line",
-            "symbol-spacing": 0
-
-          }
-          "paint": {
-            "text-color": "black"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>", "layers": [ { "id": "line_casing", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "#000000", "line-width": 3, } }, { "id": "line_inner", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "#D3D3D3", "line-width": 2, } }, { "id": "label", "source-layer": "ne:roads", "type": "symbol", "layout": { "icon-image": "white_square16", "icon-text-fit": "width", "icon-text-fit-padding": [2, 2, 2, 2], "text-field": "{name}", "text-font": ["Ariel"], "text-font-size": 10, "text-ignore-placement": true, "text-allow-overlap": true, "icon-ignore-placement": true, "icon-allow-overlap": true, "symbol-placement": "line", "symbol-spacing": 0
+
+        > } "paint": { "text-color": "black" } }
+
+        ]
+
+    }
 
 ### Interval {: #mbstyle.polygon.a2 }
 
@@ -185,8 +148,9 @@ Answer for `Explore Interval <mbstyle.polygon.q2>`{.interpreted-text role="ref"}
          }
        }
      ]
-    }
     ```
+
+    }
 
 ### Halo {: #mbstyle.polygon.a4 }
 
@@ -201,39 +165,17 @@ Answer for `Challenge Halo <mbstyle.polygon.q4>`{.interpreted-text role="ref"}:
     Here is an example:
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "text-anchor": "center"
-            "text-max-width": 14,
-            "text-font": ["Arial"]
-          },
-          "paint": {
-            "text-color": "white",
-            "text-halo-color": "black",
-            "text-halo-width": 1
-
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "gray" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}", "text-anchor": "center" "text-max-width": 14, "text-font": ["Arial"] }, "paint": { "text-color": "white", "text-halo-color": "black", "text-halo-width": 1
+
+        > #### }
+
+        ]
+
+    }
 
 ### Theming using Multiple Attributes {: #mbstyle.polygon.a5 }
 
@@ -248,52 +190,13 @@ Answer for `Challenge Theming using Multiple Attributes <mbstyle.polygon.q5>`{.i
     This should be a cut and paste using the `categorical` example, and `interval` examples already provided.
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites",
-      "layers": [
-        {
-          "id": "polygon",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": {
-              "property": "mapcolor9",
-              "type": "categorical",
-              "stops": [
-                [1, "#8dd3c7"],
-                [2, "#ffffb3"],
-                [3, "#bebada"],
-                [4, "#fb8072"],
-                [5, "#80b1d3"],
-                [6, "#fdb462"],
-                [7, "#b3de69"],
-                [8, "#fccde5"],
-                [9, "#d9d9d9"]
-              ]
-            },
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-pattern": {
-              "property": "datarank",
-              "type": "interval",
-              "stops": [
-                [4, "grey_diag8"],
-                [6, "grey_diag16"]
-              ]
-            }
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>", "layers": [ { "id": "polygon", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": { "property": "mapcolor9", "type": "categorical", "stops": [ [1, "#8dd3c7"], [2, "#ffffb3"], [3, "#bebada"], [4, "#fb8072"], [5, "#80b1d3"], [6, "#fdb462"], [7, "#b3de69"], [8, "#fccde5"], [9, "#d9d9d9"] ] }, "fill-outline-color": "gray" } }, { "id": "polygon", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-pattern": { "property": "datarank", "type": "interval", "stops": [ [4, "grey_diag8"], [6, "grey_diag16"] ] } } } ]
+
+    }
 
 ### Use of Z-Index {: #mbstyle.polygon.a6 }
 
@@ -308,50 +211,13 @@ Answer for `Challenge Use of Z-Index <mbstyle.polygon.q6>`{.interpreted-text rol
     This is much easier when using MBStyle, where z-order is controlled by layer.
 
     ``` json
-    {
-       "version": 8,
-       "name": "polygon_example",
-       "sprite": "http://localhost:8080/geoserver/styles/sprites",
-       "layers": [
-         {
-           "id": "polygon_fill",
-           "source-layer": "ne:states_provinces_shp",
-           "type": "fill",
-           "paint": {
-             "fill-color": "lightgrey",
-           }
-         },
-         {
-           "id": "polygon_pattern",
-           "source-layer": "ne:states_provinces_shp",
-           "type": "fill",
-           "paint": {
-             "fill-pattern": "grey_diag16"
-           }
-         }
-         {
-           "id": "polygon_casing",
-           "source-layer": "ne:states_provinces_shp",
-           "type": "line",
-           "paint": {
-             "line-color": "lightgrey",
-             "line-width": 6
-           }
-         },
-         {
-           "id": "polygon_outline",
-           "source-layer": "ne:states_provinces_shp",
-           "type": "line",
-           "paint": {
-             "line-color": "black",
-             "line-width": 1.5
-           }
-         }
-       ]
-     }
     ```
 
-    The structure of the legend graphic provides an indication on what is going on.
+> {
+>
+> :   "version": 8, "name": "polygon_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "lightgrey", } }, { "id": "polygon_pattern", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-pattern": "grey_diag16" } } { "id": "polygon_casing", "source-layer": "ne:states_provinces_shp", "type": "line", "paint": { "line-color": "lightgrey", "line-width": 6 } }, { "id": "polygon_outline", "source-layer": "ne:states_provinces_shp", "type": "line", "paint": { "line-color": "black", "line-width": 1.5 } } ] }
+>
+>     The structure of the legend graphic provides an indication on what is going on.
 
 ### Geometry Location {: #mbstyle.point.a1 }
 
@@ -377,29 +243,13 @@ Answer for `Explore Dynamic Symbolization <mbstyle.point.q2>`{.interpreted-text 
     This is accomplished by using a function for the value of `icon-image`:
 
     > ``` json
-    > {
-    >   "version": 8,
-    >   "name": "point_example",
-    >   "sprite": "http://localhost:8080/geoserver/styles/sprites",
-    >   "layers": [
-    >     {
-    >       "id": "point_capital",
-    >       "type": "symbol",
-    >       "source-layer": "ne:populated_places",
-    >       "layout": {
-    >         "icon-image": {
-    >           "type": "categorical",
-    >           "property": "FEATURECLA",
-    >           "default": "grey_circle",
-    >           "stops": [
-    >             ["Admin-0 capital", "star"]
-    >           ]
-    >         }
-    >       }
-    >     }
-    >   ]
-    > }
     > ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>", "layers": [ { "id": "point_capital", "type": "symbol", "source-layer": "ne:populated_places", "layout": { "icon-image": { "type": "categorical", "property": "FEATURECLA", "default": "grey_circle", "stops": [ ["Admin-0 capital", "star"] ] } } } ]
+
+    }
 
 2.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 

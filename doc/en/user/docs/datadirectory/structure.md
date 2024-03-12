@@ -18,29 +18,13 @@ The directories that do contain user-modifiable content are:
 
 The top-level XML files contain information about the services and various global options for the server instance.
 
-File
-
-:   Description
-
-**`global.xml`**
-
-:   Contains settings common to all services, such as contact information, JAI settings, character sets and verbosity.
-
-**`logging.xml`**
-
-:   Specifies logging parameters, such as logging level, logfile location, and whether to log to stdout.
-
-**`wcs.xml`**
-
-:   Contains the service metadata and various settings for the WCS service.
-
-**`wfs.xml`**
-
-:   Contains the service metadata and various settings for the WFS service.
-
-**`wms.xml`**
-
-:   Contains the service metadata and various settings for the WMS service.
+| File                | Description                                                                                                        |
+|---------------------|--------------------------------------------------------------------------------------------------------------------|
+| **`global.xml`**  | Contains settings common to all services, such as contact information, JAI settings, character sets and verbosity. |
+| **`logging.xml`** | Specifies logging parameters, such as logging level, logfile location, and whether to log to stdout.               |
+| **`wcs.xml`**     | Contains the service metadata and various settings for the WCS service.                                            |
+| **`wfs.xml`**     | Contains the service metadata and various settings for the WFS service.                                            |
+| **`wms.xml`**     | Contains the service metadata and various settings for the WMS service.                                            |
 
 ## `workspaces`
 

@@ -4,59 +4,16 @@ The following is a list of all the attributes of a request that are captured by 
 
 ## General
 
-Attribute
-
-:   Description
-
-    Type
-
-ID
-
-:   Numeric identifier of the request. Every request is assigned an identifier upon its creation.
-
-    Numeric
-
-Status
-
-:   Status of the request. See [notes](reference.md#status) below.
-
-    String
-
-Category
-
-:   The type of request being made, for example an OGC service request, a REST call, etc\... See [notes](reference.md#category) below.
-
-    String
-
-Start time
-
-:   The time of the start of the request.
-
-    Timestamp
-
-End time
-
-:   The time of the completion of the request.
-
-    Timestamp
-
-Total time
-
-:   The total time spent handling the request, measured in milliseconds, equal to the end time - start time.
-
-    Numeric
-
-Error message
-
-:   The exception message if the request failed or resulted in an error.
-
-    String
-
-Error
-
-:   The raw exception if the message failed or resulted in an error.
-
-    Text blob
+| Attribute     | Description                                                                                                                         | Type      |
+|---------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| ID            | Numeric identifier of the request. Every request is assigned an identifier upon its creation.                                       | Numeric   |
+| Status        | Status of the request. See [notes](reference.md#status) below.                                                                     | String    |
+| Category      | The type of request being made, for example an OGC service request, a REST call, etc\... See [notes](reference.md#category) below. | String    |
+| Start time    | The time of the start of the request.                                                                                               | Timestamp |
+| End time      | The time of the completion of the request.                                                                                          | Timestamp |
+| Total time    | The total time spent handling the request, measured in milliseconds, equal to the end time - start time.                            | Numeric   |
+| Error message | The exception message if the request failed or resulted in an error.                                                                | String    |
+| Error         | The raw exception if the message failed or resulted in an error.                                                                    | Text blob |
 
 ### Status
 
@@ -104,59 +61,16 @@ The following attributes are all HTTP related.
 
 The following attributes are OGC service specific.
 
-Attribute
-
-:   Description
-
-    Type
-
-Service
-
-:   The OGC service identifier, for example: "WMS", "WFS", etc\...
-
-    String
-
-Operation
-
-:   The OGC operation name, for example: "GetMap", "GetFeature", etc\...
-
-    String
-
-Sub operation
-
-:   The ogc sub operation (if it applies). For instance when the operation is a WFS Transaction the sub operation may be one of "Insert", "Update", etc\...
-
-    String
-
-OWS/OGC Version
-
-:   The OGC service version, for example with WFS the version may be "1.0.0", "1.1.0", etc\...
-
-    String
-
-Resources
-
-:   Names of resources (layers, processes, etc\...) specified as part of the request.
-
-    List of String
-
-Resources processing times in milliseconds.
-
-:   Rendering times for resources. Rendering is performed by two concurrent threads, one reading and preprocessing data and styles towards a Java2D compatible format, the other painting the results of the first on the canvas. When the first thread starts reading the next layer, the second thread is likely still painting features from the layer before it, thus, times in this list are overlapping with each other, and the sum will be greater than the actual wall rendering time.
-
-    List of Numeric
-
-Labels Processing Time
-
-:   Processing time in milliseconds for the labels of all resources listed.
-
-    Numeric
-
-Bounding box
-
-:   The bounding box specified as part of the request. In some cases this is not possible to obtain this reliable, an example being a complex WFS query with a nested "BBOX" filter.
-
-    List of Numeric
+| Attribute                                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Type            |
+|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| Service                                     | The OGC service identifier, for example: "WMS", "WFS", etc\...                                                                                                                                                                                                                                                                                                                                                                                                                          | String          |
+| Operation                                   | The OGC operation name, for example: "GetMap", "GetFeature", etc\...                                                                                                                                                                                                                                                                                                                                                                                                                    | String          |
+| Sub operation                               | The ogc sub operation (if it applies). For instance when the operation is a WFS Transaction the sub operation may be one of "Insert", "Update", etc\...                                                                                                                                                                                                                                                                                                                                 | String          |
+| OWS/OGC Version                             | The OGC service version, for example with WFS the version may be "1.0.0", "1.1.0", etc\...                                                                                                                                                                                                                                                                                                                                                                                              | String          |
+| Resources                                   | Names of resources (layers, processes, etc\...) specified as part of the request.                                                                                                                                                                                                                                                                                                                                                                                                           | List of String  |
+| Resources processing times in milliseconds. | Rendering times for resources. Rendering is performed by two concurrent threads, one reading and preprocessing data and styles towards a Java2D compatible format, the other painting the results of the first on the canvas. When the first thread starts reading the next layer, the second thread is likely still painting features from the layer before it, thus, times in this list are overlapping with each other, and the sum will be greater than the actual wall rendering time. | List of Numeric |
+| Labels Processing Time                      | Processing time in milliseconds for the labels of all resources listed.                                                                                                                                                                                                                                                                                                                                                                                                                     | Numeric         |
+| Bounding box                                | The bounding box specified as part of the request. In some cases this is not possible to obtain this reliable, an example being a complex WFS query with a nested "BBOX" filter.                                                                                                                                                                                                                                                                                                          | List of Numeric |
 
 ## GeoIP
 

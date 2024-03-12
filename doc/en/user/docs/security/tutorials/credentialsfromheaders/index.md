@@ -94,15 +94,13 @@ This tutorial uses the [curl](http://curl.haxx.se/) utility to issue HTTP reques
 This can be done with an HTTPD configuration that looks like the following:
 
 > ``` apacheconf
-> <Location  /geoserver>
->     Session On
->     SessionEnv On
->     SessionHeader X-Replace-Session
->     SessionCookieName session path=/
->     SessionCryptoPassphrase secret
->     RequestHeader set X-Credentials "%{HTTP_SESSION}e"
-> </Location>
 > ```
+>
+> <Location /geoserver>
+>
+> :   Session On SessionEnv On SessionHeader X-Replace-Session SessionCookieName session path=/ SessionCryptoPassphrase secret RequestHeader set X-Credentials "%{HTTP_SESSION}e"
+>
+> </Location>
 
 This configuration adds a new ``X-Credentials`` Request Header to each GeoServer request. The request header will contain the HTTPD Session information in a special format.
 

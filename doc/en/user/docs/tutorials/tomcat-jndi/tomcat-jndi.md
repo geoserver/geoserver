@@ -97,7 +97,7 @@ Then the following code must be added to the Tomcat configuration file **`{TOMCA
 
 ``` xml
 <Context>
-    <Resource name="jdbc/postgres"
+   <Resource name="jdbc/postgres"
       auth="Container"
       type="javax.sql.DataSource"
       driverClassName="org.postgresql.Driver"

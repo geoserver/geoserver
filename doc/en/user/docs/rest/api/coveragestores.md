@@ -6,41 +6,12 @@ A `coverage store` contains raster format spatial data.
 
 Controls all coverage stores in a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   List all coverage stores in workspace `ws`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-:   Create a new coverage store
-
-    201 with `Location` header
-
-    XML, JSON
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
+| Method | Action                                     | Status code                | Formats         | Default Format |
+|--------|--------------------------------------------|----------------------------|-----------------|----------------|
+| GET    | List all coverage stores in workspace `ws` | 200                        | HTML, XML, JSON | HTML           |
+| POST   | Create a new coverage store                | 201 with `Location` header | XML, JSON       |                |
+| PUT    |                                            | 405                        |                 |                |
+| DELETE |                                            | 405                        |                 |                |
 
 ## `/workspaces/<ws>/coveragestores/<cs>[.<format>]`
 

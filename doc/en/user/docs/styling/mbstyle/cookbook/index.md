@@ -6,21 +6,11 @@ The MBStyle Cookbook is divided into four sections: the first three for each of 
 
 Each section uses data created especially for the MBStyle Cookbook, with shapefiles for vector data and GeoTIFFs for raster data.
 
-Data Type
-
-:   Shapefile
-
-Point
-
-:   [mbstyle_cookbook_point.zip](artifacts/mbstyle_cookbook_point.zip)
-
-Line
-
-:   [mbstyle_cookbook_line.zip](artifacts/mbstyle_cookbook_line.zip)
-
-Polygon
-
-:   [mbstyle_cookbook_polygon.zip](artifacts/mbstyle_cookbook_polygon.zip)
+| Data Type | Shapefile                                                              |
+|-----------|------------------------------------------------------------------------|
+| Point     | [mbstyle_cookbook_point.zip](artifacts/mbstyle_cookbook_point.zip)     |
+| Line      | [mbstyle_cookbook_line.zip](artifacts/mbstyle_cookbook_line.zip)       |
+| Polygon   | [mbstyle_cookbook_polygon.zip](artifacts/mbstyle_cookbook_polygon.zip) |
 
 <div class="grid cards" markdown>
 

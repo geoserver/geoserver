@@ -74,47 +74,12 @@ The `pretty` parameter returns the style in a human-readable format, with proper
 
 Controls all styles in a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-    Parameters
-
-GET
-
-:   Return all styles within workspace `ws`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-:   Create a new style within workspace `ws`
-
-    201 with `Location` header
-
-    SLD, XML, JSON, ZIP [See note above](styles.md#rest_api_styles_post_put)
-
-    [name](styles.md#rest_api_styles_name) [raw](styles.md#rest_api_styles_raw)
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
->
-> [purge](styles.md#rest_api_styles_purge)
+| Method | Action                                   | Status code                | Formats                                                                   | Default Format | Parameters                                                                    |
+|--------|------------------------------------------|----------------------------|---------------------------------------------------------------------------|----------------|-------------------------------------------------------------------------------|
+| GET    | Return all styles within workspace `ws`  | 200                        | HTML, XML, JSON                                                           | HTML           |                                                                               |
+| POST   | Create a new style within workspace `ws` | 201 with `Location` header | SLD, XML, JSON, ZIP [See note above](styles.md#rest_api_styles_post_put) |                | [name](styles.md#rest_api_styles_name) [raw](styles.md#rest_api_styles_raw) |
+| PUT    |                                          | 405                        |                                                                           |                |                                                                               |
+| DELETE |                                          | 405                        |                                                                           |                | [purge](styles.md#rest_api_styles_purge)                                     |
 
 ## `/workspaces/<ws>/styles/<s>[.<format>]`
 

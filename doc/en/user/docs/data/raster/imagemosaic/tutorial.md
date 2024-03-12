@@ -17,34 +17,28 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 3.  In order to create a new mosaic it is necessary to choose a workspace and store name in the **Basic Store Info** section, as well as a URL in the **Connection Parameters** section. Valid URLs include:
 
-    > -   The absolute path to the shapefile index, or a directory containing the shapefile index.
-    > -   The absolute path to the configuration file (``\*.properties````) or a directory containing the configuration file. If ````datastore.properties```` and ````indexer.properties``\` exist, they should be in the same directory as this configuration file.
-    > -   The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.
+    -   The absolute path to the shapefile index, or a directory containing the shapefile index.
+    -   The absolute path to the configuration file (`*.properties`) or a directory containing the configuration file. If **`datastore.properties`** and **`indexer.properties`** exist, they should be in the same directory as this configuration file.
+    -   The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.
 
 4.  Click **Save**:
 
-    ``` raw_markdown
     ![](images/imagemosaicconfigure.png)
     *Configuring an ImageMosaic data store*
-    ```
 
 ### Create a new coverage
 
-1.  Navigate to **Data Panel \--\> Layers** and click **Add a new resource**.
+1.  Navigate to **Data Panel --> Layers** and click **Add a new resource**.
 
 2.  Choose the name of the store you just created:
 
-    ``` raw_markdown
     ![](images/vito_newlayerchoser.png)
     *Layer Chooser*
-    ```
 
 3.  Click the layer you wish to configure and you will be presented with the Coverage Editor:
 
-    ``` raw_markdown
     ![](images/vito_coverageeditor.png)
     *Coverage Editor*
-    ```
 
 4.  Make sure there is a value for **Native SRS**, then click the **Submit** button. If the **Native CRS** is `UNKNOWN`, you must declare the SRS in the **Declared SRS** field.
 
@@ -54,7 +48,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 !!! warning
 
-    If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in the provided directory) or it might be that the granules\' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.
+    If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.
 
 ## Configuration examples
 
@@ -73,7 +67,7 @@ Inside the Coverage Editor Publishing tab, you can specify the **dem** default s
 <StyledLayerDescriptor version="1.0.0"
   xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/sld  http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  xsi:schemaLocation="http://www.opengis.net/sld    http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
   <NamedLayer>
     <Name>gtopo</Name>
     <UserStyle>
@@ -101,67 +95,39 @@ Inside the Coverage Editor Publishing tab, you can specify the **dem** default s
 </StyledLayerDescriptor>
 ```
 
-In this way you have a clear distinction between the different intervals of the dataset that compose the mosaic, like the background and the \"nodata\" area.
+In this way you have a clear distinction between the different intervals of the dataset that compose the mosaic, like the background and the "nodata" area.
 
-``` raw_markdown
 ![](images/vito_config_1.png)
-```
 
 !!! note
 
-    The \"nodata\" on the sample mosaic is -9999. The default background value is for mosaics is 0.0.
+    The "nodata" on the sample mosaic is -9999. The default background value is for mosaics is 0.0.
 
 The result is the following:
 
-``` raw_markdown
 ![](images/vito_1.png)
 *Basic configuration*
-```
 
 By setting the other configuration parameters appropriately, it is possible to improve both the appearance of the mosaic as well as its performance. For instance, we could:
 
--   Make the \"nodata\" areas transparent and coherent with the real data. To achieve this we need to change the opacity of the \"nodata\" ColorMapEntry in the `dem` style to `0.0` and set the `BackgroundValues` parameter to `-9999` so that empty areas will be filled with this value. The result is as follows:
+-   Make the "nodata" areas transparent and coherent with the real data. To achieve this we need to change the opacity of the "nodata" ColorMapEntry in the `dem` style to `0.0` and set the `BackgroundValues` parameter to `-9999` so that empty areas will be filled with this value. The result is as follows:
 
-    ``` raw_markdown
     ![](images/vito_2.png)
     *Advanced configuration*
-    ```
 
 -   Allow multithreaded granules loading. By setting the `AllowMultiThreading` parameter to `true`, GeoServer will load the granules in parallel using multiple threads with a increase in performance on some architectures.
 
 The configuration parameters are as follows:
 
-Parameter
-
-:   Value
-
-MaxAllowedTiles
-
-:   2147483647
-
-BackgroundValues
-
-:   -9999
-
-OutputTransparentColor
-
-:   \"no color\"
-
-InputTransparentColor
-
-:   \"no color\"
-
-AllowMultiThreading
-
-:   True
-
-USE_JAI_IMAGEREAD
-
-:   True
-
-SUGGESTED_TILE_SIZE
-
-:   512,512
+| Parameter              | Value        |
+|------------------------|--------------|
+| MaxAllowedTiles        | 2147483647   |
+| BackgroundValues       | -9999        |
+| OutputTransparentColor | "no color" |
+| InputTransparentColor  | "no color" |
+| AllowMultiThreading    | True         |
+| USE_JAI_IMAGEREAD      | True         |
+| SUGGESTED_TILE_SIZE    | 512,512      |
 
 ### Aerial imagery
 
@@ -172,7 +138,7 @@ In this example we are going to create a mosaic that will serve aerial imagery, 
 <StyledLayerDescriptor version="1.0.0"
   xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/sld  http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  xsi:schemaLocation="http://www.opengis.net/sld    http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
   <NamedLayer>
     <Name>raster</Name>
     <UserStyle>
@@ -194,10 +160,8 @@ In this example we are going to create a mosaic that will serve aerial imagery, 
 
 The result is the following:
 
-``` raw_markdown
 ![](images/prato_1.png)
 *Basic configuration*
-```
 
 !!! note
 
@@ -210,17 +174,15 @@ The various parameters can be set as follows:
 | MaxAllowedTiles        | 2147483647   |
 | BackgroundValues       | (default)    |
 | OutputTransparentColor | #000000      |
-| InputTransparentColor  | \"no color\" |
+| InputTransparentColor  | "no color" |
 | AllowMultiThreading    | True         |
 | USE_JAI_IMAGEREAD      | True         |
 | SUGGESTED_TILE_SIZE    | 512,512      |
 
 The result is the following:
 
-``` raw_markdown
 ![](images/prato_2.png)
 *Advanced configuration*
-```
 
 ### Scanned maps
 
@@ -230,12 +192,10 @@ In the Coverage Editor you can use the basic `raster` since there is no need to 
 
 The result is the following.
 
-``` raw_markdown
 ![](images/iacovella_1.png)
 *Basic configuration*
-```
 
-This mosaic, formed by two single granules, shows a typical case where the \"nodata\" collar areas of the granules overlap, as shown in the picture above. In this case we can use the `InputTransparentColor` parameter to make the collar areas disappear during the superimposition process --- in this case, by using an `InputTransparentColor` of `#FFFFFF`.
+This mosaic, formed by two single granules, shows a typical case where the "nodata" collar areas of the granules overlap, as shown in the picture above. In this case we can use the `InputTransparentColor` parameter to make the collar areas disappear during the superimposition process --- in this case, by using an `InputTransparentColor` of `#FFFFFF`.
 
 The final configuration parameters are the following:
 
@@ -243,7 +203,7 @@ The final configuration parameters are the following:
 |------------------------|--------------|
 | MaxAllowedTiles        | 2147483647   |
 | BackgroundValues       | (default)    |
-| OutputTransparentColor | \"no color\" |
+| OutputTransparentColor | "no color" |
 | InputTransparentColor  | #FFFFFF      |
 | AllowMultiThreading    | True         |
 | USE_JAI_IMAGEREAD      | True         |
@@ -251,52 +211,50 @@ The final configuration parameters are the following:
 
 This is the result:
 
-``` raw_markdown
 ![](images/iacovella_2.png)
 *Advanced configuration*
-```
 
 ### Dynamic imagery
 
 A mosaic need not be static. It can contain granules which change, are added or deleted. In this example, we will create a mosaic that changes over time.
 
-1.  Create a mosaic in the standard way. (The specific configuration isn\'t important.)
+1.  Create a mosaic in the standard way. (The specific configuration isn't important.)
 
-``` raw_markdown
-![](images/tutorial_dynamic1.png)
-*This mosaic contains 5 granules. Note that ``InputTransparentColor`` is set to ``#FFFFFF`` here.*
-```
+    ![](images/tutorial_dynamic1.png)
+    *This mosaic contains 5 granules. Note that ``InputTransparentColor`` is set to ``#FFFFFF`` here.*
 
-To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:
+2.  To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:
 
--   Manually through the file system
--   Through the [REST](../../../rest/index.rst) interface
+    -   Manually through the file system
+    -   Through the [REST](../../../rest/index.md) interface
 
-To update an ImageMosaic through the file system:
+3.  To update an ImageMosaic through the file system:
 
-1.  Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)
-2.  Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:
-    -   **\`\<mosaic_name\>.dbf\`**
-    -   **\`\<mosaic_name\>.fix\`**
-    -   **\`\<mosaic_name\>.prj\`**
-    -   **\`\<mosaic_name\>.properties\`**
-    -   **\`\<mosaic_name\>.shp\`**
-    -   **\`\<mosaic_name\>.shx\`**
-3.  *(Optional but recommended)* Edit the layer definition in GeoServer, making to sure to update the bounding box information (if changed).
-4.  Save the layer. The index will be recreated.
+    Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)
 
-``` raw_markdown
-![](images/tutorial_dynamic2.png)
-*This mosaic contains 9 granules*
-```
+    Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:
+
+    -   **`<mosaic_name>.dbf`**
+    -   **`<mosaic_name>.fix`**
+    -   **`<mosaic_name>.prj`**
+    -   **`<mosaic_name>.properties`**
+    -   **`<mosaic_name>.shp`**
+    -   **`<mosaic_name>.shx`**
+
+4.  *(Optional but recommended)* Edit the layer definition in GeoServer, making to sure to update the bounding box information (if changed).
+
+5.  Save the layer. The index will be recreated.
+
+    ![](images/tutorial_dynamic2.png)
+    *This mosaic contains 9 granules*
 
 !!! note
 
-    Please see the REST section for information on [Uploading a new image mosaic](../../../rest/imagemosaic.rst).
+    Please see the REST section for information on [Uploading a new image mosaic](../../../rest/imagemosaic.md).
 
-### Multi-resolution imagery with reprojection {#multi-crs-mosaic}
+### Multi-resolution imagery with reprojection {: #multi-crs-mosaic }
 
-As a general rule, we want to have the highest resolution granules shown \"on top\", with the lower-resolution granules filling in the gaps as necessary.
+As a general rule, we want to have the highest resolution granules shown "on top", with the lower-resolution granules filling in the gaps as necessary.
 
 In this example, we will serve up overlapping granules that have varying resolutions. In addition, we will mix resolutions, such that the higher resolution granule is reprojected to match the resolution of the lower resolution granules.
 
@@ -308,7 +266,7 @@ In this example, we will serve up overlapping granules that have varying resolut
 
 4.  Make any other configuration changes.
 
-5.  Also, in order to allow for multiple CRSs in a single mosaic, an **\`indexer.properties\`** file will need to be created. Use the following :
+5.  Also, in order to allow for multiple CRSs in a single mosaic, an **`indexer.properties`** file will need to be created. Use the following :
 
         GranuleAcceptors=org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory
         GranuleHandler=org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory
@@ -317,38 +275,34 @@ In this example, we will serve up overlapping granules that have varying resolut
         PropertyCollectors=CRSExtractorSPI(crs),ResolutionExtractorSPI(resolution)
         Schema=*the_geom:Polygon,location:String,crs:String,resolution:String
 
-    The MosaicCRS property is not mandatory, but it\'s a good idea to set a predictable target CRS that all granule footprints can be reprojected into, otherwise the mosaic machinery will use the CRS of the first indexed granule.
+    The MosaicCRS property is not mandatory, but it's a good idea to set a predictable target CRS that all granule footprints can be reprojected into, otherwise the mosaic machinery will use the CRS of the first indexed granule.
 
 6.  Save this file in the root of the mosaic directory (along with the index files). The result is the following:
 
-    ``` raw_markdown
     ![](images/tutorial_reproj_artifact.png)
     *Closeup of granule overlap (high resolution granule on right)*
-    ```
 
 7.  To remove the reprojection artifact (shown in the above as a black area) edit the layer configuration to set `InputTransparentColor` to `#000000`.
 
-    ``` raw_markdown
     ![](images/tutorial_reproj_noartifact.png)
     *Closeup of granule overlap (high resolution granule on right)*
-    ```
 
 ## Referring to a datastore configured in GeoServer
 
-It is possible to make the mosaic refer to an existing data store. The **\`\`datastore.properties\`\`** file in this case will contain only one or two properties, referring to the store to be used via the `StoreName` property. For simple cases, e.g., a PostGIS store, the following will be sufficient:
+It is possible to make the mosaic refer to an existing data store. The **``datastore.properties``** file in this case will contain only one or two properties, referring to the store to be used via the `StoreName` property. For simple cases, e.g., a PostGIS store, the following will be sufficient:
 
     StoreName=workspace:storename
 
-For Oracle or H2, it\'s best to also specify the SPI in order to inform the mosaic that it needs to work around specific limitations of the storage (e.g., forced uppercase attribute usage, limitation in attribute name length and the like):
+For Oracle or H2, it's best to also specify the SPI in order to inform the mosaic that it needs to work around specific limitations of the storage (e.g., forced uppercase attribute usage, limitation in attribute name length and the like):
 
     StoreName=workspace:storename
     SPI=org.geotools.data.oracle.OracleNGDataStoreFactory
 
-The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an **\`\`indexer.properties\`\`** specifying the `TypeName` property, e.g.:
+The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using the directory name as the table name. In case a specific table name needs to be used, add an **`indexer.properties`** specifying the `TypeName` property, e.g.:
 
 > TypeName=myMosaicTypeName
 
-In case the index \"table\" already exists instead, then a **\`\`indexer.properties\`\`** file will be required, with the following contents:
+In case the index "table" already exists instead, then a **`indexer.properties`** file will be required, with the following contents:
 
     UseExistingSchema=true
     TypeName=nameOfTheFeatureTypeContainingTheIndex

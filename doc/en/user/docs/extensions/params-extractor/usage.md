@@ -148,18 +148,6 @@ If you want params-extractor to work before the security filter chain, you have 
 This can be done adding the following to your current web.xml (immediately after the `Set Character Encoding` filter) and restarting GeoServer:
 
 > ``` xml
-> <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-> <web-app>
->     ...
->     <filter>
->      <filter-name>ExtractParams</filter-name>
->      <filter-class>org.geoserver.params.extractor.Filter</filter-class>
->     </filter>
->     ...
->     <filter-mapping>
->       <filter-name>ExtractParams</filter-name>
->       <url-pattern>/*</url-pattern>
->     </filter-mapping>
->     ...
-> </web-app>
 > ```
+>
+> <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "<http://www.springframework.org/dtd/spring-beans.dtd>"> <web-app> \... <filter> <filter-name>ExtractParams</filter-name> <filter-class>org.geoserver.params.extractor.Filter</filter-class> </filter> \... <filter-mapping> <filter-name>ExtractParams</filter-name> <url-pattern>/*</url-pattern> </filter-mapping> \... </web-app>

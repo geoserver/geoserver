@@ -47,7 +47,7 @@ This example specifies lines be colored black with a thickness of 3 pixels.
 
 [Download the "Simple line" MBStyle](artifacts/mbstyle_line_simpleline.json)
 
-``` {.json linenos=""}
+``` json
 {
   "version": 8,
   "name": "simple-line",
@@ -79,7 +79,7 @@ This example shows how to draw lines with borders (sometimes called "cased lines
 
 [Download the "Line with border" MBStyle](artifacts/mbstyle_line_borderedline.json)
 
-``` {.json linenos=""}
+``` json
 {
   "version": 8,
   "name": "simple-borderedline",
@@ -131,7 +131,7 @@ This example alters the [Simple line](lines.md#mbstyle_cookbook_lines_simpleline
 
 [Download the "Dashed line" MBStyle](artifacts/mbstyle_line_dashedline.json)
 
-``` {.json linenos=""}
+``` json
 {
   "version": 8,
   "name": "simple-dashedline",
@@ -164,7 +164,7 @@ This example alters the [Simple line](lines.md#mbstyle_cookbook_lines_simpleline
 
 [Download the "Offset line" MBStlye](artifacts/mbstyle_line_offsetline.json)
 
-``` {.json linenos=""}
+``` json
 {
   "version": 8,
   "name": "simple-offsetline",

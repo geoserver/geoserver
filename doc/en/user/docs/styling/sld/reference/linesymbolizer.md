@@ -6,29 +6,12 @@ A **LineSymbolizer** styles features as **lines**. Lines are one-dimensional geo
 
 A `<LineSymbolizer>` contains an optional `<Geometry>` element, and a required `<Stroke>` element specifying the line symbology.
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<Geometry>`
-
-:   No
-
-    Specifies the geometry to be rendered.
-
-`<Stroke>`
-
-:   Yes
-
-    Specifies the styling for the line.
-
-`<PerpendicularOffset>`
-
-:   No
-
-    Specifies the perpendicular offset for the current line
+|                         |               |                                                         |
+|-------------------------|---------------|---------------------------------------------------------|
+| **Tag**                 | **Required?** | **Description**                                         |
+| `<Geometry>`            | No            | Specifies the geometry to be rendered.                  |
+| `<Stroke>`              | Yes           | Specifies the styling for the line.                     |
+| `<PerpendicularOffset>` | No            | Specifies the perpendicular offset for the current line |
 
 ### Geometry
 
@@ -40,29 +23,12 @@ Any kind of geometry may be styled with a `<LineSymbolizer>`. Point geometries a
 
 The `<Stroke>` element specifies the styling of a line. There are three elements that can be included inside the `<Stroke>` element.
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<GraphicFill>`
-
-:   No
-
-    Renders the pixels of the line with a repeated pattern.
-
-`<GraphicStroke>`
-
-:   No
-
-    Renders the line with a repeated linear graphic.
-
-`<CssParameter>`
-
-:   0..N
-
-    Determines the stroke styling parameters.
+|                   |               |                                                         |
+|-------------------|---------------|---------------------------------------------------------|
+| **Tag**           | **Required?** | **Description**                                         |
+| `<GraphicFill>`   | No            | Renders the pixels of the line with a repeated pattern. |
+| `<GraphicStroke>` | No            | Renders the line with a repeated linear graphic.        |
+| `<CssParameter>`  | 0..N          | Determines the stroke styling parameters.               |
 
 ### GraphicFill
 
@@ -107,7 +73,7 @@ Care should be taken when using it, as it might become a performance bottleneck.
 
 The following symbolizer is taken from the [Lines](../cookbook/lines.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` {.xml linenos=""}
+``` xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#0000FF</CssParameter>
@@ -126,7 +92,7 @@ The symbolizer styles a feature as a dashed blue line of width 3 pixels.
 
 The following style excerpt generates a solid line, and then a dashed blue line 3 pixels on the left of it.
 
-``` {.xml linenos=""}
+``` xml
 <LineSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#000000</CssParameter>
@@ -150,7 +116,7 @@ The following style excerpt generates a solid line, and then a dashed blue line 
 
 The following style excerpt builds a inward offset line for polygons.
 
-``` {.xml linenos=""}
+``` xml
 <PolygonSymbolizer>
   <Stroke>
     <CssParameter name="stroke">#000000</CssParameter>

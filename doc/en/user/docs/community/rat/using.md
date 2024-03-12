@@ -17,7 +17,7 @@ The generated style will match all the values in the raster attribute table, and
 
 Here is an example style:
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/sld" version="1.0.0">
   <sld:NamedLayer>
     <sld:Name>Class</sld:Name>

@@ -15,9 +15,9 @@ First let's gather that the data that we'll be publishing.
 2.  Create a PostGIS database called `nyc`. This can be done with the following commands:
 
     ``` console
-    createdb nyc
-    psql -d nyc -c 'CREATE EXTENSION postgis'
     ```
+
+    createdb nyc psql -d nyc -c 'CREATE EXTENSION postgis'
 
     !!! note
 
@@ -28,8 +28,9 @@ First let's gather that the data that we'll be publishing.
 4.  Import **`nyc_buildings.sql`** into the `nyc` database:
 
     ``` console
-    psql -f nyc_buildings.sql nyc
     ```
+
+    psql -f nyc_buildings.sql nyc
 
 ## Creating a new workspace
 

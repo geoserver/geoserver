@@ -47,19 +47,9 @@ Where the available limits are:
 The configuration is stored in a **download.properties** file found in the root of the GeoServer data directory.
 
 > ``` 
-> # Max #of features
-> maxFeatures=100000
-> #8000 px X 8000 px
-> rasterSizeLimits=64000000
-> #8000 px X 8000 px X 3 bands X 1 byte per band = 192MB
-> writeLimits=192000000
-> # 50 MB
-> hardOutputLimit=52428800
-> # STORE =0, BEST =8
-> compressionLevel=4
-> # When set to 0 or below, no limit
-> maxAnimationFrames=1000
 > ```
+>
+> \# Max #of features maxFeatures=100000 #8000 px X 8000 px rasterSizeLimits=64000000 #8000 px X 8000 px X 3 bands X 1 byte per band = 192MB writeLimits=192000000 \# 50 MB hardOutputLimit=52428800 \# STORE =0, BEST =8 compressionLevel=4 \# When set to 0 or below, no limit maxAnimationFrames=1000
 
 The file can also be manually modified while GeoServer is running, the file is under watch and gets reloaded on modification.
 

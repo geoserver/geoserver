@@ -38,72 +38,47 @@ The REST API can be used to convert any of your existing CSS or SLD styles to YS
     The original SLD file is convert to YSLD:
 
     ``` yaml
-    name: states
-    title: Population in the United States
-    abstract: |-
-      A sample filter that filters the United States into three
-              categories of population, drawn in different colors
-    feature-styles:
-    - name: name
-      rules:
-      - name: Population < 2M
-        title: Population < 2M
-        filter: ${PERSONS < '2000000'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            fill-color: '#A6CEE3'
-            fill-opacity: 0.7
-      - name: Population 2M-4M
-        title: Population 2M-4M
-        filter: ${PERSONS BETWEEN '2000000' AND '4000000'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            fill-color: F78B4
-            fill-opacity: 0.7
-      - name: '> 4M'
-        title: Population > 4M
-        filter: ${PERSONS > '4000000'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            fill-color: '#B2DF8A'
-            fill-opacity: 0.7
-      - name: State Outlines
-        title: State Outlines
-        scale: [min, max]
-        symbolizers:
-        - line:
-            stroke-color: '#8CADBF'
-            stroke-width: 0.1
-      - name: State Abbreviations
-        title: State Abbreviations
-        scale: ['1.75E7', '3.5E7']
-        symbolizers:
-        - text:
-            label: ${STATE_ABBR}
-            font-family: SansSerif
-            font-size: 12
-            font-style: Normal
-            font-weight: normal
-            placement: point
-            anchor: [0.5, 0.5]
-      - name: State Names
-        title: State Names
-        scale: [min, '1.75E7']
-        symbolizers:
-        - text:
-            label: ${STATE_NAME}
-            font-family: SansSerif
-            font-size: 12
-            font-style: Normal
-            font-weight: normal
-            placement: point
-            anchor: [0.5, 0.5]
-            x-maxDisplacement: 100
-            x-goodnessOfFit: 0.9
     ```
+
+    name: states title: Population in the United States abstract: |- A sample filter that filters the United States into three categories of population, drawn in different colors feature-styles:
+
+    -   name: name rules:
+        -   name: Population < 2M title: Population < 2M filter: \${PERSONS < '2000000'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   fill-color: '#A6CEE3' fill-opacity: 0.7
+        -   name: Population 2M-4M title: Population 2M-4M filter: \${PERSONS BETWEEN '2000000' AND '4000000'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   fill-color: F78B4 fill-opacity: 0.7
+        -   name: '> 4M' title: Population > 4M filter: \${PERSONS > '4000000'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   fill-color: '#B2DF8A' fill-opacity: 0.7
+        -   name: State Outlines title: State Outlines scale: [min, max] symbolizers:
+            -   
+
+                line:
+
+                :   stroke-color: '#8CADBF' stroke-width: 0.1
+        -   name: State Abbreviations title: State Abbreviations scale: ['1.75E7', '3.5E7'] symbolizers:
+            -   
+
+                text:
+
+                :   label: \${STATE_ABBR} font-family: SansSerif font-size: 12 font-style: Normal font-weight: normal placement: point anchor: [0.5, 0.5]
+        -   name: State Names title: State Names scale: [min, '1.75E7'] symbolizers:
+            -   
+
+                text:
+
+                :   label: \${STATE_NAME} font-family: SansSerif font-size: 12 font-style: Normal font-weight: normal placement: point anchor: [0.5, 0.5] x-maxDisplacement: 100 x-goodnessOfFit: 0.9
 
 ## YSLD Workshop Answer Key
 
@@ -217,12 +192,15 @@ Answer for `Explore Antialiasing <ysld.polygon.q1>`{.interpreted-text role="ref"
     The obvious approach works - setting both values to the same color:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'lightgrey'
-        stroke-width: 1
-        fill-color: 'lightgrey'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'lightgrey' stroke-width: 1 fill-color: 'lightgrey'
 
 ### Categorize {: #ysld.polygon.a2 }
 
@@ -237,19 +215,15 @@ Answer for `Explore Categorize <ysld.polygon.q2>`{.interpreted-text role="ref"}:
     Example:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-color: 'gray'
-        fill-graphic:
-          size: ${Categorize(datarank,'4','4','5','6','8','10','10')}
-          symbols:
-          - mark:
-              shape: shape://slash
-              stroke-color: 'darkgray'
-              stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-color: 'gray' fill-graphic: size: \${Categorize(datarank,'4','4','5','6','8','10','10')} symbols: - mark: shape: shape://slash stroke-color: 'darkgray' stroke-width: 1
 
 ### Halo {: #ysld.polygon.a4 }
 
@@ -264,23 +238,21 @@ Answer for `Challenge Halo <ysld.polygon.q4>`{.interpreted-text role="ref"}:
     Here is an example:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'gray'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        halo:
-          fill-color: 'white'
-          radius: 1
-        font-family: Arial
-        font-size: 14
-        font-style: normal
-        font-weight: normal
-        anchor: [0.5, 0.5]
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'gray' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' halo: fill-color: 'white' radius: 1 font-family: Arial font-size: 14 font-style: normal font-weight: normal anchor: [0.5, 0.5]
 
 ### Theming using Multiple Attributes {: #ysld.polygon.a5 }
 
@@ -295,33 +267,21 @@ Answer for `Challenge Theming using Multiple Attributes <ysld.polygon.q5>`{.inte
     This should be a cut and paste using the `recode` example, and `categorize` examples already provided.
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-color: ${Recode(mapcolor9,
-          '1','#8dd3c7',
-          '2','#ffffb3',
-          '3','#bebada',
-          '4','#fb8072',
-          '5','#80b1d3',
-          '6','#fdb462',
-          '7','#b3de69',
-          '8','#fccde5',
-          '9','#d9d9d9')}
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-color: 'gray'
-        fill-graphic:
-          size: ${Categorize(datarank,'6','4','8','6','10','10','12')}
-          symbols:
-          - mark:
-              shape: shape://slash
-              stroke-color: 'black'
-              stroke-width: 1
-              fill-color: 'gray'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-color: \${Recode(mapcolor9, '1','#8dd3c7', '2','#ffffb3', '3','#bebada', '4','#fb8072', '5','#80b1d3', '6','#fdb462', '7','#b3de69', '8','#fccde5', '9','#d9d9d9')}
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-color: 'gray' fill-graphic: size: \${Categorize(datarank,'6','4','8','6','10','10','12')} symbols: - mark: shape: shape://slash stroke-color: 'black' stroke-width: 1 fill-color: 'gray'
 
 ### Use of Feature styles {: #ysld.polygon.a6 }
 
@@ -336,37 +296,11 @@ Answer for `Challenge Use of Feature styles <ysld.polygon.q6>`{.interpreted-text
     This is much easier when using YSLD, where z-order is controlled by feature-style order. In this instance, multiple symbolizers within a feature-style will not work, as the order within a feature-style is only consistent per-feature (not per-layer).
 
     ``` yaml
-    feature-styles:
-    - rules:
-      - symbolizers:
-        - polygon:
-            stroke-width: 1.0
-            fill-color: 'lightgrey'
-    - rules:
-      - symbolizers:
-        - polygon:
-            stroke-width: 1.0
-            fill-color: 'gray'
-            fill-graphic:
-              size: 8
-              symbols:
-              - mark:
-                  shape: shape://slash
-                  stroke-color: 'black'
-                  stroke-width: 0.75
-    - rules:
-      - symbolizers:
-        - line:
-            stroke-color: 'lightgrey'
-            stroke-width: 6
-    - rules:
-      - symbolizers:
-        - line:
-            stroke-color: 'black'
-            stroke-width: 1.5
     ```
 
-    The structure of the legend graphic provides an indication on what is going on.
+> feature-styles: - rules: - symbolizers: - polygon: stroke-width: 1.0 fill-color: 'lightgrey' - rules: - symbolizers: - polygon: stroke-width: 1.0 fill-color: 'gray' fill-graphic: size: 8 symbols: - mark: shape: shape://slash stroke-color: 'black' stroke-width: 0.75 - rules: - symbolizers: - line: stroke-color: 'lightgrey' stroke-width: 6 - rules: - symbolizers: - line: stroke-color: 'black' stroke-width: 1.5
+>
+> > The structure of the legend graphic provides an indication on what is going on.
 
 ### Geometry Location {: #ysld.point.a1 }
 
@@ -392,11 +326,17 @@ Answer for `Explore Dynamic Symbolization <ysld.point.q2>`{.interpreted-text rol
     This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
 
     > ``` yaml
-    > - point:
-    >     symbols:
-    >     - mark:
-    >         shape: ${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
     > ```
+
+    -   
+
+        point:
+        :   symbols:
+            -   
+
+                mark:
+
+                :   shape: \${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}
 
 2.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
@@ -467,12 +407,15 @@ Discussion for `Explore Contrast Enhancement <ysld.raster.q1>`{.interpreted-text
 2.  Make use of a simple contrast enhancement with `usgs:dem`:
 
     ``` yaml
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        contrast-enhancement:
-          mode: normalize
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 contrast-enhancement: mode: normalize
 
 3.  Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?
 
@@ -503,23 +446,15 @@ Answer for `Challenge Intervals <ysld.raster.q2>`{.interpreted-text role="ref"}:
     Here is style for you to cut and paste:
 
     ``` yaml
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: intervals
-          entries:
-          - ['#014636', 0, 0, null]
-          - ['#014636', 1.0, 1, null]
-          - ['#016C59', 1.0, 500, null]
-          - ['#02818A', 1.0, 1000, null]
-          - ['#3690C0', 1.0, 1500, null]
-          - ['#67A9CF', 1.0, 2000, null]
-          - ['#A6BDDB', 1.0, 2500, null]
-          - ['#D0D1E6', 1.0, 3000, null]
-          - ['#ECE2F0', 1.0, 3500, null]
-          - ['#FFF7FB', 1.0, 4000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: intervals entries: - ['#014636', 0, 0, null] - ['#014636', 1.0, 1, null] - ['#016C59', 1.0, 500, null] - ['#02818A', 1.0, 1000, null] - ['#3690C0', 1.0, 1500, null] - ['#67A9CF', 1.0, 2000, null] - ['#A6BDDB', 1.0, 2500, null] - ['#D0D1E6', 1.0, 3000, null] - ['#ECE2F0', 1.0, 3500, null] - ['#FFF7FB', 1.0, 4000, null]
 
 ### Clear Digital Elevation Model Presentation {: #ysld.raster.a3 }
 
@@ -534,16 +469,15 @@ Answer for `Challenge Clear Digital Elevation Model Presentation <ysld.raster.q3
     The original was a dark mess. Consider making use of mid-tones (or adopting a sequential palette from color brewer) in order to fix this. In the following example the ocean has been left dark, allowing the mountains stand out more.
 
     ``` yaml
-    symbolizers:
-    - raster:
-        opacity: 1.0
-        color-map:
-          type: ramp
-          entries:
-          - ['#000000', 1.0, 0, null]
-          - ['#444444', 1.0, 1, null]
-          - ['#FFFFFF', 1.0, 3000, null]
     ```
+
+    symbolizers:
+
+    -   
+
+        raster:
+
+        :   opacity: 1.0 color-map: type: ramp entries: - ['#000000', 1.0, 0, null] - ['#444444', 1.0, 1, null] - ['#FFFFFF', 1.0, 3000, null]
 
 ### Raster Opacity {: #ysld.raster.a4 }
 

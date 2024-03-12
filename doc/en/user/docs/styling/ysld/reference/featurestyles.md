@@ -353,7 +353,7 @@ This first example shows the standard way of creating rules for a dataset. There
 
     In order to simplify this example, the specifics of the point symbolizers have been replaced by [Define and reuse YAML Variables](variables.md). In a real-world example, these would need to be defined in the YSLD as well.
 
-``` {.yaml linenos="" emphasize-lines="15"}
+``` {.yaml emphasize-lines="15"}
 feature-styles:
 - name: without_first_match
   rules:
@@ -381,7 +381,7 @@ feature-styles:
 
 Using the `x-ruleEvaluation: first` parameter, the style is simplified:
 
-``` {.yaml linenos="" emphasize-lines="3,16"}
+``` {.yaml emphasize-lines="3,16"}
 feature-styles:
 - name: with_first_match
   x-ruleEvaluation: first
@@ -426,7 +426,7 @@ Given two layers (in this case, two three-band rasters), one can mask or "knock 
 
 Layer 1 (top/source):
 
-``` {.yaml linenos="" emphasize-lines="7"}
+``` {.yaml emphasize-lines="7"}
 feature-styles:
 - rules:
   - title: Top/source
@@ -438,7 +438,7 @@ feature-styles:
 
 Layer 2 (bottom/destination):
 
-``` {.yaml linenos=""}
+``` yaml
 feature-styles:
 - rules:
   - title: Bottom/destination
@@ -456,7 +456,7 @@ Given the same two layers as the previous example, one can display the differenc
 
 Layer 1 (top/source):
 
-``` {.yaml linenos="" emphasize-lines="7"}
+``` {.yaml emphasize-lines="7"}
 feature-styles:
 - rules:
   - title: Top/source
@@ -468,7 +468,7 @@ feature-styles:
 
 Layer 2 (bottom/destination):
 
-``` {.yaml linenos=""}
+``` yaml
 feature-styles:
 - rules:
   - title: Bottom/destination

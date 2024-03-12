@@ -82,22 +82,26 @@ There are however a few rules to follow:
         As an example package `org.geoserver.wms` is listed, allowing level of WMS service logging to be controlled:
 
         ``` xml
-        <Logger name="org.geoserver.wms" level="debug" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
         ```
+
+        <Logger name="org.geoserver.wms" level="debug" additivity="false">
+
+        :   <AppenderRef ref="stdout"/> <AppenderRef ref="geoserverlogfile"/>
+
+        </Logger>
 
     -   GeoTools Logger names match up with the package names in the [project javadocs overview](https://docs.geotools.org/latest/javadocs/overview-summary.html).
 
         As an example package `org.geotools.data.shapefile` is listed, allowing level of shapefile logging to be controlled:
 
         ``` xml
-        <Logger name="org.geotools.data.shapefile" level="debug" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
         ```
+
+        <Logger name="org.geotools.data.shapefile" level="debug" additivity="false">
+
+        :   <AppenderRef ref="stdout"/> <AppenderRef ref="geoserverlogfile"/>
+
+        </Logger>
 
     -   Assign a level to each logger indicating the level of detail you wish to record:
 
@@ -138,12 +142,19 @@ Copy built-in logging profile and customize:
 3.  Double check the Console appender configuration:
 
     ``` xml
-    <Appenders>
-        <Console name="stdout" target="SYSTEM_OUT">
-            <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%"/>
-        </Console>
-    </Appenders>
     ```
+
+    <Appenders>
+
+    :   
+
+        <Console name="stdout" target="SYSTEM_OUT">
+
+        :   <PatternLayout pattern="%date{dd mmm HH:mm:ss} %-6level [%logger{2}] - %msg%n%"/>
+
+        </Console>
+
+    </Appenders>
 
 4.  Add appenders for geoserver (and any others you wish to track):
 
@@ -159,10 +170,13 @@ Copy built-in logging profile and customize:
 5.  Double check the root logger:
 
     ``` xml
-    <Root level="FATAL">
-        <AppenderRef ref="stdout"/>
-    </Root>
     ```
+
+    <Root level="FATAL">
+
+    :   <AppenderRef ref="stdout"/>
+
+    </Root>
 
 6.  This result provides minimal feedback to the console, only reporting when GeoServer encounters an error.
 

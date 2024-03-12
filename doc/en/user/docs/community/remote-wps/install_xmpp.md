@@ -315,8 +315,9 @@ Creating and exposing a shared folder is possible by following the next steps:
 3.  Modify the rights in order to allow
 
     ``` bash
-    $> chmod -Rf 777 /share
     ```
+
+    \$> chmod -Rf 777 /share
 
 4.  Once the physical folder is ready it must be exposed via the `exports`
 

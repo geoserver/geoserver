@@ -6,41 +6,12 @@ A `namespace` is a uniquely identifiable grouping of feature types. It is identi
 
 Controls all namespaces.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   List all namespaces
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-:   Create a new namespace
-
-    201 with `Location` header
-
-    XML, JSON
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
+| Method | Action                 | Status code                | Formats         | Default Format |
+|--------|------------------------|----------------------------|-----------------|----------------|
+| GET    | List all namespaces    | 200                        | HTML, XML, JSON | HTML           |
+| POST   | Create a new namespace | 201 with `Location` header | XML, JSON       |                |
+| PUT    |                        | 405                        |                 |                |
+| DELETE |                        | 405                        |                 |                |
 
 ## `/namespaces/<ns>[.<format>]`
 
@@ -55,21 +26,11 @@ Controls a particular namespace.
 
 ### Exceptions
 
-Exception
-
-:   Status code
-
-GET for a namespace that does not exist
-
-:   404
-
-PUT that changes prefix of namespace
-
-:   403
-
-DELETE against a namespace whose corresponding workspace is non-empty
-
-:   403
+| Exception                                                             | Status code |
+|-----------------------------------------------------------------------|-------------|
+| GET for a namespace that does not exist                               | 404         |
+| PUT that changes prefix of namespace                                  | 403         |
+| DELETE against a namespace whose corresponding workspace is non-empty | 403         |
 
 ### Parameters
 

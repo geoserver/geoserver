@@ -110,10 +110,11 @@ Download and unpack the [sample certificate files](sample_certs.zip). This archi
 3.  By default, Tomcat has APR enabled. To disable it so the above configuration can work, remove or comment out the following line in the server.xml configuration file
 
     > ``` xml
-    > <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />   
     > ```
 
-4.  Restart Tomcat.
+> <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+
+1.  Restart Tomcat.
 
 ## Install the client certificate
 

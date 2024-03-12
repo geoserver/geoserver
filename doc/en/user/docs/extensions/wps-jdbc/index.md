@@ -26,15 +26,9 @@ The WPS JDBC extension is a WPS status storage for asynchronous requests. Main a
 2.  Update the sample content below accordingly to your connection parameters
 
     > ``` 
-    > user=postgres
-    > port=5432
-    > password=******
-    > passwd=******
-    > host=localhost
-    > database=gsstore
-    > driver=org.postgresql.Driver
-    > dbtype=postgis
     > ```
+    >
+    > user=postgres port=5432 password=****** passwd=****** host=localhost database=gsstore driver=org.postgresql.Driver dbtype=postgis
 
 3.  Restart GeoServer
 

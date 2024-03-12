@@ -44,17 +44,9 @@ To setup for troubleshooting OIDC activity:
 5.  With these settings each individual steps of the OAuth2 authentication is shown. The logging senstive information setting logs access token and id token (the content of these token may be decoded using <https://jwt.io> ).
 
     ``` text
-    DEBUG  [security.oauth2] - OIDC: - CLIENT_SECRET: squirrel
-    DEBUG  [security.oauth2] - OIDC: received a CODE from Identity Provider - handing it in for ID/Access Token
-    DEBUG  [security.oauth2] - OIDC: CODE=...
-    DEBUG  [security.oauth2] - OIDC: Identity Provider returned Token, type=Bearer
-    DEBUG  [security.oauth2] - OIDC: SCOPES=openid geocat
-    DEBUG  [security.oauth2] - OIDC: ACCESS TOKEN: .... 
-    DEBUG  [security.oauth2] - OIDC: ID  TOKEN: ... 
-    DEBUG  [security.oauth2] - OIDC: Getting Roles from UserGroupService, location=null
-    DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ADMIN
-    DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ROLE_ADMINISTRATOR
     ```
+
+    DEBUG [security.oauth2] - OIDC: - CLIENT_SECRET: squirrel DEBUG [security.oauth2] - OIDC: received a CODE from Identity Provider - handing it in for ID/Access Token DEBUG [security.oauth2] - OIDC: CODE=\... DEBUG [security.oauth2] - OIDC: Identity Provider returned Token, type=Bearer DEBUG [security.oauth2] - OIDC: SCOPES=openid geocat DEBUG [security.oauth2] - OIDC: ACCESS TOKEN: \.... DEBUG [security.oauth2] - OIDC: ID TOKEN: \... DEBUG [security.oauth2] - OIDC: Getting Roles from UserGroupService, location=null DEBUG [security.oauth2] - OIDC: Geoserver Roles: ADMIN DEBUG [security.oauth2] - OIDC: Geoserver Roles: ROLE_ADMINISTRATOR
 
 ## OpenID Connect With Attached Access Bearer Tokens
 
@@ -181,16 +173,18 @@ In order to do this you can follow the next steps:
     For `https://accounts.google.com`
 
     > ``` shell
-    > openssl s_client -connect accounts.google.com:443
     > ```
+    >
+    > openssl s_client -connect accounts.google.com:443
     >
     > ![](images/google_ssl_001.png)
 
     And for `https://www.googleapis.com`
 
     > ``` shell
-    > openssl s_client -connect www.googleapis.com:443
     > ```
+    >
+    > openssl s_client -connect www.googleapis.com:443
     >
     > ![](images/google_ssl_002.png)
 

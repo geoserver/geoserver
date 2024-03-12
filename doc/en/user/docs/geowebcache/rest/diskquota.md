@@ -71,14 +71,16 @@ curl -u admin:geoserver -v -XGET http://localhost:8080/geoserver/gwc/rest/diskqu
     The request body for PUT should contain only the desired properties to be modified. For example, the following will only change the maxConcurrentCleanups property in XML format:
     
     ``` xml
-    <gwcQuotaConfiguration><maxConcurrentCleanUps>2</maxConcurrentCleanUps></gwcQuotaConfiguration>
     ```
+    
+    <gwcQuotaConfiguration><maxConcurrentCleanUps>2</maxConcurrentCleanUps></gwcQuotaConfiguration>
     
     The following will only change the diskBlockSize, enabled, and globalQuota properties in JSON format:
     
     ``` json
-    {"gwcQuotaConfiguration":{"diskBlockSize":2048,"enabled":true,"globalQuota":{"value":"100","units":"MiB"}}
     ```
+    
+    {"gwcQuotaConfiguration":{"diskBlockSize":2048,"enabled":true,"globalQuota":{"value":"100","units":"MiB"}}
 
 The following XML example successfully enables the quota and sets the globalQuota size:
 

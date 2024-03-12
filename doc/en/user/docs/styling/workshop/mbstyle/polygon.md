@@ -50,21 +50,13 @@ This exercise makes use of the `ne:states_provinces_shp` layer.
 3.  Enter the following style and click ****Apply`` to save:
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_example",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "lightgrey"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_example", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "lightgrey" } } ]
+
+    }
 
 4.  Click on the tab **Layer Preview** to preview.
 
@@ -85,21 +77,13 @@ The **fill-color** property is used to provide the color used to draw the interi
 1.  Replace the contents of `polygon_example` with the following **fill** example:
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_example",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "gray"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_example", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "gray" } } ]
+
+    }
 
 2.  The **Map** tab can be used preview the change:
 
@@ -110,22 +94,13 @@ The **fill-color** property is used to provide the color used to draw the interi
     The **fill-outline** property is used to provide the color of the polygon boundary. For more advanced boundary styling, use a separate line layer.
 
     ``` {.json emphasize-lines="11"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_example",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "gray",
-            "fill-outline-color": "black"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_example", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "gray", "fill-outline-color": "black" } } ]
+
+    }
 
     !!! note
 
@@ -142,23 +117,13 @@ The **fill-color** property is used to provide the color used to draw the interi
     The **stroke-opacity** property is used in a similar fashion, as a range from 0.0 to 1.0.
 
     ``` {.json emphasize-lines="10"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_example",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-opacity": 0.5,
-            "fill-color": "white",
-            "fill-outline-color": "lightgrey"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_example", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-opacity": 0.5, "fill-color": "white", "fill-outline-color": "lightgrey" } } ]
+
+    }
 
 6.  As shown in the map preview:
 
@@ -189,22 +154,13 @@ The fill pattern is defined by repeating an image defined in a sprite-sheet.
 1.  Update ``polygon_example`` with the following sprite as a repeating fill pattern:
 
     ``` {.json emphasize-lines="4,11"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "polygon_example",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-pattern": "grey_square16" 
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "polygon_example", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-pattern": "grey_square16" } } ]
+
+    }
 
 2.  The map preview (and legend) will show the result:
 
@@ -221,22 +177,13 @@ The fill pattern is defined by repeating an image defined in a sprite-sheet.
     Update the example to use **grey_diag16** for a pattern of left hatching.
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "polygon_example",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-pattern": "grey_diag16" 
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "polygon_example", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-pattern": "grey_diag16" } } ]
+
+    }
 
 4.  This approach is well suited to printed output or low color devices.
 
@@ -245,31 +192,13 @@ The fill pattern is defined by repeating an image defined in a sprite-sheet.
 5.  Multiple fills can be applied by using a separate layer for each fill.
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "polygon_background",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#DDDDFF",
-            "fill-outline-color": "black"
-          }
-        },
-        {
-          "id": "polygon_pattern",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-pattern": "grey_diag8" 
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "polygon_background", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#DDDDFF", "fill-outline-color": "black" } }, { "id": "polygon_pattern", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-pattern": "grey_diag8" } } ]
+
+    }
 
 6.  The resulting image has a solid fill, with a pattern drawn overtop.
 
@@ -288,33 +217,13 @@ Labeling polygons follows the same approach used for LineStrings.
 2.  Try out **text-field** and **text-color** by replacing our `polygon_example` with the following:
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "blue"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}" 
-          },
-          "paint": {
-            "text-color": "black" 
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "blue" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}" }, "paint": { "text-color": "black" } } ]
+
+    }
 
 3.  Each label is drawn from the lower-left corner as shown in the `Map` preview.
 
@@ -331,34 +240,13 @@ Labeling polygons follows the same approach used for LineStrings.
     To align the center of our label we select "center" below:
 
     ``` {.json emphasize-lines="20"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "blue"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "text-anchor": "center"
-          },
-          "paint": {
-            "text-color": "black" 
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "blue" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}", "text-anchor": "center" }, "paint": { "text-color": "black" } } ]
+
+    }
 
 6.  The labeling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.
 
@@ -371,34 +259,13 @@ Labeling polygons follows the same approach used for LineStrings.
 8.  This offset is used to adjust the label position relative to the geometry centroid resulting in the starting label position.
 
     ``` {.json emphasize-lines="23"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "blue"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-          },
-          "paint": {
-            "text-color": "black",
-            "text-translate": [0, -7]
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "blue" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}", }, "paint": { "text-color": "black", "text-translate": [0, -7] } } ]
+
+    }
 
 9.  Confirm this result in the map preview.
 
@@ -417,35 +284,13 @@ Labeling polygons follows the same approach used for LineStrings.
 11. To move our labels down (allowing readers to focus on each shape) we can use displacement combined with followed by horizontal alignment.
 
     ``` {.json emphasize-lines="20,24"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "blue"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "text-anchor": "left"
-          },
-          "paint": {
-            "text-color": "black",
-            "text-translate": [0, -7]
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "blue" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}", "text-anchor": "left" }, "paint": { "text-color": "black", "text-translate": [0, -7] } } ]
+
+    }
 
 12. As shown in the map preview.
 
@@ -462,35 +307,13 @@ When working with labels a map can become busy very quickly, and difficult to re
 2.  Using this we can make a small improvement in our example:
 
     ``` {.json emphasize-lines="21"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "blue"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "text-anchor": "center"
-            "text-max-width": 14
-          },
-          "paint": {
-            "text-color": "black",
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "blue" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}", "text-anchor": "center" "text-max-width": 14 }, "paint": { "text-color": "black", } } ]
+
+    }
 
 3.  As shown in the following preview.
 
@@ -501,39 +324,17 @@ When working with labels a map can become busy very quickly, and difficult to re
     Use of a halo to outline labels allows the text to stand out from an otherwise busy background. In this case we will make use of the fill color, to provide some space around our labels. We will also change the font to Arial.
 
     ``` {.json emphasize-lines="22,26-27"}
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_fill",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#7EB5D3",
-            "fill-outline-color": "blue"
-          }
-        },
-        {
-          "id": "polygon_label",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "text-anchor": "center"
-            "text-max-width": 14,
-            "text-font": ["Arial"]
-          },
-          "paint": {
-            "text-color": "black",
-            "text-halo-color": "#7EB5D3",
-            "text-halo-width": 2
-
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_fill", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#7EB5D3", "fill-outline-color": "blue" } }, { "id": "polygon_label", "source-layer": "ne:states_provinces_shp", "type": "symbol", "layout": { "text-field": "{name}", "text-anchor": "center" "text-max-width": 14, "text-font": ["Arial"] }, "paint": { "text-color": "black", "text-halo-color": "#7EB5D3", "text-halo-width": 2
+
+        > ### }
+
+        ]
+
+    }
 
     ![image](../style/img/polygon_label_5.png)
 
@@ -577,103 +378,13 @@ A thematic map (rather than focusing on representing the shape of the world) use
 3.  The first approach we will take is to directly select content based on **colormap**, providing a color based on the **9-class Set3** palette above:
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon_1",
-          "filter": ["==", "mapcolor9", 1],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#8DD3C7",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_2",
-          "filter": ["==", "mapcolor9", 2],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#FFFFB3",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_3",
-          "filter": ["==", "mapcolor9", 3],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#BEBADA",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_4",
-          "filter": ["==", "mapcolor9", 4],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#FB8072",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_5",
-          "filter": ["==", "mapcolor9", 5],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#80B1D3",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_6",
-          "filter": ["==", "mapcolor9", 6],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#FDB462",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_7",
-          "filter": ["==", "mapcolor9", 7],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#B3DE69",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_8",
-          "filter": ["==", "mapcolor9", 8],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#FCCDE5",
-            "fill-outline-color": "gray"
-          }
-        },
-        {
-          "id": "polygon_9",
-          "filter": ["==", "mapcolor9", 9],
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#D9D9D9",
-            "fill-outline-color": "gray"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon_1", "filter": ["==", "mapcolor9", 1], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#8DD3C7", "fill-outline-color": "gray" } }, { "id": "polygon_2", "filter": ["==", "mapcolor9", 2], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#FFFFB3", "fill-outline-color": "gray" } }, { "id": "polygon_3", "filter": ["==", "mapcolor9", 3], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#BEBADA", "fill-outline-color": "gray" } }, { "id": "polygon_4", "filter": ["==", "mapcolor9", 4], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#FB8072", "fill-outline-color": "gray" } }, { "id": "polygon_5", "filter": ["==", "mapcolor9", 5], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#80B1D3", "fill-outline-color": "gray" } }, { "id": "polygon_6", "filter": ["==", "mapcolor9", 6], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#FDB462", "fill-outline-color": "gray" } }, { "id": "polygon_7", "filter": ["==", "mapcolor9", 7], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#B3DE69", "fill-outline-color": "gray" } }, { "id": "polygon_8", "filter": ["==", "mapcolor9", 8], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#FCCDE5", "fill-outline-color": "gray" } }, { "id": "polygon_9", "filter": ["==", "mapcolor9", 9], "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": "#D9D9D9", "fill-outline-color": "gray" } } ]
+
+    }
 
 4.  The **Map** tab can be used to preview this result.
 
@@ -690,36 +401,13 @@ A thematic map (rather than focusing on representing the shape of the world) use
 6.  Swap out **mapcolor9** theme to use the **categorical** function:
 
     ``` json
-    {
-      "version": 8,
-      "name": "polygon_example",
-      "layers": [
-        {
-          "id": "polygon",
-          "source-layer": "ne:states_provinces_shp",
-          "type": "fill",
-          "paint": {
-            "fill-color": {
-              "property": "mapcolor9",
-              "type": "categorical",
-              "stops": [
-                [1, "#8dd3c7"],
-                [2, "#ffffb3"],
-                [3, "#bebada"],
-                [4, "#fb8072"],
-                [5, "#80b1d3"],
-                [6, "#fdb462"],
-                [7, "#b3de69"],
-                [8, "#fccde5"],
-                [9, "#d9d9d9"]
-              ]
-            },
-            "fill-outline-color": "gray"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": { "property": "mapcolor9", "type": "categorical", "stops": [ [1, "#8dd3c7"], [2, "#ffffb3"], [3, "#bebada"], [4, "#fb8072"], [5, "#80b1d3"], [6, "#fdb462"], [7, "#b3de69"], [8, "#fccde5"], [9, "#d9d9d9"] ] }, "fill-outline-color": "gray" } } ]
+
+    }
 
 7.  The **Map** tab provides the same preview.
 
@@ -728,42 +416,35 @@ A thematic map (rather than focusing on representing the shape of the world) use
 8.  The **Generated SLD** tab shows where things get interesting. Our generated style now consists of a single **Rule**:
 
     ``` xml
-    <sld:Rule>
-       <sld:PolygonSymbolizer>
-          <sld:Fill>
-             <sld:CssParameter name="fill">
-                <ogc:Function name="Recode">
-                   <ogc:PropertyName>mapcolor9</ogc:PropertyName>
-                   <ogc:Literal>1</ogc:Literal>
-                      <ogc:Literal>#8dd3c7</ogc:Literal>
-                   <ogc:Literal>2</ogc:Literal>
-                      <ogc:Literal>#ffffb3</ogc:Literal>
-                   <ogc:Literal>3</ogc:Literal>
-                      <ogc:Literal>#bebada</ogc:Literal>
-                   <ogc:Literal>4</ogc:Literal>
-                      <ogc:Literal>#fb8072</ogc:Literal>
-                   <ogc:Literal>5</ogc:Literal>
-                      <ogc:Literal>#80b1d3</ogc:Literal>
-                   <ogc:Literal>6</ogc:Literal>
-                      <ogc:Literal>#fdb462</ogc:Literal>
-                   <ogc:Literal>7</ogc:Literal>
-                      <ogc:Literal>#b3de69</ogc:Literal>
-                   <ogc:Literal>8</ogc:Literal>
-                      <ogc:Literal>#fccde5</ogc:Literal>
-                   <ogc:Literal>9</ogc:Literal>
-                      <ogc:Literal>#d9d9d9</ogc:Literal>
-             </ogc:Function>
-             </sld:CssParameter>
-          </sld:Fill>
-       </sld:PolygonSymbolizer>
-       <sld:LineSymbolizer>
-          <sld:Stroke>
-             <sld:CssParameter name="stroke">#808080</sld:CssParameter>
-             <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
-          </sld:Stroke>
-       </sld:LineSymbolizer>
-    </sld:Rule>
     ```
+
+    <sld:Rule>
+
+    :   
+
+        <sld:PolygonSymbolizer>
+
+        :   
+
+            <sld:Fill>
+
+            :   
+
+                <sld:CssParameter name="fill">
+
+                :   
+
+                    <ogc:Function name="Recode">
+
+                    :   <ogc:PropertyName>mapcolor9</ogc:PropertyName> <ogc:Literal>1</ogc:Literal> <ogc:Literal>#8dd3c7</ogc:Literal> <ogc:Literal>2</ogc:Literal> <ogc:Literal>#ffffb3</ogc:Literal> <ogc:Literal>3</ogc:Literal> <ogc:Literal>#bebada</ogc:Literal> <ogc:Literal>4</ogc:Literal> <ogc:Literal>#fb8072</ogc:Literal> <ogc:Literal>5</ogc:Literal> <ogc:Literal>#80b1d3</ogc:Literal> <ogc:Literal>6</ogc:Literal> <ogc:Literal>#fdb462</ogc:Literal> <ogc:Literal>7</ogc:Literal> <ogc:Literal>#b3de69</ogc:Literal> <ogc:Literal>8</ogc:Literal> <ogc:Literal>#fccde5</ogc:Literal> <ogc:Literal>9</ogc:Literal> <ogc:Literal>#d9d9d9</ogc:Literal>
+
+                </ogc:Function> </sld:CssParameter>
+
+            </sld:Fill>
+
+        </sld:PolygonSymbolizer> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#808080</sld:CssParameter> <sld:CssParameter name="stroke-width">0.5</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer>
+
+    </sld:Rule>
 
 ## Bonus
 
@@ -771,7 +452,7 @@ The following optional explore and challenge activities offer a chance to review
 
 In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.
 
-### Explore Interval {: #mbstyle.polygon.q2 }
+#### Explore Interval {: #mbstyle.polygon.q2 }
 
 !!! abstract "Instructor Notes"
 
@@ -781,41 +462,18 @@ In a classroom setting you are encouraged to team up into groups, with each grou
     
     -   Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the `ne:rivers` data layer (which is not yet available).
 
-1.  The **interval** function can be used to generate property values based on quantitative information. Here is an example using interval to color states according to size.
+#\. The **interval** function can be used to generate property values based on quantitative information. Here is an example using interval to color states according to size.
 
-    > ``` json
-    > {
-    >  "version": 8,
-    >  "name": "polygon_example",
-    >  "layers": [
-    >    {
-    >      "id": "polygon",
-    >      "source-layer": "ne:states_provinces_shp",
-    >      "type": "fill",
-    >      "paint": {
-    >        "fill-color": {
-    >          "property": "Shape_Area",
-    >          "type": "interval",
-    >          "stops": [
-    >            [0, "#08519c"],
-    >            [0.5, "#3182bd"],
-    >            [1, "#6baed6"],
-    >            [5, "#9ecae1"],
-    >            [60, "#c6dbef"],
-    >            [80, "#eff3ff"]
-    >          ]
-    >        }
-    >      }
-    >    }
-    >  ]
-    > }
-    > ```
+> ``` json
+> ```
+>
+> { "version": 8, "name": "polygon_example", "layers": [ { "id": "polygon", "source-layer": "ne:states_provinces_shp", "type": "fill", "paint": { "fill-color": { "property": "Shape_Area", "type": "interval", "stops": [ [0, "#08519c"], [0.5, "#3182bd"], [1, "#6baed6"], [5, "#9ecae1"], [60, "#c6dbef"], [80, "#eff3ff"] ] } } } ] }
+>
+> ![image](../style/img/polygon_area.png)
 
-    ![image](../style/img/polygon_area.png)
+1.  An exciting use of the GeoServer **shape** symbols is the theming by changing the **size** used for pattern density.
 
-2.  An exciting use of the GeoServer **shape** symbols is the theming by changing the **size** used for pattern density.
-
-3.  **Explore:** Use the **interval** function to theme by **datarank**.
+2.  **Explore:** Use the **interval** function to theme by **datarank**.
 
     ![image](../style/img/polygon_categorize.png)
 
@@ -823,7 +481,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
         Answer `provided <mbstyle.polygon.a2>`{.interpreted-text role="ref"} at the end of the workbook.
 
-### Challenge Halo {: #mbstyle.polygon.q4 }
+#### Challenge Halo {: #mbstyle.polygon.q4 }
 
 1.  The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
 
@@ -835,7 +493,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
         Answer `provided <mbstyle.polygon.a4>`{.interpreted-text role="ref"} at the end of the workbook.
 
-### Challenge Theming using Multiple Attributes {: #mbstyle.polygon.q5 }
+#### Challenge Theming using Multiple Attributes {: #mbstyle.polygon.q5 }
 
 1.  A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
 
@@ -847,7 +505,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
         Answer `provided <mbstyle.polygon.a5>`{.interpreted-text role="ref"} at the end of the workbook.
 
-### Challenge Use of Z-Index {: #mbstyle.polygon.q6 }
+#### Challenge Use of Z-Index {: #mbstyle.polygon.q6 }
 
 1.  Earlier we looked at using multiple **layers** to simulate line string casing. The line work was drawn twice, once with thick line, and then a second time with a thinner line. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
 

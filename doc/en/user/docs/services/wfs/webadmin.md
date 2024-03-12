@@ -60,25 +60,12 @@ The list will be used only for the capabilities document generation. It does not
 
 CSV is still widely used as a format to exchange tabular data. For GeoServer CSV output format, the date field format can specified using the Date Format text box as shown above. Here are some common formatting patterns supported
 
-Date and Time Pattern
-
-:   Result
-
-`yyyy.MM.dd G 'at' HH:mm:ss z`
-
-:   2001.07.04 AD at 12:08:56 PDT
-
-`EEE, MMM d, ''yy`
-
-:   Wed, Jul 4, '01
-
-`yyyy-MM-dd'T'HH:mm:ss.SSSZ`
-
-:   2001-07-04T12:08:56.235-0700
-
-`yyyy-MM-dd'T'HH:mm:ss.SSSXXX`
-
-:   2001-07-04T12:08:56.235-07:00
+| Date and Time Pattern          | Result                        |
+|--------------------------------|-------------------------------|
+| `yyyy.MM.dd G 'at' HH:mm:ss z` | 2001.07.04 AD at 12:08:56 PDT |
+| `EEE, MMM d, ''yy`             | Wed, Jul 4, '01              |
+| `yyyy-MM-dd'T'HH:mm:ss.SSSZ`   | 2001-07-04T12:08:56.235-0700  |
+| `yyyy-MM-dd'T'HH:mm:ss.SSSXXX` | 2001-07-04T12:08:56.235-07:00 |
 
 Here, **yyyy-MM-dd'T'HH:mm:ss.SSS'Z'** pattern represents the year, month, day, hour, minute, second and milliseconds. The components are separated by a hyphen character. A literal 'T' character is used to separate the date and time parts. A literal 'Z' character represents the UTC time zone. For instance, yyyy represents the year with four digits, MM represents the month with leading zeros, dd represents the day with leading zeros, and so on.
 

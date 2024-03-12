@@ -35,31 +35,31 @@ The following example shows how to configure the ActiveMQ broker in JDBC Primary
   <broker xmlns="http://activemq.apache.org/schema/core">
 
     <destinationPolicy>
-  <policyMap><policyEntries>
+ <policyMap><policyEntries>
 
-      <policyEntry topic="FOO.>">
-        <dispatchPolicy>
-      <strictOrderDispatchPolicy />
-        </dispatchPolicy>
-        <subscriptionRecoveryPolicy>
-      <lastImageSubscriptionRecoveryPolicy />
-        </subscriptionRecoveryPolicy>
-      </policyEntry>
+     <policyEntry topic="FOO.>">
+       <dispatchPolicy>
+    <strictOrderDispatchPolicy />
+       </dispatchPolicy>
+       <subscriptionRecoveryPolicy>
+    <lastImageSubscriptionRecoveryPolicy />
+       </subscriptionRecoveryPolicy>
+     </policyEntry>
 
-  </policyEntries></policyMap>
+ </policyEntries></policyMap>
     </destinationPolicy>
 
 
     <persistenceAdapter>
-    <jdbcPersistenceAdapter dataDirectory="${activemq.base}/activemq-data"/>
+   <jdbcPersistenceAdapter dataDirectory="${activemq.base}/activemq-data"/>
 
-    <!-- 
-    <jdbcPersistenceAdapter dataDirectory="activemq-data" dataSource="#oracle-ds"/>
-    --> 
+   <!-- 
+   <jdbcPersistenceAdapter dataDirectory="activemq-data" dataSource="#oracle-ds"/>
+   --> 
     </persistenceAdapter>
 
     <transportConnectors>
-  <transportConnector name="default" uri="tcp://localhost:61616"/>
+ <transportConnector name="default" uri="tcp://localhost:61616"/>
     </transportConnectors>
 
   </broker>

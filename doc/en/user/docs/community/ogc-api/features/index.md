@@ -189,18 +189,15 @@ As an example customize how collections are listed:
 2.  Save file to **`GEOSERVER_DATA_DIR/workspace/templates/ogc/collections.ftl`**, and rewrite as:
 
     ``` 
-    <#include "common-header.ftl">
-           <h2>OGC API Feature Collections</h2>
-           <p>List of collections published.</p>
-           <p>See also: <#list model.getLinksExcept(null, "text/html") as link>
-              <a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.</p>
-
-         <#list model.collections as collection>
-           <h2><a href="${serviceLink("collections/${collection.id}")}">${collection.id}</a></h2>
-           <#include "collection_include.ftl">
-         </#list>
-    <#include "common-footer.ftl">
     ```
+
+    <#include "common-header.ftl">
+
+    :   <h2>OGC API Feature Collections</h2> <p>List of collections published.</p> <p>See also: <#list model.getLinksExcept(null, "text/html") as link> <a href="\${link.href}">\${link.type}</a><#if link_has_next>, </#if></#list>.</p>
+
+        <#list model.collections as collection> <h2><a href="\${serviceLink("collections/\${collection.id}")}">\${collection.id}</a></h2> <#include "collection_include.ftl"> </#list>
+
+    <#include "common-footer.ftl">
 
 3.  Many templates are constructed using `#include`, for example **`collection.ftl`** above uses `<#include "common-header.ftl">` located next to **`collections.ftl`**.
 
@@ -214,17 +211,14 @@ As an example customize how collections are listed:
 5.  Language codes are appended for internationalization. For French create the file **`GEOSERVER_DATA_DIR/workspace/{workspace}/ogc/collections_fr.ftl`** and translate contents:
 
     ``` 
-    <#include "common-header.ftl">
-           <h2>OGC API Feature Service</h2>
-           <p>Liste des collections publiées.</p>
-           <p>Voir également: <#list model.getLinksExcept(null, "text/html") as link>
-              <a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.</p>
-
-         <#list model.collections as collection>
-           <h2><a href="${serviceLink("collections/${collection.id}")}">${collection.id}</a></h2>
-           <#include "collection_include.ftl">
-         </#list>
-    <#include "common-footer.ftl">
     ```
+
+    <#include "common-header.ftl">
+
+    :   <h2>OGC API Feature Service</h2> <p>Liste des collections publiées.</p> <p>Voir également: <#list model.getLinksExcept(null, "text/html") as link> <a href="\${link.href}">\${link.type}</a><#if link_has_next>, </#if></#list>.</p>
+
+        <#list model.collections as collection> <h2><a href="\${serviceLink("collections/\${collection.id}")}">\${collection.id}</a></h2> <#include "collection_include.ftl"> </#list>
+
+    <#include "common-footer.ftl">
 
 6.  For details on how to write templates see [Freemarker Templates](../../../tutorials/freemarker.md) tutorial.

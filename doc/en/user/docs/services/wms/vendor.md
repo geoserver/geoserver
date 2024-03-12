@@ -19,11 +19,11 @@ An example request:
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <WMT_MS_Capabilities version="1.1.1" updateSequence="247">
- <Capability>
-     <Request>
+   <Capability>
+      <Request>
          <GetCapabilities>
-             <Format>application/vnd.ogc.wms_xml</Format>
-             <Format>text/xml</Format>
+            <Format>application/vnd.ogc.wms_xml</Format>
+            <Format>text/xml</Format>
 ...
 ```
 
@@ -254,7 +254,7 @@ In OpenLayers, a good way to specify the `tilesorigin` is to reference the map e
 
 The following code shows how to specify the meta-tiling parameters:
 
-``` {.javascript linenos=""}
+``` javascript
 var options = {
     ...
     maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),

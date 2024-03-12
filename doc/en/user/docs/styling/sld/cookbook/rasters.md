@@ -28,7 +28,7 @@ This example shows a two-color style with green at lower elevations and brown at
 
 [View and download the full "Two-color gradient" SLD](artifacts/raster_twocolorgradient.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>
@@ -58,7 +58,7 @@ This example creates the same two-color gradient as in the [Two-color gradient](
 
 [View and download the full "Transparent gradient" SLD](artifacts/raster_transparentgradient.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>
@@ -87,7 +87,7 @@ This example normalizes the color output and then increases the brightness by a 
 
 [View and download the full "Brightness and contrast" SLD](artifacts/raster_brightnessandcontrast.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>
@@ -121,7 +121,7 @@ This example creates a three-color gradient in primary colors.
 
 [View and download the full "Three-color gradient" SLD](artifacts/raster_threecolorgradient.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>
@@ -152,7 +152,7 @@ This example creates an "alpha channel" effect such that higher values are incre
 
 [View and download the full "Alpha channel" SLD](artifacts/raster_alphachannel.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>
@@ -186,7 +186,7 @@ This example shows a gradient that is not linearly interpolated but instead has 
 
 [View and download the full "Discrete colors" SLD](artifacts/raster_discretecolors.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>
@@ -214,7 +214,7 @@ This example shows a gradient interpolated across eight different colors.
 
 [View and download the full "Many color gradient" SLD](artifacts/raster_manycolorgradient.sld)
 
-``` {.xml linenos=""}
+``` xml
 <FeatureTypeStyle>
   <Rule>
     <RasterSymbolizer>

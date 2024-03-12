@@ -71,16 +71,13 @@ The J2EE role service parses roles from the `WEB-INF/web.xml` file. As a consequ
 ### `<security-role>`
 
 > ``` xml
-> <security-role>
->    <role-name>role1</role-name>
-> </security-role>
-> <security-role>
->    <role-name>role2</role-name>
-> </security-role>  
-> <security-role>
->    <role-name>employee</role-name>
-> </security-role>
 > ```
+>
+> <security-role>
+>
+> :   <role-name>role1</role-name>
+>
+> </security-role> <security-role> <role-name>role2</role-name> </security-role> <security-role> <role-name>employee</role-name> </security-role>
 >
 > Roles retrieved:
 >
@@ -104,8 +101,9 @@ The J2EE role service parses roles from the `WEB-INF/web.xml` file. As a consequ
 >        <role-name>role1</role-name>
 >        <role-name>employee</role-name>
 >    </auth-constraint>
-> </security-constraint>
 > ```
+>
+> </security-constraint>
 >
 > Roles retrieved:
 >
@@ -155,13 +153,9 @@ The `roles` table is the primary table and contains the list of roles. Roles in 
 
 The default GeoServer security configuration is:
 
-name
-
-:   parent
-
-*Empty*
-
-:   *Empty*
+| name    | parent  |
+|---------|---------|
+| *Empty* | *Empty* |
 
 | rolename | propname | propvalue |
 |----------|----------|-----------|

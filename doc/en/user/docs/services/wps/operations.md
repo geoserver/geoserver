@@ -2,29 +2,14 @@
 
 The WPS 1.0.0 standard defines three operations for the discovery and execution of geospatial processes, and GeoServer extends these with two further vendor or pseudo-operations. The operations are:
 
-**Operation**
-
-:   **Description**
-
-[GetCapabilities](#getcapabilities)
-
-:   Retrieves details of the service offering, including service metadata and metadata describing the available processes
-
-[DescribeProcess](#describeprocess)
-
-:   Retrieves a description of a WPS process available through the service
-
-[Execute](#execute)
-
-:   A request to perform the process with specified input values and required output data items
-
-[Dismiss](#dismiss) (vendor extension)
-
-:   Used to cancel the execution of a process
-
-[GetExecutions](#getexecutions) (vendor extension)
-
-:   Retrieves a list of the current Execution Statuses
+|                                                    |                                                                                                                       |
+|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| **Operation**                                      | **Description**                                                                                                       |
+| [GetCapabilities](#getcapabilities)                | Retrieves details of the service offering, including service metadata and metadata describing the available processes |
+| [DescribeProcess](#describeprocess)                | Retrieves a description of a WPS process available through the service                                                |
+| [Execute](#execute)                                | A request to perform the process with specified input values and required output data items                           |
+| [Dismiss](#dismiss) (vendor extension)             | Used to cancel the execution of a process                                                                             |
+| [GetExecutions](#getexecutions) (vendor extension) | Retrieves a list of the current Execution Statuses                                                                    |
 
 ## GetCapabilities {: #wps_getcaps }
 

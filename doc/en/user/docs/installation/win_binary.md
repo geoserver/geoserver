@@ -22,15 +22,13 @@ The other way of installing GeoServer on Windows is to use the platform-independ
 
 3.  Select the version of GeoServer that you wish to download. If you're not sure, select [Stable](https://geoserver.org/release/stable) release.
 
-    ``` snapshot
-    ```
+    !!! abstract "Nightly Build"
 
-    These instructions are for GeoServer {{ version }}-SNAPSHOT which is provided as a [Nightly](https://geoserver.org/release/main) release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
+        These instructions are for GeoServer {{ version }}-SNAPSHOT which is provided as a [Nightly](https://geoserver.org/release/main) release. Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases change on an ongoing basis and are not suitable for a production environment.
 
-    ``` not snapshot
-    ```
+    !!! abstract "Release"
 
-    These instructions are for GeoServer {{ release }}.
+        These instructions are for GeoServer {{ release }}.
 
 4.  Select **Platform Independent Binary** on the download page: {{ download_release('bin') }} (nightly {{ download_release('bin','snapshot') }})
 

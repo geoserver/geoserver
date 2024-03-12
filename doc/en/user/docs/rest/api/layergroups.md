@@ -6,41 +6,12 @@ A `layer group` is a grouping of layers and styles that can be accessed as a sin
 
 Controls all layer groups.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return all layer groups
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-:   Add a new layer group
-
-    201, with `Location` header
-
-    XML,JSON
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
+| Method | Action                  | Status code                 | Formats         | Default Format |
+|--------|-------------------------|-----------------------------|-----------------|----------------|
+| GET    | Return all layer groups | 200                         | HTML, XML, JSON | HTML           |
+| POST   | Add a new layer group   | 201, with `Location` header | XML,JSON        |                |
+| PUT    |                         | 405                         |                 |                |
+| DELETE |                         | 405                         |                 |                |
 
 ## `/layergroups/<lg>[.<format>]`
 
@@ -71,41 +42,12 @@ The `quietOnNotFound` parameter avoids to log an Exception when the layergroup i
 
 Controls all layer groups in a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return all layer groups within workspace `ws`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-:   Add a new layer group within workspace `ws`
-
-    201, with `Location` header
-
-    XML,JSON
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
+| Method | Action                                        | Status code                 | Formats         | Default Format |
+|--------|-----------------------------------------------|-----------------------------|-----------------|----------------|
+| GET    | Return all layer groups within workspace `ws` | 200                         | HTML, XML, JSON | HTML           |
+| POST   | Add a new layer group within workspace `ws`   | 201, with `Location` header | XML,JSON        |                |
+| PUT    |                                               | 405                         |                 |                |
+| DELETE |                                               | 405                         |                 |                |
 
 ## `/workspaces/<ws>/layergroups/<lg>[.<format>]`
 

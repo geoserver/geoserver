@@ -140,7 +140,7 @@ The optional `<PerpendicularOffset>` element allows you to position a label abov
   <LinePlacement>
     <PerpendicularOffset>
        10
-    </PerpendicularOffset>           
+    </PerpendicularOffset>          
   </LinePlacement>
 </LabelPlacement>
 ```
@@ -405,21 +405,12 @@ GeoServer normally tries to place labels horizontally within a polygon, and give
 <VendorOption name="polygonAlign">mbr</VendorOption>
 ```
 
-**Option**
-
-:   **Description**
-
-`manual`
-
-:   The default value. Only a rotation manually specified in the `<Rotation>` tag will be used
-
-`ortho`
-
-:   If the label does not fit horizontally and the polygon is taller than wider then vertical alignment will also be tried
-
-`mbr`
-
-:   If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well
+|            |                                                                                                                                            |
+|------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| **Option** | **Description**                                                                                                                            |
+| `manual`   | The default value. Only a rotation manually specified in the `<Rotation>` tag will be used                                                 |
+| `ortho`    | If the label does not fit horizontally and the polygon is taller than wider then vertical alignment will also be tried                     |
+| `mbr`      | If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well |
 
 ### graphic-resize {: #labeling_graphic_resize }
 

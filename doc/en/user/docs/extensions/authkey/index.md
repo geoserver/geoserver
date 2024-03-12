@@ -24,7 +24,7 @@ Key providers are responsible for mapping the authentication keys to a user. The
 
 This key provider uses a user property `UUID` to map the authentication key to the user. User properties are stored in the user/group service. Synchronizing is simple since the logic has to search for users not having the property `UUID` and add it. The property value is a generated UUID.
 
-> UUID=b52d2068-0a9b-45d7-aacc-144d16322018
+`UUID=b52d2068-0a9b-45d7-aacc-144d16322018`
 
 If the user/group service is read only, the property has to be added from outside, no synchronizing is possible.
 
@@ -49,9 +49,8 @@ This key provider calls an external URL to map the authentication key to the use
 
 The web service URL and some other parameters can be specified to configure the mapper in detail:
 
-|                                                       |                                                                                                                                                                                                                                                                                              |
-|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Option**                                            | **Description**                                                                                                                                                                                                                                                                              |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Web Service URL, with key placeholder`               | the complete URL of the key mapping webservice, with a special placeholder ({key}) that will be replaced by the current authentication key                                                                                                                                                   |
 | `Web Service Response User Search Regular Expression` | a regular expression used to extract the username from the webservice response; the first matched group (the part included in parentheses) in the regular expression will be used as the username; the default (\^\\s*(.*)\\s*\$) takes all the response text, trimming spaces at both ends |
 | `Connection Timeout`                                  | timeout to connect to the webservice                                                                                                                                                                                                                                                         |
@@ -61,9 +60,8 @@ The mapper will call the webservice using an HTTP GET request (webservice requir
 
 If a response is received, it is parsed using the configured regular expression to extract the username from it. New lines are automatically stripped from the response. Some examples of regular expression that can be used are:
 
-|                                      |                                                                            |
-|--------------------------------------|----------------------------------------------------------------------------|
 | **Regular Expression**               | **Usage**                                                                  |
+|--------------------------------------|----------------------------------------------------------------------------|
 | `^\s*(.*)\s*$`                       | all text trimming spaces at both ends                                      |
 | `^.*?"user"\s*:\s*"([^"]+)".*$` | json response where the username is contained in a property named **user** |
 | `^.*?<username>(.*?)</username>.*$`  | xml response where the username is contained in a tag named **username**   |
@@ -78,91 +76,92 @@ The rationale is mostly the same; that kind of `GeoServer UserGroup Service` wil
 
 In order to do this, it is possible to configure instances of **AuthKEY WebService Body Response** User Group Service.
 
-First thing to do is to:
+**First**:
 
 1.  Login as an `Administrator`
 
 2.  Move to `Security` > `Users, Groups, Roles` and select `Add new` from `User Group Services`
 
-    > ![](images/001_user_group_service.png)
+    ![](images/001_user_group_service.png)
+    *add new user group service*
 
 3.  Click on `AuthKEY WebService Body Response`
 
-    > ![](images/002_user_group_service.png)
+    ![](images/002_user_group_service.png)
+    *AuthKEY WebService Body Response*
 
 4.  Provide a `Name` and select anything you want from `Passwords` - those won't be used by this service, but they are still mandatory for GeoServer -
 
-    > ![](images/003_user_group_service.png)
+    ![](images/003_user_group_service.png)
+    *user group service name*
 
-5\. Provide a suitable `Roles Regex` to apply to your Web Service Response
+5.  Provide a suitable `Roles Regex` to apply to your Web Service Response
 
-> ::: note
-> ::: title
-> Note
-> :::
->
-> This is the only real mandatory value to provide. The others are optional and will allow you to customize the User Group Service behavior (see below)
-> :::
->
-> ![](images/004_user_group_service.png)
+    This is the only real mandatory value to provide. The others are optional and will allow you to customize the User Group Service behavior (see below)
 
-Once the new `GeoServer UserGroup Service` has been configured, it can be easily linked to the `Key Provider Web Service Mapper`.
+    ![](images/004_user_group_service.png)
+    *user group service roles regex*
+
+**Second**: Once the new `GeoServer UserGroup Service` has been configured, next it can be linked to the `Key Provider Web Service Mapper`.
 
 1.  From `Authentication` > `Authentication Filters`, select - or add new - `AuthKEY` using `Web Service` as key mapper
 
-2\. Select the newly defined `UserGroup Service` and save
+2.  Select the newly defined `UserGroup Service` and save
 
-> ![](images/005_user_group_service.png)
+    ![](images/005_user_group_service.png)
+    *user group service save*
 
-**Additional Options**
+**Additional Options:**
 
 1.  *Optional static comma-separated list of available Groups from the Web Service response*
 
-    > It is worth notice that this `UserGroup Service` will **always** translate fetched Roles in the form `ROLE_<ROLENAME>`
-    >
-    > As an instance, if the `Roles Regular Expression` will match something like:
-    >
-    >     my_user_role1, another_custom_user_role, role_External_Role_X
-    >
-    > this will be converted into **3** different `GeoServer User Roles` named as:
-    >
-    >     ROLE_MY_USER_ROLE1
-    >     ROLE_ANOTHER_CUSTOM_USER_ROLE
-    >     ROLE_EXTERNAL_ROLE_X
-    >
-    > Of course the role names are known only at runtime; nevertheless it is possible to **statically** specify associated `GeoServer User Groups` to be mapped later to other internal `GeoServer User Roles`.
-    >
-    > What does this mean? A `GeoServer User Group` can be defined on the GeoServer Catalog and can be mapped by the active `Role Services` to one or more specific `GeoServer User Roles`.
-    >
-    > This mainly depends on the `GeoServer Role Service` you use. By default, the internal `GeoServer Role Service` can map Roles and Groups through static configuration stored on the GeoServer Data Dir. This is possible by editing `GeoServer User Group` details from the `Users, Groups, and Roles` panel
-    >
-    > > ![](images/006_user_group_service.png)
-    > >
-    > > ![](images/007_user_group_service.png)
-    >
-    > Now, this custom `UserGroup Service` maps dynamically `GeoServer User Role` to `GeoServer User Group` as follows:
-    >
-    >     ROLE_MY_USER_ROLE1              <> GROUP_MY_USER_ROLE1
-    >     ROLE_ANOTHER_CUSTOM_USER_ROLE   <> GROUP_ANOTHER_CUSTOM_USER_ROLE
-    >     ROLE_EXTERNAL_ROLE_X            <> GROUP_EXTERNAL_ROLE_X
-    >
-    > In order to be able to assign any `GeoServer User Group` to other internal `GeoServer User Roles`, since those are known only at runtime, the `UserGroup Service` allows us to **statically** specify the `GeoServer User Groups` the Web Service can use; this possible by setting the `Optional static comma-separated list of available Groups from the Web Service response` option:
-    >
-    > > ![](images/008_user_group_service.png)
-    >
-    > Once this is correctly configured, it will be possible to edit and assign `GeoServer User Roles` to the Groups by using the standard way
-    >
-    > > ![](images/009_user_group_service.png)
+    It is worth notice that this `UserGroup Service` will **always** translate fetched Roles in the form `ROLE_<ROLENAME>`
 
-2\. *Role Service to use*
+    As an instance, if the `Roles Regular Expression` will match something like:
 
-> By default, if no `Role Service` specified, the `UserGroup Service` will use the `GeoServer Active Role Service` to resolve `GeoServer User Roles` from `GeoServer User Groups` - as specified above -
->
-> > ![](images/010_user_group_service.png)
->
-> It is possible to define a `Custom Role Service` to use instead, to resole `GeoServer User Roles`; this is possible simply by selecting the `Role Service` to use from the `Role Service to use` option
->
-> > ![](images/011_user_group_service.png)
+        my_user_role1, another_custom_user_role, role_External_Role_X
+
+    this will be converted into **3** different `GeoServer User Roles` named as:
+
+        ROLE_MY_USER_ROLE1
+        ROLE_ANOTHER_CUSTOM_USER_ROLE
+        ROLE_EXTERNAL_ROLE_X
+
+    Of course the role names are known only at runtime; nevertheless it is possible to **statically** specify associated `GeoServer User Groups` to be mapped later to other internal `GeoServer User Roles`.
+
+    What does this mean? A `GeoServer User Group` can be defined on the GeoServer Catalog and can be mapped by the active `Role Services` to one or more specific `GeoServer User Roles`.
+
+    This mainly depends on the `GeoServer Role Service` you use. By default, the internal `GeoServer Role Service` can map Roles and Groups through static configuration stored on the GeoServer Data Dir. This is possible by editing `GeoServer User Group` details from the `Users, Groups, and Roles` panel
+
+    ![](images/006_user_group_service.png)
+
+    ![](images/007_user_group_service.png)
+
+    Now, this custom `UserGroup Service` maps dynamically `GeoServer User Role` to `GeoServer User Group` as follows:
+
+        ROLE_MY_USER_ROLE1              <> GROUP_MY_USER_ROLE1
+        ROLE_ANOTHER_CUSTOM_USER_ROLE   <> GROUP_ANOTHER_CUSTOM_USER_ROLE
+        ROLE_EXTERNAL_ROLE_X            <> GROUP_EXTERNAL_ROLE_X
+
+    In order to be able to assign any `GeoServer User Group` to other internal `GeoServer User Roles`, since those are known only at runtime, the `UserGroup Service` allows us to **statically** specify the `GeoServer User Groups` the Web Service can use; this possible by setting the `Optional static comma-separated list of available Groups from the Web Service response` option:
+
+    ![](images/008_user_group_service.png)
+
+    Once this is correctly configured, it will be possible to edit and assign `GeoServer User Roles` to the Groups by using the standard way
+
+    ![](images/009_user_group_service.png)
+
+2.  *Role Service to use*
+
+    By default, if no `Role Service` specified, the `UserGroup Service` will use the `GeoServer Active Role Service` to resolve `GeoServer User Roles` from `GeoServer User Groups` - as specified above -
+
+    ![](images/010_user_group_service.png)
+    *Role service*
+
+    It is possible to define a `Custom Role Service` to use instead, to resole `GeoServer User Roles`; this is possible simply by selecting the `Role Service` to use from the `Role Service to use` option
+
+    ![](images/011_user_group_service.png)
+    *Custom role service*
 
 ## Configuration
 
@@ -184,7 +183,8 @@ After configuring the filter it is necessary to put this filter on the authentic
 
 The following check is available for all provides.
 
-> ![](images/001_auto_sync.png)
+![](images/001_auto_sync.png)
+*Auto-synchronization*
 
 If enabled, the service will automatically invoke the corresponding mapper synchronize method; the one associated to the current AuthKey provider.
 

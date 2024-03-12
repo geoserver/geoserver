@@ -4,21 +4,12 @@
 
 The following table lists examples of various kinds of rendering transformations available in GeoServer:
 
-**Type**
-
-:   **Examples**
-
-Raster-to-Vector
-
-:   **Contour** extracts contours from a DEM raster. **RasterAsPointCollections** extracts a vector field from a multi-band raster
-
-Vector-to-Raster
-
-:   **BarnesSurfaceInterpolation** computes a surface from scattered data points. **Heatmap** computes a heatmap surface from weighted data points.
-
-Vector-to-Vector
-
-:   **PointStacker** aggregates dense point data into clusters.
+|                  |                                                                                                                                                 |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Type**         | **Examples**                                                                                                                                    |
+| Raster-to-Vector | **Contour** extracts contours from a DEM raster. **RasterAsPointCollections** extracts a vector field from a multi-band raster                  |
+| Vector-to-Raster | **BarnesSurfaceInterpolation** computes a surface from scattered data points. **Heatmap** computes a heatmap surface from weighted data points. |
+| Vector-to-Vector | **PointStacker** aggregates dense point data into clusters.                                                                                     |
 
 Rendering transformations are invoked within SLD styles. Parameters may be supplied to control the appearance of the output. The rendered output for the layer is produced by applying the styling rules and symbolizers in the SLD to the result of transformation.
 
@@ -70,7 +61,7 @@ If it is desired to display the input dataset in its original form, or transform
 
 `ras:Contour` is a **Raster-to-Vector** rendering transformation which extracts contour lines at specified levels from a raster DEM. The following SLD invokes the transformation and styles the contours as black lines.
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0" 
   xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
@@ -164,7 +155,7 @@ The result of using this transformation is shown in the following map image (whi
 
 `vec:Heatmap` is a **Vector-to-Raster** rendering transformation which generates a heatmap surface from weighted point data. The following SLD invokes a Heatmap rendering transformation on a featuretype with point geometries and an attribute `pop2000` supplying the weight for the points (in this example, a dataset of world urban areas is used). The output is styled using a color ramp across the output data value range [0 .. 1].
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0" 
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
@@ -262,7 +253,7 @@ This transformation styles a layer to produce a heatmap surface for the data in 
 
 The `Jiffle` rendering transformation allows to run map algebra on the bands of an input raster layer using the [Jiffle language](https://github.com/geosolutions-it/jai-ext/wiki/Jiffle---language-summary). For example, the following style computes the NDVI index from a 13 bands Sentinel 2 image, in which the red and NIR bands are the forth and eight bands (Jiffle band indexes are zero based), and then displays the resulting index with a color map:
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld
 http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">

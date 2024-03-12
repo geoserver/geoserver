@@ -20,19 +20,16 @@ A field is defined in the yaml following key-value pairs:
 
 The key is the identifier for the field and should therefore be unique. Other configurations can refer the field by using this identifier. E.g the geonetwork mapping, internationalization.
 
-+-------+----------+-------------------+
 | Key   | Required | Value             |
-+=======+==========+===================+
+| ----- | -------- | ----------------- |
 | > key | > yes    | > a unique string |
-+-------+----------+-------------------+
 
 ### fieldType
 
 Chooses the type of input widget for the field. A detailed description for each type can be found in the [Field Types](#field-types) section.
 
-+-------------+----------+------------------+
 | Key         | Required | Value            |
-+=============+==========+==================+
+| ----------- | -------- | ---------------- |
 | > fieldType | > yes    | > -   COMPLEX    |
 |             |          | > -   TEXT       |
 |             |          | > -   NUMBER     |
@@ -45,17 +42,14 @@ Chooses the type of input widget for the field. A detailed description for each 
 |             |          | > -   SUGGESTBOX |
 |             |          | > -   REQUIREBOX |
 |             |          | > -   DERIVED    |
-+-------------+----------+------------------+
 
 ### label
 
 If present this value will be used as the label for the field. When the label is not present in the yaml configuration the key will be used as label. Note: when the key is present in the internationalization (i18n) file see [Internationalization support](#internationalization-support) than the value from that file will be used as the label.
 
-+---------+----------+--------------+
 | Key     | Required | Value        |
-+=========+==========+==============+
+| ------- | -------- | ------------ |
 | > label | > no     | > any string |
-+---------+----------+--------------+
 
 ### occurrence
 
@@ -71,12 +65,10 @@ Choosing `REPEAT` will render the field in a table allowing the user to input mu
 
 The data in table can be sorted using the green arrow buttons.
 
-+--------------+----------+------------------------+
 | Key          | Required | Value                  |
-+==============+==========+========================+
+| ------------ | -------- | ---------------------- |
 | > occurrence | > no     | > -   SINGLE (Default) |
 |              |          | > -   REPEAT           |
-+--------------+----------+------------------------+
 
 ### condition
 

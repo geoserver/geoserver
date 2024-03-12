@@ -6,41 +6,12 @@ Allows access to GeoServer's global settings.
 
 Controls all global settings.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   List all global settings
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Update global settings
-
-    200
-
-    XML, JSON
-
-DELETE
-
-> 405
+| Method | Action                   | Status code | Formats         | Default Format |
+|--------|--------------------------|-------------|-----------------|----------------|
+| GET    | List all global settings | 200         | HTML, XML, JSON | HTML           |
+| POST   |                          | 405         |                 |                |
+| PUT    | Update global settings   | 200         | XML, JSON       |                |
+| DELETE |                          | 405         |                 |                |
 
 ## `/settings/contact[.<format>]`
 

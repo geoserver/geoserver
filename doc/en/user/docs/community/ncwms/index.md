@@ -30,7 +30,7 @@ Several ready to use palettes coming from the popular "color brewer" site are av
 
 The palette translates on the fly into a SLD with rendering transformation using the [Dynamic colormap generation](../colormap/index.md) module, in particular, the above style translates to the following style:
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <sld:NamedLayer>

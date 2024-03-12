@@ -54,10 +54,13 @@ The **raster-channels** is the **key property** for display of images and raster
 3.  Replace the initial CSS definition with:
 
     ``` css
-    * {
-      raster-channels: auto;
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto;
+
+    }
 
 4.  And use the **Layer Preview** tab to preview the result.
 
@@ -66,10 +69,13 @@ The **raster-channels** is the **key property** for display of images and raster
 5.  If required a list three band numbers can be supplied (for images recording in several wavelengths) or a single band number can be used to view a grayscale image.
 
     ``` css
-    * {
-      raster-channels: 2;
-    }
     ```
+
+    * {
+
+    :   raster-channels: 2;
+
+    }
 
 6.  Isolating just the green band (it will be drawn as a grayscale image):
 
@@ -100,10 +106,13 @@ The `usgs:dem` layer used for this exercise:
 3.  When we use the **raster-channels** property set to ``auto`` the rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
 
     ``` css
-    * {
-      raster-channels: auto;
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto;
+
+    }
 
 4.  Use the **Layer Preview** tab to preview the result. The range produced in this case from the highest and lowest values.
 
@@ -112,11 +121,13 @@ The `usgs:dem` layer used for this exercise:
 5.  We can use a bit of image processing to emphasis the generated color mapping by making use **raster-contrast-enhancement**.
 
     ``` css
-    * {
-      raster-channels: 1;
-      raster-contrast-enhancement: histogram;
-    }
     ```
+
+    * {
+
+    :   raster-channels: 1; raster-contrast-enhancement: histogram;
+
+    }
 
 6.  Image processing of this sort should be used with caution as it does distort the presentation (in this case making the landscape look more varied then it is in reality.
 
@@ -147,14 +158,13 @@ For qualitative data (such as land use) or simply to use color, we need a differ
 3.  An opacity value can also be used with **color-map-entry**.
 
     ``` css
-    * {
-      raster-channels: auto;
-      raster-color-map: color-map-entry(#9080DB, 0, 0.0)
-                        color-map-entry(#008000, 1, 1.0)
-                        color-map-entry(#105020, 200, 1.0)
-                        color-map-entry(#FFFFFF, 4000, 1.0);
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-color-map: color-map-entry(#9080DB, 0, 0.0) color-map-entry(#008000, 1, 1.0) color-map-entry(#105020, 200, 1.0) color-map-entry(#FFFFFF, 4000, 1.0);
+
+    }
 
 4.  Allowing the areas of zero height to be transparent:
 
@@ -171,10 +181,13 @@ This exploration focuses on accurately communicating differences in value, rathe
 1.  Restore the `raster_example` CSS style to the following:
 
     ``` css
-    * {
-      raster-channels: auto;
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto;
+
+    }
 
 2.  Producing the following map preview.
 
@@ -183,12 +196,13 @@ This exploration focuses on accurately communicating differences in value, rathe
 3.  To start with we can provide our own grayscale using two color map entries.
 
     ``` css
-    * {
-      raster-channels: auto;
-      raster-color-map: color-map-entry(#000000, 0)
-                        color-map-entry(#FFFFFF, 4000);
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-color-map: color-map-entry(#000000, 0) color-map-entry(#FFFFFF, 4000);
+
+    }
 
 4.  Use the **Map** tab to zoom in and take a look.
 
@@ -205,41 +219,26 @@ This exploration focuses on accurately communicating differences in value, rathe
 6.  Update your style with the following:
 
     ``` css
-    * {
-      raster-channels: auto;
-      raster-color-map:
-         color-map-entry(#014636,   0)
-         color-map-entry(#016c59, 500)
-         color-map-entry(#02818a,1000)
-         color-map-entry(#3690c0,1500)
-         color-map-entry(#67a9cf,2000)
-         color-map-entry(#a6bddb,2500)
-         color-map-entry(#d0d1e6,3000)
-         color-map-entry(#ece2f0,3500)
-         color-map-entry(#fff7fb,4000);
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-color-map: color-map-entry(#014636, 0) color-map-entry(#016c59, 500) color-map-entry(#02818a,1000) color-map-entry(#3690c0,1500) color-map-entry(#67a9cf,2000) color-map-entry(#a6bddb,2500) color-map-entry(#d0d1e6,3000) color-map-entry(#ece2f0,3500) color-map-entry(#fff7fb,4000);
+
+    }
 
     ![image](../style/img/raster_04_PuBuGn.png)
 
 7.  A little bit of work with alpha (to mark the ocean as a no-data section):
 
     ``` css
-    * {
-      raster-channels: auto;
-      raster-color-map:
-         color-map-entry(#014636,   0,0)
-         color-map-entry(#014636,   1)
-         color-map-entry(#016c59, 500)
-         color-map-entry(#02818a,1000)
-         color-map-entry(#3690c0,1500)
-         color-map-entry(#67a9cf,2000)
-         color-map-entry(#a6bddb,2500)
-         color-map-entry(#d0d1e6,3000)
-         color-map-entry(#ece2f0,3500)
-         color-map-entry(#fff7fb,4000);
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-color-map: color-map-entry(#014636, 0,0) color-map-entry(#014636, 1) color-map-entry(#016c59, 500) color-map-entry(#02818a,1000) color-map-entry(#3690c0,1500) color-map-entry(#67a9cf,2000) color-map-entry(#a6bddb,2500) color-map-entry(#d0d1e6,3000) color-map-entry(#ece2f0,3500) color-map-entry(#fff7fb,4000);
+
+    }
 
 8.  And we are done:
 
@@ -254,11 +253,13 @@ This exploration focuses on accurately communicating differences in value, rathe
 2.  Make use of a simple contrast enhancement with `usgs:dem`:
 
     ``` css
-    * {
-        raster-channels: auto;
-        raster-contrast-enhancement: normalize;
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-contrast-enhancement: normalize;
+
+    }
 
 3.  Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?
 
@@ -289,24 +290,15 @@ This exploration focuses on accurately communicating differences in value, rathe
         Here is style for you to cut and paste:
     
         ``` css
-        * {
-          raster-channels: auto;
-          raster-color-map:
-             color-map-entry(#014636,   0,0)
-             color-map-entry(#014636,   1)
-             color-map-entry(#016c59, 500)
-             color-map-entry(#02818a,1000)
-             color-map-entry(#3690c0,1500)
-             color-map-entry(#67a9cf,2000)
-             color-map-entry(#a6bddb,2500)
-             color-map-entry(#d0d1e6,3000)
-             color-map-entry(#ece2f0,3500)
-             color-map-entry(#fff7fb,4000);
-          raster-color-map-type: intervals;
-        }
         ```
-    
-        ![image](../style/img/raster_interval.png)
+
+    * {
+
+    :   raster-channels: auto; raster-color-map: color-map-entry(#014636, 0,0) color-map-entry(#014636, 1) color-map-entry(#016c59, 500) color-map-entry(#02818a,1000) color-map-entry(#3690c0,1500) color-map-entry(#67a9cf,2000) color-map-entry(#a6bddb,2500) color-map-entry(#d0d1e6,3000) color-map-entry(#ece2f0,3500) color-map-entry(#fff7fb,4000); raster-color-map-type: intervals;
+
+    }
+
+    > ![image](../style/img/raster_interval.png)
 
 ## Explore Image Processing
 
@@ -321,11 +313,13 @@ Image processing can be used to enhance the output to highlight small details or
 1.  The **raster-contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for ``normalize`` or ``histogram`` or ``none``;
 
     ``` css
-    * {
-        raster-channels: auto;
-        raster-contrast-enhancement: normalize;
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-contrast-enhancement: normalize;
+
+    }
 
 2.  Producing the following image:
 
@@ -334,12 +328,13 @@ Image processing can be used to enhance the output to highlight small details or
 3.  The **raster-gamma** property is used adjust the brightness of **raster-contrast-enhancement** output. Values less than 1 are used to brighten the image while values greater than 1 darken the image.
 
     ``` css
-    * {
-       raster-channels: auto;
-       raster-contrast-enhancement: none;
-       raster-gamma: 1.5;
-    }
     ```
+
+    * {
+
+    :   raster-channels: auto; raster-contrast-enhancement: none; raster-gamma: 1.5;
+
+    }
 
 4.  Providing the following effect:
 
@@ -360,15 +355,15 @@ Image processing can be used to enhance the output to highlight small details or
         The original was a dark mess, students will hopefully make use of the mid-tones (or even check color brewer) in order to fix this. I have left the ocean dark so the mountains can stand out more.
     
         ``` css
-        * {
-          raster-channels: auto;
-          raster-color-map: color-map-entry(#000000, 0)
-                            color-map-entry(#444444, 1)
-                            color-map-entry(#FFFFFF, 3000);
-        }
         ```
-    
-        ![image](../style/img/raster_grayscale.png)
+
+    * {
+
+    :   raster-channels: auto; raster-color-map: color-map-entry(#000000, 0) color-map-entry(#444444, 1) color-map-entry(#FFFFFF, 3000);
+
+    }
+
+    > ![image](../style/img/raster_grayscale.png)
 
 ## Challenge Raster Opacity {: #css.raster.q4 }
 

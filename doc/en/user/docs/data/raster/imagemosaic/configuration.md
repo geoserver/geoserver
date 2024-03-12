@@ -29,89 +29,21 @@ Within each store there are multiple configuration files that determine how the 
 
 The mosaic configuration file is the primary file used to store the configuration parameters that control the ImageMosaic plugin. When created by GeoServer it is by default called `<directory>.properties`, where `<directory>` is the name of the root directory of the store. (It is not related to the store name in GeoServer.) It can have other names, as long as it does not conflict with other files such as **`datastore.properties`** or **`indexer.properties`**. This file usually does not require manual editing.
 
-Parameter
-
-:   Mandatory
-
-    Description
-
-Levels
-
-:   Required
-
-    Represents the resolutions for the various levels of the granules of this mosaic.
-
-Heterogeneous
-
-:   Optional
-
-    Sets whether the image files are heterogeneous. Default is `false`.
-
-AbsolutePath
-
-:   Required
-
-    Controls whether or not the path stored inside the `location` attribute represents an absolute path or a path relative to the location of the shapefile index. Notice that a relative index ensures much more portability of the mosaic itself. Default value for this parameter is `false`, which means relative paths.
-
-Name
-
-:   Optional
-
-    The name to be assigned to the index. If unspecified, the index name will usually match the name of the folder containing the mosaic.
-
-TypeName
-
-:   Required
-
-    Featuretype name for this mosaic. Usually the name as `Name`.
-
-Caching
-
-:   Optional
-
-    Boolean value to enable caching. When set to `true`, the ImageMosaic will try to save in memory the entire contents of the index to reduce loading/query time. Set to `false` for a large granule index and/or if new granules are to be ingested (for example, when the index is on a database and we interact directly with it). Default is `false`.
-
-ExpandToRGB
-
-:   Optional
-
-    Boolean flag to force color expansion from index color model (paletted datasets) to component color model (RGB). Default is `false`.
-
-LocationAttribute
-
-:   Required
-
-    The name of the attribute path in the shapefile index. Default is `location`.
-
-SuggestedSPI
-
-:   Required
-
-    Suggested plugin for reading the image files.
-
-SuggestedFormat
-
-:   Optional
-
-    Suggested GridFormat for reading the image files.
-
-Envelope2D
-
-:   Optional
-
-    Envelope for the mosaic formatted as `LLX,LLY URX,URY` (notice the space between the lower left and upper right coordinate pairs).
-
-CheckAuxiliaryMetadata
-
-:   Optional
-
-    This parameter allows to specify whether the ImageMosaic plugin should check for the presence of a GDAL aux.xml file beside each granule file. For most common use cases, you don't need to set or specify this parameter. Being disabled by Default, ImageMosaic won't look for an ancillary file for each granule being initialized in the GranuleCatalog. This avoid useless checks, especially when dealing with thousand of granules. You should set that parameter to `true` when you want to instruct the ImageMosaic to look for a GDAL generated aux.xml file containing PAM (Persistent Auxiliary Metadata) for each granule, to be attached to the Granule info (GranuleDescriptor). This is specially useful when you have setup a [Dynamic ColorMap rendering transformation](../../../community/colormap/index.md) which dynamically set a color map based on the statistics collected into the granule's GDAL PAM being previously generated with a gdalinfo -stats parameter.
-
-LevelsNum
-
-:   Required
-
-    Represents the number of reduced resolution layers that we currently have for the granules of this mosaic.
+| Parameter              | Mandatory | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Levels                 | Required  | Represents the resolutions for the various levels of the granules of this mosaic.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Heterogeneous          | Optional  | Sets whether the image files are heterogeneous. Default is `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| AbsolutePath           | Required  | Controls whether or not the path stored inside the `location` attribute represents an absolute path or a path relative to the location of the shapefile index. Notice that a relative index ensures much more portability of the mosaic itself. Default value for this parameter is `false`, which means relative paths.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Name                   | Optional  | The name to be assigned to the index. If unspecified, the index name will usually match the name of the folder containing the mosaic.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| TypeName               | Required  | Featuretype name for this mosaic. Usually the name as `Name`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Caching                | Optional  | Boolean value to enable caching. When set to `true`, the ImageMosaic will try to save in memory the entire contents of the index to reduce loading/query time. Set to `false` for a large granule index and/or if new granules are to be ingested (for example, when the index is on a database and we interact directly with it). Default is `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ExpandToRGB            | Optional  | Boolean flag to force color expansion from index color model (paletted datasets) to component color model (RGB). Default is `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| LocationAttribute      | Required  | The name of the attribute path in the shapefile index. Default is `location`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| SuggestedSPI           | Required  | Suggested plugin for reading the image files.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| SuggestedFormat        | Optional  | Suggested GridFormat for reading the image files.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Envelope2D             | Optional  | Envelope for the mosaic formatted as `LLX,LLY URX,URY` (notice the space between the lower left and upper right coordinate pairs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| CheckAuxiliaryMetadata | Optional  | This parameter allows to specify whether the ImageMosaic plugin should check for the presence of a GDAL aux.xml file beside each granule file. For most common use cases, you don't need to set or specify this parameter. Being disabled by Default, ImageMosaic won't look for an ancillary file for each granule being initialized in the GranuleCatalog. This avoid useless checks, especially when dealing with thousand of granules. You should set that parameter to `true` when you want to instruct the ImageMosaic to look for a GDAL generated aux.xml file containing PAM (Persistent Auxiliary Metadata) for each granule, to be attached to the Granule info (GranuleDescriptor). This is specially useful when you have setup a [Dynamic ColorMap rendering transformation](../../../community/colormap/index.md) which dynamically set a color map based on the statistics collected into the granule's GDAL PAM being previously generated with a gdalinfo -stats parameter. |
+| LevelsNum              | Required  | Represents the number of reduced resolution layers that we currently have for the granules of this mosaic.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 A sample configuration file follows:
 
@@ -142,7 +74,7 @@ If needed, different storage can be used for the index - like a spatial DBMS, wh
 
     At the time of writing the following spatial DBMS have been tested successfully: Oracle, PostgreSQL, H2, SQLServer.
 
-``Parameter``
+Parameter
 
 :   Mandatory
 

@@ -10,17 +10,15 @@ This data store allows features from an Elasticsearch index to be published thro
 
 Once the Elasticsearch GeoServer extension is installed, `Elasticsearch index` will be an available vector data source format when creating a new data store.
 
-  -------------------------------------------------------------
-  ![new_store](images/elasticsearch_store.png){.align-middle}
-
-  -------------------------------------------------------------
++-------------------------------------------------------------+
+| ![new_store](images/elasticsearch_store.png){.align-middle} |
++-------------------------------------------------------------+
 
 The Elasticsearch data store configuration panel includes connection parameters and search settings.
 
-  ---------------------------------------------------------
-  ![store_config](images/elasticsearch_configuration.png)
-
-  ---------------------------------------------------------
++---------------------------------------------------------+
+| ![store_config](images/elasticsearch_configuration.png) |
++---------------------------------------------------------+
 
 Available data store configuration parameters are summarized in the following table:
 
@@ -136,10 +134,9 @@ For example, use `javax.net.ssl.trustStore[Password]` to validate server certifi
 
 The initial layer configuration panel for an Elasticsearch layer will include an additional pop-up showing a table of available fields.
 
-  ------------------------------------------------------------------
-  ![field_list](images/elasticsearch_fieldlist.png){.align-middle}
-
-  ------------------------------------------------------------------
++------------------------------------------------------------------+
+| ![field_list](images/elasticsearch_fieldlist.png){.align-middle} |
++------------------------------------------------------------------+
 
 |                      |                                                                                                                                                                                                              |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -159,10 +156,9 @@ The initial layer configuration panel for an Elasticsearch layer will include an
 
 To return to the field table after it has been closed, click the "Configure Elasticsearch fields" button below the "Feature Type Details" panel on the layer configuration page.
 
-  ----------------------------------------------------------------------------
-  ![field_list_edit](images/elasticsearch_fieldlist_edit.png){.align-middle}
-
-  ----------------------------------------------------------------------------
++----------------------------------------------------------------------------+
+| ![field_list_edit](images/elasticsearch_fieldlist_edit.png){.align-middle} |
++----------------------------------------------------------------------------+
 
 ### Configuring logging
 
@@ -173,10 +169,9 @@ Logging is configurable through Log4j. The data store includes logging such as t
 
 The logging configuration file will be in the `logs` subdirectory in the GeoServer data directory. Check GeoServer global settings for which logging profile is being used (e.g. `DEFAULT_LOGGING`, etc.).
 
-  -------------------------------------------------------------
-  ![logging](images/elasticsearch_logging.png){.align-middle}
-
-  -------------------------------------------------------------
++-------------------------------------------------------------+
+| ![logging](images/elasticsearch_logging.png){.align-middle} |
++-------------------------------------------------------------+
 
 ## Filtering
 
@@ -445,47 +440,15 @@ Extracted raster value: `4.9`
 
 Extract raster value from nested aggregation results.
 
-Argument Index
-
-:   Default Value
-
-    Description
-
-0
-
-:   `nested`
-
-    Key used to pluck nested aggregation results from the geogrid bucket.
-
-1
-
-:   empty string
-
-    Key used to pluck metric object from each nested aggregation bucket. Empty string results in plucking doc_count.
-
-2
-
-:   `value`
-
-    Key used to pluck the value from the metric object.
-
-3
-
-:   `largest`
-
-    `largest` | `smallest`. Strategy used to select a bucket from the nested aggregation buckets. The grid cell raster value is extracted from the selected bucket.
-
-4
-
-:   `value`
-
-    `key` | `value`. Strategy used to extract the raster value from the selected bucket. `value`: Raster value is the selected bucket's metric value. `key`: Raster value is the selected bucket's key.
-
-5
-
-:   null
-
-    (Optional) Map used to convert String keys into numeric values. Use the format `key1:1;key2:2`. Only utilized when raster strategy is `key`.
+|                |               |                                                                                                                                                                                                        |
+|----------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Argument Index | Default Value | Description                                                                                                                                                                                            |
+| 0              | `nested`      | Key used to pluck nested aggregation results from the geogrid bucket.                                                                                                                                  |
+| 1              | empty string  | Key used to pluck metric object from each nested aggregation bucket. Empty string results in plucking doc_count.                                                                                       |
+| 2              | `value`       | Key used to pluck the value from the metric object.                                                                                                                                                    |
+| 3              | `largest`     | `largest` | `smallest`. Strategy used to select a bucket from the nested aggregation buckets. The grid cell raster value is extracted from the selected bucket.                                       |
+| 4              | `value`       | `key` | `value`. Strategy used to extract the raster value from the selected bucket. `value`: Raster value is the selected bucket's metric value. `key`: Raster value is the selected bucket's key. |
+| 5              | null          | (Optional) Map used to convert String keys into numeric values. Use the format `key1:1;key2:2`. Only utilized when raster strategy is `key`.                                                           |
 
 Example Aggregation:
 

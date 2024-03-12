@@ -50,10 +50,15 @@ This exercise makes use of the `ne:states_provinces_shp` layer.
 4.  Replace the generated style with the following style and click **Apply** to save:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        fill-color: 'lightgrey'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   fill-color: 'lightgrey'
 
 5.  Click on the tab **Layer Preview** to preview.
 
@@ -74,10 +79,15 @@ The **fill-color** property is used to provide the color used to draw the interi
 1.  Replace the contents of `polygon_example` with the following **fill** example:
 
     ``` {.yaml emphasize-lines="3"}
-    symbolizers:
-    - polygon:
-        fill-color: 'gray'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   fill-color: 'gray'
 
 2.  The **Layer Preview** tab can be used preview the change:
 
@@ -88,12 +98,15 @@ The **fill-color** property is used to provide the color used to draw the interi
     The **stroke** property is used to provide the color and size of the polygon boundary. It is effected by the same parameters (and vendor specific parameters) as used for LineStrings.
 
     ``` {.yaml emphasize-lines="4,5"}
-    symbolizers:
-    - polygon:
-        fill-color: 'gray'
-        stroke-color: 'black'
-        stroke-width: 2
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   fill-color: 'gray' stroke-color: 'black' stroke-width: 2
 
     !!! note
 
@@ -110,14 +123,15 @@ The **fill-color** property is used to provide the color used to draw the interi
     The **stroke-opacity** property is used in a similar fashion, as a range from 0.0 to 1.0.
 
     ``` {.yaml emphasize-lines="4,7"}
-    symbolizers:
-    - polygon:
-        fill-color: 'white'
-        fill-opacity: 0.5
-        stroke-color: 'lightgrey'
-        stroke-width: 0.25
-        stroke-opacity: 0.5
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   fill-color: 'white' fill-opacity: 0.5 stroke-color: 'lightgrey' stroke-width: 0.25 stroke-opacity: 0.5
 
 6.  As shown in the map preview:
 
@@ -154,16 +168,23 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Update ``polygon_example`` with the following built-in symbol as a repeating fill pattern:
 
     ``` {.yaml emphasize-lines="3-9"}
-    symbolizers:
-    - polygon:
-        fill-graphic:
-          symbols:
-          - mark:
-              shape: square
-              fill-color: 'gray'
-              stroke-color: 'black'
-              stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   
+
+            fill-graphic:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: square fill-color: 'gray' stroke-color: 'black' stroke-width: 1
 
 2.  The map preview (and legend) will show the result:
 
@@ -172,18 +193,15 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 3.  Add a black stroke:
 
     ``` {.yaml emphasize-lines="3,4"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-graphic:
-          symbols:
-          - mark:
-              shape: square
-              fill-color: 'gray'
-              stroke-color: 'black'
-              stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-graphic: symbols: - mark: shape: square fill-color: 'gray' stroke-color: 'black' stroke-width: 1
 
 4.  To outline the individual shapes:
 
@@ -198,20 +216,15 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Adjust the size and rotation as shown:
 
     ``` {.yaml emphasize-lines="6,7"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-graphic:
-          size: 22
-          rotation: 45.0
-          symbols:
-          - mark:
-              shape: square
-              fill-color: 'gray'
-              stroke-color: 'black'
-              stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-graphic: size: 22 rotation: 45.0 symbols: - mark: shape: square fill-color: 'gray' stroke-color: 'black' stroke-width: 1
 
 6.  The size of each symbol is increased, and each symbol rotated by 45 degrees.
 
@@ -226,16 +239,23 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 8.  Replace the contents of `polygon_example` with the following:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        fill-graphic:
-          symbols:
-          - mark:
-              shape: square
-              fill-color: '#008000'
-              stroke-color: '#006400'
-              stroke-width: 1
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   
+
+            fill-graphic:
+            :   symbols:
+                -   
+
+                    mark:
+
+                    :   shape: square fill-color: '#008000' stroke-color: '#006400' stroke-width: 1
 
 9.  This change adjusts the appearance of our grid of squares.
 
@@ -255,16 +275,15 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
     Update the example to use **shape://slash** for a pattern of left hatching.
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-graphic:
-          symbols:
-          - mark:
-              shape: 'shape://slash'
-              stroke-color: 'gray'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-graphic: symbols: - mark: shape: 'shape://slash' stroke-color: 'gray'
 
 11. This approach is well suited to printed output or low color devices.
 
@@ -273,17 +292,15 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 12. To control the size of the symbol produced use the **size** property of the **fill-graphic**.
 
     ``` {.yaml emphasize-lines="6"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-graphic:
-          size: 8
-          symbols:
-          - mark:
-              shape: 'shape://slash'
-              stroke-color: 'gray'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-graphic: size: 8 symbols: - mark: shape: 'shape://slash' stroke-color: 'gray'
 
 13. This results in a tighter pattern shown:
 
@@ -292,20 +309,29 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 14. Multiple fills can be applied by using a separate symbolizer for each fill as part of the same rule.
 
     ``` {.yaml emphasize-lines="2,3,4,5"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'black'
-        stroke-width: 1
-        fill-color: '#DDDDFF'
-    - polygon:
-        fill-graphic:
-          size: 8
-          symbols:
-          - mark:
-              shape: shape://slash
-              stroke-color: 'black'
-              stroke-width: 0.5
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'black' stroke-width: 1 fill-color: '#DDDDFF'
+
+    -   
+
+        polygon:
+
+        :   
+
+            fill-graphic:
+            :   size: 8 symbols:
+                -   
+
+                    mark:
+
+                    :   shape: shape://slash stroke-color: 'black' stroke-width: 0.5
 
 15. The resulting image has a solid fill, with a pattern drawn overtop.
 
@@ -326,15 +352,21 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 2.  Try out **label** and **fill** together by replacing our `polygon_example` with the following:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black'
 
 3.  Each label is drawn from the lower-left corner as shown in the `Layer Preview` preview.
 
@@ -346,15 +378,15 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 
     The property **anchor** provides two numbers expressing how a label is aligned with respect to the centroid. The first value controls the horizontal alignment, while the second value controls the vertical alignment. Alignment is expressed between 0.0 and 1.0 as shown in the following table.
 
-      ---------- --------- --------- ---------
-                 Left      Center    Right
-
-      Top        0.0 1.0   0.5 1.0   1.0 1.0
-
-      Middle     0.0 0.5   0.5 0.5   1.0 0.5
-
-      Bottom     0.0 0.0   0.5 0.0   1.0 0.0
-      ---------- --------- --------- ---------
+    +----------+---------+---------+---------+
+    |          | Left    | Center  | Right   |
+    +----------+---------+---------+---------+
+    | Top      | 0.0 1.0 | 0.5 1.0 | 1.0 1.0 |
+    +----------+---------+---------+---------+
+    | Middle   | 0.0 0.5 | 0.5 0.5 | 1.0 0.5 |
+    +----------+---------+---------+---------+
+    | Bottom   | 0.0 0.0 | 0.5 0.0 | 1.0 0.0 |
+    +----------+---------+---------+---------+
 
     Adjusting the **anchor** is the recommended approach to positioning your labels.
 
@@ -363,16 +395,21 @@ The key properties **fill** and **label** are used to enable Polygon label gener
     To align the center of our label we select 50% horizontally and 50% vertically, by filling in 0.5 and 0.5 below:
 
     ``` {.yaml emphasize-lines="9"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        anchor: [0.5, 0.5]
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' anchor: [0.5, 0.5]
 
 6.  The labeling position remains at the polygon centroid. We adjust alignment by controlling which part of the label we are "snapping" into position.
 
@@ -385,16 +422,21 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 8.  This offset is used to adjust the label position relative to the geometry centroid resulting in the starting label position.
 
     ``` {.yaml emphasize-lines="9"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        displacement: [0, 7]
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' displacement: [0, 7]
 
 9.  Confirm this result in the map preview.
 
@@ -413,17 +455,21 @@ The key properties **fill** and **label** are used to enable Polygon label gener
 11. To move our labels down (allowing readers to focus on each shape) we can use displacement combined with followed by horizontal alignment.
 
     ``` {.yaml emphasize-lines="9,10"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        anchor: [0.5, 1]
-        displacement: [0, -7]
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' anchor: [0.5, 1] displacement: [0, -7]
 
 12. As shown in the map preview.
 
@@ -446,18 +492,21 @@ When working with labels a map can become busy very quickly, and difficult to re
 3.  Using these together we can make a small improvement in our example:
 
     ``` {.yaml emphasize-lines="10,11"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        anchor: [0.5, 0.5]
-        x-maxDisplacement: 40
-        x-autoWrap: 70
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' anchor: [0.5, 0.5] x-maxDisplacement: 40 x-autoWrap: 70
 
 4.  As shown in the following preview.
 
@@ -468,26 +517,21 @@ When working with labels a map can become busy very quickly, and difficult to re
     Use of a halo to outline labels allows the text to stand out from an otherwise busy background. In this case we will make use of the fill color, to provide some space around our labels. We will also change the font to Arial.
 
     ``` {.yaml emphasize-lines="14-17"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        anchor: [0.5, 0.5]
-        font-family: Arial
-        font-size: 14
-        font-style: normal
-        font-weight: normal
-        halo:
-          fill-color: '#7EB5D3'
-          fill-opacity: 0.8
-          radius: 2
-        x-maxDisplacement: 40
-        x-autoWrap: 70
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' anchor: [0.5, 0.5] font-family: Arial font-size: 14 font-style: normal font-weight: normal halo: fill-color: '#7EB5D3' fill-opacity: 0.8 radius: 2 x-maxDisplacement: 40 x-autoWrap: 70
 
 6.  By making use of **fill-opacity** on the **halo** we still allow stroke information to show through, but prevent the stroke information from making the text hard to read.
 
@@ -502,27 +546,21 @@ When working with labels a map can become busy very quickly, and difficult to re
     The values for **labelrank** go from 0 (for zoomed out) to 20 (for zoomed in). To use this value for **priority** we need to swap the values around so a **scalerank** of 1 is given the highest priority.
 
     ``` {.yaml emphasize-lines="20"}
-    symbolizers:
-    - polygon:
-        stroke-color: 'blue'
-        stroke-width: 1
-        fill-color: '#7EB5D3'
-    - text:
-        label: ${name}
-        fill-color: 'black'
-        anchor: [0.5, 0.5]
-        font-family: Arial
-        font-size: 14
-        font-style: normal
-        font-weight: normal
-        halo:
-          fill-color: '#7EB5D3'
-          fill-opacity: 0.8
-          radius: 2
-        x-maxDisplacement: 40
-        x-autoWrap: 70
-        priority: ${'20' - labelrank}
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'blue' stroke-width: 1 fill-color: '#7EB5D3'
+
+    -   
+
+        text:
+
+        :   label: \${name} fill-color: 'black' anchor: [0.5, 0.5] font-family: Arial font-size: 14 font-style: normal font-weight: normal halo: fill-color: '#7EB5D3' fill-opacity: 0.8 radius: 2 x-maxDisplacement: 40 x-autoWrap: 70 priority: \${'20' - labelrank}
 
 9.  In the following map `East Flanders` will take priority over `Zeeland` when the two labels overlap.
 
@@ -568,70 +606,74 @@ A thematic map (rather than focusing on representing the shape of the world) use
 3.  The first approach we will take is to directly select content based on **colormap**, providing a color based on the **9-class Set3** palette above:
 
     ``` yaml
-    define: &stroke
-      stroke-color: 'gray'
-      stroke-width: 0.5
-    rules:
-      - filter: ${mapcolor9 = '1'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#8DD3C7'
-      - filter: ${mapcolor9 = '2'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#FFFFB3'
-      - filter: ${mapcolor9 = '3'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#BEBADA'
-      - filter: ${mapcolor9 = '4'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#FB8072'
-      - filter: ${mapcolor9 = '5'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#80B1D3'
-      - filter: ${mapcolor9 = '6'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#FDB462'
-      - filter: ${mapcolor9 = '7'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#B3DE69'
-      - filter: ${mapcolor9 = '8'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#FCCDE5'
-      - filter: ${mapcolor9 = '9'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            <<: *stroke
-            fill-color: '#D9D9D9'
-      - filter: ${mapcolor9 <> '1' AND mapcolor9 <> '2' AND mapcolor9 <> '3' AND mapcolor9 <> '4' AND mapcolor9 <> '5' AND mapcolor9 <> '6' AND mapcolor9 <> '7' AND mapcolor9 <> '8' AND mapcolor9 <> '9'}
-        scale: [min, max]
-        symbolizers:
-        - line:
-            <<: *stroke
     ```
+
+    define: &stroke
+
+    :   stroke-color: 'gray' stroke-width: 0.5
+
+    rules:
+
+    :   -   filter: \${mapcolor9 = '1'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#8DD3C7'
+        -   filter: \${mapcolor9 = '2'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#FFFFB3'
+        -   filter: \${mapcolor9 = '3'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#BEBADA'
+        -   filter: \${mapcolor9 = '4'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#FB8072'
+        -   filter: \${mapcolor9 = '5'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#80B1D3'
+        -   filter: \${mapcolor9 = '6'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#FDB462'
+        -   filter: \${mapcolor9 = '7'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#B3DE69'
+        -   filter: \${mapcolor9 = '8'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#FCCDE5'
+        -   filter: \${mapcolor9 = '9'} scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   <<: *stroke fill-color: '#D9D9D9'
+        -   filter: \${mapcolor9 <> '1' AND mapcolor9 <> '2' AND mapcolor9 <> '3' AND mapcolor9 <> '4' AND mapcolor9 <> '5' AND mapcolor9 <> '6' AND mapcolor9 <> '7' AND mapcolor9 <> '8' AND mapcolor9 <> '9'} scale: [min, max] symbolizers:
+            -   
+
+                line:
+
+                :   <<: *stroke
 
 4.  The **Layer Preview** tab can be used to preview this result.
 
@@ -642,38 +684,40 @@ A thematic map (rather than focusing on representing the shape of the world) use
     As an example the ``\${mapcolor9 = '2'}`` rule, combined with the ``define:`` results in the following collection of properties:
 
     ``` yaml
-    - filter: ${mapcolor9 = '2'}
-        scale: [min, max]
-        symbolizers:
-        - polygon:
-            stroke-color: 'gray'
-            stroke-width: 0.5
-            fill-color: '#FFFFB3'
     ```
+
+    -   
+
+        filter: \${mapcolor9 = '2'}
+        :   scale: [min, max] symbolizers:
+            -   
+
+                polygon:
+
+                :   stroke-color: 'gray' stroke-width: 0.5 fill-color: '#FFFFB3'
 
 6.  Reviewing the generated SLD shows us this representation:
 
     ``` xml
-    <sld:Rule>
-       <ogc:Filter>
-          <ogc:PropertyIsEqualTo>
-             <ogc:PropertyName>mapcolor9</ogc:PropertyName>
-             <ogc:Literal>2</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-       </ogc:Filter>
-       <sld:PolygonSymbolizer>
-          <sld:Fill>
-             <sld:CssParameter name="fill">#ffffb3</sld:CssParameter>
-          </sld:Fill>
-       </sld:PolygonSymbolizer>
-       <sld:LineSymbolizer>
-          <sld:Stroke>
-             <sld:CssParameter name="stroke">#808080</sld:CssParameter>
-             <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
-          </sld:Stroke>
-       </sld:LineSymbolizer>
-    </sld:Rule>
     ```
+
+    <sld:Rule>
+
+    :   
+
+        <ogc:Filter>
+
+        :   
+
+            <ogc:PropertyIsEqualTo>
+
+            :   <ogc:PropertyName>mapcolor9</ogc:PropertyName> <ogc:Literal>2</ogc:Literal>
+
+            </ogc:PropertyIsEqualTo>
+
+        </ogc:Filter> <sld:PolygonSymbolizer> <sld:Fill> <sld:CssParameter name="fill">#ffffb3</sld:CssParameter> </sld:Fill> </sld:PolygonSymbolizer> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#808080</sld:CssParameter> <sld:CssParameter name="stroke-width">0.5</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer>
+
+    </sld:Rule>
 
 7.  There are three important functions, defined by the Symbology Encoding specification, that are often easier to use for theming than using rules.
 
@@ -686,21 +730,15 @@ A thematic map (rather than focusing on representing the shape of the world) use
 8.  Swap out **mapcolor9** theme to use the **Recode** function:
 
     ``` yaml
-    symbolizers:
-    - polygon:
-        stroke-color: 'gray'
-        stroke-width: 0.5
-        fill-color: ${Recode(mapcolor9,
-          '1','#8dd3c7',
-          '2','#ffffb3',
-          '3','#bebada',
-          '4','#fb8072',
-          '5','#80b1d3',
-          '6','#fdb462',
-          '7','#b3de69',
-          '8','#fccde5',
-          '9','#d9d9d9')}
     ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   stroke-color: 'gray' stroke-width: 0.5 fill-color: \${Recode(mapcolor9, '1','#8dd3c7', '2','#ffffb3', '3','#bebada', '4','#fb8072', '5','#80b1d3', '6','#fdb462', '7','#b3de69', '8','#fccde5', '9','#d9d9d9')}
 
 9.  The **Layer Preview** tab provides the same preview.
 
@@ -709,42 +747,35 @@ A thematic map (rather than focusing on representing the shape of the world) use
 10. The **Generated SLD** tab shows where things get interesting. Our generated style now consists of a single **Rule**:
 
     ``` xml
-    <sld:Rule>
-       <sld:PolygonSymbolizer>
-          <sld:Fill>
-             <sld:CssParameter name="fill">
-                <ogc:Function name="Recode">
-                   <ogc:PropertyName>mapcolor9</ogc:PropertyName>
-                   <ogc:Literal>1</ogc:Literal>
-                      <ogc:Literal>#8dd3c7</ogc:Literal>
-                   <ogc:Literal>2</ogc:Literal>
-                      <ogc:Literal>#ffffb3</ogc:Literal>
-                   <ogc:Literal>3</ogc:Literal>
-                      <ogc:Literal>#bebada</ogc:Literal>
-                   <ogc:Literal>4</ogc:Literal>
-                      <ogc:Literal>#fb8072</ogc:Literal>
-                   <ogc:Literal>5</ogc:Literal>
-                      <ogc:Literal>#80b1d3</ogc:Literal>
-                   <ogc:Literal>6</ogc:Literal>
-                      <ogc:Literal>#fdb462</ogc:Literal>
-                   <ogc:Literal>7</ogc:Literal>
-                      <ogc:Literal>#b3de69</ogc:Literal>
-                   <ogc:Literal>8</ogc:Literal>
-                      <ogc:Literal>#fccde5</ogc:Literal>
-                   <ogc:Literal>9</ogc:Literal>
-                      <ogc:Literal>#d9d9d9</ogc:Literal>
-             </ogc:Function>
-             </sld:CssParameter>
-          </sld:Fill>
-       </sld:PolygonSymbolizer>
-       <sld:LineSymbolizer>
-          <sld:Stroke>
-             <sld:CssParameter name="stroke">#808080</sld:CssParameter>
-             <sld:CssParameter name="stroke-width">0.5</sld:CssParameter>
-          </sld:Stroke>
-       </sld:LineSymbolizer>
-    </sld:Rule>
     ```
+
+    <sld:Rule>
+
+    :   
+
+        <sld:PolygonSymbolizer>
+
+        :   
+
+            <sld:Fill>
+
+            :   
+
+                <sld:CssParameter name="fill">
+
+                :   
+
+                    <ogc:Function name="Recode">
+
+                    :   <ogc:PropertyName>mapcolor9</ogc:PropertyName> <ogc:Literal>1</ogc:Literal> <ogc:Literal>#8dd3c7</ogc:Literal> <ogc:Literal>2</ogc:Literal> <ogc:Literal>#ffffb3</ogc:Literal> <ogc:Literal>3</ogc:Literal> <ogc:Literal>#bebada</ogc:Literal> <ogc:Literal>4</ogc:Literal> <ogc:Literal>#fb8072</ogc:Literal> <ogc:Literal>5</ogc:Literal> <ogc:Literal>#80b1d3</ogc:Literal> <ogc:Literal>6</ogc:Literal> <ogc:Literal>#fdb462</ogc:Literal> <ogc:Literal>7</ogc:Literal> <ogc:Literal>#b3de69</ogc:Literal> <ogc:Literal>8</ogc:Literal> <ogc:Literal>#fccde5</ogc:Literal> <ogc:Literal>9</ogc:Literal> <ogc:Literal>#d9d9d9</ogc:Literal>
+
+                </ogc:Function> </sld:CssParameter>
+
+            </sld:Fill>
+
+        </sld:PolygonSymbolizer> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#808080</sld:CssParameter> <sld:CssParameter name="stroke-width">0.5</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer>
+
+    </sld:Rule>
 
 ## Bonus
 
@@ -787,16 +818,19 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 1.  The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
 
     > ``` yaml
-    > symbolizers:
-    > - polygon:
-    >     fill-color: ${Categorize(Shape_Area,
-    >       '#08519c','0.5',
-    >       '#3182bd','1',
-    >       '#6baed6','5',
-    >       '#9ecae1','60',
-    >       '#c6dbef','80',
-    >       '#eff3ff')}
     > ```
+
+    symbolizers:
+
+    -   
+
+        polygon:
+
+        :   
+
+            fill-color: \${Categorize(Shape_Area,
+
+            :   '#08519c','0.5', '#3182bd','1', '#6baed6','5', '#9ecae1','60', '#c6dbef','80', '#eff3ff')}
 
     ![image](../style/img/polygon_area.png)
 

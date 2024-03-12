@@ -21,16 +21,16 @@ To install the JWT Headers module:
     To compile the JWT Headers community module yourself download the src bundle for GeoServer {{ release }} and compile:
     
     ``` bash
-    cd src/community
-    mvn install -PcommunityRelease -DskipTests
     ```
+    
+    cd src/community mvn install -PcommunityRelease -DskipTests
     
     And package:
     
     ``` bash
-    cd src/community
-    mvn assembly:single -N
     ```
+    
+    cd src/community mvn assembly:single -N
 
 For developers;
 

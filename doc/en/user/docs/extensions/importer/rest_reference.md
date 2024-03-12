@@ -4,21 +4,13 @@
 
 The importer REST api is built around a tree of objects representing a single import, structured as follows:
 
-> -   
->
->     import
->
->     :   -   target workspace
->
->         -   data
->
->         -   
->
->             task (one or more)
->
->             :   -   data
->                 -   layer
->                 -   transformation (one or more)
+-   import
+    -   target workspace
+    -   data
+    -   task (one or more)
+        -   data
+        -   layer
+        -   transformation (one or more)
 
 An **import** refers to the top level object and is a "session" like entity the state of the entire import. It maintains information relevant to the import as a whole such as user information, timestamps along with optional information that is uniform along all tasks, such as a target workspace, the shared input data (e.g., a directory, a database). An import is made of any number of task objects.
 
@@ -185,7 +177,7 @@ To get more information about transformations see the [Transformation reference]
 
 ### Import object
 
-#### /imports/<importId>
+#### `/imports/<importId>`
 
 | Method | Action                                                                                                                                                                                                                                                                                 | Status Code/Headers      | Input | Output  | Parameters       |
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|-------|---------|------------------|
@@ -216,7 +208,7 @@ The location can be [any URI supported by Commons VFS](http://commons.apache.org
 
 ### Tasks
 
-#### /imports/<importId>/tasks
+#### `/imports/<importId>/tasks`
 
 | Method | Action                                             | Status Code/Headers      | Input                                                 | Output          |
 |--------|----------------------------------------------------|--------------------------|-------------------------------------------------------|-----------------|
@@ -297,7 +289,7 @@ The creation response will be the same as the multipart upload.
 
 ### Single task resource
 
-#### /imports/<importId>/tasks/<taskId>
+#### `/imports/<importId>/tasks/<taskId>`
 
 | Method | Action                                                              | Status Code/Headers | Input | Output |
 |--------|---------------------------------------------------------------------|---------------------|-------|--------|
@@ -333,7 +325,7 @@ The following PUT request updates a task from "CREATE" to "APPEND" mode:
 
 The following operations are specific to data objects of type `directory`.
 
-#### /imports/<importId>/tasks/<taskId>/data/files
+#### `/imports/<importId>/tasks/<taskId>/data/files`
 
 | Method | Action                                                                                      | Status Code/Headers | Input | Output |
 |--------|---------------------------------------------------------------------------------------------|---------------------|-------|--------|
@@ -365,37 +357,12 @@ The response to a GET request will be:
         ]
     }
 
-#### /imports/<importId>/tasks/<taskId>/data/files/<fileId>
+#### `/imports/<importId>/tasks/<taskId>/data/files/<fileId>`
 
-Method
-
-:   Action
-
-    Status Code/Headers
-
-    Input
-
-    Output
-
-GET
-
-:   Retrieve the file with id <fileId> from the data of a task with id <taskId> within import with id <importId>
-
-    200
-
-    n/a
-
-    Task
-
-DELETE
-
-:   Remove a specific file from the task with id <taskId> within import with id <importId>
-
-    200
-
-    n/a
-
-    n/a
+| Method | Action                                                                                                             | Status Code/Headers | Input | Output |
+|--------|--------------------------------------------------------------------------------------------------------------------|---------------------|-------|--------|
+| GET    | Retrieve the file with id <fileId> from the data of a task with id <taskId> within import with id <importId> | 200                 | n/a   | Task   |
+| DELETE | Remove a specific file from the task with id <taskId> within import with id <importId>                         | 200                 | n/a   | n/a    |
 
 Following the links we'll get to the representation of a single file, notice how in this case a main file can be associate to sidecar files:
 
@@ -447,7 +414,7 @@ and the response will be:
 
 The following operations are specific to data objects of type `database`. At the time or writing, the REST API does not allow the creation of a database data source, but it can provide a read only description of one that has been created using the GUI.
 
-#### /imports/<importId>/tasks/<taskId>/data
+#### `/imports/<importId>/tasks/<taskId>/data`
 
 | Method | Action                                                                                                       | Status Code/Headers | Input | Output                                                      |
 |--------|--------------------------------------------------------------------------------------------------------------|---------------------|-------|-------------------------------------------------------------|
@@ -488,7 +455,7 @@ Performing a GET on a database type data will result in the following response:
 
 The following operations are specific to data objects of type `table`. At the time or writing, the REST API does not allow the creation of a database data source, but it can provide a read only description of one that has been created using the GUI. A table description is normally linked to task, and refers to a database data linked to the overall import.
 
-#### /imports/<importId>/tasks/<taskId>/data
+#### `/imports/<importId>/tasks/<taskId>/data`
 
 | Method | Action                                                                                          | Status Code/Headers | Input | Output                 |
 |--------|-------------------------------------------------------------------------------------------------|---------------------|-------|------------------------|
@@ -505,39 +472,14 @@ Performing a GET on a database type data will result in the following response:
 
 ### Task target layer
 
-#### /imports/<importId>/tasks/<taskId>/layer
+#### `/imports/<importId>/tasks/<taskId>/layer`
 
 The layer defines how the target layer will be created
 
-Method
-
-:   Action
-
-    Status Code/Headers
-
-    Input
-
-    Output
-
-GET
-
-:   Retrieve the layer of a task with id <taskId> within import with id <importId>
-
-    200
-
-    n/a
-
-    A layer JSON representation
-
-PUT
-
-:   Modify the target layer for a task with id <taskId> within import with id <importId>
-
-    200
-
-    Task
-
-    Task
+| Method | Action                                                                                   | Status Code/Headers | Input | Output                      |
+|--------|------------------------------------------------------------------------------------------|---------------------|-------|-----------------------------|
+| GET    | Retrieve the layer of a task with id <taskId> within import with id <importId>       | 200                 | n/a   | A layer JSON representation |
+| PUT    | Modify the target layer for a task with id <taskId> within import with id <importId> | 200                 | Task  | Task                        |
 
 Requesting the task layer will result in the following:
 
@@ -596,7 +538,7 @@ All the above attributes can be updated using a PUT request. Even if the above r
 
 ### Task transformations
 
-#### /imports/<importId>/tasks/<taskId>/transforms
+#### `/imports/<importId>/tasks/<taskId>/transforms`
 
 | Method | Action                                                                                                        | Status Code/Headers | Input                                | Output                                   |
 |--------|---------------------------------------------------------------------------------------------------------------|---------------------|--------------------------------------|------------------------------------------|
@@ -646,7 +588,7 @@ The response will be:
     Status: 201 OK
     Location: http://localhost:8080/geoserver/rest/imports/0/tasks/1/transform/2
 
-#### /imports/<importId>/tasks/<taskId>/transforms/<transformId>
+#### `/imports/<importId>/tasks/<taskId>/transforms/<transformId>`
 
 | Method | Action                                                                                                                                        | Status Code/Headers | Input                                                                                              | Output                                 |
 |--------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------|----------------------------------------------------------------------------------------------------|----------------------------------------|
@@ -696,51 +638,20 @@ The response will be:
 
 Remaps a certain field to a given target data type
 
-Parameter
-
-:   Optional
-
-    Description
-
-field
-
-:   N
-
-    The name of the field to be remapped
-
-target
-
-:   N
-
-    The "target" field type, as a fully qualified Java class name
+| Parameter | Optional | Description                                                     |
+|-----------|----------|-----------------------------------------------------------------|
+| field     | N        | The name of the field to be remapped                            |
+| target    | N        | The "target" field type, as a fully qualified Java class name |
 
 #### AttributeComputeTransform
 
 Computes a new field based on an expression that can use the other field values
 
-Parameter
-
-:   Optional
-
-    Description
-
-field
-
-:   N
-
-    The name of the field to be computed
-
-fieldType
-
-:   N
-
-    The field type, as a fully qualified Java class name (e.g., `java.lang.String`, `java.lang.Integer`, `java.util.Date` and so on)
-
-cql
-
-:   N
-
-    The (E)CQL expression used to compute the new field (can be a constant value, e.g. `'My String'`)
+| Parameter | Optional | Description                                                                                                                      |
+|-----------|----------|----------------------------------------------------------------------------------------------------------------------------------|
+| field     | N        | The name of the field to be computed                                                                                             |
+| fieldType | N        | The field type, as a fully qualified Java class name (e.g., `java.lang.String`, `java.lang.Integer`, `java.util.Date` and so on) |
+| cql       | N        | The (E)CQL expression used to compute the new field (can be a constant value, e.g. `'My String'`)                                |
 
 #### AttributesToPointGeometryTransform
 

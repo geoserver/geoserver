@@ -70,37 +70,36 @@ would be represented in the following forms:
 > -   in application/xml: the following xml
 >
 > ``` xml
-> <?xml version="1.0" encoding="UTF-8"?><gml:Polygon xmlns:gml="http://www.opengis.net/gml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink">
->   <gml:outerBoundaryIs>
->     <gml:LinearRing>
->       <gml:coordinates>500116.08576537756,499994.25579707103 500116.08576537756,500110.1012210889 500286.2657688021,500110.1012210889 500286.2657688021,499994.25579707103 500116.08576537756,499994.25579707103</gml:coordinates>
->     </gml:LinearRing>
->   </gml:outerBoundaryIs>
-> </gml:Polygon>
 > ```
+>
+> <?xml version="1.0" encoding="UTF-8"?><gml:Polygon xmlns:gml="<http://www.opengis.net/gml>" xmlns:xs="<http://www.w3.org/2001/XMLSchema>" xmlns:xlink="<http://www.w3.org/1999/xlink>">
+>
+> :   
+>
+>     <gml:outerBoundaryIs>
+>
+>     :   
+>
+>         <gml:LinearRing>
+>
+>         :   <gml:coordinates>500116.08576537756,499994.25579707103 500116.08576537756,500110.1012210889 500286.2657688021,500110.1012210889 500286.2657688021,499994.25579707103 500116.08576537756,499994.25579707103</gml:coordinates>
+>
+>         </gml:LinearRing>
+>
+>     </gml:outerBoundaryIs>
+>
+> </gml:Polygon>
 
 The general structure of a WPS Download request POST payload consists of two parts: the first (`<wps:DataInputs>`) contains the input parameters for the process, and the second (`<wps:ResponseForm>`) contains details about delivering the output. A typical pseudo payload is the following:
 
 > ``` xml
-> <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
->  <ows:Identifier>gs:WPS_Process_Name_Here</ows:Identifier>
->  <wps:DataInputs>
->   <wps:Input>
->    <ows:Identifier>First_Param_Name</ows:Identifier>
->    <wps:Data>
->      (First_Param_Data)
->    </wps:Data>
->   </wps:Input>
->   ...
->   ...
->  </wps:DataInputs>
->  <wps:ResponseForm>
->   <wps:RawDataOutput mimeType="application/zip">
->    <ows:Identifier>result</ows:Identifier>
->   </wps:RawDataOutput>
->  </wps:ResponseForm>
-> </wps:Execute>
 > ```
+>
+> <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="<http://www.w3.org/2001/XMLSchema-instance>" xmlns="<http://www.opengis.net/wps/1.0.0>" xmlns:wfs="<http://www.opengis.net/wfs>" xmlns:wps="<http://www.opengis.net/wps/1.0.0>" xmlns:ows="<http://www.opengis.net/ows/1.1>" xmlns:gml="<http://www.opengis.net/gml>" xmlns:ogc="<http://www.opengis.net/ogc>" xmlns:wcs="<http://www.opengis.net/wcs/1.1.1>" xmlns:xlink="<http://www.w3.org/1999/xlink>" xsi:schemaLocation="<http://www.opengis.net/wps/1.0.0> <http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd>">
+>
+> :   <ows:Identifier>gs:WPS_Process_Name_Here</ows:Identifier> <wps:DataInputs> <wps:Input> <ows:Identifier>First_Param_Name</ows:Identifier> <wps:Data> (First_Param_Data) </wps:Data> </wps:Input> \... \... </wps:DataInputs> <wps:ResponseForm> <wps:RawDataOutput mimeType="application/zip"> <ows:Identifier>result</ows:Identifier> </wps:RawDataOutput> </wps:ResponseForm>
+>
+> </wps:Execute>
 
 Each parameter for the process is defined in its own `<wps:Input>` xml block. In case of simple type data, such as layerName, outputFormat, targetCRS, etc, input params xml blocks have the following form:
 
@@ -192,47 +191,13 @@ Assuming that a local geoserver instance (setup for wps/wps-download support) is
 using the following payload:
 
 > ``` xml
-> <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
->  <ows:Identifier>gs:Download</ows:Identifier>
->  <wps:DataInputs>
->   <wps:Input>
->    <ows:Identifier>layerName</ows:Identifier>
->    <wps:Data>
->     <wps:LiteralData>nurc:Img_Sample</wps:LiteralData>
->    </wps:Data>
->   </wps:Input>
->   <wps:Input>
->    <ows:Identifier>outputFormat</ows:Identifier>
->    <wps:Data>
->     <wps:LiteralData>image/tiff</wps:LiteralData>
->    </wps:Data>
->   </wps:Input>
->   <wps:Input>
->    <ows:Identifier>targetCRS</ows:Identifier>
->    <wps:Data>
->     <wps:LiteralData>EPSG:4326</wps:LiteralData>
->    </wps:Data>
->   </wps:Input>
->   <wps:Input>
->    <ows:Identifier>targetSizeX</ows:Identifier>
->    <wps:Data>
->     <wps:LiteralData>80</wps:LiteralData>
->    </wps:Data>
->   </wps:Input>
->   <wps:Input>
->    <ows:Identifier>targetSizeY</ows:Identifier>
->    <wps:Data>
->     <wps:LiteralData>80</wps:LiteralData>
->    </wps:Data>
->   </wps:Input>
->  </wps:DataInputs>
->  <wps:ResponseForm>
->   <wps:RawDataOutput mimeType="application/zip">
->    <ows:Identifier>result</ows:Identifier>
->   </wps:RawDataOutput>
->  </wps:ResponseForm>
-> </wps:Execute>
 > ```
+>
+> <?xml version="1.0" encoding="UTF-8"?><wps:Execute version="1.0.0" service="WPS" xmlns:xsi="<http://www.w3.org/2001/XMLSchema-instance>" xmlns="<http://www.opengis.net/wps/1.0.0>" xmlns:wfs="<http://www.opengis.net/wfs>" xmlns:wps="<http://www.opengis.net/wps/1.0.0>" xmlns:ows="<http://www.opengis.net/ows/1.1>" xmlns:gml="<http://www.opengis.net/gml>" xmlns:ogc="<http://www.opengis.net/ogc>" xmlns:wcs="<http://www.opengis.net/wcs/1.1.1>" xmlns:xlink="<http://www.w3.org/1999/xlink>" xsi:schemaLocation="<http://www.opengis.net/wps/1.0.0> <http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd>">
+>
+> :   <ows:Identifier>gs:Download</ows:Identifier> <wps:DataInputs> <wps:Input> <ows:Identifier>layerName</ows:Identifier> <wps:Data> <wps:LiteralData>nurc:Img_Sample</wps:LiteralData> </wps:Data> </wps:Input> <wps:Input> <ows:Identifier>outputFormat</ows:Identifier> <wps:Data> <wps:LiteralData>image/tiff</wps:LiteralData> </wps:Data> </wps:Input> <wps:Input> <ows:Identifier>targetCRS</ows:Identifier> <wps:Data> <wps:LiteralData>EPSG:4326</wps:LiteralData> </wps:Data> </wps:Input> <wps:Input> <ows:Identifier>targetSizeX</ows:Identifier> <wps:Data> <wps:LiteralData>80</wps:LiteralData> </wps:Data> </wps:Input> <wps:Input> <ows:Identifier>targetSizeY</ows:Identifier> <wps:Data> <wps:LiteralData>80</wps:LiteralData> </wps:Data> </wps:Input> </wps:DataInputs> <wps:ResponseForm> <wps:RawDataOutput mimeType="application/zip"> <ows:Identifier>result</ows:Identifier> </wps:RawDataOutput> </wps:ResponseForm>
+>
+> </wps:Execute>
 
 More parameters (from the parameter list above) can be used, for example, we can only select bands **0 and 2** from the original raster:
 
@@ -275,29 +240,42 @@ The result produced is a zipped file to download.
 The process can also be performed asynchronously. In this case, the second part (`wps:ResponseForm`) of the wps download payload slightly changes, by using the **storeExecuteResponse** and **status** parameters, set to **true** for the `<wps:ResponseDocument>`:
 
 > ``` xml
-> <wps:ResponseForm>
->   <wps:ResponseDocument storeExecuteResponse="true" status="true">
->     <wps:RawDataOutput mimeType="application/zip">
->       <ows:Identifier>result</ows:Identifier>
->     </wps:RawDataOutput>
->   </wps:ResponseDocument>>
-> </wps:ResponseForm>
 > ```
+>
+> <wps:ResponseForm>
+>
+> :   
+>
+>     <wps:ResponseDocument storeExecuteResponse="true" status="true">
+>
+>     :   
+>
+>         <wps:RawDataOutput mimeType="application/zip">
+>
+>         :   <ows:Identifier>result</ows:Identifier>
+>
+>         </wps:RawDataOutput>
+>
+>     </wps:ResponseDocument>>
+>
+> </wps:ResponseForm>
 
 In case of asynchronous execution, the initial request to download data returns an xml indication that the process has successfully started:
 
 > ``` xml
-> <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba" version="1.0.0">
->   <wps:Process wps:processVersion="1.0.0">
->       <ows:Identifier>gs:Download</ows:Identifier>
->       <ows:Title>Enterprise Download Process</ows:Title>
->       <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract>
->   </wps:Process>
->   <wps:Status creationTime="2016-08-08T11:03:18.167Z">
->       <wps:ProcessAccepted>Process accepted.</wps:ProcessAccepted>
->   </wps:Status>
-> </wps:ExecuteResponse>
 > ```
+>
+> <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:xs="<http://www.w3.org/2001/XMLSchema>" xmlns:ows="<http://www.opengis.net/ows/1.1>" xmlns:wps="<http://www.opengis.net/wps/1.0.0>" xmlns:xlink="<http://www.w3.org/1999/xlink>" xml:lang="en" service="WPS" serviceInstance="<http://127.0.0.1:8080/geoserver/ows>?" statusLocation="<http://127.0.0.1:8080/geoserver/ows?service=WPS&version=1.0.0&request=GetExecutionStatus&executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba>" version="1.0.0">
+>
+> :   
+>
+>     <wps:Process wps:processVersion="1.0.0">
+>
+>     :   <ows:Identifier>gs:Download</ows:Identifier> <ows:Title>Enterprise Download Process</ows:Title> <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract>
+>
+>     </wps:Process> <wps:Status creationTime="2016-08-08T11:03:18.167Z"> <wps:ProcessAccepted>Process accepted.</wps:ProcessAccepted> </wps:Status>
+>
+> </wps:ExecuteResponse>
 
 The response contains a `<wps:Status>` block indicating successful process creation and process start time. However, the important part in this response is the **executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba** attribute in the `<wps:ExecuteResponse>` tag. The `dd0d61f5-7da3-41ed-bd3f-15311fa660ba` ID can be used as a reference for this process, in order to issue new GET requests and to check process status. These requests have the form:
 
@@ -306,67 +284,31 @@ The response contains a `<wps:Status>` block indicating successful process creat
 When issued (and process has finished on the server), this GET request returns the result to download/process as a base64 encoded zip:
 
 > ``` xml
-> <?xml version="1.0" encoding="UTF-8"?>
-> <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=0c596a4d-7ddb-4a4e-bf35-4a64b47ee0d3" version="1.0.0">
->   <wps:Process wps:processVersion="1.0.0">
->       <ows:Identifier>gs:Download</ows:Identifier>
->       <ows:Title>Enterprise Download Process</ows:Title>
->       <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract>
->   </wps:Process>
->   <wps:Status creationTime="2016-08-08T11:18:46.015Z">
->       <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded>
->   </wps:Status>
->   <wps:ProcessOutputs>
->       <wps:Output>
->           <ows:Identifier>result</ows:Identifier>
->           <ows:Title>Zipped output files to download</ows:Title>
->           <wps:Data>
->               <wps:ComplexData encoding="base64" mimeType="application/zip">UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00...(more zipped raster data following, ommited for space saving)...</wps:ComplexData>
->           </wps:Data>
->       </wps:Output>
->   </wps:ProcessOutputs>
-> </wps:ExecuteResponse>
 > ```
+>
+> <?xml version="1.0" encoding="UTF-8"?> <wps:ExecuteResponse xmlns:xs="<http://www.w3.org/2001/XMLSchema>" xmlns:ows="<http://www.opengis.net/ows/1.1>" xmlns:wps="<http://www.opengis.net/wps/1.0.0>" xmlns:xlink="<http://www.w3.org/1999/xlink>" xml:lang="en" service="WPS" serviceInstance="<http://127.0.0.1:8080/geoserver/ows>?" statusLocation="<http://127.0.0.1:8080/geoserver/ows?service=WPS&version=1.0.0&request=GetExecutionStatus&executionId=0c596a4d-7ddb-4a4e-bf35-4a64b47ee0d3>" version="1.0.0"> <wps:Process wps:processVersion="1.0.0"> <ows:Identifier>gs:Download</ows:Identifier> <ows:Title>Enterprise Download Process</ows:Title> <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract> </wps:Process> <wps:Status creationTime="2016-08-08T11:18:46.015Z"> <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded> </wps:Status> <wps:ProcessOutputs> <wps:Output> <ows:Identifier>result</ows:Identifier> <ows:Title>Zipped output files to download</ows:Title> <wps:Data> <wps:ComplexData encoding="base64" mimeType="application/zip">UEsDBBQACAgIAFdyCEkAAAAAAAAAAAAAAAApAAAAMGEwYmJkYmQtMjdkNi00\...(more zipped raster data following, ommited for space saving)\...</wps:ComplexData> </wps:Data> </wps:Output> </wps:ProcessOutputs> </wps:ExecuteResponse>
 
 ### Asynchronous execution (output as a reference)
 
 The `<wps:ResponseForm>` of the previous asynchronous request payload example can be modified to get back a link to the file to be downloaded instead of the base64 encoded data.
 
 > ``` xml
-> ...
-> <wps:ResponseForm>
->   <wps:ResponseDocument storeExecuteResponse="true" status="true">
->     <wps:Output asReference="true" mimeType="application/zip">
->       <ows:Identifier>result</ows:Identifier>
->     </wps:Output>
->   </wps:ResponseDocument>
-> </wps:ResponseForm>
 > ```
+>
+> \... <wps:ResponseForm> <wps:ResponseDocument storeExecuteResponse="true" status="true"> <wps:Output asReference="true" mimeType="application/zip"> <ows:Identifier>result</ows:Identifier> </wps:Output> </wps:ResponseDocument> </wps:ResponseForm>
 
 Note `<wps:ResponseDocument>` contains a `<wps:Output>` instead of a `<wps:RawDataOutput>` being used by previous example. Moreover the attribute **asReference** set to **true** has been added to the `<wps:Output>`.
 
 This time, when issued (and process has finished on the server), the GET request returns the result to download as a link as part of `<wps:Output><wps:Reference>` .
 
 > ``` xml
-> <?xml version="1.0" encoding="UTF-8"?>
->   <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1" version="1.0.0">
->   <wps:Process wps:processVersion="1.0.0">
->     <ows:Identifier>gs:Download</ows:Identifier>
->     <ows:Title>Enterprise Download Process</ows:Title>
->     <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract>
->   </wps:Process>
->   <wps:Status creationTime="2016-08-08T11:38:34.024Z">
->     <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded>
->   </wps:Status>
->   <wps:ProcessOutputs>
->     <wps:Output>
->       <ows:Identifier>result</ows:Identifier>
->       <ows:Title>Zipped output files to download</ows:Title>
->       <wps:Reference href="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionResult&amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1&amp;outputId=result.zip&amp;mimetype=application%2Fzip" mimeType="application/zip" />
->     </wps:Output>
->   </wps:ProcessOutputs>
-> </wps:ExecuteResponse>
 > ```
+>
+> <?xml version="1.0" encoding="UTF-8"?>
+>
+> :   <wps:ExecuteResponse xmlns:xs="<http://www.w3.org/2001/XMLSchema>" xmlns:ows="<http://www.opengis.net/ows/1.1>" xmlns:wps="<http://www.opengis.net/wps/1.0.0>" xmlns:xlink="<http://www.w3.org/1999/xlink>" xml:lang="en" service="WPS" serviceInstance="<http://127.0.0.1:8080/geoserver/ows>?" statusLocation="<http://127.0.0.1:8080/geoserver/ows?service=WPS&version=1.0.0&request=GetExecutionStatus&executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1>" version="1.0.0"> <wps:Process wps:processVersion="1.0.0"> <ows:Identifier>gs:Download</ows:Identifier> <ows:Title>Enterprise Download Process</ows:Title> <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract> </wps:Process> <wps:Status creationTime="2016-08-08T11:38:34.024Z"> <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded> </wps:Status> <wps:ProcessOutputs> <wps:Output> <ows:Identifier>result</ows:Identifier> <ows:Title>Zipped output files to download</ows:Title> <wps:Reference href="<http://127.0.0.1:8080/geoserver/ows?service=WPS&version=1.0.0&request=GetExecutionResult&executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1&outputId=result.zip&mimetype=application%2Fzip>" mimeType="application/zip" /> </wps:Output> </wps:ProcessOutputs>
+>
+> </wps:ExecuteResponse>
 
 ## Output Format and Response mime-types
 
@@ -375,15 +317,9 @@ By default, downloading vector data results in a Shapefile, compressed in a zip 
 Similarly, for raster data, by default the downloaded raster gets zipped, along with the SLD style associated to the layer. In some cases, this can be unnecessary, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary SLD. Let's consider downloading a RGB TIFF: the default raster.sld style won't add anything useful to the output. In that case it's possible to specify `image/tiff` in the Response's output `mimeType`: the output TIFF will be provided as is, without extra steps of compression and file management.
 
 > ``` xml
-> ...
-> <wps:ResponseForm>
->   <wps:ResponseDocument storeExecuteResponse="true" status="true">
->     <wps:Output asReference="true" mimeType="image/tiff">
->       <ows:Identifier>result</ows:Identifier>
->     </wps:Output>
->   </wps:ResponseDocument>
-> </wps:ResponseForm>
 > ```
+>
+> \... <wps:ResponseForm> <wps:ResponseDocument storeExecuteResponse="true" status="true"> <wps:Output asReference="true" mimeType="image/tiff"> <ows:Identifier>result</ows:Identifier> </wps:Output> </wps:ResponseDocument> </wps:ResponseForm>
 
 It is also possible to download the raster data as a GeoPackage, using `application/geopackage+sqlite3` as the value for the `mimeType` parameter.
 

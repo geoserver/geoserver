@@ -93,23 +93,23 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
       ]
     ]
   },
-  "cube:dimensions"\: {
+ "cube:dimensions"\: {
    "x": {
-      "type": "spatial",
-      "axis": "x",
-      "extent": "$${eoSummaries('bounds',eo:parentIdentifier,'x')}",
-      "reference_system": 4326},
-          "y": {
-          "type": "spatial",
-          "axis": "y",
-          "extent": "$${eoSummaries('bounds',eo:parentIdentifier,'y')}",
-          "reference_system": 4326},
-          "time": 
-              {"type": "temporal",
-              "extent": 
-                  ["$${eoSummaries('min',eo:parentIdentifier,'timeStart')}",
-              "$${eoSummaries('min',eo:parentIdentifier,'timeEnd')}"]
-              }
+       "type": "spatial",
+       "axis": "x",
+       "extent": "$${eoSummaries('bounds',eo:parentIdentifier,'x')}",
+       "reference_system": 4326},
+       "y": {
+         "type": "spatial",
+         "axis": "y",
+         "extent": "$${eoSummaries('bounds',eo:parentIdentifier,'y')}",
+         "reference_system": 4326},
+         "time": 
+            {"type": "temporal",
+            "extent": 
+               ["$${eoSummaries('min',eo:parentIdentifier,'timeStart')}",
+            "$${eoSummaries('min',eo:parentIdentifier,'timeEnd')}"]
+            }
       }
 ```
 
@@ -118,17 +118,17 @@ Support for the [STAC Datacube Extension](https://github.com/stac-extensions/dat
 ``` none
 <li><b>Extents</b>:
      <ul>
-    <li data-tid='gbounds'>Geographic (WGS84):
-                ${model.eoSummaries("bounds",a.name.value,"x")[0]}, 
-                ${model.eoSummaries("bounds",a.name.value,"y")[0]}, 
-                ${model.eoSummaries("bounds",a.name.value,"x")[1]}, 
-                ${model.eoSummaries("bounds",a.name.value,"y")[1]}.
-            </li>
-            <li data-tid='tbounds'>Temporal: 
-                ${model.eoSummaries("min",a.name.value,"timeStart")}/
-                ${model.eoSummaries("max",a.name.value,"timeEnd")}
-            </li> 
-        </ul>
+     <li data-tid='gbounds'>Geographic (WGS84):
+            ${model.eoSummaries("bounds",a.name.value,"x")[0]}, 
+            ${model.eoSummaries("bounds",a.name.value,"y")[0]}, 
+            ${model.eoSummaries("bounds",a.name.value,"x")[1]}, 
+            ${model.eoSummaries("bounds",a.name.value,"y")[1]}.
+         </li>
+         <li data-tid='tbounds'>Temporal: 
+            ${model.eoSummaries("min",a.name.value,"timeStart")}/
+            ${model.eoSummaries("max",a.name.value,"timeEnd")}
+         </li> 
+      </ul>
 </li>
 ```
 
@@ -158,98 +158,41 @@ This information could be used, for example, to implement the STAC [web-map-link
 Here is a Freemarker template snipped using the layer information:
 
 > ``` 
-> <#include "common-header.ftl">
->   <h1>This is a collection with layers</h1>
+> ```
 >
->   <#list collection.layers as layerWrapper>
->     <#assign layer=layerWrapper.rawValue>
->     <h2>${layer.workspace.value}:${layer.layer.value}</h2>
->     <p class="title">${layer.title.value}</p>
->     <p class="description">${layer.description.value}</p>
+> <#include "common-header.ftl"> <h1>This is a collection with layers</h1>
+>
+> <#list collection.layers as layerWrapper>
+>
+> :   <#assign layer=layerWrapper.rawValue> <h2>\${layer.workspace.value}:\${layer.layer.value}</h2> <p class="title">\${layer.title.value}</p> <p class="description">\${layer.description.value}</p>
 >
 >     <#if layer.styles??>
->       <h3>Styles</h3>
->         <#list layer.styles as styleWrapper>
->           <#assign style=styleWrapper.rawValue>
->           <p class="style">${(style.name.value)!}: ${(style.title.value)!}</p>
->         </#list>
+>
+>     :   
+>
+>         <h3>Styles</h3>
+>
+>         :   
+>
+>             <#list layer.styles as styleWrapper>
+>
+>             :   <#assign style=styleWrapper.rawValue> <p class="style">\${(style.name.value)!}: \${(style.title.value)!}</p>
+>
+>             </#list>
+>
 >     </#if>
 >
->     <#assign wms=layer.services.rawValue.wms.rawValue>
->     <#if wms??>
->         <h3>WMS</h3>
->         <p>Enabled: ${wms.enabled.value}</p>
->         <p>Formats: 
->         <ul>
->         <#list wms.formats as format>
->           <li>${format.value}</li>
->         </#list>
->         </ul>
->     </#if>
+>     <#assign wms=layer.services.rawValue.wms.rawValue> <#if wms??> <h3>WMS</h3> <p>Enabled: \${wms.enabled.value}</p> <p>Formats: <ul> <#list wms.formats as format> <li>\${format.value}</li> </#list> </ul> </#if>
 >
->     <#assign wcs=layer.services.rawValue.wcs.rawValue>
->     <#if wcs??>
->         <h3>WCS</h3>
->         <p>Enabled: ${wcs.enabled.value}</p>
->         <p>Formats: 
->         <ul>
->         <#list wcs.formats as format>
->           <li>${format.value}</li>
->         </#list>
->         </ul>
->     </#if>
+>     <#assign wcs=layer.services.rawValue.wcs.rawValue> <#if wcs??> <h3>WCS</h3> <p>Enabled: \${wcs.enabled.value}</p> <p>Formats: <ul> <#list wcs.formats as format> <li>\${format.value}</li> </#list> </ul> </#if>
 >
->     <#assign wmts=layer.services.rawValue.wmts.rawValue>
->     <#if wmts??>
->         <h3>WMTS</h3>
->         <p>Enabled: ${wmts.enabled.value}</p>
->         <p>Formats: 
->         <ul>
->         <#list wmts.formats as format>
->           <li>${format.value}</li>
->         </#list>
->         </ul>
->     </#if>
->   </#list>
-> ```
+>     <#assign wmts=layer.services.rawValue.wmts.rawValue> <#if wmts??> <h3>WMTS</h3> <p>Enabled: \${wmts.enabled.value}</p> <p>Formats: <ul> <#list wmts.formats as format> <li>\${format.value}</li> </#list> </ul> </#if>
+>
+> </#list>
 
 And here is a Features Templating JSON template exposing the same information, to use in the collection JSON output:
 
 > ``` json
-> {
->   "collections": [
->     {
->       "id": "${name}",
->       "title": "${title}",
->       "layers": [
->         {
->           "$source": "layers"
->         },
->         {
->           "workspace": "${workspace}",
->           "layer": "${layer}",
->           "styles": [
->             {
->               "$source": "styles"
->             },
->             {
->               "name": "${name}",
->               "title": "${title}"
->             }
->           ],
->           "services": {
->             "wms": {
->               "enabled": "${services.wms.enabled}",
->               "formats": "${services.wms.formats}"
->             },
->             "wcs": {
->               "enabled": "${services.wcs.enabled}",
->               "formats": "${services.wcs.formats}"
->             }
->           }
->         }
->       ]
->     }
->   ]
-> }
 > ```
+>
+> { "collections": [ { "id": "\${name}", "title": "\${title}", "layers": [ { "\$source": "layers" }, { "workspace": "\${workspace}", "layer": "\${layer}", "styles": [ { "\$source": "styles" }, { "name": "\${name}", "title": "\${title}" } ], "services": { "wms": { "enabled": "\${services.wms.enabled}", "formats": "\${services.wms.formats}" }, "wcs": { "enabled": "\${services.wcs.enabled}", "formats": "\${services.wcs.formats}" } } } ] } ] }

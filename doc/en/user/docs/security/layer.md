@@ -32,11 +32,11 @@ The parameters include:
 
 -   `permission`--- Type of access permission/mode.
 
-    > -   `r`---Read access
-    > -   `w`---Write access
-    > -   `a`---Admin access
-    >
-    > See [Access modes](layer.md#access_mode) for more details.
+    -   `r`---Read access
+    -   `w`---Write access
+    -   `a`---Admin access
+
+    See [Access modes](layer.md#access_mode) for more details.
 
 -   `role[,role2,...]` is the name(s) of predefined roles. The wildcard `*` is used to indicate the permission is applied to all users, including anonymous users.
 
@@ -63,17 +63,12 @@ For WMS, layers will be also secured by considering their containing layer group
 
 The following tables summarizes the layer group behavior depending on whether they are used in a public or secured environment:
 
-  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  **Mode**               **Public behavior**                                                                                                                                **Restricted behavior**
-  ---------------------- -------------------------------------------------------------------------------------------------------------------------------------------------- ------------------------------------------------------------------------------------------------------------------------------------
-  **Single**             Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers are also visible at root level             Does not control layer access at all
-
-  **Opaque container**   Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers in it are not available for WMS requests   Same as public behavior
-
-  **Named tree**         Contained layers are visible as children in the capabilities document, the name can be used as a shortcut to request all layers.                   Restricting access to the group restricts also the contained layers, unless another "tree" group allows access to the same layer
-
-  **Container tree**     Same as "named tree", but does not have a name published in the capabilities document and thus cannot be requested directly                      Same as "named tree"
-  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| **Mode**             | **Public behavior**                                                                                                                              | **Restricted behavior**                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Single**           | Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers are also visible at root level           | Does not control layer access at all                                                                                               |
+| **Opaque container** | Looks like a stand-alone layer, can be requested directly and acts as an alias for a layer list. Layers in it are not available for WMS requests | Same as public behavior                                                                                                            |
+| **Named tree**       | Contained layers are visible as children in the capabilities document, the name can be used as a shortcut to request all layers.                 | Restricting access to the group restricts also the contained layers, unless another "tree" group allows access to the same layer |
+| **Container tree**   | Same as "named tree", but does not have a name published in the capabilities document and thus cannot be requested directly                    | Same as "named tree"                                                                                                             |
 
 ## Catalog Mode
 

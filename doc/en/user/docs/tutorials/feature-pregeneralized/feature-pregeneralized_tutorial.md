@@ -62,12 +62,12 @@ First we need a XML config file
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <GeneralizationInfos version="1.0">
-  <GeneralizationInfo dataSourceName="file:data/streams/0/streams.shp"  featureName="GenStreams" baseFeatureName="streams" geomPropertyName="the_geom">
-      <Generalization dataSourceName="file:data/streams/5.0/streams.shp"  distance="5" featureName="streams" geomPropertyName="the_geom"/>
-      <Generalization dataSourceName="file:data/streams/10.0/streams.shp"  distance="10" featureName="streams" geomPropertyName="the_geom"/>
-      <Generalization dataSourceName="file:data/streams/20.0/streams.shp"  distance="20" featureName="streams" geomPropertyName="the_geom"/>
-      <Generalization dataSourceName="file:data/streams/50.0/streams.shp"  distance="50" featureName="streams" geomPropertyName="the_geom"/>      
-  </GeneralizationInfo>
+ <GeneralizationInfo dataSourceName="file:data/streams/0/streams.shp"  featureName="GenStreams" baseFeatureName="streams" geomPropertyName="the_geom">
+    <Generalization dataSourceName="file:data/streams/5.0/streams.shp"  distance="5" featureName="streams" geomPropertyName="the_geom"/>
+    <Generalization dataSourceName="file:data/streams/10.0/streams.shp"  distance="10" featureName="streams" geomPropertyName="the_geom"/>
+    <Generalization dataSourceName="file:data/streams/20.0/streams.shp"  distance="20" featureName="streams" geomPropertyName="the_geom"/>
+    <Generalization dataSourceName="file:data/streams/50.0/streams.shp"  distance="50" featureName="streams" geomPropertyName="the_geom"/>      
+ </GeneralizationInfo>
 </GeneralizationInfos>
 ```
 
@@ -156,12 +156,12 @@ No we need another XML configuration file
 ``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <GeneralizationInfos version="1.0">
-  <GeneralizationInfo dataSourceNameSpace="topp" dataSourceName="Streams_0"  featureName="GenStreams2" baseFeatureName="streams" geomPropertyName="the_geom">
-      <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_5"  distance="5" featureName="streams" geomPropertyName="the_geom"/>
-      <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_10"  distance="10" featureName="streams" geomPropertyName="the_geom"/>
-      <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_20"  distance="20" featureName="streams" geomPropertyName="the_geom"/>
-      <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_50"  distance="50" featureName="streams" geomPropertyName="the_geom"/>       
-  </GeneralizationInfo>
+ <GeneralizationInfo dataSourceNameSpace="topp" dataSourceName="Streams_0"  featureName="GenStreams2" baseFeatureName="streams" geomPropertyName="the_geom">
+    <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_5"  distance="5" featureName="streams" geomPropertyName="the_geom"/>
+    <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_10"  distance="10" featureName="streams" geomPropertyName="the_geom"/>
+    <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_20"  distance="20" featureName="streams" geomPropertyName="the_geom"/>
+    <Generalization dataSourceNameSpace="topp" dataSourceName="Streams_50"  distance="50" featureName="streams" geomPropertyName="the_geom"/>      
+ </GeneralizationInfo>
 </GeneralizationInfos>
 ```
 

@@ -16,7 +16,7 @@ Let's look at some examples.
 
 Here is an example that allows one to extract all the vertices of a geometry, and make them visible in a map, using the `vertices` function:
 
-``` {.xml linenos=""}
+``` xml
 <PointSymbolizer>
   <Geometry>
     <ogc:Function name="vertices">
@@ -44,42 +44,42 @@ Applied to the sample ``tasmania_roads`` layer this will result in:
 
 ### Start and end point
 
-The ``startPoint`` and ``endPoint`` functions can be used to extract the start and end point of a line.
+The `startPoint` and `endPoint` functions can be used to extract the start and end point of a line.
 
-``` {.xml linenos="
+``` xml
 <PointSymbolizer>
-<Geometry>
-  <ogc:Function name=\"startPoint\">
-    <ogc:PropertyName>the_geom</ogc:PropertyName>
-  </ogc:Function>
-</Geometry>
-<Graphic>
-  <Mark>
-    <WellKnownName>square</WellKnownName>
-    <Stroke>
-      <CssParameter name=\"stroke\">0x00FF00</CssParameter>
-      <CssParameter name=\"stroke-width\">1.5</CssParameter>
-    </Stroke>
-  </Mark>
-  <Size>8</Size>
-</Graphic>
-</PointSymbolizer>
-<PointSymbolizer>
- <Geometry>
-   <ogc:Function name=\"endPoint\">
-     <ogc:PropertyName>the_geom</ogc:PropertyName>
-   </ogc:Function>
- </Geometry>
- <Graphic>
-   <Mark>
-     <WellKnownName>circle</WellKnownName>
-     <Fill>
-        <CssParameter name=\"fill\">0xFF0000</CssParameter>
-     </Fill>
-   </Mark>
-   <Size>4</Size>
- </Graphic>
-</PointSymbolizer>"}
+  <Geometry>
+    <ogc:Function name="startPoint">
+      <ogc:PropertyName>the_geom</ogc:PropertyName>
+    </ogc:Function>
+  </Geometry>
+  <Graphic>
+    <Mark>
+      <WellKnownName>square</WellKnownName>
+      <Stroke>
+        <CssParameter name="stroke">0x00FF00</CssParameter>
+        <CssParameter name="stroke-width">1.5</CssParameter>
+      </Stroke>
+    </Mark>
+    <Size>8</Size>
+  </Graphic>
+ </PointSymbolizer>
+ <PointSymbolizer>
+   <Geometry>
+     <ogc:Function name="endPoint">
+       <ogc:PropertyName>the_geom</ogc:PropertyName>
+     </ogc:Function>
+   </Geometry>
+   <Graphic>
+     <Mark>
+       <WellKnownName>circle</WellKnownName>
+       <Fill>
+          <CssParameter name="fill">0xFF0000</CssParameter>
+       </Fill>
+     </Mark>
+     <Size>4</Size>
+   </Graphic>
+ </PointSymbolizer>
 ```
 
 [View the full "StartEnd" SLD](artifacts/startend.sld)
@@ -93,7 +93,7 @@ Applied to the sample ``tasmania_roads`` layer this will result in:
 
 The ``offset`` function can be used to create drop shadow effects below polygons. Notice that the offset values reflect the fact that the data used in the example is in a geographic coordinate system.
 
-``` {.xml linenos=""}
+``` xml
 <PolygonSymbolizer>
   <Geometry>
      <ogc:Function name="offset">

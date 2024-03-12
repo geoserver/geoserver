@@ -6,29 +6,12 @@ A **PolygonSymbolizer** styles features as **polygons**. Polygons are two-dimens
 
 A `<PolygonSymbolizer>` contains an optional `<Geometry>` element, and two elements `<Fill>` and `<Stroke>` for specifying styling:
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<Geometry>`
-
-:   No
-
-    Specifies the geometry to be rendered.
-
-`<Fill>`
-
-:   No
-
-    Specifies the styling for the polygon interior.
-
-`<Stroke>`
-
-:   No
-
-    Specifies the styling for the polygon border.
+|              |               |                                                 |
+|--------------|---------------|-------------------------------------------------|
+| **Tag**      | **Required?** | **Description**                                 |
+| `<Geometry>` | No            | Specifies the geometry to be rendered.          |
+| `<Fill>`     | No            | Specifies the styling for the polygon interior. |
+| `<Stroke>`   | No            | Specifies the styling for the polygon border.   |
 
 ### Geometry
 
@@ -84,7 +67,7 @@ The following parameters are supported:
 
 The following symbolizer is taken from the [Polygons](../cookbook/polygons.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` {.xml linenos=""}
+``` xml
 <PolygonSymbolizer>
   <Fill>
     <CssParameter name="fill">#000080</CssParameter>

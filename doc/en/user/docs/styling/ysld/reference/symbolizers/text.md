@@ -110,181 +110,29 @@ The following properties allow for a graphic to be displayed in addition to just
 
 The following properties are equivalent to SLD "vendor options".
 
-Property
-
-:   Required?
-
-    Description
-
-    Default value
-
-`x-allowOverruns`
-
-:   No
-
-    Allows labels on lines to move slightly beyond the beginning or end of the line.
-
-    `true`
-
-`x-autoWrap`
-
-:   No
-
-    The number of pixels beyond which a label will be wrapped over multiple lines. Cannot use with `x-followLine`.
-
-    0
-
-`x-conflictResolution`
-
-:   No
-
-    Enables conflict resolution, meaning no two labels will be allowed to overlap. Without conflict resolution, symbolizers can overlap with other labels.
-
-    `true`
-
-`x-followLine`
-
-:   No
-
-    On linear geometries, the label will follow the shape of the current line, as opposed to being drawn at a tangent. Will override
-
-    `false`
-
-`x-forceLeftToRight`
-
-:   No
-
-    Forces labels to a readable orientation, otherwise will follow the line orientation, possibly making the label look upside-down. This setting is useful when using symbol fonts to add direction markers along a line.
-
-    `false`
-
-`x-goodnessOfFit`
-
-:   No
-
-    Percentage (expressed as a decimal between 0-1) of the label that must fit inside the geometry to permit the label to be drawn. Works only on polygon features.
-
-    0.5
-
-`x-graphic-margin`
-
-:   No
-
-    Number of pixels between the stretched graphic and the text. Only applies when `x-graphic-resize` is set to `stretch` or `proportional`.
-
-    0
-
-`x-graphic-resize`
-
-:   No
-
-    Allows for stretching the graphic underneath a label to fit the label size. Options are `none`, `stretch` or `proportional`. Used in conjunction with `x-graphic-margin`..
-
-    `none`
-
-`x-group`
-
-:   No
-
-    Geometries with identical labels will be considered a single entity to be labeled. Used to control repeated labels.
-
-    `false`
-
-`x-labelAllGroup`
-
-:   No
-
-    Used in conjunction with `x-group`. When `true` all items in a group are labeled. When `false`, only the largest geometry in the group is labeled. Valid for lines only.
-
-    `false`
-
-`x-repeat`
-
-:   No
-
-    Desired distance (in pixels) between labels drawn on a group. If zero, only one label will be drawn. Used in conjunction with `x-group`. Valid for lines only.
-
-    0
-
-`x-maxAngleDelta`
-
-:   No
-
-    Maximum allowed angle (in degrees) between two characters in a curved label. Used in conjunction with `x-followLine`. Values higher than `30` may cause loss of legibility of the label.
-
-    22.5
-
-`x-maxDisplacement`
-
-:   No
-
-    Distance (in pixels) a label can be displaced from its natural position in an attempt to eliminate conflict with other labels.
-
-    0
-
-`x-minGroupDistance`
-
-:   No
-
-    Minimum distance (in pixels) between two labels in the same label group. Used in conjunction with `displacement` or `repeat` to avoid having two labels too close to each other
-
-    No minimum distance
-
-`x-partials`
-
-:   No
-
-    Will display partial labels (truncated on the border of the display area).
-
-    `false`
-
-`x-polygonAlign`
-
-:   No
-
-    Overrides manual rotation to align label rotation automatically. Valid for polygons only.
-
-    `false`
-
-`x-spaceAround`
-
-:   No
-
-    Minimum distance (in pixels) between two labels. A negative value specifies the maximum overlap between two labels.
-
-    0
-
-`x-underlineText`
-
-:   No
-
-    Instruct the renderer to underline labels.
-
-    `false`
-
-`x-strikethroughText`
-
-:   No
-
-    Instruct the renderer to strikethrough labels.
-
-    `false`
-
-`x-charSpacing`
-
-:   No
-
-    The option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap). The value is specified in pixels.
-
-    0
-
-`x-wordSpacing`
-
-:   No
-
-    The option controls the amount of space between words, for this option only positive values (or zero) are accepted. The value is specified in pixels.
-
-    0
+| Property               | Required? | Description                                                                                                                                                                                                            | Default value       |
+|------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| `x-allowOverruns`      | No        | Allows labels on lines to move slightly beyond the beginning or end of the line.                                                                                                                                       | `true`              |
+| `x-autoWrap`           | No        | The number of pixels beyond which a label will be wrapped over multiple lines. Cannot use with `x-followLine`.                                                                                                         | 0                   |
+| `x-conflictResolution` | No        | Enables conflict resolution, meaning no two labels will be allowed to overlap. Without conflict resolution, symbolizers can overlap with other labels.                                                                 | `true`              |
+| `x-followLine`         | No        | On linear geometries, the label will follow the shape of the current line, as opposed to being drawn at a tangent. Will override                                                                                       | `false`             |
+| `x-forceLeftToRight`   | No        | Forces labels to a readable orientation, otherwise will follow the line orientation, possibly making the label look upside-down. This setting is useful when using symbol fonts to add direction markers along a line. | `false`             |
+| `x-goodnessOfFit`      | No        | Percentage (expressed as a decimal between 0-1) of the label that must fit inside the geometry to permit the label to be drawn. Works only on polygon features.                                                        | 0.5                 |
+| `x-graphic-margin`     | No        | Number of pixels between the stretched graphic and the text. Only applies when `x-graphic-resize` is set to `stretch` or `proportional`.                                                                               | 0                   |
+| `x-graphic-resize`     | No        | Allows for stretching the graphic underneath a label to fit the label size. Options are `none`, `stretch` or `proportional`. Used in conjunction with `x-graphic-margin`..                                             | `none`              |
+| `x-group`              | No        | Geometries with identical labels will be considered a single entity to be labeled. Used to control repeated labels.                                                                                                    | `false`             |
+| `x-labelAllGroup`      | No        | Used in conjunction with `x-group`. When `true` all items in a group are labeled. When `false`, only the largest geometry in the group is labeled. Valid for lines only.                                               | `false`             |
+| `x-repeat`             | No        | Desired distance (in pixels) between labels drawn on a group. If zero, only one label will be drawn. Used in conjunction with `x-group`. Valid for lines only.                                                         | 0                   |
+| `x-maxAngleDelta`      | No        | Maximum allowed angle (in degrees) between two characters in a curved label. Used in conjunction with `x-followLine`. Values higher than `30` may cause loss of legibility of the label.                               | 22.5                |
+| `x-maxDisplacement`    | No        | Distance (in pixels) a label can be displaced from its natural position in an attempt to eliminate conflict with other labels.                                                                                         | 0                   |
+| `x-minGroupDistance`   | No        | Minimum distance (in pixels) between two labels in the same label group. Used in conjunction with `displacement` or `repeat` to avoid having two labels too close to each other                                        | No minimum distance |
+| `x-partials`           | No        | Will display partial labels (truncated on the border of the display area).                                                                                                                                             | `false`             |
+| `x-polygonAlign`       | No        | Overrides manual rotation to align label rotation automatically. Valid for polygons only.                                                                                                                              | `false`             |
+| `x-spaceAround`        | No        | Minimum distance (in pixels) between two labels. A negative value specifies the maximum overlap between two labels.                                                                                                    | 0                   |
+| `x-underlineText`      | No        | Instruct the renderer to underline labels.                                                                                                                                                                             | `false`             |
+| `x-strikethroughText`  | No        | Instruct the renderer to strikethrough labels.                                                                                                                                                                         | `false`             |
+| `x-charSpacing`        | No        | The option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap). The value is specified in pixels.                | 0                   |
+| `x-wordSpacing`        | No        | The option controls the amount of space between words, for this option only positive values (or zero) are accepted. The value is specified in pixels.                                                                  | 0                   |
 
 {%
    include-markdown "./include/composite.md"

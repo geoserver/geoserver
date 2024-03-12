@@ -265,7 +265,7 @@ Sets the WFS specific publishing parameters.
 -   **Request SRS**---Provides a list of SRSs the layer can be converted to. **New Request SRS** allows you to add an SRS to that list.
 -   **Interpolation Methods**---Sets the raster rendering process, if applicable.
 -   **Formats**---Lists which output formats a layers supports.
--   **GeoSearch**---When enabled, allows the Google Geosearch crawler to index from this particular layer. See [What is a Geo Sitemap?](http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=94554) for more information.
+-   **GeoSearch**---When enabled, supports Geo Sitemap (formally used by Google Geosearch crawler index layers).
 
 ### KML Format Settings
 

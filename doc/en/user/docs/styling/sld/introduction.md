@@ -26,7 +26,7 @@ More advanced styling is possible as well. Points can be specified with well-kno
 
 A good way to learn about SLD is to study styling examples. The following is a simple SLD that can be applied to a layer that contains points, to style them as red circles with a size of 6 pixels. (This is the first example in the [Points](cookbook/points.md) section of the [SLD Cookbook](cookbook/index.md).)
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0" 
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 

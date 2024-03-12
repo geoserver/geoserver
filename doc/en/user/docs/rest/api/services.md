@@ -6,203 +6,56 @@ GeoServer includes several types of OGC services like WCS, WFS and WMS, commonly
 
 Controls Web Coverage Service settings.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return global WCS settings
-
-    200
-
-    XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Modify global WCS settings
-
-    200
-
-DELETE
-
-> 405
+| Method | Action                     | Status code | Formats   | Default Format |
+|--------|----------------------------|-------------|-----------|----------------|
+| GET    | Return global WCS settings | 200         | XML, JSON | HTML           |
+| POST   |                            | 405         |           |                |
+| PUT    | Modify global WCS settings | 200         |           |                |
+| DELETE |                            | 405         |           |                |
 
 ## `/services/wcs/workspaces/<ws>/settings[.<format>]`
 
 Controls Web Coverage Service settings for a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return WCS settings for workspace `ws`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Create or modify WCS settings for workspace `ws`
-
-    200
-
-    XML,JSON
-
-DELETE
-
-:   Delete WCS settings for workspace `ws`
-
-    200
+| Method | Action                                           | Status code | Formats         | Default Format |
+|--------|--------------------------------------------------|-------------|-----------------|----------------|
+| GET    | Return WCS settings for workspace `ws`           | 200         | HTML, XML, JSON | HTML           |
+| POST   |                                                  | 405         |                 |                |
+| PUT    | Create or modify WCS settings for workspace `ws` | 200         | XML,JSON        |                |
+| DELETE | Delete WCS settings for workspace `ws`           | 200         |                 |                |
 
 ## `/services/wfs/settings[.<format>]`
 
 Controls Web Feature Service settings.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return global WFS settings
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Modify global WFS settings
-
-    200
-
-    XML,JSON
-
-DELETE
-
-> 405
+| Method | Action                     | Status code | Formats         | Default Format |
+|--------|----------------------------|-------------|-----------------|----------------|
+| GET    | Return global WFS settings | 200         | HTML, XML, JSON | HTML           |
+| POST   |                            | 405         |                 |                |
+| PUT    | Modify global WFS settings | 200         | XML,JSON        |                |
+| DELETE |                            | 405         |                 |                |
 
 ## `/services/wfs/workspaces/<ws>/settings[.<format>]`
 
 Controls Web Feature Service settings for a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return WFS settings for workspace `ws`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Modify WFS settings for workspace `ws`
-
-    200
-
-    XML,JSON
-
-DELETE
-
-:   Delete WFS settings for workspace `ws`
-
-    200
+| Method | Action                                 | Status code | Formats         | Default Format |
+|--------|----------------------------------------|-------------|-----------------|----------------|
+| GET    | Return WFS settings for workspace `ws` | 200         | HTML, XML, JSON | HTML           |
+| POST   |                                        | 405         |                 |                |
+| PUT    | Modify WFS settings for workspace `ws` | 200         | XML,JSON        |                |
+| DELETE | Delete WFS settings for workspace `ws` | 200         |                 |                |
 
 ## `/services/wms/settings[.<format>]`
 
 Controls Web Map Service settings.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return global WMS settings
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Modify global WMS settings
-
-    200
-
-    XML,JSON
-
-DELETE
-
-> 405
+| Method | Action                     | Status code | Formats         | Default Format |
+|--------|----------------------------|-------------|-----------------|----------------|
+| GET    | Return global WMS settings | 200         | HTML, XML, JSON | HTML           |
+| POST   |                            | 405         |                 |                |
+| PUT    | Modify global WMS settings | 200         | XML,JSON        |                |
+| DELETE |                            | 405         |                 |                |
 
 ## `/services/wms/workspaces/<ws>/settings[.<format>]`
 
@@ -219,41 +72,12 @@ Controls Web Map Service settings for a given workspace.
 
 Controls Web Map Tile Service settings.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return global WMTS settings
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   Modify global WMTS settings
-
-    200
-
-    XML,JSON
-
-DELETE
-
-> 405
+| Method | Action                      | Status code | Formats         | Default Format |
+|--------|-----------------------------|-------------|-----------------|----------------|
+| GET    | Return global WMTS settings | 200         | HTML, XML, JSON | HTML           |
+| POST   |                             | 405         |                 |                |
+| PUT    | Modify global WMTS settings | 200         | XML,JSON        |                |
+| DELETE |                             | 405         |                 |                |
 
 ## `/services/wmts/workspaces/<ws>/settings[.<format>]`
 

@@ -46,41 +46,12 @@ The `quietOnNotFound` parameter avoids to log an Exception when the Workspace is
 
 Controls the default workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Returns default workspace
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-:   200
-
-    Set default workspace
-
-    XML, JSON
-
-DELETE
-
-> 405
+| Method | Action                    | Status code           | Formats         | Default Format |
+|--------|---------------------------|-----------------------|-----------------|----------------|
+| GET    | Returns default workspace | 200                   | HTML, XML, JSON | HTML           |
+| POST   |                           | 405                   |                 |                |
+| PUT    | 200                       | Set default workspace | XML, JSON       |                |
+| DELETE |                           | 405                   |                 |                |
 
 ## `/workspaces/<ws>/settings[.<format>]`
 

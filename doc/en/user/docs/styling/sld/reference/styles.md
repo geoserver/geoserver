@@ -8,41 +8,14 @@ The **UserStyle** element defines styling for a layer.
 
 The `<UserStyle>` element contains the following elements:
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<Name>`
-
-:   No
-
-    The name of the style, used to reference it externally. (Ignored for catalog styles.)
-
-`<Title>`
-
-:   No
-
-    The title of the style.
-
-`<Abstract>`
-
-:   No
-
-    The description for the style.
-
-`<IsDefault>`
-
-:   No
-
-    Whether the style is the default one for a named layer. Used in SLD **Library Mode**. Values are `1` or `0` (default).
-
-`<FeatureTypeStyle>`
-
-:   1..N
-
-    Defines the symbology for rendering a single feature type.
+|                      |               |                                                                                                                        |
+|----------------------|---------------|------------------------------------------------------------------------------------------------------------------------|
+| **Tag**              | **Required?** | **Description**                                                                                                        |
+| `<Name>`             | No            | The name of the style, used to reference it externally. (Ignored for catalog styles.)                                  |
+| `<Title>`            | No            | The title of the style.                                                                                                |
+| `<Abstract>`         | No            | The description for the style.                                                                                         |
+| `<IsDefault>`        | No            | Whether the style is the default one for a named layer. Used in SLD **Library Mode**. Values are `1` or `0` (default). |
+| `<FeatureTypeStyle>` | 1..N          | Defines the symbology for rendering a single feature type.                                                             |
 
 ## FeatureTypeStyle
 

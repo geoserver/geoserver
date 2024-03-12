@@ -95,7 +95,7 @@ The following style specifies a named layer using the default style, and a user-
       <sld:UserStyle>
          <sld:FeatureTypeStyle>
             <sld:Rule>
-              <sld:PolygonSymbolizer>
+             <sld:PolygonSymbolizer>
                 <Stroke>
                   <CssParameter name="stroke">#FF0000</CssParameter>
                   <CssParameter name="stroke-width">2</CssParameter>

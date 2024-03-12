@@ -20,7 +20,7 @@
 
 The following SLD invokes a Dynamic Color Map rendering transformation on a Coverage using colorMaps created on top of QuantumGIS SVG files. Dynamic Color Map Rendering Transformation takes data as first parameter (the coverage) and ColorRamp as second parameter which is a colorMap.
 
-``` {.xml linenos=""}
+``` xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <StyledLayerDescriptor version="1.0.0"
     xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
@@ -74,41 +74,13 @@ Key aspects of the SLD are:
     A sample of QuantumGIS SVG LinearGradient subelement is:
 
     ``` xml
-    <linearGradient id="GMT_panoply" gradientUnits="objectBoundingBox" spreadMethod="pad" x1="0%" x2="100%" y1="0%" y2="0%">
-        <stop offset="0.00%" stop-color="rgb(4,14,216)" stop-opacity="1.0000"/>
-        <stop offset="6.25%" stop-color="rgb(4,14,216)" stop-opacity="1.0000"/>
-        <stop offset="6.25%" stop-color="rgb(32,80,255)" stop-opacity="1.0000"/>
-        <stop offset="12.50%" stop-color="rgb(32,80,255)" stop-opacity="1.0000"/>
-        <stop offset="12.50%" stop-color="rgb(65,150,255)" stop-opacity="1.0000"/>
-        <stop offset="18.75%" stop-color="rgb(65,150,255)" stop-opacity="1.0000"/>
-        <stop offset="18.75%" stop-color="rgb(109,193,255)" stop-opacity="1.0000"/>
-        <stop offset="25.00%" stop-color="rgb(109,193,255)" stop-opacity="1.0000"/>
-        <stop offset="25.00%" stop-color="rgb(134,217,255)" stop-opacity="1.0000"/>
-        <stop offset="31.25%" stop-color="rgb(134,217,255)" stop-opacity="1.0000"/>
-        <stop offset="31.25%" stop-color="rgb(156,238,255)" stop-opacity="1.0000"/>
-        <stop offset="37.50%" stop-color="rgb(156,238,255)" stop-opacity="1.0000"/>
-        <stop offset="37.50%" stop-color="rgb(175,245,255)" stop-opacity="1.0000"/>
-        <stop offset="43.75%" stop-color="rgb(175,245,255)" stop-opacity="1.0000"/>
-        <stop offset="43.75%" stop-color="rgb(206,255,255)" stop-opacity="1.0000"/>
-        <stop offset="50.00%" stop-color="rgb(206,255,255)" stop-opacity="1.0000"/>
-        <stop offset="50.00%" stop-color="rgb(255,254,71)" stop-opacity="1.0000"/>
-        <stop offset="56.25%" stop-color="rgb(255,254,71)" stop-opacity="1.0000"/>
-        <stop offset="56.25%" stop-color="rgb(255,235,0)" stop-opacity="1.0000"/>
-        <stop offset="62.50%" stop-color="rgb(255,235,0)" stop-opacity="1.0000"/>
-        <stop offset="62.50%" stop-color="rgb(255,196,0)" stop-opacity="1.0000"/>
-        <stop offset="68.75%" stop-color="rgb(255,196,0)" stop-opacity="1.0000"/>
-        <stop offset="68.75%" stop-color="rgb(255,144,0)" stop-opacity="1.0000"/>
-        <stop offset="75.00%" stop-color="rgb(255,144,0)" stop-opacity="1.0000"/>
-        <stop offset="75.00%" stop-color="rgb(255,72,0)" stop-opacity="1.0000"/>
-        <stop offset="81.25%" stop-color="rgb(255,72,0)" stop-opacity="1.0000"/>
-        <stop offset="81.25%" stop-color="rgb(255,0,0)" stop-opacity="1.0000"/>
-        <stop offset="87.50%" stop-color="rgb(255,0,0)" stop-opacity="1.0000"/>
-        <stop offset="87.50%" stop-color="rgb(213,0,0)" stop-opacity="1.0000"/>
-        <stop offset="93.75%" stop-color="rgb(213,0,0)" stop-opacity="1.0000"/>
-        <stop offset="93.75%" stop-color="rgb(158,0,0)" stop-opacity="1.0000"/>
-        <stop offset="100.00%" stop-color="rgb(158,0,0)" stop-opacity="1.0000"/>
-    </linearGradient>
     ```
+
+    <linearGradient id="GMT_panoply" gradientUnits="objectBoundingBox" spreadMethod="pad" x1="0%" x2="100%" y1="0%" y2="0%">
+
+    :   <stop offset="0.00%" stop-color="rgb(4,14,216)" stop-opacity="1.0000"/> <stop offset="6.25%" stop-color="rgb(4,14,216)" stop-opacity="1.0000"/> <stop offset="6.25%" stop-color="rgb(32,80,255)" stop-opacity="1.0000"/> <stop offset="12.50%" stop-color="rgb(32,80,255)" stop-opacity="1.0000"/> <stop offset="12.50%" stop-color="rgb(65,150,255)" stop-opacity="1.0000"/> <stop offset="18.75%" stop-color="rgb(65,150,255)" stop-opacity="1.0000"/> <stop offset="18.75%" stop-color="rgb(109,193,255)" stop-opacity="1.0000"/> <stop offset="25.00%" stop-color="rgb(109,193,255)" stop-opacity="1.0000"/> <stop offset="25.00%" stop-color="rgb(134,217,255)" stop-opacity="1.0000"/> <stop offset="31.25%" stop-color="rgb(134,217,255)" stop-opacity="1.0000"/> <stop offset="31.25%" stop-color="rgb(156,238,255)" stop-opacity="1.0000"/> <stop offset="37.50%" stop-color="rgb(156,238,255)" stop-opacity="1.0000"/> <stop offset="37.50%" stop-color="rgb(175,245,255)" stop-opacity="1.0000"/> <stop offset="43.75%" stop-color="rgb(175,245,255)" stop-opacity="1.0000"/> <stop offset="43.75%" stop-color="rgb(206,255,255)" stop-opacity="1.0000"/> <stop offset="50.00%" stop-color="rgb(206,255,255)" stop-opacity="1.0000"/> <stop offset="50.00%" stop-color="rgb(255,254,71)" stop-opacity="1.0000"/> <stop offset="56.25%" stop-color="rgb(255,254,71)" stop-opacity="1.0000"/> <stop offset="56.25%" stop-color="rgb(255,235,0)" stop-opacity="1.0000"/> <stop offset="62.50%" stop-color="rgb(255,235,0)" stop-opacity="1.0000"/> <stop offset="62.50%" stop-color="rgb(255,196,0)" stop-opacity="1.0000"/> <stop offset="68.75%" stop-color="rgb(255,196,0)" stop-opacity="1.0000"/> <stop offset="68.75%" stop-color="rgb(255,144,0)" stop-opacity="1.0000"/> <stop offset="75.00%" stop-color="rgb(255,144,0)" stop-opacity="1.0000"/> <stop offset="75.00%" stop-color="rgb(255,72,0)" stop-opacity="1.0000"/> <stop offset="81.25%" stop-color="rgb(255,72,0)" stop-opacity="1.0000"/> <stop offset="81.25%" stop-color="rgb(255,0,0)" stop-opacity="1.0000"/> <stop offset="87.50%" stop-color="rgb(255,0,0)" stop-opacity="1.0000"/> <stop offset="87.50%" stop-color="rgb(213,0,0)" stop-opacity="1.0000"/> <stop offset="93.75%" stop-color="rgb(213,0,0)" stop-opacity="1.0000"/> <stop offset="93.75%" stop-color="rgb(158,0,0)" stop-opacity="1.0000"/> <stop offset="100.00%" stop-color="rgb(158,0,0)" stop-opacity="1.0000"/>
+
+    </linearGradient>
 
     Which should be rendered like this:
 

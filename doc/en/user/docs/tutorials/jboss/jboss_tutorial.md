@@ -10,8 +10,8 @@ To install geoserver onto JBoss AS 5.1, the following is required:
 
 ``` xml
 <classloading xmlns="urn:jboss:classloading:1.0"
-    name="geoserver.war"
-    domain="GeoServerDomain">
+   name="geoserver.war"
+   domain="GeoServerDomain">
 </classloading>
 ```
 
@@ -20,7 +20,7 @@ To install geoserver onto JBoss AS 5.1, the following is required:
 
 ``` xml
 <context-param>
-    <param-name>RELINQUISH_LOG4J_CONTROL</param-name>
-    <param-value>true</param-value>
+   <param-name>RELINQUISH_LOG4J_CONTROL</param-name>
+   <param-value>true</param-value>
 </context-param>    
 ```

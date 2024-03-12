@@ -60,8 +60,8 @@ The default configuration is equivalent to the following xml file:
       <singleFile>true</singleFile>
       <mimeType>image/jp2</mimeType>
       <type>binary</type> <!-- not really needed, it's the default -->
-  <option>-co</option>
-  <option>FORMAT=JP2</option>
+ <option>-co</option>
+ <option>FORMAT=JP2</option>
     </Format>
     <Format>
       <toolFormat>PDF</toolFormat>
@@ -70,8 +70,8 @@ The default configuration is equivalent to the following xml file:
       <singleFile>true</singleFile>
       <mimeType>application/pdf</mimeType>
       <formatAdapters>
-         <GrayAlphaToRGBA/>
-         <PalettedToRGB/>
+        <GrayAlphaToRGBA/>
+        <PalettedToRGB/>
       </formatAdapters>
     </Format>
     <Format>

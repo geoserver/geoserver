@@ -4,93 +4,18 @@ This page lists the supported rendering properties. See [CSS value types](valuet
 
 ## Point symbology {: #css_properties_point }
 
-Property
-
-:   Type
-
-    Meaning
-
-    Accepts Expression?
-
-`mark`
-
-:   url, symbol
-
-    The image or well-known shape to render for points
-
-    yes
-
-`mark-composite`
-
-:   string
-
-    The composite mode to be used and the optional opacity separated with a comma. See the [full list of available modes](../sld/extensions/composite-blend/modes.md).
-
-    no
-
-`mark-mime`
-
-:   string ([MIME Type](http://en.wikipedia.org/wiki/MIME))
-
-    The type of the image referenced by a url()
-
-    No, defaults to 'image/jpeg'
-
-`mark-geometry`
-
-:   expression
-
-    An expression to use for the geometry when rendering features
-
-    yes
-
-`mark-size`
-
-:   length
-
-    The width to assume for the provided image. The height will be adjusted to preserve the source aspect ratio.
-
-    yes
-
-`mark-rotation`
-
-:   angle
-
-    A rotation to be applied (clockwise) to the mark image.
-
-    yes
-
-`z-index`
-
-:   integer
-
-    Controls the z ordering of output
-
-    no
-
-`mark-label-obstacle`
-
-:   boolean
-
-    If true the point symbol will be considered an obstacle for labels, no label will overlap it
-
-    no
-
-`mark-anchor`
-
-:   expression
-
-    The part of the mark to place over the point or middle of the polygon. This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge. y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label.
-
-    yes
-
-`mark-offset`
-
-:   expression
-
-    This is for fine-tuning mark-anchor. x and y values specify pixel offsets to adjust the mark position.
-
-    yes
+| Property              | Type                                                    | Meaning                                                                                                                                                                                                                                                       | Accepts Expression?            |
+|-----------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------|
+| `mark`                | url, symbol                                             | The image or well-known shape to render for points                                                                                                                                                                                                            | yes                            |
+| `mark-composite`      | string                                                  | The composite mode to be used and the optional opacity separated with a comma. See the [full list of available modes](../sld/extensions/composite-blend/modes.md).                                                                                           | no                             |
+| `mark-mime`           | string ([MIME Type](http://en.wikipedia.org/wiki/MIME)) | The type of the image referenced by a url()                                                                                                                                                                                                                   | No, defaults to 'image/jpeg' |
+| `mark-geometry`       | expression                                              | An expression to use for the geometry when rendering features                                                                                                                                                                                                 | yes                            |
+| `mark-size`           | length                                                  | The width to assume for the provided image. The height will be adjusted to preserve the source aspect ratio.                                                                                                                                                  | yes                            |
+| `mark-rotation`       | angle                                                   | A rotation to be applied (clockwise) to the mark image.                                                                                                                                                                                                       | yes                            |
+| `z-index`             | integer                                                 | Controls the z ordering of output                                                                                                                                                                                                                             | no                             |
+| `mark-label-obstacle` | boolean                                                 | If true the point symbol will be considered an obstacle for labels, no label will overlap it                                                                                                                                                                  | no                             |
+| `mark-anchor`         | expression                                              | The part of the mark to place over the point or middle of the polygon. This takes 2 values - x y where x=0 is the left edge of the label, x=1 is the right edge. y=0 is the bottom edge of the label, y=1 is the top edge. Specify 0.5 0.5 to centre a label. | yes                            |
+| `mark-offset`         | expression                                              | This is for fine-tuning mark-anchor. x and y values specify pixel offsets to adjust the mark position.                                                                                                                                                        | yes                            |
 
 ## Line symbology {: #css_properties_line }
 
@@ -191,109 +116,20 @@ Property
 
 ## Raster symbology {: #css_properties_raster }
 
-Property
-
-:   Type
-
-    Meaning
-
-    Accepts Expression?
-
-`raster-channels`
-
-:   string
-
-    The list of raster channels to be used in the output. It can be "auto" to make the renderer choose the best course of action, or a list of band numbers, a single one will generate a gray image, three will generate an RGB one, four will generate a RGBA one. E.g., "1 3 7" to choose the first, third and seventh band of the input raster to make an RGB image
-
-    no
-
-`raster-composite`
-
-:   string
-
-    The composite mode to be used and the optional opacity separated with a comma. See the [full list of available modes](../sld/extensions/composite-blend/modes.md).
-
-    no
-
-`raster-geometry`
-
-:   expression
-
-    The attribute containing the raster to be painted. Normally not needed, but it would work if you had a custom vector data source that contains a GridCoverage attribute, in order to select it
-
-    yes
-
-`raster-opacity`
-
-:   floating point
-
-    A value comprised between 0 and 1, 0 meaning completely transparent, 1 meaning completely opaque. This controls the whole raster transparency.
-
-    no
-
-`raster-contrast-enhancement`
-
-:   string
-
-    Allows to stretch the range of data/colors in order to enhance tiny differences. Possible values are 'normalize', 'histogram' and 'none'
-
-    no
-
-`raster-gamma`
-
-:   floating point
-
-    Gamma adjustment for the output raster
-
-    no
-
-`raster-z-index`
-
-:   integer
-
-    Controls the z ordering of the raster output
-
-    no
-
-`raster-color-map`
-
-:   string
-
-    Applies a color map to single banded input. The contents are a space separate list of `color-map-entry(color, value)` (opacity assumed to be 1 and label will have a null value), or `color-map-entry(color, value, opacity, label)`. The values must be provided in increasing order.
-
-    no
-
-`raster-color-map-type`
-
-:   string
-
-    Controls how the color map entries are interpreted, the possible values are "ramp", "intervals" and "values", with ramp being the default if no "raster-color-map-type" is provided. The default "ramp" behavior is to linearly interpolate color between the provided values, and assign the lowest color to all values below the lowest value, and the highest color to all values above the highest value. The "intervals" behavior instead assigns solid colors between values, whilst "values" only assigns colors to the specified values, every other value in the raster is not painted at all
-
-    no
-
-`raster-color-map-extended`
-
-:   string
-
-    Enables "extended color map" mode, which makes the color map use 65536 entries instead of 256, and thus allows for a more precise color mapping. The default is "false", which means the color map is limited to 256 entries (if more than 256 colors are used, the extended color map mode is enabled automatically). This property is ignored if the "raster-color-map" property is not provided.
-
-    no
-
-`raster-label-fi`
-
-:   string
-
-    Controls if and how color map entry labels are included, as attributes, in the GetFeatureInfo output. Valid values are `add`, adding the labels as extra attributes, `replace`, using the labels in place of the actual value, or `none` (the default) which does not include the labels in the output.
-
-    no
-
-`raster-label-name`
-
-:   string
-
-    If color map entry labels are included in the GetFeatureInfo output, this property controls then name of the attribute that will contain them.
-
-    no
+| Property                      | Type           | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Accepts Expression? |
+|-------------------------------|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| `raster-channels`             | string         | The list of raster channels to be used in the output. It can be "auto" to make the renderer choose the best course of action, or a list of band numbers, a single one will generate a gray image, three will generate an RGB one, four will generate a RGBA one. E.g., "1 3 7" to choose the first, third and seventh band of the input raster to make an RGB image                                                                                                                                                                                                                                              | no                  |
+| `raster-composite`            | string         | The composite mode to be used and the optional opacity separated with a comma. See the [full list of available modes](../sld/extensions/composite-blend/modes.md).                                                                                                                                                                                                                                                                                                                                                                                                                                                  | no                  |
+| `raster-geometry`             | expression     | The attribute containing the raster to be painted. Normally not needed, but it would work if you had a custom vector data source that contains a GridCoverage attribute, in order to select it                                                                                                                                                                                                                                                                                                                                                                                                                       | yes                 |
+| `raster-opacity`              | floating point | A value comprised between 0 and 1, 0 meaning completely transparent, 1 meaning completely opaque. This controls the whole raster transparency.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | no                  |
+| `raster-contrast-enhancement` | string         | Allows to stretch the range of data/colors in order to enhance tiny differences. Possible values are 'normalize', 'histogram' and 'none'                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | no                  |
+| `raster-gamma`                | floating point | Gamma adjustment for the output raster                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | no                  |
+| `raster-z-index`              | integer        | Controls the z ordering of the raster output                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | no                  |
+| `raster-color-map`            | string         | Applies a color map to single banded input. The contents are a space separate list of `color-map-entry(color, value)` (opacity assumed to be 1 and label will have a null value), or `color-map-entry(color, value, opacity, label)`. The values must be provided in increasing order.                                                                                                                                                                                                                                                                                                                               | no                  |
+| `raster-color-map-type`       | string         | Controls how the color map entries are interpreted, the possible values are "ramp", "intervals" and "values", with ramp being the default if no "raster-color-map-type" is provided. The default "ramp" behavior is to linearly interpolate color between the provided values, and assign the lowest color to all values below the lowest value, and the highest color to all values above the highest value. The "intervals" behavior instead assigns solid colors between values, whilst "values" only assigns colors to the specified values, every other value in the raster is not painted at all | no                  |
+| `raster-color-map-extended`   | string         | Enables "extended color map" mode, which makes the color map use 65536 entries instead of 256, and thus allows for a more precise color mapping. The default is "false", which means the color map is limited to 256 entries (if more than 256 colors are used, the extended color map mode is enabled automatically). This property is ignored if the "raster-color-map" property is not provided.                                                                                                                                                                                                            | no                  |
+| `raster-label-fi`             | string         | Controls if and how color map entry labels are included, as attributes, in the GetFeatureInfo output. Valid values are `add`, adding the labels as extra attributes, `replace`, using the labels in place of the actual value, or `none` (the default) which does not include the labels in the output.                                                                                                                                                                                                                                                                                                              | no                  |
+| `raster-label-name`           | string         | If color map entry labels are included in the GetFeatureInfo output, this property controls then name of the attribute that will contain them.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | no                  |
 
 ## Shared {: #css_properties_shared }
 

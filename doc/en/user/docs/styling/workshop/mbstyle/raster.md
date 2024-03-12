@@ -56,21 +56,13 @@ The **raster** layer controls the display of raster data.
 3.  Replace the initial MBStyle definition with:
 
     ``` json
-    {
-      "name": "image_example",
-      "version": 8,
-      "layers": [
-        {
-          "id": "image_example",
-          "type": "raster",
-          "source-layer": "ne:ne1",
-          "paint": {
-            "raster-opacity": 1
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "name": "image_example", "version": 8, "layers": [ { "id": "image_example", "type": "raster", "source-layer": "ne:ne1", "paint": { "raster-opacity": 1 } } ]
+
+    }
 
 4.  And use the **Layer Preview** tab to preview the result.
 
@@ -101,21 +93,13 @@ The `usgs:dem` layer used for this exercise:
 3.  The rendering engine will select our single band of raster content, and do its best to map these values into a grayscale image. Replace the content of the style with:
 
     ``` json
-    {
-      "name": "raster_example",
-      "version": 8,
-      "layers": [
-        {
-          "id": "raster_example",
-          "type": "raster",
-          "source-layer": "usgs:dem",
-          "paint": {
-            "raster-opacity": 1
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "name": "raster_example", "version": 8, "layers": [ { "id": "raster_example", "type": "raster", "source-layer": "usgs:dem", "paint": { "raster-opacity": 1 } } ]
+
+    }
 
 4.  Use the **Layer Preview** tab to preview the result. The range produced in this case from the highest and lowest values.
 

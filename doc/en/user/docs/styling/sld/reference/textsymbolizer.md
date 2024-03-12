@@ -8,65 +8,18 @@ Labelling is a complex operation, and effective labelling is crucial to obtainin
 
 A `<TextSymbolizer>` contains the following elements:
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<Geometry>`
-
-:   No
-
-    The geometry to be labelled.
-
-`<Label>`
-
-:   No
-
-    The text content for the label.
-
-`<Font>`
-
-:   No
-
-    The font information for the label.
-
-`<LabelPlacement>`
-
-:   No
-
-    Sets the position of the label relative to its associated geometry.
-
-`<Halo>`
-
-:   No
-
-    Creates a colored background around the label text, for improved legibility.
-
-`<Fill>`
-
-:   No
-
-    The fill style of the label text.
-
-`<Graphic>`
-
-:   No
-
-    A graphic to be displayed behind the label text. See [Graphic](pointsymbolizer.md#sld_reference_graphic) for content syntax.
-
-`<Priority>`
-
-:   No
-
-    The priority of the label during conflict resolution. Content may contains [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). See also [Priority Labeling](labeling.md#labeling_priority).
-
-`<VendorOption>`
-
-:   0..N
-
-    A GeoServer-specific option. See [Labeling](labeling.md) for descriptions of the available options. Any number of options may be specified.
+|                    |               |                                                                                                                                                                                                                  |
+|--------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Tag**            | **Required?** | **Description**                                                                                                                                                                                                  |
+| `<Geometry>`       | No            | The geometry to be labelled.                                                                                                                                                                                     |
+| `<Label>`          | No            | The text content for the label.                                                                                                                                                                                  |
+| `<Font>`           | No            | The font information for the label.                                                                                                                                                                              |
+| `<LabelPlacement>` | No            | Sets the position of the label relative to its associated geometry.                                                                                                                                              |
+| `<Halo>`           | No            | Creates a colored background around the label text, for improved legibility.                                                                                                                                     |
+| `<Fill>`           | No            | The fill style of the label text.                                                                                                                                                                                |
+| `<Graphic>`        | No            | A graphic to be displayed behind the label text. See [Graphic](pointsymbolizer.md#sld_reference_graphic) for content syntax.                                                                                    |
+| `<Priority>`       | No            | The priority of the label during conflict resolution. Content may contains [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). See also [Priority Labeling](labeling.md#labeling_priority). |
+| `<VendorOption>`   | 0..N          | A GeoServer-specific option. See [Labeling](labeling.md) for descriptions of the available options. Any number of options may be specified.                                                                     |
 
 ### Geometry
 
@@ -150,7 +103,7 @@ The `<Graphic>` element specifies a graphic symbol to be displayed behind the la
 
 The following symbolizer is taken from the [Points](../cookbook/points.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` {.xml linenos=""}
+``` xml
 <TextSymbolizer>
   <Label>
     <ogc:PropertyName>name</ogc:PropertyName>
@@ -191,7 +144,7 @@ The displacement takes effect before the rotation during rendering, so the 25 pi
 
 The font size can also be set depending on the scale denominator as follows:
 
-``` {.xml linenos=""}
+``` xml
 <CssParameter name="font-size">
   <ogc:Function name="Categorize">
     <!-- Value to transform -->

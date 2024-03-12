@@ -74,23 +74,10 @@ The default user/group service is by default the service named "default". This c
 
 Query all users or add a new user in a particular or the default user/group service.
 
-Method
-
-:   Action
-
-    Response
-
-GET
-
-:   List all users in service.
-
-    200 OK. List of users in XML.
-
-POST
-
-:   Add a new user
-
-    201 Inserted. Created `ID` header.
+| Method | Action                     | Response                           |
+|--------|----------------------------|------------------------------------|
+| GET    | List all users in service. | 200 OK. List of users in XML.      |
+| POST   | Add a new user             | 201 Inserted. Created `ID` header. |
 
 ### `/rest/usergroup/[service/<serviceName>/]user/<user>`
 
@@ -106,39 +93,18 @@ Query, modify or delete a specific user in a particular or the default user/grou
 
 Query all groups in a particular user/group or the default service.
 
-Method
-
-:   Action
-
-    Response
-
-GET
-
-:   List all groups in service.
-
-    200 OK. List of groups in XML.
+| Method | Action                      | Response                       |
+|--------|-----------------------------|--------------------------------|
+| GET    | List all groups in service. | 200 OK. List of groups in XML. |
 
 ### `/rest/usergroup/[service/<serviceName>/]group/<group>`
 
 Add or delete a specific group in a particular or the default user/group service.
 
-Method
-
-:   Action
-
-    Response
-
-POST
-
-:   Add the group.
-
-    200 OK.
-
-DELETE
-
-:   Delete the group.
-
-    200 OK.
+| Method | Action            | Response |
+|--------|-------------------|----------|
+| POST   | Add the group.    | 200 OK.  |
+| DELETE | Delete the group. | 200 OK.  |
 
 ### `/rest/usergroup/[service/<serviceName>/]user/<user>/groups`
 
@@ -182,55 +148,26 @@ DELETE
 
 Query all roles in a particular role service or the active role service.
 
-Method
-
-:   Action
-
-    Response
-
-GET
-
-:   List all roles in service.
-
-    200 OK. List of roles in XML.
+| Method | Action                     | Response                      |
+|--------|----------------------------|-------------------------------|
+| GET    | List all roles in service. | 200 OK. List of roles in XML. |
 
 ### `/rest/roles/[service/<serviceName>/]role/<role>`
 
 Add or delete a specific role in a particular role service or the active role service.
 
-Method
-
-:   Action
-
-    Response
-
-POST
-
-:   Add the role.
-
-    200 OK.
-
-DELETE
-
-:   Delete the role.
-
-    200 OK.
+| Method | Action           | Response |
+|--------|------------------|----------|
+| POST   | Add the role.    | 200 OK.  |
+| DELETE | Delete the role. | 200 OK.  |
 
 ### `/rest/roles/[service/<serviceName>/]<serviceName>/user/<user>/roles`
 
 Query all roles associated with a user in a particular role service or the active role service.
 
-Method
-
-:   Action
-
-    Response
-
-GET
-
-:   List all roles associated with user.
-
-    200 OK. List of roles in XML.
+| Method | Action                               | Response                      |
+|--------|--------------------------------------|-------------------------------|
+| GET    | List all roles associated with user. | 200 OK. List of roles in XML. |
 
 ### `/rest/roles/[service/<serviceName>/]role/<role>/user/<user>/`
 

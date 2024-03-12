@@ -5,10 +5,10 @@ Deploy the produced activemqBroker.war in your tomcat instance and check the ext
 ``` xml
 ...
 <!-- The transport connectors expose ActiveMQ over a given protocol to 
-  clients and other brokers. 
-  For more information, see: http://activemq.apache.org/configuring-transports.html -->
+ clients and other brokers. 
+ For more information, see: http://activemq.apache.org/configuring-transports.html -->
 <transportConnectors>
-    <transportConnector name="openwire" uri="tcp://192.168.1.XXX:61616" />
+   <transportConnector name="openwire" uri="tcp://192.168.1.XXX:61616" />
 </transportConnectors>
 ...
 ```
@@ -22,7 +22,7 @@ It is possible to enable persistence for messages that cannot be delivered right
 <persistenceAdapter>
 <!-- <kahaDB directory="${activemq.base}/data/kahadb"/> --> 
   <jdbcPersistenceAdapter dataDirectory="activemq-data" 
-    dataSource="#postgres-ds" lockKeepAlivePeriod="0"/>
+   dataSource="#postgres-ds" lockKeepAlivePeriod="0"/>
 </persistenceAdapter>
 ...
 ```
@@ -54,14 +54,14 @@ Configuring PostgreSQL as the datasource to use for the persistence of the messa
 ``` xml
 ...
 <bean id="postgres-ds" class="org.postgresql.ds.PGPoolingDataSource">
-    <property name="serverName" value="192.168.1.XXX"/>
-    <property name="databaseName" value="activemq"/>
-    <property name="portNumber" value="5432"/>
-    <property name="user" value="postgres"/>
-    <property name="password" value="postgres"/>
-    <property name="dataSourceName" value="postgres"/>
-    <property name="initialConnections" value="15"/>
-    <property name="maxConnections" value="30"/>
+   <property name="serverName" value="192.168.1.XXX"/>
+   <property name="databaseName" value="activemq"/>
+   <property name="portNumber" value="5432"/>
+   <property name="user" value="postgres"/>
+   <property name="password" value="postgres"/>
+   <property name="dataSourceName" value="postgres"/>
+   <property name="initialConnections" value="15"/>
+   <property name="maxConnections" value="30"/>
 </bean>
 ...
 ```

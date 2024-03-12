@@ -36,25 +36,12 @@ The **image** decoration (`type="image"`) overlays a static image file onto the 
 
 The **scaleratio** decoration (`type="scaleratio"`) overlays a text description of the map's scale ratio onto the document.
 
-Option Name
-
-:   Meaning
-
-`bgcolor`
-
-:   the background color for the text. supports RGB or RGBA colors specified as hex values.
-
-`fgcolor`
-
-:   the color for the text and border. follows the color specification from bgcolor.
-
-`format`
-
-:   the number format pattern, specified using Java own [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html) syntax
-
-`formatLanguage`
-
-:   the language used to drive number formatting (applies only if also `format` is used), using a valid Java [Locale](https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html)
+| Option Name      | Meaning                                                                                                                                                                            |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `bgcolor`        | the background color for the text. supports RGB or RGBA colors specified as hex values.                                                                                            |
+| `fgcolor`        | the color for the text and border. follows the color specification from bgcolor.                                                                                                   |
+| `format`         | the number format pattern, specified using Java own [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html) syntax                                 |
+| `formatLanguage` | the language used to drive number formatting (applies only if also `format` is used), using a valid Java [Locale](https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html) |
 
 The **scaleline** decoration (`type="scaleline"`) overlays a graphic showing the scale of the map in world units.
 
@@ -82,41 +69,16 @@ Option Name
 
 The **text** decoration (`type="text"`) overlays a parametric, single line text message on top of the map. The parameter values can be fed via the `env` request parameter, just like SLD environment parameters.
 
-Option Name
-
-:   Meaning
-
-`message`
-
-:   the message to be displayed, as plain text or Freemarker template that can use the `env` map contents to expand variables
-
-`font-family`
-
-:   the name of the font used to display the message, e.g., `Arial`, defaults to `Serif`
-
-`font-size`
-
-:   the size of the font to use (can have decimals), defaults to 12
-
-`font-italic`
-
-:   it `true` the font will be italic, defaults to `false`
-
-`font-bold`
-
-:   if `true` the font will be bold, defaults to `false`
-
-`font-color`
-
-:   the color of the message, in `#RRGGBB` or `#RRGGBBAA` format, defaults to black
-
-`halo-radius`
-
-:   the radius of a halo around the message, can have decimals, defaults to 0
-
-`halo-color`
-
-:   the halo fill color, in `#RRGGBB` or `#RRGGBBAA` format, defaults to white
+| Option Name   | Meaning                                                                                                                   |
+|---------------|---------------------------------------------------------------------------------------------------------------------------|
+| `message`     | the message to be displayed, as plain text or Freemarker template that can use the `env` map contents to expand variables |
+| `font-family` | the name of the font used to display the message, e.g., `Arial`, defaults to `Serif`                                      |
+| `font-size`   | the size of the font to use (can have decimals), defaults to 12                                                           |
+| `font-italic` | it `true` the font will be italic, defaults to `false`                                                                    |
+| `font-bold`   | if `true` the font will be bold, defaults to `false`                                                                      |
+| `font-color`  | the color of the message, in `#RRGGBB` or `#RRGGBBAA` format, defaults to black                                           |
+| `halo-radius` | the radius of a halo around the message, can have decimals, defaults to 0                                                 |
+| `halo-color`  | the halo fill color, in `#RRGGBB` or `#RRGGBBAA` format, defaults to white                                                |
 
 ## Example
 

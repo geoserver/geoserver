@@ -172,29 +172,10 @@ layerAny
 
 Query all rules or add a new rule.
 
-Method
-
-:   Action
-
-    Supported parameters
-
-    Response
-
-GET
-
-:   List all rules, with respect to any added filters
-
-    page, entries, userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny
-
-    200 OK. List of rules in XML.
-
-POST
-
-:   Add a new rule
-
-    None
-
-    201 Inserted. Created `ID` header.
+| Method | Action                                            | Supported parameters                                                                                                                    | Response                           |
+|--------|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
+| GET    | List all rules, with respect to any added filters | page, entries, userName, userAny, roleName, roleAny, service, serviceAny, request, requestAny, workspace, workspaceAny, layer, layerAny | 200 OK. List of rules in XML.      |
+| POST   | Add a new rule                                    | None                                                                                                                                    | 201 Inserted. Created `ID` header. |
 
 ### `/rest/geofence/rules/count`
 

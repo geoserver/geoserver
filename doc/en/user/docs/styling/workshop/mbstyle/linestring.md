@@ -51,18 +51,13 @@ A line layer is represented by the ``line`` type.
 3.  Fill in the style editor
 
     ``` json
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-          {
-              "id": "line_example",
-              "source-layer": "ne:roads",
-              "type": "line",
-          }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line_example", "source-layer": "ne:roads", "type": "line", } ]
+
+    }
 
 4.  Click **Apply**
 
@@ -75,56 +70,72 @@ A line layer is represented by the ``line`` type.
 6.  You can see the equivalent SLD by requesting ``http://localhost:8080/geoserver/rest/styles/line_example.sld?pretty=true`` which will currently show the default line symbolizer we created.
 
     ``` xml
-    <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
-      <sld:NamedLayer>
-        <sld:Name>line_example</sld:Name>
-        <sld:UserStyle>
-          <sld:Name>line_example</sld:Name>
-          <sld:FeatureTypeStyle>
-            <sld:Name>name</sld:Name>
-            <sld:Rule>
-              <sld:LineSymbolizer/>
-            </sld:Rule>
-          </sld:FeatureTypeStyle>
-        </sld:UserStyle>
-      </sld:NamedLayer>
-    </sld:StyledLayerDescriptor>
     ```
+
+    <?xml version="1.0" encoding="UTF-8"?><sld:StyledLayerDescriptor xmlns="<http://www.opengis.net/sld>" xmlns:sld="<http://www.opengis.net/sld>" xmlns:gml="<http://www.opengis.net/gml>" xmlns:ogc="<http://www.opengis.net/ogc>" version="1.0.0">
+
+    :   
+
+        <sld:NamedLayer>
+
+        :   <sld:Name>line_example</sld:Name> <sld:UserStyle> <sld:Name>line_example</sld:Name> <sld:FeatureTypeStyle> <sld:Name>name</sld:Name> <sld:Rule> <sld:LineSymbolizer/> </sld:Rule> </sld:FeatureTypeStyle> </sld:UserStyle>
+
+        </sld:NamedLayer>
+
+    </sld:StyledLayerDescriptor>
 
 We only specified the line layer, so all of the boilerplate around was generated for us.
 
 1.  Additional properties cane be used fine-tune appearance. Use **line-color** to specify the colour and width of the line.
 
     ``` {.json emphasize-lines="3"}
-    {
-      "paint": {
-        "line-color": "blue"
-      }
-    }
     ```
+
+    {
+
+    :   
+
+        "paint": {
+
+        :   "line-color": "blue"
+
+        }
+
+    }
 
 2.  **line-width** lets us make the line wider
 
     ``` {.json emphasize-lines="4"}
-    {
-      "paint": {
-        "line-color": "blue",
-        "line-width": 2
-      }
-    }
     ```
+
+    {
+
+    :   
+
+        "paint": {
+
+        :   "line-color": "blue", "line-width": 2
+
+        }
+
+    }
 
 3.  **line-dasharray** applies a dot dash pattern.
 
     ``` {.json emphasize-lines="5"}
-    {
-      "paint": {
-        "line-color": "blue",
-        "line-width": 2,
-        "line-dasharray": [5, 2]
-      }
-    }
     ```
+
+    {
+
+    :   
+
+        "paint": {
+
+        :   "line-color": "blue", "line-width": 2, "line-dasharray": [5, 2]
+
+        }
+
+    }
 
 4.  Check the **Map** tab to preview the result.
 
@@ -139,51 +150,24 @@ Providing two strokes is often used to provide a contrasting edge (called casing
 1.  Start by filling in a bit of boilerplate that we'll be using
 
     ``` json
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line_example",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "#8080E6",
-            "line-width": 3,
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line_example", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "#8080E6", "line-width": 3, } } ]
+
+    }
 
 2.  Add a second layer to the rule
 
     ``` {.json emphasize-lines="6-12"}
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line_casing",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "black",
-            "line-width": 5,
-          }
-        },
-        {
-          "id": "line_center",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "#8080E6",
-            "line-width": 3,
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line_casing", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "black", "line-width": 5, } }, { "id": "line_center", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "#8080E6", "line-width": 3, } } ]
+
+    }
 
     The wider black line is first so it is drawn first, then the thinner blue line drawn second and so over top of the black line. This is called the painter's algorithm.
 
@@ -203,30 +187,13 @@ This is also our first example making use of a dynamic style (where a value come
     Update `line_example` with the following:
 
     ``` {.json emphasize-lines="15-20"}
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "blue",
-            "line-width": 1,
-          }
-        },
-        {
-          "id": "label",
-          "source-layer": "ne:roads",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "blue", "line-width": 1, } }, { "id": "label", "source-layer": "ne:roads", "type": "symbol", "layout": { "text-field": "{name}" } } ]
+
+    }
 
 2.  The SLD standard documents the default label position for each kind of Geometry. For LineStrings the initial label is positioned on the midway point of the line.
 
@@ -257,107 +224,42 @@ This is also our first example making use of a dynamic style (where a value come
          }
        }
      ]
-    }
     ```
+
+    }
 
 4.  Additional keys can be supplied to fine-tune label presentation:
 
     ``` {.json emphasize-lines="20,21,24"}
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "blue",
-            "line-width": 1,
-          }
-        },
-        {
-          "id": "label",
-          "source-layer": "ne:roads",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "symbol-placement": "line",
-            "text-offset": [0, -8]
-          }
-          "paint": {
-            "text-color": "black"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "blue", "line-width": 1, } }, { "id": "label", "source-layer": "ne:roads", "type": "symbol", "layout": { "text-field": "{name}", "symbol-placement": "line", "text-offset": [0, -8] } "paint": { "text-color": "black" } } ]
+
+    }
 
 5.  The **text-color** property is set to ``black`` to provide the colour of the text. Notice how this is a **paint** property, unlike all the others which are **layout** properties.
 
     ``` {.json emphasize-lines="24"}
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "blue",
-            "line-width": 1,
-          }
-        },
-        {
-          "id": "label",
-          "source-layer": "ne:roads",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "symbol-placement": "line",
-            "text-offset": [0, -8]
-          }
-          "paint": {
-            "text-color": "black"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "blue", "line-width": 1, } }, { "id": "label", "source-layer": "ne:roads", "type": "symbol", "layout": { "text-field": "{name}", "symbol-placement": "line", "text-offset": [0, -8] } "paint": { "text-color": "black" } } ]
+
+    }
 
 6.  The **symbol-placement** property is used to set how the label is placed with respect to the line. By default it is ``point`` which causes the label to be placed next to the midpoint as it would be for a point feature. When set to ``line`` it is placed along the line instead. **text-offset** specifies how far from the anchor the label should be placed, in both the x and y directions.
 
     ``` {.json emphasize-lines="20,21"}
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "blue",
-            "line-width": 1,
-          }
-        },
-        {
-          "id": "label",
-          "source-layer": "ne:roads",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "symbol-placement": "line",
-            "text-offset": [0, -8]
-          }
-          "paint": {
-            "text-color": "black"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "blue", "line-width": 1, } }, { "id": "label", "source-layer": "ne:roads", "type": "symbol", "layout": { "text-field": "{name}", "symbol-placement": "line", "text-offset": [0, -8] } "paint": { "text-color": "black" } } ]
+
+    }
 
     ![image](../style/img/line_label_2.png)
 
@@ -368,36 +270,13 @@ The rendering engine collects all the generated labels during the rendering of e
 1.  The parameter **text-padding** provides additional space around our label for use in collision avoidance.
 
     ``` {.json emphasize-lines="22"}
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "paint": {
-            "line-color": "blue",
-            "line-width": 1,
-          }
-        },
-        {
-          "id": "label",
-          "source-layer": "ne:roads",
-          "type": "symbol",
-          "layout": {
-            "text-field": "{name}",
-            "symbol-placement": "line",
-            "text-offset": [0, -8],
-            "text-padding": "10"
-          }
-          "paint": {
-            "text-color": "black"
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line", "source-layer": "ne:roads", "type": "line", "paint": { "line-color": "blue", "line-width": 1, } }, { "id": "label", "source-layer": "ne:roads", "type": "symbol", "layout": { "text-field": "{name}", "symbol-placement": "line", "text-offset": [0, -8], "text-padding": "10" } "paint": { "text-color": "black" } } ]
+
+    }
 
 2.  Each label is now separated from its neighbor, improving legibility.
 
@@ -410,23 +289,13 @@ This section explores the use of rules with filters and zoom restrictions.
 1.  Replace the ``line_example`` MBStyle definition with:
 
     ``` json
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line_example",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["<", "scalerank", 4],
-          "paint": {
-            "line-color": "black",
-            "line-width": 1
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line_example", "source-layer": "ne:roads", "type": "line", "filter": ["<", "scalerank", 4], "paint": { "line-color": "black", "line-width": 1 } } ]
+
+    }
 
 2.  And use the **Map** tab to preview the result.
 
@@ -439,33 +308,13 @@ This section explores the use of rules with filters and zoom restrictions.
     Replace your MBStyle with the following:
 
     ``` json
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line_black",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "maxzoom": 3,
-          "paint": {
-            "line-color": "black",
-            "line-width": 1
-          }
-        },
-        {
-          "id": "line_blue",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "minzoom": 3,
-          "paint": {
-            "line-color": "blue",
-            "line-width": 1
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line_black", "source-layer": "ne:roads", "type": "line", "maxzoom": 3, "paint": { "line-color": "black", "line-width": 1 } }, { "id": "line_blue", "source-layer": "ne:roads", "type": "line", "minzoom": 3, "paint": { "line-color": "blue", "line-width": 1 } } ]
+
+    }
 
 5.  As you adjust the scale in the **Map** preview (using the mouse scroll wheel) the color will change between black and blue. You can read the current scale in the bottom right corner, and the legend will change to reflect the current style.
 
@@ -474,103 +323,13 @@ This section explores the use of rules with filters and zoom restrictions.
 6.  Putting these two ideas together allows control of level detail based on scale:
 
     ``` json
-    {
-      "version": 8,
-      "name": "line_example",
-      "layers": [
-        {
-          "id": "line_else",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": [">", "scalerank", 7],
-          "minzoom": 7,
-          "paint": {
-            "line-color": "#888888",
-            "line-width": 1
-          }
-        },
-        {
-          "id": "line_7",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["==", "scalerank", 7],
-          "minzoom": 6,
-          "paint": {
-            "line-color": "#777777",
-            "line-width": 1
-          }
-        },
-        {
-          "id": "line_6",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["==", "scalerank", 6],
-          "minzoom": 5,
-          "paint": {
-            "line-color": "#444444",
-            "line-width": 1
-          }
-        },
-        {
-          "id": "line_5_1",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["==", "scalerank", 5],
-          "minzoom": 4,
-          "maxzoom": 7
-          "paint": {
-            "line-color": "#000055",
-            "line-width": 1
-          }
-        },
-        {
-          "id": "line_5_2",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["==", "scalerank", 5],
-          "minzoom": 7,
-          "paint": {
-            "line-color": "#000055",
-            "line-width": 2
-          }
-        },
-        {
-          "id": "line_5_1",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["<=", "scalerank", 4],
-          "maxzoom": 5,
-          "paint": {
-            "line-color": "black",
-            "line-width": 1
-          }
-        },
-        {
-          "id": "line_5_2",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["<=", "scalerank", 4],
-          "minzoom": 5,
-          "maxzoom": 7
-          "paint": {
-            "line-color": "black",
-            "line-width": 2
-          }
-        },
-        {
-          "id": "line_5_4",
-          "source-layer": "ne:roads",
-          "type": "line",
-          "filter": ["<=", "scalerank", 4],
-          "minzoom": 7,
-          "paint": {
-            "line-color": "black",
-            "line-width": 4
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "line_example", "layers": [ { "id": "line_else", "source-layer": "ne:roads", "type": "line", "filter": [">", "scalerank", 7], "minzoom": 7, "paint": { "line-color": "#888888", "line-width": 1 } }, { "id": "line_7", "source-layer": "ne:roads", "type": "line", "filter": ["==", "scalerank", 7], "minzoom": 6, "paint": { "line-color": "#777777", "line-width": 1 } }, { "id": "line_6", "source-layer": "ne:roads", "type": "line", "filter": ["==", "scalerank", 6], "minzoom": 5, "paint": { "line-color": "#444444", "line-width": 1 } }, { "id": "line_5_1", "source-layer": "ne:roads", "type": "line", "filter": ["==", "scalerank", 5], "minzoom": 4, "maxzoom": 7 "paint": { "line-color": "#000055", "line-width": 1 } }, { "id": "line_5_2", "source-layer": "ne:roads", "type": "line", "filter": ["==", "scalerank", 5], "minzoom": 7, "paint": { "line-color": "#000055", "line-width": 2 } }, { "id": "line_5_1", "source-layer": "ne:roads", "type": "line", "filter": ["<=", "scalerank", 4], "maxzoom": 5, "paint": { "line-color": "black", "line-width": 1 } }, { "id": "line_5_2", "source-layer": "ne:roads", "type": "line", "filter": ["<=", "scalerank", 4], "minzoom": 5, "maxzoom": 7 "paint": { "line-color": "black", "line-width": 2 } }, { "id": "line_5_4", "source-layer": "ne:roads", "type": "line", "filter": ["<=", "scalerank", 4], "minzoom": 7, "paint": { "line-color": "black", "line-width": 4 } } ]
+
+    }
 
 7.  When a rule has both a filter and a scale, it will trigger when both are true.
 

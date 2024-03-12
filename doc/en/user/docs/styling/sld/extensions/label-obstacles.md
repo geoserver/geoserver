@@ -21,22 +21,22 @@ GeoServer supports a vendor option called `labelObstacle` that allows marking a 
   <NamedLayer>
     <UserStyle>
 
-      <FeatureTypeStyle>
-        <Rule>
-          <PointSymbolizer>
-            <Graphic>
-              <ExternalGraphic>
-                <OnlineResource
-                  xlink:type="simple"
-                  xlink:href="smileyface.png" />
-                <Format>image/png</Format>
-              </ExternalGraphic>
-              <Size>32</Size>
-            </Graphic>
-            <VendorOption name="labelObstacle">true</VendorOption>
-          </PointSymbolizer>
-        </Rule>
-      </FeatureTypeStyle>
+       <FeatureTypeStyle>
+         <Rule>
+           <PointSymbolizer>
+             <Graphic>
+               <ExternalGraphic>
+                 <OnlineResource
+                   xlink:type="simple"
+                   xlink:href="smileyface.png" />
+                 <Format>image/png</Format>
+               </ExternalGraphic>
+               <Size>32</Size>
+             </Graphic>
+             <VendorOption name="labelObstacle">true</VendorOption>
+           </PointSymbolizer>
+         </Rule>
+       </FeatureTypeStyle>
 
     </UserStyle>
   </NamedLayer>

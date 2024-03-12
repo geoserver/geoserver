@@ -6,83 +6,23 @@ A `data store` contains vector format spatial data. It can be a file (such as a 
 
 Controls all data stores in a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   List all data stores in workspace `ws`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-:   Create a new data store
-
-    201 with `Location` header
-
-    XML, JSON
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
+| Method | Action                                 | Status code                | Formats         | Default Format |
+|--------|----------------------------------------|----------------------------|-----------------|----------------|
+| GET    | List all data stores in workspace `ws` | 200                        | HTML, XML, JSON | HTML           |
+| POST   | Create a new data store                | 201 with `Location` header | XML, JSON       |                |
+| PUT    |                                        | 405                        |                 |                |
+| DELETE |                                        | 405                        |                 |                |
 
 ## `/workspaces/<ws>/datastores/<ds>[.<format>]`
 
 Controls a particular data store in a given workspace.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-    Parameters
-
-GET
-
-:   Return data store `ds`
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-    [quietOnNotFound](datastores.md#rest_api_datastores_quietOnNotFound)
-
-POST
-
-> 405
-
-PUT
-
-:   Modify data store `ds`
-
-DELETE
-
-:   Delete data store `ds`
-
-    [recurse](datastores.md#rest_api_datastores_recurse)
+| Method | Action                 | Status code | Formats         | Default Format | Parameters                                                            |
+|--------|------------------------|-------------|-----------------|----------------|-----------------------------------------------------------------------|
+| GET    | Return data store `ds` | 200         | HTML, XML, JSON | HTML           | [quietOnNotFound](datastores.md#rest_api_datastores_quietOnNotFound) |
+| POST   |                        | 405         |                 |                |                                                                       |
+| PUT    | Modify data store `ds` |             |                 |                |                                                                       |
+| DELETE | Delete data store `ds` |             |                 |                | [recurse](datastores.md#rest_api_datastores_recurse)                 |
 
 ### Exceptions
 
@@ -111,55 +51,19 @@ These endpoints (`file`, `url`, and `external`) allow a file containing either s
 -   `url`---Uploads a file from an remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
 -   `external`---Uses an existing file on the server. The body of the request is the absolute path to the existing file.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-    Parameters
-
-GET
-
-:   *Deprecated*. Retrieve the underlying files for the data store as a zip file with MIME type `application/zip`
-
-    200
-
-POST
-
-> 405
-
-PUT
-
-:   Uploads files to the data store `ds`, creating it if necessary
-
-    200
-
-    [See note below](datastores.md#rest_api_datastores_file_put)
-
-    [configure](datastores.md#rest_api_datastores_configure), [target](datastores.md#rest_api_datastores_target), [update](datastores.md#rest_api_datastores_update), [charset](datastores.md#rest_api_datastores_charset)
-
-DELETE
-
-> 405
+| Method | Action                                                                                                        | Status code | Formats                                                       | Default Format | Parameters                                                                                                                                                                                                                 |
+|--------|---------------------------------------------------------------------------------------------------------------|-------------|---------------------------------------------------------------|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GET    | *Deprecated*. Retrieve the underlying files for the data store as a zip file with MIME type `application/zip` | 200         |                                                               |                |                                                                                                                                                                                                                            |
+| POST   |                                                                                                               | 405         |                                                               |                |                                                                                                                                                                                                                            |
+| PUT    | Uploads files to the data store `ds`, creating it if necessary                                                | 200         | [See note below](datastores.md#rest_api_datastores_file_put) |                | [configure](datastores.md#rest_api_datastores_configure), [target](datastores.md#rest_api_datastores_target), [update](datastores.md#rest_api_datastores_update), [charset](datastores.md#rest_api_datastores_charset) |
+| DELETE |                                                                                                               | 405         |                                                               |                |                                                                                                                                                                                                                            |
 
 ### Exceptions
 
-Exception
-
-:   Status code
-
-GET for a data store that does not exist
-
-:   404
-
-GET for a data store that is not file based
-
-:   404
+| Exception                                   | Status code |
+|---------------------------------------------|-------------|
+| GET for a data store that does not exist    | 404         |
+| GET for a data store that is not file based | 404         |
 
 ### Parameters
 
@@ -167,25 +71,12 @@ GET for a data store that is not file based
 
 The `extension` parameter specifies the type of data being uploaded. The following extensions are supported:
 
-Extension
-
-:   Datastore
-
-shp
-
-:   Shapefile
-
-properties
-
-:   Property file
-
-h2
-
-:   H2 Database
-
-appschema
-
-:   App-schema mapping configuration
+| Extension  | Datastore                        |
+|------------|----------------------------------|
+| shp        | Shapefile                        |
+| properties | Property file                    |
+| h2         | H2 Database                      |
+| appschema  | App-schema mapping configuration |
 
 #### File PUT {: #rest_api_datastores_file_put }
 

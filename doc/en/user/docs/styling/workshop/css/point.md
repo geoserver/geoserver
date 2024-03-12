@@ -40,10 +40,13 @@ This exercise makes use of the `ne:populated_places` layer.
 3.  Replace the initial CSS definition with the following and click **apply**:
 
     ``` css
-    * {
-      mark: symbol(circle);
-    }
     ```
+
+    * {
+
+    :   mark: symbol(circle);
+
+    }
 
 4.  And use the **Layer Preview** tab to preview the result.
 
@@ -60,10 +63,13 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
 1.  As a **key property** the presence **mark** triggers the generation of an appropriate PointSymbolizer.
 
     ``` css
-    * {
-     mark: symbol(square);
-    }
     ```
+
+    * {
+
+    :   mark: symbol(square);
+
+    }
 
 2.  Map Preview:
 
@@ -72,10 +78,13 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
 3.  Before we continue we will use a selector to cut down the amount of data shown to a reasonable level.
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(square);
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(square);
+
+    }
 
 4.  Resulting in a considerably cleaner image:
 
@@ -90,12 +99,13 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
     Trying these two settings together:
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(square);
-      mark-size: 8;
-      mark-rotation: 45;
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(square); mark-size: 8; mark-rotation: 45;
+
+    }
 
 6.  Results in each location being marked with a diamond:
 
@@ -110,16 +120,13 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
     This form of pseudo-selector is used for all marks:
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(square);
-      mark-size: 8;
-      mark-rotation: 45;
-    }
-    :mark{
-       fill: white;
-       stroke: black;
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(square); mark-size: 8; mark-rotation: 45;
+
+    } :mark{ fill: white; stroke: black; }
 
 8.  Updating the mark to a white square with a black outline.
 
@@ -134,20 +141,13 @@ The SLD standard provides "well-known" symbols for use with point symbology: `ci
     Using this approach marks can be composed of multiple symbols, each with its own settings:
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(square),symbol(cross);
-      mark-size: 16,14;
-      mark-rotation: 0,45;
-    }
-    :nth-mark(1){
-       fill: red;
-       stroke: black;
-    }
-    :nth-mark(2){
-       fill: black;
-       stroke: white;
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(square),symbol(cross); mark-size: 16,14; mark-rotation: 0,45;
+
+    } :nth-mark(1){ fill: red; stroke: black; } :nth-mark(2){ fill: black; stroke: white; }
 
 10. Producing an interesting compound symbol effect:
 
@@ -170,11 +170,13 @@ This technique was shown with the initial <file:%60airport.svg>` CSS example.
     This technique is used to reference files placed in the styles directory.
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: url(port.svg);
-      mark-mime: "image/svg";
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: url(port.svg); mark-mime: "image/svg";
+
+    }
 
 2.  Drawing the provided shape in each location:
 
@@ -183,12 +185,13 @@ This technique was shown with the initial <file:%60airport.svg>` CSS example.
 3.  The **mark** property **url** reference can also be used to reference external images. We can make use of the GeoServer logo.
 
     ``` css
-    [ SCALERANK < 1 ] {
-         mark: url("http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png");
-         mark-mime: "image/png";
-         mark-size: 16;
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: url("<http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png>"); mark-mime: "image/png"; mark-size: 16;
+
+    }
 
 4.  As shown in the map preview.
 
@@ -201,18 +204,13 @@ This technique was shown with the initial <file:%60airport.svg>` CSS example.
     The styles declarations have to icluded in the **:mark** pseudo-class.
 
     ``` scss
-    /* @title red triangle with blue stroke */
-    *{
-       mark: symbol('https://www.svgrepo.com/show/488433/triangle.svg');
-       mark-mime: "image/svg";
-       mark-size: 25;
-       :mark {
-          fill: #ff3300;
-          stroke: blue;
-          stroke-width: 5px;
-       }
-    }
     ```
+
+    /* @title red triangle with blue stroke */*{
+
+    :   mark: symbol('<https://www.svgrepo.com/show/488433/triangle.svg>'); mark-mime: "image/svg"; mark-size: 25; :mark { fill: #ff3300; stroke: blue; stroke-width: 5px; }
+
+    }
 
 6.  Will result in a modified style for an external SVG graphic resource.
 
@@ -229,11 +227,13 @@ The key properties **mark** and **label** are required to label Point locations.
 1.  Replace `point_example` with the following:
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(circle);
-      label: [NAME];
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(circle); label: [NAME];
+
+    }
 
 2.  Confirm the result in `Map` preview.
 
@@ -252,17 +252,17 @@ The key properties **mark** and **label** are required to label Point locations.
 4.  Using these two facilities together we can center our labels below the symbol, taking care that the displacement used provides an offset just outside the area required for the symbol size.
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(circle);
-      mark-size: 10;
-
-      label: [NAME];
-      label-offset: 0 -12;
-      label-anchor: 0.5 1.0;
-
-      font-fill: black;
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(circle); mark-size: 10;
+
+        label: [NAME]; label-offset: 0 -12; label-anchor: 0.5 1.0;
+
+        font-fill: black;
+
+    }
 
 5.  Each label is now placed under the mark.
 
@@ -281,21 +281,19 @@ The key properties **mark** and **label** are required to label Point locations.
     Update our example to use these settings:
 
     ``` css
-    [ SCALERANK < 1 ] {
-      mark: symbol(circle);
-      mark-size: 10;
-
-      label: [NAME];
-      label-offset: 0 -12;
-      label-anchor: 0.5 1.0;
-
-      font-fill: black;
-
-      mark-label-obstacle: true;
-      label-max-displacement: 100;
-      label-padding: 2;
-    }
     ```
+
+    [ SCALERANK < 1 ] {
+
+    :   mark: symbol(circle); mark-size: 10;
+
+        label: [NAME]; label-offset: 0 -12; label-anchor: 0.5 1.0;
+
+        font-fill: black;
+
+        mark-label-obstacle: true; label-max-displacement: 100; label-padding: 2;
+
+    }
 
 7.  Resulting in a considerably cleaner image:
 
@@ -306,37 +304,49 @@ The key properties **mark** and **label** are required to label Point locations.
 1.  We will quickly use **scalerank** to select content based on @scale selectors.
 
     ``` css
+    ```
+
     [@scale < 4000000] {
-       mark: symbol(circle);
-    }
-    [@scale > 4000000] [@scale < 8000000] [SCALERANK < 7] {
-       mark: symbol(circle);
-    }
+
+    :   mark: symbol(circle);
+
+    } [@scale > 4000000] [@scale < 8000000] [SCALERANK < 7] { mark: symbol(circle); }
 
     [@scale > 8000000] [@scale < 17000000] [SCALERANK < 5] {
-       mark: symbol(circle);
+
+    :   mark: symbol(circle);
+
     }
 
     [@scale > 17000000] [@scale < 35000000] [SCALERANK < 4] {
-       mark: symbol(circle);
+
+    :   mark: symbol(circle);
+
     }
 
     [@scale > 35000000] [@scale < 70000000][SCALERANK < 3] {
-       mark: symbol(circle);
+
+    :   mark: symbol(circle);
+
     }
 
     [@scale > 70000000] [@scale < 140000000][SCALERANK < 2] {
-       mark: symbol(circle);
+
+    :   mark: symbol(circle);
+
     }
 
     [@scale > 140000000] [SCALERANK < 1] {
-      mark: symbol(circle);
+
+    :   mark: symbol(circle);
+
     }
 
     * {
-      mark-size: 6;
+
+    :   mark-size: 6;
+
     }
-    ```
 
 2.  Click **Submit** to update the **Map** after each step.
 
@@ -345,48 +355,51 @@ The key properties **mark** and **label** are required to label Point locations.
 3.  To add labeling we must use both the **key properties** mark and label in each scale selector, using rule cascading to define the mark-size and font information once.
 
     ``` css
+    ```
+
     [@scale < 4000000] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-    [@scale > 4000000] [@scale < 8000000] [SCALERANK < 7] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
+
+    :   mark: symbol(circle); label: [NAME];
+
+    } [@scale > 4000000] [@scale < 8000000] [SCALERANK < 7] { mark: symbol(circle); label: [NAME]; }
 
     [@scale > 8000000] [@scale < 17000000] [SCALERANK < 5] {
-       mark: symbol(circle);
-       label: [NAME];
+
+    :   mark: symbol(circle); label: [NAME];
+
     }
 
     [@scale > 17000000] [@scale < 35000000] [SCALERANK < 4] {
-       mark: symbol(circle);
-       label: [NAME];
+
+    :   mark: symbol(circle); label: [NAME];
+
     }
 
     [@scale > 35000000] [@scale < 70000000][SCALERANK < 3] {
-       mark: symbol(circle);
-       label: [NAME];
+
+    :   mark: symbol(circle); label: [NAME];
+
     }
 
     [@scale > 70000000] [@scale < 140000000][SCALERANK < 2] {
-       mark: symbol(circle);
-       label: [NAME];
+
+    :   mark: symbol(circle); label: [NAME];
+
     }
 
     [@scale > 140000000] [SCALERANK < 1] {
-       mark: symbol(circle);
-       label: [NAME];
+
+    :   mark: symbol(circle); label: [NAME];
+
     }
 
     * {
-      mark-size: 6;
 
-      font-fill: black;
-      font-family: "Arial";
-      font-size: 10;
+    :   mark-size: 6;
+
+        font-fill: black; font-family: "Arial"; font-size: 10;
+
     }
-    ```
 
     ![image](../style/img/point_05_label.png)
 
@@ -395,17 +408,17 @@ The key properties **mark** and **label** are required to label Point locations.
     Add the following two lines to the ``*`` selector:
 
     ``` {.css emphasize-lines="8,9"}
-    * {
-      mark-size: 6;
-
-      font-fill: black;
-      font-family: "Arial";
-      font-size: 10;
-
-      label-anchor: 0.5 0;
-      label-offset: 0 6;
-    }
     ```
+
+    * {
+
+    :   mark-size: 6;
+
+        font-fill: black; font-family: "Arial"; font-size: 10;
+
+        label-anchor: 0.5 0; label-offset: 0 6;
+
+    }
 
     ![image](../style/img/point_05_align.png)
 
@@ -414,21 +427,19 @@ The key properties **mark** and **label** are required to label Point locations.
     Add the following vendor options to the ``*`` selector:
 
     ``` {.css emphasize-lines="11-13"}
-    * {
-      mark-size: 6;
-
-      font-fill: black;
-      font-family: "Arial";
-      font-size: 10;
-
-      label-anchor: 0.5 0;
-      label-offset: 0 6;
-
-      mark-label-obstacle: true;
-      label-max-displacement: 90;
-      label-padding: 2;
-    }
     ```
+
+    * {
+
+    :   mark-size: 6;
+
+        font-fill: black; font-family: "Arial"; font-size: 10;
+
+        label-anchor: 0.5 0; label-offset: 0 6;
+
+        mark-label-obstacle: true; label-max-displacement: 90; label-padding: 2;
+
+    }
 
     ![image](../style/img/point_06_relocate.png)
 
@@ -457,22 +468,19 @@ The key properties **mark** and **label** are required to label Point locations.
     This expression will result in values between 0 and 10 and will be used for the **label-priority**.
 
     ``` {.css emphasize-lines="2,9"}
-    * {
-      mark-size: [10-(SCALERANK/2)];
-
-      font-fill: black;
-      font-family: "Arial";
-      font-size: 10;
-
-      label-anchor: 0.5 0;
-      label-offset: 0 [10-(SCALERANK/2)];
-
-      mark-label-obstacle: true;
-      label-max-displacement: 90;
-      label-padding: 2;
-      label-priority: [10 - LABELRANK];
-    }
     ```
+
+    * {
+
+    :   mark-size: [10-(SCALERANK/2)];
+
+        font-fill: black; font-family: "Arial"; font-size: 10;
+
+        label-anchor: 0.5 0; label-offset: 0 [10-(SCALERANK/2)];
+
+        mark-label-obstacle: true; label-max-displacement: 90; label-padding: 2; label-priority: [10 - LABELRANK];
+
+    }
 
     ![image](../style/img/point_07_expression.png)
 
@@ -481,79 +489,45 @@ The key properties **mark** and **label** are required to label Point locations.
     Adding a selector for capital cities at the top of the file:
 
     ``` css
-    /* capitals */
-    [@scale < 70000000]
-    [FEATURECLA = 'Admin-0 capital']  {
-       mark: symbol(star);
-       label: [NAME];
-    }
-    [@scale > 70000000] [SCALERANK < 2]
-    [FEATURECLA = 'Admin-0 capital']  {
-       mark: symbol(star);
-       label: [NAME];
-    }
     ```
+
+    /* capitals */ [@scale < 70000000] [FEATURECLA = 'Admin-0 capital'] { mark: symbol(star); label: [NAME]; } [@scale > 70000000] [SCALERANK < 2] [FEATURECLA = 'Admin-0 capital'] { mark: symbol(star); label: [NAME]; }
 
     And updating the populated places selectors to ignore capital cities:
 
     ``` css
-    /* populated places */
-    [@scale < 4000000]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-    [@scale > 4000000] [@scale < 8000000] [SCALERANK < 7]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-
-    [@scale > 8000000] [@scale < 17000000] [SCALERANK < 5]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-
-    [@scale > 17000000] [@scale < 35000000] [SCALERANK < 4]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-
-    [@scale > 35000000] [@scale < 70000000][SCALERANK < 3]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-
-    [@scale > 70000000] [@scale < 140000000][SCALERANK < 2]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
-
-    [@scale > 140000000] [SCALERANK < 1]
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-       label: [NAME];
-    }
     ```
+
+    /* populated places */ [@scale < 4000000] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; } [@scale > 4000000] [@scale < 8000000] [SCALERANK < 7] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; }
+
+    [@scale > 8000000] [@scale < 17000000] [SCALERANK < 5] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; }
+
+    [@scale > 17000000] [@scale < 35000000] [SCALERANK < 4] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; }
+
+    [@scale > 35000000] [@scale < 70000000][SCALERANK < 3] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; }
+
+    [@scale > 70000000] [@scale < 140000000][SCALERANK < 2] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; }
+
+    [@scale > 140000000] [SCALERANK < 1] [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); label: [NAME]; }
 
     ![image](../style/img/point_08_symbol.png)
 
 8.  Finally we can fill in the capital city symbols using a combination of a selector to detect capital cities, and pseudo selector to provide mark styling.
 
     ``` css
+    ```
+
     [FEATURECLA = 'Admin-0 capital'] :mark {
-      fill: black;
+
+    :   fill: black;
+
     }
 
     :symbol {
-      fill: gray;
-      stroke: black;
+
+    :   fill: gray; stroke: black;
+
     }
-    ```
 
     ![image](../style/img/point_09_fill.png)
 
@@ -592,23 +566,26 @@ The key properties **mark** and **label** are required to label Point locations.
     This approach is straightforward when applied in isolation:
 
     ``` css
-    [FEATURECLA = 'Admin-0 capital'] {
-       mark: symbol(star);
-    }
-    [FEATURECLA <> 'Admin-0 capital'] {
-       mark: symbol(circle);
-    }
     ```
+
+    [FEATURECLA = 'Admin-0 capital'] {
+
+    :   mark: symbol(star);
+
+    } [FEATURECLA <> 'Admin-0 capital'] { mark: symbol(circle); }
 
     When combined with checking another attribute, or checking @scale as in our example, this approach can quickly lead to many rules which can be difficult to keep straight.
 
 2.  Taking a closer look both `symbol()` and `url()` can actually be expressed using a string:
 
     ``` css
-    [FEATURECLA = 'Admin-0 capital'] {
-       mark: symbol("star");
-    }
     ```
+
+    [FEATURECLA = 'Admin-0 capital'] {
+
+    :   mark: symbol("star");
+
+    }
 
     Which is represented in SLD as:
 
@@ -621,20 +598,28 @@ The key properties **mark** and **label** are required to label Point locations.
             <sld:Stroke/>
          </sld:Mark>
       </sld:Graphic>
-    </sld:PointSymbolizer>
     ```
+
+    </sld:PointSymbolizer>
 
 3.  GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
 
     This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with ``\${ }`` as shown:
 
     ``` css
-    * {
-       mark: symbol(
-         "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
-       );
-    }
     ```
+
+    * {
+
+    :   
+
+        mark: symbol(
+
+        :   "\${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+
+        );
+
+    }
 
     Which is represented in SLD as:
 
@@ -647,8 +632,9 @@ The key properties **mark** and **label** are required to label Point locations.
             <sld:Stroke/>
          </sld:Mark>
       </sld:Graphic>
-    </sld:PointSymbolizer>
     ```
+
+    </sld:PointSymbolizer>
 
 4.  **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
@@ -669,20 +655,25 @@ The key properties **mark** and **label** are required to label Point locations.
 2.  To help start things out here is a style for `ne:states_provinces_shp`:
 
     ``` css
-    * {     
-       fill: white,[
-        recode(mapcolor9,
-          1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada',
-          4,'#fb8072', 5,'#80b1d3', 6,'#fdb462',
-          7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
-       ];
-       fill-opacity: 05%,50%;
-
-       stroke: black;
-       stroke-width: 0.25;
-       stroke-opacity: 50%;
-    }
     ```
+
+    * {
+
+    :   
+
+        fill: white,[
+
+        :   
+
+            recode(mapcolor9,
+
+            :   1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada', 4,'#fb8072', 5,'#80b1d3', 6,'#fdb462', 7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
+
+        ]; fill-opacity: 05%,50%;
+
+        stroke: black; stroke-width: 0.25; stroke-opacity: 50%;
+
+    }
 
 3.  This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.
 
@@ -701,13 +692,13 @@ The key properties **mark** and **label** are required to label Point locations.
 1.  In addition to image formats GeoServer can make use other kinds of graphics, such as True Type fonts:
 
     ``` css
-    * {
-       mark: symbol("ttf://Webdings#0x0064");
-    }
-    :mark {
-       stroke: blue;
-    }
     ```
+
+    * {
+
+    :   mark: symbol("ttf://Webdings#0x0064");
+
+    } :mark { stroke: blue; }
 
 2.  Additional fonts dropped in the **`styles`** directory are available for use.
 
@@ -720,10 +711,10 @@ The key properties **mark** and **label** are required to label Point locations.
 2.  Support has been added for custom graphics using the WKT Geometry representation.
 
     ``` css
-    * {
-       mark: symbol("wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))");
-    }
-    :mark {
-       stroke: blue;
-    } 
     ```
+
+    * {
+
+    :   mark: symbol("wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))");
+
+    } :mark { stroke: blue; }

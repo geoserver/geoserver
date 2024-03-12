@@ -243,11 +243,13 @@ To confirm everything works, let's reproduce the airports style above.
 3.  Replace the initial YSLD definition with our airport CSS example and click **Apply**:
 
     ``` css
-    * {
-      mark: url(airport.svg);
-      mark-mime: "image/svg";
-    }
     ```
+
+    * {
+
+    :   mark: url(airport.svg); mark-mime: "image/svg";
+
+    }
 
 4.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select ``ne:airports`` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 

@@ -90,33 +90,15 @@ ${DATETIME_ATTRIBUTE_NAME.value?date("M?d%y")}
 
 So when must you specify the date format in this manner? The following table illustrates the **date** formats that GeoServer can understand. Note that the '-' character can be one of any of the following characters: '/' (forward slash), ' ' (space), '.' (period), ',' (comma)
 
-**Date Format**
-
-:   **Example**
-
-yyyy-MM-dd
-
-:   2007-06-20
-
-yyyy-MMM-dd
-
-:   2007-Jun-20
-
-MM-dd-yyyy
-
-:   06-20-2007
-
-MMM-dd-yyyy
-
-:   Jun-20-2007
-
-dd-MM-yyyy
-
-:   20-06-2007
-
-dd-MMM-yyyy
-
-:   20-Jun-2007
+|                 |             |
+|-----------------|-------------|
+| **Date Format** | **Example** |
+| yyyy-MM-dd      | 2007-06-20  |
+| yyyy-MMM-dd     | 2007-Jun-20 |
+| MM-dd-yyyy      | 06-20-2007  |
+| MMM-dd-yyyy     | Jun-20-2007 |
+| dd-MM-yyyy      | 20-06-2007  |
+| dd-MMM-yyyy     | 20-Jun-2007 |
 
 The set of **date time** formats which GeoServer can be understand is formed by appending the timestamp formats `hh:mm` and `hh:mm:ss` to the entries in the above table:
 

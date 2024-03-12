@@ -69,21 +69,29 @@ To remove `floatProperty` from the list of attributes, the following steps would
 1.  The original schema is modified to remove the `floatProperty`, resulting in the following type definition:
 
     ``` xml
-    <xsd:complexType name="myDatasetType">
-      <xsd:complexContent>
-        <xsd:extension base="gml:AbstractFeatureType">
-          <xsd:sequence>
-            <xsd:element maxOccurs="1" minOccurs="0" name="intProperty" nillable="true" type="xsd:int"/>
-            <xsd:element maxOccurs="1" minOccurs="0" name="stringProperty" nillable="true" type="xsd:string"/>
-            <!-- remove the floatProperty element
-            <xsd:element maxOccurs="1" minOccurs="0" name="floatProperty" nillable="true" type="xsd:double"/>
-            -->
-            <xsd:element maxOccurs="1" minOccurs="0" name="geometry" nillable="true" type="gml:PointPropertyType"/>
-          </xsd:sequence>
-        </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
     ```
+
+    <xsd:complexType name="myDatasetType">
+
+    :   
+
+        <xsd:complexContent>
+
+        :   
+
+            <xsd:extension base="gml:AbstractFeatureType">
+
+            :   
+
+                <xsd:sequence>
+
+                :   <xsd:element maxOccurs="1" minOccurs="0" name="intProperty" nillable="true" type="xsd:int"/> <xsd:element maxOccurs="1" minOccurs="0" name="stringProperty" nillable="true" type="xsd:string"/> <!-- remove the floatProperty element <xsd:element maxOccurs="1" minOccurs="0" name="floatProperty" nillable="true" type="xsd:double"/> --> <xsd:element maxOccurs="1" minOccurs="0" name="geometry" nillable="true" type="gml:PointPropertyType"/>
+
+                </xsd:sequence>
+
+            </xsd:extension> </xsd:complexContent>
+
+    </xsd:complexType>
 
 2.  The modification is saved in a file named `schema.xsd`.
 

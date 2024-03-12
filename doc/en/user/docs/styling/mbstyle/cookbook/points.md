@@ -29,7 +29,7 @@ This example specifies points be styled as red circles with a diameter of 6 pixe
 
 [Download the "Simple point" MBStyle JSON](artifacts/mbstyle_simple_point_circle.json)
 
-``` {.json linenos=""}
+``` json
 {
   "version": 8,
   "name": "point-circle-test",
@@ -62,7 +62,7 @@ This example adds a stroke (or border) around the [Simple point](points.md#mbsty
 
 [Download the "Simple point with stroke" MBStyle JSON](artifacts/mbstyle_simple_point_circle_stroke.json)
 
-``` {.json linenos=""}
+``` json
 {
   "version": 8,
   "name": "point-circle-test",

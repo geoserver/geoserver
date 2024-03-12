@@ -16,17 +16,15 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
 3.  Select the version of GeoServer that you wish to download. If you're not sure, select [Stable](https://geoserver.org/release/stable) release.
 
-    ``` snapshot
-    ```
+    !!! abstract "Nightly Build"
 
-    This documentation covers GeoServer {{ version }}-SNAPSHOT which is under development and is available as a [Nightly](https://geoserver.org/release/main) release.
+        This documentation covers GeoServer {{ version }}-SNAPSHOT which is under development and is available as a [Nightly](https://geoserver.org/release/main) release.
+    
+        Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer {{ version }}.0 is released a windows installer will be provided.
 
-    Nightly releases are used to test out try out new features and test community modules and do not provide a windows installer. When GeoServer {{ version }}.0 is released a windows installer will be provided.
+    !!! abstract "Release"
 
-    ``` not snapshot
-    ```
-
-    These instructions are for GeoServer {{ release }}.
+        These instructions are for GeoServer {{ release }}.
 
 4.  Click the link for the **Windows Installer**.
 

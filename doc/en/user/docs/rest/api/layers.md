@@ -6,37 +6,12 @@ A `layer` is a *published* resource (feature type or coverage).
 
 Controls all layers.
 
-Method
-
-:   Action
-
-    Status code
-
-    Formats
-
-    Default Format
-
-GET
-
-:   Return all layers
-
-    200
-
-    HTML, XML, JSON
-
-    HTML
-
-POST
-
-> 405
-
-PUT
-
-> 405
-
-DELETE
-
-> 405
+| Method | Action            | Status code | Formats         | Default Format |
+|--------|-------------------|-------------|-----------------|----------------|
+| GET    | Return all layers | 200         | HTML, XML, JSON | HTML           |
+| POST   |                   | 405         |                 |                |
+| PUT    |                   | 405         |                 |                |
+| DELETE |                   | 405         |                 |                |
 
 ## `/layers/<l>[.<format>]`
 

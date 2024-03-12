@@ -104,29 +104,10 @@ Retrieving the user/group information can be done anonymously or using a given u
 An example of configuration file (config.xml) for this type of role service is the following:
 
 > ``` xml
-> <org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
->   <id>2c3e0e8d:154853796a3:-8000</id>
->   <name>myldapservice</name>
->   <className>org.geoserver.security.ldap.LDAPUserGroupService</className>
->   <serverURL>ldap://127.0.0.1:10389/dc=acme,dc=org</serverURL>
->   <groupSearchBase>ou=groups</groupSearchBase>
->   <groupFilter>cn={0}</groupFilter>
->   <groupNameAttribute>cn</groupNameAttribute>
->   <allGroupsSearchFilter>cn=*</allGroupsSearchFilter>
->   <groupSearchFilter>member={0}</groupSearchFilter>
->   <groupMembershipAttribute>member</groupMembershipAttribute>
->   <userSearchBase>ou=people</userSearchBase>
->   <userFilter>uid</userFilter>
->   <userNameAttribute>uid={0}</userNameAttribute>
->   <allUsersSearchFilter>uid=*</allUsersSearchFilter>
->   <useTLS>false</useTLS>
->   <bindBeforeGroupSearch>true</bindBeforeGroupSearch>
->   <user>admin</user>
->   <password>admin</password>
->   <passwordEncoderName>emptyPasswordEncoder</passwordEncoderName>
->   <passwordPolicyName>default</passwordPolicyName>
->   <populatedAttributes>email, telephone</populatedAttributes>
-> </org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
 > ```
+>
+> <org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
+>
+> :   <id>2c3e0e8d:154853796a3:-8000</id> <name>myldapservice</name> <className>org.geoserver.security.ldap.LDAPUserGroupService</className> <serverURL><ldap://127.0.0.1:10389/dc=acme,dc=org></serverURL> <groupSearchBase>ou=groups</groupSearchBase> <groupFilter>cn={0}</groupFilter> <groupNameAttribute>cn</groupNameAttribute> <allGroupsSearchFilter>cn=*</allGroupsSearchFilter> <groupSearchFilter>member={0}</groupSearchFilter> <groupMembershipAttribute>member</groupMembershipAttribute> <userSearchBase>ou=people</userSearchBase> <userFilter>uid</userFilter> <userNameAttribute>uid={0}</userNameAttribute> <allUsersSearchFilter>uid=*</allUsersSearchFilter> <useTLS>false</useTLS> <bindBeforeGroupSearch>true</bindBeforeGroupSearch> <user>admin</user> <password>admin</password> <passwordEncoderName>emptyPasswordEncoder</passwordEncoderName> <passwordPolicyName>default</passwordPolicyName> <populatedAttributes>email, telephone</populatedAttributes> </org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
 
 For further information, please refer to [configuring a user/group service](../webadmin/ugr.md#security_webadmin_usergroupservices) in the [Web administration interface](../../webadmin/index.md).

@@ -66,29 +66,12 @@ The `<PropertyIsNull>` operator tests whether a property value is null. It conta
 
 The `<PropertyIsBetween>` operator tests whether an expression value lies within a range given by a lower and upper bound (inclusive). It contains the elements:
 
-**Element**
-
-:   **Required?**
-
-    **Description**
-
-[Expression](filter_reference.md#filter_expression)
-
-:   Yes
-
-    The value to test
-
-`<LowerBoundary>`
-
-:   Yes
-
-    Contains an [Expression](filter_reference.md#filter_expression) giving the lower bound of the range
-
-`<UpperBoundary>`
-
-:   Yes
-
-    Contains an [Expression](filter_reference.md#filter_expression) giving the upper bound of the range
+|                                                      |               |                                                                                                      |
+|------------------------------------------------------|---------------|------------------------------------------------------------------------------------------------------|
+| **Element**                                          | **Required?** | **Description**                                                                                      |
+| [Expression](filter_reference.md#filter_expression) | Yes           | The value to test                                                                                    |
+| `<LowerBoundary>`                                    | Yes           | Contains an [Expression](filter_reference.md#filter_expression) giving the lower bound of the range |
+| `<UpperBoundary>`                                    | Yes           | Contains an [Expression](filter_reference.md#filter_expression) giving the upper bound of the range |
 
 ### Spatial operators
 
@@ -124,51 +107,22 @@ These operators test distance relationships between a geometry property and a ge
 
 They contain the elements:
 
-**Element**
-
-:   **Required?**
-
-    **Description**
-
-`<PropertyName>`
-
-:   Yes
-
-    Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed.
-
-*GML Geometry*
-
-:   Yes
-
-    A literal value specifying a geometry to compute the distance to. This may be either a geometry or an envelope in GML 3 format
-
-`<Distance>`
-
-:   Yes
-
-    Contains the numeric value for the distance tolerance. The element may include an optional `units` attribute.
+|                  |               |                                                                                                                                |
+|------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------|
+| **Element**      | **Required?** | **Description**                                                                                                                |
+| `<PropertyName>` | Yes           | Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed.   |
+| *GML Geometry*   | Yes           | A literal value specifying a geometry to compute the distance to. This may be either a geometry or an envelope in GML 3 format |
+| `<Distance>`     | Yes           | Contains the numeric value for the distance tolerance. The element may include an optional `units` attribute.                  |
 
 #### Bounding Box operator
 
 The `<BBOX>` operator tests whether a geometry-valued property intersects a fixed bounding box. It contains the elements:
 
-**Element**
-
-:   **Required?**
-
-    **Description**
-
-`<PropertyName>`
-
-:   No
-
-    Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed.
-
-`<gml:Box>`
-
-:   Yes
-
-    A GML Box literal value specifying the bounding box to test against
+|                  |               |                                                                                                                              |
+|------------------|---------------|------------------------------------------------------------------------------------------------------------------------------|
+| **Element**      | **Required?** | **Description**                                                                                                              |
+| `<PropertyName>` | No            | Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed. |
+| `<gml:Box>`      | Yes           | A GML Box literal value specifying the bounding box to test against                                                          |
 
 #### Examples
 

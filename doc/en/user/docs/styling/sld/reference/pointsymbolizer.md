@@ -51,42 +51,25 @@ The `<ExternalGraphic>` element has the sub-elements:
 
 The `<Mark>` element has the sub-elements:
 
-**Tag**
-
-:   **Required?**
-
-    **Description**
-
-`<WellKnownName>`
-
-:   No
-
-    The name of the shape. Standard SLD shapes are `circle`, `square`, `triangle`, `star`, `cross`, or `x`. Default is `square`.
-
-`<Fill>`
-
-:   No
-
-    Specifies how the symbol should be filled (for closed shapes). Options are to use `<CssParameter name="fill">` to specify a solid fill color, or using `<GraphicFill>` for a tiled graphic fill. See the `PolygonSymbolizer` [Fill](polygonsymbolizer.md#sld_reference_fill) for the full syntax.
-
-`<Stroke>`
-
-:   No
-
-    Specifies how the symbol linework should be drawn. Some options are using `<CssParameter name="stroke">` to specify a stroke color, or using `<GraphicStroke>` for a repeated graphic. See the `LineSymbolizer` [Stroke](linesymbolizer.md#sld_reference_stroke) for the full syntax.
+|                   |               |                                                                                                                                                                                                                                                                                                    |
+|-------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Tag**           | **Required?** | **Description**                                                                                                                                                                                                                                                                                    |
+| `<WellKnownName>` | No            | The name of the shape. Standard SLD shapes are `circle`, `square`, `triangle`, `star`, `cross`, or `x`. Default is `square`.                                                                                                                                                                       |
+| `<Fill>`          | No            | Specifies how the symbol should be filled (for closed shapes). Options are to use `<CssParameter name="fill">` to specify a solid fill color, or using `<GraphicFill>` for a tiled graphic fill. See the `PolygonSymbolizer` [Fill](polygonsymbolizer.md#sld_reference_fill) for the full syntax. |
+| `<Stroke>`        | No            | Specifies how the symbol linework should be drawn. Some options are using `<CssParameter name="stroke">` to specify a stroke color, or using `<GraphicStroke>` for a repeated graphic. See the `LineSymbolizer` [Stroke](linesymbolizer.md#sld_reference_stroke) for the full syntax.             |
 
 ## Example
 
 The following symbolizer is taken from the [Points](../cookbook/points.md) section in the [SLD Cookbook](../cookbook/index.md).
 
-``` {.xml linenos=""}
+``` xml
 <PointSymbolizer>
   <Graphic>
     <Mark>
-  <WellKnownName>circle</WellKnownName>
+ <WellKnownName>circle</WellKnownName>
       <Fill>
-    <CssParameter name="fill">#FF0000</CssParameter>
-  </Fill>
+     <CssParameter name="fill">#FF0000</CssParameter>
+   </Fill>
     </Mark>
     <Size>6</Size>
   </Graphic>
@@ -101,7 +84,7 @@ The symbolizer contains the required `<Graphic>` element. Inside this element is
 
 The next example uses an external graphic loaded from the file system:
 
-``` {.xml linenos=""}
+``` xml
 <PointSymbolizer>
   <Graphic>
     <ExternalGraphic>

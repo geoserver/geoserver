@@ -48,13 +48,16 @@ The use of **stroke** as a key property prevents CSS from having the idea of a d
 4.  Replace the generated CSS definition with the following **stroke** example:
 
     ``` css
-    /* @title Line
-     * @abstract Example line symbolization
-     */
-     * {
-       stroke: blue;
-     }
     ```
+
+    /* @title Line
+    :   * @abstract Example line symbolization */
+
+        * {
+
+        :   stroke: blue;
+
+        }
 
 5.  Click **Submit** and then the **Map** tab for an initial preview.
 
@@ -65,47 +68,41 @@ The use of **stroke** as a key property prevents CSS from having the idea of a d
 6.  You can look at the **SLD** tab at any time to see the generated SLD. Currently it is showing a straight forward LineSymbolizer generated from the CSS **stroke** property:
 
     ``` xml
-    <sld:UserStyle>
-       <sld:Name>Default Styler</sld:Name>
-       <sld:FeatureTypeStyle>
-          <sld:Name>name</sld:Name>
-          <sld:Rule>
-             <sld:Title>Line</sld:Title>
-             <sld:Abstract>Example line symboloization</sld:Abstract>
-             <sld:LineSymbolizer>
-                <sld:Stroke>
-                   <sld:CssParameter name="stroke">#0000ff</sld:CssParameter>
-                </sld:Stroke> 
-             </sld:LineSymbolizer>
-          </sld:Rule>
-       </sld:FeatureTypeStyle>
-    </sld:UserStyle>
     ```
+
+    <sld:UserStyle>
+
+    :   <sld:Name>Default Styler</sld:Name> <sld:FeatureTypeStyle> <sld:Name>name</sld:Name> <sld:Rule> <sld:Title>Line</sld:Title> <sld:Abstract>Example line symboloization</sld:Abstract> <sld:LineSymbolizer> <sld:Stroke> <sld:CssParameter name="stroke">#0000ff</sld:CssParameter> </sld:Stroke> </sld:LineSymbolizer> </sld:Rule> </sld:FeatureTypeStyle>
+
+    </sld:UserStyle>
 
 7.  Additional properties cane be used fine-tune appearance. Use **stroke-width** to specify the width of the line.
 
     ``` {.css emphasize-lines="6"}
-    /* @title Line
-     * @abstract Example line symbolization
-     */
-     * {
-       stroke: blue;
-       stroke-width: 2px;
-     }
     ```
+
+    /* @title Line
+    :   * @abstract Example line symbolization */
+
+        * {
+
+        :   stroke: blue; stroke-width: 2px;
+
+        }
 
 8.  The **stroke-dasharray** is used to define breaks rendering the line as a dot dash pattern.
 
     ``` {.css emphasize-lines="7"}
-    /* @title Line
-     * @abstract Example line symbolization
-     */
-     * {
-       stroke: blue;
-       stroke-width: 2px;
-       stroke-dasharray: 5 2;
-     }
     ```
+
+    /* @title Line
+    :   * @abstract Example line symbolization */
+
+        * {
+
+        :   stroke: blue; stroke-width: 2px; stroke-dasharray: 5 2;
+
+        }
 
 9.  Check the **Map** tab to preview the result.
 
@@ -127,11 +124,13 @@ The next exercise shows how to work around a limitation when using multiple stro
     Update `line_example` with the following:
 
     ``` css
-    * {
-      stroke: black, #8080E6;
-      stroke-width: 5px, 3px;
-    }
     ```
+
+    * {
+
+    :   stroke: black, #8080E6; stroke-width: 5px, 3px;
+
+    }
 
 2.  If you look carefully you can see a problem with our initial attempt. The junctions of each line show that the casing outlines each line individually, making the lines appear randomly overlapped. Ideally we would like to control this process, only making use of this effect for overpasses.
 
@@ -140,12 +139,13 @@ The next exercise shows how to work around a limitation when using multiple stro
 3.  The **z-index** parameter allows a draw order to be supplied. This time all the thick black lines are dawn first (at z-index 0) followed by the thinner blue lines (at z-index 1).
 
     ``` css
-    * {
-      stroke: black, #8080E6;
-      stroke-width: 5px, 3px;
-      z-index: 0, 1;
-    }
     ```
+
+    * {
+
+    :   stroke: black, #8080E6; stroke-width: 5px, 3px; z-index: 0, 1;
+
+    }
 
 4.  If you look carefully you can see the difference.
 
@@ -169,11 +169,13 @@ This is also our first example making use of a dynamic style (where the value of
     Update `line_example` with the following:
 
     ``` {.css emphasize-lines="2,3"}
-    * {
-      stroke: blue;
-      label: [name];
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name];
+
+    }
 
 2.  The SLD standard documents the default label position for each kind of Geometry. For LineStrings the initial label is positioned on the midway point of the line.
 
@@ -182,33 +184,35 @@ This is also our first example making use of a dynamic style (where the value of
 3.  We have used an expression to calculate a property value for label. The **label** property is generated dynamically from the ``name`` attribute. Expressions are supplied within square brackets, making use of Constraint Query Language (CQL) syntax.
 
     ``` {.css emphasize-lines="3"}
-    * {
-      stroke: blue;
-      label: [name];
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name];
+
+    }
 
 4.  Additional properties can be supplied to fine-tune label presentation:
 
     ``` css
-    * {
-      stroke: blue;
-      label: [name];
-      font-fill: black;
-      label-offset: 7px;
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name]; font-fill: black; label-offset: 7px;
+
+    }
 
 5.  The **font-fill** property is set to ``black`` provides the label color.
 
     ``` {.css emphasize-lines="4"}
-    * {
-      stroke: blue;
-      label: [name];
-      font-fill: black;
-      label-offset: 7px;
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name]; font-fill: black; label-offset: 7px;
+
+    }
 
 6.  The **label-offset** property is used to adjust the starting position used for labeling.
 
@@ -217,13 +221,13 @@ This is also our first example making use of a dynamic style (where the value of
     When labeling a LineString there is a special twist: by specifying a single number for **label-offset** we can ask the rendering engine to position our label a set distance away from the LineString.
 
     ``` {.css emphasize-lines="5"}
-    * {
-      stroke: blue;
-      label: [name];
-      font-fill: black;
-      label-offset: 7px;
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name]; font-fill: black; label-offset: 7px;
+
+    }
 
 7.  When used in this manner the rotation of the label will be adjusted automatically to match the LineString.
 
@@ -240,26 +244,24 @@ To take greater control over the GeoServer rendering engine we can use extra par
     Update `line_example` with the following:
 
     ``` css
-    * {
-      stroke: blue;
-      label: [name];
-      font-fill: black;
-      label-offset: 7px;
-      label-padding: 10;
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name]; font-fill: black; label-offset: 7px; label-padding: 10;
+
+    }
 
 2.  The parameter **label-padding** provides additional space around our label for use in collision avoidance.
 
     ``` {.css emphasize-lines="6"}
-    * {
-      stroke: blue;
-      label: [name];
-      font-fill: black;
-      label-offset: 7px;
-      label-padding: 10;
-    }
     ```
+
+    * {
+
+    :   stroke: blue; label: [name]; font-fill: black; label-offset: 7px; label-padding: 10;
+
+    }
 
 3.  Each label is now separated from its neighbor, improving legibility.
 
@@ -272,10 +274,13 @@ This section explores the use of attribute selectors and the ``@scale`` selector
 1.  Replace the ``line_example`` CSS definition with:
 
     ``` css
-    [scalerank < 4] {
-      stroke: black;
-    }
     ```
+
+    [scalerank < 4] {
+
+    :   stroke: black;
+
+    }
 
 2.  And use the **Map** tab to preview the result.
 
@@ -288,13 +293,13 @@ This section explores the use of attribute selectors and the ``@scale`` selector
     Replace your CSS with the following:
 
     ``` css
-    [@scale > 35000000] {
-       stroke: black;
-    }
-    [@scale < 35000000] {
-       stroke: blue;
-    }
     ```
+
+    [@scale > 35000000] {
+
+    :   stroke: black;
+
+    } [@scale < 35000000] { stroke: blue; }
 
 5.  As you adjust the scale in the **Map** preview (using the mouse scroll wheel) the color will change between black and blue. You can read the current scale in the bottom right corner, and the legend will change to reflect the current style.
 
@@ -303,38 +308,37 @@ This section explores the use of attribute selectors and the ``@scale`` selector
 6.  Putting these two ideas together allows control of level detail based on scale:
 
     ``` css
+    ```
+
     [@scale < 9000000] [scalerank > 7] {
-      stroke: #888888;
+
+    :   stroke: #888888;
+
     }
 
     [@scale < 17000000] [scalerank = 7] {
-      stroke: #777777;
+
+    :   stroke: #777777;
+
     }
 
     [@scale < 35000000] [scalerank = 6] {
-      stroke: #444444;
+
+    :   stroke: #444444;
+
     }
 
     [@scale > 9000000] [@scale < 70000000] [scalerank = 5] {
-      stroke: #000055;
-    }
-    [@scale < 9000000] [scalerank = 5] {
-      stroke: #000055;
-      stroke-width: 2
-    }
+
+    :   stroke: #000055;
+
+    } [@scale < 9000000] [scalerank = 5] { stroke: #000055; stroke-width: 2 }
 
     [@scale > 35000000] [scalerank < 4] {
-      stroke: black;
-    }
-    [@scale > 9000000] [@scale <= 35000000] [scalerank < 4] {
-      stroke: black;
-      stroke-width: 2
-    }
-    [@scale <= 9000000] [scalerank < 4] {
-      stroke: black;
-      stroke-width: 4
-    }
-    ```
+
+    :   stroke: black;
+
+    } [@scale > 9000000] [@scale <= 35000000] [scalerank < 4] { stroke: black; stroke-width: 2 } [@scale <= 9000000] [scalerank < 4] { stroke: black; stroke-width: 4 }
 
 7.  As shown above selectors can be combined in the same rule:
 
@@ -364,38 +368,35 @@ Options can be used to enable some quite useful effects, while still providing a
 1.  Update ``line_example`` with the following:
 
     ``` css
-    * {
-      stroke: #ededff;
-      stroke-width: 10;
-      label: [level] " " [name];
-      font-fill: black;
-      label-follow-line: true;
-    }
     ```
+
+    * {
+
+    :   stroke: #ededff; stroke-width: 10; label: [level] " " [name]; font-fill: black; label-follow-line: true;
+
+    }
 
 2.  The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label.
 
     ``` {.css emphasize-lines="3"}
-    * {
-      stroke: #ededff;
-      stroke-width: 10;
-      label: [level] " " [name];
-      font-fill: black;
-      label-follow-line: true;
-    }
     ```
+
+    * {
+
+    :   stroke: #ededff; stroke-width: 10; label: [level] " " [name]; font-fill: black; label-follow-line: true;
+
+    }
 
 3.  The **label** property combines combine several CQL expressions together for a longer label.
 
     ``` {.css emphasize-lines="4"}
-    * {
-      stroke: #ededff;
-      stroke-width: 10;
-      label: [level] " " [name];
-      font-fill: black;
-      label-follow-line: true;
-    }
     ```
+
+    * {
+
+    :   stroke: #ededff; stroke-width: 10; label: [level] " " [name]; font-fill: black; label-follow-line: true;
+
+    }
 
     The combined **label** property:
 
@@ -408,14 +409,13 @@ Options can be used to enable some quite useful effects, while still providing a
 4.  The property **label-follow-line** provides the ability of have a label exactly follow a LineString character by character.
 
     ``` {.css emphasize-lines="6"}
-    * {
-      stroke: #ededff;
-      stroke-width: 10;
-      label: [level] " " [name];
-      font-fill: black;
-      label-follow-line: true;
-    }
     ```
+
+    * {
+
+    :   stroke: #ededff; stroke-width: 10; label: [level] " " [name]; font-fill: black; label-follow-line: true;
+
+    }
 
 5.  The result is a new appearance for our roads.
 
@@ -460,12 +460,13 @@ Options can be used to enable some quite useful effects, while still providing a
 1.  Review the SLD generated by the **z-index** example.
 
     ``` css
-    * {
-      stroke: black, #8080E6;
-      stroke-width: 5px, 3px;
-      z-index: 0, 1;
-    }
     ```
+
+    * {
+
+    :   stroke: black, #8080E6; stroke-width: 5px, 3px; z-index: 0, 1;
+
+    }
 
 2.  *Challenge:* There is an interesting trick in the generated SLD, can you explain how it works?
 

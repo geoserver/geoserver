@@ -40,22 +40,13 @@ This exercise makes use of the `ne:populated_places` layer.
 3.  Replace the initial MBStyle definition with the following and click **apply**:
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "point_example",
-          "type": "symbol",
-          "source-layer": "ne:populated_places",
-          "layout": {
-            "icon-image": "grey_circle",
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "layout": { "icon-image": "grey_circle", } } ]
+
+    }
 
 4.  And use the **Layer Preview** tab to preview the result.
 
@@ -72,22 +63,13 @@ MBStyle uses a sprite-sheet defined at the top-level of the style to define a se
 1.  Change the symbol used by the style to a square:
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "point_example",
-          "type": "symbol",
-          "source-layer": "ne:populated_places",
-          "layout": {
-            "icon-image": "grey_square16",
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "layout": { "icon-image": "grey_square16", } } ]
+
+    }
 
 2.  Map Preview:
 
@@ -96,23 +78,13 @@ MBStyle uses a sprite-sheet defined at the top-level of the style to define a se
 3.  Before we continue we will use a selector to cut down the amount of data shown to a reasonable level.
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "point_example",
-          "type": "symbol",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 1],
-          "layout": {
-            "icon-image": "grey_square16",
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "layout": { "icon-image": "grey_square16", } } ]
+
+    }
 
 4.  Resulting in a considerably cleaner image:
 
@@ -127,25 +99,13 @@ MBStyle uses a sprite-sheet defined at the top-level of the style to define a se
     Trying these two settings together:
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites"
-      "layers": [
-        {
-          "id": "point_example",
-          "type": "symbol",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 1],
-          "layout": {
-            "icon-image": "grey_square16",
-            "icon-size": 0.75,
-            "icon-rotate": 45
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>" "layers": [ { "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "layout": { "icon-image": "grey_square16", "icon-size": 0.75, "icon-rotate": 45 } } ]
+
+    }
 
 6.  Results in each location being marked with a diamond:
 
@@ -158,24 +118,13 @@ Another way of displaying point data is using the **circle** layer. Rather than 
 1.  Modify the style to render a grey circle using the **circle** layer:
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "layers": [
-        {
-          "id": "point_example",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "layers": [ { "id": "point_example", "type": "circle", "source-layer": "ne:populated_places", "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } } ]
+
+    }
 
 2.  And use the **Layer Preview** tab to preview the result.
 
@@ -192,36 +141,13 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 1.  Replace `point_example` with the following:
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "layers": [
-         {
-          "id": "point_circle",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_label",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 1],
-          "type": "symbol",
-          "layout": {
-            "text-field": "{NAME}" 
-          },
-          "paint": {
-            "text-color": "gray" 
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "layers": [ { "id": "point_circle", "type": "circle", "source-layer": "ne:populated_places", "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_label", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "type": "symbol", "layout": { "text-field": "{NAME}" }, "paint": { "text-color": "gray" } } ]
+
+    }
 
 2.  Confirm the result in `Map` preview.
 
@@ -240,38 +166,13 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 4.  Using these two facilities together we can center our labels below the symbol, taking care that the displacement used provides an offset just outside the area required for the symbol size.
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "layers": [
-        {
-          "id": "point_circle",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_label",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 1],
-          "type": "symbol",
-          "layout": {
-            "text-field": "{NAME}",
-            "text-anchor": "top"
-          },
-          "paint": {
-            "text-color": "black",
-            "text-translate": [0, 12]
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "layers": [ { "id": "point_circle", "type": "circle", "source-layer": "ne:populated_places", "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_label", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "type": "symbol", "layout": { "text-field": "{NAME}", "text-anchor": "top" }, "paint": { "text-color": "black", "text-translate": [0, 12] } } ]
+
+    }
 
 5.  Each label is now placed under the mark.
 
@@ -290,39 +191,13 @@ The **symbol** layer with the **label** property are used to label Point Locatio
     The **-allow-overlap** and **-ignore-placement** parameters are false by default, which is the behavior we want. Update our example to use **text-padding**:
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "layers": [
-        {
-          "id": "point_circle",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_label",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 1],
-          "type": "symbol",
-          "layout": {
-            "text-field": "{NAME}",
-            "text-anchor": "top",
-            "text-padding": 2
-          },
-          "paint": {
-            "text-color": "black",
-            "text-translate": [0, 12]
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "layers": [ { "id": "point_circle", "type": "circle", "source-layer": "ne:populated_places", "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_label", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "type": "symbol", "layout": { "text-field": "{NAME}", "text-anchor": "top", "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": [0, 12] } } ]
+
+    }
 
 7.  Resulting in a considerably cleaner image:
 
@@ -333,108 +208,13 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 1.  We will quickly use **minzoom** and **maxzoom** to select content based on SCALERANK selectors.
 
     ``` json
-    {
-      "version": 8,
-      "name": "point_example",
-      "layers": [
-        {
-          "id": "point_7",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 7],
-          "minzoom": 6,
-          "maxzoom": 7,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_5",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 5],
-          "minzoom": 5,
-          "maxzoom": 6,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_4",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 4],
-          "minzoom": 4,
-          "maxzoom": 5,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_3",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 3],
-          "minzoom": 3,
-          "maxzoom": 4,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_2",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 2],
-          "minzoom": 2,
-          "maxzoom": 3,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_1",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "filter": ["<", "SCALERANK", 1],
-          "maxzoom": 2,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        },
-        {
-          "id": "point_0",
-          "type": "circle",
-          "source-layer": "ne:populated_places",
-          "minzoom": 7,
-          "paint": {
-            "circle-color": "gray",
-            "circle-radius": 8
-            "circle-stroke-color": "black",
-            "circle-stroke-width": 1
-          }
-        }
-      ]
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "layers": [ { "id": "point_7", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 7], "minzoom": 6, "maxzoom": 7, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_5", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 5], "minzoom": 5, "maxzoom": 6, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_4", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 4], "minzoom": 4, "maxzoom": 5, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_3", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 3], "minzoom": 3, "maxzoom": 4, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_2", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 2], "minzoom": 2, "maxzoom": 3, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_1", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "maxzoom": 2, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_0", "type": "circle", "source-layer": "ne:populated_places", "minzoom": 7, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } } ]
+
+    }
 
 2.  Click **Submit** to update the **Map** after each step.
 
@@ -443,246 +223,30 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 3.  To add labeling we can add a symbol layer for each of the existing circle layers.
 
     ``` json
-    {
-       "version": 8,
-       "name": "point_example",
-       "layers": [
-         {
-           "id": "point_7",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 7],
-           "minzoom": 6,
-           "maxzoom": 7,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_7_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 7],
-           "minzoom": 6,
-           "maxzoom": 7,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         },
-         {
-           "id": "point_5",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 5],
-           "minzoom": 5,
-           "maxzoom": 6,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_5_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 5],
-           "minzoom": 5,
-           "maxzoom": 6,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         },
-         {
-           "id": "point_4",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 4],
-           "minzoom": 4,
-           "maxzoom": 5,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_4_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 4],
-           "minzoom": 4,
-           "maxzoom": 5,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         },
-         {
-           "id": "point_3",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 3],
-           "minzoom": 3,
-           "maxzoom": 4,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_3_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 3],
-           "minzoom": 3,
-           "maxzoom": 4,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         },
-         {
-           "id": "point_2",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 2],
-           "minzoom": 2,
-           "maxzoom": 3,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_2_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 2],
-           "minzoom": 2,
-           "maxzoom": 3,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         },
-         {
-           "id": "point_1",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 1],
-           "maxzoom": 2,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_1_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "filter": ["<", "SCALERANK", 1],
-           "maxzoom": 2,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         },
-         {
-           "id": "point_0",
-           "type": "circle",
-           "source-layer": "ne:populated_places",
-           "minzoom": 7,
-           "paint": {
-             "circle-color": "gray",
-             "circle-radius": 8
-             "circle-stroke-color": "black",
-             "circle-stroke-width": 1
-           }
-         },
-         {
-           "id": "point_0_text",
-           "type": "symbol",
-           "source-layer": "ne:populated_places",
-           "minzoom": 7,
-           "layout": {
-             "text-field": "{NAME}",
-             "text-font": ["Arial"],
-             "text-size": 10
-           },
-           "paint": {
-             "text-color": "black"
-           }
-         }
-       ]
-     }
     ```
 
-    ![image](../style/img/point_05_label.png)
+> {
+>
+> :   "version": 8, "name": "point_example", "layers": [ { "id": "point_7", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 7], "minzoom": 6, "maxzoom": 7, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_7_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 7], "minzoom": 6, "maxzoom": 7, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } }, { "id": "point_5", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 5], "minzoom": 5, "maxzoom": 6, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_5_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 5], "minzoom": 5, "maxzoom": 6, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } }, { "id": "point_4", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 4], "minzoom": 4, "maxzoom": 5, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_4_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 4], "minzoom": 4, "maxzoom": 5, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } }, { "id": "point_3", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 3], "minzoom": 3, "maxzoom": 4, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_3_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 3], "minzoom": 3, "maxzoom": 4, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } }, { "id": "point_2", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 2], "minzoom": 2, "maxzoom": 3, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_2_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 2], "minzoom": 2, "maxzoom": 3, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } }, { "id": "point_1", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "maxzoom": 2, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_1_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "maxzoom": 2, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } }, { "id": "point_0", "type": "circle", "source-layer": "ne:populated_places", "minzoom": 7, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 } }, { "id": "point_0_text", "type": "symbol", "source-layer": "ne:populated_places", "minzoom": 7, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10 }, "paint": { "text-color": "black" } } ] }
+>
+>     ![image](../style/img/point_05_label.png)
 
-4.  We will use **text-offset** to position the label above each symbol, and **text-padding** to give some extra space around our labels.
+1.  We will use **text-offset** to position the label above each symbol, and **text-padding** to give some extra space around our labels.
 
     Add the following line to each layer:
 
     ``` {.json emphasize-lines="10, 14"}
-    {
-      "id": "point_example",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "minzoom": 7,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": [0, -12]
-      }
-    }
     ```
+
+    {
+
+    :   "id": "point_example", "type": "symbol", "source-layer": "ne:populated_places", "minzoom": 7, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": [0, -12] }
+
+    }
 
     ![image](../style/img/point_06_relocate.png)
 
-5.  Now that we have clearly labeled our cities, zoom into an area you are familiar with and we can look at changing symbology on a case-by-case basis.
+2.  Now that we have clearly labeled our cities, zoom into an area you are familiar with and we can look at changing symbology on a case-by-case basis.
 
     We have used expressions previous to generate an appropriate label. Expressions can also be used for many other property settings.
 
@@ -705,448 +269,180 @@ The **symbol** layer with the **label** property are used to label Point Locatio
     This expression should result in sizes between 5 and 9 and will need to be applied to both point **size** and label **displacement**.
 
     ``` {.json emphasize-lines="8-15"}
-    {
-      "id": "point_0",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "minzoom": 7,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` {.json emphasize-lines="14-21"}
     {
-      "id": "point_0_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "minzoom": 7,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        },
-      }
+
+    :   "id": "point_0", "type": "circle", "source-layer": "ne:populated_places", "minzoom": 7, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
     }
+
+    ``` {.json emphasize-lines="14-21"}
     ```
+
+    {
+
+    :   "id": "point_0_text", "type": "symbol", "source-layer": "ne:populated_places", "minzoom": 7, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] }, }
+
+    }
 
     ![image](../style/img/point_07_expression.png)
 
-6.  Next we can use `FEATURECLA` to check for capital cities.
+3.  Next we can use `FEATURECLA` to check for capital cities.
 
     Adding a selector for capital cities at the top of the **rules** list:
 
     ``` json
-    {
-      "id": "point_capital",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["all",["<", "SCALERANK", 2], ["==", "FEATURECLA", "Admin-0 capital"]]
-      "minzoom": 2,
-      "layout": {
-        "icon-image": "star",
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": [0, -12]
-      }
-    }
     ```
+
+    {
+
+    :   "id": "point_capital", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["all",["<", "SCALERANK", 2], ["==", "FEATURECLA", "Admin-0 capital"]] "minzoom": 2, "layout": { "icon-image": "star", "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": [0, -12] }
+
+    }
 
     Also add the sprite-sheet url to the top of the style if it is not present:
 
     ``` {.json emphasize-lines="4"}
-    {
-      "version": 8,
-      "name": "point_example",
-      "sprite": "http://localhost:8080/geoserver/styles/sprites",
-    }
     ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>",
+
+    }
 
     And updating the populated places selectors to ignore capital cities:
 
     ``` json
-    {
-      "id": "point_7",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 7], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 6,
-      "maxzoom": 7,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_7_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 7], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 6,
-      "maxzoom": 7,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_7", "type": "circle", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 7], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 6, "maxzoom": 7, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
     }
-    ```
 
     ``` json
-    {
-      "id": "point_5",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 5], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 5,
-      "maxzoom": 6,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_5_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 5], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 5,
-      "maxzoom": 6,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_7_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 7], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 6, "maxzoom": 7, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
     }
-    ```
 
     ``` json
-    {
-      "id": "point_4",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 4], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 4,
-      "maxzoom": 5,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_4_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 4], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 4,
-      "maxzoom": 5,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_5", "type": "circle", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 5], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 5, "maxzoom": 6, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
     }
-    ```
 
     ``` json
-    {
-      "id": "point_3",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 3], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 3,
-      "maxzoom": 4,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": 8
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_3_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 3], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 3,
-      "maxzoom": 4,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_5_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 5], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 5, "maxzoom": 6, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
     }
-    ```
 
     ``` json
-    {
-      "id": "point_2",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 2], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 2,
-      "maxzoom": 3,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_2_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["all", ["<", "SCALERANK", 2], ["!=", "FEATURECLA", "Admin-0 capital"]],
-      "minzoom": 2,
-      "maxzoom": 3,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_4", "type": "circle", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 4], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 4, "maxzoom": 5, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
     }
-    ```
 
     ``` json
-    {
-      "id": "point_1",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["<", "SCALERANK", 1],
-      "maxzoom": 2,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_1_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["<", "SCALERANK", 1],
-      "maxzoom": 2,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_4_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 4], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 4, "maxzoom": 5, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
     }
-    ```
 
     ``` json
-    {
-      "id": "point_0",
-      "type": "circle",
-      "source-layer": "ne:populated_places",
-      "filter": ["!=", "FEATURECLA", "Admin-0 capital"],
-      "minzoom": 7,
-      "paint": {
-        "circle-color": "gray",
-        "circle-radius": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, 4.5],
-            [10, 2.5]
-          ]
-        },
-        "circle-stroke-color": "black",
-        "circle-stroke-width": 1
-      }
-    }
     ```
 
-    ``` json
     {
-      "id": "point_0_text",
-      "type": "symbol",
-      "source-layer": "ne:populated_places",
-      "filter": ["!=", "FEATURECLA", "Admin-0 capital"],
-      "minzoom": 7,
-      "layout": {
-        "text-field": "{NAME}",
-        "text-font": ["Arial"],
-        "text-size": 10,
-        "text-padding": 2
-      },
-      "paint": {
-        "text-color": "black",
-        "text-translate": {
-          "property": "SCALERANK",
-          "type": "exponential",
-          "stops": [
-            [0, [0, -8]],
-            [10, [0, -6]]
-          ]
-        }
-      }
+
+    :   "id": "point_3", "type": "circle", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 3], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 3, "maxzoom": 4, "paint": { "circle-color": "gray", "circle-radius": 8 "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
     }
+
+    ``` json
     ```
+
+    {
+
+    :   "id": "point_3_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 3], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 3, "maxzoom": 4, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
+    }
+
+    ``` json
+    ```
+
+    {
+
+    :   "id": "point_2", "type": "circle", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 2], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 2, "maxzoom": 3, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
+    }
+
+    ``` json
+    ```
+
+    {
+
+    :   "id": "point_2_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["all", ["<", "SCALERANK", 2], ["!=", "FEATURECLA", "Admin-0 capital"]], "minzoom": 2, "maxzoom": 3, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
+    }
+
+    ``` json
+    ```
+
+    {
+
+    :   "id": "point_1", "type": "circle", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "maxzoom": 2, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
+    }
+
+    ``` json
+    ```
+
+    {
+
+    :   "id": "point_1_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["<", "SCALERANK", 1], "maxzoom": 2, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
+    }
+
+    ``` json
+    ```
+
+    {
+
+    :   "id": "point_0", "type": "circle", "source-layer": "ne:populated_places", "filter": ["!=", "FEATURECLA", "Admin-0 capital"], "minzoom": 7, "paint": { "circle-color": "gray", "circle-radius": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, 4.5], [10, 2.5] ] }, "circle-stroke-color": "black", "circle-stroke-width": 1 }
+
+    }
+
+    ``` json
+    ```
+
+    {
+
+    :   "id": "point_0_text", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["!=", "FEATURECLA", "Admin-0 capital"], "minzoom": 7, "layout": { "text-field": "{NAME}", "text-font": ["Arial"], "text-size": 10, "text-padding": 2 }, "paint": { "text-color": "black", "text-translate": { "property": "SCALERANK", "type": "exponential", "stops": [ [0, [0, -8]], [10, [0, -6]] ] } }
+
+    }
 
     ![image](../style/img/point_09_fill.png)
 
-7.  If you would like to check your work the final file is here: [point_example.mbstyle](../files/point_example.json)
+4.  If you would like to check your work the final file is here: [point_example.mbstyle](../files/point_example.json)
 
 ## Bonus
 
@@ -1181,96 +477,62 @@ The **symbol** layer with the **label** property are used to label Point Locatio
     This approach is straightforward when applied in isolation:
 
     > ``` json
-    > {
-    >   "version": 8,
-    >   "name": "point_example",
-    >   "sprite": "http://localhost:8080/geoserver/styles/sprites",
-    >   "layers": [
-    >     {
-    >       "id": "point_capital",
-    >       "type": "symbol",
-    >       "source-layer": "ne:populated_places",
-    >       "filter": ["==", "FEATURECLA", "Admin-0 capital"]
-    >       "minzoom": 2,
-    >       "layout": {
-    >         "icon-image": "star",
-    >       }
-    >     },
-    >     {
-    >       "id": "point_0",
-    >       "type": "circle",
-    >       "source-layer": "ne:populated_places",
-    >       "filter": ["!=", "FEATURECLA", "Admin-0 capital"],
-    >       "minzoom": 7,
-    >       "paint": {
-    >         "circle-color": "gray",
-    >         "circle-radius": 4,
-    >         "circle-stroke-color": "black",
-    >         "circle-stroke-width": 1
-    >       }
-    >     }
-    >   ]
-    > }
     > ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>", "layers": [ { "id": "point_capital", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["==", "FEATURECLA", "Admin-0 capital"] "minzoom": 2, "layout": { "icon-image": "star", } }, { "id": "point_0", "type": "circle", "source-layer": "ne:populated_places", "filter": ["!=", "FEATURECLA", "Admin-0 capital"], "minzoom": 7, "paint": { "circle-color": "gray", "circle-radius": 4, "circle-stroke-color": "black", "circle-stroke-width": 1 } } ]
+
+    }
 
     When combined with checking another attribute, or checking @scale as in our example, this approach can quickly lead to many rules which can be difficult to keep straight.
 
 2.  Taking a closer look, `icon-image` is expressed using a string:
 
     > ``` json
-    > {
-    >   "id": "point_capital",
-    >   "type": "symbol",
-    >   "source-layer": "ne:populated_places",
-    >   "filter": ["==", "FEATURECLA", "Admin-0 capital"]
-    >   "minzoom": 2,
-    >   "layout": {
-    >     "icon-image": "star",
-    >   }
-    > }
     > ```
+
+    {
+
+    :   "id": "point_capital", "type": "symbol", "source-layer": "ne:populated_places", "filter": ["==", "FEATURECLA", "Admin-0 capital"] "minzoom": 2, "layout": { "icon-image": "star", }
+
+    }
 
     Which is represented in SLD as:
 
     ``` xml
-    <sld:PointSymbolizer uom="http://www.opengeospatial.org/se/units/pixel">
-      <sld:Graphic>
-        <sld:ExternalGraphic>
-          <sld:OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://localhost:8080/geoserver/styles/sprites#icon=${strURLEncode('star')}&size=${strURLEncode(1.0)}"/>
-          <sld:Format>mbsprite</sld:Format>
-        </sld:ExternalGraphic>
-      </sld:Graphic>
-    </sld:PointSymbolizer>
     ```
+
+    <sld:PointSymbolizer uom="<http://www.opengeospatial.org/se/units/pixel>">
+
+    :   
+
+        <sld:Graphic>
+
+        :   
+
+            <sld:ExternalGraphic>
+
+            :   <sld:OnlineResource xmlns:xlink="<http://www.w3.org/1999/xlink>" xlink:type="simple" xlink:href="<http://localhost:8080/geoserver/styles/sprites#icon=$%7BstrURLEncode>('star')}&size=\${strURLEncode(1.0)}"/> <sld:Format>mbsprite</sld:Format>
+
+            </sld:ExternalGraphic>
+
+        </sld:Graphic>
+
+    </sld:PointSymbolizer>
 
 3.  MBStyle provides an opportunity for dynamic symbolization.
 
     This is accomplished by using a function for the value of the **icon-image**:
 
     > ``` {.json emphasize-lines="11-18"}
-    > {
-    >   "version": 8,
-    >   "name": "point_example",
-    >   "sprite": "http://localhost:8080/geoserver/styles/sprites",
-    >   "layers": [
-    >     {
-    >       "id": "point_capital",
-    >       "type": "symbol",
-    >       "source-layer": "ne:populated_places",
-    >       "layout": {
-    >         "icon-image": {
-    >           "type": "categorical",
-    >           "property": "FEATURECLA",
-    >           "default": "grey_circle",
-    >           "stops": [
-    >             ["Admin-0 capital", "star"]
-    >           ]
-    >         }
-    >       }
-    >     }
-    >   ]
-    > }
     > ```
+
+    {
+
+    :   "version": 8, "name": "point_example", "sprite": "<http://localhost:8080/geoserver/styles/sprites>", "layers": [ { "id": "point_capital", "type": "symbol", "source-layer": "ne:populated_places", "layout": { "icon-image": { "type": "categorical", "property": "FEATURECLA", "default": "grey_circle", "stops": [ ["Admin-0 capital", "star"] ] } } } ]
+
+    }
 
     Which is represented in SLD as:
 

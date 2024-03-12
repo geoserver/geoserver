@@ -17,97 +17,31 @@ The following examples use the `topp:states` sample layer shipped with GeoServer
 
 The attributes used in the filter examples are those included in the layer. For example, the following are the attribute names and values for the Colorado feature:
 
-**Attribute**
-
-:   **states.6**
-
-STATE_NAME
-
-:   Colorado
-
-STATE_FIPS
-
-:   08
-
-SUB_REGION
-
-:   Mtn
-
-STATE_ABBR
-
-:   CO
-
-LAND_KM
-
-:   268659.501
-
-WATER_KM
-
-:   960.364
-
-PERSONS
-
-:   3294394.0
-
-FAMILIES
-
-:   854214.0
-
-HOUSHOLD
-
-:   1282489.0
-
-MALE
-
-:   1631295.0
-
-FEMALE
-
-:   1663099.0
-
-WORKERS
-
-:   1233023.0
-
-DRVALONE
-
-:   1216639.0
-
-CARPOOL
-
-:   210274.0
-
-PUBTRANS
-
-:   46983.0
-
-EMPLOYED
-
-:   1633281.0
-
-UNEMPLOY
-
-:   99438.0
-
-SERVICE
-
-:   421079.0
-
-MANUAL
-
-:   181760.0
-
-P_MALE
-
-:   0.495
-
-P_FEMALE
-
-:   0.505
-
-SAMP_POP
-
-:   512677.0
+|               |              |
+|---------------|--------------|
+| **Attribute** | **states.6** |
+| STATE_NAME    | Colorado     |
+| STATE_FIPS    | 08           |
+| SUB_REGION    | Mtn          |
+| STATE_ABBR    | CO           |
+| LAND_KM       | 268659.501   |
+| WATER_KM      | 960.364      |
+| PERSONS       | 3294394.0    |
+| FAMILIES      | 854214.0     |
+| HOUSHOLD      | 1282489.0    |
+| MALE          | 1631295.0    |
+| FEMALE        | 1663099.0    |
+| WORKERS       | 1233023.0    |
+| DRVALONE      | 1216639.0    |
+| CARPOOL       | 210274.0     |
+| PUBTRANS      | 46983.0      |
+| EMPLOYED      | 1633281.0    |
+| UNEMPLOY      | 99438.0      |
+| SERVICE       | 421079.0     |
+| MANUAL        | 181760.0     |
+| P_MALE        | 0.495        |
+| P_FEMALE      | 0.505        |
+| SAMP_POP      | 512677.0     |
 
 ## Simple comparisons
 

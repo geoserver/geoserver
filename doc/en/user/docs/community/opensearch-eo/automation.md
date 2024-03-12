@@ -57,94 +57,52 @@ A collection can have multiple layers:
 
 The layer configuration fields are:
 
-Attribute
-
-:   Description
-
-workspace
-
-:   The workspace that will contain the store and layer to be published
-
-layer
-
-:   The name of the layer that will be created
-
-separateBands
-
-:   A boolean value, true if the underlying granule table has the "band" column populated with values, meaning the product bands are split among different files, false if a single product is stored in a single file
-
-heterogeneousCRS
-
-:   A boolean value, indicating if the products in the collection share the same CRS (false) or are expressed in different CRSses (true)
-
-timeRanges
-
-:   A boolean value, indicating if the products are associated to a single time (false) or have have a time range of validity (true)
-
-bands
-
-:   The list of bands used in this layer (to be specified only if "separateBands" is used)
-
-browseBands
-
-:   An array of 1 or 3 band names used to create the default display for the layer
-
-mosaicCRS
-
-:   The identifier of the CRS used by the mosaic (must match the granules table one)
-
-defaultLayer
-
-:   A flag indicating if the layer is considered the default one for the collection (thus also appearing at `/oseo/collection/{COLLECTION}/layer`
+| Attribute        | Description                                                                                                                                                                                                          |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| workspace        | The workspace that will contain the store and layer to be published                                                                                                                                                  |
+| layer            | The name of the layer that will be created                                                                                                                                                                           |
+| separateBands    | A boolean value, true if the underlying granule table has the "band" column populated with values, meaning the product bands are split among different files, false if a single product is stored in a single file |
+| heterogeneousCRS | A boolean value, indicating if the products in the collection share the same CRS (false) or are expressed in different CRSses (true)                                                                                 |
+| timeRanges       | A boolean value, indicating if the products are associated to a single time (false) or have have a time range of validity (true)                                                                                     |
+| bands            | The list of bands used in this layer (to be specified only if "separateBands" is used)                                                                                                                             |
+| browseBands      | An array of 1 or 3 band names used to create the default display for the layer                                                                                                                                       |
+| mosaicCRS        | The identifier of the CRS used by the mosaic (must match the granules table one)                                                                                                                                     |
+| defaultLayer     | A flag indicating if the layer is considered the default one for the collection (thus also appearing at `/oseo/collection/{COLLECTION}/layer`                                                                        |
 
 The layer configuration specification will have different contents depending on the collection structure:
 
 -   Single CRS, non band split, RGB or RGBA files, time configured as an "instant" (only `timeStart` used):
 
     ``` json
-    {
-        "workspace": "gs",
-        "layer": "test123",
-        "separateBands": false,
-        "heterogeneousCRS": false,
-        "timeRanges": false
-    }
     ```
+
+    {
+
+    :   "workspace": "gs", "layer": "test123", "separateBands": false, "heterogeneousCRS": false, "timeRanges": false
+
+    }
 
 -   Single CRS, multiband in single file, with a gray browse style, product time configured as a range between `timeStart` and `timeEnd`:
 
     ``` json
-    {
-        "workspace": "gs",
-        "layer": "test123",
-        "separateBands": false,
-        "browseBands": ["test123[0]"],
-        "heterogeneousCRS": false,
-        "timeRanges": true
-    }
     ```
+
+    {
+
+    :   "workspace": "gs", "layer": "test123", "separateBands": false, "browseBands": ["test123[0]"], "heterogeneousCRS": false, "timeRanges": true
+
+    }
 
 -   Heterogeneous CRS, multi-band split across files, with a RGB browse style ("timeRanges" not specified, implying it's handled as an instant):
 
     ``` json
-    {
-        "workspace": "gs",
-        "layer": "test123",
-        "separateBands": true,
-        "bands": [
-            "VNIR",
-            "QUALITY",
-            "CLOUDSHADOW",
-            "HAZE",
-            "SNOW"
-        ],
-        "browseBands": [
-            "VNIR[0]", "VNIR[1]", "SNOW"
-        ],
-        "heterogeneousCRS": true,
-        "mosaicCRS": "EPSG:4326"
-    }
     ```
+
+    {
+
+    :   "workspace": "gs", "layer": "test123", "separateBands": true, "bands": [ "VNIR", "QUALITY", "CLOUDSHADOW", "HAZE", "SNOW" ], "browseBands": [ "VNIR[0]", "VNIR[1]", "SNOW" ], "heterogeneousCRS": true, "mosaicCRS": "EPSG:4326"
+
+    }
 
 In terms of band naming the "bands" parameter contains coverage names as used in the "band" column of the granules table, in case a granule contains multiple bands, they can be referred by either using the full name, in which case they will be all picked, or by using zero-based indexes like `BANDNAME[INDEX]`, which allows to pick a particular band.
 

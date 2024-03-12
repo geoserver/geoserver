@@ -107,6 +107,15 @@ The disadvantage of metatiling is that at large sizes, memory consumption can be
 
 The size of the default metatile can be adjusted here. By default, GeoServer sets a metatile size of **4x4**, which strikes a balance between performance, memory usage, and rendering accuracy.
 
+Metatiling threads
+~~~~~~~~~~~~~~~~~~
+
+After a 4x4 metatile is produced, it is then split into a total of 16 individual tiles to be encoded and saved to the cache. By default, a user requested tile will be encoded and saved on the main request thread but the additional 15 tiles will be encoded and saved on asynchronous threads to decrease experienced latency from the user.
+
+Leaving this value blank will use the default thread pool size for these asynchronous threads which is equal to 2 times the number of cores. Setting to 0 will disable concurrency and all tiles belonging to the metatile will be encoded/saved on the main request thread.
+
+This setting only affects user requests and is not used when seeding (seeding will encode an entire metatile on one thread).
+
 Default gutter size
 ~~~~~~~~~~~~~~~~~~~
 

@@ -49,6 +49,10 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
         assertFalse(config.isSane());
         assertTrue((config = config.saneConfig()).isSane());
 
+        config.setMetaTilingThreads(-1);
+        assertFalse(config.isSane());
+        assertTrue((config = config.saneConfig()).isSane());
+
         config.setGutter(-1);
         assertFalse(config.isSane());
         assertTrue((config = config.saneConfig()).isSane());

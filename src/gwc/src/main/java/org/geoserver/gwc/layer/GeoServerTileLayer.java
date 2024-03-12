@@ -5,53 +5,9 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Throwables.throwIfUnchecked;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
-
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.lang.reflect.Proxy;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.KeywordInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.PublishedType;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
@@ -84,26 +40,11 @@ import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterException;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.request.RequestFilter;
-import org.geowebcache.grid.BoundingBox;
-import org.geowebcache.grid.GridSet;
-import org.geowebcache.grid.GridSetBroker;
-import org.geowebcache.grid.GridSubset;
-import org.geowebcache.grid.OutsideCoverageException;
-import org.geowebcache.grid.SRS;
+import org.geowebcache.grid.*;
 import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
-import org.geowebcache.layer.ExpirationRule;
-import org.geowebcache.layer.LayerListenerList;
-import org.geowebcache.layer.MetaTile;
-import org.geowebcache.layer.ProxyLayer;
-import org.geowebcache.layer.TileJSONProvider;
-import org.geowebcache.layer.TileLayer;
-import org.geowebcache.layer.TileLayerListener;
-import org.geowebcache.layer.meta.ContactInformation;
-import org.geowebcache.layer.meta.LayerMetaInformation;
-import org.geowebcache.layer.meta.MetadataURL;
-import org.geowebcache.layer.meta.TileJSON;
-import org.geowebcache.layer.meta.VectorLayerMetadata;
+import org.geowebcache.layer.*;
+import org.geowebcache.layer.meta.*;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
 import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
@@ -115,6 +56,30 @@ import org.geowebcache.util.ServletUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.vfny.geoserver.util.ResponseUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Throwables.throwIfUnchecked;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
 /**
  * GeoServer {@link TileLayer} implementation. Delegates to {@link GeoServerTileLayerInfo} for layer
@@ -612,7 +577,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                 + Thread.currentThread().getName()
                                 + " returns cache hit for "
                                 + Arrays.toString(metaTile.getMetaGridPos()));
-                log(metaTile.getMetaGridPos(), "Got tile from cache");
+                metaTile.dispose();
             } else {
                 LOGGER.finer(
                         "--> "
@@ -624,7 +589,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 WebMap map;
                 try {
                     long requestTime = System.currentTimeMillis();
-                    log(metaTile.getMetaGridPos(), "Dispatching getmap for metatile");
 
                     // Actually fetch the metatile data
                     map = dispatchGetMap(conveyorTile, metaTile);
@@ -650,7 +614,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                         // reduces the user-experienced latency but isn't useful for seeding. In fact, it
                         // would be harmful for seeding because it makes it more difficult for an administrator
                         // to control the amount of resource usage for significant seeding jobs.
-                        System.out.println("Disabling metatiling concurrency because not a user request");
                         executor = null;
                     }
                     List<CompletableFuture<?>> completableFutures = new ArrayList<>();
@@ -733,7 +696,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 tileLock.release();
             } finally {
                 /* ****************** Release lock on metatile ******************* */
-                log(metaTile.getMetaGridPos(), "Releasing metatile lock");
                 metaTileLock.release();
             }
         }
@@ -763,7 +725,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             try {
 
                 /* ****************** Acquire lock on individual tile ******************* */
-                log(gridPosition, "Acquiring lock");
                 final Lock tileLock =
                         GWC.get()
                                 .getLockProvider()
@@ -807,7 +768,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
                     /* ****************** Release lock on individual tile ******************* */
                     tileLock.release();
-                    log(gridPosition, "Lock released");
                 }
 
             } catch (GeoWebCacheException e) {
@@ -815,12 +775,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             }
             return resource;
         };
-    }
-
-    private void log(long[] position, String message){
-        long x = position[0];
-        long y = position[1];
-        System.out.printf("[%s] [%d_%d] %s%n", Thread.currentThread().getName(), x, y, message);
     }
 
     /**

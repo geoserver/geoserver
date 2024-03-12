@@ -313,7 +313,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             metaTilingThreads = Runtime.getRuntime().availableProcessors() * 2;
         }
 
-        System.out.println("Building meta tiling executor with thread pool size of " + metaTilingThreads);
         if(metaTilingThreads == 0){
             return null;
         }

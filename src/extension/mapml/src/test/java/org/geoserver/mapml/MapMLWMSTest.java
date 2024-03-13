@@ -300,6 +300,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:3857",
                         null,
+                        "id%3D%27t0002%27;INCLUDE",
                         false);
 
         List<Link> extentLinks =
@@ -313,6 +314,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertTrue(
                 "Features link tref should contain format=text/mapml",
                 imageLinksForSingle.get(0).getTref().contains("format=text/mapml"));
+        assertTrue(
+                "Features link tref should contain CQL_FILTER=id%3D%27t0002%27",
+                imageLinksForSingle.get(0).getTref().contains("cql_filter=id='t0002'"));
 
         // now we change one of the layers to not return features
         li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
@@ -324,6 +328,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         null,
                         "EPSG:3857",
+                        null,
                         null,
                         false);
 
@@ -384,6 +389,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:3857",
                         null,
+                        null,
                         false);
 
         List<Link> extentLinksOneRaster =
@@ -426,6 +432,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         null,
                         "EPSG:3857",
+                        null,
                         null,
                         false);
 
@@ -512,6 +519,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:3857",
                         null,
+                        null,
                         false);
 
         List<Link> selfStyleLinksForMulti =
@@ -574,6 +582,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:3857",
                         null,
+                        null,
                         false);
         assertFalse(
                 "For multi-extent, the extent hidden attribute should be excluded",
@@ -589,6 +598,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:3857",
                         "BasicPolygons,",
+                        null,
                         false);
 
         assertTrue(
@@ -620,6 +630,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "scaleRange",
+                        null,
                         false);
 
         List<Input> inputs =
@@ -648,6 +659,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "scaleRangeNoMax",
+                        null,
                         false);
 
         List<Input> inputsNoMax =
@@ -679,6 +691,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "scaleRangeExtremes",
+                        null,
                         false);
 
         List<Input> inputsExtremes =
@@ -716,6 +729,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "scaleRange,",
+                        null,
                         false);
 
         List<Input> inputsMultiExtent =
@@ -748,6 +762,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "scaleRange,",
+                        null,
                         false);
 
         List<Input> inputsSingleExtent =
@@ -793,7 +808,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
     @Test
     public void testNonExistentLayer() throws Exception {
         String response =
-                getWMSAsMapMLString("nonexistent", null, null, null, "EPSG:3857", null, false);
+                getWMSAsMapMLString(
+                        "nonexistent", null, null, null, "EPSG:3857", null, null, false);
 
         assertTrue(
                 response.contains(
@@ -803,7 +819,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     @Test
     public void testNonExistentProjection() throws Exception {
         String response =
-                getWMSAsMapMLString("Polgons", null, null, null, "EPSG:9999", null, false);
+                getWMSAsMapMLString("Polgons", null, null, null, "EPSG:9999", null, null, false);
 
         assertTrue(
                 response.contains(

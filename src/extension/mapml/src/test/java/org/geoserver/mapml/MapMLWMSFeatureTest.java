@@ -102,6 +102,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                         "-180,-90,180,90",
                         "EPSG:4326",
                         null,
+                        null,
                         true);
 
         assertEquals(
@@ -142,6 +143,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "polygonFilter",
+                        null,
                         true);
 
         assertEquals(
@@ -157,6 +159,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         "polygonElseFilter",
+                        null,
                         true);
 
         assertEquals(
@@ -175,7 +178,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         kvp.put("width", "256");
         kvp.put("height", "256");
         kvp.put("BBOX", "-180,-90,180,90");
-        Mapml mapmlFeaturesCQL = getWMSAsMapML(null, kvp, null, null, null, null, true);
+        Mapml mapmlFeaturesCQL = getWMSAsMapML(null, kvp, null, null, null, null, null, true);
 
         assertEquals(
                 "SLD filters yield two features, only one should show up after the CQL filter is applied",
@@ -183,7 +186,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 mapmlFeaturesCQL.getBody().getFeatures().size());
 
         kvp.put("CQL_FILTER", "ADDRESS = '99 Minor Street'");
-        Mapml mapmlNoFeaturesCQL = getWMSAsMapML(null, kvp, null, null, null, null, true);
+        Mapml mapmlNoFeaturesCQL = getWMSAsMapML(null, kvp, null, null, null, null, null, true);
         assertEquals(
                 "SLD filters yield two features, none should show up after the CQL filter is applied",
                 0,
@@ -242,6 +245,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                         null,
                         "EPSG:4326",
                         null,
+                        null,
                         true);
 
         assertTrue(
@@ -259,7 +263,14 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         cat.save(liRaster);
         String response =
                 getWMSAsMapMLString(
-                        MockData.WORLD.getLocalPart(), null, null, null, "EPSG:3857", null, true);
+                        MockData.WORLD.getLocalPart(),
+                        null,
+                        null,
+                        null,
+                        "EPSG:3857",
+                        null,
+                        null,
+                        true);
 
         assertTrue(
                 "MapML response contains an exception due to non-vector type",

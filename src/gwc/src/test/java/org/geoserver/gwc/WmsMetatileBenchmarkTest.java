@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.servlet.ServletResponse;
 import org.ehcache.impl.internal.concurrent.ConcurrentHashMap;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -29,8 +30,6 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.ServletResponse;
 
 public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
@@ -149,7 +148,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAndNoCacheHitsState extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAndNoCacheHitsState
+                extends AbstractGwcWithConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -158,7 +158,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAndNoCacheHitsState extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAndNoCacheHitsState
+                extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -167,7 +168,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAnd50PercentCacheHitsState extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAnd50PercentCacheHitsState
+                extends AbstractGwcWithConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -176,7 +178,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAnd50PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAnd50PercentCacheHitsState
+                extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -185,7 +188,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAnd75PercentCacheHitsState extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAnd75PercentCacheHitsState
+                extends AbstractGwcWithConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -194,7 +198,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAnd75PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAnd75PercentCacheHitsState
+                extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -203,7 +208,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAnd90PercentCacheHitsState extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAnd90PercentCacheHitsState
+                extends AbstractGwcWithConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -212,7 +218,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAnd90PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAnd90PercentCacheHitsState
+                extends AbstractGwcWithoutConcurrency {
 
             public void setup() throws Exception {
                 super.setup();
@@ -231,48 +238,50 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithConcurrencyAndNoCacheHits(GwcWithConcurrencyAndNoCacheHitsState state) throws Exception {
+        public ServletResponse runWithGwcWithConcurrencyAndNoCacheHits(
+                GwcWithConcurrencyAndNoCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithoutConcurrencyAndNoCacheHits(GwcWithoutConcurrencyAndNoCacheHitsState state) throws Exception {
+        public ServletResponse runWithGwcWithoutConcurrencyAndNoCacheHits(
+                GwcWithoutConcurrencyAndNoCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithConcurrencyAnd50PercentCacheHits(GwcWithConcurrencyAnd50PercentCacheHitsState state)
-                throws Exception {
+        public ServletResponse runWithGwcWithConcurrencyAnd50PercentCacheHits(
+                GwcWithConcurrencyAnd50PercentCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithoutConcurrencyAnd50PercentCacheHits(GwcWithoutConcurrencyAnd50PercentCacheHitsState state)
-                throws Exception {
+        public ServletResponse runWithGwcWithoutConcurrencyAnd50PercentCacheHits(
+                GwcWithoutConcurrencyAnd50PercentCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithConcurrencyAnd75PercentCacheHits(GwcWithConcurrencyAnd75PercentCacheHitsState state)
-                throws Exception {
+        public ServletResponse runWithGwcWithConcurrencyAnd75PercentCacheHits(
+                GwcWithConcurrencyAnd75PercentCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithoutConcurrencyAnd75PercentCacheHits(GwcWithoutConcurrencyAnd75PercentCacheHitsState state)
-                throws Exception {
+        public ServletResponse runWithGwcWithoutConcurrencyAnd75PercentCacheHits(
+                GwcWithoutConcurrencyAnd75PercentCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithConcurrencyAnd90PercentCacheHits(GwcWithConcurrencyAnd90PercentCacheHitsState state)
-                throws Exception {
+        public ServletResponse runWithGwcWithConcurrencyAnd90PercentCacheHits(
+                GwcWithConcurrencyAnd90PercentCacheHitsState state) throws Exception {
             return run(state);
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithoutConcurrencyAnd90PercentCacheHits(GwcWithoutConcurrencyAnd90PercentCacheHitsState state)
-                throws Exception {
+        public ServletResponse runWithGwcWithoutConcurrencyAnd90PercentCacheHits(
+                GwcWithoutConcurrencyAnd90PercentCacheHitsState state) throws Exception {
             return run(state);
         }
 

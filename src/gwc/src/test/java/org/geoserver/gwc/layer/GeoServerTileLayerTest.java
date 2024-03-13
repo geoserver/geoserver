@@ -883,16 +883,17 @@ public class GeoServerTileLayerTest {
             return new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         }
 
-        public RenderedImageMap prepareFakeMap(){
+        public RenderedImageMap prepareFakeMap() {
             return prepareFakeMap(256, 256);
         }
 
-        public RenderedImageMap prepareFakeMap(int width, int height){
+        public RenderedImageMap prepareFakeMap(int width, int height) {
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             return new RenderedImageMap(new WMSMapContent(), image, "image/png");
         }
 
-        public ConveyorTile prepareConveyorTile(GeoServerTileLayer tileLayer, long[] tileIndex) throws Exception {
+        public ConveyorTile prepareConveyorTile(GeoServerTileLayer tileLayer, long[] tileIndex)
+                throws Exception {
 
             MockHttpServletRequest servletReq = new MockHttpServletRequest();
             HttpServletResponse servletResp = new MockHttpServletResponse();
@@ -923,17 +924,17 @@ public class GeoServerTileLayerTest {
             assertEquals(CacheResult.MISS, result.getCacheResult());
             assertEquals(200, result.getStatus());
 
-
             verify(result.getStorageBroker(), atLeastOnce()).get(any());
             verify(result.getStorageBroker(), times(1)).put(Mockito.any());
             verify(result.getStorageBroker(), never()).putTransient(Mockito.any());
-            verify(mockGWC, times(1)).getResponseEncoder(eq(result.getMimeType()), isA(RenderedImageMap.class));
+            verify(mockGWC, times(1))
+                    .getResponseEncoder(eq(result.getMimeType()), isA(RenderedImageMap.class));
         }
     }
 
     @Test
     public void testGetTile() throws Exception {
-        long[] tileIndex = new long[]{0, 0, 0};
+        long[] tileIndex = new long[] {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
@@ -955,15 +956,14 @@ public class GeoServerTileLayerTest {
     @Test
     public void testGetTileWarningNoSkip() throws Exception {
         // no skips setup, will cache permanently
-        long[] tileIndex = new long[]{0, 0, 0};
+        long[] tileIndex = new long[] {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
         tileLayer.getInfo().setCacheWarningSkips(Collections.emptySet());
 
         FeatureTypeInfo resource = getMockTimeFeatureType();
-        HTTPWarningAppender.addWarning(
-                DimensionWarning.defaultValue(resource, "time", new Date()));
+        HTTPWarningAppender.addWarning(DimensionWarning.defaultValue(resource, "time", new Date()));
 
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap());
@@ -974,40 +974,35 @@ public class GeoServerTileLayerTest {
     @Test
     public void testGetTileWarningMismatchedSkip() throws Exception {
         // skips on nearest, gets a warning as default, caches permanently
-        long[] tileIndex = new long[]{0, 0, 0};
+        long[] tileIndex = new long[] {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
-        tileLayer.getInfo()
-                .setCacheWarningSkips(Collections.singleton(WarningType.Nearest));
+        tileLayer.getInfo().setCacheWarningSkips(Collections.singleton(WarningType.Nearest));
 
         FeatureTypeInfo resource = getMockTimeFeatureType();
-        HTTPWarningAppender.addWarning(
-                DimensionWarning.defaultValue(resource, "time", new Date()));
+        HTTPWarningAppender.addWarning(DimensionWarning.defaultValue(resource, "time", new Date()));
 
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap());
         ConveyorTile result = tileLayer.getTile(conveyorTile);
         tester.performAssertions(result);
-
     }
 
     @Test
     public void testGetTileWarningSkip() throws Exception {
         // skips on nearest and default, gets a warning as default, no persistent cache occurs
-        long[] tileIndex = new long[]{0, 0, 0};
+        long[] tileIndex = new long[] {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
         tileLayer
                 .getInfo()
                 .setCacheWarningSkips(
-                        new HashSet<>(
-                                Arrays.asList(WarningType.Nearest, WarningType.Default)));
+                        new HashSet<>(Arrays.asList(WarningType.Nearest, WarningType.Default)));
 
         FeatureTypeInfo resource = getMockTimeFeatureType();
-        HTTPWarningAppender.addWarning(
-                DimensionWarning.defaultValue(resource, "time", new Date()));
+        HTTPWarningAppender.addWarning(DimensionWarning.defaultValue(resource, "time", new Date()));
 
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap());
@@ -1019,7 +1014,6 @@ public class GeoServerTileLayerTest {
         verify(result.getStorageBroker(), times(1)).putTransient(Mockito.any());
         verify(mockGWC, times(1))
                 .getResponseEncoder(eq(result.getMimeType()), isA(RenderedImageMap.class));
-
     }
 
     @Test
@@ -1035,10 +1029,15 @@ public class GeoServerTileLayerTest {
         resource.setNativeBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
 
         int zoomLevel = 4; // pick a zoom level that has enough tiles for at least one meta-tile
-        long[] coverage = tileLayer.getGridSubset("EPSG:4326").getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
+        long[] coverage =
+                tileLayer
+                        .getGridSubset("EPSG:4326")
+                        .getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
 
-        long[] tileIndex = new long[]{coverage[0], coverage[1], zoomLevel};
+        long[] tileIndex = new long[] {coverage[0], coverage[1], zoomLevel};
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
+        Dispatcher.REQUEST.set(new Request());
+
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap(1024, 1024));
         ConveyorTile result = tileLayer.getTile(conveyorTile);
 
@@ -1049,20 +1048,22 @@ public class GeoServerTileLayerTest {
 
         executorServiceSpy.awaitTermination(2, TimeUnit.SECONDS);
 
-        // 16 async threads: 15 for tiles and 1 to dispose of metatile (one of the tiles is performed on main thread)
-        verify(executorServiceSpy, times(16)).execute(any());
+        // 1 async threads: 1 to save the requested tile, 15 for encoding/saving additional tiles,
+        // and 1 to dispose of metatile (one of the tiles is performed on main thread)
+        verify(executorServiceSpy, times(17)).execute(any());
 
         // 16 tiles to put in storage
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
     }
 
     /**
-     * If there is a metatiling executor service configured, but a conveyor tile comes in that is missing the
-     * "servlet request" object, this is not a user-initiated requeset and is likely a seed attempt, and therefore
-     * it should ignore the executor service and encode/save all tiles from a metatile on the main thread.
+     * If there is a metatiling executor service configured, but a conveyor tile comes in that is
+     * missing the "servlet request" object, this is not a user-initiated request and is likely a
+     * seed attempt, and therefore it should ignore the executor service and encode/save all tiles
+     * from a metatile on the main thread.
      */
     @Test
-    public void testGetTileWithMetaTilingExecutorButNoServletRequest() throws Exception {
+    public void testGetTileWithMetaTilingExecutorButNoDispatcherRequest() throws Exception {
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
@@ -1074,11 +1075,15 @@ public class GeoServerTileLayerTest {
         resource.setNativeBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
 
         int zoomLevel = 4; // pick a zoom level that has enough tiles for at least one meta-tile
-        long[] coverage = tileLayer.getGridSubset("EPSG:4326").getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
+        long[] coverage =
+                tileLayer
+                        .getGridSubset("EPSG:4326")
+                        .getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
 
-        long[] tileIndex = new long[]{coverage[0], coverage[1], zoomLevel};
+        long[] tileIndex = new long[] {coverage[0], coverage[1], zoomLevel};
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
-        conveyorTile.servletReq = null; // Null out the servlet request
+
+        Dispatcher.REQUEST.remove();
 
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap(1024, 1024));
         ConveyorTile result = tileLayer.getTile(conveyorTile);
@@ -1109,9 +1114,12 @@ public class GeoServerTileLayerTest {
         resource.setNativeBoundingBox(new ReferencedEnvelope(-180, 180, -90, 90, WGS84));
 
         int zoomLevel = 4; // pick a zoom level that has enough tiles for at least one meta-tile
-        long[] coverage = tileLayer.getGridSubset("EPSG:4326").getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
+        long[] coverage =
+                tileLayer
+                        .getGridSubset("EPSG:4326")
+                        .getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
 
-        long[] tileIndex = new long[]{coverage[0], coverage[1], zoomLevel};
+        long[] tileIndex = new long[] {coverage[0], coverage[1], zoomLevel};
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap(1024, 1024));
         ConveyorTile result = tileLayer.getTile(conveyorTile);
@@ -1124,7 +1132,6 @@ public class GeoServerTileLayerTest {
         // 16 storage puts instead of the typical 1
         verify(result.getStorageBroker(), times(16)).put(Mockito.any());
     }
-
 
     /** Test expire web cache without any setup of LayerInfo resource. */
     @Test

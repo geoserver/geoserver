@@ -1,9 +1,10 @@
 package org.geoserver.security.jwtheaders;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JwtConfiguration {
+public class JwtConfiguration implements Serializable {
 
     // --- user name extraction
     // how is the username stored in the header

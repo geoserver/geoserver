@@ -731,8 +731,13 @@
       <id>jwt-headers</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>jwt-headers</artifactId>
+          <groupId>org.geoserver.community.jwt-headers</groupId>
+          <artifactId>jwt-headers-util</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.jwt-headers</groupId>
+          <artifactId>jwt-headers-gs</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

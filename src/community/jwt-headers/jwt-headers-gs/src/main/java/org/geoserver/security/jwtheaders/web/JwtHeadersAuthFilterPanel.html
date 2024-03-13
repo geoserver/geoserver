@@ -49,7 +49,7 @@
         window.addEventListener('load', function () {
             usernameFormatChanged();
             showTokenValidationChanged();
-            toggleVisible(document.getElementById('validateToken'),'validateTokenSignatureURLDiv');
+            toggleVisible(document.getElementById('validateTokenSignature'),'validateTokenSignatureURLDiv');
             toggleVisible(document.getElementById('validateTokenAgainstURL'),'validateTokenAgainstURLDiv');
             toggleVisible(document.getElementById('validateTokenAudience'),'validateTokenAudienceDiv');
 
@@ -98,7 +98,7 @@
                 <wicket:message key="showTokenValidation"></wicket:message>
             </label>
         </div>
-
+        <div id="validateTokenDiv" style="padding-top:5px;padding-left:20px">
         <div  style="padding-top:20px">
             <div style="display:flex">
                 <input class="field checkbox" id="validateTokenExpiry"
@@ -111,21 +111,21 @@
         </div>
 
 
-        <div id="validateTokenDiv" style="padding-top:20px">
-            <div style="display:flex">
+
+            <div style="display:flex;padding-top:20px">
                 <input class="field checkbox" id="validateTokenSignature" onchange="toggleVisible(this,'validateTokenSignatureURLDiv')"
                        style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="validateTokenSignature"/>
                 <label style="padding-left:5px">
                     <wicket:message key="validateTokenSignatureText"></wicket:message>
                 </label>
             </div>
-            <div id="validateTokenSignatureURLDiv">
+            <div id="validateTokenSignatureURLDiv" style="padding-left:20px;padding-top: 5px">
                 <label>
                     <wicket:message key="validateTokenSignatureURL"></wicket:message>
                 </label>
                 <input class="field text" wicket:id="validateTokenSignatureURL"/>
             </div>
-        </div>
+
 
         <div  style="padding-top:20px">
             <div style="display:flex">
@@ -135,7 +135,7 @@
                     <wicket:message key="validateTokenAgainstURL"></wicket:message>
                 </label>
             </div>
-            <div id="validateTokenAgainstURLDiv" style="display: flex">
+            <div id="validateTokenAgainstURLDiv" style="display: flex; padding-left: 20px;padding-top: 5px">
 
                 <label>
                     <wicket:message key="validateTokenAgainstURLText"></wicket:message>
@@ -163,7 +163,7 @@
                     <wicket:message key="validateTokenAudience"></wicket:message>
                 </label>
             </div>
-            <div id="validateTokenAudienceDiv" style="display: flex">
+            <div id="validateTokenAudienceDiv" style="display: flex;padding-left: 20px;padding-top: 5px">
                 <label>
                     <wicket:message key="validateTokenAudienceClaimName"></wicket:message>
                 </label>
@@ -177,7 +177,7 @@
                     <input class="field text" wicket:id="validateTokenAudienceClaimValue"/>
                 </div>
 
-
+            </div>
             </div>
         </div>
 

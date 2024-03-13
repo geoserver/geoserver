@@ -28,7 +28,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
     // used by super-class
     protected String userGroupServiceName;
 
-    protected JwtConfiguration jwtConfiguration;
+    protected JwtConfiguration jwtConfiguration = new JwtConfiguration();
 
     public GeoServerJwtHeadersFilterConfig() {
         jwtConfiguration = new JwtConfiguration();

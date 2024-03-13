@@ -21,54 +21,54 @@
   <name>JWT Headers Shared Library</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-main</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-sec-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver.web</groupId>-->
+    <!--      <artifactId>gs-web-sec-core</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-sec-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-main</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-wms</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver.web</groupId>-->
+    <!--      <artifactId>gs-web-core</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver.web</groupId>-->
+    <!--      <artifactId>gs-web-sec-core</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
 
-    <dependency>
-      <groupId>org.geoserver.security</groupId>
-      <artifactId>gs-security-tests</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver.security</groupId>-->
+    <!--      <artifactId>gs-security-tests</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--      <classifier>tests</classifier>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
 
     <dependency>
       <groupId>com.nimbusds</groupId>

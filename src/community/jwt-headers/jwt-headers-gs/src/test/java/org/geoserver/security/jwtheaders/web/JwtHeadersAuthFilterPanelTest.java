@@ -45,9 +45,10 @@ public class JwtHeadersAuthFilterPanelTest extends AbstractSecurityNamedServiceP
 
     @Test
     public void webtest1_roles() throws Exception {
-        navigateToJwtHeadersPanel("JwtHeaderFilter1");
 
-        formTester.setValue("panel:content:name", "JwtHeaderFilter1");
+        navigateToJwtHeadersPanel("JwtHeaderFilter2");
+
+        formTester.setValue("panel:content:name", "JwtHeaderFilter2");
         formTester.setValue(
                 "panel:content:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
 
@@ -55,8 +56,8 @@ public class JwtHeadersAuthFilterPanelTest extends AbstractSecurityNamedServiceP
 
         clickSave();
         tester.assertNoErrorMessage();
-        clickNamedServiceConfig("JwtHeaderFilter1");
-        tester.assertModelValue("panel:panel:form:panel:name", "JwtHeaderFilter1");
+        clickNamedServiceConfig("JwtHeaderFilter2");
+        tester.assertModelValue("panel:panel:form:panel:name", "JwtHeaderFilter2");
         tester.assertModelValue(
                 "panel:panel:form:panel:userNameHeaderAttributeName",
                 "userNameHeaderAttributeName111");

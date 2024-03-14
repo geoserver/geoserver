@@ -1643,7 +1643,7 @@
       </dependencies>
     </profile>
     <profile>
-    <id>features-autopopulate</id>
+      <id>features-autopopulate</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>

@@ -108,6 +108,8 @@ public class MapMLDocumentBuilder {
     private final List<RawLayer> layers;
     private final String proj;
     private final Optional<List<String>> styles;
+
+    private final Optional<List<String>> cqlFilter;
     private final Optional<Boolean> transparent;
     private final Optional<Object> format;
     private final GWC gwc = GWC.get();
@@ -115,6 +117,7 @@ public class MapMLDocumentBuilder {
     private final String layerTitlesCommaDelimited;
     private final GetMapRequest getMapRequest;
     private final String stylesCommaDelimited;
+    private final String cqlCommadDelimited;
 
     private String defaultStyle;
     private String layerTitle;
@@ -134,7 +137,6 @@ public class MapMLDocumentBuilder {
 
     private Input zoomInput;
 
-    private boolean useFeaturesAllLayers = true;
     private List<MapMLLayerMetadata> mapMLLayerMetadataList = new ArrayList<>();
 
     private Mapml mapml;
@@ -172,6 +174,15 @@ public class MapMLDocumentBuilder {
                         stylesCommaDelimited.isEmpty()
                                 ? null
                                 : Arrays.asList(stylesCommaDelimited.split(",", -1)));
+        this.cqlCommadDelimited =
+                getMapRequest.getRawKvp().get("cql_filter") != null
+                        ? getMapRequest.getRawKvp().get("cql_filter")
+                        : "";
+        cqlFilter =
+                Optional.ofNullable(
+                        cqlCommadDelimited.isEmpty()
+                                ? null
+                                : Arrays.asList(cqlCommadDelimited.split(";", -1)));
         this.proj = getMapRequest.getSRS();
         this.height = getMapRequest.getHeight();
         this.width = getMapRequest.getWidth();
@@ -269,6 +280,7 @@ public class MapMLDocumentBuilder {
             for (int i = 0; i < layers.size(); i++) {
                 RawLayer layer = layers.get(i);
                 String style = null;
+                String cql = null;
                 if (styles.isPresent()) {
                     try {
                         style = styles.get().get(i);
@@ -278,14 +290,23 @@ public class MapMLDocumentBuilder {
                                 "Number of styles does not match number of layers");
                     }
                 }
-                MapMLLayerMetadata mapMLLayerMetadata = layerToMapMLLayerMetadata(layer, style);
+                if (cqlFilter.isPresent()) {
+                    try {
+                        cql = cqlFilter.get().get(i);
+                    } catch (IndexOutOfBoundsException e) {
+                        // if there are more layers than cql filters
+                        throw new ServiceException(
+                                "Number of cql filters does not match number of layers");
+                    }
+                }
+                MapMLLayerMetadata mapMLLayerMetadata =
+                        layerToMapMLLayerMetadata(layer, style, cql);
                 mapMLLayerMetadataList.add(mapMLLayerMetadata);
             }
         } else {
             MapMLLayerMetadata mapMLLayerMetadata = layersToOneMapMLLayerMetadata(layers);
             mapMLLayerMetadataList.add(mapMLLayerMetadata);
         }
-        useFeaturesAllLayers = allLayersUsingFeatures(layers);
         // populate Map-wide variables using the first layer
         if (!mapMLLayerMetadataList.isEmpty()) {
             defaultStyle =
@@ -355,8 +376,15 @@ public class MapMLDocumentBuilder {
         MapMLLayerMetadata mapMLLayerMetadata = new MapMLLayerMetadata();
         mapMLLayerMetadata.setLayerMeta(new MetadataMap());
         mapMLLayerMetadata.setUseTiles(false);
+        boolean useFeatures = false;
+        if (layers.size() == 1) {
+            useFeatures =
+                    useFeatures(layers.get(0), layers.get(0).getPublishedInfo().getMetadata());
+        }
+        mapMLLayerMetadata.setUseFeatures(useFeatures);
         mapMLLayerMetadata.setLayerName(layersCommaDelimited);
         mapMLLayerMetadata.setStyleName(stylesCommaDelimited);
+        mapMLLayerMetadata.setCqlFilter(cqlCommadDelimited);
         mapMLLayerMetadata.setTimeEnabled(false);
         mapMLLayerMetadata.setElevationEnabled(false);
         mapMLLayerMetadata.setTransparent(transparent.orElse(false));
@@ -367,24 +395,6 @@ public class MapMLDocumentBuilder {
         mapMLLayerMetadata.setProjType(projType);
 
         return mapMLLayerMetadata;
-    }
-
-    /**
-     * Check if all layers in the request use features
-     *
-     * @param layers List of RawLayer objects
-     * @return boolean
-     */
-    private boolean allLayersUsingFeatures(List<RawLayer> layers) {
-        for (RawLayer layer : layers) {
-            Boolean useFeatures =
-                    layer.getPublishedInfo().getMetadata().get(MAPML_USE_FEATURES, Boolean.class);
-            Boolean isVector = (PublishedType.VECTOR == layer.getPublishedInfo().getType());
-            if (useFeatures == null || isVector == null || !useFeatures || !isVector) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -502,10 +512,11 @@ public class MapMLDocumentBuilder {
      *
      * @param layer RawLayer object
      * @param style style name
+     * @param cql CQL filter
      * @return MapMLLayerMetadata object
      * @throws ServiceException In the event of a service error.
      */
-    private MapMLLayerMetadata layerToMapMLLayerMetadata(RawLayer layer, String style)
+    private MapMLLayerMetadata layerToMapMLLayerMetadata(RawLayer layer, String style, String cql)
             throws ServiceException {
 
         // LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer.getTitle());
@@ -521,6 +532,7 @@ public class MapMLDocumentBuilder {
         ResourceInfo resourceInfo = null;
         boolean isTransparent = true;
         String styleName = null;
+        String cqlFilter = null;
         boolean tileLayerExists = false;
         if (isLayerGroup) {
             layerGroupInfo = (LayerGroupInfo) layer.getPublishedInfo();
@@ -555,13 +567,14 @@ public class MapMLDocumentBuilder {
         }
         ProjType projType = parseProjType();
         styleName = style != null ? style : "";
+        cqlFilter = cql != null ? cql : "";
         tileLayerExists =
                 gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
                         && gwc.getTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
                                         .getGridSubset(projType.value())
                                 != null;
         boolean useTiles = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_TILES, Boolean.class));
-        boolean useFeatures = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_FEATURES, Boolean.class));
+        boolean useFeatures = useFeatures(layer, layerMeta);
 
         return new MapMLLayerMetadata(
                 layerInfo,
@@ -578,7 +591,20 @@ public class MapMLDocumentBuilder {
                 styleName,
                 tileLayerExists,
                 useTiles,
-                useFeatures);
+                useFeatures,
+                cqlFilter);
+    }
+
+    /**
+     * Check if layer should be represented as a feature
+     *
+     * @param layer RawLayer
+     * @param layerMeta MetadataMap for layer
+     * @return boolean
+     */
+    private static boolean useFeatures(RawLayer layer, MetadataMap layerMeta) {
+        return (Boolean.TRUE.equals(layerMeta.get(MAPML_USE_FEATURES, Boolean.class)))
+                && (PublishedType.VECTOR == layer.getPublishedInfo().getType());
     }
 
     /**
@@ -734,6 +760,7 @@ public class MapMLDocumentBuilder {
                     styleLink.setRel(RelType.STYLE);
                     styleLink.setTitle(si.getName());
                     styleParams.put("styles", si.getName());
+                    if (cqlFilter.isPresent()) styleParams.put("cql_filter", cqlCommadDelimited);
                     styleParams.put("width", Integer.toString(width));
                     styleParams.put("height", Integer.toString(height));
                     styleParams.put("bbox", bbox);
@@ -761,6 +788,7 @@ public class MapMLDocumentBuilder {
                     styleLink.setRel(RelType.STYLE);
                     styleLink.setTitle(si.getName());
                     styleParams.put("styles", si.getName());
+                    if (cqlFilter.isPresent()) styleParams.put("cql_filter", cqlCommadDelimited);
                     styleParams.put("width", Integer.toString(width));
                     styleParams.put("height", Integer.toString(height));
                     styleParams.put("bbox", bbox);
@@ -1026,7 +1054,8 @@ public class MapMLDocumentBuilder {
 
         // query inputs
         if (mapMLLayerMetadata.isQueryable()
-                && !useFeaturesAllLayers) { // No query links for feature representations
+                && !mapMLLayerMetadata
+                        .isUseFeatures()) { // No query links for feature representations
             if (mapMLLayerMetadata.isUseTiles() && mapMLLayerMetadata.isTileLayerExists()) {
                 generateWMTSQueryClientLinks(mapMLLayerMetadata);
             } else {
@@ -1349,7 +1378,7 @@ public class MapMLDocumentBuilder {
 
         // image link
         Link imageLink = new Link();
-        if (useFeaturesAllLayers) {
+        if (mapMLLayerMetadata.isUseFeatures()) {
             imageLink.setRel(RelType.FEATURES);
         } else {
             imageLink.setRel(RelType.IMAGE);
@@ -1362,6 +1391,7 @@ public class MapMLDocumentBuilder {
         params.put("crs", projType.getCRSCode());
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("styles", mapMLLayerMetadata.getStyleName());
+        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         if (mapMLLayerMetadata.isTimeEnabled()) {
             params.put("time", "{time}");
         }
@@ -1369,7 +1399,7 @@ public class MapMLDocumentBuilder {
             params.put("elevation", "{elevation}");
         }
         params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
-        if (useFeaturesAllLayers) {
+        if (mapMLLayerMetadata.isUseFeatures()) {
             params.put("format", MAPML_MIME_TYPE);
             params.put("format_options", MAPML_FEATURE_FORMAT_OPTIONS);
         } else {
@@ -1480,6 +1510,9 @@ public class MapMLDocumentBuilder {
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("query_layers", mapMLLayerMetadata.getLayerName());
         params.put("styles", mapMLLayerMetadata.getStyleName());
+        if (mapMLLayerMetadata.getCqlFilter() != null) {
+            params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
+        }
         if (mapMLLayerMetadata.isTimeEnabled()) {
             params.put("time", "{time}");
         }
@@ -1522,6 +1555,7 @@ public class MapMLDocumentBuilder {
         String layerLabel = "";
         String layer = "";
         String styleName = "";
+        String cqlFilter = "";
         int zoom = 0;
         Double latitude = 0.0;
         Double longitude = 0.0;
@@ -1531,6 +1565,7 @@ public class MapMLDocumentBuilder {
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
             layer += mapMLLayerMetadata.getLayerName() + ",";
             styleName += mapMLLayerMetadata.getStyleName() + ",";
+            cqlFilter += mapMLLayerMetadata.getCqlFilter() + ",";
             // bbbox and layerLabel precomputed from multiple layers
             if (mapMLLayerMetadata.getBbbox() != null) {
                 layerLabel = mapMLLayerMetadata.getLayerLabel();
@@ -1564,9 +1599,13 @@ public class MapMLDocumentBuilder {
         layerLabel = layerLabel.replaceAll(",$", "");
         layer = layer.replaceAll(",$", "");
         styleName = styleName.replaceAll(",$", "");
+        cqlFilter = cqlFilter.replaceAll(",$", "");
         // if all commas, set to empty string
         if (ALL_COMMAS.matcher(styleName).matches()) {
             styleName = "";
+        }
+        if (ALL_COMMAS.matcher(cqlFilter).matches()) {
+            cqlFilter = "";
         }
         final Bounds pb =
                 new Bounds(
@@ -1632,7 +1671,8 @@ public class MapMLDocumentBuilder {
                                 height,
                                 escapeHtml4(proj),
                                 styleName,
-                                format))
+                                format,
+                                cqlFilter))
                 .append("\" checked></layer->\n")
                 .append("</mapml-viewer>\n")
                 .append("</body>\n")
@@ -1648,7 +1688,8 @@ public class MapMLDocumentBuilder {
             int width,
             String proj,
             String styleName,
-            Optional<Object> format) {
+            Optional<Object> format,
+            String cqlFilter) {
         Map<String, String> kvp = new LinkedHashMap<>();
         kvp.put("LAYERS", escapeHtml4(layer));
         kvp.put("BBOX", toCommaDelimitedBbox(projectedBbox));
@@ -1656,12 +1697,15 @@ public class MapMLDocumentBuilder {
         kvp.put("WIDTH", String.valueOf(width));
         kvp.put("SRS", escapeHtml4(proj));
         kvp.put("STYLES", escapeHtml4(styleName));
+        if (cqlFilter != null && !cqlFilter.isEmpty()) {
+            kvp.put("CQL_FILTER", cqlFilter);
+        }
         kvp.put("FORMAT", MAPML_MIME_TYPE);
-        kvp.put(
-                "format_options",
+        String formatOptions =
                 MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
                         + ":"
-                        + escapeHtml4((String) format.orElse("image/png")));
+                        + escapeHtml4((String) format.orElse("image/png"));
+        kvp.put("format_options", formatOptions);
         kvp.put("SERVICE", "WMS");
         kvp.put("REQUEST", "GetMap");
         kvp.put("VERSION", "1.3.0");
@@ -1782,6 +1826,7 @@ public class MapMLDocumentBuilder {
 
     /** MapML layer metadata */
     static class MapMLLayerMetadata {
+        private String cqlFilter;
         private boolean useFeatures;
         private LayerInfo layerInfo;
         private ReferencedEnvelope bbox;
@@ -1857,7 +1902,8 @@ public class MapMLDocumentBuilder {
                 String styleName,
                 boolean tileLayerExists,
                 boolean useTiles,
-                boolean useFeatures) {
+                boolean useFeatures,
+                String cqFilter) {
             this.layerInfo = layerInfo;
             this.bbox = bbox;
             this.isLayerGroup = isLayerGroup;
@@ -1873,6 +1919,7 @@ public class MapMLDocumentBuilder {
             this.tileLayerExists = tileLayerExists;
             this.useTiles = useTiles;
             this.useFeatures = useFeatures;
+            this.cqlFilter = cqFilter;
         }
 
         /** Constructor */
@@ -2212,6 +2259,24 @@ public class MapMLDocumentBuilder {
          */
         public void setLayerLabel(String layerLabel) {
             this.layerLabel = layerLabel;
+        }
+
+        /**
+         * get the cql filter
+         *
+         * @return String
+         */
+        public String getCqlFilter() {
+            return cqlFilter;
+        }
+
+        /**
+         * set the cql filter
+         *
+         * @param cqlFilter String
+         */
+        public void setCqlFilter(String cqlFilter) {
+            this.cqlFilter = cqlFilter;
         }
     }
 }

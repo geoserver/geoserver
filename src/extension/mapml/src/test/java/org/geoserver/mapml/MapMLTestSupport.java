@@ -25,8 +25,10 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @param name the name of the layer
      * @param kvp the key value pairs
      * @param locale the locale
+     * @param bbox the bounding box
      * @param srs the SRS
      * @param styles the styles
+     * @param cqlFilter the CQL filter
      * @return the MapML object
      * @throws Exception if an error occurs
      */
@@ -34,12 +36,15 @@ public class MapMLTestSupport extends WMSTestSupport {
             String name,
             Map kvp,
             Locale locale,
+            String bbox,
             String srs,
             String styles,
+            String cqlFilter,
             boolean isFeatureRepresentation)
             throws Exception {
         MockHttpServletRequest request =
-                getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
+                getMapMLWMSRequest(
+                        name, kvp, locale, bbox, srs, styles, cqlFilter, isFeatureRepresentation);
         MockHttpServletResponse response = dispatch(request);
         return mapml(response);
     }
@@ -48,12 +53,15 @@ public class MapMLTestSupport extends WMSTestSupport {
             String name,
             Map kvp,
             Locale locale,
+            String bbox,
             String srs,
             String styles,
+            String cqlFilter,
             boolean isFeatureRepresentation)
             throws Exception {
         MockHttpServletRequest request =
-                getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
+                getMapMLWMSRequest(
+                        name, kvp, locale, bbox, srs, styles, cqlFilter, isFeatureRepresentation);
         MockHttpServletResponse response = dispatch(request);
         return response.getContentAsString();
     }
@@ -97,8 +105,10 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @param name the name of the layer
      * @param kvp the key value pairs
      * @param locale the locale
+     * @param bbox the bounding box
      * @param srs the SRS
      * @param styles the styles
+     * @param cql the CQL filter
      * @return the request
      * @throws Exception if an error occurs
      */
@@ -106,11 +116,14 @@ public class MapMLTestSupport extends WMSTestSupport {
             String name,
             Map kvp,
             Locale locale,
+            String bbox,
             String srs,
             String styles,
+            String cql,
             boolean isFeatureRepresentation)
             throws Exception {
         String path = null;
+        cql = cql != null ? cql : "";
         MockHttpServletRequest request = null;
         String formatOptions =
                 isFeatureRepresentation
@@ -131,9 +144,12 @@ public class MapMLTestSupport extends WMSTestSupport {
                             + "&REQUEST=GetMap"
                             + "&SRS="
                             + srs
-                            + "&BBOX=0,0,1,1"
+                            + "&BBOX="
+                            + (bbox != null ? bbox : "0,0,1,1")
                             + "&WIDTH=150"
                             + "&HEIGHT=150"
+                            + "&cql_filter="
+                            + cql
                             + "&format_options="
                             + formatOptions;
             request = createRequest(path);

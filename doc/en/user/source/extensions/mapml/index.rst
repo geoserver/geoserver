@@ -41,7 +41,7 @@ If the ``Represent multi-layer requests as multiple elements`` is checked (and t
 Styles
 ------
 
-Like any WMS layer or layer group available from GeoServer, a comma-separated list of styles may be supplied in the WMS GetMap `styles` parameter.  If no style name is requested, the default style will be used for that layer.  For single-layer (or layer group) requests, the set of alternate styles is presented as an option list in the layer preview map's layer control, with the currently requested style indicated.
+Like any WMS layer or layer group available from GeoServer, a comma-separated list of styles may be supplied in the WMS GetMap `styles` parameter.  If no style name is requested, the default style will be used for that layer.  For single-layer or single-layer group requests, the set of alternate styles is presented as an option list in the layer preview map's layer control, with the currently requested style indicated.
 
 .. figure:: images/mapml_preview_multiple_styles_menu.png
 
@@ -75,7 +75,31 @@ Vector Settings
 MapML supports the serving of vector feature representations of the data.  This results in a smoother user navigation experience, smaller bandwidth requirements, and more options for dynamic styling on the client-side.
 
 **Use Features**
-  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  For multi-layer requests, all of the layers must have the feature option enabled or image-based links will be returned instead.
+  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  MapML <map-extent> element with a feature link:
+
+.. code-block:: html
+
+    <map-extent units="WGS84" label="Manhattan (NY) points of interest" checked="checked">
+      <map-input name="z" type="zoom" min="0" max="21"/>
+      <map-input name="xmin" type="location" rel="map" position="top-left" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
+      <map-input name="ymin" type="location" rel="map" position="bottom-left" axis="latitude" units="gcrs" min="40.70754683896324" max="40.719885123828675"/>
+      <map-input name="xmax" type="location" rel="map" position="top-right" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
+      <map-input name="ymax" type="location" rel="map" position="top-left" axis="latitude" units="gcrs" min="40.70754683896324" max="40.719885123828675"/>
+      <map-input name="w" type="width" min="1" max="10000"/>
+      <map-input name="h" type="height" min="1" max="10000"/>
+      <map-link tref="http://localhost:8080/geoserver/tiger/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:WGS84&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=true&amp;service=WMS&amp;layers=poi&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
+    </map-extent>
+
+WMS GetMap considerations
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, each layer/style pair that is requested via the GetMap parameters is composed into a single <map-extent>...<map-link tref="...">...</map-extent> structure as exemplified above.  
+
+If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <layer-> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
+
+.. figure:: images/mapml_wms_multi_extent.png
+
+With 'Represent multi-layer requests as multiple elements' checked, if two or more layers are requested in MapML format via the GetMap 'layers' parameter, the MapML extension serialize each layer's <map-extent> according to its "Use Features" and "Use Tiles" settings.  Note that there is currently no "Use Features" setting available for layer groups.
 
 Tile Caching
 ^^^^^^^^^^^^

@@ -598,16 +598,19 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     }
 
     /**
-     * [GEOS-11312] Test for respecting int max value as memory limit (kb) for GetLegendGraphic requests
+     * [GEOS-11312] Test for respecting int max value as memory limit (kb) for GetLegendGraphic
+     * requests
      */
     @Test
     public void testMaxMemoryLimit() throws Exception {
         setMemoryLimit(Integer.MAX_VALUE);
         String request =
-                String.format("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer=%s"
-                        + "&style="
-                        + "&format=image/png&width=20&height=20", SF_STATES_ID);
+                String.format(
+                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                                + "&layer=%s"
+                                + "&style="
+                                + "&format=image/png&width=20&height=20",
+                        SF_STATES_ID);
 
         BufferedImage image = getAsImage(request, "image/png");
         assertThat(image.getWidth() * image.getHeight() * 4, Matchers.lessThan(15 * 1024));

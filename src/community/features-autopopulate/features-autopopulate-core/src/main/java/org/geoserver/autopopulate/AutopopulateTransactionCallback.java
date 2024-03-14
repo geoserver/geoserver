@@ -69,6 +69,15 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     private static final Logger log = Logging.getLogger(AutopopulateTransactionCallback.class);
     /** The GeoServer catalog */
     private final Catalog catalog;
+
+    public Map<TemplateKey, AutopopulateTemplate> getTemplateCache() {
+        return templateCache;
+    }
+
+    public void setTemplateCache(Map<TemplateKey, AutopopulateTemplate> templateCache) {
+        this.templateCache = templateCache;
+    }
+
     /** Template cache used to avoid paying the cost of template lookup for each feature */
     Map<TemplateKey, AutopopulateTemplate> templateCache = new HashMap<>();
 
@@ -359,7 +368,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
             for (Map.Entry<String, String> entry : t.getAllProperties().entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-                source.setAttribute(key, value);
+                if (source.getProperties().stream()
+                        .anyMatch(p -> p.getName().getLocalPart().equals(key))) {
+                    source.setAttribute(key, value);
+                }
             }
         }
 

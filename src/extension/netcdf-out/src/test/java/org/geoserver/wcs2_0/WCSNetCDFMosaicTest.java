@@ -58,7 +58,7 @@ import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.DateRange;
 import org.junit.AfterClass;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import ucar.ma2.Array;
@@ -69,6 +69,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 @TestSetup(run = TestSetupFrequency.ONCE)
 public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
@@ -115,9 +116,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         NETCDF_SECTION = new Section(ranges);
     }
 
-    @Before
-    public void init() {
-
+    @BeforeClass
+    public static void init() {
+        WCSNetCDFBaseTest.init();
         // make sure CRS ordering is correct
         System.setProperty("org.geotools.referencing.forceXY", "true");
         System.setProperty("user.timezone", "GMT");
@@ -307,7 +308,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "out.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
         } finally {
             FileUtils.deleteQuietly(file);
@@ -337,7 +338,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             File file = File.createTempFile("netcdf", "out.nc", new File("./target"));
             FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-            try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
                 assertNotNull(dataset);
             }
         }
@@ -359,7 +360,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outCF.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             Variable var = dataset.findVariable(STANDARD_NAME);
             assertNotNull(var);
 
@@ -412,7 +413,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             File file = File.createTempFile("netcdf", "outCompressed.nc", new File("./target"));
             FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-            try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
                 assertNotNull(dataset);
 
                 Variable var = dataset.findVariable(STANDARD_NAME);
@@ -439,7 +440,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outPK.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             Variable var = dataset.findVariable(STANDARD_NAME);
             assertNotNull(var);
 
@@ -484,7 +485,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outCFPK.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             Variable var = dataset.findVariable(STANDARD_NAME);
             assertNotNull(var);
 
@@ -534,7 +535,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         File file = File.createTempFile("netcdf", "outNaNPK.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             Variable var = dataset.findVariable(STANDARD_NAME);
             assertNotNull(var);
 
@@ -563,7 +564,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         FileUtils.writeByteArrayToFile(file, netcdfOut);
 
         // Retrieve the GeoTransform attribute from the output NetCDF
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             String geoTransform = dataset.findGlobalAttribute("GeoTransform").getStringValue();
             dataset.close();
             assertNotNull(geoTransform);
@@ -686,7 +687,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
                 File.createTempFile(
                         "extra-variable-", "-wcs__Temperature_surface.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
             // check dimensions
             Dimension timeDim = dataset.findDimension("time");

@@ -304,6 +304,20 @@ These Java system variables can be set to enable and configure the file caching:
 
 .. note:: When enabling the file caching and setting up an ImageMosaic of NetCDFs, consider disabling the Deferred Loading from the coverage configuration so that the underlying readers get access to the NetCDF dataset and release them as soon as the read is done.
 
+MemoryMapped RandomAccessFile
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Starting from Version 2.26, GeoServer introduced a new feature: a RandomAccessFile implementation utilizing Memory Mapping. 
+This feature provides advantageous, particularly when handling large files stored on network drives. With Memory Mapping, a portion of the file is loaded into memory, thereby ensuring that read and seek operations are not impeded by Disk I/O or Network I/O latency once the file is loaded into memory.
+
+By default, memory mapping is enabled on Linux and disabled on Windows. However, users have the flexibility to explicitly control this setting by defining a Java system variable:
+
+* ``org.geotools.coverage.io.netcdf.memorymap`` : A boolean variable. Set it to true to enable memory-mapped RandomAccessFile.
+The underlying MemoryMapped byteBuffer, by default, maps the entire file into memory, up to a limit of 2GB. For larger files, the mapped portion adjusts dynamically based on read and seek operations.
+
+Users can further customize the behavior by specifying the maximum size of the buffer using another Java system variable:
+
+* ``org.geotools.coverage.io.netcdf.memorymaplimit`` : Set this variable to limit the maximum size of the memory-mapped buffer, expressed in bytes.
+
 Mosaic of NetCDF files
 ======================
 
@@ -532,3 +546,4 @@ is configured to use relative paths.
 If GeoServer was running during the migration, the mosaic store just migrated needs to be reset
 so that it reads again its configuration: go to the mosaic store, open its configuration,
 and without changing any parameter, save it again: the layers backed by the mosaic are now ready to use.
+

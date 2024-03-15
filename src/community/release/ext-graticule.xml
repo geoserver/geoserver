@@ -11,6 +11,7 @@
       <includes>
         <include>gs-graticule-*.jar</include>
         <include>gt-process-feature-*.jar</include>
+        <include>gt-grid-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

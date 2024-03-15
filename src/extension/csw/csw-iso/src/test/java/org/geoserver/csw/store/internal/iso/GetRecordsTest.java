@@ -24,6 +24,7 @@ public class GetRecordsTest extends MDTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
+
         // insert extra metadata
         ResourceInfo forestInfo = getCatalog().getLayerByName("Forests").getResource();
         forestInfo.getMetadata().put("date", "09/10/2012");

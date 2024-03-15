@@ -165,7 +165,11 @@ public class CatalogStoreMapping {
         mapping.identifier = identifier;
 
         mapping.includeEnvelope =
-                includeEnvelope && paths.contains(rd.getBoundingBoxPropertyName());
+                includeEnvelope
+                        && paths.contains(
+                                rd.getQueryablesMapping(mappingName).getBoundingBoxPropertyName());
+
+        mapping.mappingName = mappingName;
 
         return mapping;
     }

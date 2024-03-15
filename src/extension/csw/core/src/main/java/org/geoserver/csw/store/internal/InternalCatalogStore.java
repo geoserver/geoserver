@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -93,16 +95,48 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
         return result;
     }
 
+    private Query unmap(Query q, CSWUnmappingFilterVisitor unmapper) throws IOException {
+        Filter unmapped = Filter.INCLUDE;
+        // unmap filter
+        if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
+            Filter filter = q.getFilter();
+            unmapped = (Filter) filter.accept(unmapper, null);
+        }
+
+        // unmap sortby
+        SortBy[] unmappedSortBy = null;
+        if (q.getSortBy() != null && q.getSortBy().length > 0) {
+            unmappedSortBy = new SortBy[q.getSortBy().length];
+            for (int i = 0; i < q.getSortBy().length; i++) {
+                SortBy sortby = q.getSortBy()[i];
+                Expression expr = (Expression) sortby.getPropertyName().accept(unmapper, null);
+
+                if (!(expr instanceof PropertyName)) {
+                    throw new IOException(
+                            "Sorting on " + sortby.getPropertyName() + " is not supported.");
+                }
+
+                unmappedSortBy[i] = new SortByImpl((PropertyName) expr, sortby.getSortOrder());
+            }
+        }
+
+        Query result = new Query(q);
+        result.setFilter(unmapped);
+        result.setSortBy(unmappedSortBy);
+
+        return result;
+    }
+
     @Override
     public FeatureCollection<FeatureType, Feature> getRecordsInternal(
-            RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
+            RecordDescriptor rd, RecordDescriptor rdOutput, Query query, Transaction t)
             throws IOException {
 
         List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
 
         Map<String, String> interpolationProperties = new HashMap<>();
 
-        String baseUrl = (String) q.getHints().get(GetRecords.KEY_BASEURL);
+        String baseUrl = (String) query.getHints().get(GetRecords.KEY_BASEURL);
         if (baseUrl != null) {
             interpolationProperties.put(
                     "url.wfs", ResponseUtils.buildURL(baseUrl, "wfs", null, URLType.SERVICE));
@@ -117,42 +151,22 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                     "url.base", ResponseUtils.buildURL(baseUrl, null, null, URLType.SERVICE));
         }
 
-        Collection<CatalogStoreMapping> mappings = getMappings(q.getTypeName());
+        Collection<CatalogStoreMapping> mappings = getMappings(query.getTypeName());
         Collection<CatalogStoreMapping> outputMappings =
                 getMappings(rdOutput.getFeatureDescriptor().getName().getLocalPart());
 
         int startIndex = 0;
-        if (q.getStartIndex() != null) {
-            startIndex = q.getStartIndex();
+        if (query.getStartIndex() != null) {
+            startIndex = query.getStartIndex();
         }
 
         for (CatalogStoreMapping mapping : mappings) {
 
-            CSWUnmappingFilterVisitor unmapper = new CSWUnmappingFilterVisitor(mapping, rd);
-
-            Filter unmapped = Filter.INCLUDE;
-            // unmap filter
-            if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
-                Filter filter = q.getFilter();
-                unmapped = (Filter) filter.accept(unmapper, null);
-            }
-
-            // unmap sortby
-            SortBy[] unmappedSortBy = null;
-            if (q.getSortBy() != null && q.getSortBy().length > 0) {
-                unmappedSortBy = new SortBy[q.getSortBy().length];
-                for (int i = 0; i < q.getSortBy().length; i++) {
-                    SortBy sortby = q.getSortBy()[i];
-                    Expression expr = (Expression) sortby.getPropertyName().accept(unmapper, null);
-
-                    if (!(expr instanceof PropertyName)) {
-                        throw new IOException(
-                                "Sorting on " + sortby.getPropertyName() + " is not supported.");
-                    }
-
-                    unmappedSortBy[i] = new SortByImpl((PropertyName) expr, sortby.getSortOrder());
-                }
-            }
+            Query unmapped =
+                    unmap(
+                            prepareQuery(
+                                    query, rd, rd.getQueryablesMapping(mapping.getMappingName())),
+                            new CSWUnmappingFilterVisitor(mapping, rd));
 
             for (CatalogStoreMapping outputMapping : outputMappings) {
                 // we only output mappings with the same name, to avoid duplication of the results
@@ -160,16 +174,17 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
                 if (outputMapping.getMappingName().equals(mapping.getMappingName())) {
 
-                    if (q.getProperties() != null) {
-                        outputMapping = outputMapping.subMapping(q.getProperties(), rdOutput);
+                    if (unmapped.getProperties() != null) {
+                        outputMapping =
+                                outputMapping.subMapping(unmapped.getProperties(), rdOutput);
                     }
 
                     results.add(
                             new CatalogStoreFeatureCollection(
                                     startIndex,
-                                    q.getMaxFeatures(),
-                                    unmappedSortBy,
-                                    unmapped,
+                                    unmapped.getMaxFeatures(),
+                                    unmapped.getSortBy(),
+                                    unmapped.getFilter(),
                                     geoServer.getCatalog(),
                                     outputMapping,
                                     rdOutput,
@@ -187,7 +202,13 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
     @Override
     public List<PropertyName> translateToPropertyNames(RecordDescriptor rd, Name name) {
-        return rd.translateProperty(name);
+        Set<PropertyName> propertyNames = new HashSet<>();
+        for (CatalogStoreMapping mapping :
+                getMappings(rd.getFeatureDescriptor().getName().getLocalPart())) {
+            propertyNames.addAll(
+                    rd.getQueryablesMapping(mapping.getMappingName()).translateProperty(name));
+        }
+        return new ArrayList<>(propertyNames);
     }
 
     private static boolean isMappingFileForType(String fileName, String typeName) {
@@ -195,6 +216,9 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
             return false;
         }
         fileName = FilenameUtils.removeExtension(fileName);
+        if ("queryables".equals(FilenameUtils.getExtension(fileName))) {
+            return false;
+        }
         return typeName.equals(fileName) || fileName.startsWith(typeName + "-");
     }
 

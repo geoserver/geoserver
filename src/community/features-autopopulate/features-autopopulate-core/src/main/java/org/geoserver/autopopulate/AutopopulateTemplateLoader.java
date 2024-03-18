@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -25,7 +24,7 @@ import org.geoserver.platform.resource.Resources;
 public class AutopopulateTemplateLoader {
 
     /** logger */
-    private static final Logger log =
+    private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(AutopopulateTemplateLoader.class);
     /**
      * Feature type directory to load template against. Its presence is mutually exclusive with
@@ -34,24 +33,19 @@ public class AutopopulateTemplateLoader {
     protected ResourceInfo resource;
     /** GeoServer data directory */
     GeoServerDataDirectory dd;
-    /** Allows for workspace-specific lookup */
-    WorkspaceInfo workspace;
 
     /**
      * Constructs the template loader.
      *
      * @param rl The geoserver resource loader
-     * @param workspace The workspace to load the template from
      * @param resource The resource to load the template from
      */
-    public AutopopulateTemplateLoader(
-            GeoServerResourceLoader rl, WorkspaceInfo workspace, ResourceInfo resource) {
+    public AutopopulateTemplateLoader(GeoServerResourceLoader rl, ResourceInfo resource) {
         this(
                 rl == null
                         ? new GeoServerDataDirectory(
                                 GeoServerExtensions.bean(GeoServerResourceLoader.class))
                         : new GeoServerDataDirectory(rl),
-                workspace,
                 resource);
     }
 
@@ -59,13 +53,10 @@ public class AutopopulateTemplateLoader {
      * Constructs the template loader.
      *
      * @param dd The geoserver data directory
-     * @param workspace The workspace to load the template from
      * @param resource The resource to load the template from
      */
-    public AutopopulateTemplateLoader(
-            GeoServerDataDirectory dd, WorkspaceInfo workspace, ResourceInfo resource) {
+    public AutopopulateTemplateLoader(GeoServerDataDirectory dd, ResourceInfo resource) {
         this.dd = dd;
-        this.workspace = workspace;
         this.resource = resource;
     }
 
@@ -106,19 +97,19 @@ public class AutopopulateTemplateLoader {
             if (template != null) {
                 return new AutopopulateTemplate(template.getAbsolutePath());
             }
-        }
 
-        if (workspace != null) {
-            // next try relative to the workspace
-            template = Resources.file(dd.get(workspace, path));
+            if (resource.getStore() != null && resource.getStore().getWorkspace() != null) {
+                // next try relative to the workspace
+                template = Resources.file(dd.get(resource.getStore().getWorkspace(), path));
 
-            if (template == null) {
-                // try global supplementary files
-                template = Resources.file(dd.getWorkspaces(path));
-            }
+                if (template == null) {
+                    // try global supplementary files
+                    template = Resources.file(dd.getWorkspaces(path));
+                }
 
-            if (template != null) {
-                return new AutopopulateTemplate(template.getAbsolutePath());
+                if (template != null) {
+                    return new AutopopulateTemplate(template.getAbsolutePath());
+                }
             }
         }
 

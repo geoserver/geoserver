@@ -9,27 +9,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wfs.*;
-import org.geoserver.wfs.request.*;
+import org.geoserver.wfs.TransactionCallback;
+import org.geoserver.wfs.TransactionEvent;
+import org.geoserver.wfs.TransactionEventType;
+import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.WFSTransactionException;
+import org.geoserver.wfs.request.Delete;
+import org.geoserver.wfs.request.Insert;
+import org.geoserver.wfs.request.Property;
+import org.geoserver.wfs.request.Replace;
+import org.geoserver.wfs.request.TransactionElement;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
+import org.geoserver.wfs.request.Update;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
-import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 
@@ -66,7 +74,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     public static final String TRANSACTION_CUSTOMIZER_PROPERTIES =
             "transactionCustomizer.properties";
     /** logger */
-    private static final Logger log = Logging.getLogger(AutopopulateTransactionCallback.class);
+    private static final Logger LOGGER = Logging.getLogger(AutopopulateTransactionCallback.class);
     /** The GeoServer catalog */
     private final Catalog catalog;
 
@@ -83,7 +91,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
 
     public AutopopulateTransactionCallback(Catalog catalog) {
         this.catalog = catalog;
-        log.info("AutopopulateTransactionCallback initialized");
+        LOGGER.info("AutopopulateTransactionCallback initialized");
     }
 
     /**
@@ -139,7 +147,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * the other values provided in the update/insert, and will not be differentiated by
      * insert/update cases.
      *
-     * @see TransactionListener#dataStoreChange(TransactionEvent)
+     * @see TransactionCallback#beforeTransaction(TransactionRequest)
      */
     @Override
     public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
@@ -154,14 +162,14 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                 for (Object of : affectedFeatures(element)) {
                     if (of instanceof SimpleFeature) {
                         try {
-                            log.info("Updating feature: " + of);
-                            SimpleFeature transformed = dataStoreChangeInternal((SimpleFeature) of);
+                            LOGGER.info("Updating feature: " + of);
+                            SimpleFeature transformed = applyTemplate((SimpleFeature) of);
                             newFeatures.add(transformed);
                         } catch (RuntimeException | IOException e) {
                             // Do never make the transaction fail due to an
                             // AutopopulateTransactionCallback error.
                             // Yell on the logs though
-                            log.log(
+                            LOGGER.log(
                                     Level.WARNING,
                                     "Error pre computing the transaction's affected attributes",
                                     e);
@@ -169,61 +177,50 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                         }
                     }
                 }
-                ((Insert) element).setFeatures(newFeatures);
+                Insert insertElement = (Insert) element;
+                insertElement.setFeatures(newFeatures);
                 newElements.add(element);
             } else if (element instanceof Update) {
                 FeatureTypeInfo featureTypeInfo =
                         getFeatureTypeInfo(new NameImpl(element.getTypeName()));
                 try {
-                    SimpleFeatureCollection features = getTransactionFeatures((Update) element);
-                    SimpleFeatureIterator featuresIterator = features.features();
-                    while (featuresIterator.hasNext()) {
-                        SimpleFeature feature = featuresIterator.next();
-                        log.info("Updating feature: " + feature);
-                        SimpleFeature transformed = dataStoreChangeInternal(feature);
-                        List<Property> properties = ((Update) element).getUpdateProperties();
-                        for (org.geotools.api.feature.Property p : transformed.getProperties()) {
-                            if (properties.stream()
-                                    .anyMatch(
-                                            prop ->
-                                                    prop.getName()
-                                                            .getLocalPart()
-                                                            .equals(p.getName().getLocalPart()))) {
-                                properties.stream()
-                                        .filter(
-                                                prop ->
-                                                        prop.getName()
-                                                                .getLocalPart()
-                                                                .equals(p.getName().getLocalPart()))
-                                        .forEach(prop -> prop.setValue(p.getValue()));
-                            } else {
-                                Property updateProperty = ((Update) element).createProperty();
-                                updateProperty.setName(
-                                        new QName(
-                                                featureTypeInfo.getNamespace().getURI(),
-                                                p.getName().getLocalPart()));
-                                updateProperty.setValue(p.getValue());
-                                properties.add(updateProperty);
-                            }
+                    Update updateElement = (Update) element;
+                    SimpleFeature feature =
+                            getTransactionSource(updateElement).getFeatures().features().next();
+                    LOGGER.info("Updating feature: " + feature);
+                    SimpleFeature transformed = applyTemplate(feature);
+                    List<Property> properties = updateElement.getUpdateProperties();
+                    for (org.geotools.api.feature.Property p : transformed.getProperties()) {
+                        if (properties.stream().anyMatch(prop -> match(p, prop))) {
+                            properties.stream()
+                                    .filter(prop -> match(p, prop))
+                                    .forEach(prop -> prop.setValue(p.getValue()));
+                        } else {
+                            Property updateProperty = updateElement.createProperty();
+                            updateProperty.setName(
+                                    new QName(
+                                            featureTypeInfo.getNamespace().getURI(),
+                                            p.getName().getLocalPart()));
+                            updateProperty.setValue(p.getValue());
+                            properties.add(updateProperty);
                         }
-                        ((Update) element).setUpdateProperties(properties);
-                        transformed.getProperties().stream()
-                                .forEach(p -> log.info("Feature Property: " + p));
-                        ((Update) element)
-                                .getUpdateProperties().stream()
-                                        .forEach(
-                                                p ->
-                                                        log.info(
-                                                                "Update Property: "
-                                                                        + p.getName()
-                                                                        + " "
-                                                                        + p.getValue()));
                     }
+                    updateElement.setUpdateProperties(properties);
+                    transformed.getProperties().stream()
+                            .forEach(p -> LOGGER.info("Feature Property: " + p));
+                    updateElement.getUpdateProperties().stream()
+                            .forEach(
+                                    p ->
+                                            LOGGER.info(
+                                                    "Update Property: "
+                                                            + p.getName()
+                                                            + " "
+                                                            + p.getValue()));
                 } catch (IOException e) {
                     // Do never make the transaction fail due to an
                     // AutopopulateTransactionCallback error.
                     // Yell on the logs though
-                    log.log(
+                    LOGGER.log(
                             Level.WARNING,
                             "Error pre computing the transaction's affected attributes",
                             e);
@@ -239,11 +236,16 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         return request;
     }
 
+    /** Utility method to match a feature property with a property. */
+    private static boolean match(org.geotools.api.feature.Property p, Property prop) {
+        return prop.getName().getLocalPart().equals(p.getName().getLocalPart());
+    }
+
     /**
      * Get the feature type info for the given feature type.
      *
-     * @param featureType
-     * @return
+     * @param featureType the feature type
+     * @return FeatureTypeInfo the feature type info
      */
     private FeatureTypeInfo getFeatureTypeInfo(FeatureType featureType) {
         Name featureTypeName = featureType.getName();
@@ -253,8 +255,8 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     /**
      * Get the feature type info for the given feature type name.
      *
-     * @param featureTypeName
-     * @return
+     * @param featureTypeName the feature type name
+     * @return FeatureTypeInfo the feature type info
      */
     private FeatureTypeInfo getFeatureTypeInfo(Name featureTypeName) {
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
@@ -266,33 +268,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     }
 
     /**
-     * Get the features that are affected by the given update.
-     *
-     * @param update
-     * @return
-     */
-    private SimpleFeatureCollection getTransactionFeatures(Update update) throws IOException {
-        QName typeName = update.getTypeName();
-        Filter filter = update.getFilter();
-        SimpleFeatureSource source = getTransactionSource(update);
-        try {
-            List<SimpleFeature> recent = DataUtilities.list(source.getFeatures(filter));
-            List<SimpleFeature> newFeatures =
-                    recent.stream()
-                            .map(f -> prepareUpdateFeature(f, update))
-                            .collect(Collectors.toList());
-            return DataUtilities.collection(newFeatures);
-        } catch (Exception exception) {
-            throw new RuntimeException(
-                    String.format("Error getting features of type '%s'.", typeName), exception);
-        }
-    }
-
-    /**
      * Set the updated attributes for the given feature.
      *
-     * @param feature
-     * @param update
+     * @param feature the feature
+     * @param update the update
      */
     private SimpleFeature prepareUpdateFeature(SimpleFeature feature, Update update) {
         // run the update
@@ -306,8 +285,8 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     /**
      * Get the feature source for the given update.
      *
-     * @param update
-     * @return
+     * @param update the update
+     * @return SimpleFeatureSource the feature source
      */
     private SimpleFeatureSource getTransactionSource(Update update) throws IOException {
         QName typeName = update.getTypeName();
@@ -335,8 +314,8 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     /**
      * Get the list of affected features from the transaction element.
      *
-     * @param element
-     * @return
+     * @param element the transaction element
+     * @return List of affected features
      */
     private List affectedFeatures(TransactionElement element) {
         if (element instanceof Insert) {
@@ -355,14 +334,14 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * identifiers may be reliable. Essentially, they can only be relied upon in the case of a
      * spatial dbms (such as PostGIS) is being used.
      *
-     * @return
+     * @return SimpleFeature the feature to be persisted
      */
-    private SimpleFeature dataStoreChangeInternal(SimpleFeature source) throws IOException {
-        log.info("Feature: " + source.getID());
+    private SimpleFeature applyTemplate(SimpleFeature source) throws IOException {
+        LOGGER.info("Feature: " + source.getID());
 
         AutopopulateTemplate t =
                 lookupTemplate(source.getFeatureType(), TRANSACTION_CUSTOMIZER_PROPERTIES);
-        log.info("Template: " + t);
+        LOGGER.info("Template: " + t);
 
         if (t != null) {
             for (Map.Entry<String, String> entry : t.getAllProperties().entrySet()) {
@@ -388,7 +367,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         // lookup the cache first
         TemplateKey key = new TemplateKey(featureType, path);
         AutopopulateTemplate t = templateCache.get(key);
-        if (t != null) return t;
+        if (t != null && !t.needsReload()) return t;
 
         // if not found, load the template
         GeoServerResourceLoader resourceLoader =
@@ -396,8 +375,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         FeatureTypeInfo feature = catalog.getFeatureTypeByName(featureType.getTypeName());
         AutopopulateTemplateLoader templateLoader =
-                new AutopopulateTemplateLoader(
-                        resourceLoader, feature.getStore().getWorkspace(), feature);
+                new AutopopulateTemplateLoader(resourceLoader, feature);
         t = templateLoader.loadTemplate(path);
         templateCache.put(key, t);
         return t;
@@ -414,26 +392,16 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         }
 
         @Override
-        public int hashCode() {
-            final int PRIME = 31;
-            int result = 1;
-            result = PRIME * result + ((template == null) ? 0 : template.hashCode());
-            result = PRIME * result + ((type == null) ? 0 : type.hashCode());
-            return result;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TemplateKey)) return false;
+            TemplateKey that = (TemplateKey) o;
+            return Objects.equals(type, that.type) && Objects.equals(template, that.template);
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            final TemplateKey other = (TemplateKey) obj;
-            if (template == null) {
-                if (other.template != null) return false;
-            } else if (!template.equals(other.template)) return false;
-            if (type == null) {
-                return other.type == null;
-            } else return type.equals(other.type);
+        public int hashCode() {
+            return Objects.hash(type, template);
         }
     }
 }

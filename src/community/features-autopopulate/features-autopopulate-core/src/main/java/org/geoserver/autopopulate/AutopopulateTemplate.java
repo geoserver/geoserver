@@ -4,13 +4,15 @@
  */
 package org.geoserver.autopopulate;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -26,9 +28,12 @@ import org.geotools.util.logging.Logging;
  */
 public class AutopopulateTemplate {
     /** logger */
-    private static final Logger log = Logging.getLogger(AutopopulateTransactionCallback.class);
+    private static final Logger LOGGER = Logging.getLogger(AutopopulateTransactionCallback.class);
     /** The properties map */
     private final Map<String, String> propertiesMap;
+
+    /** The file watcher */
+    private final PropertyFileWatcher watcher;
 
     /**
      * Constructs the template loader.
@@ -37,6 +42,8 @@ public class AutopopulateTemplate {
      */
     public AutopopulateTemplate(String filePath) {
         this.propertiesMap = new HashMap<>();
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        this.watcher = new PropertyFileWatcher(loader.get(filePath));
         loadProperties(filePath);
     }
 
@@ -46,26 +53,32 @@ public class AutopopulateTemplate {
      * @param filePath The file path to load the properties from
      */
     private void loadProperties(String filePath) {
-        Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream(filePath)) {
-            properties.load(fis);
-            for (String key : properties.stringPropertyNames()) {
-                String expression = properties.getProperty(key);
-                propertiesMap.put(key, expression);
+        try {
+            Properties properties = this.watcher.getProperties();
+            if (properties == null) {
+                LOGGER.warning("Unable to load the properties file: " + filePath);
+                return;
+            } else {
+                for (String key : properties.stringPropertyNames()) {
+                    String expression = properties.getProperty(key);
+                    propertiesMap.put(key, expression);
 
-                // First check on the Syntax of the expression
-                try {
-                    Expression ecql = ECQL.toExpression(expression);
-                    if (ecql != null) {
-                        propertiesMap.put(key, ecql.evaluate(null, String.class));
+                    // First check on the Syntax of the expression
+                    try {
+                        Expression ecql = ECQL.toExpression(expression);
+                        if (ecql != null) {
+                            propertiesMap.put(key, ecql.evaluate(null, String.class));
+                        }
+                    } catch (CQLException e) {
+                        LOGGER.warning(
+                                "Unable to parse the following Expression" + e.getSyntaxError());
                     }
-                } catch (CQLException e) {
-                    log.warning("Unable to parse the following Expression" + e.getSyntaxError());
                 }
             }
         } catch (IOException e) {
             // Handle file loading error here
-            log.warning("Unable to load the properties file: " + e.getMessage());
+            LOGGER.severe("Unable to load the properties file: " + e.getMessage());
+            throw new RuntimeException("Unable to load the properties file: " + e.getMessage());
         }
     }
 
@@ -80,22 +93,22 @@ public class AutopopulateTemplate {
     }
 
     /**
-     * Set the property in the map.
-     *
-     * @param key The key to set the property
-     * @param value The value to set the property
-     */
-    public void setProperty(String key, String value) {
-        propertiesMap.put(key, value);
-    }
-
-    /**
      * Get all the properties from the map.
      *
      * @return The properties map
      */
     public Map<String, String> getAllProperties() {
         return propertiesMap;
+    }
+
+    /**
+     * Check if the template file has been modified on the filesystem.
+     *
+     * @return true if the template file has been modified and must be reloaded, false otherwise
+     */
+    public boolean needsReload() {
+        if (watcher != null) return watcher.isStale();
+        return true;
     }
 
     @Override

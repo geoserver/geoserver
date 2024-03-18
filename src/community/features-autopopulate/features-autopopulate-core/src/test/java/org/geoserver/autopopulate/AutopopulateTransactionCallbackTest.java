@@ -4,9 +4,20 @@
  */
 package org.geoserver.autopopulate;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +34,12 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
-import org.geoserver.wfs.request.*;
+import org.geoserver.util.IOUtils;
+import org.geoserver.wfs.request.Property;
+import org.geoserver.wfs.request.TransactionElement;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
+import org.geoserver.wfs.request.Update;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +70,19 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     @Before
     public void setUp() throws Exception {
         listener = new AutopopulateTransactionCallback(getCatalog());
-        template = new AutopopulateTemplate("src/test/resources/transactionCustomizer.properties");
+        File f =
+                new File(
+                        this.getTestData().getDataDirectoryRoot()
+                                + "\\workspaces\\cite\\cite\\NamedPlaces\\",
+                        "transactionCustomizer.properties");
+        f.deleteOnExit();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            IOUtils.copy(
+                    this.getClass()
+                            .getResourceAsStream("test-data/transactionCustomizer.properties"),
+                    fout);
+        }
+        template = new AutopopulateTemplate("cite/NamedPlaces/transactionCustomizer.properties");
         Map templateCache = mock(Map.class);
         when(templateCache.get(any())).thenReturn(template);
         listener.setTemplateCache(templateCache);
@@ -138,7 +166,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
 
         listener.beforeTransaction(request);
 
-        verify(element, times(6)).getUpdateProperties();
+        verify(element, times(2)).getUpdateProperties();
         assertTrue(properties.stream().anyMatch(p -> p.getName().getLocalPart().equals("NAME")));
         while (properties.iterator().hasNext()) {
             Property p = properties.iterator().next();

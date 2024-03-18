@@ -100,6 +100,7 @@
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
             <descriptor>release/ext-rat.xml</descriptor>
             <descriptor>release/ext-monitor-kafka.xml</descriptor>
+            <descriptor>release/ext-graticule.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
         </configuration>

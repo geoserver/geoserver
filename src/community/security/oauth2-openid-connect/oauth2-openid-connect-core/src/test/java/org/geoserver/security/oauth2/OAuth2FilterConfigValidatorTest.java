@@ -13,7 +13,10 @@
  */
 package org.geoserver.security.oauth2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -95,12 +98,13 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         assertTrue(failed);
 
         config.setRoleConverterName(null);
+
         config.setCheckTokenEndpointUrl(null);
 
         failed = false;
         try {
             validator.validateOAuth2FilterConfig(config);
-        } catch (FilterConfigException ex) {
+        } catch (OAuth2FilterConfigException ex) {
             assertEquals(
                     OpenIdConnectFilterConfigException
                             .OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED,
@@ -112,6 +116,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         assertTrue(failed);
 
         config.setCheckTokenEndpointUrl("http://localhost/callback");
+
         config.setAccessTokenUri("blabal");
         failed = false;
         try {
@@ -137,6 +142,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         assertTrue(failed);
 
         config.setAccessTokenUri("https://localhost/callback");
+
         config.setUserAuthorizationUri("blabal");
         failed = false;
         try {
@@ -149,6 +155,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         }
         assertTrue(failed);
         config.setUserAuthorizationUri("https://oauth2server/case");
+
         config.setLogoutUri("blbla");
         failed = false;
         try {

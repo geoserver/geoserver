@@ -143,6 +143,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         filterConfig.setLogoutEndpoint("/j_spring_oauth2_openid_connect_logout");
         filterConfig.setLogoutUri(authService + "/endSession");
         filterConfig.setJwkURI(authService + "/.well-known/jwks.json");
+        filterConfig.setEnforceTokenValidation(false);
         filterConfig.setScopes("openid profile email phone address");
         filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         filterConfig.setPrincipalKey("email");

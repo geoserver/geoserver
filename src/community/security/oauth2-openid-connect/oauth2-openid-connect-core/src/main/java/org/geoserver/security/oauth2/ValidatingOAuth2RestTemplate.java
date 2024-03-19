@@ -117,6 +117,13 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
                     store.readAuthentication(idToken);
                 } catch (InvalidTokenException e) {
                     LOGGER.warning("Failed to validate ID token: " + e.getMessage());
+                    if (config.isEnforceTokenValidation()) {
+                        /**
+                         * If the token is invalid, we should throw an exception to prevent the
+                         * request from being processed. This is the default behavior.
+                         */
+                        throw e;
+                    }
                 }
             }
             // TODO: the authentication just read could contain roles, could be treated as

@@ -1,5 +1,5 @@
 <assembly>
-  <id>features-templating-plugin</id>
+  <id>features-autopopulate-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -10,8 +10,6 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-features-autopopulate*.jar</include>
-        <include>jsonld-java-*.jar</include>
-        <include>gt-geojson-core*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

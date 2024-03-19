@@ -54,7 +54,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
-        testData.addStyle("polygonFilter", "polygonFilter.sld", getClass(), catalog);
+        testData.addStyle("polygonOneFilter", "polygonOneFilter.sld", getClass(), catalog);
         testData.addStyle("polygonElseFilter", "polygonElseFilter.sld", getClass(), catalog);
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
@@ -131,9 +131,9 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         LayerInfo li = cat.getLayerByName(MockData.BUILDINGS.getLocalPart());
         li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
         li.getResource().getMetadata().put(MAPML_USE_TILES, false);
-        li.getStyles().add(cat.getStyleByName("polygonFilter"));
+        li.getStyles().add(cat.getStyleByName("polygonOneFilter"));
         li.getStyles().add(cat.getStyleByName("polygonElseFilter"));
-        li.setDefaultStyle(cat.getStyleByName("polygonFilter"));
+        li.setDefaultStyle(cat.getStyleByName("polygonOneFilter"));
         cat.save(li);
         Mapml mapmlFeatures =
                 getWMSAsMapML(
@@ -142,7 +142,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                         null,
                         null,
                         "EPSG:4326",
-                        "polygonFilter",
+                        "polygonOneFilter",
                         null,
                         true);
 
@@ -207,7 +207,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         FeatureLayer layer =
                 new FeatureLayer(
                         ds.getFeatureSource("polygons"),
-                        cat.getStyleByName("polygonFilter").getStyle());
+                        cat.getStyleByName("polygonOneFilter").getStyle());
 
         WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 0, layer);
         Query q = StyleQueryUtil.getStyleQuery(layer, mapContent);

@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
@@ -37,8 +41,13 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
 
 public class MapMLFeatureUtil {
+    private static final Logger LOGGER = Logging.getLogger(MapMLFeatureUtil.class);
+    public static final String STYLE_CLASS_PREFIX = ".";
+    public static final String STYLE_CLASS_DELIMITER = " ";
+
     /**
      * Convert a feature collection to a MapML document
      *
@@ -59,7 +68,8 @@ public class MapMLFeatureUtil {
             List<Link> alternateProjections,
             int numDecimals,
             boolean forcedDecimal,
-            boolean padWithZeros)
+            boolean padWithZeros,
+            Map<String, MapMLStyle> styles)
             throws IOException {
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
             throw new ServiceException("MapML OutputFormat does not support Complex Features.");
@@ -103,7 +113,8 @@ public class MapMLFeatureUtil {
             }
             links.add(link);
         }
-
+        String style = getCSSStylesString(styles);
+        head.setStyle(style);
         String fCaptionTemplate = layerMeta.get("mapml.featureCaption", String.class);
         mapml.setHead(head);
 
@@ -120,12 +131,128 @@ public class MapMLFeatureUtil {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 // convert feature to xml
-
-                Feature f = featureBuilder.buildFeature(feature, fCaptionTemplate);
-                features.add(f);
+                if (styles != null) {
+                    List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
+                    Optional<Feature> f =
+                            featureBuilder.buildFeature(
+                                    feature, fCaptionTemplate, applicableStyles);
+                    // feature will be skipped if geometry incompatible with style symbolizer
+                    f.ifPresent(features::add);
+                } else {
+                    // WFS GETFEATURE request with no styles
+                    Optional<Feature> f =
+                            featureBuilder.buildFeature(feature, fCaptionTemplate, null);
+                    f.ifPresent(features::add);
+                }
             }
         }
         return mapml;
+    }
+
+    /**
+     * Get an empty MapML document populated with basic request related metadata
+     *
+     * @param layerInfo metadata for the feature class
+     * @param requestCRS the CRS requested by the client
+     * @return an empty MapML document
+     * @throws IOException if an error occurs while producing the MapML document
+     */
+    public static Mapml getEmptyMapML(LayerInfo layerInfo, CoordinateReferenceSystem requestCRS)
+            throws IOException {
+
+        ResourceInfo resourceInfo = layerInfo.getResource();
+        MetadataMap layerMeta = resourceInfo.getMetadata();
+
+        // build the mapML doc
+        Mapml mapml = new Mapml();
+
+        // build the head
+        HeadContent head = new HeadContent();
+        head.setTitle(layerInfo.getName());
+        List<Meta> metas = head.getMetas();
+        Meta meta = new Meta();
+        meta.setCharset("UTF-8");
+        metas.add(meta);
+        meta = new Meta();
+        meta.setHttpEquiv("Content-Type");
+        meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
+        metas.add(meta);
+        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, layerInfo);
+        metas.addAll(projectionAndExtent);
+        List<Link> links = head.getLinks();
+
+        String licenseLink = layerMeta.get("mapml.licenseLink", String.class);
+        String licenseTitle = layerMeta.get("mapml.licenseTitle", String.class);
+        if (licenseLink != null || licenseTitle != null) {
+            Link link = new Link();
+            link.setRel(RelType.LICENSE);
+            if (licenseLink != null) {
+                link.setHref(licenseLink);
+            }
+            if (licenseTitle != null) {
+                link.setTitle(licenseTitle);
+            }
+            links.add(link);
+        }
+
+        mapml.setHead(head);
+
+        // build the body
+        BodyContent body = new BodyContent();
+        mapml.setBody(body);
+
+        return mapml;
+    }
+
+    /**
+     * Get the applicable styles for a feature based on the filters
+     *
+     * @param sf the feature
+     * @param styles the styles
+     * @return the applicable styles
+     */
+    private static List<MapMLStyle> getApplicableStyles(
+            SimpleFeature sf, Map<String, MapMLStyle> styles) {
+        List<MapMLStyle> applicableStyles = new ArrayList<>();
+        for (MapMLStyle style : styles.values()) {
+            if (!style.isElseFilter()
+                    && (style.getFilter() == null || style.getFilter().evaluate(sf))) {
+                applicableStyles.add(style);
+            }
+        }
+        // if no styles are applicable, add the else filter styles
+        if (applicableStyles.isEmpty()) {
+            for (MapMLStyle style : styles.values()) {
+                if (style.isElseFilter()) {
+                    applicableStyles.add(style);
+                }
+            }
+        }
+        if (applicableStyles.isEmpty() && LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.finer("No applicable SLD styles found for feature " + sf.getID());
+        }
+        return applicableStyles;
+    }
+
+    /**
+     * Get the CSS styles as a string
+     *
+     * @param styles the styles
+     * @return the CSS styles as a string
+     */
+    private static String getCSSStylesString(Map<String, MapMLStyle> styles) {
+        if (styles == null) {
+            return null;
+        }
+        StringJoiner style = new StringJoiner(STYLE_CLASS_DELIMITER);
+        for (Map.Entry<String, MapMLStyle> entry : styles.entrySet()) {
+            MapMLStyle mapMLStyle = entry.getValue();
+            // empty properties can happen when style elements are not supported
+            if (mapMLStyle != null && !mapMLStyle.getProperties().isEmpty()) {
+                style.add(STYLE_CLASS_PREFIX + mapMLStyle.getStyleAsCSS());
+            }
+        }
+        return style.toString();
     }
 
     /**

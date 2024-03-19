@@ -82,7 +82,8 @@ public class Feature {
 
     @XmlAttribute(name = "class")
     @XmlSchemaType(name = "anySimpleType")
-    protected String clazz;
+    protected String style;
+
     //
     //    /**
     //     * Gets the value of the bboxOrImageOrGeometry property.
@@ -176,20 +177,20 @@ public class Feature {
     }
 
     /**
-     * Gets the value of the clazz property.
+     * Gets the value of the style property.
      *
      * @return possible object is {@link String }
      */
-    public String getClazz() {
-        return clazz;
+    public String getStyle() {
+        return style;
     }
 
     /**
-     * Sets the value of the clazz property.
+     * Sets the value of the style property.
      *
-     * @param value allowed object is {@link String }
+     * @param style allowed object is {@link String }
      */
-    public void setClazz(String value) {
-        this.clazz = value;
+    public void setStyle(String style) {
+        this.style = style;
     }
 }

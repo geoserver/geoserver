@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.PropertyFileWatcher;
-import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.expression.Expression;
 
 /**
  * AutopopulateTemplate class is used to load the properties from the file and store them in a map

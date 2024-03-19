@@ -31,15 +31,15 @@ import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geoserver.wfs.request.Update;
-import org.geotools.api.data.FeatureSource;
-import org.geotools.api.data.SimpleFeatureSource;
-import org.geotools.api.feature.simple.SimpleFeature;
-import org.geotools.api.feature.simple.SimpleFeatureType;
-import org.geotools.api.feature.type.FeatureType;
-import org.geotools.api.feature.type.Name;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * Listens to transactions (so far only issued by WFS), and autopopulates the feature type
@@ -190,7 +190,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                     LOGGER.info("Updating feature: " + feature);
                     SimpleFeature transformed = applyTemplate(feature);
                     List<Property> properties = updateElement.getUpdateProperties();
-                    for (org.geotools.api.feature.Property p : transformed.getProperties()) {
+                    for (org.opengis.feature.Property p : transformed.getProperties()) {
                         if (properties.stream().anyMatch(prop -> match(p, prop))) {
                             properties.stream()
                                     .filter(prop -> match(p, prop))
@@ -237,7 +237,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     }
 
     /** Utility method to match a feature property with a property. */
-    private static boolean match(org.geotools.api.feature.Property p, Property prop) {
+    private static boolean match(org.opengis.feature.Property p, Property prop) {
         return prop.getName().getLocalPart().equals(p.getName().getLocalPart());
     }
 

@@ -186,7 +186,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                 try {
                     Update updateElement = (Update) element;
                     SimpleFeature feature =
-                            getTransactionSource(updateElement).getFeatures().features().next();
+                            DataUtilities.first(getTransactionSource(updateElement).getFeatures());
                     LOGGER.info("Updating feature: " + feature);
                     SimpleFeature transformed = applyTemplate(feature);
                     List<Property> properties = updateElement.getUpdateProperties();

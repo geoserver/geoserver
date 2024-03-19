@@ -81,6 +81,7 @@
             <descriptor>release/ext-ogcapi-tiled-features.xml</descriptor>
             <descriptor>release/ext-ogcapi-tiles.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
+            <descriptor>release/ext-features-autopopulate.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
             <descriptor>release/ext-gsr.xml</descriptor>
             <descriptor>release/ext-smart-data-loader.xml</descriptor>
@@ -231,6 +232,7 @@
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>importer-jdbc</module>
+        <module>features-autopopulate</module>
         <module>features-templating</module>
         <module>gsr</module>
         <module>cog</module>
@@ -614,6 +616,12 @@
       <id>importer-jdbc</id>
       <modules>
         <module>importer-jdbc</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>features-autopopulate</id>
+      <modules>
+        <module>features-autopopulate</module>
       </modules>
     </profile>
     <profile>

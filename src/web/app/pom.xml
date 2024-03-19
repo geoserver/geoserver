@@ -1643,6 +1643,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>features-autopopulate</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-features-autopopulate-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>features-templating</id>
       <dependencies>
         <dependency>

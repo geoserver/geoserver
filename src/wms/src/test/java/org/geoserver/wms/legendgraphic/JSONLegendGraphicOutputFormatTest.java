@@ -104,22 +104,18 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     private void addToppWorkspace(SystemTestData testData) throws IOException {
         Catalog catalog = getCatalog();
         testData.addWorkspace("topp", "http://www.openplans.org/topp", catalog);
-
-        String sourceToppStyles = "/data_dir/nested_layer_groups/workspaces/topp/styles/";
         testData.addStyle(
                 catalog.getWorkspaceByName("topp"),
                 "toppsample",
-                sourceToppStyles + "toppsample.sld",
+                "topp/toppsample.sld",
                 this.getClass(),
                 catalog);
-
-        // copy redflag.svg
-        File baseDirectory = catalog.getResourceLoader().getBaseDirectory();
-        File toppStylesDir = new File(baseDirectory, "workspaces/topp/styles");
+        File toppStylesDir =
+                new File(catalog.getResourceLoader().getBaseDirectory(), "workspaces/topp/styles");
         catalog.getResourceLoader()
                 .copyFromClassPath(
-                        sourceToppStyles + "redflag.svg",
-                        new File(toppStylesDir, "redflag.svg"),
+                        "/org/geoserver/wms/map/burg02.svg",
+                        new File(toppStylesDir, "burg02.svg"),
                         this.getClass());
     }
 
@@ -2043,6 +2039,6 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         JSONArray symbolizers = rules.getJSONObject(0).getJSONArray("symbolizers");
         JSONObject point = symbolizers.getJSONObject(0).getJSONObject("Point");
         assertTrue(point.has("url"));
-        assertTrue(point.getString("url").endsWith("/geoserver/styles/topp/redflag.svg"));
+        assertTrue(point.getString("url").endsWith("/geoserver/styles/topp/burg02.svg"));
     }
 }

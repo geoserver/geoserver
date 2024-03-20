@@ -44,8 +44,7 @@ public final class IconPropertyInjector {
         this.properties = properties;
     }
 
-    private List<List<MiniRule>> injectProperties(
-            List<List<MiniRule>> ftStyles, boolean filterEmptyRules) {
+    private List<List<MiniRule>> injectProperties(List<List<MiniRule>> ftStyles) {
         List<List<MiniRule>> result = new ArrayList<>();
         for (int ftIdx = 0; ftIdx < ftStyles.size(); ftIdx++) {
             boolean empty = true;
@@ -64,7 +63,7 @@ public final class IconPropertyInjector {
                 }
                 resultRules.add(new MiniRule(null, false, resultSymbolizers));
             }
-            if (!filterEmptyRules || !empty) {
+            if (!empty) {
                 result.add(resultRules);
             }
         }
@@ -281,11 +280,6 @@ public final class IconPropertyInjector {
     }
 
     public static Style injectProperties(Style style, Map<String, String> properties) {
-        return injectProperties(style, properties, false);
-    }
-
-    public static Style injectProperties(
-            Style style, Map<String, String> properties, boolean filterEmptyRules) {
         boolean includeNonPointGraphics =
                 Boolean.valueOf(
                         properties.getOrDefault(
@@ -293,7 +287,6 @@ public final class IconPropertyInjector {
         List<List<MiniRule>> ftStyles = MiniRule.minify(style, includeNonPointGraphics);
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
         return MiniRule.makeStyle(
-                factory,
-                new IconPropertyInjector(properties).injectProperties(ftStyles, filterEmptyRules));
+                factory, new IconPropertyInjector(properties).injectProperties(ftStyles));
     }
 }

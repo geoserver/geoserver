@@ -47,7 +47,7 @@ Installation
 
       sudo chown -R USER_NAME /usr/share/geoserver/
 
-#. Start GeoServer by changing into the directory ``geoserver/bin`` and executing the ``startup.sh`` script:
+#. Start GeoServer by changing into the directory :file:`geoserver/bin` and executing the :file:`startup.sh` script:
 
    .. code-block:: bash
       

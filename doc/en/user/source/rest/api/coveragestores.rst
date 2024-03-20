@@ -167,11 +167,12 @@ This end point allows a file containing spatial data to be added (via a POST or 
 
 .. _rest_api_coveragestores_file_put:
 
-.. note::
+coveragestores file PUT
+~~~~~~~~~~~~~~~~~~~~~~~
 
-   A file can be PUT to a coverage store as a standalone or zipped archive file. Standalone files are only suitable for coverage stores that work with a single file such as GeoTIFF store. Coverage stores that work with multiple files, such as the ImageMosaic store, must be sent as a zip archive.
+A file can be PUT to a coverage store as a standalone or zipped archive file. Standalone files are only suitable for coverage stores that work with a single file such as GeoTIFF store. Coverage stores that work with multiple files, such as the ImageMosaic store, must be sent as a zip archive.
 
-   When uploading a standalone file, set the ``Content-type`` appropriately based on the file type. If you are loading a zip archive, set the ``Content-type`` to ``application/zip``.
+When uploading a standalone file, set the ``Content-type`` appropriately based on the file type. If you are loading a zip archive, set the ``Content-type`` to ``application/zip``.
 
 Exceptions
 ~~~~~~~~~~

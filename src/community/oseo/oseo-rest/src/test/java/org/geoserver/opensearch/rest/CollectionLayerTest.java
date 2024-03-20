@@ -5,6 +5,10 @@
 package org.geoserver.opensearch.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.*;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_DESCRIPTION;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_TITLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -18,9 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -38,15 +44,24 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo.PngEncoderType;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geotools.api.data.Query;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.style.ChannelSelection;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.RasterSymbolizer;
 import org.geotools.api.style.Rule;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.Symbolizer;
+import org.geotools.data.DataUtilities;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.operation.projection.MapProjection;
+import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -60,11 +75,6 @@ import org.w3c.dom.Document;
 public class CollectionLayerTest extends OSEORestTestSupport {
 
     private String resourceBase;
-
-    @Override
-    protected String getLogConfiguration() {
-        return "DEFAULT_LOGGING";
-    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -737,5 +747,39 @@ public class CollectionLayerTest extends OSEORestTestSupport {
                 "2018-01-01T00:00:00.000Z/2018-01-01T02:00:00.000Z/PT1S",
                 "//wms:Layer/wms:Dimension",
                 dom);
+
+        // add some extra info to the resource
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName("gs", "test123");
+        String title = "test title";
+        ci.setTitle(title);
+        String description = "test description";
+        ci.setDescription(description);
+        catalog.save(ci);
+
+        Feature collection = getCollectionFeature("TEST123");
+        Collection<Property> layers = collection.getProperties(LAYERS);
+        Feature layerFeature = (Feature) layers.iterator().next();
+        assertEquals(title, layerFeature.getProperty(LAYER_TITLE).getValue());
+        assertEquals(description, layerFeature.getProperty(LAYER_DESCRIPTION).getValue());
+        List<SimpleFeature> styles =
+                layerFeature.getProperties("styles").stream()
+                        .map(p -> (SimpleFeature) p)
+                        .collect(Collectors.toList());
+        assertEquals(1, styles.size());
+        assertEquals("test123", styles.get(0).getAttribute("name"));
+        assertEquals("test123", styles.get(0).getAttribute("title"));
+    }
+
+    @Nullable
+    private static Feature getCollectionFeature(String collectionId) throws IOException {
+        OpenSearchAccessProvider accessProvider =
+                applicationContext.getBean(OpenSearchAccessProvider.class);
+        Query q = new Query();
+        q.setFilter(FF.equals(FF.property(EO_IDENTIFIER), FF.literal(collectionId)));
+        FeatureCollection<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
+        Feature collection = DataUtilities.first(collections);
+        return collection;
     }
 }

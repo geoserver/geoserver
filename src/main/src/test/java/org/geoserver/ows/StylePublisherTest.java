@@ -115,50 +115,70 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testDefaultContentType() throws Exception {
+    public void testContentTypeDefault() throws Exception {
         // test that the application/octect-stream content type is used if
         // the servlet context doesn't contain a mapping for the mime type.
-        String[] path = {"styles/test.bar"};
-        MockHttpServletResponse response = request(path, null);
-        assertEquals(200, response.getStatus());
-        assertThat(
-                response.getHeader("Content-Type"),
-                startsWith(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+        doTestTypeAndDisposition(
+                "test.bar", null, MediaType.APPLICATION_OCTET_STREAM_VALUE, "inline");
     }
 
     @Test
-    public void testForceDownload() throws Exception {
-        // test that style resources with certain mime types have a Content-Disposition
+    public void testContentTypeTextXml() throws Exception {
+        // test that the text/xml content type has a Content-Disposition
         // to force the web browser to download the file
-        String[] path = {"styles/test.foo"};
-        context.addMimeType("foo", MediaType.TEXT_XML);
-        MockHttpServletResponse response1 = request(path, null);
-        assertEquals(200, response1.getStatus());
-        assertThat(response1.getHeader("Content-Type"), startsWith(MediaType.TEXT_XML_VALUE));
-        assertEquals(
-                "attachment; filename=\"test.foo\"", response1.getHeader("Content-Disposition"));
+        doTestTypeAndDisposition(
+                "test.foo", MediaType.TEXT_XML, MediaType.TEXT_XML_VALUE, "attachment");
+    }
 
-        context.addMimeType("foo", MediaType.APPLICATION_XML);
-        MockHttpServletResponse response2 = request(path, null);
-        assertEquals(200, response2.getStatus());
-        assertThat(
-                response2.getHeader("Content-Type"), startsWith(MediaType.APPLICATION_XML_VALUE));
-        assertEquals(
-                "attachment; filename=\"test.foo\"", response2.getHeader("Content-Disposition"));
+    @Test
+    public void testContentTypeApplicationXml() throws Exception {
+        // test that the application/xml content type has a Content-Disposition
+        // to force the web browser to download the file
+        doTestTypeAndDisposition(
+                "test.foo",
+                MediaType.APPLICATION_XML,
+                MediaType.APPLICATION_XML_VALUE,
+                "attachment");
+    }
 
-        context.addMimeType("foo", MediaType.TEXT_HTML);
-        MockHttpServletResponse response3 = request(path, null);
-        assertEquals(200, response3.getStatus());
-        assertThat(response3.getHeader("Content-Type"), startsWith(MediaType.TEXT_HTML_VALUE));
-        assertEquals(
-                "attachment; filename=\"test.foo\"", response3.getHeader("Content-Disposition"));
+    @Test
+    public void testContentTypeImageSvgXml() throws Exception {
+        // test that the image/svg+xml content type has a Content-Disposition
+        // to force the web browser to download the file
+        doTestTypeAndDisposition(
+                "test.foo", MediaType.valueOf("image/svg+xml"), "image/svg+xml", "attachment");
+    }
 
-        context.addMimeType("foo", MediaType.valueOf("image/svg+xml"));
-        MockHttpServletResponse response4 = request(path, null);
-        assertEquals(200, response4.getStatus());
-        assertThat(response4.getHeader("Content-Type"), startsWith("image/svg+xml"));
+    @Test
+    public void testContentTypeTextHtml() throws Exception {
+        // test that the text/html content type is replaced with text/plain
+        doTestTypeAndDisposition(
+                "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_PLAIN_VALUE, "inline");
+    }
+
+    @Test
+    public void testContentTypeApplicationJavascript() throws Exception {
+        // test that the application/javascript content type is replaced with text/plain
+        doTestTypeAndDisposition(
+                "test.foo",
+                MediaType.valueOf("application/javascript"),
+                MediaType.TEXT_PLAIN_VALUE,
+                "inline");
+    }
+
+    private void doTestTypeAndDisposition(
+            String filename, MediaType serverType, String responseType, String dispositionType)
+            throws Exception {
+        String[] path = {"styles/" + filename};
+        if (serverType != null) {
+            context.addMimeType("foo", serverType);
+        }
+        MockHttpServletResponse response = request(path, null);
+        assertEquals(200, response.getStatus());
+        assertThat(response.getHeader("Content-Type"), startsWith(responseType));
         assertEquals(
-                "attachment; filename=\"test.foo\"", response4.getHeader("Content-Disposition"));
+                dispositionType + "; filename=\"" + filename + "\"",
+                response.getHeader("Content-Disposition"));
     }
 
     @Test

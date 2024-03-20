@@ -20,7 +20,9 @@ The order of symbolizers significant, and also the order of your data.
 
 For each feature the rules are evaluated resulting in a list of symbolizers that will be used to draw that feature. The symbolizers are drawn in the order provided.
 
-Consider the following two symbolizers::
+Consider the following two symbolizers:
+
+.. code-block:: yaml
 
    symbolizers:
    - point:
@@ -33,7 +35,7 @@ Consider the following two symbolizers::
        - mark:
            shape: triangle
            fill-color: '#FF3300'
-     
+
 When drawing three points these symbolizers will be applied in order on each feature:
 
 #. Feature 1 is drawn as a square, followed by a triangle:
@@ -117,8 +119,8 @@ The following is the basic syntax common to all symbolizers. Note that the conte
 
 Where:
 
-.. include:: include/symbol.txt
+.. include:: include/symbol.rst
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
-.. include:: include/inclusion.txt
+.. include:: include/inclusion.rst

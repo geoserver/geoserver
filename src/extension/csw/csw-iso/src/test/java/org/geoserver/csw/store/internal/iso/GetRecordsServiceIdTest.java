@@ -11,29 +11,51 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 /** @author Niels Charlier */
 public class GetRecordsServiceIdTest extends MDTestSupport {
 
+    private File serviceQueryablesIgnore, originalQueryablesIgnore, queryables;
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        File root = testData.getDataDirectoryRoot();
-        File csw = new File(root, "csw");
-        File records = new File("./src/test/resources/org/geoserver/csw/store/internal/iso");
-        FileUtils.copyDirectory(records, csw);
-
         ResourceInfo forestInfo = getCatalog().getLayerByName("Forests").getResource();
         forestInfo.setLatLonBoundingBox(
                 new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
         getCatalog().save(forestInfo);
+    }
+
+    @Before
+    public void load() {
+        // copy service queryables into the data directory
+        queryables =
+                new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata.queryables.properties");
+        serviceQueryablesIgnore =
+                new File(
+                        testData.getDataDirectoryRoot(),
+                        "csw/MD_Metadata.service.queryables.properties.ignore");
+        originalQueryablesIgnore =
+                new File(
+                        testData.getDataDirectoryRoot(),
+                        "csw/MD_Metadata.original.queryables.properties.ignore");
+
+        queryables.renameTo(originalQueryablesIgnore);
+        serviceQueryablesIgnore.renameTo(queryables);
+    }
+
+    @After
+    public void restore() {
+        queryables.renameTo(serviceQueryablesIgnore);
+        originalQueryablesIgnore.renameTo(queryables);
     }
 
     @Test

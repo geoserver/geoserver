@@ -243,7 +243,7 @@ These options are specified as subelements of ``<TextSymbolizer>``.
 
 .. _labeling_priority:
 
-Priority Labeling 
+Priority Labeling
 ^^^^^^^^^^^^^^^^^
 
 The optional ``<Priority>`` element allows specifying label priority.

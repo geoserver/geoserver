@@ -27,6 +27,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -317,7 +318,7 @@ public class CoveragesService {
         if (CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
             return DEFAULT_CRS;
         }
-        String identifier = CRS.lookupIdentifier(crs, false);
+        String identifier = ResourcePool.lookupIdentifier(crs, false);
         return mapResponseSRS(identifier);
     }
 

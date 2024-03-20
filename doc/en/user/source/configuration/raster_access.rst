@@ -8,8 +8,6 @@ The Coverage Access Settings page in the Server menu in the :ref:`web_admin` pro
 .. figure:: img/raster_access.png
    
    Raster Access Settings
-   
-.. _Thread_pool_executor_settings:
 
 .. _ImageIO_settings:
 

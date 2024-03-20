@@ -25,6 +25,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -321,7 +322,7 @@ public class ImportProcess implements GeoServerProcess {
             CoordinateReferenceSystem cvCrs = coverage.getCoordinateReferenceSystem();
             if (srs != null) {
                 try {
-                    String code = CRS.lookupIdentifier(srs, true);
+                    String code = ResourcePool.lookupIdentifier(srs, true);
                     if (code == null) {
                         throw new WPSException("Could not find a EPSG code for " + srs);
                     }
@@ -588,7 +589,7 @@ public class ImportProcess implements GeoServerProcess {
     private static String getSRSFromCRS(CoordinateReferenceSystem nativeCrs) {
         String targetSRSCode;
         try {
-            String identifier = CRS.lookupIdentifier(nativeCrs, true);
+            String identifier = ResourcePool.lookupIdentifier(nativeCrs, true);
             if (identifier == null) {
                 throw new ProcessException(
                         "Could not find an EPSG identifier for data "

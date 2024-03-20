@@ -40,6 +40,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.KvpUtils.Tokenizer;
@@ -539,7 +540,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         if (crsName != null) {
             crs = decodeCRS100(crsName);
 
-            crsType.setValue(CRS.lookupIdentifier(crs, true));
+            crsType.setValue(ResourcePool.lookupIdentifier(crs, true));
 
             output.setCrs(crsType);
         }

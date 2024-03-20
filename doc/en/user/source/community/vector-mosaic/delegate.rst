@@ -8,11 +8,18 @@ The Vector Mosaic Datastore Delegate is a datastore that contains references to 
 The delegate datastore can be in any format that GeoServer supports but there are two required fields:
 
 * There must be a geometry field representing the index spatial area in either Polygon or MultiPolygon form. There are not requirements on the name of such field.
-* There should be a field called ``params``, in text format, that contains either URIs pointing at granule resources like shapefiles -or- a configuration string in .properties format. (See `Java Properties file <https://en.wikipedia.org/wiki/.properties>`_ for more details about the format).
+* There should be a field called ``params``, in text format, that contains either:
+  * The name of a store already configured in GeoServer (useful to handle few granule stores, and avoid re-creating the store at every read). The string is considered a potential name if it does not contain an equal sign (making it a candidate for property format) or a colon or having path separators (making it a candidate for URI/URL).
+  * The URI/URL pointing at granule resources like shapefiles, GeoPackage, FlatGeobuf, etc. (for simplicity).
+  * A configuration string in .properties format. (See `Java Properties file <https://en.wikipedia.org/wiki/.properties>`_ for more details about the format).
+
+In addition to that, the following fields are optional:
+* ``type`` indicates the typename to be used when querying the granule store.  Useful when the target store can contain multiple feature types. If not present, it's recommended to target a store with a single feature type (e.g., Shapefile, FlatGeoBuf).
+* ``filter`` is a (E)CQL filter that can be used to cherry pick the features to be read from the delegate store.  This is useful when the delegate store contains a large number of features, and only a subset of them are of interest for the given set of index record attributes. 
 
 Any other field beyond the two required can serve as queryable/filterable attribute, and will be used to narrow the number of potential granule vectors that are searched by a query.  The non-required parameters will be combined with the vector granule parameters to create the output feature type.
 
-An example of a delegate in property datastore format can be found `here <https://github.com/geotools/geotools/blob/main/modules/unsupported/vector-mosaic/src/test/resources/org.geotools.vectormosaic.data/mosaic_delegate.properties>`_. The ``name`` and ``type`` fields can be used to filter the granules, while ``params` contains the location of the granule file and ``geom`` its footprint. 
+An example of a delegate in property datastore format can be found `here <https://github.com/geotools/geotools/blob/main/modules/unsupported/vector-mosaic/src/test/resources/org.geotools.vectormosaic.data/mosaic_delegate.properties>`_. The ``name`` field can be used to filter the granules, while ``params` contains the location of the granule file and ``geom`` its footprint. The ``type`` field can be used for filtering, but also indicates the name of the feature type to be used when querying the granule store (in this case, happens to match the name of the target shapefile). 
 
 
 Creating an Index with ogrtindex

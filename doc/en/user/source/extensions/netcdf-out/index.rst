@@ -5,6 +5,11 @@ NetCDF Output Format
 
 This plugin adds the ability to encode WCS 2.0.1 multidimensional output as a NetCDF file using the Unidata NetCDF Java library. 
 
+.. toctree::
+   :hidden:
+   
+   nc4
+
 Getting a NetCDF output file
 ----------------------------
 

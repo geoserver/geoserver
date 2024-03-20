@@ -41,8 +41,7 @@ Here is an example style:
                   <sld:ColorMapEntry color="#C81E32" opacity="1.0" quantity="1.0E20" label="two"/>
                   <sld:ColorMapEntry color="#FFFFFF" opacity="0.0" quantity="5.0E25"/>
                 </sld:ColorMap>
-                <sld:VendorOption name="labelInFeatureInfo">add</sld:VendorOption>
-                <sld:VendorOption name="labelAttributeName">Class</sld:VendorOption>
+                <sld:VendorOption name="addAttributeTable">true</sld:VendorOption>
               </sld:RasterSymbolizer>
             </sld:Rule>
           </sld:FeatureTypeStyle>

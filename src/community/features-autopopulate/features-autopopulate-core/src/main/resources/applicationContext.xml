@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="autopopulateTransactionListener" class="org.geoserver.autopopulate.AutopopulateTransactionCallback">
+        <description>
+            Listens to WFS transactions and autopopulate the feature type with the values retrieved from the properties
+            file.
+        </description>
+        <constructor-arg ref="catalog"/>
+    </bean>
+</beans>

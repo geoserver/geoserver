@@ -21,6 +21,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -212,7 +213,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                         envelopeDimensionsMapper.getAxesNames(ci.boundingBox(), true);
 
                 // lookup CRS identifier and encode as HTTP URI
-                String identifier = CRS.lookupIdentifier(crs, false);
+                String identifier = ResourcePool.lookupIdentifier(crs, false);
                 String srsName = SrsSyntax.OGC_HTTP_URI.getSRS(identifier);
 
                 // handle axes swap for geographic crs

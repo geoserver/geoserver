@@ -485,7 +485,7 @@ Text symbology (labelling) - part 3
 
 .. _css_properties_raster:
 
-Raster symbology 
+Raster symbology
 ----------------
 
 .. list-table:: 
@@ -575,7 +575,7 @@ Shared
       * yes
     - * ``sort-by``
       * string 
-      * A comma separated list of sorting directives, "att1 A|D, att2 A|D, ..." where ``att?`` are attribute names,
+      * A comma separated list of sorting directives, ``att1 A|D, att2 A|D, ...`` where ``att?`` are attribute names,
         and ``A`` or ``D`` are an optional direction specification, 
         ``A`` is ascending, ``D`` is descending.
         Determines the loading, and thus painting, order of the features 

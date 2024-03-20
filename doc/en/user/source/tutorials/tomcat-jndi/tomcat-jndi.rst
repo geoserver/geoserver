@@ -28,7 +28,7 @@ Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/conte
         driverClassName="oracle.jdbc.driver.OracleDriver"
         url="jdbc:oracle:thin:@localhost:1521:xe"
         username="xxxxx" password="xxxxxx"
-        maxActive="20"
+        maxTotal="20"
         initialSize="0"
         minIdle="0"
         maxIdle="8"
@@ -43,6 +43,8 @@ Once that is done, the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/conte
         rollbackOnReturn="true"
         />
    </Context>
+
+.. note:: The above configuration is valid for Tomcat 8+, while Tomcat 7.x would use ``maxActive`` in place of ``maxTotal``.
 
 
 The example sets up a connection pool connecting to the local Oracle XE instance. 
@@ -113,7 +115,7 @@ Then the following code must be added to the Tomcat configuration file :file:`{T
         driverClassName="org.postgresql.Driver"
         url="jdbc:postgresql://localhost:5432/test"
         username="xxxxx" password="xxxxxx"
-        maxActive="20"
+        maxTotal="20"
         initialSize="0"
         minIdle="0"
         maxIdle="8"
@@ -160,7 +162,7 @@ Then the following code must be written in the Tomcat configuration file :file:`
         driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
         url="jdbc:sqlserver://localhost:1433;databaseName=test;user=admin;password=admin;"
         username="admin" password="admin"
-        maxActive="20"
+        maxTotal="20"
         initialSize="0"
         minIdle="0"
         maxIdle="8"

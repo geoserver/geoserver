@@ -70,6 +70,9 @@ attributes:
     derivedFrom: source
     occurrence: REPEAT
     tab: tab3
+  - key: extra-text
+    fieldType: TEXT
+    tab: tab1, tab3
 csvImports:
   - sourcetarget.csv
 

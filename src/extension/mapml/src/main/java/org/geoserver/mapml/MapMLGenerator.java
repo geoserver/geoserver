@@ -8,6 +8,10 @@ package org.geoserver.mapml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.text.StringEscapeUtils;
 import org.geoserver.mapml.xml.Feature;
@@ -18,8 +22,19 @@ import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryType;
 import org.geotools.gml.producer.CoordinateFormatter;
+import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
 import org.springframework.core.Constants;
@@ -31,7 +46,12 @@ import org.springframework.util.PropertyPlaceholderHelper;
  *     <p>methods to convert GeoServer features markup
  */
 public class MapMLGenerator {
-
+    private static final Logger LOGGER = Logging.getLogger(MapMLGenerator.class);
+    public static final double BUFFER_DISTANCE = 0.0001;
+    public static final String POLYGON = "Polygon";
+    public static final String LINE = "Line";
+    public static final String POINT = "Point";
+    public static final String CSS_STYLE_DELIMITER = " ";
     static ObjectFactory factory = new ObjectFactory();
 
     private int DEFAULT_NUM_DECIMALS = 8;
@@ -40,15 +60,19 @@ public class MapMLGenerator {
     /**
      * @param sf a feature
      * @param featureCaptionTemplate - template optionally containing ${placeholders}. Can be null.
+     * @param mapMLStyles - the applicable MapMLStyles, null if from WFS
      * @return the feature
      * @throws IOException - IOException
      */
-    public Feature buildFeature(SimpleFeature sf, String featureCaptionTemplate)
+    public Optional<Feature> buildFeature(
+            SimpleFeature sf, String featureCaptionTemplate, List<MapMLStyle> mapMLStyles)
             throws IOException {
-
+        if (mapMLStyles != null && mapMLStyles.isEmpty()) {
+            // no applicable styles, probably because of scale
+            return Optional.empty();
+        }
         Feature f = new Feature();
         f.setId(sf.getID());
-        f.setClazz(sf.getFeatureType().getTypeName());
         PropertyContent pc = new PropertyContent();
         f.setProperties(pc);
         if (featureCaptionTemplate != null && !featureCaptionTemplate.isEmpty()) {
@@ -68,10 +92,10 @@ public class MapMLGenerator {
                         + "<th role=\"columnheader\" scope=\"col\">Property value</th>"
                         + "</tr></thead><tbody>");
 
-        org.locationtech.jts.geom.Geometry g = null;
+        Geometry g = null;
         for (AttributeDescriptor attr : sf.getFeatureType().getAttributeDescriptors()) {
             if (attr.getType() instanceof GeometryType) {
-                g = (org.locationtech.jts.geom.Geometry) (sf.getAttribute(attr.getName()));
+                g = (Geometry) (sf.getAttribute(attr.getName()));
             } else {
                 String escapedName = StringEscapeUtils.escapeXml10(attr.getLocalName());
                 String value =
@@ -90,8 +114,87 @@ public class MapMLGenerator {
         }
         sb.append("</tbody></table>");
         pc.setAnyElement(sb.toString());
-        f.setGeometry(buildGeometry(g));
-        return f;
+        Optional<GeometryContent> geometryContent;
+        if (mapMLStyles == null) {
+            geometryContent = Optional.of(buildGeometry(g));
+        } else {
+            // convert geometry to type expected by the first symbolizer
+            geometryContent = convertGeometryToSymbolizerType(g, mapMLStyles.get(0));
+            String spaceDelimitedCSSClasses =
+                    mapMLStyles.stream()
+                            .map(MapMLStyle::getCSSClassName)
+                            .collect(Collectors.joining(CSS_STYLE_DELIMITER));
+            f.setStyle(spaceDelimitedCSSClasses);
+        }
+        // can't convert geometry to type expected by symbolizer
+        if (geometryContent.isEmpty()) {
+            if (LOGGER.isLoggable(Level.FINER)) {
+                LOGGER.finer(
+                        "Could not convert geometry of type"
+                                + (g != null ? g.getGeometryType() : "null")
+                                + " to symbolizer type: "
+                                + mapMLStyles.get(0).getSymbolizerType());
+            }
+            return Optional.empty();
+        }
+        f.setGeometry(geometryContent.get());
+
+        return Optional.of(f);
+    }
+
+    /**
+     * Convert a geometry type to match the symbolizer type
+     *
+     * @param g - the geometry
+     * @param mapMLStyle the applicable MapMLStyle
+     * @return the geometry content
+     * @throws IOException IOException
+     */
+    private Optional<GeometryContent> convertGeometryToSymbolizerType(
+            Geometry g, MapMLStyle mapMLStyle) throws IOException {
+        if (mapMLStyle.getSymbolizerType().startsWith(POINT)) {
+            if (g instanceof Point || g instanceof MultiPoint) {
+                return Optional.of(buildGeometry(g));
+            } else if (g instanceof LineString || g instanceof MultiLineString) {
+                LengthIndexedLine indexedLine = new LengthIndexedLine(g);
+                double length = indexedLine.getEndIndex();
+                double midpointLength = length / 2;
+                Coordinate midpoint = indexedLine.extractPoint(midpointLength);
+                if (midpoint == null) {
+                    return Optional.empty();
+                }
+                Geometry midpointGeometry = g.getFactory().createPoint(midpoint);
+                return Optional.of(buildGeometry(midpointGeometry));
+            } else if (g instanceof Polygon || g instanceof MultiPolygon) {
+                Geometry centroid = g.getCentroid();
+                return Optional.of(buildGeometry(centroid));
+            } else {
+                return Optional.empty();
+            }
+
+        } else if (mapMLStyle.getSymbolizerType().startsWith(LINE)) {
+            if (g instanceof LineString || g instanceof MultiLineString) {
+                return Optional.of(buildGeometry(g));
+            } else if (g instanceof Polygon || g instanceof MultiPolygon) {
+                Geometry boundary = g.getBoundary();
+                return Optional.of(buildGeometry(boundary));
+            } else {
+                return Optional.empty();
+            }
+        } else if (mapMLStyle.getSymbolizerType().startsWith(POLYGON)) {
+            if (g instanceof Polygon || g instanceof MultiPolygon) {
+                return Optional.of(buildGeometry(g));
+            } else if (g instanceof LineString || g instanceof MultiLineString) {
+                Geometry buffer = g.buffer(BUFFER_DISTANCE);
+                return Optional.of(buildGeometry(buffer));
+            } else if (g instanceof Point || g instanceof MultiPoint) {
+                Geometry buffer = g.buffer(BUFFER_DISTANCE);
+                return Optional.of(buildGeometry(buffer));
+            } else {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
     }
 
     private class AttributeValueResolver {
@@ -107,6 +210,7 @@ public class MapMLGenerator {
         private final SimpleFeature feature;
         private final PropertyPlaceholderHelper.PlaceholderResolver resolver =
                 (name) -> resolveAttributeNames(name);
+
         /**
          * Wrap the feature to caption via this constructor
          *
@@ -115,6 +219,7 @@ public class MapMLGenerator {
         protected AttributeValueResolver(SimpleFeature feature) {
             this.feature = feature;
         }
+
         /**
          * Take an attribute name, return the attribute. "attribute" may be a band name. Band names
          * can have spaces in them, but these seem to require that the space be replaced by an
@@ -130,6 +235,7 @@ public class MapMLGenerator {
             if (attribute == null) return nullValue;
             return feature.getAttribute(attributeName).toString();
         }
+
         /**
          * Invokes PropertyPlaceholderHelper.replacePlaceholders, which iterates over the
          * userTemplate string to replace placeholders with attribute values of the attribute of
@@ -146,79 +252,78 @@ public class MapMLGenerator {
     }
 
     /**
+     * Build a MapML geometry from a JTS geometry
+     *
      * @param g
      * @return
      * @throws IOException - IOException
      */
-    public GeometryContent buildGeometry(org.locationtech.jts.geom.Geometry g) throws IOException {
+    public GeometryContent buildGeometry(Geometry g) throws IOException {
         GeometryContent geom = new GeometryContent();
-        if (g instanceof org.locationtech.jts.geom.Point) {
-            geom.setGeometryContent(
-                    factory.createPoint(buildPoint((org.locationtech.jts.geom.Point) g)));
-        } else if (g instanceof org.locationtech.jts.geom.MultiPoint) {
-            geom.setGeometryContent(
-                    factory.createMultiPoint(
-                            buildMultiPoint((org.locationtech.jts.geom.MultiPoint) g)));
-        } else if (g instanceof org.locationtech.jts.geom.LinearRing
-                || g instanceof org.locationtech.jts.geom.LineString) {
-            geom.setGeometryContent(
-                    factory.createLineString(
-                            buildLineString((org.locationtech.jts.geom.LineString) g)));
-        } else if (g instanceof org.locationtech.jts.geom.MultiLineString) {
-            geom.setGeometryContent(
-                    factory.createMultiLineString(
-                            buildMultiLineString((org.locationtech.jts.geom.MultiLineString) g)));
-        } else if (g instanceof org.locationtech.jts.geom.Polygon) {
-            geom.setGeometryContent(
-                    factory.createPolygon(buildPolygon((org.locationtech.jts.geom.Polygon) g)));
-        } else if (g instanceof org.locationtech.jts.geom.MultiPolygon) {
-            geom.setGeometryContent(
-                    factory.createMultiPolygon(
-                            buildMultiPolygon((org.locationtech.jts.geom.MultiPolygon) g)));
-        } else if (g instanceof org.locationtech.jts.geom.GeometryCollection) {
+        if (g instanceof Point) {
+            org.geoserver.mapml.xml.Point point = buildPoint((Point) g);
+            geom.setGeometryContent(factory.createPoint(point));
+        } else if (g instanceof MultiPoint) {
+            org.geoserver.mapml.xml.MultiPoint multiPoint = buildMultiPoint((MultiPoint) g);
+            geom.setGeometryContent(factory.createMultiPoint(multiPoint));
+        } else if (g instanceof LineString) {
+            org.geoserver.mapml.xml.LineString lineString = buildLineString((LineString) g);
+            geom.setGeometryContent(factory.createLineString(lineString));
+        } else if (g instanceof MultiLineString) {
+            org.geoserver.mapml.xml.MultiLineString multiLineString =
+                    buildMultiLineString((MultiLineString) g);
+            geom.setGeometryContent(factory.createMultiLineString(multiLineString));
+        } else if (g instanceof Polygon) {
+            org.geoserver.mapml.xml.Polygon polygon = buildPolygon((Polygon) g);
+            geom.setGeometryContent(factory.createPolygon(polygon));
+        } else if (g instanceof MultiPolygon) {
+            org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon((MultiPolygon) g);
+            geom.setGeometryContent(factory.createMultiPolygon(multiPolygon));
+        } else if (g instanceof GeometryCollection) {
             geom.setGeometryContent(
                     factory.createGeometryCollection(
-                            buildGeometryCollection(
-                                    (org.locationtech.jts.geom.GeometryCollection) g)));
+                            buildGeometryCollection((GeometryCollection) g)));
         } else if (g != null) {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
 
         return geom;
     }
+
     /**
      * @param g a JTS Geometry
      * @return
      * @throws IOException - IOException
      */
-    private Object buildSpecificGeom(org.locationtech.jts.geom.Geometry g) throws IOException {
+    private Object buildSpecificGeom(Geometry g) throws IOException {
         switch (g.getGeometryType()) {
-            case "Point":
-                return buildPoint((org.locationtech.jts.geom.Point) g);
+            case POINT:
+                return buildPoint((Point) g);
             case "MultiPoint":
-                return buildMultiPoint((org.locationtech.jts.geom.MultiPoint) g);
+                return buildMultiPoint((MultiPoint) g);
             case "LinearRing":
             case "LineString":
-                return buildLineString((org.locationtech.jts.geom.LineString) g);
+                return buildLineString((LineString) g);
             case "MultiLineString":
-                return buildMultiLineString((org.locationtech.jts.geom.MultiLineString) g);
-            case "Polygon":
-                return buildPolygon((org.locationtech.jts.geom.Polygon) g);
+                return buildMultiLineString((MultiLineString) g);
+            case POLYGON:
+                return buildPolygon((Polygon) g);
             case "MultiPolygon":
-                return buildMultiPolygon((org.locationtech.jts.geom.MultiPolygon) g);
+                return buildMultiPolygon((MultiPolygon) g);
             case "GeometryCollection":
-                return buildGeometryCollection((org.locationtech.jts.geom.GeometryCollection) g);
+                return buildGeometryCollection((GeometryCollection) g);
             default:
                 throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
     }
+
     /**
      * @param gc a JTS GeometryCollection
      * @return
      * @throws IOException - IOException
      */
     private org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(
-            org.locationtech.jts.geom.GeometryCollection gc) throws IOException {
+            GeometryCollection gc) throws IOException {
         org.geoserver.mapml.xml.GeometryCollection geomColl =
                 new org.geoserver.mapml.xml.GeometryCollection();
         List<Object> geoms = geomColl.getPointOrLineStringOrPolygon();
@@ -227,25 +332,25 @@ public class MapMLGenerator {
         }
         return geomColl;
     }
+
     /**
      * @param mpg a JTS MultiPolygo
      * @return
      */
-    private org.geoserver.mapml.xml.MultiPolygon buildMultiPolygon(
-            org.locationtech.jts.geom.MultiPolygon mpg) {
+    private org.geoserver.mapml.xml.MultiPolygon buildMultiPolygon(MultiPolygon mpg) {
         org.geoserver.mapml.xml.MultiPolygon multiPoly = new org.geoserver.mapml.xml.MultiPolygon();
         List<org.geoserver.mapml.xml.Polygon> polys = multiPoly.getPolygon();
         for (int i = 0; i < mpg.getNumGeometries(); i++) {
-            polys.add(buildPolygon((org.locationtech.jts.geom.Polygon) mpg.getGeometryN(i)));
+            polys.add(buildPolygon((Polygon) mpg.getGeometryN(i)));
         }
         return multiPoly;
     }
+
     /**
      * @param ml a JTS MultiLineString
      * @return
      */
-    private org.geoserver.mapml.xml.MultiLineString buildMultiLineString(
-            org.locationtech.jts.geom.MultiLineString ml) {
+    private org.geoserver.mapml.xml.MultiLineString buildMultiLineString(MultiLineString ml) {
         org.geoserver.mapml.xml.MultiLineString multiLine =
                 new org.geoserver.mapml.xml.MultiLineString();
         List<JAXBElement<List<String>>> coordLists = multiLine.getTwoOrMoreCoordinatePairs();
@@ -253,49 +358,53 @@ public class MapMLGenerator {
             coordLists.add(
                     factory.createMultiLineStringCoordinates(
                             buildCoordinates(
-                                    ((org.locationtech.jts.geom.LineString) (ml.getGeometryN(i)))
-                                            .getCoordinateSequence(),
+                                    ((LineString) (ml.getGeometryN(i))).getCoordinateSequence(),
                                     null)));
         }
         return multiLine;
     }
+
     /**
      * @param l a JTS LineString
      * @return
      */
-    private org.geoserver.mapml.xml.LineString buildLineString(
-            org.locationtech.jts.geom.LineString l) {
+    private org.geoserver.mapml.xml.LineString buildLineString(LineString l) {
         org.geoserver.mapml.xml.LineString lineString = new org.geoserver.mapml.xml.LineString();
         List<String> lsCoords = lineString.getCoordinates();
         buildCoordinates(l.getCoordinateSequence(), lsCoords);
         return lineString;
     }
+
     /**
      * @param mp a JTS MultiPoint
      * @return
      */
-    private org.geoserver.mapml.xml.MultiPoint buildMultiPoint(
-            org.locationtech.jts.geom.MultiPoint mp) {
+    private org.geoserver.mapml.xml.MultiPoint buildMultiPoint(MultiPoint mp) {
         org.geoserver.mapml.xml.MultiPoint multiPoint = new org.geoserver.mapml.xml.MultiPoint();
         List<String> mpCoords = multiPoint.getCoordinates();
         buildCoordinates(new CoordinateArraySequence(mp.getCoordinates()), mpCoords);
         return multiPoint;
     }
+
     /**
      * @param p a JTS Point
      * @return
      */
-    private org.geoserver.mapml.xml.Point buildPoint(org.locationtech.jts.geom.Point p) {
+    private org.geoserver.mapml.xml.Point buildPoint(Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
         point.getCoordinates()
-                .add(this.formatter.format(p.getX()) + " " + this.formatter.format(p.getY()));
+                .add(
+                        this.formatter.format(p.getX())
+                                + CSS_STYLE_DELIMITER
+                                + this.formatter.format(p.getY()));
         return point;
     }
+
     /**
      * @param p a JTS Polygon
      * @return
      */
-    private org.geoserver.mapml.xml.Polygon buildPolygon(org.locationtech.jts.geom.Polygon p) {
+    private org.geoserver.mapml.xml.Polygon buildPolygon(Polygon p) {
         org.geoserver.mapml.xml.Polygon poly = new org.geoserver.mapml.xml.Polygon();
         List<JAXBElement<List<String>>> ringList = poly.getThreeOrMoreCoordinatePairs();
         List<String> coordList =
@@ -307,6 +416,7 @@ public class MapMLGenerator {
         }
         return poly;
     }
+
     /**
      * @param cs a JTS CoordinateSequence
      * @param coordList a list of coordinate strings to add to
@@ -318,10 +428,13 @@ public class MapMLGenerator {
         }
         for (int i = 0; i < cs.size(); i++) {
             coordList.add(
-                    this.formatter.format(cs.getX(i)) + " " + this.formatter.format(cs.getY(i)));
+                    this.formatter.format(cs.getX(i))
+                            + CSS_STYLE_DELIMITER
+                            + this.formatter.format(cs.getY(i)));
         }
         return coordList;
     }
+
     /** @param numDecimals */
     public void setNumDecimals(int numDecimals) {
         // make a copy of relevant object state
@@ -333,10 +446,12 @@ public class MapMLGenerator {
         this.formatter.setForcedDecimal(fd);
         this.formatter.setPadWithZeros(pad);
     }
+
     /** @param forcedDecimal */
     public void setForcedDecimal(boolean forcedDecimal) {
         this.formatter.setForcedDecimal(forcedDecimal);
     }
+
     /** @param padWithZeros */
     public void setPadWithZeros(boolean padWithZeros) {
         this.formatter.setPadWithZeros(padWithZeros);

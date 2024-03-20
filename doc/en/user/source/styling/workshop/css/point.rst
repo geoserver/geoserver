@@ -200,6 +200,30 @@ This technique was shown with the initial file:`airport.svg` CSS example.
 
    .. image:: ../style/img/point_graphic_2.png
 
+#. SVG external graphics styles can also be declared in the CSS code.
+   
+   Using the **symbol** function in the **mark** property.
+
+   The styles declarations have to icluded in the **:mark** pseudo-class.
+
+   .. code-block:: scss
+
+      /* @title red triangle with blue stroke */
+      *{
+         mark: symbol('https://www.svgrepo.com/show/488433/triangle.svg');
+         mark-mime: "image/svg";
+         mark-size: 25;
+         :mark {
+            fill: #ff3300;
+            stroke: blue;
+            stroke-width: 5px;
+         }
+      }
+
+#. Will result in a modified style for an external SVG graphic resource.
+
+   .. image:: ../style/img/point_graphic_3.png 
+
 Label
 -----
 
@@ -551,28 +575,24 @@ Dynamic Styling
 Bonus
 -----
 
-.. only:: instructor
+.. admonition:: Instructor Notes 
 
-   .. admonition:: Instructor Notes 
+   The exercise section does not review the examples above, instead it explores the use of: 
 
-      The exercise section does not review the examples above, instead it explores the use of: 
-
-      * scale and attribute selectors
-      * recode to map from attribute to symbol
-      * interpolate to change size by population
+   * scale and attribute selectors
+   * recode to map from attribute to symbol
+   * interpolate to change size by population
 
 .. _css.point.q1:
 
 Challenge Geometry Location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-.. only:: instructor
-  
-   .. admonition:: Instructor Notes 
+.. admonition:: Instructor Notes 
 
-      As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
- 
-      The use of selectors using the roads **type** attribute provides this opportunity.
+   As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
+
+   The use of selectors using the roads **type** attribute provides this opportunity.
 
 #. The **mark** property can be used to render any geometry content.
 

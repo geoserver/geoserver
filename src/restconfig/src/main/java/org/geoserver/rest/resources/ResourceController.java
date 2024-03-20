@@ -134,10 +134,18 @@ public class ResourceController extends RestBaseController {
             case RESOURCE:
                 // set the mime if known by the servlet container, otherwise default to
                 // application/octet-stream to mitigate potential cross-site scripting
-                return Optional.ofNullable(request.getServletContext())
-                        .map(sc -> sc.getMimeType(resource.name()))
-                        .map(MediaType::valueOf)
-                        .orElse(MediaType.APPLICATION_OCTET_STREAM);
+                MediaType mediaType =
+                        Optional.ofNullable(request.getServletContext())
+                                .map(sc -> sc.getMimeType(resource.name()))
+                                .map(MediaType::valueOf)
+                                .orElse(MediaType.APPLICATION_OCTET_STREAM);
+                String mimeType = mediaType.toString().toLowerCase();
+                // force using the static web files directory for html/javascript files to mitigate
+                // stored XSS vulnerabilities
+                if (mimeType.contains("html") || mimeType.contains("javascript")) {
+                    return MediaType.TEXT_PLAIN;
+                }
+                return mediaType;
             default:
                 throw new ResourceNotFoundException("Undefined resource path.");
         }

@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
-import org.geotools.api.feature.simple.SimpleFeature;
 
 public class CollectionLayer {
 
@@ -153,7 +152,7 @@ public class CollectionLayer {
                 feature.getProperties(org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS);
         if (layers != null) {
             for (Property p : layers) {
-                SimpleFeature lf = (SimpleFeature) p;
+                Feature lf = (Feature) p;
                 CollectionLayer layer = new CollectionLayer();
                 layer.setWorkspace((String) getAttribute(lf, "workspace"));
                 layer.setLayer((String) getAttribute(lf, "layer"));

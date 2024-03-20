@@ -124,7 +124,7 @@ public class FileSystemResourceStore implements ResourceStore {
     public boolean remove(String path) {
         path = Paths.valid(path);
 
-        File file = Paths.toFile(baseDirectory, path);
+        File file = new File(baseDirectory, path);
 
         return Files.delete(file);
     }
@@ -134,8 +134,8 @@ public class FileSystemResourceStore implements ResourceStore {
         path = Paths.valid(path);
         target = Paths.valid(target);
 
-        File file = Paths.toFile(baseDirectory, path);
-        File dest = Paths.toFile(baseDirectory, target);
+        File file = new File(baseDirectory, path);
+        File dest = new File(baseDirectory, target);
 
         if (!file.exists() && !dest.exists()) {
             return true; // moving an undefined resource
@@ -170,8 +170,8 @@ public class FileSystemResourceStore implements ResourceStore {
         File file;
 
         public FileSystemResource(String path) {
-            this.path = path;
-            this.file = Paths.toFile(baseDirectory, path);
+            this.file = new File(baseDirectory, path);
+            this.path = Paths.convert(baseDirectory, file);
         }
 
         @Override
@@ -186,7 +186,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public Lock lock() {
-            return lockProvider.acquire(path);
+            return lockProvider.acquire(path());
         }
 
         @Override
@@ -452,7 +452,7 @@ public class FileSystemResourceStore implements ResourceStore {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((path == null) ? 0 : path.hashCode());
+            result = prime * result + path.hashCode();
             return result;
         }
 
@@ -462,9 +462,7 @@ public class FileSystemResourceStore implements ResourceStore {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
             FileSystemResource other = (FileSystemResource) obj;
-            if (path == null) {
-                if (other.path != null) return false;
-            } else if (!path.equals(other.path)) return false;
+            if (!file.equals(other.file)) return false;
             return true;
         }
 
@@ -485,7 +483,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean renameTo(Resource dest) {
-            if (dest.parent().path().contains(path())) {
+            if (dest.parent().path().contains(path)) {
                 LOGGER.log(Level.FINE, "Cannot rename a resource to a descendant of itself");
                 return false;
             }
@@ -559,7 +557,7 @@ public class FileSystemResourceStore implements ResourceStore {
                             v ->
                                     v == null
                                             ? new FileSystemWatcher(
-                                                    path -> Paths.toFile(baseDirectory, path))
+                                                    path -> new File(baseDirectory, path))
                                             : v);
         }
         return instance;

@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.25-SNAPSHOT</version>
+    <version>2.26-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -81,6 +81,7 @@
             <descriptor>release/ext-ogcapi-tiled-features.xml</descriptor>
             <descriptor>release/ext-ogcapi-tiles.xml</descriptor>
             <descriptor>release/ext-importer-jdbc.xml</descriptor>
+            <descriptor>release/ext-features-autopopulate.xml</descriptor>
             <descriptor>release/ext-features-templating.xml</descriptor>
             <descriptor>release/ext-gsr.xml</descriptor>
             <descriptor>release/ext-smart-data-loader.xml</descriptor>
@@ -99,6 +100,7 @@
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
             <descriptor>release/ext-rat.xml</descriptor>
             <descriptor>release/ext-monitor-kafka.xml</descriptor>
+            <descriptor>release/ext-graticule.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
         </configuration>
@@ -217,6 +219,7 @@
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>gwc-sqlite</module>
+        <module>jwt-headers</module>
         <module>security</module>
         <module>notification</module>
         <module>notification-common</module>
@@ -229,6 +232,7 @@
         <module>web-ogr</module>
         <module>ogcapi</module>
         <module>importer-jdbc</module>
+        <module>features-autopopulate</module>
         <module>features-templating</module>
         <module>gsr</module>
         <module>cog</module>
@@ -462,6 +466,14 @@
         <module>gwc-sqlite</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>jwt-headers</id>
+      <modules>
+        <module>jwt-headers</module>
+      </modules>
+    </profile>
+
     <profile>
       <id>oauth2-google</id>
       <modules>
@@ -604,6 +616,12 @@
       <id>importer-jdbc</id>
       <modules>
         <module>importer-jdbc</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>features-autopopulate</id>
+      <modules>
+        <module>features-autopopulate</module>
       </modules>
     </profile>
     <profile>

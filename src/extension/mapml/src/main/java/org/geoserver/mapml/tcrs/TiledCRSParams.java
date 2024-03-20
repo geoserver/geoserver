@@ -61,4 +61,13 @@ public class TiledCRSParams {
     public Point getOrigin() {
         return origin;
     }
+
+    /**
+     * Returns the MapML full CRS name for these params
+     *
+     * @return
+     */
+    public String getSRSName() {
+        return TiledCRSFactory.AUTHORITY + ":" + name;
+    }
 }

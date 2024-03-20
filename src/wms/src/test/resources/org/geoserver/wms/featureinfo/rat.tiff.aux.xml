@@ -1,0 +1,70 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>Elevation</Description>
+    <UnitType>m</UnitType>
+    <GDALRasterAttributeTable tableType="thematic">
+      <FieldDefn index="0">
+        <Name>con_min</Name>
+        <Type>1</Type>
+        <Usage>3</Usage>
+      </FieldDefn>
+      <FieldDefn index="1">
+        <Name>con_max</Name>
+        <Type>1</Type>
+        <Usage>4</Usage>
+      </FieldDefn>
+      <FieldDefn index="2">
+        <Name>test</Name>
+        <Type>2</Type>
+        <Usage>0</Usage>
+      </FieldDefn>
+      <Row index="0">
+        <F>1.000000023841858</F>
+        <F>1.200000023841858</F>
+        <F>green</F>
+      </Row>
+      <Row index="1">
+        <F>1.4</F>
+        <F>1.6</F>
+        <F>white</F>
+      </Row>
+      <Row index="2">
+        <F>2.4</F>
+        <F>2.6</F>
+        <F>gold</F>
+      </Row>
+      <Row index="3">
+        <F>5.099999809265137</F>
+        <F>5.299999809265136</F>
+        <F>blue</F>
+      </Row>
+      <Row index="4">
+        <F>7.200000190734864</F>
+        <F>7.400000190734863</F>
+        <F>red</F>
+      </Row>
+      <Row index="5">
+        <F>9.000000381469727</F>
+        <F>9.200000381469726</F>
+        <F>orange</F>
+      </Row>
+      <Row index="6">
+        <F>11.00000038146973</F>
+        <F>11.20000038146973</F>
+        <F>black</F>
+      </Row>
+      <Row index="7">
+        <F>12.09999980926514</F>
+        <F>12.29999980926514</F>
+        <F>purple</F>
+      </Row>
+    </GDALRasterAttributeTable>
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">12.199999809265</MDI>
+      <MDI key="STATISTICS_MEAN">6.2500000745058</MDI>
+      <MDI key="STATISTICS_MINIMUM">1.1000000238419</MDI>
+      <MDI key="STATISTICS_STDDEV">4.0681691852786</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

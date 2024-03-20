@@ -5,11 +5,14 @@
 package org.geoserver.opensearch.eo.store;
 
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.COLLECTION_PROPERTY_NAME;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -22,16 +25,17 @@ import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.api.feature.Attribute;
 import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.Property;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
-import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
 
@@ -100,29 +104,18 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
             result.getJoins().add(join);
         }
 
-        if (addJoins
-                && hasOutputProperty(query, OpenSearchAccess.COLLECTION_PROPERTY_NAME, false)) {
-            Filter filter =
-                    FF.equal(
-                            FF.property("eoParentIdentifier"),
-                            FF.property("collection.eoIdentifier"),
-                            true);
-            Join join = new Join("collection", filter);
-            join.setAlias("collection");
-            result.getJoins().add(join);
-        }
-
         return result;
     }
 
     @Override
-    protected void mapPropertiesToComplex(ComplexFeatureBuilder builder, SimpleFeature fi) {
+    protected void mapPropertiesToComplex(
+            ComplexFeatureBuilder builder, SimpleFeature fi, Map<String, Object> mapperState) {
         // JSONB Keys are Unsorted, so we sort them here
         jsonBProperties.stream()
                 .filter(n -> fi.getAttribute(n) != null && fi.getAttribute(n) instanceof String)
                 .forEach(n -> sortJSONBKeys(fi, n));
         // basic mappings
-        super.mapPropertiesToComplex(builder, fi);
+        super.mapPropertiesToComplex(builder, fi, mapperState);
 
         // quicklook extraction
         Object metadataValue = fi.getAttribute("quicklook");
@@ -137,28 +130,55 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
         }
 
         // collection extraction
-        Object collection = fi.getAttribute("collection");
-        if (collection instanceof SimpleFeature) {
+        String parentIdentifier = (String) fi.getAttribute("eoParentIdentifier");
+        if (parentIdentifier != null) {
+            Feature collectionFeature = getCollectionFeature(mapperState, parentIdentifier);
+            builder.append(COLLECTION_PROPERTY_NAME, collectionFeature);
+        }
+    }
+
+    private Feature getCollectionFeature(Map<String, Object> mapperState, String parentIdentifier) {
+        Feature collectionFeature = (Feature) mapperState.get(parentIdentifier);
+        if (collectionFeature == null) {
             try {
-                FeatureType collectionType =
-                        (FeatureType)
-                                getSchema()
-                                        .getDescriptor(
-                                                JDBCOpenSearchAccess.COLLECTION_PROPERTY_NAME)
-                                        .getType();
                 JDBCCollectionFeatureStore collectionSource =
                         (JDBCCollectionFeatureStore)
                                 ((JDBCOpenSearchAccess) getDataStore()).getCollectionSource();
-                ComplexFeatureBuilder cb = new ComplexFeatureBuilder(collectionType);
-                SimpleFeature sf = (SimpleFeature) collection;
-                collectionSource.mapPropertiesToComplex(cb, sf);
-                Feature collectionFeature =
-                        cb.buildFeature((String) sf.getAttribute("eoIdentifier"));
-                builder.append(OpenSearchAccess.COLLECTION_PROPERTY_NAME, collectionFeature);
+                Query q = new Query(Query.ALL);
+                q.setFilter(FF.equals(FF.property(EO_IDENTIFIER), FF.literal(parentIdentifier)));
+                Feature first = DataUtilities.first(collectionSource.getFeatures(q));
+
+                // remap the feature, it's using the wrong namespace
+                collectionFeature = remapCollectionToEONamespace(parentIdentifier, first);
+
+                mapperState.put(parentIdentifier, collectionFeature);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to access collection schema", e);
+                // not impossible, but unexpected
+                throw new RuntimeException(e);
             }
         }
+        return collectionFeature;
+    }
+
+    /**
+     * The collection feature is generated in the store provided namespaceURI, but the collection
+     * property in the product uses the EO namespace instead (to have a stable namespace for usage
+     * in JSON templates). So we need to remap, cannot have a feature with a namespaceURI different
+     * from the one of its type descriptor....
+     */
+    private Feature remapCollectionToEONamespace(String parentIdentifier, Feature first) {
+        FeatureType collectionType =
+                (FeatureType) getSchema().getDescriptor(COLLECTION_PROPERTY_NAME).getType();
+        ComplexFeatureBuilder cb = new ComplexFeatureBuilder(collectionType, FEATURE_FACTORY);
+        for (Property p : first.getProperties()) {
+            if (p instanceof Feature) {
+                cb.append(p.getName(), p);
+            } else {
+                cb.append(p.getName().getLocalPart(), p.getValue());
+            }
+        }
+        Feature feature = cb.buildFeature(parentIdentifier);
+        return feature;
     }
 
     private static void sortJSONBKeys(SimpleFeature fi, Name n) {

@@ -47,6 +47,9 @@ Controls all styles.
 
 .. _rest_api_styles_post_put:
 
+Styles POST and PUT
+~~~~~~~~~~~~~~~~~~~
+
 When executing a POST or PUT request with an SLD style, the ``Content-type`` header should be set to the mime type identifying the style format. Style formats 
 supported out of the box include:
 

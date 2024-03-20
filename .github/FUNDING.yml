@@ -1,4 +1,1 @@
-# These are supported funding model platforms
-
-github: [osgeo]
-custom: ['https://github.com/geoserver/geoserver/wiki/Sponsor','https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4XZ76BZMEWZ24&source=url']
+custom: [https://geoserver.org/sponsor/]

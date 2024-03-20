@@ -344,7 +344,8 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     @Override
     public synchronized int synchronize() throws IOException {
-        // synchronization functionality is not supported for web services
+        // synchronization purges the cached keys for the current WebService Mapper
+        getSecurityManager().getAuthenticationCache().removeAll(getAuthenticationFilterName());
         return 0;
     }
 }

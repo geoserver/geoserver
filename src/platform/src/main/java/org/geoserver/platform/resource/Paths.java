@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.SystemUtils;
 
 /**
  * Utility class for handling Resource paths in a consistent fashion.
@@ -23,11 +22,12 @@ import org.apache.commons.lang3.SystemUtils;
  * <p>This utility class is primarily aimed at implementations of ResourceStore and may be helpful
  * when writing test cases. These methods are suitable for static import.
  *
- * <p>Resource paths are consistent with file URLs. The base location is represented with "",
- * relative paths are not supported.
+ * <p>Resource paths are consistent with file URLs. The base location is represented with "", paths
+ * with . and .. are not supported.
  *
- * <p>Absolute paths are supported, with Linux systems using a leading {@code /}, and windows using
- * {@code L:}.
+ * <p>Resource paths are OS independent and refer to resources that are internal to the
+ * ResourceStore. Note that resources obtained with Files.asResource contain a file path rather than
+ * a resource path.
  *
  * @author Jody Garnett
  */
@@ -184,7 +184,7 @@ public class Paths {
      */
     static final Pattern WARN = Pattern.compile("^[^:*,\'&?\"<>|]*$");
 
-    /** Set of invalid resource names (currently used to quickly identify relative paths). */
+    /** Set of invalid resource names (currently used to quickly identify non-canonical paths). */
     static final Set<String> INVALID = new HashSet<>(Arrays.asList(new String[] {"..", "."}));
 
     /**
@@ -209,7 +209,7 @@ public class Paths {
                 return reportInvalidPath(names, item);
             }
             buf.append(item);
-            if (i < LIMIT - 1 && !isAbsolute(item)) {
+            if (i < LIMIT - 1) {
                 buf.append("/");
             }
         }
@@ -270,7 +270,7 @@ public class Paths {
         } else if (path.isEmpty()) {
             return Paths.BASE;
         } else {
-            for (String component : Paths.names(path)) {
+            for (String component : names(path)) {
                 if (INVALID.contains(component)) {
                     throw new IllegalArgumentException("Relative paths not supported " + path);
                 } else if (!VALID.matcher(component).matches()) {
@@ -282,26 +282,15 @@ public class Paths {
     }
 
     /**
-     * Path components listed into absolute prefix, directory names, and final file name or
+     * Resource Path components listed into absolute prefix, directory names, and final file name or
      * directory name.
      *
      * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with: {@code
      * Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
      *
-     * <p><b>Absolute path</b>: When working with an absolute path the list starts with a special
-     * marker.
-     *
-     * <p>Linux absolute paths are start with leading slash character ({@code / } ). <br>
-     * {@code convert("/srv/gis/cadaster/district.geopg") --> "/srv/gis/cadaster/district.geopg" <br>
-     * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster",
-     * "district.geopkg"}}. <br>
-     * This agrees with URL representation of
-     * {@code file:///srv/gis/cadaster/district.geopkg}.
-     *
-     * <p>Windows absolute drive letter and slash ( {@code C:\ } ). <br>
-     * {@code names("D:\\gis\cadaster\district.geopkg") --> {"D:", "gis", "cadaster",
-     * "district.geopkg"}}. This agrees with URL representation of
-     * {@code file:///D:/gis/cadaster/district.geopkg}.
+     * <p><b>Absolute path</b>: When working with an absolute path the list starts with the base of
+     * the resource store: {@code Paths.names("/data/tasmania/roads.shp"} --> {"",
+     * "data","tasmania","roads.shp"}}.
      *
      * @param path Path used for reference lookup
      * @return List of path components divided into absolute prefix, directory names, and final file
@@ -319,15 +308,8 @@ public class Paths {
         ArrayList<String> names = new ArrayList<>(3);
         String item;
 
-        if (isAbsolute(path)) {
-            item = path.substring(0, split + 1);
-        }
         do {
-            if (index == 0 && isAbsolute(path)) {
-                item = path.substring(0, split + 1);
-            } else {
-                item = path.substring(index, split);
-            }
+            item = path.substring(index, split);
             // ignoring zero length items resulting from double slash
             // path breaks (occasionally produced when concatenating paths without due care).
             if (item.length() != 0) {
@@ -368,8 +350,11 @@ public class Paths {
 
         if (fileURI.toString().startsWith(baseURI.toString())) {
             URI relativize = baseURI.relativize(fileURI);
-
-            return relativize.getPath();
+            String path = relativize.getPath();
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
+            return path;
         } else {
             return convert(file.getPath());
         }
@@ -488,7 +473,7 @@ public class Paths {
             throw new NullPointerException("Initial path required to handle relative filenames");
         }
         String filePath = convert(filename);
-        if (isAbsolute(filePath)) {
+        if (FilePaths.isAbsolute(filePath)) {
             throw new IllegalArgumentException(
                     "File location " + filename + " absolute, must be relative to " + path);
         }
@@ -513,99 +498,5 @@ public class Paths {
             resolvedPath.add(item);
         }
         return toPath(resolvedPath);
-    }
-
-    /**
-     * Pattern used to recognize absolute path in Windows, as indicated by driver letter reference
-     * (included {@code :}), followed by as slash character.
-     *
-     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
-     * current directory for that drive).
-     */
-    static final Pattern WINDOWS_DRIVE_LETTER = Pattern.compile("^\\w\\:/.*$");
-
-    /**
-     * While paths are primarily intended as paths relative to the GeoServer data directory, there
-     * is some support for absolute paths.
-     *
-     * <p><b>Linux</b>: Linux absolute paths start with a leading {@code /} character. As this slash
-     * character is also used as the path separator special handling is required. Notably {@link
-     * #names(String)} will represent an absolute path as: {@code { "/", "srv" "gis", "cadaster",
-     * "district.geopkg"}}
-     *
-     * <p><b>Windows</b>: Windows absolute paths start with a drive letter, colon, and slash
-     * characters.{@link #names(String)} will represent an absolute path on windows as: {@code {
-     * "D:/, "gis", "cadaster", "district.geopkg"}}
-     *
-     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
-     * current directory for that drive).
-     *
-     * <p><b>Guidance</b>: On both platforms an absolute path should agree with the file URL
-     * representation while dropping the {@code file:/} prefix
-     *
-     * @param path Resource path reference
-     * @return {@code true} if path forms an absolute reference to a location outside the data
-     *     directory.
-     */
-    public static boolean isAbsolute(String path) {
-        return isAbsolute(path, SystemUtils.IS_OS_WINDOWS);
-    }
-
-    // package visibility for test case coverage on all platforms
-    static boolean isAbsolute(String path, boolean isWindows) {
-        if (isWindows) return WINDOWS_DRIVE_LETTER.matcher(path).matches();
-        else return path != null && path.startsWith("/");
-    }
-
-    /**
-     * Convert a Resource path to file reference for provided base directory.
-     *
-     * <p>This method requires the base directory of the ResourceStore. Note ResourceStore
-     * implementations may not create the file until needed.
-     *
-     * <p>In the case of an absolute path, base should be null. Both linux {@code /} and windows
-     * {@code Z:/} absolute resource paths are supported.
-     *
-     * <p>Relative paths when base is {@code null}, are not supported.
-     *
-     * @param base Base directory, often GeoServer Data Directory
-     * @param path Resource path reference
-     * @return File reference (will be an absolute file reference)
-     */
-    public static File toFile(File base, String path) {
-        if (isAbsolute(path)) {
-            if (base != null) {
-                // To be forgiving we will ignore duplicate slash between base and relative path
-                if (path.startsWith("/")) {
-                    path = path.substring(1);
-                } else {
-                    base = null;
-                }
-            }
-        }
-        for (String item : Paths.names(path)) {
-            if (base == null && Paths.isAbsolute(item)) {
-                base = root(item.replace('/', File.separatorChar));
-            } else {
-                base = new File(base, item);
-            }
-        }
-        return base;
-    }
-
-    /**
-     * Carefully look up a filesystem root directory (matching {@code /} or {@code C:\} as
-     * appropriate).
-     *
-     * @param name
-     * @return filesystem root directory matching name, or {@code null} if not found.
-     */
-    private static File root(String name) {
-        for (File root : File.listRoots()) {
-            if (root.getPath().equalsIgnoreCase(name)) {
-                return root;
-            }
-        }
-        return null;
     }
 }

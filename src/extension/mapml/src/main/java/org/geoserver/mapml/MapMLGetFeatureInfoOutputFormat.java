@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -145,13 +146,14 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                             // see if in such a case we could just return the
                             // scalar properties
                             feature = iterator.next();
-                            Feature f =
+                            Optional<Feature> f =
                                     featureBuilder.buildFeature(
                                             feature,
-                                            captionTemplates.get(fc.getSchema().getName()));
+                                            captionTemplates.get(fc.getSchema().getName()),
+                                            null);
                             // might be interesting to be able to put features
                             // from different layers into a layer-specific div
-                            features.add(f);
+                            f.ifPresent(features::add);
                         } catch (IllegalStateException e) {
                             LOGGER.log(Level.INFO, "Error transforming feature.");
                         }
@@ -194,6 +196,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                         });
         return map;
     }
+
     /**
      * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
      *
@@ -227,6 +230,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
 
         return numDecimals;
     }
+
     /**
      * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
      *
@@ -250,6 +254,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         }
         return padWithZeros;
     }
+
     /**
      * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
      *
@@ -273,6 +278,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         }
         return forcedDecimal;
     }
+
     /**
      * @param <T>
      * @param catalog

@@ -296,33 +296,31 @@ Challenge Intervals
    
    .. note:: Answer :ref:`provided <ysld.raster.a2>` at the end of the workbook.
 
-   .. only:: instructor
-    
-      .. admonition:: Instructor Notes      
+   .. admonition:: Instructor Notes      
 
-         By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
-    
-         Here is style for you to cut and paste:
-   
-         .. code-block:: css
-    
-            * {
-              raster-channels: auto;
-              raster-color-map:
-                 color-map-entry(#014636,   0,0)
-                 color-map-entry(#014636,   1)
-                 color-map-entry(#016c59, 500)
-                 color-map-entry(#02818a,1000)
-                 color-map-entry(#3690c0,1500)
-                 color-map-entry(#67a9cf,2000)
-                 color-map-entry(#a6bddb,2500)
-                 color-map-entry(#d0d1e6,3000)
-                 color-map-entry(#ece2f0,3500)
-                 color-map-entry(#fff7fb,4000);
-              raster-color-map-type: intervals;
-            }
-   
-         .. image:: ../style/img/raster_interval.png
+      By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
+ 
+      Here is style for you to cut and paste:
+
+      .. code-block:: css
+ 
+         * {
+           raster-channels: auto;
+           raster-color-map:
+              color-map-entry(#014636,   0,0)
+              color-map-entry(#014636,   1)
+              color-map-entry(#016c59, 500)
+              color-map-entry(#02818a,1000)
+              color-map-entry(#3690c0,1500)
+              color-map-entry(#67a9cf,2000)
+              color-map-entry(#a6bddb,2500)
+              color-map-entry(#d0d1e6,3000)
+              color-map-entry(#ece2f0,3500)
+              color-map-entry(#fff7fb,4000);
+           raster-color-map-type: intervals;
+         }
+
+      .. image:: ../style/img/raster_interval.png
 
 
 Explore Image Processing
@@ -372,22 +370,20 @@ Challenge Clear Digital Elevation Model Presentation
   
    .. note:: Answer :ref:`provided <ysld.raster.a3>` at the end of the workbook.
    
-  .. only:: instructor
-    
-     .. admonition:: Instructor Notes      
-
-        The original was a dark mess, students will hopefully make use of the mid-tones (or even check color brewer) in order to fix this. I have left the ocean dark so the mountains can stand out more.
-    
-        .. code-block:: css
-
-           * {
-             raster-channels: auto;
-             raster-color-map: color-map-entry(#000000, 0)
-                               color-map-entry(#444444, 1)
-                               color-map-entry(#FFFFFF, 3000);
-           }
-    
-        .. image:: ../style/img/raster_grayscale.png
+   .. admonition:: Instructor Notes      
+ 
+      The original was a dark mess, students will hopefully make use of the mid-tones (or even check color brewer) in order to fix this. I have left the ocean dark so the mountains can stand out more.
+  
+      .. code-block:: css
+ 
+         * {
+           raster-channels: auto;
+           raster-color-map: color-map-entry(#000000, 0)
+                             color-map-entry(#444444, 1)
+                             color-map-entry(#FFFFFF, 3000);
+         }
+  
+      .. image:: ../style/img/raster_grayscale.png
 
 .. _css.raster.q4:
 

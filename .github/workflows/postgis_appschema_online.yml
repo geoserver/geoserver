@@ -1,0 +1,53 @@
+name: PostGIS app-schema online tests
+
+on: [pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  appschema-postgis:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    # amrocha just tagged v2 with the latest code as huaxk, allowing usage of postgis/postgis docker image
+    - uses: amrocha/postgis-action@v2
+      with:
+        postgresql version: '15-3.4'
+        postgresql password: 'geoserver'
+        postgresql user: 'geoserver'
+        postgresql db: 'appschema'
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: 11
+        distribution: 'temurin'
+    - uses: actions/checkout@v2
+    - name: Maven repository caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: gt-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          gt-maven-
+    - name: Build GeoServer dependent modules (no tests, prepare fresh artifacts)
+      run: mvn -B clean install -T2 -U --file src/pom.xml -Prelease,app-schema-online-test -DskipTests -pl :gs-app-schema-postgis-test -am -Dspotless.apply.skip=true
+    - name: Build PostGIS app-schema online tests
+      run: |
+        mkdir ~/.geoserver
+        cat <<EOT >>   ~/.geoserver/postgis.properties
+        user=geoserver
+        port=5432
+        password=geoserver
+        passwd=geoserver
+        url=jdbc\:postgresql\://localhost/appschema
+        host=localhost
+        database=appschema
+        driver=org.postgresql.Driver
+        EOT
+        mvn -B clean install -nsu --file src/pom.xml -Prelease,app-schema-online-test -pl :gs-app-schema-postgis-test -Dspotless.apply.skip=true
+    - name: Remove SNAPSHOT jars from repository
+      run: |
+        find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {} 

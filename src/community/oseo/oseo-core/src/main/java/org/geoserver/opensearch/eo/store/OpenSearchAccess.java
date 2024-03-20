@@ -52,8 +52,14 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      */
     public static String LAYERS = "layers";
 
-    /** The optional property in collection containing the published layers */
-    public static Name LAYERS_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, LAYERS);
+    /** The collection layer property containing the style list */
+    String STYLES = "styles";
+
+    /** The collection layer property containing the service list */
+    String SERVICES = "services";
+
+    /** The property in collection layers containing the styles */
+    public static Name SERVICES_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, SERVICES);
 
     /**
      * Local part of the HTML description property. The namespace is the one assigned to the store,
@@ -69,6 +75,12 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
 
     /** Property used to enable/disable products and collections */
     public static final String ENABLED = "enabled";
+
+    /** The collection layer title, picked from the GeoServer configuration */
+    public static final String LAYER_TITLE = "title";
+
+    /** The collection layer description, picked from the GeoServer configuration */
+    public static final String LAYER_DESCRIPTION = "description";
 
     /**
      * Just like in WCS 2.0, setting up a separator that's unlikely to be found in the wild, since
@@ -106,7 +118,23 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     /** Returns a feature source to access the granules of a particular product */
     SimpleFeatureSource getGranules(String collectionId, String productId) throws IOException;
 
+    /**
+     * Returns the feature source backing the collection layers (used for writes, when fetching the
+     * collection containign the layers, the layers property contains complex features)
+     */
     SimpleFeatureType getCollectionLayerSchema() throws IOException;
 
     SimpleFeatureType getOGCLinksSchema() throws IOException;
+
+    /**
+     * Returns the default namespace for this {@link OpenSearchAccess}
+     *
+     * @return
+     */
+    String getNamespaceURI();
+
+    /** Returns the qualified name for the given local part */
+    public default Name getName(String localPart) {
+        return new NameImpl(getNamespaceURI(), localPart);
+    }
 }

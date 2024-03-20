@@ -38,9 +38,9 @@ The full syntax of a polygon symbolizer is::
       
 where:
 
-.. include:: include/stroke.txt
+.. include:: include/stroke.rst
 
-.. include:: include/fill.txt
+.. include:: include/fill.rst
 
 .. list-table::
    :class: non-responsive
@@ -61,19 +61,19 @@ where:
      - Specifies a distance to which to move the symbol relative to the feature. Value is an ``[x,y]`` tuple with values expressed in pixels, so [10,5] will displace the symbol 10 pixels to the right, and 5 pixels down.
      - ``[0,0]``
 
-.. include:: include/symbol.txt
+.. include:: include/symbol.rst
 
 The following properties are equivalent to SLD "vendor options".
 
-.. include:: include/misc.txt
+.. include:: include/misc.rst
 
 Additional "vendor options" properties for :ref:`sld-extensions_composite-blend`:
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
 Additional "vendor options" properties for :ref:`rendering_selection`:
 
-.. include:: include/inclusion.txt
+.. include:: include/inclusion.rst
 
 
 Examples

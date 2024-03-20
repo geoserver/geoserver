@@ -6,7 +6,10 @@
 package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -16,8 +19,12 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.api.style.FeatureTypeStyle;
+import org.geotools.api.style.NamedLayer;
 import org.geotools.api.style.Rule;
 import org.geotools.api.style.Style;
+import org.geotools.api.style.StyledLayer;
+import org.geotools.api.style.StyledLayerDescriptor;
+import org.geotools.api.style.UserLayer;
 import org.geotools.util.NumberRange;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -43,36 +50,67 @@ public final class CapabilityUtil {
             throws IOException {
         // searches the maximum and minimum denominator in the style's rules that are contained in
         // the style set.
-        double minScaleDenominator = Double.POSITIVE_INFINITY;
-        double maxScaleDenominator = Double.NEGATIVE_INFINITY;
+        MinMaxDenominator minMaxDenominator =
+                new MinMaxDenominator(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY);
 
         for (StyleInfo styleInfo : styles) {
-            Style style = styleInfo.getStyle();
-            for (FeatureTypeStyle fts : style.featureTypeStyles()) {
-
-                for (Rule rule : fts.rules()) {
-
-                    if (rule.getMinScaleDenominator() < minScaleDenominator) {
-                        minScaleDenominator = rule.getMinScaleDenominator();
+            Optional<StyledLayer[]> styledLayers =
+                    Optional.ofNullable(styleInfo.getSLD())
+                            .map(StyledLayerDescriptor::getStyledLayers);
+            if (styledLayers.isPresent()) {
+                for (StyledLayer styledLayer : styledLayers.get()) {
+                    List<Style> stylesList = Collections.emptyList();
+                    if (styledLayer instanceof NamedLayer) {
+                        NamedLayer namedLayer = (NamedLayer) styledLayer;
+                        stylesList = namedLayer.styles();
+                    } else if (styledLayer instanceof UserLayer) {
+                        UserLayer userLayer = (UserLayer) styledLayer;
+                        stylesList = userLayer.userStyles();
                     }
-                    if (rule.getMaxScaleDenominator() > maxScaleDenominator) {
-                        maxScaleDenominator = rule.getMaxScaleDenominator();
+                    for (Style style : stylesList) {
+                        populateMinMaxScaleDenominator(style, minMaxDenominator);
                     }
+                }
+            } else {
+                if (styleInfo.getStyle() != null) {
+                    populateMinMaxScaleDenominator(styleInfo.getStyle(), minMaxDenominator);
                 }
             }
         }
 
         // If the initial values weren't changed by any rule in the previous step,
         // then the default values, Min=0.0 and Max=infinity, are set.
-        if (minScaleDenominator == Double.POSITIVE_INFINITY) {
-            minScaleDenominator = 0.0;
+        if (minMaxDenominator.getMin() == Double.POSITIVE_INFINITY) {
+            minMaxDenominator.setMin(0.0);
         }
-        if (maxScaleDenominator == Double.NEGATIVE_INFINITY) {
-            maxScaleDenominator = Double.POSITIVE_INFINITY;
+        if (minMaxDenominator.getMax() == Double.NEGATIVE_INFINITY) {
+            minMaxDenominator.setMax(Double.POSITIVE_INFINITY);
         }
-        assert minScaleDenominator <= maxScaleDenominator : "Min <= Max scale is expected";
+        assert minMaxDenominator.getMin() <= minMaxDenominator.getMax()
+                : "Min <= Max scale is expected";
 
-        return new NumberRange<>(Double.class, minScaleDenominator, maxScaleDenominator);
+        return new NumberRange<>(
+                Double.class, minMaxDenominator.getMin(), minMaxDenominator.getMax());
+    }
+
+    /**
+     * Populates the Min and Max scale denominators from the style's rules.
+     *
+     * @param style Style to be analyzed
+     * @param minMaxDenominator Min and Max scale denominators
+     */
+    private static void populateMinMaxScaleDenominator(
+            Style style, MinMaxDenominator minMaxDenominator) {
+        for (FeatureTypeStyle fts : style.featureTypeStyles()) {
+            for (Rule rule : fts.rules()) {
+                if (rule.getMinScaleDenominator() < minMaxDenominator.getMin()) {
+                    minMaxDenominator.setMin(rule.getMinScaleDenominator());
+                }
+                if (rule.getMaxScaleDenominator() > minMaxDenominator.getMax()) {
+                    minMaxDenominator.setMax(rule.getMaxScaleDenominator());
+                }
+            }
+        }
     }
 
     /**
@@ -230,5 +268,58 @@ public final class CapabilityUtil {
      */
     public static String getGroupDefaultStyleName(LayerGroupInfo groupName) {
         return getGroupDefaultStyleName(groupName.prefixedName());
+    }
+
+    /** Stores the Min and Max scale denominators for a set of styles. */
+    private static class MinMaxDenominator {
+        private Double min;
+        private Double max;
+
+        /**
+         * Default constructor.
+         *
+         * @param minScaleDenominator the minimum scale denominator
+         * @param maxScaleDenominator the maximum scale denominator
+         */
+        public MinMaxDenominator(Double minScaleDenominator, Double maxScaleDenominator) {
+            this.min = minScaleDenominator;
+            this.max = maxScaleDenominator;
+        }
+
+        /**
+         * Returns the maximum scale denominator.
+         *
+         * @return the maximum scale denominator.
+         */
+        public Double getMax() {
+            return max;
+        }
+
+        /**
+         * Returns the minimum scale denominator.
+         *
+         * @return the minimum scale denominator.
+         */
+        public Double getMin() {
+            return min;
+        }
+
+        /**
+         * Sets the maximum scale denominator.
+         *
+         * @param max the maximum scale denominator.
+         */
+        public void setMax(Double max) {
+            this.max = max;
+        }
+
+        /**
+         * Sets the minimum scale denominator.
+         *
+         * @param min the minimum scale denominator.
+         */
+        public void setMin(Double min) {
+            this.min = min;
+        }
     }
 }

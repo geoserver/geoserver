@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{}meta"/&gt;
  *         &lt;element ref="{}title"/&gt;
  *         &lt;group ref="{}links"/&gt;
+ *         &lt;element ref="{}style"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -50,6 +51,9 @@ public class HeadContent {
 
     @XmlElement(name = "map-link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Link> links;
+
+    @XmlElement(name = "map-style", type = String.class, namespace = "http://www.w3.org/1999/xhtml")
+    protected String style;
 
     public void setTitle(String title) {
         this.title = title;
@@ -105,5 +109,13 @@ public class HeadContent {
             links = new ArrayList<>();
         }
         return this.links;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
     }
 }

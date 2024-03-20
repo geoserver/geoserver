@@ -61,10 +61,7 @@ Configuring a SQL Server data store
      - The name of the user to connect to the database as.
    * - ``password``
      - The password to use when connecting to the database. Leave blank for no password.
-   * - ``max connections``
-
-       ``min connections``
-
+   * - ``max connections`` ``min connections``
      - Connection pool configuration parameters. See the :ref:`connection_pooling` section for details. If you are connecting to SQL Azure make sure to set the ``validate connections`` flag as SQL Azure closes inactive connections after a very short delay.
 
 .. _port_notes:
@@ -72,9 +69,14 @@ Configuring a SQL Server data store
 Determining the port used by the SQL Server instance
 ````````````````````````````````````````````````````
 
-You can determine the port in use by connecting to your SQL server instance using some other software, and then using :command:`netstat` to display details on network connections.  In the following example on a Windows PC, the port is 2646 ::
+You can determine the port in use by connecting to your SQL server instance using some other software, and then using :command:`netstat` to display details on network connections.  In the following example on a Windows PC, the port is 2646 :
+
+.. code-block:: batch
 
     C:\>netstat -a | find "sql1"
+
+::
+
     TCP   DPI908194:1918   maittestsql1.dpi.nsw.gov.au:2646   ESTABLISHED
 
 
@@ -86,17 +88,19 @@ by looking at the first row in the table. Of course this is error prone, and wor
 The administrator can address the above issue by manually creating a geometry metadata table describing each geometry column.
 Its presence is indicated via the SQL Server datastore connection parameter named *Geometry metadata table*
 (which may be a simple table name or a schema-qualified one).
-The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter)::
+The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter):
 
-	CREATE TABLE GEOMETRY_COLUMNS(
-	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL,
-	   F_TABLE_NAME VARCHAR(30) NOT NULL,
-	   F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL,
-	   COORD_DIMENSION INTEGER,
-	   SRID INTEGER NOT NULL,
-	   TYPE VARCHAR(30) NOT NULL,
-	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
-	   CHECK(TYPE IN ('POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION') ));
+.. code-block:: sql
+
+   CREATE TABLE GEOMETRY_COLUMNS(
+      F_TABLE_SCHEMA VARCHAR(30) NOT NULL,
+      F_TABLE_NAME VARCHAR(30) NOT NULL,
+      F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL,
+      COORD_DIMENSION INTEGER,
+      SRID INTEGER NOT NULL,
+      TYPE VARCHAR(30) NOT NULL,
+      UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
+      CHECK(TYPE IN ('POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION') ));
 
 When the table is present the store first searches it for information about each geometry column
 to be classified, and falls back on data inspection only if the table does not contain any information.

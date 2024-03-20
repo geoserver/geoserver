@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.FilePaths;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.factory.FactoryRegistry;
@@ -567,7 +567,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
                     return file;
                 }
             } else {
-                List<String> items = Paths.names(path);
+                List<String> items = FilePaths.names(path);
                 int index = 0;
                 if (index < items.size()) {
 

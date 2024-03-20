@@ -5,7 +5,7 @@ Oracle
 
 .. note:: GeoServer does not come built-in with support for Oracle; it must be installed through an extension.  Proceed to :ref:`oracle_install` for installation details.
 
-`Oracle Spatial and Locator <http://www.oracle.com/technology/products/spatial/index.html>`_ are the spatial components of Oracle.
+`Oracle Spatial and Locator <https://www.oracle.com/database/spatial/>`_ are the spatial components of Oracle.
 **Locator** is provided with all Oracle versions, but has limited spatial functions.
 **Spatial** is Oracle's full-featured spatial offering, but requires a specific license to use.
 
@@ -118,13 +118,13 @@ user owns (for the ``MDSYS.USER_SDO*`` views) or can otherwise access (for the `
 
 There are a few issues with this strategy:
 
-  * if the connection pool user cannot access the tables (because :ref:`impersonation <data_sqlsession>` is used) 
-    the MDSYS views will be empty, making it impossible to determine both the geometry type and the native SRID
-  * the geometry type can be specified only while building the spatial indexes, as an index constraint.  However 
-    such information is often not included when creating the indexes
-  * the views are populated dynamically based on the current user. If the database has thousands of tables and users
-    the views can become very slow
-    
+* if the connection pool user cannot access the tables (because :ref:`impersonation <data_sqlsession>` is used) 
+  the MDSYS views will be empty, making it impossible to determine both the geometry type and the native SRID
+* the geometry type can be specified only while building the spatial indexes, as an index constraint.  However 
+  such information is often not included when creating the indexes
+* the views are populated dynamically based on the current user. If the database has thousands of tables and users
+  the views can become very slow
+
 Starting with GeoServer 2.1.4 the administrator can address the above issues by manually creating a geometry metadata table
 describing each geometry column.
 Its presence is indicated via the Oracle datastore connection parameter named *Geometry metadata table*

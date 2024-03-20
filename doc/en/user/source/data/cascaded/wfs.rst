@@ -75,6 +75,8 @@ In a corporate environment it may be necessary to connect to an external WFS thr
 
 For a Windows install running GeoServer as a service, this is done by modifying the wrapper.conf file. For a default Windows install, modify :file:`C:\\Program Files\\GeoServer x.x.x\\wrapper\\wrapper.conf` similarly to the following.
 
+.. code-block:: properties
+
    # Java Additional Parameters
 
    wrapper.java.additional.1=-Djetty.home=.

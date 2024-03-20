@@ -19,13 +19,13 @@ Syntax
 
 The following elements can be used inside the ``<RasterSymbolizer>`` element.
 
-    - <Opacity>
-    - <ColorMap>
-    - <ChannelSelection>
-    - <ContrastEnhancement>
-    - <ShadedRelief> *
-    - <OverlapBehavior> *
-    - <ImageOutline> *
+- ``<Opacity>``
+- ``<ColorMap>``
+- ``<ChannelSelection>``
+- ``<ContrastEnhancement>``
+- ``<ShadedRelief>`` *
+- ``<OverlapBehavior>`` *
+- ``<ImageOutline>`` *
 
 .. warning::  The starred (*) elements are not yet implemented in GeoServer.
 
@@ -39,7 +39,7 @@ The syntax is:
 
 .. code-block:: xml
 
-	<Opacity>0.5</Opacity>
+   <Opacity>0.5</Opacity>
 
 where, in this case, the raster is rendered at 50% opacity.
 
@@ -528,10 +528,10 @@ OverlapBehavior
 
 Sometimes raster data is comprised of multiple image sets. Take, for example, a `satellite view of the Earth at night <http://apod.nasa.gov/apod/ap001127.html>`_ . As all of the Earth can't be in nighttime at once, a composite of multiple images are taken. These images are georeferenced, and pieced together to make the finished product. That said, it is possible that two images from the same dataset could overlap slightly, and the OverlapBehavior element is designed to determine how this is handled. There are four types of OverlapBehavior:
 
-    - AVERAGE
-    - RANDOM
-    - LATEST_ON_TOP
-    - EARLIEST_ON_TOP
+- AVERAGE
+- RANDOM
+- LATEST_ON_TOP
+- EARLIEST_ON_TOP
 
 **AVERAGE** takes each overlapping point and displays their average value. **RANDOM** determines which image gets displayed according to chance (which can sometimes result in a crisper image). **LATEST_ON_TOP** and **EARLIEST_ON_TOP** sets the determining factor to be the internal timestamp on each image in the dataset. None of these elements have any parameters, and are all called in the same way:
 

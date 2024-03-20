@@ -207,7 +207,7 @@ The following properties allow for a graphic to be displayed in addition to just
      - Value (in degrees) or rotation of the graphic. Larger values increase counter-clockwise rotation. A value of ``180`` will make the graphic upside-down.
      - ``0``
 
-.. include:: include/symbol.txt
+.. include:: include/symbol.rst
 
 The following properties are equivalent to SLD "vendor options".
 
@@ -307,7 +307,7 @@ The following properties are equivalent to SLD "vendor options".
      - 0
 
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
 Examples
 --------

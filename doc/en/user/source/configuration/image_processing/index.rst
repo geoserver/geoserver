@@ -44,7 +44,7 @@ When supporting large images it is efficient to work on image subsets without lo
 
 .. _JAIEXT:
 
-JAI-EXT  
+JAI-EXT
 -------
 
 The `JAI-EXT <https://github.com/geosolutions-it/jai-ext>`_ library is open-source project which aims to replace closed source JAI project provided by Sun. The main difference between *JAI* and *JAI-EXT* operations is the support for external **Region of Interests** (ROI) and image **NoData** in *JAI-EXT*.

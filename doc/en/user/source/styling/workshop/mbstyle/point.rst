@@ -1171,28 +1171,24 @@ Dynamic Styling
 Bonus
 -----
 
-.. only:: instructor
+.. admonition:: Instructor Notes 
 
-   .. admonition:: Instructor Notes 
+   The exercise section does not review the examples above, instead it explores the use of: 
 
-      The exercise section does not review the examples above, instead it explores the use of: 
-
-      * rules using min/max scale and rules using attribute filters
-      * recode to map from attribute to symbol
-      * interpolate to change size by population
+   * rules using min/max scale and rules using attribute filters
+   * recode to map from attribute to symbol
+   * interpolate to change size by population
 
 .. _mbstyle.point.q1:
 
 Challenge Geometry Location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   
-.. only:: instructor
-  
-   .. admonition:: Instructor Notes 
 
-      As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
- 
-      The use of filters using the roads **type** attribute provides this opportunity.
+.. admonition:: Instructor Notes 
+
+   As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
+
+   The use of filters using the roads **type** attribute provides this opportunity.
 
 #. The **mark** property can be used to render any geometry content.
 

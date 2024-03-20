@@ -151,7 +151,7 @@ where the ``name`` of a known gridset is specified; or a custom gridset may be d
         </grids>
     </gridset>
 
-..  _overviews:
+.. _overviews:
 
 Creating generalized tables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

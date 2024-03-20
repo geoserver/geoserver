@@ -6,7 +6,6 @@ package org.geoserver.wms.vector;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 
 import com.google.common.base.Stopwatch;
 import java.awt.Rectangle;
@@ -22,6 +21,7 @@ import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
+import org.geoserver.wms.map.StyleQueryUtil;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Attribute;
@@ -36,7 +36,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
-import org.geotools.renderer.lite.VectorMapRenderUtils;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
@@ -108,12 +107,11 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
             sourceCrs = geometryDescriptor.getType().getCoordinateReferenceSystem();
             int buffer =
-                    VectorMapRenderUtils.getComputedBuffer(
+                    StyleQueryUtil.getComputedBuffer(
                             mapContent.getBuffer(),
-                            VectorMapRenderUtils.getFeatureStyles(
+                            StyleQueryUtil.getFeatureStyles(
                                     layer,
-                                    paintArea,
-                                    VectorMapRenderUtils.getMapScale(mapContent, renderingArea),
+                                    StyleQueryUtil.getMapScale(mapContent, renderingArea),
                                     featureSource.getSchema()));
             if (this.tileBuilderFactory.shouldOversampleScale()) {
                 // buffer is in pixels (style pixels), need to convert to paint area pixels
@@ -125,7 +123,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                                 1); // if 0 (i.e. test case), don't expand
             }
 
-            Query query = getStyleQuery(layer, mapContent);
+            Query query = StyleQueryUtil.getStyleQuery(layer, mapContent);
             Hints hints = query.getHints();
 
             Pipeline pipeline =

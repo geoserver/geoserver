@@ -81,16 +81,15 @@ public class FileExistsValidator implements IValidator<String> {
         File relFile = null;
 
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        if (baseDirectory != null) {
-            // local to provided baseDirectory
-            relFile = Files.url(baseDirectory, uriSpec);
-        } else if (loader != null) {
-            // local to data directory?
-            relFile =
-                    Resources.find(
-                            Resources.fromURL(Files.asResource(loader.getBaseDirectory()), uriSpec),
-                            true);
-        }
+        relFile =
+                Resources.find(
+                        Resources.fromURL(
+                                Files.asResource(
+                                        baseDirectory == null
+                                                ? loader.getBaseDirectory()
+                                                : baseDirectory),
+                                uriSpec),
+                        true);
 
         if (relFile == null || !relFile.exists()) {
             IValidationError err =

@@ -4,7 +4,6 @@
  */
 package org.geoserver.wms.vector;
 
-import static org.geotools.renderer.lite.VectorMapRenderUtils.getStyleQuery;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +35,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.map.StyleQueryUtil;
 import org.geoserver.wms.mapbox.MapBoxTileBuilderFactory;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -192,7 +192,7 @@ public class VectorTileMapOutputFormatTest {
         WMSMapContent mapContent =
                 createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
 
-        Query q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
+        Query q = StyleQueryUtil.getStyleQuery(scaleDependentPolygonLayer, mapContent);
         assertNotSame(q.getFilter(), Filter.EXCLUDE);
 
         // ------------------- abnormal case, there are no rules in the sld that will draw
@@ -203,7 +203,7 @@ public class VectorTileMapOutputFormatTest {
 
         mapContent = createMapContent(mapBounds, renderingArea, 0, scaleDependentPolygonLayer);
 
-        q = getStyleQuery(scaleDependentPolygonLayer, mapContent);
+        q = StyleQueryUtil.getStyleQuery(scaleDependentPolygonLayer, mapContent);
         assertSame(q.getFilter(), Filter.EXCLUDE);
     }
 
@@ -514,7 +514,7 @@ public class VectorTileMapOutputFormatTest {
 
     @Test
     public void testPregeneralized() throws Exception {
-        /** Simple class to MOCK a Datastore supporting PreGeneralized features */
+        // Simple class to MOCK a Datastore supporting PreGeneralized features
         final class PregenDataStore extends MemoryDataStore {
 
             final class _FeatureSource extends MemoryFeatureSource {

@@ -217,12 +217,12 @@ interface):
 -  ``SQL`` (protects against ';' hacking)
 
 External Parameter Types (members of ``ExtTypes`` spring bean): \*
-``dbName``: `database name <user#databases>`__ \* ``tableName``:
+``dbName``: :ref:`database name <taskmanager_user_databases>` \* ``tableName``:
 table name (parameter must depend on parameter of ``dbName`` type) \*
-``extGeoserver``: `external geoserver <user#external-geoservers>`__
+``extGeoserver``: :ref:`external geoserver <taskmanager_user_external_geoserver>`
 \* ``internalLayer``: layer from geoserver catalog \* ``name``: name
 qualified with namespace from geoserver catalog \* ``fileService``:
-`file service <user#file-services>`__ \* ``file``: reference to file
+:ref:`file service <taskmanager_user_file_services>` \* ``file``: reference to file
 (parameter must dpend of parameter of ``fileService`` type)
 
 Defining a new Parameter Type:

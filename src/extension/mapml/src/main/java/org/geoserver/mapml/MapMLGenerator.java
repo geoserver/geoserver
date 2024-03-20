@@ -55,7 +55,7 @@ public class MapMLGenerator {
     public static final String POLYGON = "Polygon";
     public static final String LINE = "Line";
     public static final String POINT = "Point";
-    public static final String CSS_STYLE_DELIMITER = " ";
+    public static final String SPACE = " ";
 
     static ObjectFactory factory = new ObjectFactory();
 
@@ -113,6 +113,29 @@ public class MapMLGenerator {
                 LOGGER.log(Level.FINE, "Failed to simplify geometry, using it as is.", e);
             }
         }
+
+        // eventual geometry conversion due to style type
+        if (mapMLStyles != null) {
+            // convert geometry to type expected by the first symbolizer
+            g = convertGeometryToSymbolizerType(g, mapMLStyles.get(0));
+            // can't convert geometry to type expected by symbolizer?
+            if (g == null) {
+                if (LOGGER.isLoggable(Level.FINER)) {
+                    LOGGER.finer(
+                            "Could not convert geometry of type"
+                                    + (g != null ? g.getGeometryType() : "null")
+                                    + " to symbolizer type: "
+                                    + mapMLStyles.get(0).getSymbolizerType());
+                }
+                return Optional.empty();
+            }
+            String spaceDelimitedCSSClasses =
+                    mapMLStyles.stream()
+                            .map(MapMLStyle::getCSSClassName)
+                            .collect(Collectors.joining(SPACE));
+            f.setStyle(spaceDelimitedCSSClasses);
+        }
+
         // and clipping (again for WMS usage)
         if (g != null && !g.isEmpty() && clipBounds != null) {
             MapMLGeometryClipper clipper = new MapMLGeometryClipper(g, clipBounds);
@@ -120,30 +143,7 @@ public class MapMLGenerator {
         }
         if (g == null || g.isEmpty()) return Optional.empty();
 
-        Optional<GeometryContent> geometryContent;
-        if (mapMLStyles == null) {
-            geometryContent = Optional.of(buildGeometry(g));
-        } else {
-            // convert geometry to type expected by the first symbolizer
-            geometryContent = convertGeometryToSymbolizerType(g, mapMLStyles.get(0));
-            String spaceDelimitedCSSClasses =
-                    mapMLStyles.stream()
-                            .map(MapMLStyle::getCSSClassName)
-                            .collect(Collectors.joining(CSS_STYLE_DELIMITER));
-            f.setStyle(spaceDelimitedCSSClasses);
-        }
-        // can't convert geometry to type expected by symbolizer
-        if (geometryContent.isEmpty()) {
-            if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(
-                        "Could not convert geometry of type"
-                                + (g != null ? g.getGeometryType() : "null")
-                                + " to symbolizer type: "
-                                + mapMLStyles.get(0).getSymbolizerType());
-            }
-            return Optional.empty();
-        }
-        f.setGeometry(geometryContent.get());
+        f.setGeometry(buildGeometry(g));
         return Optional.of(f);
     }
 
@@ -185,51 +185,44 @@ public class MapMLGenerator {
      * @return the geometry content
      * @throws IOException IOException
      */
-    private Optional<GeometryContent> convertGeometryToSymbolizerType(
-            Geometry g, MapMLStyle mapMLStyle) throws IOException {
+    private Geometry convertGeometryToSymbolizerType(Geometry g, MapMLStyle mapMLStyle)
+            throws IOException {
         if (mapMLStyle.getSymbolizerType().startsWith(POINT)) {
             if (g instanceof Point || g instanceof MultiPoint) {
-                return Optional.of(buildGeometry(g));
+                return g;
             } else if (g instanceof LineString || g instanceof MultiLineString) {
                 LengthIndexedLine indexedLine = new LengthIndexedLine(g);
                 double length = indexedLine.getEndIndex();
                 double midpointLength = length / 2;
                 Coordinate midpoint = indexedLine.extractPoint(midpointLength);
-                if (midpoint == null) {
-                    return Optional.empty();
-                }
+                if (midpoint == null) return null;
                 Geometry midpointGeometry = g.getFactory().createPoint(midpoint);
-                return Optional.of(buildGeometry(midpointGeometry));
+                return midpointGeometry;
             } else if (g instanceof Polygon || g instanceof MultiPolygon) {
                 Geometry centroid = g.getCentroid();
-                return Optional.of(buildGeometry(centroid));
-            } else {
-                return Optional.empty();
+                return centroid;
             }
-
         } else if (mapMLStyle.getSymbolizerType().startsWith(LINE)) {
-            if (g instanceof LineString || g instanceof MultiLineString) {
-                return Optional.of(buildGeometry(g));
-            } else if (g instanceof Polygon || g instanceof MultiPolygon) {
-                Geometry boundary = g.getBoundary();
-                return Optional.of(buildGeometry(boundary));
-            } else {
-                return Optional.empty();
+            // there is no need to covert from polygon to line, as the boundary can already
+            // be painted client side (the stroke properties apply to the polygon boundary directly)
+            if (g instanceof LineString
+                    || g instanceof MultiLineString
+                    || g instanceof Polygon
+                    || g instanceof MultiPolygon) {
+                return g;
             }
         } else if (mapMLStyle.getSymbolizerType().startsWith(POLYGON)) {
             if (g instanceof Polygon || g instanceof MultiPolygon) {
-                return Optional.of(buildGeometry(g));
-            } else if (g instanceof LineString || g instanceof MultiLineString) {
+                return g;
+            } else if (g instanceof LineString
+                    || g instanceof MultiLineString
+                    || g instanceof Point
+                    || g instanceof MultiPoint) {
                 Geometry buffer = g.buffer(BUFFER_DISTANCE);
-                return Optional.of(buildGeometry(buffer));
-            } else if (g instanceof Point || g instanceof MultiPoint) {
-                Geometry buffer = g.buffer(BUFFER_DISTANCE);
-                return Optional.of(buildGeometry(buffer));
-            } else {
-                return Optional.empty();
+                return buffer;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /** Sets the clip bounds, for tiled MapML output */
@@ -442,10 +435,7 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.Point buildPoint(Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
         point.getCoordinates()
-                .add(
-                        this.formatter.format(p.getX())
-                                + CSS_STYLE_DELIMITER
-                                + this.formatter.format(p.getY()));
+                .add(this.formatter.format(p.getX()) + SPACE + this.formatter.format(p.getY()));
         return point;
     }
 
@@ -524,9 +514,7 @@ public class MapMLGenerator {
         }
         for (int i = 0; i < cs.size(); i++) {
             coordList.add(
-                    this.formatter.format(cs.getX(i))
-                            + CSS_STYLE_DELIMITER
-                            + this.formatter.format(cs.getY(i)));
+                    this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
         }
         return coordList;
     }

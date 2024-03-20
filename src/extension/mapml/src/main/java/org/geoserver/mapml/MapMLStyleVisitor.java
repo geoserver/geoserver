@@ -4,7 +4,7 @@
  */
 package org.geoserver.mapml;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,7 +58,12 @@ public class MapMLStyleVisitor extends AbstractStyleVisitor {
 
     Double scaleDenominator;
 
-    Map<String, MapMLStyle> styles = new HashMap<>();
+    /**
+     * Order preserving map, important as the styles are rendered one on top of the other, must
+     * respect the SLD order
+     */
+    Map<String, MapMLStyle> styles = new LinkedHashMap<>();
+
     int ruleCounter = 0;
     int symbolizerCounter = 0;
     boolean isElseFilter = false;

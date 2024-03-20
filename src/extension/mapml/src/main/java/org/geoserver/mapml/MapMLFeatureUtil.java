@@ -254,7 +254,7 @@ public class MapMLFeatureUtil {
      * @param styles the styles
      * @return the CSS styles as a string
      */
-    private static String getCSSStylesString(Map<String, MapMLStyle> styles) {
+    public static String getCSSStylesString(Map<String, MapMLStyle> styles) {
         if (styles == null) {
             return BBOX_DISPLAY_NONE;
         }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.24-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-features-autopopulate</artifactId>
+  <packaging>pom</packaging>
+  <name>Features Autopopulate Module</name>
+  <description>Features Autopopulate Plugin: executes transaction manager insert/update operations according to
+        featureTypes local property files definitions.</description>
+
+  <developers>
+    <developer>
+      <id>afabiani</id>
+      <name>Alessio Fabiani</name>
+      <email>alessio.fabiani@geosolutionsgroup.com</email>
+      <organization>GeoSolutions SRL</organization>
+      <roles>
+        <role>Java Developer</role>
+        <role>Module Maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>features-autopopulate-core</module>
+  </modules>
+
+</project>

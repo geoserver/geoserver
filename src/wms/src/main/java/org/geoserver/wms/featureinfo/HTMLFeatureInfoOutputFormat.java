@@ -5,10 +5,8 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import freemarker.template.Template;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -52,7 +50,9 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     public void write(
             FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException {
-        templateManager.write(results, request, out);
+        @SuppressWarnings("unchecked")
+        List<FeatureCollection> collections = results.getFeature();
+        templateManager.write(collections, out);
     }
 
     @Override
@@ -62,38 +62,5 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
     public FreeMarkerTemplateManager getTemplateManager() {
         return templateManager;
-    }
-
-    /** */
-    private final class HTMLTemplateManager extends FreeMarkerTemplateManager {
-
-        public HTMLTemplateManager(
-                OutputFormat format, WMS wms, GeoServerResourceLoader resourceLoader) {
-            super(format, wms, resourceLoader);
-        }
-
-        @Override
-        protected boolean templatesExist(
-                Template header, Template footer, List<FeatureCollection> collections)
-                throws IOException {
-            return true;
-        }
-
-        @Override
-        protected void handleContent(
-                List<FeatureCollection> collections,
-                OutputStreamWriter osw,
-                GetFeatureInfoRequest request)
-                throws IOException {
-            for (FeatureCollection fc : collections) {
-                Template content = getContentTemplate(fc, wms.getCharSet());
-                processTemplate("content", fc, content, osw);
-            }
-        }
-
-        @Override
-        protected String getTemplateFileName(String filename) {
-            return filename + ".ftl";
-        }
     }
 }

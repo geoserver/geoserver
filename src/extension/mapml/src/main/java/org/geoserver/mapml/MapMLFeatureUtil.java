@@ -4,6 +4,10 @@
  */
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
+import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
+import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +22,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.mapml.xml.BodyContent;
@@ -28,6 +33,7 @@ import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
@@ -35,6 +41,7 @@ import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeodeticCRS;
+import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
@@ -76,6 +83,7 @@ public class MapMLFeatureUtil {
             boolean forcedDecimal,
             boolean padWithZeros,
             Map<String, MapMLStyle> styles,
+            boolean skipHeadStyles,
             boolean skipAttributes,
             MapMLSimplifier simplifier)
             throws IOException {
@@ -107,9 +115,6 @@ public class MapMLFeatureUtil {
         if (alternateProjections != null) {
             links.addAll(alternateProjections);
         }
-        if (clipBounds != null) {
-            head.setStyle(".bbox{display:none}");
-        }
 
         String licenseLink = layerMeta.get("mapml.licenseLink", String.class);
         String licenseTitle = layerMeta.get("mapml.licenseTitle", String.class);
@@ -124,8 +129,10 @@ public class MapMLFeatureUtil {
             }
             links.add(link);
         }
-        String style = getCSSStylesString(styles);
-        head.setStyle(style);
+        if (!skipHeadStyles) {
+            String style = getCSSStylesFull(styles);
+            head.setStyle(style);
+        }
         String fCaptionTemplate = layerMeta.get("mapml.featureCaption", String.class);
         mapml.setHead(head);
 
@@ -249,24 +256,34 @@ public class MapMLFeatureUtil {
     }
 
     /**
-     * Get the CSS styles as a string
+     * Get the CSS styles as a string, including the "bbox" style used for transparency
      *
      * @param styles the styles
      * @return the CSS styles as a string
      */
-    public static String getCSSStylesString(Map<String, MapMLStyle> styles) {
-        if (styles == null) {
-            return BBOX_DISPLAY_NONE;
-        }
-        StringJoiner style = new StringJoiner(STYLE_CLASS_DELIMITER);
+    public static String getCSSStylesFull(Map<String, MapMLStyle> styles) {
+        if (styles == null) return BBOX_DISPLAY_NONE;
+        String style = getCSSStyles(styles);
+        return BBOX_DISPLAY_NONE + " " + style.toString();
+    }
+
+    /**
+     * Get the CSS styles as a string, without the "bbox" style used for transparency
+     *
+     * @param styles
+     * @return
+     */
+    public static String getCSSStyles(Map<String, MapMLStyle> styles) {
+        if (styles == null) return "";
+        StringJoiner css = new StringJoiner(STYLE_CLASS_DELIMITER);
         for (Map.Entry<String, MapMLStyle> entry : styles.entrySet()) {
             MapMLStyle mapMLStyle = entry.getValue();
             // empty properties can happen when style elements are not supported
             if (mapMLStyle != null && !mapMLStyle.getProperties().isEmpty()) {
-                style.add(STYLE_CLASS_PREFIX + mapMLStyle.getStyleAsCSS());
+                css.add(STYLE_CLASS_PREFIX + mapMLStyle.getStyleAsCSS());
             }
         }
-        return BBOX_DISPLAY_NONE + " " + style.toString();
+        return css.toString();
     }
 
     /**
@@ -417,5 +434,59 @@ public class MapMLFeatureUtil {
                 });
 
         return links;
+    }
+
+    /**
+     * Get the MapML styles based on Layer Styles
+     *
+     * @return the MapML styles
+     * @throws IOException if an error occurs
+     */
+    public static Map<String, MapMLStyle> getMapMLStyleMap(Style style, double scaleDenominator) {
+        MapMLStyleVisitor styleVisitor = new MapMLStyleVisitor();
+        if (style.getName() != null) {
+            styleVisitor.setStyleId(style.getName().replace(":", MapMLStyle.NAME_DELIMITER));
+        }
+        styleVisitor.setScaleDenominator(scaleDenominator);
+        style.accept(styleVisitor);
+        return styleVisitor.getStyles();
+    }
+
+    /** Checks if the request should dump features instead of HTML */
+    public static boolean isFeaturesRequest(Request request) {
+        // case 1: the format_options parameter is set to include the mapml feature format
+        if (getBoleanFormatOption(request, MAPML_FEATURE_FO)) return true;
+
+        // case 2: it's a GWC tile seeding request, can only be a features request
+        return isGWCTiledRequest(request);
+    }
+
+    /** Checks if the request should skip attributes */
+    public static boolean isSkipAttributes(Request request) {
+        // case 1: the format_options parameter is set to include the mapml feature format
+        if (getBoleanFormatOption(request, MAPML_SKIP_ATTRIBUTES_FO)) return true;
+
+        // case 2: it's a GWC tile seeding request, we want to skip attributes as well
+        return isGWCTiledRequest(request);
+    }
+
+    /** Checks if the request should skip style bodies */
+    public static boolean isSkipHeadStyles(Request request) {
+        // case 1: the format_options parameter is set to include the mapml feature format
+        if (getBoleanFormatOption(request, MAPML_SKIP_STYLES_FO)) return true;
+
+        // case 2: it's a GWC tile seeding request, we want to skip styles in head as well
+        return isGWCTiledRequest(request);
+    }
+
+    private static boolean isGWCTiledRequest(Request request) {
+        return "true".equals(request.getRawKvp().get(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN));
+    }
+
+    /** Tests if the specified format option is present and evaluates to true */
+    private static boolean getBoleanFormatOption(Request request, String key) {
+        Map formatOptions = (Map) request.getKvp().get("format_options");
+        if (formatOptions != null && Boolean.valueOf((String) formatOptions.get(key))) return true;
+        return false;
     }
 }

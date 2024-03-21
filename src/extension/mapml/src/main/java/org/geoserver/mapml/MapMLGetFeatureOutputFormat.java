@@ -95,6 +95,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                         padWithZeros,
                         null,
                         false,
+                        false,
                         null);
 
         // write to output

@@ -46,6 +46,8 @@ public class MapMLFeaturesBuilder {
 
     private boolean skipAttributes = false;
 
+    private boolean skipHeadStyles = false;
+
     /**
      * Constructor
      *
@@ -91,6 +93,11 @@ public class MapMLFeaturesBuilder {
     /** Enables/disables attribute representation skipping (false by default) */
     public void setSkipAttributes(boolean skipAttributes) {
         this.skipAttributes = skipAttributes;
+    }
+
+    /** Enables/disables attribute representation skipping (false by default) */
+    public void setSkipHeadStyles(boolean skipHeadStyles) {
+        this.skipHeadStyles = skipHeadStyles;
     }
 
     /**
@@ -158,19 +165,12 @@ public class MapMLFeaturesBuilder {
                 getForcedDecimal(meta),
                 getPadWithZeros(meta),
                 styles,
+                skipHeadStyles,
                 skipAttributes,
                 simplifier);
     }
 
-    /**
-     * Get the MapML styles based on Layer Styles
-     *
-     * @return the MapML styles
-     * @throws IOException if an error occurs
-     */
     private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {
-        MapMLStyleVisitor styleVisitor = new MapMLStyleVisitor();
-        styleVisitor.setScaleDenominator(mapContent.getScaleDenominator());
         Style style = getMapRequest.getStyles().get(0);
         if (style == null) {
             StyleInfo styleInfo = getMapRequest.getLayers().get(0).getLayerInfo().getDefaultStyle();
@@ -182,9 +182,7 @@ public class MapMLFeaturesBuilder {
                                 + getMapRequest.getLayers().get(0).getLayerInfo().getName());
             }
         }
-        style.accept(styleVisitor);
-        Map<String, MapMLStyle> styles = styleVisitor.getStyles();
-        return styles;
+        return MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
     }
 
     /**

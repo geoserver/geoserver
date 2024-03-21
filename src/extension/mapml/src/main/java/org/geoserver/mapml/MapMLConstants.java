@@ -37,6 +37,8 @@ public final class MapMLConstants {
     /** MapML format option enabling attribute skipping */
     public static final String MAPML_SKIP_ATTRIBUTES_FO = "mapmlskipattributes";
 
+    public static final String MAPML_SKIP_STYLES_FO = "mapmlskiphstyles";
+
     /** MapML layer metadata use features */
     public static final String MAPML_USE_FEATURES = "mapml.useFeatures";
 

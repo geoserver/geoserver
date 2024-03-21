@@ -83,7 +83,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                 mapmlFeatures.getBody().getFeatures().size());
         assertEquals(
                 "Feature style class rule-1_symbolizer-1 is assigned because scale matches rule scale range, rule2 is excluded because it is outside the scale range",
-                "rule-1_symbolizer-1",
+                "lakeScale-r1-s1",
                 mapmlFeatures.getBody().getFeatures().get(0).getStyle());
     }
 
@@ -108,7 +108,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         true);
         assertEquals(
                 "Style classes string",
-                ".bbox {display:none} .rule-1_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 2.0;fill: #000080;fill-opacity: 0.5;stroke: #FFFFFF;stroke-linecap: butt;} .rule-2_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 4.0;fill: #033080;fill-opacity: 0.74;stroke: #FF66FF;stroke-linecap: butt;}",
+                ".bbox {display:none} .polygonSymbolizer-r1-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:2.0; fill:#000080; fill-opacity:0.5; stroke:#FFFFFF; stroke-linecap:butt} .polygonSymbolizer-r2-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; fill:#033080; fill-opacity:0.74; stroke:#FF66FF; stroke-linecap:butt}",
                 mapmlFeatures.getHead().getStyle());
         assertEquals(
                 "XML feature count is equals the underlying features source count because multiple symbolizer classes are assigned at the feature level",
@@ -116,7 +116,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                 mapmlFeatures.getBody().getFeatures().size());
         assertEquals(
                 "The first feature has a two style classes assigned because two symbolizers are applicable",
-                "rule-1_symbolizer-1 rule-2_symbolizer-1",
+                "polygonSymbolizer-r1-s1 polygonSymbolizer-r2-s1",
                 mapmlFeatures.getBody().getFeatures().get(0).getStyle());
     }
 
@@ -141,16 +141,16 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         true);
         assertEquals(
                 "Style classes string",
-                ".bbox {display:none} .rule-1_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 0.5;fill: #0033cc;fill-opacity: 1.0;stroke: #000000;stroke-linecap: butt;} .rule-2_symbolizer-1{stroke-opacity: 1.0;stroke-dashoffset: 0;stroke-width: 0.7;fill: #8833cc;fill-opacity: 1.0;stroke: #001200;stroke-linecap: butt;}",
+                ".bbox {display:none} .polygonFilterSymbolizer-r1-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:0.5; fill:#0033cc; fill-opacity:1.0; stroke:#000000; stroke-linecap:butt} .polygonFilterSymbolizer-r2-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:0.7; fill:#8833cc; fill-opacity:1.0; stroke:#001200; stroke-linecap:butt}",
                 mapmlFeatures.getHead().getStyle());
 
         assertEquals(
                 "The first feature is assigned the second style class because it matches the filter",
-                "rule-2_symbolizer-1",
+                "polygonFilterSymbolizer-r2-s1",
                 mapmlFeatures.getBody().getFeatures().get(0).getStyle());
         assertEquals(
                 "The second feature is assigned the first style class",
-                "rule-1_symbolizer-1",
+                "polygonFilterSymbolizer-r1-s1",
                 mapmlFeatures.getBody().getFeatures().get(1).getStyle());
     }
 
@@ -320,7 +320,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         MapMLStyleVisitor visitor = new MapMLStyleVisitor();
         style.accept(visitor);
         Map<String, MapMLStyle> styleMap = visitor.getStyles();
-        MapMLStyle mapMLStyle = styleMap.get("rule-1_symbolizer-1");
+        MapMLStyle mapMLStyle = styleMap.get("r1-s1");
         assertEquals("0.5", mapMLStyle.getProperty("opacity"));
         assertEquals("#FF0000", mapMLStyle.getProperty("fill"));
         assertEquals("circle", mapMLStyle.getProperty("well-known-name"));
@@ -334,7 +334,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         MapMLStyleVisitor visitor = new MapMLStyleVisitor();
         style.accept(visitor);
         Map<String, MapMLStyle> styleMap = visitor.getStyles();
-        MapMLStyle mapMLStyle = styleMap.get("rule-1_symbolizer-1");
+        MapMLStyle mapMLStyle = styleMap.get("r1-s1");
         assertEquals("0.5", mapMLStyle.getProperty("stroke-opacity"));
         assertEquals("#333333", mapMLStyle.getProperty("stroke"));
         assertEquals("3.0", mapMLStyle.getProperty("stroke-width"));
@@ -350,7 +350,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         MapMLStyleVisitor visitor = new MapMLStyleVisitor();
         style.accept(visitor);
         Map<String, MapMLStyle> styleMap = visitor.getStyles();
-        MapMLStyle mapMLStyle = styleMap.get("rule-1_symbolizer-1");
+        MapMLStyle mapMLStyle = styleMap.get("r1-s1");
         assertEquals("#000080", mapMLStyle.getProperty("fill"));
         assertEquals("2.0", mapMLStyle.getProperty("stroke-width"));
         assertEquals("0.5", mapMLStyle.getProperty("fill-opacity"));

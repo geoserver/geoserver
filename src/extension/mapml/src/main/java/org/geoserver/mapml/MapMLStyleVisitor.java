@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.NilExpression;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.Fill;
 import org.geotools.api.style.Graphic;
@@ -71,6 +72,7 @@ public class MapMLStyleVisitor extends AbstractStyleVisitor {
     Filter filter;
 
     private MapMLStyle style;
+    private String styleId;
 
     @Override
     public void visit(FeatureTypeStyle fts) {
@@ -296,7 +298,9 @@ public class MapMLStyleVisitor extends AbstractStyleVisitor {
      * @return true if the expression is not null and is static
      */
     private boolean isNotNullAndIsStatic(Expression ex) {
-        return ex != null && (Boolean) ex.accept(IsStaticExpressionVisitor.VISITOR, null);
+        return ex != null
+                && !(ex instanceof NilExpression)
+                && (Boolean) ex.accept(IsStaticExpressionVisitor.VISITOR, null);
     }
 
     /**
@@ -306,6 +310,7 @@ public class MapMLStyleVisitor extends AbstractStyleVisitor {
      */
     private void createStyle(Symbolizer sym) {
         style = new MapMLStyle();
+        if (styleId != null) style.setStyleId(styleId);
         style.setRuleId(ruleCounter);
         style.setSymbolizerId(++symbolizerCounter);
         style.setSymbolizerType(sym.getClass().getSimpleName());
@@ -342,5 +347,18 @@ public class MapMLStyleVisitor extends AbstractStyleVisitor {
     private boolean isWithInScale(Rule r, double scaleDenominator) {
         return ((r.getMinScaleDenominator() - TOLERANCE) <= scaleDenominator)
                 && ((r.getMaxScaleDenominator() + TOLERANCE) > scaleDenominator);
+    }
+
+    /**
+     * Sets the class prefix
+     *
+     * @param styleId
+     */
+    public void setStyleId(String styleId) {
+        this.styleId = styleId;
+    }
+
+    public String getStyleId() {
+        return styleId;
     }
 }

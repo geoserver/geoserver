@@ -974,45 +974,43 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         new ByteArrayInputStream(
                                 requestResponse.response.getContentAsString().getBytes()),
                         true);
-        print(doc);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
 
-        assertTrue(vars.get("request").equalsIgnoreCase("GetMap"));
-        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
-        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
-        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
-        assertTrue(vars.get("crs").equalsIgnoreCase("MapML:OSMTILE"));
-        assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
-        assertTrue(vars.get("format").equalsIgnoreCase("image/png"));
-        assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
-        assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
-        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
-        assertTrue(vars.get("styles").equalsIgnoreCase(""));
-        assertTrue(vars.get("language").equalsIgnoreCase(Locale.FRENCH.getLanguage()));
+        assertEquals("GetMap", vars.get("request"));
+        assertEquals("WMS", vars.get("service"));
+        assertEquals("1.3.0", vars.get("version"));
+        assertEquals(MockData.ROAD_SEGMENTS.getLocalPart(), vars.get("layers"));
+        assertEquals("MapML:OSMTILE", vars.get("crs"));
+        assertEquals("{xmin},{ymin},{xmax},{ymax}", vars.get("bbox"));
+        assertEquals("image/png", vars.get("format"));
+        assertEquals("{w}", vars.get("width"));
+        assertEquals("{h}", vars.get("height"));
+        assertEquals("true", vars.get("transparent"));
+        assertEquals("RoadSegments", vars.get("styles"));
+        assertEquals(Locale.FRENCH.getLanguage(), vars.get("language"));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
 
-        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
-        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
-        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
-        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.ROAD_SEGMENTS.getLocalPart()));
-        assertTrue(vars.get("crs").equalsIgnoreCase("MapML:OSMTILE"));
-        assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
-        assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
-        assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
-        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
-        assertTrue(vars.get("styles").equalsIgnoreCase(""));
-        assertTrue(vars.get("x").equalsIgnoreCase("{i}"));
-        assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
-        assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
-        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
-        assertTrue(vars.get("language").equalsIgnoreCase(Locale.FRENCH.getLanguage()));
-
+        assertEquals("GetFeatureInfo", vars.get("request"));
+        assertEquals("WMS", vars.get("service"));
+        assertEquals("1.3.0", vars.get("version"));
+        assertEquals(MockData.ROAD_SEGMENTS.getLocalPart(), vars.get("layers"));
+        assertEquals("MapML:OSMTILE", vars.get("crs"));
+        assertEquals("{xmin},{ymin},{xmax},{ymax}", vars.get("bbox"));
+        assertEquals("{w}", vars.get("width"));
+        assertEquals("{h}", vars.get("height"));
+        assertEquals("true", vars.get("transparent"));
+        assertEquals("RoadSegments", vars.get("styles"));
+        assertEquals("{i}", vars.get("x"));
+        assertEquals("{j}", vars.get("y"));
+        assertEquals("text/mapml", vars.get("info_format"));
+        assertEquals("50", vars.get("feature_count"));
+        assertEquals(Locale.FRENCH.getLanguage(), vars.get("language"));
         // make sure there's an input for each template variable
         assertXpathEvaluatesTo(
                 "1",
@@ -1079,35 +1077,32 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
-        assertTrue(vars.get("request").equalsIgnoreCase("GetTile"));
-        assertTrue(vars.get("service").equalsIgnoreCase("WMTS"));
-        assertTrue(vars.get("version").equalsIgnoreCase("1.0.0"));
-        assertTrue(vars.get("layer").equalsIgnoreCase(wmtsLayerName));
-        assertTrue(vars.get("format").equalsIgnoreCase("image/png"));
-        assertTrue(vars.get("tilematrixset").equalsIgnoreCase("WGS84"));
-        assertTrue(vars.get("tilematrix").equalsIgnoreCase("{z}"));
-        assertTrue(vars.get("TileRow").equalsIgnoreCase("{y}"));
-        assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
-        assertTrue(vars.get("style").equalsIgnoreCase(""));
+        assertEquals("GetTile", vars.get("request"));
+        assertEquals("WMTS", vars.get("service"));
+        assertEquals("1.0.0", vars.get("version"));
+        assertEquals(wmtsLayerName, vars.get("layer"));
+        assertEquals("image/png", vars.get("format"));
+        assertEquals("WGS84", vars.get("tilematrixset"));
+        assertEquals("{z}", vars.get("tilematrix"));
+        assertEquals("{y}", vars.get("TileRow"));
+        assertEquals("{x}", vars.get("TileCol"));
+        assertEquals("RoadSegments", vars.get("style"));
         assertNull(vars.get("language"));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
 
-        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
-        assertTrue(vars.get("service").equalsIgnoreCase("WMTS"));
-        assertTrue(vars.get("version").equalsIgnoreCase("1.0.0"));
-        assertTrue(vars.get("layer").equalsIgnoreCase(wmtsLayerName));
-        assertTrue(vars.get("tilematrixset").equalsIgnoreCase("WGS84"));
-        assertTrue(vars.get("tilematrix").equalsIgnoreCase("{z}"));
-        assertTrue(vars.get("TileRow").equalsIgnoreCase("{y}"));
-        assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
-        assertTrue(vars.get("style").equalsIgnoreCase(""));
-        assertTrue(vars.get("i").equalsIgnoreCase("{i}"));
-        assertTrue(vars.get("j").equalsIgnoreCase("{j}"));
-        assertTrue(vars.get("infoformat").equalsIgnoreCase("text/mapml"));
-        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
+        assertEquals("GetFeatureInfo", vars.get("request"));
+        assertEquals("WMTS", vars.get("service"));
+        assertEquals("1.0.0", vars.get("version"));
+        assertEquals(wmtsLayerName, vars.get("layer"));
+        assertEquals("image/png", vars.get("format"));
+        assertEquals("WGS84", vars.get("tilematrixset"));
+        assertEquals("{z}", vars.get("tilematrix"));
+        assertEquals("{y}", vars.get("TileRow"));
+        assertEquals("{x}", vars.get("TileCol"));
+        assertEquals("RoadSegments", vars.get("style"));
         assertNull(vars.get("language"));
         //        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ENGLISH.getLanguage()));
 
@@ -1202,7 +1197,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertEquals("{z}", vars.get("tilematrix"));
         assertEquals("{y}", vars.get("TileRow"));
         assertEquals("{x}", vars.get("TileCol"));
-        assertEquals("", vars.get("style"));
+        assertEquals("RoadSegments", vars.get("style"));
         assertNull(vars.get("language"));
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
@@ -1217,7 +1212,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertEquals("{z}", vars.get("tilematrix"));
         assertEquals("{y}", vars.get("TileRow"));
         assertEquals("{x}", vars.get("TileCol"));
-        assertEquals("", vars.get("style"));
+        assertEquals("RoadSegments", vars.get("style"));
         assertEquals("{i}", vars.get("i"));
         assertEquals("{j}", vars.get("j"));
         assertEquals("text/mapml", vars.get("infoformat"));
@@ -1304,6 +1299,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertNull(f1.getProperties());
         Feature f2 = featureMap.get("RoadSegments.1107532045088");
         assertNull(f2.getProperties());
+
+        // check the styles are applied to features, but are not in the mapml head
+        assertNull(mapml.getHead().getStyle());
+        assertEquals("RoadSegments-r2-s1", f1.getStyle());
+        assertEquals("RoadSegments-r2-s1", f2.getStyle());
     }
 
     private void enableTileCaching(QName layerName, Catalog catalog) {
@@ -1408,21 +1408,21 @@ public class MapMLWMSTest extends MapMLTestSupport {
         URL url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
 
-        assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
-        assertTrue(vars.get("service").equalsIgnoreCase("WMS"));
-        assertTrue(vars.get("version").equalsIgnoreCase("1.3.0"));
-        assertTrue(vars.get("layers").equalsIgnoreCase(MockData.BASIC_POLYGONS.getLocalPart()));
-        assertTrue(vars.get("crs").equalsIgnoreCase("MapML:OSMTILE"));
-        assertTrue(vars.get("bbox").equalsIgnoreCase("{xmin},{ymin},{xmax},{ymax}"));
-        assertTrue(vars.get("width").equalsIgnoreCase("{w}"));
-        assertTrue(vars.get("height").equalsIgnoreCase("{h}"));
-        assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
-        assertTrue(vars.get("styles").equalsIgnoreCase(""));
-        assertTrue(vars.get("x").equalsIgnoreCase("{i}"));
-        assertTrue(vars.get("y").equalsIgnoreCase("{j}"));
-        assertTrue(vars.get("info_format").equalsIgnoreCase("text/mapml"));
-        assertTrue(vars.get("feature_count").equalsIgnoreCase("50"));
-        assertTrue(vars.get("language").equalsIgnoreCase(Locale.ENGLISH.getLanguage()));
+        assertEquals("GetFeatureInfo", vars.get("request"));
+        assertEquals("WMS", vars.get("service"));
+        assertEquals("1.3.0", vars.get("version"));
+        assertEquals(MockData.BASIC_POLYGONS.getLocalPart(), vars.get("layers"));
+        assertEquals("MapML:OSMTILE", vars.get("crs"));
+        assertEquals("{xmin},{ymin},{xmax},{ymax}", vars.get("bbox"));
+        assertEquals("{w}", vars.get("width"));
+        assertEquals("{h}", vars.get("height"));
+        assertEquals("true", vars.get("transparent"));
+        assertEquals("BasicPolygons", vars.get("styles"));
+        assertEquals("{i}", vars.get("x"));
+        assertEquals("{j}", vars.get("y"));
+        assertEquals("text/mapml", vars.get("info_format"));
+        assertEquals("50", vars.get("feature_count"));
+        assertEquals(Locale.ENGLISH.getLanguage(), vars.get("language"));
         vars.put(
                 "bbox",
                 "-967387.0299771908,-118630.26789859355,884223.543202919,920913.3167798058");

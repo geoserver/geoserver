@@ -65,7 +65,7 @@ public abstract class FreeMarkerTemplateManager {
 
         private String format;
 
-        String getFormat() {
+        public String getFormat() {
             return format;
         }
     }

@@ -101,6 +101,7 @@
             <descriptor>release/ext-rat.xml</descriptor>
             <descriptor>release/ext-monitor-kafka.xml</descriptor>
             <descriptor>release/ext-graticule.xml</descriptor>
+            <descriptor>release/ext-wfs-freemarker.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
         </configuration>
@@ -253,6 +254,7 @@
         <module>rat</module>
         <module>monitor-kafka</module>
         <module>graticule</module>
+        <module>wfs-freemarker</module>
       </modules>
     </profile>
     <profile>
@@ -736,6 +738,12 @@
       </build>
       <modules>
         <module>graticule</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wfs-freemarker</id>
+      <modules>
+        <module>wfs-freemarker</module>
       </modules>
     </profile>
   </profiles>

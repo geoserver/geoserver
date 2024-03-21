@@ -23,7 +23,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
@@ -33,7 +32,6 @@ import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
-import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.RuleItem;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -172,8 +170,7 @@ public abstract class FreeMarkerTemplateManager {
     }
 
     /** Writes the features to the output */
-    public boolean write(
-            FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+    public boolean write(List<FeatureCollection> collections, OutputStream out)
             throws ServiceException, IOException {
         // setup the writer
         final Charset charSet = wms.getCharSet();
@@ -183,9 +180,6 @@ public abstract class FreeMarkerTemplateManager {
             // if there is only one feature type loaded, we allow for header/footer customization,
             // otherwise we stick with the default ones for html, or for those
             // in the template directory for JSON
-            @SuppressWarnings("unchecked")
-            List<FeatureCollection> collections = results.getFeature();
-
             ResourceInfo ri = null;
             if (collections.size() == 1) {
                 ri = wms.getResourceInfo(FeatureCollectionDecorator.getName(collections.get(0)));
@@ -204,7 +198,7 @@ public abstract class FreeMarkerTemplateManager {
 
             processTemplate("header", null, header, osw);
 
-            handleContent(collections, osw, request);
+            handleContent(collections, osw);
 
             // if a template footer was loaded (ie, there were only one feature
             // collection), process it
@@ -312,10 +306,7 @@ public abstract class FreeMarkerTemplateManager {
             throws IOException;
 
     protected abstract void handleContent(
-            List<FeatureCollection> collections,
-            OutputStreamWriter osw,
-            GetFeatureInfoRequest request)
-            throws IOException;
+            List<FeatureCollection> collections, OutputStreamWriter osw) throws IOException;
 
     public void setTemplateLoader(GeoServerTemplateLoader templateLoader) {
         this.templateLoader = templateLoader;

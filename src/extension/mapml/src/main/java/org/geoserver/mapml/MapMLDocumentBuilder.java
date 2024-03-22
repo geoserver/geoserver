@@ -6,8 +6,10 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.DATE_FORMAT;
-import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS;
+import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
+import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
+import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 
@@ -57,6 +59,7 @@ import org.geoserver.mapml.xml.InputType;
 import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
+import org.geoserver.mapml.xml.MimeType;
 import org.geoserver.mapml.xml.Option;
 import org.geoserver.mapml.xml.PositionType;
 import org.geoserver.mapml.xml.ProjType;
@@ -75,6 +78,7 @@ import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.style.Style;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -104,6 +108,8 @@ public class MapMLDocumentBuilder {
     private final WMS wms;
 
     private final GeoServer geoServer;
+
+    private final WMSMapContent mapContent;
     private final HttpServletRequest request;
     private final List<RawLayer> layers;
     private final String proj;
@@ -115,7 +121,6 @@ public class MapMLDocumentBuilder {
     private final GWC gwc = GWC.get();
     private final String layersCommaDelimited;
     private final String layerTitlesCommaDelimited;
-    private final GetMapRequest getMapRequest;
     private final String stylesCommaDelimited;
     private final String cqlCommadDelimited;
 
@@ -162,7 +167,8 @@ public class MapMLDocumentBuilder {
         this.wms = wms;
         this.geoServer = geoServer;
         this.request = request;
-        this.getMapRequest = mapContent.getRequest();
+        this.mapContent = mapContent;
+        GetMapRequest getMapRequest = mapContent.getRequest();
         String rawLayersCommaDL = getMapRequest.getRawKvp().get("layers");
         this.layers = toRawLayers(rawLayersCommaDL);
         this.stylesCommaDelimited =
@@ -408,7 +414,7 @@ public class MapMLDocumentBuilder {
             // figure out the parameter name (version dependent) and the actual original
             // string value for the srs/crs parameter
             String parameterName =
-                    Optional.ofNullable(getMapRequest.getVersion())
+                    Optional.ofNullable(mapContent.getRequest().getVersion())
                             .filter(v -> v.equals("1.3.0"))
                             .map(v -> "crs")
                             .orElse("srs");
@@ -518,8 +524,6 @@ public class MapMLDocumentBuilder {
      */
     private MapMLLayerMetadata layerToMapMLLayerMetadata(RawLayer layer, String style, String cql)
             throws ServiceException {
-
-        // LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(layer.getTitle());
         ReferencedEnvelope bbox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
         boolean isLayerGroup = (layer.isLayerGroup());
         LayerInfo layerInfo = null;
@@ -531,7 +535,7 @@ public class MapMLDocumentBuilder {
         String layerTitle = null;
         ResourceInfo resourceInfo = null;
         boolean isTransparent = true;
-        String styleName = null;
+        String styleName = style != null ? style : "";
         String cqlFilter = null;
         boolean tileLayerExists = false;
         if (isLayerGroup) {
@@ -564,9 +568,10 @@ public class MapMLDocumentBuilder {
             isTransparent = transparent.orElse(!layerInfo.isOpaque());
             layerName = layerInfo.getName().isEmpty() ? layer.getTitle() : layerInfo.getName();
             layerTitle = getTitle(layerInfo, layerName);
+            // set the actual style name from the layer info
+            if (style == null) styleName = layerInfo.getDefaultStyle().getName();
         }
         ProjType projType = parseProjType();
-        styleName = style != null ? style : "";
         cqlFilter = cql != null ? cql : "";
         tileLayerExists =
                 gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
@@ -683,9 +688,13 @@ public class MapMLDocumentBuilder {
     /** Create and return MapML document */
     private void prepareDocument() {
         // build the mapML doc
-        mapml = new Mapml();
-        mapml.setHead(prepareHead());
-        mapml.setBody(prepareBody());
+        try {
+            mapml = new Mapml();
+            mapml.setHead(prepareHead());
+            mapml.setBody(prepareBody());
+        } catch (IOException e) {
+            throw new ServiceException("Error building MapML document", e);
+        }
     }
 
     /**
@@ -693,7 +702,7 @@ public class MapMLDocumentBuilder {
      *
      * @return
      */
-    private HeadContent prepareHead() {
+    private HeadContent prepareHead() throws IOException {
         // build the head
         HeadContent head = new HeadContent();
         head.setTitle(layerTitle);
@@ -848,7 +857,31 @@ public class MapMLDocumentBuilder {
                 LOGGER.log(Level.INFO, "Unable to reproject bounds for " + pt.value(), e);
             }
         }
+        String styles = buildStyles();
+        if (styles != null) head.setStyle(styles);
         return head;
+    }
+
+    /** Builds the CSS styles for all the layers involved in this GetMap */
+    private String buildStyles() throws IOException {
+        List<String> cssStyles = new ArrayList<>();
+        for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
+            if (!mapMLLayerMetadata.isLayerGroup()) {
+                String styleName = mapMLLayerMetadata.getStyleName();
+                Style style = wms.getStyleByName(styleName);
+                if (style != null) {
+                    Map<String, MapMLStyle> styles =
+                            MapMLFeatureUtil.getMapMLStyleMap(
+                                    style, mapContent.getScaleDenominator());
+                    String css = MapMLFeatureUtil.getCSSStyles(styles);
+                    cssStyles.add(css);
+                } else {
+                    LOGGER.log(Level.INFO, "Could not find style named " + styleName);
+                }
+            }
+        }
+        if (cssStyles.isEmpty()) return null;
+        return MapMLFeatureUtil.BBOX_DISPLAY_NONE + " " + String.join(" ", cssStyles);
     }
 
     /**
@@ -1052,10 +1085,10 @@ public class MapMLDocumentBuilder {
             generateWMSClientLinks(mapMLLayerMetadata);
         }
 
-        // query inputs
+        // Query inputs: query links for WMS with images, and WMTS always
+        // (for WMS features, the client is self sufficient, while it's not with tiled features yet)
         if (mapMLLayerMetadata.isQueryable()
-                && !mapMLLayerMetadata
-                        .isUseFeatures()) { // No query links for feature representations
+                && (!mapMLLayerMetadata.isUseFeatures() || mapMLLayerMetadata.isUseTiles())) {
             if (mapMLLayerMetadata.isUseTiles() && mapMLLayerMetadata.isTileLayerExists()) {
                 generateWMTSQueryClientLinks(mapMLLayerMetadata);
             } else {
@@ -1126,7 +1159,27 @@ public class MapMLDocumentBuilder {
         params.put("tilematrix", "{z}");
         params.put("TileCol", "{x}");
         params.put("TileRow", "{y}");
-        params.put("format", imageFormat);
+        if (mapMLLayerMetadata.isUseFeatures()) {
+            params.put("format", MAPML_MIME_TYPE);
+            params.put(
+                    "format_options",
+                    MAPML_FEATURE_FO
+                            + ":true;"
+                            + MAPML_SKIP_ATTRIBUTES_FO
+                            + ":true;"
+                            + MAPML_SKIP_STYLES_FO
+                            + ":true");
+            tileLink.setType(MimeType.TEXT_MAPML);
+        } else {
+            params.put("format", imageFormat);
+        }
+        if (mapMLLayerMetadata.isTimeEnabled()) {
+            params.put("time", "{time}");
+        }
+        if (mapMLLayerMetadata.isElevationEnabled()) {
+            params.put("elevation", "{elevation}");
+        }
+        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         String urlTemplate = "";
         try {
             urlTemplate =
@@ -1249,8 +1302,22 @@ public class MapMLDocumentBuilder {
         if (mapMLLayerMetadata.isElevationEnabled()) {
             params.put("elevation", "{elevation}");
         }
+        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         params.put("bbox", "{txmin},{tymin},{txmax},{tymax}");
-        params.put("format", imageFormat);
+        if (mapMLLayerMetadata.isUseFeatures()) {
+            params.put("format", MAPML_MIME_TYPE);
+            params.put(
+                    "format_options",
+                    MAPML_FEATURE_FO
+                            + ":true;"
+                            + MAPML_SKIP_ATTRIBUTES_FO
+                            + ":true;"
+                            + MAPML_SKIP_STYLES_FO
+                            + ":true");
+            tileLink.setType(MimeType.TEXT_MAPML);
+        } else {
+            params.put("format", imageFormat);
+        }
         params.put("transparent", Boolean.toString(mapMLLayerMetadata.isTransparent()));
         params.put("width", "256");
         params.put("height", "256");
@@ -1401,7 +1468,7 @@ public class MapMLDocumentBuilder {
         params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
         if (mapMLLayerMetadata.isUseFeatures()) {
             params.put("format", MAPML_MIME_TYPE);
-            params.put("format_options", MAPML_FEATURE_FORMAT_OPTIONS);
+            params.put("format_options", MAPML_FEATURE_FO + ":true");
         } else {
             params.put("format", imageFormat);
         }

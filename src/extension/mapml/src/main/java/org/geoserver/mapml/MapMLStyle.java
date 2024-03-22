@@ -6,14 +6,17 @@ package org.geoserver.mapml;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 import org.geotools.api.filter.Filter;
 
 /** A class to represent a MapML style */
 public class MapMLStyle {
-    public static final String RULE_ID_PREFIX = "rule-";
+    public static final String RULE_ID_PREFIX = "r";
 
-    public static final String NAME_DELIMITER = "_";
-    public static final String SYMBOLIZER_ID_PREFIX = "symbolizer-";
+    public static final String NAME_DELIMITER = "-";
+    public static final String SYMBOLIZER_ID_PREFIX = "s";
+
+    private String styleId;
     private int ruleId;
     private int symbolizerId;
     private String symbolizerType;
@@ -23,6 +26,14 @@ public class MapMLStyle {
     private boolean isElseFilter = false;
 
     private Filter filter;
+
+    public String getStyleId() {
+        return styleId;
+    }
+
+    public void setStyleId(String styleId) {
+        this.styleId = styleId;
+    }
 
     /**
      * Set the rule ID
@@ -149,11 +160,11 @@ public class MapMLStyle {
      * @return the properties as a CSS style string
      */
     public String getPropertiesAsCSS() {
-        StringBuilder sb = new StringBuilder();
+        StringJoiner joiner = new StringJoiner("; ");
         for (Map.Entry<String, String> entry : properties.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(";");
+            joiner.add(entry.getKey() + ":" + entry.getValue());
         }
-        return sb.toString();
+        return joiner.toString();
     }
 
     /**
@@ -171,6 +182,10 @@ public class MapMLStyle {
      * @return the CSS class name for this style
      */
     public String getCSSClassName() {
-        return RULE_ID_PREFIX + ruleId + NAME_DELIMITER + SYMBOLIZER_ID_PREFIX + symbolizerId;
+        StringJoiner joiner = new StringJoiner(NAME_DELIMITER);
+        if (styleId != null) joiner.add(styleId);
+        joiner.add(RULE_ID_PREFIX + ruleId);
+        joiner.add(SYMBOLIZER_ID_PREFIX + symbolizerId);
+        return joiner.toString();
     }
 }

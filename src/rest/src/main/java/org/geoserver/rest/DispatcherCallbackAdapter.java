@@ -4,8 +4,8 @@
  */
 package org.geoserver.rest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** No-op implementation of DispatcherCallback. */
 public class DispatcherCallbackAdapter implements DispatcherCallback {

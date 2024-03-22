@@ -8,11 +8,11 @@ package org.geoserver.cluster;
 import static com.google.common.base.Objects.equal;
 
 import com.google.common.base.Objects;
+import jakarta.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;

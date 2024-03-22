@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.Filter;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,7 +36,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.servlet.Filter;
 import javax.xml.namespace.QName;
 import net.opengis.ows11.BoundingBoxType;
 import org.apache.commons.codec.binary.Base64;

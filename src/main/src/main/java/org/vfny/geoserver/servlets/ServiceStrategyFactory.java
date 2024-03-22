@@ -5,10 +5,10 @@
  */
 package org.vfny.geoserver.servlets;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OutputStrategyFactory;
 import org.geoserver.ows.ServiceStrategy;

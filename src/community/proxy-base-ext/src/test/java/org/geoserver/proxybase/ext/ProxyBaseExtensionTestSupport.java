@@ -6,12 +6,12 @@ package org.geoserver.proxybase.ext;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.Filter;
-import javax.servlet.ServletException;
 import net.sf.json.JSON;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.SpringDelegatingFilter;

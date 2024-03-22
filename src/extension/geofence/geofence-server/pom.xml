@@ -32,6 +32,11 @@
       <artifactId>search-jpa-hibernate</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
@@ -135,12 +140,6 @@
     <dependency>
       <groupId>com.github.svenmeier.wicket-dnd</groupId>
       <artifactId>wicket-dnd</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- test dependencies -->

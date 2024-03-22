@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -32,7 +32,7 @@ public class FileItemCleanupCallbackTest {
 
     // temp files are only created for fields that exceed a certain content length
     private static final String FILE_CONTENTS =
-            Strings.repeat("1", DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD + 1);
+            Strings.repeat("1", DiskFileItemFactory.DEFAULT_THRESHOLD + 1);
 
     private static String oldTmpDir;
 

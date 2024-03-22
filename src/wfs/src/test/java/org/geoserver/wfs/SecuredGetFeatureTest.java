@@ -8,10 +8,10 @@ package org.geoserver.wfs;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.Filter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.Filter;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.codec.binary.Base64;

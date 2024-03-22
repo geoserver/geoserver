@@ -8,6 +8,14 @@ package org.geoserver.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -25,14 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -405,8 +405,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * during testing (otherwise no authentication will take place):
      *
      * <pre>
-     * protected List&lt;javax.servlet.Filter&gt; getFilters() {
-     *     return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions
+     * protected List&lt;jakarta.servlet.Filter&gt; getFilters() {
+     *     return Collections.singletonList((jakarta.servlet.Filter) GeoServerExtensions
      *             .bean(&quot;filterChainProxy&quot;));
      * }
      * </pre>

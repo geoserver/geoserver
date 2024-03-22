@@ -5,9 +5,9 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;

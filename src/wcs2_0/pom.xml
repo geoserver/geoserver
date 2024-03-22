@@ -19,6 +19,21 @@ application directory.
   <name>Web Coverage Service 2.0 Module</name>
 
   <dependencies>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>2.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+      <version>2.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -42,12 +57,6 @@ application directory.
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-wcs</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

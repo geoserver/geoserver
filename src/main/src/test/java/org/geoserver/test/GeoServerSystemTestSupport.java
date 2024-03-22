@@ -14,6 +14,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -41,14 +49,6 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.servlet.Filter;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -794,8 +794,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * during testing (otherwise no authentication will take place):
      *
      * <pre>
-     * protected List&lt;javax.servlet.Filter&gt; getFilters() {
-     *     return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions
+     * protected List&lt;jakarta.servlet.Filter&gt; getFilters() {
+     *     return Collections.singletonList((jakarta.servlet.Filter) GeoServerExtensions
      *             .bean(&quot;filterChainProxy&quot;));
      * }
      * </pre>

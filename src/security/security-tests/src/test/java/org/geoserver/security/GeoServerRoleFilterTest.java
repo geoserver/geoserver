@@ -8,7 +8,7 @@ package org.geoserver.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleFilterConfig;

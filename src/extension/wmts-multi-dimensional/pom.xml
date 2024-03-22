@@ -12,6 +12,11 @@
   <name>WMTS Multi Dimensional</name>
   <dependencies>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-gwc</artifactId>
       <version>${project.version}</version>

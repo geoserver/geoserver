@@ -6,6 +6,7 @@ package org.geoserver.metadata.data.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import javax.annotation.PostConstruct;
 import org.apache.wicket.Application;
 import org.apache.wicket.IApplicationListener;
 import org.geoserver.config.GeoServerDataDirectory;

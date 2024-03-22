@@ -5,12 +5,12 @@
  */
 package org.geoserver.cluster.impl.events;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.DispatcherCallback;
 import org.geotools.util.logging.Logging;
 

@@ -4,11 +4,11 @@
  */
 package org.geoserver.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.HandlerInterceptor;

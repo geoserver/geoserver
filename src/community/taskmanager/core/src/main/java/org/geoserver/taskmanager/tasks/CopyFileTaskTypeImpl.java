@@ -4,11 +4,11 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.FileReference;
 import org.geoserver.taskmanager.schedule.ParameterInfo;

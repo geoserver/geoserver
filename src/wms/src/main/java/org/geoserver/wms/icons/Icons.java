@@ -5,11 +5,11 @@
  */
 package org.geoserver.wms.icons;
 
+import jakarta.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.filter.expression.Expression;

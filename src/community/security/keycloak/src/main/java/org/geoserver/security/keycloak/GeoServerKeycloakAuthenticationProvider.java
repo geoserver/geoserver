@@ -5,9 +5,9 @@
 package org.geoserver.security.keycloak;
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.Filter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;

@@ -4,8 +4,8 @@
  */
 package org.geoserver.flow.controller;
 
+import jakarta.servlet.http.Cookie;
 import java.rmi.server.UID;
-import javax.servlet.http.Cookie;
 import org.geoserver.ows.Request;
 
 /**

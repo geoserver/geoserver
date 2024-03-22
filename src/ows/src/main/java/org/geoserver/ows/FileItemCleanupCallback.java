@@ -4,12 +4,13 @@
  */
 package org.geoserver.ows;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.DiskFileItem;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -21,16 +22,16 @@ public class FileItemCleanupCallback extends AbstractDispatcherCallback {
 
     private static final Logger LOGGER = Logging.getLogger(FileItemCleanupCallback.class);
 
-    private static final ThreadLocal<List<FileItem>> FILE_ITEMS =
+    private static final ThreadLocal<List<DiskFileItem>> FILE_ITEMS =
             ThreadLocal.withInitial(Collections::emptyList);
 
-    public static void setFileItems(List<FileItem> fileItems) {
+    public static void setFileItems(List<DiskFileItem> fileItems) {
         FILE_ITEMS.set(fileItems);
     }
 
     @Override
     public void finished(Request request) {
-        List<FileItem> items = FILE_ITEMS.get();
+        List<DiskFileItem> items = FILE_ITEMS.get();
         FILE_ITEMS.remove();
         if (!items.isEmpty()) {
             try (Reader r = request.getInput()) {
@@ -39,7 +40,14 @@ public class FileItemCleanupCallback extends AbstractDispatcherCallback {
                 LOGGER.log(Level.FINEST, "Unable to close request input", e);
             }
             // delete all of the temp file uploads for this request
-            items.forEach(FileItem::delete);
+            items.forEach(
+                    t -> {
+                        try {
+                            t.delete();
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING, "Error deleting uploaded file item", e);
+                        }
+                    });
         }
     }
 }

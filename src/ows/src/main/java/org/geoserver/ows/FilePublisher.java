@@ -5,11 +5,11 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.URLs;

@@ -7,6 +7,8 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -15,8 +17,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.ConverterLocator;

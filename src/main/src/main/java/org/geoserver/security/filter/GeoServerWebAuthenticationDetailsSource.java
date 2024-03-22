@@ -6,7 +6,7 @@
 
 package org.geoserver.security.filter;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 
 /** @author christian */

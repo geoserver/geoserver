@@ -5,8 +5,8 @@
  */
 package org.geoserver.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.wicket.RestartResponseException;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

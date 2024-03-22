@@ -4,7 +4,7 @@
  */
 package org.geoserver.geofence.server.rest.xml;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.xsd.DOMParser;

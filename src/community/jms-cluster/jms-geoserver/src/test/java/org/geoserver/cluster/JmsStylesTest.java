@@ -12,10 +12,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import jakarta.jms.Message;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-import javax.jms.Message;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;

@@ -8,6 +8,7 @@ import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.s
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.Filter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;

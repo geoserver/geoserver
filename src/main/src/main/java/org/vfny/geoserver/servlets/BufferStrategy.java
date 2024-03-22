@@ -5,10 +5,10 @@
  */
 package org.vfny.geoserver.servlets;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.DispatcherOutputStream;
 import org.geoserver.ows.ServiceStrategy;
 

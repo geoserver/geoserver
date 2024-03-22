@@ -7,8 +7,8 @@ package org.geoserver.wms.web.data;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nullable;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.web.GeoServerApplication;

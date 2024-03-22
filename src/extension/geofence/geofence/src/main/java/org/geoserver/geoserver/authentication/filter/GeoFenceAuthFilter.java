@@ -4,12 +4,12 @@
  */
 package org.geoserver.geoserver.authentication.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import org.geoserver.geoserver.authentication.auth.GeoFenceAuthenticationProvider;
 import org.geoserver.geoserver.authentication.auth.GeoFenceSecurityProvider;
 import org.geoserver.security.GeoServerSecurityManager;

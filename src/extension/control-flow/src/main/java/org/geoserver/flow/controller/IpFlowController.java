@@ -6,11 +6,11 @@
 
 package org.geoserver.flow.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 

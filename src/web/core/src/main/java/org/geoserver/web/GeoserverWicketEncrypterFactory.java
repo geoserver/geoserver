@@ -11,10 +11,10 @@
  */
 package org.geoserver.web;
 
+import jakarta.servlet.http.HttpSession;
 import java.security.GeneralSecurityException;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
-import javax.servlet.http.HttpSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.crypt.AbstractCrypt;

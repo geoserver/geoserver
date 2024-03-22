@@ -5,10 +5,10 @@
  */
 package org.geoserver.security.filter;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.config.SecurityManagerConfig;

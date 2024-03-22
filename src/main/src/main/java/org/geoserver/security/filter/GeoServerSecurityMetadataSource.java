@@ -6,12 +6,12 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.access.ConfigAttribute;

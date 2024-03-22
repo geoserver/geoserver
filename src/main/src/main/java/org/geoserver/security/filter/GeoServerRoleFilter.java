@@ -6,12 +6,12 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.config.RoleFilterConfig;

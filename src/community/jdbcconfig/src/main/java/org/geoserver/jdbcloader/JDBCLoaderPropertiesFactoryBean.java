@@ -4,6 +4,7 @@
  */
 package org.geoserver.jdbcloader;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +14,6 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.platform.GeoServerResourceLoader;

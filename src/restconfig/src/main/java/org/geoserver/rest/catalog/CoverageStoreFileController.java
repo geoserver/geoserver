@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.catalog;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.awt.RenderingHints;
 import java.io.IOException;
 import java.io.Serializable;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogRepository;

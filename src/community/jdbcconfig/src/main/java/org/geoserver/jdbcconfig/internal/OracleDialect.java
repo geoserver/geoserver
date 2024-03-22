@@ -5,7 +5,7 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public class OracleDialect extends Dialect {
 

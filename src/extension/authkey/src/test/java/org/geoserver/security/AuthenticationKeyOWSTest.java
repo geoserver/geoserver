@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.Filter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import javax.servlet.Filter;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -135,7 +135,7 @@ public class AuthenticationKeyOWSTest extends GeoServerSystemTestSupport {
      * realistic
      */
     @Override
-    protected List<javax.servlet.Filter> getFilters() {
+    protected List<jakarta.servlet.Filter> getFilters() {
 
         SecurityManagerConfig mconfig = getSecurityManager().getSecurityConfig();
         GeoServerSecurityFilterChain filterChain = mconfig.getFilterChain();

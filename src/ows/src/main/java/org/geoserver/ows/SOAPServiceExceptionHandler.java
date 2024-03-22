@@ -5,8 +5,8 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.ServiceException;
 
 /**

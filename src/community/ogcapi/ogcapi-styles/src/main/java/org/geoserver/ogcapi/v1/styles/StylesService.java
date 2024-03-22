@@ -10,6 +10,8 @@ import static org.geoserver.ogcapi.v1.styles.StylesService.ValidationMode.only;
 import static org.geoserver.ogcapi.v1.styles.StylesService.ValidationMode.yes;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,8 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;

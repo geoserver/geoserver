@@ -12,6 +12,7 @@ import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.isNull;
 
 import com.google.common.base.Preconditions;
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;

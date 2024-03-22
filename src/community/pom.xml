@@ -19,11 +19,6 @@
 
   <dependencies>
     <!-- Do not add any other dependency here, modules shall explicitly declare their dependencies -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

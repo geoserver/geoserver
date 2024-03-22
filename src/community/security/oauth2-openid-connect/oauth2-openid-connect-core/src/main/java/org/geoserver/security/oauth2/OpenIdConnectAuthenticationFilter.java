@@ -10,6 +10,9 @@ import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRole
 import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo;
 
 import com.jayway.jsonpath.JsonPath;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -19,9 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;

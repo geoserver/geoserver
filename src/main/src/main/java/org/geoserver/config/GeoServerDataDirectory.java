@@ -5,6 +5,7 @@
  */
 package org.geoserver.config;
 
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.annotation.Nonnull;
 import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;

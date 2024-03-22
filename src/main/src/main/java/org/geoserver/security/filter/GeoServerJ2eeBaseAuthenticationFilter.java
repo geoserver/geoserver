@@ -5,10 +5,10 @@
  */
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.impl.GeoServerRole;

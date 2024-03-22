@@ -8,6 +8,7 @@ package org.geoserver.ysld;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import jakarta.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleType;

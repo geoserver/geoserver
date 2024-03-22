@@ -18,6 +18,12 @@
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Google common libraries, featuring great utility classes for collections, io, concurrency, and more -->
     <dependency>

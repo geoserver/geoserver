@@ -6,10 +6,10 @@
 package org.geoserver.jdbcconfig.internal;
 
 import com.google.common.base.Joiner;
+import jakarta.annotation.Nullable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
 public class Dialect {

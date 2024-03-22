@@ -5,8 +5,8 @@
  */
 package org.geoserver.monitor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Does some post processing on a request to generate some bit of request information.

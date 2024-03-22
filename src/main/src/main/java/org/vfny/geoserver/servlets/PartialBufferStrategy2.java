@@ -5,9 +5,9 @@
  */
 package org.vfny.geoserver.servlets;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.DispatcherOutputStream;
 import org.geoserver.ows.ServiceStrategy;
 import org.vfny.geoserver.util.PartialBufferedOutputStream2;
@@ -52,7 +52,7 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
     /*
      * (non-Javadoc)
      *
-     * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#getDestination(javax.servlet.http.HttpServletResponse)
+     * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#getDestination(jakarta.servlet.http.HttpServletResponse)
      */
     @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {

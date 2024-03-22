@@ -5,9 +5,9 @@
  */
 package org.geoserver.logging;
 
+import jakarta.servlet.ServletContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import javax.servlet.ServletContext;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;

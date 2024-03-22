@@ -6,10 +6,10 @@
 package org.geoserver.gwc.layer;
 
 import com.google.common.collect.ImmutableSet;
+import jakarta.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;

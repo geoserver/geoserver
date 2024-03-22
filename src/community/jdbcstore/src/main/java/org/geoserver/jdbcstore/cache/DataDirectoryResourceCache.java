@@ -4,8 +4,8 @@
  */
 package org.geoserver.jdbcstore.cache;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
-import javax.servlet.ServletContext;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.web.context.ServletContextAware;
 

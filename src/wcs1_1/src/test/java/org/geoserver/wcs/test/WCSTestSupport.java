@@ -5,13 +5,13 @@
  */
 package org.geoserver.wcs.test;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;

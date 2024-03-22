@@ -4,8 +4,8 @@
  */
 package org.geoserver.catalog;
 
+import jakarta.annotation.Nullable;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.util.factory.Hints;
 

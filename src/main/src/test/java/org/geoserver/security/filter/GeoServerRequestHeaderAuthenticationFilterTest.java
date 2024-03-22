@@ -7,8 +7,8 @@ package org.geoserver.security.filter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;

@@ -82,13 +82,13 @@
       <artifactId>imageio-ext-png</artifactId>
     </dependency>
     <dependency>
-      <groupId>ar.com.hjg</groupId>
-      <artifactId>pngj</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
+      <groupId>ar.com.hjg</groupId>
+      <artifactId>pngj</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

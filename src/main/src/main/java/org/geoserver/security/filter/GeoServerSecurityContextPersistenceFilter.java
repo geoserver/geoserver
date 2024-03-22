@@ -6,11 +6,11 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -67,7 +67,8 @@ public class GeoServerSecurityContextPersistenceFilter extends GeoServerComposit
                         }
                         request.setAttribute(FILTER_APPLIED, Boolean.TRUE);
                         try {
-                            SecurityContext securityContext = repo.loadContext(request).get();
+                            SecurityContext securityContext =
+                                    repo.loadDeferredContext(request).get();
                             SecurityContextHolder.setContext(securityContext);
                             chain.doFilter(request, response);
                         } finally {

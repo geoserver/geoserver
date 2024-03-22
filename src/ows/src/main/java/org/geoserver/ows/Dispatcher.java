@@ -7,6 +7,8 @@ package org.geoserver.ows;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -33,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,9 +45,11 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload;
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
@@ -325,20 +327,21 @@ public class Dispatcher extends AbstractController {
                 request.setSOAP(true);
                 request.setInput(soapReader(httpRequest, request));
             } else if (reqContentType != null
-                    && ServletFileUpload.isMultipartContent(httpRequest)) {
+                    && JakartaServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
-                ServletFileUpload up = new ServletFileUpload(new DiskFileItemFactory());
+                JakartaServletDiskFileUpload up =
+                        new JakartaServletDiskFileUpload(DiskFileItemFactory.builder().get());
 
                 // treat regular form fields as additional kvp parameters
-                Map<String, FileItem> kvpFileItems =
+                Map<String, DiskFileItem> kvpFileItems =
                         new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
-                    List<FileItem> items = up.parseRequest(httpRequest);
+                    List<DiskFileItem> items = up.parseRequest(httpRequest);
                     FileItemCleanupCallback.setFileItems(items);
-                    FileItem body = null;
-                    for (FileItem item : items) {
+                    DiskFileItem body = null;
+                    for (DiskFileItem item : items) {
                         if (item.isFormField()) {
-                            FileItem old = kvpFileItems.put(item.getFieldName(), item);
+                            DiskFileItem old = kvpFileItems.put(item.getFieldName(), item);
                             if (old != null) {
                                 old.delete(); // the temp file can be deleted at this point
                             }
@@ -368,7 +371,11 @@ public class Dispatcher extends AbstractController {
                 kvpFileItems.forEach(
                         (key, value) -> {
                             kvpItems.put(key, value.getString());
-                            value.delete(); // the temp file can be deleted at this point
+                            try {
+                                value.delete(); // the temp file can be deleted at this point
+                            } catch (IOException e) {
+                                logger.log(Level.WARNING, "Error deleting uploaded file item", e);
+                            }
                         });
 
                 request.setOrAppendKvp(parseKVP(request, kvpItems));

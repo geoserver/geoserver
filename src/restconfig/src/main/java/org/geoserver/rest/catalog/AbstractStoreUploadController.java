@@ -4,10 +4,10 @@
  */
 package org.geoserver.rest.catalog;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.resource.Resource;

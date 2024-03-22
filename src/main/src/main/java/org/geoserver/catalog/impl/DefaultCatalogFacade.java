@@ -7,6 +7,7 @@ package org.geoserver.catalog.impl;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -20,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;

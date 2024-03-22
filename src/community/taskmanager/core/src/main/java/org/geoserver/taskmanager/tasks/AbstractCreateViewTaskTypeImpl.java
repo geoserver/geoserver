@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.tasks;
 
+import jakarta.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.geoserver.taskmanager.external.DbSource;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.impl.DbTableImpl;

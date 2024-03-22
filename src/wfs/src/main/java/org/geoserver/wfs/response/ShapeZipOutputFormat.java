@@ -7,6 +7,7 @@ package org.geoserver.wfs.response;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,7 +33,6 @@ import java.util.Properties;
 import java.util.SimpleTimeZone;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;

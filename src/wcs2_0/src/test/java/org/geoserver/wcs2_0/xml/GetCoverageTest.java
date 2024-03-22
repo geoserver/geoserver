@@ -10,13 +10,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.mail.BodyPart;
+import jakarta.mail.Multipart;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import javax.mail.BodyPart;
-import javax.mail.Multipart;
 import javax.xml.namespace.QName;
 import net.opengis.wcs20.GetCoverageType;
 import net.opengis.wcs20.Wcs20Factory;

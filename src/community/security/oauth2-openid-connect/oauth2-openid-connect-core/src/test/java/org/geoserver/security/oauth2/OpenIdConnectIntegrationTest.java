@@ -16,13 +16,13 @@ import static org.junit.Assert.assertThat;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletRequestEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.servlet.Filter;
-import javax.servlet.ServletRequestEvent;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -277,7 +277,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener()
                 .requestInitialized(new ServletRequestEvent(request.getServletContext(), request));

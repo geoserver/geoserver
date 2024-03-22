@@ -17,15 +17,15 @@
  */
 package org.geoserver.filters;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.logging.Logger;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     protected HttpServletResponse origResponse = null;

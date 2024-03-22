@@ -8,12 +8,12 @@ package org.geoserver.web.demo;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;

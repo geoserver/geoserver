@@ -14,6 +14,11 @@
   <name>DownloadProcess</name>
 
   <dependencies>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.1</version>
+    </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
@@ -102,6 +107,12 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
 

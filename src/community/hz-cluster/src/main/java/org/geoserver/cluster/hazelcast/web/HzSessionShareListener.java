@@ -6,8 +6,8 @@
 package org.geoserver.cluster.hazelcast.web;
 
 import com.hazelcast.web.SessionListener;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSessionEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSessionEvent;
 import org.geoserver.cluster.hazelcast.HzCluster;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

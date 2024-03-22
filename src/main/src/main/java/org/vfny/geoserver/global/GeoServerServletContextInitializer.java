@@ -5,8 +5,8 @@
  */
 package org.vfny.geoserver.global;
 
+import jakarta.servlet.ServletContext;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

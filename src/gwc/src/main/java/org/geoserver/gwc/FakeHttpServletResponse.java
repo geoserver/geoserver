@@ -5,6 +5,10 @@
  */
 package org.geoserver.gwc;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,10 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import org.geotools.util.logging.Logging;
 
 /** A HTTP response used when calling back into the GeoServer dispatcher */
@@ -68,7 +68,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
         return cookies == null ? new Cookie[0] : cookies.toArray(new Cookie[cookies.size()]);
     }
 
-    /** @see javax.servlet.http.HttpServletResponse#addCookie(javax.servlet.http.Cookie) */
+    /** @see jakarta.servlet.http.HttpServletResponse#addCookie(jakarta.servlet.http.Cookie) */
     @Override
     public void addCookie(Cookie cookie) {
         if (cookies == null) {
@@ -140,7 +140,9 @@ public class FakeHttpServletResponse implements HttpServletResponse {
         throw new ServletDebugException();
     }
 
-    /** @see javax.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String) */
+    /**
+     * @see jakarta.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String)
+     */
     @Override
     public void setHeader(String arg0, String arg1) {
         addHeader(arg0, arg1);

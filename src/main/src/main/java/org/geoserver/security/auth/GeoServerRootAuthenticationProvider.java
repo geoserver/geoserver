@@ -5,9 +5,9 @@
  */
 package org.geoserver.security.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;

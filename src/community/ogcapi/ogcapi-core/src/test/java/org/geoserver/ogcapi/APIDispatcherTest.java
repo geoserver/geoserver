@@ -9,6 +9,7 @@ package org.geoserver.ogcapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.TestDispatcherCallback;

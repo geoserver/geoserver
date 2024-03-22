@@ -6,13 +6,13 @@ package org.geoserver.wms.vector;
 
 import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
 
+import jakarta.annotation.Nullable;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;

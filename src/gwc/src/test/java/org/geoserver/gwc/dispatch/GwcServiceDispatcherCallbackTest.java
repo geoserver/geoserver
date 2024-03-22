@@ -12,9 +12,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;

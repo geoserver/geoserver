@@ -5,6 +5,8 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,8 +22,6 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.TimeZone;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.util.EncodingInfo;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geotools.util.URLs;

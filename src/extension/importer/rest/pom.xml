@@ -26,8 +26,13 @@
       <artifactId>org.restlet.ext.fileupload</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-jakarta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>

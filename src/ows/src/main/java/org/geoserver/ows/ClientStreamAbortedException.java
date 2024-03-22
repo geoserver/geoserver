@@ -8,7 +8,7 @@ import java.io.IOException;
 
 /**
  * An IOException that means a {@link
- * ServiceStrategy#getDestination(javax.servlet.http.HttpServletResponse) ServiceStrategy's
+ * ServiceStrategy#getDestination(jakarta.servlet.http.HttpServletResponse) ServiceStrategy's
  * destination} IO operation has been abruptly interrupted while writing a response.
  *
  * <p>This exception serves as an indicator to the dispatching system that there's no need to report

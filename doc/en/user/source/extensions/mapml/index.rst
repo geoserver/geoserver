@@ -204,7 +204,7 @@ The values ``WGS84`` and ``OSMTILE`` are equivalent to the EPSG:4326 and EPSG:90
 However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is ``WGS84`` (equivalent to EPSG:4326), ``OSMTILE`` (equivalent to EPSG:900913), ``CBMTILE`` (Canada Base Map) and ``APSTILE`` (Alaska Polar Stereographic).
 
 The MapML client will normally request image tiles against WMTS, but if configured to use feature output,
-it will try to use tiles in ``text/mapml`` format, which should be configured as a cachable format
+it will try to use tiles in ``text/mapml`` format, which should be configured as a cacheable format
 in order to enable WMTS requests.
 
 .. figure:: images/mapml_tile_caching_panel_ui.png

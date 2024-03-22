@@ -693,7 +693,7 @@ public class MapMLDocumentBuilder {
             mapml.setHead(prepareHead());
             mapml.setBody(prepareBody());
         } catch (IOException e) {
-
+            throw new ServiceException("Error building MapML document", e);
         }
     }
 

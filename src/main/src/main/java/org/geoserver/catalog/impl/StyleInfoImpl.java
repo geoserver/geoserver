@@ -133,6 +133,12 @@ public class StyleInfoImpl implements StyleInfo {
 
     @Override
     public StyledLayerDescriptor getSLD() throws IOException {
+        // to avoid NPEs in cases where the catalog or resource pool are not set
+        // this can happen when the GeoServerImpl is mocked and the style is treated as remote
+        // @see GetCapabilitiesTransformerTest
+        if (catalog == null || catalog.getResourcePool() == null) {
+            return null;
+        }
         return catalog.getResourcePool().getSld(this);
     }
 

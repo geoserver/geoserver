@@ -311,13 +311,15 @@ public class STACService {
             HttpServletRequest request)
             throws Exception {
         // run just to check the collection exists, and throw an appropriate exception otherwise
-        getCollection(collectionId);
+        collectionAvailableAndEnabled(collectionId);
 
         Query q = new Query();
-        q.setFilter(
-                FF.and(
-                        getEnabledFilter(),
-                        FF.equals(FF.property("identifier"), FF.literal(itemId))));
+        Filter collectionFilter = getCollectionsFilter(Collections.singletonList(collectionId));
+        // make sure the item is in the collection
+        Filter collectionAndItem =
+                FF.and(collectionFilter, FF.equals(FF.property("identifier"), FF.literal(itemId)));
+        // make sure the item is enabled
+        q.setFilter(FF.and(getEnabledFilter(), collectionAndItem));
 
         FeatureSource<FeatureType, Feature> products =
                 accessProvider.getOpenSearchAccess().getProductSource();
@@ -364,13 +366,7 @@ public class STACService {
             throws Exception {
 
         // check the collection is enabled
-        Feature collection = getCollection(collectionId);
-        if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
-            throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "Collection " + collectionId + " is not avialable",
-                    HttpStatus.NOT_FOUND);
-        }
+        collectionAvailableAndEnabled(collectionId);
         boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(
@@ -409,6 +405,22 @@ public class STACService {
         response.setSelf(linksBuilder.getSelf());
         response.setTemplateMap(qr.getTemplateMap());
         return response;
+    }
+
+    /**
+     * Check the collection is available and enabled
+     *
+     * @param collectionId the collection identifier
+     * @throws IOException problem accessing the collection
+     */
+    private void collectionAvailableAndEnabled(String collectionId) throws IOException {
+        Feature collection = getCollection(collectionId);
+        if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
+            throw new APIException(
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "Collection " + collectionId + " is not available",
+                    HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path = "search", name = "searchGet")

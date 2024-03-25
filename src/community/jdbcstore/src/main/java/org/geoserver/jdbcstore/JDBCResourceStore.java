@@ -233,7 +233,7 @@ public class JDBCResourceStore implements ResourceStore {
                                 events));
             }
             try {
-                return new CachingOutputStreamWrapper(File.createTempFile("out.", entry.getName()));
+                return new CachingOutputStreamWrapper(Files.createTempFile("out.", entry.getName()).toFile());
             } catch (IOException ex) {
                 throw new IllegalStateException(ex);
             }

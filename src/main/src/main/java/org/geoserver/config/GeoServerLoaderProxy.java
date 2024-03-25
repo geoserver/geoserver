@@ -7,6 +7,7 @@ package org.geoserver.config;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -79,9 +80,25 @@ public class GeoServerLoaderProxy
     protected GeoServerLoader lookupGeoServerLoader(ApplicationContext appContext) {
         GeoServerLoader loader = GeoServerExtensions.bean(GeoServerLoader.class, appContext);
         if (loader == null) {
-            loader = new DefaultGeoServerLoader(resourceLoader);
+            loader = createDefaultLoader(appContext);
         }
         return loader;
+    }
+
+    /**
+     * @param appContext required for {@link
+     *     DataDirectoryGeoServerLoader#isEnabled(ApplicationContext)}
+     * @return a new instance of {@link DataDirectoryGeoServerLoader} if {@link
+     *     DataDirectoryGeoServerLoader#isEnabled() enabled}, or {@link DefaultGeoServerLoader}
+     *     otherwise.
+     */
+    protected GeoServerLoader createDefaultLoader(ApplicationContext appContext) {
+        if (DataDirectoryGeoServerLoader.isEnabled(appContext)) {
+            GeoServerSecurityManager securityManager =
+                    GeoServerExtensions.bean(GeoServerSecurityManager.class);
+            return new DataDirectoryGeoServerLoader(resourceLoader, securityManager);
+        }
+        return new DefaultGeoServerLoader(resourceLoader);
     }
 
     @Override

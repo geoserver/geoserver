@@ -242,7 +242,7 @@ public abstract class GeoServerLoader {
 
     protected GeoServerResourceLoader resourceLoader;
     GeoServer geoserver;
-    XStreamPersisterFactory xpf = new XStreamPersisterFactory();
+    protected XStreamPersisterFactory xpf = new XStreamPersisterFactory();
 
     // JD: this is a hack for the moment, it is used only to maintain tests since the test setup
     // relies
@@ -514,7 +514,7 @@ public abstract class GeoServerLoader {
     }
 
     /** Reads the catalog from disk. */
-    Catalog readCatalog(XStreamPersister xp) throws Exception {
+    protected Catalog readCatalog(XStreamPersister xp) throws Exception {
         CatalogImpl catalog = new CatalogImpl();
         catalog.setResourceLoader(resourceLoader);
         xp.setCatalog(catalog);
@@ -948,13 +948,17 @@ public abstract class GeoServerLoader {
         return catalog2;
     }
 
+    protected boolean isLegacyConfig() {
+        Resource legacyServicesConfigFile = resourceLoader.get("services.xml");
+        return Resources.exists(legacyServicesConfigFile);
+    }
+
     protected void readConfiguration(GeoServer geoServer, XStreamPersister xp) throws Exception {
         // look for services.xml, if it exists assume we are dealing with
         // an old data directory
-        Resource f = resourceLoader.get("services.xml");
-        if (!Resources.exists(f)) {
+        if (!isLegacyConfig()) {
             // assume 2.x style
-            f = resourceLoader.get("global.xml");
+            Resource f = resourceLoader.get("global.xml");
             if (Resources.exists(f)) {
                 try {
                     GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
@@ -1032,7 +1036,8 @@ public abstract class GeoServerLoader {
             geoServer.removeListener(p);
 
             // rename the services.xml file
-            f.renameTo(f.parent().get("services.xml.old"));
+            Resource services = resourceLoader.get("services.xml");
+            services.renameTo(services.parent().get("services.xml.old"));
         }
     }
 

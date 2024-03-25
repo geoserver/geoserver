@@ -96,7 +96,6 @@
             <descriptor>release/ext-proxy-base-ext.xml</descriptor>
             <descriptor>release/ext-imagemap.xml</descriptor>
             <descriptor>release/ext-xslt.xml</descriptor>
-            <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
             <descriptor>release/ext-rat.xml</descriptor>
             <descriptor>release/ext-monitor-kafka.xml</descriptor>
@@ -248,7 +247,6 @@
         <module>proxy-base-ext</module>
         <module>xslt</module>
         <module>imagemap</module>
-        <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
         <module>rat</module>
         <module>monitor-kafka</module>
@@ -700,12 +698,6 @@
       <id>imagemap</id>
       <modules>
         <module>imagemap</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>datadir-catalog-loader</id>
-      <modules>
-        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
     <profile>

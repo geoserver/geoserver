@@ -95,7 +95,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
     File createTempFile(String prefix, String suffix) throws IOException {
         String customTempDir = GeoServerExtensions.getProperty(CUSTOM_TEMP_DIR_PROPERTY);
         if (!StringUtils.hasText(customTempDir)) {
-            return File.createTempFile("geopkg", ".tmp.gpkg");
+            return Files.createTempFile("geopkg", ".tmp.gpkg").toFile();
         }
         File tempDir = new File(customTempDir);
         if (!tempDir.exists() || !tempDir.isDirectory()) {

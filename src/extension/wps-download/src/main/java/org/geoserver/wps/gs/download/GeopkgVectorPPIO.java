@@ -25,7 +25,7 @@ public class GeopkgVectorPPIO extends GeopkgPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) value;
-        File file = File.createTempFile("geopkg", ".tmp.gpkg");
+        File file = Files.createTempFile("geopkg", ".tmp.gpkg").toFile();
         try {
             // write the geopackage
             try (GeoPackage geopkg = getGeoPackage(file)) {

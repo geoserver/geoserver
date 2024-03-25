@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,6 +97,26 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         namespaces.put("ogc", "http://www.opengis.net/ogc");
         NamespaceContext ctx = new SimpleNamespaceContext(namespaces);
         XMLUnit.setXpathNamespaceContext(ctx);
+
+        addToppWorkspace(testData);
+    }
+
+    private void addToppWorkspace(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        testData.addWorkspace("topp", "http://www.openplans.org/topp", catalog);
+        testData.addStyle(
+                catalog.getWorkspaceByName("topp"),
+                "toppsample",
+                "topp/toppsample.sld",
+                this.getClass(),
+                catalog);
+        File toppStylesDir =
+                new File(catalog.getResourceLoader().getBaseDirectory(), "workspaces/topp/styles");
+        catalog.getResourceLoader()
+                .copyFromClassPath(
+                        "/org/geoserver/wms/map/burg02.svg",
+                        new File(toppStylesDir, "burg02.svg"),
+                        this.getClass());
     }
 
     @Before
@@ -2002,5 +2023,22 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         rules = legend.getJSONArray("Legend").getJSONObject(0).getJSONArray("rules");
         assertEquals(1, rules.size());
         assertEquals("ashton", rules.getJSONObject(0).getString("name"));
+    }
+
+    @Test
+    public void testExternalReferenceWorkspace() throws Exception {
+        String url =
+                "wms?LAYER="
+                        + MockData.BRIDGES.getLocalPart()
+                        + "&STYLE=toppsample&FORMAT=application/json"
+                        + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+        JSONObject result = (JSONObject) getAsJSON(url);
+        assertNotNull(result);
+        JSONArray legend = result.getJSONArray("Legend");
+        JSONArray rules = legend.getJSONObject(0).getJSONArray("rules");
+        JSONArray symbolizers = rules.getJSONObject(0).getJSONArray("symbolizers");
+        JSONObject point = symbolizers.getJSONObject(0).getJSONObject("Point");
+        assertTrue(point.has("url"));
+        assertTrue(point.getString("url").endsWith("/geoserver/styles/topp/burg02.svg"));
     }
 }

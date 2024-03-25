@@ -6,12 +6,17 @@
 package org.geoserver.wms.icons;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -148,8 +153,6 @@ public abstract class IconProperties {
 
                     if ("file".equals(graphicProtocol)) {
                         File file = URLs.urlToFile(target);
-                        File styles = null;
-                        File graphicFile = null;
 
                         if (file.isAbsolute()) {
                             GeoServerDataDirectory dataDir =
@@ -157,30 +160,19 @@ public abstract class IconProperties {
                                             GeoServerExtensions.bean("dataDirectory");
                             // we grab the canonical path to make sure we can compare them, no
                             // relative parts in them and so on
-                            styles = dataDir.getStyles().dir().getCanonicalFile();
-                            file = graphicFile = file.getCanonicalFile();
-                            if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
-                                // ok, part of the styles directory, extract only the relative path
-                                String relativePath =
-                                        file.getAbsolutePath()
-                                                .substring(styles.getAbsolutePath().length() + 1);
-                                file = new File(relativePath);
-                            } else {
-                                // we wont' transform this, other dirs are not published
-                                file = null;
-                            }
+                            File canonicalFile = file.getCanonicalFile();
 
-                            // rebuild the icon href accordingly
-                            if (file != null && styles != null) {
-                                return ResponseUtils.buildURL(
-                                        baseURL,
-                                        "styles/" + styles.toURI().relativize(graphicFile.toURI()),
-                                        null,
-                                        URLType.RESOURCE);
-                            } else {
+                            SimpleEntry<WorkspaceInfo, File> stylesDirEntry =
+                                    findStylesDir(canonicalFile, dataDir);
+                            if (stylesDirEntry == null) {
                                 // we don't know how to handle this then...
                                 return null;
                             }
+                            return rebuildIconHref(
+                                    baseURL,
+                                    canonicalFile,
+                                    stylesDirEntry.getKey(),
+                                    stylesDirEntry.getValue());
                         }
                         return ResponseUtils.buildURL(
                                 baseURL,
@@ -198,6 +190,36 @@ public abstract class IconProperties {
                 } catch (Exception ex) {
                     throw new IllegalStateException(ex);
                 }
+            }
+
+            private String rebuildIconHref(
+                    String baseURL, File canonicalFile, WorkspaceInfo ws, File stylesDir) {
+                String styles = "styles/" + (ws != null ? ws.getName() + "/" : "");
+                String path = styles + stylesDir.toURI().relativize(canonicalFile.toURI());
+                return ResponseUtils.buildURL(baseURL, path, null, URLType.RESOURCE);
+            }
+
+            private SimpleEntry<WorkspaceInfo, File> findStylesDir(
+                    File canonicalFile, GeoServerDataDirectory dataDir) throws IOException {
+                // try main dir
+                File stylesDir = dataDir.getStyles().dir().getCanonicalFile();
+                if (isPartOfStylesDir(canonicalFile, stylesDir)) {
+                    return new SimpleEntry<>(null, stylesDir);
+                }
+                // try workspaces
+                List<WorkspaceInfo> workspaces =
+                        ((Catalog) GeoServerExtensions.bean("catalog")).getWorkspaces();
+                for (WorkspaceInfo ws : workspaces) {
+                    stylesDir = dataDir.getStyles(ws).dir().getCanonicalFile();
+                    if (isPartOfStylesDir(canonicalFile, stylesDir)) {
+                        return new SimpleEntry<>(ws, stylesDir);
+                    }
+                }
+                return null;
+            }
+
+            private boolean isPartOfStylesDir(File canonicalFile, File stylesDir) {
+                return canonicalFile.getAbsolutePath().startsWith(stylesDir.getAbsolutePath());
             }
 
             @Override

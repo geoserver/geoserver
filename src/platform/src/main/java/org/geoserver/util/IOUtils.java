@@ -190,7 +190,7 @@ public class IOUtils {
      * <p>Strategy is to leverage the system temp directory, then create a sub-directory.
      */
     public static File createTempDirectory(String prefix) throws IOException {
-        File dummyTemp = File.createTempFile("blah", null);
+        File dummyTemp = Files.createTempFile("blah", null).toFile();
         String sysTempDir = dummyTemp.getParentFile().getAbsolutePath();
         dummyTemp.delete();
 

@@ -47,6 +47,7 @@ public final class IconPropertyInjector {
     private List<List<MiniRule>> injectProperties(List<List<MiniRule>> ftStyles) {
         List<List<MiniRule>> result = new ArrayList<>();
         for (int ftIdx = 0; ftIdx < ftStyles.size(); ftIdx++) {
+            boolean empty = true;
             List<MiniRule> origRules = ftStyles.get(ftIdx);
             List<MiniRule> resultRules = new ArrayList<>();
             for (int ruleIdx = 0; ruleIdx < origRules.size(); ruleIdx++) {
@@ -57,11 +58,14 @@ public final class IconPropertyInjector {
                     if (properties.containsKey(key)) {
                         Symbolizer sym = origRule.symbolizers.get(symbIdx);
                         resultSymbolizers.add(injectPointSymbolizer(key, sym));
+                        empty = false;
                     }
                 }
                 resultRules.add(new MiniRule(null, false, resultSymbolizers));
             }
-            result.add(resultRules);
+            if (!empty) {
+                result.add(resultRules);
+            }
         }
         return result;
     }

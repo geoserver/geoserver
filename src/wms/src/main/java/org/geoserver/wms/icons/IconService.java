@@ -88,7 +88,6 @@ public class IconService extends AbstractController {
             }
 
             Style adjustedStyle = IconPropertyInjector.injectProperties(style, kvp);
-
             BufferedImage image = IconRenderer.renderIcon(adjustedStyle);
 
             response.setContentType("image/png");

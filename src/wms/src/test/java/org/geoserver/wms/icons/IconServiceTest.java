@@ -38,6 +38,24 @@ public class IconServiceTest extends IconTestSupport {
     }
 
     @Test
+    public void testHandleMultipleFTS() throws Exception {
+        Style style =
+                style(
+                        featureTypeStyle(rule(Filter.INCLUDE, grayCircle())),
+                        featureTypeStyle(rule(Filter.INCLUDE, redStar())));
+
+        StyleInfo s = createNiceMock(StyleInfo.class);
+        expect(s.getStyle()).andReturn(style);
+
+        Catalog cat = createNiceMock(Catalog.class);
+        expect(cat.getStyleByName("foo-bar")).andReturn(s);
+
+        replay(s, cat);
+
+        dispatch("/icon/foo-bar", "1.0.0=", cat);
+    }
+
+    @Test
     public void testAcceptedNames() throws Exception {
         // test a name with non word characters
         Style style = style(featureTypeStyle(rule(Filter.INCLUDE, grayCircle())));

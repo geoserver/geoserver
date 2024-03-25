@@ -78,7 +78,7 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
 
         File tempFile = null;
         try {
-            tempFile = File.createTempFile("tempNetCDF", ".nc");
+            tempFile = Files.createTempFile("tempNetCDF", ".nc").toFile();
             for (NetCDFEncoderFactory factory : encoderFactories) {
                 NetCDFEncoder encoder =
                         factory.getEncoderFor(

@@ -159,7 +159,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         try {
             if (validateSchema) { // copy POST to a file
                 // make tempfile
-                temp = File.createTempFile("getMapPost", "xml");
+                temp = Files.createTempFile("getMapPost", "xml").toFile();
 
                 try (FileOutputStream fos = new FileOutputStream(temp);
                         BufferedOutputStream out = new BufferedOutputStream(fos)) {

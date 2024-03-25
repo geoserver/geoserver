@@ -260,7 +260,7 @@ public class CatalogUtil {
                 }
             }
 
-            File zipFile = File.createTempFile("style", ".zip");
+            File zipFile = Files.createTempFile("style", ".zip").toFile();
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile))) {
                 ZipEntry zipEntry = new ZipEntry(resStyle.name());
                 out.putNextEntry(zipEntry);

@@ -69,7 +69,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                         upRound(ri.getWidth(), TILE_SIZE),
                         upRound(ri.getHeight(), TILE_SIZE));
 
-        File file = File.createTempFile("geopkg", ".tmp.gpkg");
+        File file = Files.createTempFile("geopkg", ".tmp.gpkg").toFile();
         try {
             // write the geopackage
             try (GeoPackage geopkg = getGeoPackage(file)) {

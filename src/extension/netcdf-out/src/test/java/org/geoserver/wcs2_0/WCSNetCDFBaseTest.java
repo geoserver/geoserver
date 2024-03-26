@@ -11,8 +11,15 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.kvp.WCSKVPTestSupport;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
+import org.junit.BeforeClass;
 
 public class WCSNetCDFBaseTest extends WCSKVPTestSupport {
+
+    @BeforeClass
+    public static void init() {
+        System.setProperty("org.geotools.coverage.io.netcdf.cachefile", "true");
+        System.setProperty("org.geotools.coverage.io.netcdf.memorymap", "true");
+    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

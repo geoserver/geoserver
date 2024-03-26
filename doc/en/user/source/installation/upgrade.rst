@@ -30,6 +30,18 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+GRIB Layers (GeoServer 2.26 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GeoServer 2.26 upgraded underlying Unidata NetCDF libraries from 4.6.15 to 5.3.3 which includes internal GRIB mapping table 
+updates and GRIB parameters interpretation updates. The upgrade impacted the way the GRIB parameters are being retrieved as
+well the way the temporal information is being extracted from the underlying data which affects the construction of the
+names and the reported temporal ranges as well.
+
+Due to the above compatibility issues, some layers based on underlying GRIB datasets may stop working properly after the upgrade.
+If that is the case, the recommended action is to do a backup before doing the upgrade and then reconfigure the layers.
+Detailed instructions are provided in the :ref:`grib_layers` page.
+
+
 External Entity Allow List default (GeoServer 2.25 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

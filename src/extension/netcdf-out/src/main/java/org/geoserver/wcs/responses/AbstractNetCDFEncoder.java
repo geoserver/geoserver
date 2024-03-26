@@ -43,12 +43,15 @@ import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.units.PrefixDBException;
 import ucar.units.SpecificationException;
 import ucar.units.StandardUnitFormat;
@@ -122,10 +125,12 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
     protected DataPacking dataPacking = DataPacking.getDefault();
 
-    /** The underlying {@link NetcdfFileWriter} which will be used to write down data. */
-    protected NetcdfFileWriter writer;
+    /** The underlying {@link NetcdfFormatWriter.Builder} which will be used to write down data. */
+    protected NetcdfFormatWriter.Builder writerb;
 
-    protected NetcdfFileWriter.Version version;
+    protected NetcdfFormatWriter writer;
+
+    protected NetcdfFileFormat ncFormat;
 
     /** The instance of the class delegated to do proper NetCDF coordinates setup */
     protected NetCDFCRSWriter crsWriter;
@@ -149,9 +154,10 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         if (settings != null) {
             initializeFromSettings(settings);
         }
-        this.writer = getWriter(file, outputFormat);
+        this.writerb = getWriterBuilder(file, outputFormat);
         dimensionsManager.collectCoverageDimensions(this.granuleStack);
         initializeNetCDF();
+        this.writer = writerb.build();
     }
 
     protected void initializeFromSettings(NetCDFLayerSettingsContainer settings) {
@@ -168,7 +174,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** Basic NetCDF Initialization */
     protected void initializeNetCDF() {
         // Initialize the coordinates writer
-        crsWriter = new NetCDFCRSWriter(writer, sampleGranule);
+        crsWriter = new NetCDFCRSWriter(writerb, sampleGranule);
 
         // Initialize the Dimensions and coordinates variable
         initializeDimensions();
@@ -194,13 +200,12 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         if (globalAttributes != null) {
             for (NetCDFSettingsContainer.GlobalAttribute att : globalAttributes) {
                 if (att.getKey().equalsIgnoreCase(NetCDFUtilities.CONVENTIONS)) {
-                    writer.addGroupAttribute(
-                            null,
+                    writerb.addAttribute(
                             new Attribute(
                                     NetCDFUtilities.COORD_SYS_BUILDER,
                                     NetCDFUtilities.COORD_SYS_BUILDER_CONVENTION));
                 }
-                writer.addGroupAttribute(null, buildAttribute(att.getKey(), att.getValue()));
+                writerb.addAttribute(buildAttribute(att.getKey(), att.getValue()));
             }
         }
     }
@@ -215,7 +220,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                         // part of the blacklist?
                         String shortName = att.getShortName();
                         if (!COPY_GLOBAL_ATTRIBUTES_BLACKLIST.contains(shortName)) {
-                            writer.addGroupAttribute(null, att);
+                            writerb.addAttribute(att);
                         }
                     }
                 }
@@ -258,9 +263,10 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         return new Attribute(key, value);
     }
 
-    protected NetcdfFileWriter getWriter(File file, String outputFormat) throws IOException {
+    protected NetcdfFormatWriter.Builder getWriterBuilder(File file, String outputFormat)
+            throws IOException {
         if (NetCDFUtilities.NETCDF4_MIMETYPE.equalsIgnoreCase(outputFormat)) {
-            version = NetcdfFileWriter.Version.netcdf4_classic;
+            ncFormat = NetcdfFileFormat.NETCDF4_CLASSIC;
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(
@@ -271,22 +277,22 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                                 + "\nFallback to Version 3");
             }
             // Version 3 as fallback (the Default)
-            version = NetcdfFileWriter.Version.netcdf3;
+            ncFormat = NetcdfFileFormat.NETCDF3;
         }
 
-        NetcdfFileWriter writer = null;
-        if (version == NetcdfFileWriter.Version.netcdf4_classic) {
+        NetcdfFormatWriter.Builder writerb = null;
+        if (ncFormat == NetcdfFileFormat.NETCDF4_CLASSIC) {
             if (!NetCDFUtilities.isNC4CAvailable()) {
                 throw new IOException(NetCDFUtilities.NC4_ERROR_MESSAGE);
             }
             Nc4Chunking chunker = new Nc4ChunkingDefault(compressionLevel, shuffle);
-            writer = NetcdfFileWriter.createNew(version, file.getAbsolutePath(), chunker);
+            writerb =
+                    NetcdfFormatWriter.createNewNetcdf4(ncFormat, file.getAbsolutePath(), chunker);
         }
 
-        return writer != null
-                ? writer
-                : NetcdfFileWriter.createNew(
-                        NetcdfFileWriter.Version.netcdf3, file.getAbsolutePath());
+        return writerb != null
+                ? writerb
+                : NetcdfFormatWriter.createNewNetcdf3(file.getAbsolutePath());
     }
 
     /**
@@ -409,36 +415,30 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             }
             if (isRange) {
                 if (boundDimension == null) {
-                    boundDimension =
-                            writer.addDimension(null, NetCDFUtilities.BOUNDARY_DIMENSION, 2);
+                    boundDimension = writerb.addDimension(NetCDFUtilities.BOUNDARY_DIMENSION, 2);
                 }
             }
-            final Dimension netcdfDimension =
-                    writer.addDimension(null, dimensionName, dimensionLength);
+            final Dimension netcdfDimension = writerb.addDimension(dimensionName, dimensionLength);
             dimension.setNetCDFDimension(netcdfDimension);
 
             // Assign variable to dimensions having coordinates
-            Variable var =
-                    writer.addVariable(
-                            null,
-                            dimensionName,
-                            NetCDFUtilities.getNetCDFDataType(dim.getDatatype()),
-                            dimensionName);
-            writer.addVariableAttribute(
-                    var, new Attribute(NetCDFUtilities.LONG_NAME, dimensionName));
-            writer.addVariableAttribute(
-                    var, new Attribute(NetCDFUtilities.DESCRIPTION, dimensionName));
-            // TODO: introduce some lookup table to get a description if needed
+            Variable.Builder variableBuilder =
+                    writerb.addVariable(
+                                    dimensionName,
+                                    NetCDFUtilities.getNetCDFDataType(dim.getDatatype()),
+                                    dimensionName)
+                            .addAttribute(new Attribute(NetCDFUtilities.LONG_NAME, dimensionName))
+                            .addAttribute(
+                                    new Attribute(NetCDFUtilities.DESCRIPTION, dimensionName));
 
             if (NetCDFUtilities.isATime(dim.getDatatype())) {
                 // Special management for times. We use the NetCDF convention of defining times
                 // starting from
                 // an origin. Right now we use the Linux EPOCH
-                writer.addVariableAttribute(
-                        var, new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.TIME_ORIGIN));
+                variableBuilder.addAttribute(
+                        new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.TIME_ORIGIN));
             } else {
-                writer.addVariableAttribute(
-                        var, new Attribute(NetCDFUtilities.UNITS, dim.getSymbol()));
+                variableBuilder.addAttribute(new Attribute(NetCDFUtilities.UNITS, dim.getSymbol()));
             }
 
             // Add bounds variable for ranges
@@ -447,9 +447,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 boundsDimensions.add(netcdfDimension);
                 boundsDimensions.add(boundDimension);
                 final String boundName = dimensionName + NetCDFUtilities.BOUNDS_SUFFIX;
-                writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.BOUNDS, boundName));
-                writer.addVariable(
-                        null,
+                variableBuilder.addAttribute(new Attribute(NetCDFUtilities.BOUNDS, boundName));
+                writerb.addVariable(
                         boundName,
                         NetCDFUtilities.getNetCDFDataType(dim.getDatatype()),
                         boundsDimensions);
@@ -460,20 +459,14 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** Write the NetCDF file */
     @Override
     public void write() throws IOException, ucar.ma2.InvalidRangeException {
-        // end of define mode
-        writer.create();
-
-        try { // NOPMD - writer is a field, cannot use try-with-resources
-            // Setting values
+        try (NetcdfFormatWriter formatWriter = writer) {
+            crsWriter.setWriter(formatWriter);
             for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper :
                     dimensionsManager.getDimensions()) {
                 crsWriter.setCoordinateVariable(mapper);
             }
 
             writeDataValues();
-        } finally {
-            // Close the writer
-            writer.close();
         }
     }
 
@@ -501,15 +494,16 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     /** Method checking if LayerName and LayerUOM are compliant */
-    protected boolean checkCompliant(Variable var) {
+    protected boolean checkCompliant(Variable.Builder var) {
         // Check in the Variable
         if (var == null) {
             // Variable is not present
             return false;
         }
 
+        AttributeContainerMutable attribContainer = var.getAttributeContainer();
         // Check the unit is defined
-        Attribute unit = var.findAttribute(NetCDFUtilities.UNITS);
+        Attribute unit = attribContainer.findAttribute(NetCDFUtilities.UNITS);
         if (unit == null) {
             // No unit defined
             return false;
@@ -519,7 +513,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             return false;
         }
 
-        String variableName = var.getShortName();
+        String variableName = var.shortName;
         // Getting the parser
         NetCDFCFParser parser = parserBean.getParser();
         // Checking CF convention
@@ -728,6 +722,89 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             this.extraVariable = extraVariable;
             this.dimensionIndex = dimensionIndex;
         }
+    }
+
+    @SuppressWarnings("deprecation") // getting Longname from attributes
+    protected void copyAttributes(
+            Variable sourceVar, Variable.Builder varb, DataPacking dataPacking) {
+        AttributeContainerMutable attributesContainer = varb.getAttributeContainer();
+        Iterator<Attribute> attributesIterator = sourceVar.attributes().iterator();
+        while (attributesIterator.hasNext()) {
+            Attribute att = attributesIterator.next();
+            // do not allow overwrite or attributes in blacklist
+            if (attributesContainer.findAttribute(att.getFullName()) == null
+                    && !isBlacklistedAttribute(att, dataPacking)) {
+                varb.addAttribute(att);
+            }
+        }
+    }
+
+    protected void addExtraVariables(NetcdfDataset source) {
+        if (extraVariables != null) {
+            for (NetCDFSettingsContainer.ExtraVariable extra : extraVariables) {
+                Variable sourceVar = source.findVariable(extra.getSource());
+                if (sourceVar == null) {
+                    LOGGER.info(
+                            String.format(
+                                    "Could not find extra variable source '%s' "
+                                            + "in NetCDF/GRIB %s",
+                                    extra.getSource(), source.getLocation()));
+                } else if (!sourceVar.getDimensionsString().isEmpty()) {
+                    LOGGER.info(
+                            String.format(
+                                    "Only scalar extra variables are supported but source "
+                                            + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
+                                    extra.getSource(),
+                                    source.getLocation(),
+                                    sourceVar.getDimensionsString()));
+                } else if (variableAlreadyDefined(writerb, extra.getOutput())) {
+                    LOGGER.info(
+                            String.format(
+                                    "Extra variable output '%s' already exists",
+                                    extra.getOutput()));
+                } else if (extra.getDimensions().split("\\s").length > 1) {
+                    LOGGER.info(
+                            String.format(
+                                    "Extra variable output '%s' " + "has too many dimensions '%s'",
+                                    extra.getOutput(), extra.getDimensions()));
+                } else {
+                    Variable.Builder outputVarb =
+                            writerb.addVariable(
+                                    extra.getOutput(),
+                                    sourceVar.getDataType(),
+                                    extra.getDimensions());
+                    Iterator<Attribute> attributesIterator = sourceVar.attributes().iterator();
+                    while (attributesIterator.hasNext()) {
+                        Attribute att = attributesIterator.next();
+                        outputVarb.addAttribute(att);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void addSettingsVariableAttributes(Variable.Builder varb) {
+        // Apply variable attributes from settings (allowing overwrite)
+        if (variableAttributes != null) {
+            AttributeContainerMutable attributes = varb.getAttributeContainer();
+            for (NetCDFSettingsContainer.VariableAttribute att : variableAttributes) {
+                attributes.removeAttribute(att.getKey());
+                varb.addAttribute(buildAttribute(att.getKey(), att.getValue()));
+            }
+        }
+    }
+
+    private boolean variableAlreadyDefined(NetcdfFormatWriter.Builder writerb, String output) {
+        Group.Builder rootGroop = writerb.getRootGroup();
+        for (Variable.Builder<?> vbuilder : rootGroop.vbuilders) {
+            if (output.equalsIgnoreCase(vbuilder.getFullName())) return true;
+        }
+        return false;
+    }
+
+    protected boolean isBlacklistedAttribute(Attribute att, DataPacking dataPacking) {
+        // Default implementation ignores dataPacking
+        return COPY_ATTRIBUTES_BLACKLIST.contains(att.getShortName());
     }
 
     /** Writes out all non scalar extra variable configured */

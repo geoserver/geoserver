@@ -27,12 +27,15 @@ import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
 import org.geoserver.web.netcdf.DataPacking;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import org.geotools.imageio.netcdf.utilities.NetCDFCRSUtilities;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 
 /**
  * Base support class for NetCDF wcs tests.
@@ -50,7 +53,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     public static QName TEMPERATURE_SURFACE_NETCDF =
             new QName(CiteTestData.WCS_URI, "Temperature_surface_NetCDF", CiteTestData.WCS_PREFIX);
     public static QName TEMPERATURE_SURFACE_GRIB =
-            new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
+            new QName(CiteTestData.WCS_URI, "TMP_P0_L100_GLC0_surface", CiteTestData.WCS_PREFIX);
     public static QName SNOW_DEPTH_GRIB =
             new QName(
                     CiteTestData.WCS_URI,
@@ -58,6 +61,11 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                     CiteTestData.WCS_PREFIX);
     public static QName SAMPLEKM =
             new QName(CiteTestData.WCS_URI, "samplekm", CiteTestData.WCS_PREFIX);
+
+    @BeforeClass
+    public static void init() {
+        WCSNetCDFBaseTest.init();
+    }
 
     /** Only setup coverages */
     @Override
@@ -200,7 +208,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                         "-wcs__Temperature_surface_NetCDF.nc",
                         new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
             // check dimensions
             Dimension rlonDim = dataset.findDimension("rlon");
@@ -282,7 +290,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageid=wcs__Temperature_surface&format=application/x-netcdf");
+                                + "&coverageid=wcs__TMP_P0_L100_GLC0_surface&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] responseBytes = getBinary(response);
@@ -292,7 +300,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                         "-wcs__Temperature_surface.nc",
                         new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
             // check dimensions
             Dimension rlonDim = dataset.findDimension("rlon");
@@ -343,7 +351,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                             .doubleValue(),
                     DELTA);
             // check data variable
-            Variable dataVar = dataset.findVariable("Temperature_surface");
+            Variable dataVar = dataset.findVariable("TMP_P0_L100_GLC0_surface");
             assertNotNull(dataVar);
             assertEquals(
                     "rotated_latitude_longitude",
@@ -383,7 +391,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                         "-wcs__Snow_depth_water_equivalent_surface.nc",
                         new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
             // check dimensions
             Dimension rlonDim = dataset.findDimension("rlon");
@@ -481,7 +489,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             FileUtils.writeByteArrayToFile(file, responseBytes);
 
             // read non enhanced to check the data type
-            try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
                 assertNotNull(dataset);
                 final Variable variable = dataset.findVariable("O3");
                 // has been packed
@@ -491,10 +499,10 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             // read enhanced to validate scaling
             EnumSet<NetcdfDataset.Enhance> enhanceMode =
                     EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
-            enhanceMode.add(NetcdfDataset.Enhance.ScaleMissing);
+            enhanceMode.add(NetcdfDataset.Enhance.ApplyScaleOffset);
+            DatasetUrl url = DatasetUrl.findDatasetUrl(file.getAbsolutePath());
             try (NetcdfDataset dataset =
-                    NetcdfDataset.openDataset(
-                            file.getAbsolutePath(), enhanceMode, 4096, null, null)) {
+                    NetcdfDatasets.openDataset(url, enhanceMode, 4096, null, null)) {
                 assertNotNull(dataset);
                 final Variable variable = dataset.findVariable("O3");
                 // not read as packed this time
@@ -527,7 +535,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         byte[] responseBytes = getBinary(response);
         File file = File.createTempFile("output", "samplekm.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
-        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+        try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
             // check coordinate variables
             Variable xCoord = dataset.findVariable("x");

@@ -17,9 +17,11 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.csp.CSPHeaderDAO;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -50,15 +52,30 @@ import org.geotools.util.logging.Logging;
  * This header will only be added to HTTPS requests. Default is false.<br>
  * - geoserver.hsts.policy: controls the value of the Strict-Transport-Security header. Default is
  * "max-age=31536000 ; includeSubDomains". Valid options can change the max-age to the desired age
- * in seconds and can omit the includeSubDomains directive.
+ * in seconds and can omit the includeSubDomains directive.<br>
+ * <br>
+ * Two properties control the Content-Security-Policy header to prevent cross-site scripting
+ * attacks:<br>
+ * - geoserver.csp.shouldSetPolicy: controls whether to set the Content-Security-Policy header.
+ * Default is true.<br>
+ * - geoserver.csp.policy: controls the value of the Content-Security-Policy header. Default is to
+ * use the configuration file that will set the header based on the request and server environment
+ * but this property allows the administrator to set a fixed header value, which can be useful in
+ * cases where JavaScript is not needed at all.
  */
-public class XFrameOptionsFilter implements Filter {
+public class SecurityHeadersFilter implements Filter {
 
-    private static final Logger LOGGER = Logging.getLogger(XFrameOptionsFilter.class);
+    private static final Logger LOGGER = Logging.getLogger(SecurityHeadersFilter.class);
 
     private static final String DEFAULT_HSTS_POLICY = "max-age=31536000 ; includeSubDomains";
     private static final String DEFAULT_FRAME_POLICY = "SAMEORIGIN";
     private static final String DEFAULT_XXSS_POLICY = "0";
+
+    /** The system property to set whether the Content-Security-Policy should be set */
+    public static final String GEOSERVER_CSP_SHOULD_SET_POLICY = "geoserver.csp.shouldSetPolicy";
+
+    /** The system property for the value of the Content-Security-Policy header */
+    public static final String GEOSERVER_CSP_POLICY = "geoserver.csp.policy";
 
     /** The system property to set whether the Strict-Transport-Security should be set */
     public static final String GEOSERVER_HSTS_SHOULD_SET_POLICY = "geoserver.hsts.shouldSetPolicy";
@@ -113,7 +130,12 @@ public class XFrameOptionsFilter implements Filter {
                     (String) map.get(GEOSERVER_XXSS_PROTECTION_POLICY));
         }
 
-        chain.doFilter(request, response);
+        try {
+            response = setContentSecurityPolicy(map, (HttpServletRequest) request, httpResponse);
+            chain.doFilter(request, response);
+        } finally {
+            CSPHeaderDAO.removeProxyPolicy();
+        }
     }
 
     @Override
@@ -143,6 +165,10 @@ public class XFrameOptionsFilter implements Filter {
     private static Map<String, Object> initializeCache() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(
+                GEOSERVER_CSP_SHOULD_SET_POLICY,
+                getBooleanProperty(GEOSERVER_CSP_SHOULD_SET_POLICY, true));
+        map.put(GEOSERVER_CSP_POLICY, getStringProperty(GEOSERVER_CSP_POLICY, null));
+        map.put(
                 GEOSERVER_HSTS_SHOULD_SET_POLICY,
                 getBooleanProperty(GEOSERVER_HSTS_SHOULD_SET_POLICY, false));
         map.put(
@@ -170,5 +196,17 @@ public class XFrameOptionsFilter implements Filter {
                                         .map(e -> e.getKey() + " = " + e.getValue())
                                         .collect(Collectors.joining("\n ")));
         return Collections.unmodifiableMap(map);
+    }
+
+    private static HttpServletResponse setContentSecurityPolicy(
+            Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) {
+        if ((Boolean) map.get(GEOSERVER_CSP_SHOULD_SET_POLICY)) {
+            // The DAO is used even for a fixed policy since it contains a workaround to allow
+            // setting the form-action and frame-ancestors directives on Wicket 9+ requests.
+            String policy = (String) map.get(GEOSERVER_CSP_POLICY);
+            return GeoServerExtensions.bean(CSPHeaderDAO.class)
+                    .setContentSecurityPolicy(request, response, policy);
+        }
+        return response;
     }
 }

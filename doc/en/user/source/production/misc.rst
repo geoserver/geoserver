@@ -16,11 +16,53 @@ GeoServer can have the capabilities documents properly report a proxy.  You can 
 Publish your server's capabilities documents
 --------------------------------------------
 
-In order to make it easier to find your data, put a link to your capabilities document somewhere on the web. This will ensure that a search engine will crawl and index it.
+In order to make it easier to find your data, your service must be available.
 
-Set up clustering
------------------
+* Put a link to your capabilities document somewhere on the web. This will ensure that a search engine will crawl and index it.
 
-Setting up a `Cluster <http://en.wikipedia.org/wiki/Cluster_(computing)>`_ is one of the best ways to improve the reliability and performance of your GeoServer installation.  All the most stable and high performance GeoServer instances are configured in some sort of cluster.  There are a huge variety of techniques to configure a cluster, including at the container level, the virtual machine level, and the physical server level.  
+* If your GeoServer is operating as part of a "Spatial Data Infrastructure" it may be registered with a catalogue service.
+  
+  Catalogue services such as `GeoNetwork-opensource <http://geonetwork-opensource.org/>`__ or `PyCSW <https://pycsw.org>`__ can harvest GeoServer listing the web serivces and layers published allowing content to be more easily browsed and searched.
 
-Andrea Aime is currently working on an overview of what some of the biggest GeoServer users have done, for his 'GeoServer in Production' talk at FOSS4G 2009.  In time that information will be migrated to tutorials and white papers.
+Clustering
+----------
+
+Setting up a `Cluster <http://en.wikipedia.org/wiki/Cluster_(computing)>`_ is one of the best ways to improve the reliability and performance of your GeoServer installation.
+
+There are a variety of techniques to configure a cluster, including at the container level, the virtual machine level, and the physical server level.
+
+This results in running multiple GeoServer nodes behind a common proxy or load balancer:
+  
+1. The ``PROXY_BASE_URL`` setting allows all nodes in the cluster operate as the same web service.
+  
+2. Optional: Provide settings to identify :ref:`identify` individual nodes.
+
+3. Optional: Use :ref:`logging_location` settings to direct logs from individual nodes to different files.
+
+4. While most web services are stateless, some functionality like importer or WPS may require the use of an extension to share state between nodes.
+
+  WPS clustering has extensions for Hazelcast and JDBC (shared database).
+  
+  Importer provides an extension to establish a Berkley shared database.
+
+5. The challenge to operating a cluster is the management of changes to the data directory configuration to ensure all the nodes are operating with the same configuration and produce the same results.
+
+   * Using a shared file system to allow nodes to share a common data directory.
+
+   * Using version control or a layer of a docker image to share a data directory.
+
+   To support these workflows teams often direct `geoserver/web` requests to a single node, and use the REST API to restart other nodes when a configuration change is ready.
+
+The limitation of these approach is the startup time associated with restarting nodes. Several community modules exist to address this limitation:
+
+* The project `Cloud Native GeoServer <https://github.com/geoserver/geoserver-cloud>`__ breaks the GeoServer application into microservies that may be scaled by Kubernetes.
+  
+  This prevents the needs to restart nodes, but requires a microservice environment.
+
+* The community module :ref:`` uses a bus to communicate configuration changes in real time between all the nodes in a cluster.
+  
+  Each mode is updated when configuration changes are made, preventing the need to restart nodes, while providing full web service performance.
+
+* The community module :ref:`community_jdbcconfig` allows the configuration to be stored in a database. This is best combined with the community module :ref:`community_jdbcstore` which allows the icons, fonts and styles to also be stored in a database.
+  
+  Each node checks for changes during operation, preventing the need to restart nodes, with an impact to web service performance. 

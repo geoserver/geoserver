@@ -91,8 +91,8 @@
     </filter>
 
     <filter>
-        <filter-name>xFrameOptionsFilter</filter-name>
-        <filter-class>org.geoserver.filters.XFrameOptionsFilter</filter-class>
+        <filter-name>securityHeadersFilter</filter-name>
+        <filter-class>org.geoserver.filters.SecurityHeadersFilter</filter-class>
     </filter>
 
     <filter>
@@ -216,7 +216,7 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>xFrameOptionsFilter</filter-name>
+        <filter-name>securityHeadersFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

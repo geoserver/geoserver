@@ -20,5 +20,6 @@ The first page discusses configuration options in the web administration interfa
    sandbox
    rest
    urlchecks
+   csp
    disable
    tutorials/index

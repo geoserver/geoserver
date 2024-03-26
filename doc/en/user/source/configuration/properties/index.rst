@@ -137,6 +137,72 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - geoserver.xContentType.shouldSetPolicy
+       
+       :doc:`/production/config`, default true
+     - x
+     - x
+     - x
+   * - geoserver.xXssProtection.shouldSetPolicy
+       
+       :doc:`/production/config`, default false
+     - x
+     - x
+     - x
+   * - geoserver.xXssProtection.policy
+       
+       :doc:`/production/config`, default 0
+     - x
+     - x
+     - x
+   * - geoserver.hsts.shouldSetPolicy
+       
+       :doc:`/production/config`, default false
+     - x
+     - x
+     - x
+   * - geoserver.hsts.policy
+       
+       :doc:`/production/config`, default max-age=31536000 ; includeSubDomains
+     - x
+     - x
+     - x
+   * - geoserver.csp.remoteResources
+       
+       :doc:`/security/csp`
+     - x
+     - x
+     - x
+   * - geoserver.csp.frameAncestors
+       
+       :doc:`/security/csp`
+     - x
+     - x
+     - x
+   * - geoserver.csp.fallbackDirectives
+       
+       :doc:`/security/csp`, default base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
+     - x
+     - x
+     - x
+   * - GEOSERVER_DISABLE_STATIC_WEB_FILES
+       
+       :doc:`/tutorials/staticfiles`, default false
+     - x
+     - x
+     - x
+   * - GEOSERVER_STATIC_WEB_FILES_SCRIPT
+       
+       :doc:`/tutorials/staticfiles`, default UNSAFE
+     - x
+     - x
+     - x
+   * - GEOSERVER_FEATUREINFO_HTML_SCRIPT
+       
+       :doc:`/tutorials/GetFeatureInfo/html`, default SELF
+     - x
+     - x
+     - x
    * - ows10.exception.xml.responsetype
        
        :doc:`/production/config`

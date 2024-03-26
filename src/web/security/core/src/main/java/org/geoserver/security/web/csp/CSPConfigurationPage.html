@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:extend>
+      <form id="form" wicket:id="form">
+        <ul>
+          <li>
+            <fieldset>
+              <legend><span><wicket:message key="settings"></wicket:message></span></legend>
+              <ul>
+                <li class="choiceItem">
+                  <input id="enabled" wicket:id="enabled" type="checkbox"/>
+                  <label for="enabled"><wicket:message key="enabled"></wicket:message></label>
+                </li>
+                <li class="choiceItem">
+                  <input id="reportOnly" wicket:id="reportOnly" type="checkbox"/>
+                  <label for="reportOnly"><wicket:message key="reportOnly"></wicket:message></label>
+                </li>
+                <li class="choiceItem">
+                  <input id="allowOverride" wicket:id="allowOverride" type="checkbox"/>
+                  <label for="allowOverride"><wicket:message key="allowOverride"></wicket:message></label>
+                </li>
+                <li class="choiceItem">
+                  <input id="injectProxyBase" wicket:id="injectProxyBase" type="checkbox"/>
+                  <label for="injectProxyBase"><wicket:message key="injectProxyBase"></wicket:message></label>
+                </li>
+                <li>
+                  <label for="remoteResources"><wicket:message key="remoteResources"></wicket:message></label>
+                  <textarea wicket:id="remoteResources" id="remoteResources" class="textarea h-2-em"></textarea>
+                </li>
+                <li>
+                  <label for="frameAncestors"><wicket:message key="frameAncestors"></wicket:message></label>
+                  <textarea wicket:id="frameAncestors" id="frameAncestors" class="textarea h-2-em"></textarea>
+                </li>
+              </ul>
+            </fieldset>
+            <fieldset>
+              <legend><span><wicket:message key="policies"></wicket:message></span></legend>
+              <div wicket:id="policies"></div>
+            </fieldset>
+            <fieldset>
+              <legend><span><wicket:message key="test"></wicket:message></span></legend>
+              <ul>
+                <li>
+                  <label for="testUrl"><wicket:message key="testUrl"></wicket:message></label>
+                  <textarea wicket:id="testUrl" id="testUrl" class="textarea h-2-em"></textarea>
+                </li>
+                <li>
+                  <div class="button-group selfclear">
+                    <a wicket:id="testLink"><span><wicket:message key="testLink"></wicket:message></span></a>
+                  </div>
+                </li>
+                <li>
+                  <label for="testResult"><wicket:message key="testResult"></wicket:message></label>
+                  <textarea wicket:id="testResult" id="testResult" class="textarea"></textarea>
+                </li>
+              </ul>
+            </fieldset>
+          </li>
+        </ul>
+        <div class="button-group toolbar-sticky selfclear">
+          <button wicket:id="save" class="form-button-save" type="submit"><wicket:message key="save"/></button>
+          <button wicket:id="apply" class="form-button-apply" type="submit"><wicket:message key="apply"/></button>
+          <button wicket:id="cancel" class="form-button-cancel" type="submit"><wicket:message key="cancel"/></button>
+        </div>
+      </form>
+    </wicket:extend>
+  </body>
+</html>

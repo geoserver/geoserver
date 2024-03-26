@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:extend>
+      <form id="form" wicket:id="form">
+        <ul>
+          <li>
+            <fieldset>
+              <legend><span><wicket:message key="settings"></wicket:message></span></legend>
+              <ul>
+                <li>
+                  <label for="name"><wicket:message key="name"></wicket:message></label>
+                  <input id="name" wicket:id="name" type="text" class="text"/>
+                </li>
+                <li>
+                  <label for="description"><wicket:message key="descriptionLabel"></wicket:message></label>
+                  <textarea wicket:id="description" id="description" class="textarea"></textarea>
+                </li>
+                <li class="choiceItem">
+                  <input id="enabled" wicket:id="enabled" type="checkbox"/>
+                  <label for="enabled"><wicket:message key="enabled"></wicket:message></label>
+                </li>
+              </ul>
+            </fieldset>
+            <fieldset>
+              <legend><span><wicket:message key="rules"></wicket:message></span></legend>
+              <div wicket:id="rules"></div>
+            </fieldset>
+          </li>
+        </ul>
+        <div class="button-group toolbar-sticky selfclear">
+          <button wicket:id="save" class="form-button-save" type="submit"><wicket:message key="save"/></button>
+          <button wicket:id="cancel" class="form-button-cancel" type="submit"><wicket:message key="cancel"/></button>
+        </div>
+      </form>
+    </wicket:extend>
+  </body>
+</html>

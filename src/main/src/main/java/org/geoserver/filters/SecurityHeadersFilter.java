@@ -17,9 +17,11 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.csp.CSPHeaderDAO;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -50,11 +52,14 @@ import org.geotools.util.logging.Logging;
  * This header will only be added to HTTPS requests. Default is false.<br>
  * - geoserver.hsts.policy: controls the value of the Strict-Transport-Security header. Default is
  * "max-age=31536000 ; includeSubDomains". Valid options can change the max-age to the desired age
- * in seconds and can omit the includeSubDomains directive.
+ * in seconds and can omit the includeSubDomains directive.<br>
+ * <br>
+ * The Content-Security-Policy header to prevent cross-site scripting attacks is set based on a
+ * separate configuration file.
  */
-public class XFrameOptionsFilter implements Filter {
+public class SecurityHeadersFilter implements Filter {
 
-    private static final Logger LOGGER = Logging.getLogger(XFrameOptionsFilter.class);
+    private static final Logger LOGGER = Logging.getLogger(SecurityHeadersFilter.class);
 
     private static final String DEFAULT_HSTS_POLICY = "max-age=31536000 ; includeSubDomains";
     private static final String DEFAULT_FRAME_POLICY = "SAMEORIGIN";
@@ -113,7 +118,14 @@ public class XFrameOptionsFilter implements Filter {
                     (String) map.get(GEOSERVER_XXSS_PROTECTION_POLICY));
         }
 
-        chain.doFilter(request, response);
+        try {
+            response =
+                    GeoServerExtensions.bean(CSPHeaderDAO.class)
+                            .setContentSecurityPolicy((HttpServletRequest) request, httpResponse);
+            chain.doFilter(request, response);
+        } finally {
+            CSPHeaderDAO.removeProxyPolicy();
+        }
     }
 
     @Override

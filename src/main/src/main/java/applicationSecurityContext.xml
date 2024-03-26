@@ -193,4 +193,9 @@
     <constructor-arg ref="catalog"/>
   </bean>
 
+  <bean id="cspHeaderDAO" class="org.geoserver.security.csp.CSPHeaderDAO">
+    <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="dataDirectory"/>
+    <constructor-arg ref="xstreamPersisterFactory"/>
+  </bean>
 </beans>

@@ -29,11 +29,11 @@ class VolatileGeoServerTileLayer extends GeoServerTileLayer {
     }
 
     @Override
-    protected ConveyorTile getMetatilingReponse(
+    protected ConveyorTile getMetatilingResponse(
             ConveyorTile tile, boolean tryCache, int metaX, int metaY)
             throws GeoWebCacheException, IOException {
         // forces meta tiling factors to 1x1 and disables cache usage
-        return super.getMetatilingReponse(tile, false, 1, 1);
+        return super.getMetatilingResponse(tile, false, 1, 1);
     }
 
     @Override

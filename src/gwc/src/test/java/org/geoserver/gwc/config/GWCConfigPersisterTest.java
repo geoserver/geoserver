@@ -74,6 +74,7 @@ public class GWCConfigPersisterTest {
         GWCConfig config = GWCConfig.getOldDefaults();
         config.setCacheNonDefaultStyles(true);
         config.setDirectWMSIntegrationEnabled(true);
+        config.setMetaTilingThreads(12);
         config.setCacheWarningSkips(
                 new LinkedHashSet<>(Arrays.asList(WarningType.Default, WarningType.FailedNearest)));
 

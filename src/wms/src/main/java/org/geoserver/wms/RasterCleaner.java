@@ -53,11 +53,15 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
     @Override
     public void finished(Request request) {
+        cleanup();
+    }
+
+    public static void cleanup() {
         disposeCoverages();
         disposeImages();
     }
 
-    private void disposeImages() {
+    private static void disposeImages() {
         List<RenderedImage> list = images.get();
         if (list != null) {
             images.remove();
@@ -92,7 +96,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
         }
     }
 
-    private void disposeCoverages() {
+    private static void disposeCoverages() {
         List<GridCoverage2D> list = coverages.get();
         if (list != null) {
             coverages.remove();

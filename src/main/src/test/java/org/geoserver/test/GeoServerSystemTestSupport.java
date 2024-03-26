@@ -1059,7 +1059,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *     'wms?request=GetMap&version=1.1.1&..."
      * @return the mock servlet response
      */
-    protected MockHttpServletResponse getAsServletResponse(String path) throws Exception {
+    public MockHttpServletResponse getAsServletResponse(String path) throws Exception {
         return getAsServletResponse(path, null);
     }
 

@@ -3,26 +3,170 @@
 Configuration Considerations
 ============================
 
-Use production logging
-----------------------
+General Guidance
+----------------
 
-Logging may visibly affect the performance of your server. High logging levels are often necessary to track down issues, but by default you should run with low levels.  (You can switch the logging levels while GeoServer is running.)
+Use production logging
+''''''''''''''''''''''
+
+Excessive logging may visibly affect the performance of your server. High logging levels are often necessary to track down issues, but during operation you should run with low levels.  (You can switch the logging levels while GeoServer is running.)
 
 You can change the logging level in the :ref:`config_globalsettings_log_profile`.  You will want to choose the ``PRODUCTION`` logging configuration, where only problems are written to the log files.
 
+Personalize your server
+'''''''''''''''''''''''
+
+In order to your GeoServer as welcoming as possible, you should customize the server's metadata to your organization.  It may be tempting to skip some of the configuration steps, and leave in the same keywords and abstract as the defaults, but this will only confuse potential users.
+
+Suggestions:
+
+* Fill out :ref:`service_metadata` sections for WFS, WMS, WCS, WMTS web services.
+
+* Use :ref:`config_contact` to provide service welcome message, contact details and a link to your organisation.
+
+  This message is be shown to visitors at the top of welcome page. The contact details and organisation information are included in the welcome page, and used to describe each web service in the capabilities documents.
+  
+* When setting up a workspace you can provide more more detailed service metadata and contact information.
+* Serve your data with your own namespace (and provide a correct URI)
+* Remove default layers (such as ``topp:states``)
+
+Configure service limits
+''''''''''''''''''''''''
+
+Make sure clients cannot request an inordinate amount of resources from your server.
+
+In particular:
+
+* Set the :ref:`maximum amount of features <services_webadmin_wfs>` returned by each WFS GetFeature request (this can also be set on a per featuretype basis by modifying the :ref:`layer publishing wfs settings <data_webadmin_layers>`).
+* Set the :ref:`WMS request limits <wms_configuration>` so that no request will consume too much memory or too much time.
+* Set :ref:`WPS limits <webadmin_wps>`, so no process will consume too much memory or too much time. You may also limit the :ref:`size input parameters <wps_security>` for further control.
+* Install and configure the :ref:`control_flow` for greater control of client access.
+
+Welcome page selectors
+''''''''''''''''''''''
+
+The workspace and layer selectors might take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the number of items in them (by default, ``1000``), and will fall back on simple text fields if the time limit is reached.
+
+In some situations, that won't be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:
+
+*  ``GeoServerHomePage.selectionMode`` : can be set to ``text`` to always use simple text fields, ``dropdown`` to always use dropdowns, or ``auto`` to use the default automatic behavior.
+* ``GeoServerHomePage.selectionTimeout`` : the time limit in milliseconds, defaults to ``5000``.
+* ``GeoServerHomePage.selectionMaxItems`` : the maximum number of items to show in the dropdowns, defaults to ``1000``.
+
+When using ``text`` selection mode the page description is static, no longer offering of available workspace and layers.
+
+.. figure:: images/selector_text.png
+   
+   Welcome page text selection mode
+
+Cache your data
+'''''''''''''''
+
+Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on :ref:`gwc` for more details.)  Another option is `TileCache <https://tilecache.org>`__.
+
+You can also use a more generic non-spatial caching system, such as `Ehcache <https://www.ehcache.org>`__ (an embedded cache service) or `Squid <http://www.squid-cache.org>`__ (a web cache proxy).
+
+Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don't have a quick way to determine feature counts (e.g. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property ``org.geoserver.wfs.getfeature.cachelimit`` to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent the dataset from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.
+
+Set security for data modification
+''''''''''''''''''''''''''''''''''
+
+GeoServer includes support for WFS-T (transactions) which lets users modify your data.
+
+If you don't want your database modified, you can turn off transactions in the :ref:`services_webadmin_wfs`. Set the :guilabel:`Service Level` to ``Basic``. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
+
+If you would like some users to be able to modify data, set the service level :guilabel:`Service Level` to ``Transactional`` (or ``Complete``) and use :ref:`security_service` to limit access to the `WFS.Transaction` operation.
+
+If you would like some users to be able to modify some but not all of your data, set the :guilabel:`Service Level` to ``Transactional`` (or ``Complete``), and use :ref:`security_layer` to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
+
+GeoServer Data Admin Guidance
+-----------------------------
+
+Establishing a data administrator user is a recommended configuration to privileged users with limited access to the Admin Console to manage the publication of information, but are not intended to be trusted as a GeoServer Administrator with responsibility for the full global settings and system integration controls.
+
+1. Create a role to be used for data administration.
+
+2. Provide this role to the Users (or Groups) requiring data admin access.
+
+3. Provide this role :ref:`data security <security_webadmin_data>` admin access ``a`` to:
+
+   * :ref:`workspace <workspace_security>` administration
+   * :ref:`layer <layer_security>` administration
+
+4. Recommendation: The combination of data admin permission for a workspace and GROUP_ADMIN access provides a good combination for an individual responsible for a workspace. This provides the ability to manage and control access to the data products in a workspace.
+
+GeoServer Administrator Guidance
+--------------------------------
+
+The GeoServer administration console provides a trusted GeoServer Administrator control of the application. This is often the same individual as the System Administrator who has deep knowledge of the operational environment.
+
+In this workflow the Administration Console is used to adapt the application to the operational environment:
+
+* :ref:`proxy_base`
+* :ref:`config_globalsettings_log_location`
+* ... and many more :ref:`config_globalsettings`.
+
+Management of a web service using an administration console is a more common practice when running GeoServer as a windows web service.
+
+System Administrator Guidance
+-----------------------------
+
+In situations where GeoServer is operating in an environment provided by a System Administrator the use of :ref:`application_properties` is available.
+
+* ``PROXY_BASE_URL``
+* ``GEOSERVER_LOG_LOCATION``
+* ``GEOSERVER_CONSOLE_DISABLED``
+* ... and many more :ref:`application_properties`
+
+This approach removes some functionality from the Administration Console and REST API.
+
+Management of web services using environmental variables is standard practice when running GeoServer in a Linux or Docker environment.
+
 Logging configuration hardening
--------------------------------
+''''''''''''''''''''''''''''''''
 
 For production systems, it is advised to set ``GEOSERVER_LOG_LOCATION`` parameter during startup. The value may be defined as either an environment variable, java system property, or servlet context parameter.
 
-The location set for ``GEOSERVER_LOG_LOCATION`` has priority, causing the value provided using the Admin Console GUI or REST API to be ignored. This approach establishes a separation of responsibility between those setting up and controlling the actual machine, and those configuring the GeoServer application.
+The location set for ``GEOSERVER_LOG_LOCATION`` has priority, causing the setting provided using the Admin Console or REST API to be ignored.
 
-See :ref:`logging` for more information.
+See :ref:`logging_location` for more information.
+
+Disable the GeoServer web administration interface
+''''''''''''''''''''''''''''''''''''''''''''''''''
+
+In some circumstances, you might want to completely disable the web administration interface.  There are two ways of doing this:
+
+* Set the Java system property ``GEOSERVER_CONSOLE_DISABLED`` to true by adding ``-DGEOSERVER_CONSOLE_DISABLED=true`` to your container's JVM options
+* Remove all of the :file:`gs-web*-.jar` files from :file:`WEB-INF/lib`
+
+Application Server Guidance
+---------------------------
+
+A few settings are only available by adjusting the Application Server environment :ref:`web context parameters <application_properties>`.
 
 Set a service strategy
-----------------------
+''''''''''''''''''''''
 
-A service strategy is the method in which output is served to the client.  This is a balance between proper form (being absolutely sure of reporting errors with the proper OGC codes, etc) and speed (serving output as quickly as possible).  This is a decision to be made based on the function that GeoServer is providing.  You can configure the service strategy by modifying the :file:`web.xml` file of your GeoServer instance.
+A service strategy is the method in which output is served to the client.  This is a balance between proper form (being absolutely sure of reporting errors with the proper OGC codes, etc.) and speed (serving output as quickly as possible).  This is a decision to be made based on the function that GeoServer is providing.
+
+In Apache Tomcat you can provide system property by creating :file:`conf/Catalina/localhost/geoserver.xml`:
+
+.. code-block:: xml
+   
+   <Context>
+     <Parameter name="serviceStrategy"
+                value="PARTIAL-BUFFER2" override="false"/>
+   </Context>
+   
+
+You can configure the default service strategy by modifying the :file:`web.xml` file of your GeoServer instance:
+
+.. code-block:: xml
+   
+    <context-param>
+        <param-name>serviceStrategy</param-name>
+        <param-value>PARTIAL-BUFFER2</param-value>
+    </context-param>
 
 The possible strategies are:
 
@@ -37,79 +181,16 @@ The possible strategies are:
      - Stores the whole result in memory, and then serves it after the output is complete.  This ensures proper OGC error reporting, but delays the response quite a bit and can exhaust memory if the response is large.
    * - ``FILE``
      - Similar to ``BUFFER``, but stores the whole result in a file instead of in memory. Slower than ``BUFFER``, but ensures there won't be memory issues.
-   * - ``PARTIAL-BUFFER`` 
+   * - ``PARTIAL-BUFFER2`` 
      - A balance between ``BUFFER`` and ``SPEED``, this strategy tries to buffer in memory a few KB of response, then serves the full output.
 
-Personalize your server
------------------------
+Security and Service Hardening
+------------------------------
 
-This is isn't a performance consideration, but is just as important.  In order to make GeoServer as useful as possible, you should customize the server's metadata to your organization.  It may be tempting to skip some of the configuration steps, and leave in the same keywords and abstract as the sample, but this will only confuse potential users.
+The following settings allow administrators to take greater control of the application allowing functionality to be disabled.
 
-Suggestions:
-
-* Fill out the WFS, WMS, and WCS :ref:`service_metadata` sections (this info will be broadcast as part of the capabilities documents)
-* Serve your data with your own namespace (and provide a correct URI)
-* Remove default layers (such as ``topp:states``)
-
-Configure service limits
-------------------------
-
-Make sure clients cannot request an inordinate amount of resources from your server.
-
-In particular:
-
-* Set the :ref:`maximum amount of features <services_webadmin_wfs>` returned by each WFS GetFeature request (this can also be set on a per featuretype basis by modifying the :ref:`layer publishing wfs settings <data_webadmin_layers>`).
-* Set the :ref:`WMS request limits <wms_configuration>` so that no request will consume too much memory or too much time
-* Set :ref:`WPS limits <webadmin_wps>`, so no process will consume too much memory or too much time. You may also limit the :ref:`size input parameters <wps_security>` for further control.
-
-Set security for data modification
-----------------------------------
-
-GeoServer includes support for WFS-T (transactions) by default, which lets users modify your data.
-
-If you don't want your database modified, you can turn off transactions in the :ref:`services_webadmin_wfs`. Set the :guilabel:`Service Level` to ``Basic``. For extra security, we recommend any database access use datastore credentials providing read-only permissions. This will eliminate the possibility of a SQL injection (though GeoServer is generally not vulnerable to that sort of attack).
-
-If you would like some users to be able to modify data, set the service level :guilabel:`Service Level` to ``Transactional`` (or ``Complete``) and use :ref:`security_service` to limit access to the `WFS.Transaction` operation.
-
-If you would like some users to be able to modify some but not all of your data, set the :guilabel:`Service Level` to ``Transactional`` (or ``Complete``), and use :ref:`security_layer` to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
-
-Cache your data
----------------
-
-Server-side caching of WMS tiles is the best way to increase performance.  In caching, pre-rendered tiles will be saved, eliminating the need for redundant WMS calls.  There are several ways to set up WMS caching for GeoServer.  GeoWebCache is the simplest method, as it comes bundled with GeoServer.  (See the section on :ref:`gwc` for more details.)  Another option is `TileCache <http://tilecache.org>`__.
-
-You can also use a more generic non-spatial caching system, such as `OSCache <http://www.opensymphony.com/oscache/>`__ (an embedded cache service) or `Squid <http://www.squid-cache.org>`__ (a web cache proxy).
-
-Caching is also possible for WFS layers, in a very limited fashion. For DataStores that don't have a quick way to determine feature counts (e.g. shapefiles), enabling caching can prevent querying a store twice during a single request. To enable caching, set the Java system property ``org.geoserver.wfs.getfeature.cachelimit`` to a positive integer. Any data sets that are smaller than the cache limit will be cached for the duration of a request, which will prevent the dataset from being queried a second time for the feature count. Note that this may adversely affect some types of DataStores, as it bypasses any feature count optimizations that may exist.
-
-Welcome page selectors
-----------------------
-
-
-The workspace and layer selectors migth take a lot of time to fill up against large catalogs. Because of this, GeoServer tries to limit the time taken to fill them (by default, 5 seconds), and the amount of items in them (by default, ``1000``), and will fall back on simple text fields if the time limit is reached.
-
-In some situations, that won't be enough and the page might get stuck anyways. The following properties can be used to tweak the behavior:
-
-*  ``GeoServerHomePage.selectionMode`` : can be set to ``text`` to always use simple text fields, ``dropdown`` to always use dropdowns, or ``auto`` to use the default automatic behavior.
-* ``GeoServerHomePage.selectionTimeout`` : the time limit in milliseconds, defaults to ``5000``.
-* ``GeoServerHomePage.selectionMaxItems`` : the maximum number of items to show in the dropdowns, defaults to ``1000``.
-
-When using ``text`` selection mode the page description is static, no longer offering of available workspace and layers.
-
-.. figure:: images/selector_text.png
-   
-   Welcome page text selection mode
-
-Disable the GeoServer web administration interface
---------------------------------------------------
-
-In some circumstances, you might want to completely disable the web administration interface.  There are two ways of doing this:
-
-* Set the Java system property ``GEOSERVER_CONSOLE_DISABLED`` to true by adding ``-DGEOSERVER_CONSOLE_DISABLED=true`` to your container's JVM options
-* Remove all of the :file:`gs-web*-.jar` files from :file:`WEB-INF/lib`
-
-Disable the Auto-complete on web administration interface login 
----------------------------------------------------------------
+Disable the Auto-complete on web administration interface login
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 To disable the Auto Complete on Web Admin login form:
 
@@ -117,7 +198,7 @@ To disable the Auto Complete on Web Admin login form:
 * If the browser has already cached the credentials, please consider clearing the cache or form data after setting the JVM option.
 
 Disable anonymous access to the layer preview page
---------------------------------------------------
+''''''''''''''''''''''''''''''''''''''''''''''''''
 
 In some circumstances, you might want to provide access to the layer preview page to authenticated users only. The solution is based on
 adding a new :guilabel:`filter chain` with a rule matching the path of the layer preview page to GeoServer's :ref:`security_auth_chain`. Here are the
@@ -151,22 +232,31 @@ The above procedure could as well be applied to other pages of the web administr
     service-level security.
 
 X-Frame-Options Policy
-----------------------
+''''''''''''''''''''''
 
 In order to prevent clickjacking attacks GeoServer defaults to setting the X-Frame-Options HTTP 
-header to SAMEORIGIN. This prevents GeoServer from being embedded into an iFrame, which prevents certain
+header to ``SAMEORIGIN``. This prevents GeoServer from being embedded into an iFrame, which prevents certain
 kinds of security vulnerabilities. See the `OWASP Clickjacking entry <https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet>`_ for details.
 
 If you wish to change this behavior you can do so through the following properties:
 
-* ``geoserver.xframe.shouldSetPolicy``: controls whether the X-Frame-Options filter should be set at all. Default is true.
-* ``geoserver.xframe.policy``: controls what the set the X-Frame-Options header to. Default is ``SAMEORIGIN`` valid options are ``DENY``, ``SAMEORIGIN`` and ``ALLOW-FROM`` [uri]
+* ``geoserver.xframe.shouldSetPolicy``: controls whether the X-Frame-Options header should be set at all. Default is true.
+* ``geoserver.xframe.policy``: controls what to set the X-Frame-Options header to. Default is ``SAMEORIGIN``. Valid options are ``DENY``, ``SAMEORIGIN`` and ``ALLOW-FROM [uri]``.
+
+.. note::
+    The WMS GetMap OpenLayers output format uses iframes to display the WMS GetFeatureInfo output and
+    this may not function properly if the policy is set to something other than ``SAMEORIGIN``.
+
+.. warning::
+    The ``ALLOW-FROM`` option is not supported by modern browsers and should only be used if you know
+    that browsers interacting with your GeoServer will support it. Applying this policy will be treated
+    as if no policy was set by browsers that do not support this (i.e., **NO** protection).
 
 These properties can be set either via Java system property, command line argument (-D), environment
-variable or web.xml init parameter.
+variable or :file:`web.xml` init parameter.
 
 X-Content-Type-Options Policy
------------------------------
+'''''''''''''''''''''''''''''
 
 In order to mitigate MIME confusion attacks (which often results in Cross-Site Scripting), GeoServer defaults to setting the ``X-Content-Type-Options: nosniff`` HTTP header.
 See the `OWASP X-Content-Type-Options entry <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-content-type-options>`_ for details.
@@ -178,8 +268,40 @@ If you wish to change this behavior you can do so through the following property
 This property can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
 
+X-XSS-Protection Policy
+'''''''''''''''''''''''
+
+GeoServer supports setting the X-XSS-Protection HTTP header in order to control the built-in reflected XSS filtering that existed in
+some older browsers. This header is **NOT** enabled by default since it does not affect modern browsers. Enabling the header without
+specifying a policy will default to Spring Security's default of ``0`` (which is also the current OWASP recommendation). See the
+`OWASP X-XSS-Protection entry <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-xss-protection>`_ for details.
+
+If you wish to change this behavior you can do so through the following properties:
+
+* ``geoserver.xXssProtection.shouldSetPolicy``: controls whether the X-XSS-Protection header should be set at all. Default is false.
+* ``geoserver.xXssProtection.policy``: controls what to set the X-XSS-Protection header to. Default is ``0``. Valid options are ``0``, ``1`` and ``1; mode=block``.
+
+These properties can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+
+Strict-Transport-Security Policy
+''''''''''''''''''''''''''''''''
+
+In order to reduce the possibility of man-in-the-middle attacks GeoServer supports setting the Strict-Transport-Security HTTP header.
+This header is **NOT** enabled by default and, when enabled, this header will only be set on HTTPS requests. If a policy has not been
+set, the default policy will be the same as Spring Security's default of ``max-age=31536000 ; includeSubDomains``. See the
+`OWASP Strict-Transport-Security entry <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#strict-transport-security-hsts>`_ for details.
+
+If you wish to change this behavior you can do so through the following properties:
+
+* ``geoserver.hsts.shouldSetPolicy``: controls whether the Strict-Transport-Security header should be set at all. Default is false.
+* ``geoserver.hsts.policy``: controls what to set the Strict-Transport-Security header to. Default is ``max-age=31536000 ; includeSubDomains``. Valid options can change the max-age to the desired age in seconds and can omit the includeSubDomains directive.
+
+These properties can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+
 OWS ServiceException XML mimeType
---------------------------------------------------
+'''''''''''''''''''''''''''''''''
 
 By default, OWS Service Exception XML responses have content-type set to ``application/xml``.
 
@@ -191,7 +313,7 @@ In case you want it set to ``text/xml`` instead, you need to setup the Java Syst
 .. _production_config_external_entities:
 
 External Entities Resolution
-----------------------------
+''''''''''''''''''''''''''''
 
 When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution is used to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).
 

@@ -6,4 +6,4 @@ Package `filter\details` is the GeoServer Web Auth Details implementation that t
  
 Package `filter\web` is the wicket infrastructure needed for the configuration GUI.
 
-Please note that (jwt-headers-gs) `GeoserverJwtHeaderFilterConfig` wraps a (jwt-headers-util) `JwtConfiguration` for supplying configuration details.
+Please note that (gs-jwt-headers) `GeoserverJwtHeaderFilterConfig` wraps a (jwt-headers-util) `JwtConfiguration` for supplying configuration details.

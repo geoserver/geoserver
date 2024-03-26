@@ -737,7 +737,7 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community.jwt-headers</groupId>
-          <artifactId>jwt-headers-gs</artifactId>
+          <artifactId>gs-jwt-headers</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

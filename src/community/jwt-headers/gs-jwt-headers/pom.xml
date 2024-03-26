@@ -16,7 +16,7 @@
   </parent>
 
   <groupId>org.geoserver.community.jwt-headers</groupId>
-  <artifactId>jwt-headers-gs</artifactId>
+  <artifactId>gs-jwt-headers</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer Security Plugin For JWT Headers</name>
 

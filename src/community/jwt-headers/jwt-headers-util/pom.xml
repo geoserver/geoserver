@@ -20,56 +20,16 @@
   <packaging>jar</packaging>
   <name>JWT Headers Shared Library</name>
 
+  <!--
+
+      This module should have minimal dependencies.
+      This module should have NO GeoServer/GeoTools dependencies.
+
+      This is a shared module and used by both GeoServer and GeoNetwork.
+
+    -->
+
   <dependencies>
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver</groupId>-->
-    <!--      <artifactId>gs-main</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--    </dependency>-->
-
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver.web</groupId>-->
-    <!--      <artifactId>gs-web-sec-core</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--    </dependency>-->
-
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver</groupId>-->
-    <!--      <artifactId>gs-main</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver</groupId>-->
-    <!--      <artifactId>gs-wms</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver.web</groupId>-->
-    <!--      <artifactId>gs-web-core</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver.web</groupId>-->
-    <!--      <artifactId>gs-web-sec-core</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-
-    <!--    <dependency>-->
-    <!--      <groupId>org.geoserver.security</groupId>-->
-    <!--      <artifactId>gs-security-tests</artifactId>-->
-    <!--      <version>${project.version}</version>-->
-    <!--      <classifier>tests</classifier>-->
-    <!--      <scope>test</scope>-->
-    <!--    </dependency>-->
-
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>nimbus-jose-jwt</artifactId>

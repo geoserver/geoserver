@@ -4,7 +4,7 @@ The JWT Headers module functionality is mirrored in GeoNetwork.  The module is s
 
     This contains shared functionality between GeoServer and GeoNetwork. This does things like Access Token validation and JSON processing.       
 
-2. `jwt-headers-gs`
+2. `gs-jwt-headers`
 
     This is the GeoServer specific components to integrate the functionality inside GeoServer.
 

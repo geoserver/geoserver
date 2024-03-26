@@ -21,7 +21,7 @@
   <name>JWT Headers Community Modules</name>
   <modules>
     <module>jwt-headers-util</module>
-    <module>jwt-headers-gs</module>
+    <module>gs-jwt-headers</module>
   </modules>
   <dependencies>
     <dependency>
@@ -57,7 +57,7 @@
       <id>jwt-headers</id>
       <modules>
         <module>jwt-headers-util</module>
-        <module>jwt-headers-gs</module>
+        <module>gs-jwt-headers</module>
       </modules>
     </profile>
 

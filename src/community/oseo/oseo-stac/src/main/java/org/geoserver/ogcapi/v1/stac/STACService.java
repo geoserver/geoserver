@@ -113,6 +113,10 @@ public class STACService {
 
     public static final String STAC_VERSION = "1.0.0";
 
+    public static final String STAC_CONFORMANCE_VERSION = "v" + STAC_VERSION;
+    public static final String STAC_AUTHORITY = "https://api.stacspec.org/";
+    public static final String STAC_CONFORMANCE_ROOT = STAC_AUTHORITY + STAC_CONFORMANCE_VERSION;
+
     public static final String FEATURE_CORE =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
     public static final String FEATURE_HTML =
@@ -121,18 +125,16 @@ public class STACService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
     public static final String FEATURE_OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-    public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.5/core";
-    public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.5/item-search";
-    public static final String STAC_SEARCH_SORT =
-            "https://api.stacspec.org/v1.0.0-beta.5/item-search#sort";
+    public static final String STAC_CORE = STAC_CONFORMANCE_ROOT + "/core";
+    public static final String STAC_SEARCH = STAC_CONFORMANCE_ROOT + "/item-search";
+    public static final String STAC_SEARCH_SORT = STAC_CONFORMANCE_ROOT + "/item-search#sort";
 
-    public static final String STAC_SEARCH_FIELDS =
-            "https://api.stacspec.org/v1.0.0-beta.5/item-search#fields";
+    public static final String STAC_SEARCH_FIELDS = STAC_CONFORMANCE_ROOT + "/item-search#fields";
 
-    public static final String STAC_SEARCH_FILTER =
-            "https://api.stacspec.org/v1.0.0-beta.5/item-search#filter";
-    public static final String STAC_FEATURES =
-            "https://api.stacspec.org/spec/v1.0.0-beta.1/ogcapi-features";
+    public static final String STAC_SEARCH_FILTER = STAC_CONFORMANCE_ROOT + "/item-search#filter";
+    public static final String STAC_FEATURES = STAC_CONFORMANCE_ROOT + "/ogcapi-features";
+
+    public static final String STAC_COLLECTIONS = STAC_CONFORMANCE_ROOT + "/collections";
 
     /** Container type: catalog */
     public static String TYPE_CATALOG = "Catalog";
@@ -195,6 +197,7 @@ public class STACService {
                         FEATURE_OAS30,
                         FEATURE_HTML,
                         FEATURE_GEOJSON,
+                        STAC_COLLECTIONS,
                         STAC_CORE,
                         STAC_FEATURES,
                         STAC_SEARCH,

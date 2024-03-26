@@ -43,6 +43,7 @@ public class ConformanceTest extends STACTestSupport {
             STACService.FEATURE_OAS30,
             STACService.FEATURE_HTML,
             STACService.FEATURE_GEOJSON,
+            STACService.STAC_COLLECTIONS,
             STACService.STAC_CORE,
             STACService.STAC_FEATURES,
             STACService.STAC_SEARCH,

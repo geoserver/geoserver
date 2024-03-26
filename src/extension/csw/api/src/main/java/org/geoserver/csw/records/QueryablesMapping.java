@@ -9,6 +9,10 @@ import org.geotools.api.data.Query;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.expression.PropertyName;
 
+/**
+ * A mapping of CSW queryables to properties of the metadata record schema. Provides functionality
+ * for translating properties and adapting queries.
+ */
 public interface QueryablesMapping {
 
     /**

@@ -30,6 +30,25 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Content Security Policy (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.27, the Content-Security-Policy HTTP response header will be enabled by default
+in order to mitigate cross-site scripting and clickjacking attacks. The default header value is
+intended to **block** the use of inline JavaScript in all HTML output except in cases where it is
+required (e.g., OpenLayers maps). It is possible that future work may further restrict the default
+policy.
+
+Most uers without any customized HTML output should not experience any issues. Users who need
+inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output should see
+:ref:`tutorials_getfeatureinfo_html_csp`. Users experiencing issues with static web files or custom
+classes/plugins generating HTML output may need to update their settings. For more information, see
+:ref:`production_config_csp`.
+
+.. note::
+    It is recommended that static web files be disabled if they are not necessary in order to
+    mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

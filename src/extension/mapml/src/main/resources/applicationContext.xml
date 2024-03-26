@@ -32,9 +32,6 @@
     </bean>
     <bean id="mapMLEncoder" class="org.geoserver.mapml.MapMLEncoder"/>
 
-    <bean id="mapMLMapResponse" class="org.geoserver.mapml.MapMLMapResponse">
-        <constructor-arg ref="mapMLEncoder"/>
-    </bean>
     <bean id="mapMLHTMLResponse" class="org.geoserver.mapml.MapMLHTMLResponse"/>
     <bean id="getFeatureMapMLCallback" class="org.geoserver.mapml.MapMLGetFeatureCallback"/>
     <bean id="wmsGetFeatureInfoMapML" class="org.geoserver.mapml.MapMLGetFeatureInfoOutputFormat">

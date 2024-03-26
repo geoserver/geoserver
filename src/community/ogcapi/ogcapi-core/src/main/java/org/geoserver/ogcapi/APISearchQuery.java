@@ -28,7 +28,10 @@ public class APISearchQuery {
 
     private String datetime;
     private List<String> ids;
+
+    @JsonProperty("sortby")
     private SortBy[] sortBy;
+
     private String filter;
 
     @JsonProperty("filter-crs")

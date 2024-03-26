@@ -660,7 +660,7 @@
       <constructor-arg index="0" ref="OpenLayers2MapProducer" />
       <constructor-arg index="1" ref="OpenLayers3MapProducer" />
     </bean>
-    <bean id="OpenLayersMapResponse" class="org.geoserver.wms.map.RawMapResponse">
+    <bean id="RawMapResponse" class="org.geoserver.wms.map.RawMapResponse">
     </bean>
 
   <bean id="AtomGeoRSSMapProducer"

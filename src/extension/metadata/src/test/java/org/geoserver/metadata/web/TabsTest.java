@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.Map;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.util.file.File;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.AbstractWicketMetadataTest;
@@ -53,7 +55,7 @@ public class TabsTest extends AbstractWicketMetadataTest {
                 (GeoServerTablePanel<AttributeConfiguration>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel");
-        assertEquals(6, attPanel.getDataProvider().size());
+        assertEquals(7, attPanel.getDataProvider().size());
 
         tester.clickLink("publishedinfo:tabs:panel:metadataPanel:tabs-container:tabs:1:link");
         tester.assertComponent("publishedinfo:tabs:panel:metadataPanel:panel", MetadataPanel.class);
@@ -69,8 +71,80 @@ public class TabsTest extends AbstractWicketMetadataTest {
                 (GeoServerTablePanel<AttributeConfiguration>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel");
-        assertEquals(4, attPanel.getDataProvider().size());
+        assertEquals(5, attPanel.getDataProvider().size());
 
         logout();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSave() throws IOException {
+
+        login();
+        layer = geoServer.getCatalog().getLayerByName("mylayer");
+        assertNotNull(layer);
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
+        tester.startPage(page);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
+                .setSelectedTab(4);
+        tester.submitForm("publishedinfo");
+        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", TabbedPanel.class);
+        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel:panel", MetadataPanel.class);
+
+        FormTester formTester = tester.newFormTester("publishedinfo");
+        formTester.setValue(
+                "tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:textfield",
+                "new-value");
+
+        tester.clickLink("publishedinfo:tabs:panel:metadataPanel:tabs-container:tabs:1:link");
+
+        formTester.submit("save");
+
+        logout();
+
+        layer = geoServer.getCatalog().getLayerByName("mylayer");
+        assertEquals(
+                "new-value",
+                ((Map<String, Object>) layer.getResource().getMetadata().get("custom"))
+                        .get("extra-text"));
+    }
+
+    @Test
+    public void testMultiTabField() throws IOException {
+
+        login();
+        layer = geoServer.getCatalog().getLayerByName("mylayer");
+        assertNotNull(layer);
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
+        tester.startPage(page);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
+                .setSelectedTab(4);
+        tester.submitForm("publishedinfo");
+        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", TabbedPanel.class);
+        tester.assertComponent("publishedinfo:tabs:panel:metadataPanel:panel", MetadataPanel.class);
+
+        assertEquals(
+                "extra-text",
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:0:component")
+                        .getDefaultModelObject());
+
+        FormTester formTester = tester.newFormTester("publishedinfo");
+        formTester.setValue(
+                "tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:7:itemProperties:1:component:textfield",
+                "new-value");
+
+        tester.clickLink("publishedinfo:tabs:panel:metadataPanel:tabs-container:tabs:2:link");
+
+        assertEquals(
+                "extra-text",
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:0:component")
+                        .getDefaultModelObject());
+        assertEquals(
+                "new-value",
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:metadataPanel:panel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:textfield")
+                        .getDefaultModelObject());
     }
 }

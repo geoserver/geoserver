@@ -11,8 +11,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -54,10 +56,13 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public abstract class AbstractURLPublisher extends AbstractController {
 
+    protected boolean replaceWindowsFileSeparator = false;
+
     @Override
     protected ModelAndView handleRequestInternal(
             HttpServletRequest request, HttpServletResponse response) throws Exception {
-        URL url = getUrl(request);
+        String reqPath = getRequestPath(request);
+        URL url = getUrl(request, reqPath);
 
         // if not found return a 404
         if (url == null) {
@@ -81,15 +86,10 @@ public abstract class AbstractURLPublisher extends AbstractController {
             return null;
         }
 
-        // set the mime if known by the servlet container, otherwise default to
-        // application/octet-stream to mitigate potential cross-site scripting
         String filename = new File(url.getFile()).getName();
-        String mime =
-                Optional.ofNullable(getServletContext())
-                        .map(sc -> sc.getMimeType(filename))
-                        .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        String mime = getMimeType(reqPath, filename);
         response.setContentType(mime);
-        String dispositionType = isAttachment(url, filename, mime) ? "attachment" : "inline";
+        String dispositionType = isAttachment(reqPath, filename, mime) ? "attachment" : "inline";
         response.setHeader(
                 "Content-Disposition",
                 ContentDisposition.builder(dispositionType).filename(filename).build().toString());
@@ -151,6 +151,19 @@ public abstract class AbstractURLPublisher extends AbstractController {
         return false;
     }
 
+    private String getRequestPath(HttpServletRequest request) throws IOException {
+        String reqPath =
+                URLDecoder.decode(request.getRequestURI(), "UTF-8")
+                        .substring(request.getContextPath().length());
+        if (this.replaceWindowsFileSeparator) {
+            reqPath = reqPath.replace(File.separatorChar, '/');
+        }
+        if (Arrays.stream(reqPath.split("/")).anyMatch(".."::equals)) {
+            throw new IllegalArgumentException("Contains invalid '..' path: " + reqPath);
+        }
+        return reqPath;
+    }
+
     static String lastModified(long timeStamp) {
         SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH);
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -171,13 +184,25 @@ public abstract class AbstractURLPublisher extends AbstractController {
     }
 
     /**
+     * Can be overridden to replace specific mime types to mitigate potential XSS issues with
+     * certain resources
+     */
+    protected String getMimeType(String reqPath, String filename) {
+        // set the mime if known by the servlet container, otherwise default to
+        // application/octet-stream to mitigate potential cross-site scripting
+        return Optional.ofNullable(getServletContext())
+                .map(sc -> sc.getMimeType(filename))
+                .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+    }
+
+    /**
      * Can be overridden to set the Content-Disposition: attachment to mitigate potential XSS issues
      * with certain resources
      */
-    protected boolean isAttachment(URL url, String filename, String mime) {
+    protected boolean isAttachment(String reqPath, String filename, String mime) {
         return false;
     }
 
     /** Retrieves the resource URL from the specified request */
-    protected abstract URL getUrl(HttpServletRequest request) throws IOException;
+    protected abstract URL getUrl(HttpServletRequest request, String reqPath) throws IOException;
 }

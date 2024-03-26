@@ -40,7 +40,7 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
      */
     @Override
     protected Resource getResource(String path) throws Exception {
-        File file = Paths.toFile(folder.getRoot(), path);
+        File file = FilePaths.toFile(folder.getRoot(), path);
         return Files.asResource(file);
     }
 

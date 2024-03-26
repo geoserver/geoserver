@@ -23,20 +23,13 @@ Layer group behaviour can be configured by setting its :guilabel:`mode`. There a
 
 If a layer is included in any non *single* mode group, it will no longer be listed in the flat layer list.  It will still be possible to include the layer in other layer groups. 
 
-+------------------------+-------+-------------------+----------------+------------------+
 | Layer Group Mode       | Named | Contains Children | Lists Children | Details          |
-+========================+=======+===================+================+==================+
-| Single                 | named |                   | no             |                  |
-+------------------------+-------+-------------------+----------------+------------------+
+| ---------------------- | ----- | ----------------- | -------------- | ---------------- |
+| Single                 | named | -                 | no             | -                |
 | Opaque Container       | named | yes               | no             | hides children   |
-+------------------------+-------+-------------------+----------------+------------------+
-| Named Tree             | named | yes               | lists children |                  |
-+------------------------+-------+-------------------+----------------+------------------+
-| Container Tree         |       | yes               | lists children |                  |
-+------------------------+-------+-------------------+----------------+------------------+
+| Named Tree             | named | yes               | lists children | -                |
+| Container Tree         | -     | yes               | lists children | -                |
 | Earth Observation Tree | named | yes               | lists children | has root layer   |
-+------------------------+-------+-------------------+----------------+------------------+
-
 
 Edit a Layer Group
 ------------------

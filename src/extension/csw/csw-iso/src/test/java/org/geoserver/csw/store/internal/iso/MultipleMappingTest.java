@@ -28,7 +28,6 @@ public class MultipleMappingTest extends MDTestSupport {
                         "csw/MD_Metadata-second.properties.ignore");
         secondMappingFile =
                 new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata-second.properties");
-        // copy all mappings into the data directory
         secondMappingFileIgnore2 =
                 new File(testData.getDataDirectoryRoot(), "csw/Record-second.properties.ignore");
         secondMappingFile2 =

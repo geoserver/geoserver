@@ -140,6 +140,11 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         getFeatureInfoRequest.setQueryLayers(queryLayers);
     }
 
+    @After
+    public void resetSetting() {
+        System.clearProperty(FreeMarkerTemplateManager.FORCE_FREEMARKER_ESCAPING);
+    }
+
     @SuppressWarnings("unchecked") // EMF model without generics
     private void initFeatureType(FeatureTypeInfo featureType) throws IOException {
         fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
@@ -424,27 +429,51 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         resource.getKeywords().set(0, new Keyword(decoded));
         getCatalog().save(resource);
 
-        // test with auto-escaping disabled
-        ByteArrayOutputStream outStream1 = new ByteArrayOutputStream();
-        outputFormat.write(fcType, getFeatureInfoRequest, outStream1);
-        String result1 = new String(outStream1.toByteArray());
-        assertThat(result1, containsString(decoded));
-        assertThat(result1, not(containsString(encoded)));
+        // test with no system property defined (default is true) and WMS setting disabled
+        // result will be escaped
+        doTestAutoEscaping(null, encoded, decoded);
 
-        // test with auto-escaping enabled
+        // test with system property set to true and WMS setting disabled
+        // result will be escaped
+        doTestAutoEscaping("true", encoded, decoded);
+
+        // test with system property set to false and WMS setting disabled
+        // result will not be escaped
+        doTestAutoEscaping("false", decoded, encoded);
+
         WMSInfo info = getGeoServer().getService(WMSInfo.class);
         info.setAutoEscapeTemplateValues(true);
         getGeoServer().save(info);
         try {
-            ByteArrayOutputStream outStream2 = new ByteArrayOutputStream();
-            outputFormat.write(fcType, getFeatureInfoRequest, outStream2);
-            String result2 = new String(outStream2.toByteArray());
-            assertThat(result2, not(containsString(decoded)));
-            assertThat(result2, containsString(encoded));
+            // test with no system property defined (default is true) and WMS setting enabled
+            // result will be escaped
+            doTestAutoEscaping(null, encoded, decoded);
+
+            // test with system property set to true and WMS setting enabled
+            // result will be escaped
+            doTestAutoEscaping("true", encoded, decoded);
+
+            // test with system property set to false and WMS setting enabled
+            // result will be escaped
+            doTestAutoEscaping("false", encoded, decoded);
         } finally {
             info.setAutoEscapeTemplateValues(false);
             getGeoServer().save(info);
         }
+    }
+
+    private void doTestAutoEscaping(String property, String contains, String notContains)
+            throws Exception {
+        if (property != null) {
+            System.setProperty(FreeMarkerTemplateManager.FORCE_FREEMARKER_ESCAPING, property);
+        } else {
+            System.clearProperty(FreeMarkerTemplateManager.FORCE_FREEMARKER_ESCAPING);
+        }
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        assertThat(result, not(containsString(notContains)));
+        assertThat(result, containsString(contains));
     }
 
     /** Restore FreeMarkerTemplateManager default state */

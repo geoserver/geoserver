@@ -27,6 +27,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
 
     private String beanName;
     private String userGroupServiceName;
+    private String authenticationFilterName;
     private GeoServerSecurityManager securityManager;
 
     private Map<String, String> parameters = new HashMap<>();
@@ -135,5 +136,16 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     protected AuthenticationKeyFilterConfigException createFilterException(
             String errorid, Object... args) {
         return new AuthenticationKeyFilterConfigException(errorid, args);
+    }
+
+    /** Get the belonging Auth Filter Name to allow the Mapper accessing the auth cache * */
+    public String getAuthenticationFilterName() {
+        return authenticationFilterName;
+    }
+
+    /** Set the belonging Auth Filter Name to allow the Mapper accessing the auth cache * */
+    @Override
+    public void setAuthenticationFilterName(String authenticationFilterName) {
+        this.authenticationFilterName = authenticationFilterName;
     }
 }

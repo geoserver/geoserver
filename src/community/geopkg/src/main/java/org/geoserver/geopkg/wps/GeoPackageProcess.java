@@ -30,6 +30,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
@@ -324,7 +325,7 @@ public class GeoPackageProcess implements GeoServerProcess {
 
     private String getFirstCRS(List<PublishedInfo> layers) {
         try {
-            return CRS.lookupIdentifier(getCRS(layers.get(0)), false);
+            return ResourcePool.lookupIdentifier(getCRS(layers.get(0)), false);
         } catch (FactoryException e) {
             throw new RuntimeException(e);
         }

@@ -113,6 +113,13 @@ public class ItemsTest extends STACTestSupport {
     }
 
     @Test
+    public void testItemWrongCollection() throws Exception {
+        getAsMockHttpServletResponse(
+                "ogc/stac/v1/collections/SAS1/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                404);
+    }
+
+    @Test
     public void testSentinelItemJSONWorkspace() throws Exception {
         // matched workspace
         DocumentContext json =
@@ -754,7 +761,7 @@ public class ItemsTest extends STACTestSupport {
         // assetsb object inserted into test table as
         // '{"g":1,"m":2,"f":3,"h":4,"c":5,"a":{"hello":6,"archive":7,"meh":{"working":8,"aver":9}},"opt:cloudCover":34}'
         DocumentContext json =
-                getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items/JSONB_TEST.02", 200);
+                getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items/JSONB_TEST.02", 200);
         assertEquals(
                 "{a={archive=7, hello=6, meh={aver=9, working=8}}, c=5, f=3, g=1, h=4, m=2, opt:cloudCover=34}",
                 json.read("assetsb").toString());

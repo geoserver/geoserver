@@ -1982,4 +1982,25 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
             if (group != null) catalog.remove(group);
         }
     }
+
+    @Test
+    public void testHideEmptyRules() throws Exception {
+        String url =
+                "wms?LAYER="
+                        + MockData.NAMED_PLACES.getLocalPart()
+                        + "&FORMAT=application/json"
+                        + "&SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&WIDTH=20&HEIGHT=20";
+        JSONObject legend = (JSONObject) getAsJSON(url);
+        JSONArray rules = legend.getJSONArray("Legend").getJSONObject(0).getJSONArray("rules");
+        assertEquals(2, rules.size());
+        assertEquals("ashton", rules.getJSONObject(0).getString("name"));
+        assertEquals("goose_island", rules.getJSONObject(1).getString("name"));
+
+        // goose_island is placed on negative Y ordinates
+        url += "&LEGEND_OPTIONS=hideEmptyRules:true&BBOX=0,0,0.1,0.1";
+        legend = (JSONObject) getAsJSON(url);
+        rules = legend.getJSONArray("Legend").getJSONObject(0).getJSONArray("rules");
+        assertEquals(1, rules.size());
+        assertEquals("ashton", rules.getJSONObject(0).getString("name"));
+    }
 }

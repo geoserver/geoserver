@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.ProductClass;
 import org.geotools.api.data.DataSourceException;
@@ -116,6 +117,13 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     static final String COLLECTION_NAME = "name";
 
+    /**
+     * Marks an attribute as being a synthetic one, meaning it's not part of the original source
+     * data and should not be back-mapped into the source data. Used as a key in the attribute own
+     * user data.
+     */
+    static final String SYNTHETIC = "synthetic";
+
     Repository repository;
 
     Name delegateStoreName;
@@ -156,7 +164,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         this.propertyMapper = new SourcePropertyMapper(productFeatureType);
     }
 
-    String getNamespaceURI() {
+    public String getNamespaceURI() {
         return namespaceURI;
     }
 
@@ -206,9 +214,14 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         }
 
         // adding the layer publishing property
+        SimpleFeatureType simpleLayerType =
+                AbstractMappingStore.buildCollectionLayerFeatureType(this);
+        SimpleFeatureType stylesType = AbstractMappingStore.buildStyleType(this);
+        FeatureType complexLayerType =
+                AbstractMappingStore.buildComplexLayerType(simpleLayerType, stylesType, this);
         AttributeDescriptor layerDescriptor =
-                buildFeatureListDescriptor(
-                        LAYERS_PROPERTY_NAME, EO_PREFIX, delegate.getSchema("collection_ogclink"));
+                buildFeatureDescriptor(
+                        getName(LAYERS), EO_PREFIX, complexLayerType, 0, Integer.MAX_VALUE);
         typeBuilder.add(layerDescriptor);
 
         // map OGC links
@@ -238,7 +251,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return buildFeatureDescriptor(name, prefix, schema, 0, Integer.MAX_VALUE);
     }
 
-    private AttributeDescriptor buildFeatureDescriptor(
+    /** Builds a descriptor for an attribute holding simple features (eventually a list of them) */
+    static AttributeDescriptor buildFeatureDescriptor(
             Name name, String prefix, SimpleFeatureType schema, int minOccurs, int maxOccurs) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         String ns = name.getNamespaceURI();
@@ -262,7 +276,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return descriptor;
     }
 
-    private FeatureType applyNamespace(String namespaceURI, SimpleFeatureType schema) {
+    static FeatureType applyNamespace(String namespaceURI, SimpleFeatureType schema) {
         TypeBuilder tb = new OrderedTypeBuilder();
         tb.setName(schema.getTypeName());
         tb.setNamespaceURI(namespaceURI);
@@ -1238,5 +1252,14 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     void clearFeatureSourceCaches() {
         featureSourceCache.clear();
+    }
+
+    /** Returns the GeoServer catalog */
+    Catalog getCatalog() {
+        return geoServer.getCatalog();
+    }
+
+    GeoServer getGeoServer() {
+        return geoServer;
     }
 }

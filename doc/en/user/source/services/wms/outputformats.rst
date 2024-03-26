@@ -65,6 +65,12 @@ where ``<format>`` is any of the options below.
    * - KMZ
      - ``format=kmz``
      -
+   * - MapML
+     - ``format=text/mapml``
+     -
+   * - MapML HTML Viewer
+     - ``text/html; subtype=mapml``
+     -
    * - OpenLayers
      - ``format=application/openlayers``
      - Generates an OpenLayers HTML application.

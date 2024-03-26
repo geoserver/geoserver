@@ -30,8 +30,49 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
-WCS ArcGRID output format removal
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+External Entity Allow List default (GeoServer 2.25 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The external entity allow list has changed to the following default locations:
+
+* ``www.w3.org``
+* ``schemas.opengis.net``
+* ``www.opengis.net``
+* ``inspire.ec.europa.eu/schemas``
+* proxy base url if configured
+
+The external entity allow list is an important setting from a security standpoint. This update changes its use from a recommended best practice to a default covering the most common locations used for OGC web services.
+
+.. note:: In general only application schema extension users need to update this setting.
+
+.. note:: To restore the previous behavour use system property ``ENTITY_RESOLUTION_ALLOWLIST=*`` to allow external entity resolution from any `http` or `https` location.
+
+For more information, including how to add additional allowed locations see :ref:`production_config_external_entities`.
+
+FreeMarker Template HTML Auto-escaping (GeoServer 2.25 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.25, the FreeMarker library's HTML auto-escaping feature will be enabled by default to prevent
+cross-site scripting (XSS) vulnerabilities in WMS GetFeatureInfo HTML output when using the default FreeMarker
+templates and WMS service settings. Some users may experience incorrectly escaped HTML output when using custom
+templates or if HTML tags are stored in vector data stores.
+
+See the :ref:`production_config_freemarker_escaping` page for information about the limitations of this feature
+and for instructions to disable this feature and delegate to the WMS service setting which defaults to disabling
+HTML auto-escaping.
+
+Spring Security Strict HTTP Firewall (GeoServer 2.25 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.25, Spring Security's StrictHttpFirewall will be enabled by default which will provide stronger
+default protection, particularly against potential path traversal vulnerabilities.
+
+In some cases valid requests may be blocked if the names of GeoServer resources (e.g., workspaces) contain certain
+special characters and are included in URL paths. See the :ref:`production_config_spring_firewall` page for
+instructions to disable the strict firewall and revert to the DefaultHttpFirewall used by earlier versions.
+
+WCS ArcGRID output format removal (GeoServer 2.24 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ArcGRID output format for WCS has been removed in GeoServer 2.24.0.
 If you have been using this format, you will need to switch to another text based format, 
@@ -89,11 +130,12 @@ As of GeoServer 2.21, the logging system used by GeoServer has been upgraded fro
 * GeoServer now uses :file:`xml` files for the built-in logging profiles (previously :file:`properties` files were used).
 
 * The built-in logging profiles are upgraded with :file:`xml` files:
+  
+  ::
 
-  | :file:`DEFAULT_LOGGING.xml`
-  | :file:`DEFAULT_LOGGING.properties.bak`
-  
-  
+    DEFAULT_LOGGING.xml
+    DEFAULT_LOGGING.properties.bak
+
 * A backup of the prior :file:`properties` files are created during the upgrade process. If you had previously made any customizations to a built-in profiles these backup files may be used as a reference when customizing the xml file.
 
 * Log4J 2 does have the ability to read Log4j 1.2 properties files although not all features are supported.

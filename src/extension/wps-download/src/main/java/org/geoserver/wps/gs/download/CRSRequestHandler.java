@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.ResourcePool;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.type.GeometryDescriptor;
@@ -280,7 +281,7 @@ class CRSRequestHandler {
             // since they can expose a crs attribute
             return null;
         }
-        String crsId = CRS.lookupIdentifier(targetCRS, false);
+        String crsId = ResourcePool.lookupIdentifier(targetCRS, false);
         if (crsId == null) {
             return null;
         }

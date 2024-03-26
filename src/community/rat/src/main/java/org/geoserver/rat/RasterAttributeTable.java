@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.geoserver.wms.featureinfo.RasterLayerIdentifier;
 import org.geotools.api.style.ColorMap;
 import org.geotools.api.style.Style;
 import org.geotools.brewer.styling.builder.ColorMapBuilder;
@@ -133,8 +134,7 @@ public abstract class RasterAttributeTable {
             throw new UnsupportedOperationException("Cannot classify on color ranges yet");
         else buildUniqueValuesColorMap(colorMapBuilder, fieldName);
 
-        raster.option("labelInFeatureInfo", "add");
-        raster.option("labelAttributeName", fieldName);
+        raster.option(RasterLayerIdentifier.INCLUDE_RAT, "true");
 
         return sb.build();
     }

@@ -1,4 +1,4 @@
-.. _get_legend_graphic: 
+.. _get_legend_graphic:
 
 GetLegendGraphic
 ================

@@ -135,7 +135,7 @@ The print module will use the nearest scale and will make sure the aspect ratio 
 
 The geodetic parameter can be set to true so the scale of geodetic layers can correctly be calculated.  Certain projections (Google and Latlong for example) are based on a spheroid and therefore require **geodetic: true** in order to correctly calculate the scale.  If the geodetic parameter is not present it will be assumed to be false.
 
-The _optional_ strictEpsg4326 parameter can be set to true to control how EPSG:4326 is interpreted. This needs to be true for WMS version 1.3.0 GetMap requests. See https://www.google.ch/search?q=epsg+4326+latitude+longitude+order&oq=epsg+4326+&aqs=chrome.3.69i57j0l5.5996j0j4&sourceid=chrome&espv=210&es_sm=93&ie=UTF-8 for some links to the history and mess that is EPSG:4326.
+The **optional** strictEpsg4326 parameter can be set to true to control how EPSG:4326 is interpreted. This needs to be true for WMS version 1.3.0 GetMap requests. See https://www.google.ch/search?q=epsg+4326+latitude+longitude+order&oq=epsg+4326+&aqs=chrome.3.69i57j0l5.5996j0j4&sourceid=chrome&espv=210&es_sm=93&ie=UTF-8 for some links to the history and mess that is EPSG:4326.
 
 The outputFilename parameter is optional and if omitted the values used in the server's configuration will be used instead.  If it is present it will be the name of the downloaded file.  The suffix will be added if not left off in the parameter.  The date can be substituted into the filename as well if desired.  See configuration's outputFilename for more information and examples
 
@@ -187,9 +187,9 @@ To print more than one map on a single page you need to:
  * specify several map blocks in a page of the yaml file, each with a distinct name property value
  * use a particular syntax in the spec to bind different rendering properties to each map block
  
-This is possible specifying a _maps_ object in spec root object with a distinct key - object pair for each map. The
+This is possible specifying a **maps** object in spec root object with a distinct key - object pair for each map. The
 key will refer the map block name as defined in yaml file. The object will contain layers and srs for the named map.
-Another _maps_ object has to be specified inside the page object to describe positioning, scale and so on.
+Another **maps** object has to be specified inside the page object to describe positioning, scale and so on.
 
 .. code-block:: javascript
 

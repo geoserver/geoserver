@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<!--
+  ~ (c) 2024 Open Source Geospatial Foundation - all rights reserved
+  ~ This code is licensed under the GPL 2.0 license, available at the root
+  ~ application directory.
+  ~
+  -->
+<wicket:head>
+    <style>
+        #roleConverterStringTable table, th, td {
+            border: black 1px solid !important;
+        }
+
+    </style>
+    <script>
+
+        //takes the converter string (in "att1=val1;att2=val2" format)
+        //and adds rows to the roleConverterStringTbody.
+        //If there aren't any items in the converter string, then
+        //hide the table.
+        function roleConverterStringChanged() {
+            //actual (string) value of the att1=val1;att2=val2 map
+            var strElement = document.getElementById("roleConverterString");
+            if (strElement == null) {
+                //loading
+                return;
+            }
+            var str = strElement.value;
+
+            //body of the table - under the <th>s
+            var tbody = document.getElementById("roleConverterStringTbody");
+
+            //div containing the table (and title).
+            //we only display it if there are conversions
+            var div = document.getElementById("roleConverterStringDiv");
+
+            if (str == null) {
+                div.style.display = "none";
+                return; //nothing to do
+            }
+            str = str.trim();
+            if (str === "") {
+                div.style.display = "none";
+                return; //nothing to do
+            }
+
+            //one for each of the items in the Map
+            var items = str.split(";");
+            var body = "";
+            for (var i = 0; i < items.length; i++) {
+                //parts[0]=key, parts[1]=value
+                var parts = items[i].split("=");
+                if (parts.length != 2) {
+                    continue; // invalid
+                }
+                var externalRole = removeBadChars(parts[0]);
+                var gsRole = removeBadChars(parts[1]);
+                var tr = "<tr><td>" + externalRole + "</td><td>" + gsRole + "</td></tr>";
+                body += tr;
+            }
+            tbody.innerHTML = body;
+            div.style.display = "block";
+        }
+
+        //we don't want to put user input into the dom, so we
+        //make sure there isn't anything "bad" (like "script") in the
+        //input
+        function removeBadChars(inputString) {
+            var regex = new RegExp('[^0-9a-zA-Z_.\-]', 'g');
+            return inputString.replace(regex, '');
+        }
+
+    </script>
+
+</wicket:head>
+
+<body>
+
+
+<wicket:panel>
+
+    <label>
+        <wicket:message key="rolesHeaderName"></wicket:message>
+    </label>
+    <input class="field text" wicket:id="rolesHeaderName"/>
+
+    <label>
+        <wicket:message key="jsonPath"></wicket:message>
+    </label>
+    <input class="field text" wicket:id="rolesJsonPath"/>
+
+    <label style="padding-top: 20px;">
+        <wicket:message key="roleConverterTitle"></wicket:message>
+    </label>
+    <!--
+      `oninput` fires when user changes the value - this will
+      update the summary table.
+    -->
+    <input class="field text" id="roleConverterString" oninput="roleConverterStringChanged(this)"
+           style="width: 95%;" wicket:id="roleConverterString"/>
+
+    <label>
+        <wicket:message key="roleConverterHint"></wicket:message>
+    </label>
+    <div style="display:flex">
+        <input class="field checkbox" id="onlyExternalListedRoles"
+               style="margin-top:auto;margin-bottom:auto" type="checkbox" wicket:id="onlyExternalListedRoles"/>
+        <label style="padding-left:5px">
+            <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+        </label>
+    </div>
+
+    <div id="roleConverterStringDiv" style="display:none;padding-top:10px;width:55%">
+        <table id="roleConverterStringTable">
+            <thead>
+            <tr>
+                <th style="text-align: center;">
+                    <wicket:message key="externalRoleTitle"/>
+                </th>
+                <th style="text-align: center;">
+                    <wicket:message key="gsRoleTitle"/>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="roleConverterStringTbody">
+
+            </tbody>
+        </table>
+
+        <div style="justify-content: center;display: flex;font-size: 10px">
+            <div>
+                <wicket:message key="roleConverterTableTitle"/>
+            </div>
+        </div>
+    </div>
+    <script>
+        //when wicket loads the page, we want this to fire AFTER the
+        //above elements are in the dom.  This is so the converter is run
+        //when the page first loads (and table is updated).
+        roleConverterStringChanged();
+    </script>
+</wicket:panel>
+</body>
+</html>

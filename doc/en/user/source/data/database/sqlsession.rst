@@ -15,10 +15,12 @@ if the SQL sessions scripts are used to provide tight control over database acce
 
 The SQL script can expand environment variables using the ``${variableName, defaultValue}`` syntax,
 for example the following alters the current database user to be the same as the GeoServer current user, 
-or ``geoserver`` in case no user was authenticated 
+or ``geoserver`` in case no user was authenticated
+
+.. code-block::
 
    SET SESSION AUTHORIZATION ${GSUSER,geoserver}
-   
+
 Using SQL session scripts to control authorizations at the database level
 -------------------------------------------------------------------------
 

@@ -6,6 +6,7 @@
 package org.geoserver.importer.transform;
 
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.importer.ImportTask;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -56,7 +57,7 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
         // update the layer metadata
         ResourceInfo r = task.getLayer().getResource();
         r.setNativeCRS(target);
-        r.setSRS(CRS.lookupIdentifier(target, true));
+        r.setSRS(ResourcePool.lookupIdentifier(target, true));
         if (r.getNativeBoundingBox() != null) {
             r.setNativeBoundingBox(r.getNativeBoundingBox().transform(target, true));
         }

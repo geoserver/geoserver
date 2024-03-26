@@ -60,10 +60,10 @@ There is also the possibility of having mapping each layer to multiple records. 
 
 In this example, each of the two types have three mapping files: one nameless, one called `otherRecord` and one called `thirdRecord`. Each layer will thus generate three records for each type. Geoserver will assume that mappings of different type but with the same name refer to the same record (in another format). (This is only relevant for GetRecords requests where outputSchema and typeNames do not match¸ which is unusual). The user is responsible for ensuring that identifiers are unique accross all mappings of the same record type.
 
-The mapping files take the syntax from Java properties files. The left side of the equals sign specifies the target field name or path in the metadata record, paths being separated with dots. The right side of the equals sign specifies any CQL expression that denotes the value of the target property. The CQL expression is applied to each ResourceInfo_ object in the catalog and can retrieve all properties from this object. These expressions can make use of literals, properties present in the ResourceInfo_ object, and all normal CQL operators and functions. 
+The mapping files take the syntax from Java properties files. The left side of the equals sign specifies the target field name or path in the metadata record, paths being separated with dots. The right side of the equals sign specifies any CQL expression that denotes the value of the target property. The CQL expression is applied to each **ResourceInfo** object in the catalog and can retrieve all properties from this object. These expressions can make use of literals, properties present in the **ResourceInfo** object, and all normal CQL operators and functions. 
 There is also support for complex data structures such as Maps using the dot notation and Lists using the bracket notation (Example mapping files are given below).
 
-The properties in the ResourceInfo_ object that can be used are:: 
+The properties in the **ResourceInfo** object that can be used are:: 
 
   name
   qualifiedName
@@ -121,8 +121,6 @@ The properties in the ResourceInfo_ object that can be used are::
 
 Depending on whether the resource is a FeatureTypeInfo or a CoverageInfo, additional properties may be taken from their respective object structure.
 You may use :ref:`rest` to view an xml model of feature types and datastores in which the xml tags represent the available properties in the objects.
-
-.. _ResourceInfo: http://rancor.boundlessgeo.com:8080/display/GEOS/Catalog+Design#CatalogDesign-resources
 
 Some fields in the metadata schemes can have multiple occurrences. They may be mapped to properties in the Catalog model that are also multi-valued, such as for example ``keywords``.
 It is also possible to use a filter function called ``list`` to map multiple single-valued or multi-valued catalog properties to a MetaData field with multiple occurrences (see in ISO MetaData Profile example, mapping for the ``identificationInfo.AbstractMD_Identification.citation.CI_Citation.alternateTitle`` field). 

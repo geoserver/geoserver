@@ -188,7 +188,7 @@ A CQL expression that is used to set the custom ``gml:id`` of the output feature
       
          * In the absence of primary keys, this will be ``<the table name>.<generated gml id>``, e.g. ``MAPPEDFEATURE.fid--46fd41b8_1407138b56f_-7fe0``. 
          
-         * If using property files instead of database tables, the default ``gml:id`` will be the row key found before the equals ("=") in the property file, e.g. the feature with row "mf1=Mudstone|POINT(1 2)|..." will have gml:id ``mf1``.
+         * If using property files instead of database tables, the default ``gml:id`` will be the row key found before the equals ("=") in the property file, e.g. the feature with row ``mf1=Mudstone|POINT(1 2)|...`` will have ``gml:id`` ``mf1``.
 
 .. note:: ``gml:id`` must be an `NCName <http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName>`_.
 
@@ -342,11 +342,11 @@ For example, the table below has multiple ``POSITION`` for each feature:
 ===== ========
  ID   POSITION
 ===== ========
-ID1.2  1948-05
-ID1.2  1948-06
-ID1.2  1948-07
-ID1.2  1948-08
-ID1.2  1948-09
+ID1.2 1948-05
+ID1.2 1948-06
+ID1.2 1948-07
+ID1.2 1948-08
+ID1.2 1948-09
 ===== ========
 
 The configuration file uses ``isList`` on ``timePositionList`` attribute mapped to ``POSITION`` column::
@@ -354,7 +354,7 @@ The configuration file uses ``isList`` on ``timePositionList`` attribute mapped 
     <AttributeMapping>
         <targetAttribute>csml:timePositionList</targetAttribute>
         <sourceExpression>
-	    <OCQL>POSITION</OCQL>
+        <OCQL>POSITION</OCQL>
         </sourceExpression>
         <isList>true</isList>
     </AttributeMapping>
@@ -398,7 +398,7 @@ CQL functions enable data conversion and conditional behaviour to be specified i
 * See :ref:`app-schema.cql-functions` for information on additional functions provided by the app-schema plugin.
 * The uDig manual includes a list of CQL functions:
 
-    * http://udig.refractions.net/confluence/display/EN/Constraint+Query+Language
+    * http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html
 
 * CQL string literals are enclosed in single quotes, for example ``'urn:ogc:def:nil:OGC:missing'``.
 
@@ -427,7 +427,7 @@ Attributes with cardinality 1..N
 Consider the following two tables, the first table contains information related to meteorological stations:
 
 ======== ========== 
-ID       NAME                    
+ID       NAME      
 ======== ==========
 st.1     Station 1  
 st.2     Station 2  

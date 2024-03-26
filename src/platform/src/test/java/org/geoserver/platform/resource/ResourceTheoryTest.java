@@ -19,6 +19,8 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -484,13 +486,23 @@ public abstract class ResourceTheoryTest {
         assertTrue(res.delete());
     }
 
-    @Theory
-    public void theoryRootIsAbsolute(String path) throws Exception {
+    public void theoryNoAbsoluteFiles(String path) throws Exception {
         File home = new File(System.getProperty("user.home")).getCanonicalFile();
-        File file = Paths.toFile(home, path);
+        File file = new File(home, path);
 
         final Resource res = getResource(Paths.convert(file.getPath()));
-        assertTrue(Paths.isAbsolute(res.path()));
+        assertFalse(FilePaths.isAbsolute(res.path()));
+    }
+
+    @Theory
+    public void theoryObsoleteSlashIsIgnored(String path) throws Exception {
+        final Resource res = getResource(path);
+        final Resource res2 = getResource("/" + path);
+        final Resource res3 = getResource(path + "/");
+        assertEquals(res, res2);
+        assertEquals(res.path(), res2.path());
+        assertEquals(res, res3);
+        assertEquals(res.path(), res3.path());
     }
 
     @Test

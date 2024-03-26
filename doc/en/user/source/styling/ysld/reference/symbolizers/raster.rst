@@ -107,11 +107,11 @@ where:
 
 Additional "vendor options" properties for :ref:`sld-extensions_composite-blend`:
 
-.. include:: include/composite.txt
+.. include:: include/composite.rst
 
 Additional "vendor options" properties for :ref:`rendering_selection`:
 
-.. include:: include/inclusion.txt
+.. include:: include/inclusion.rst
 
 Examples
 --------

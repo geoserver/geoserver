@@ -44,6 +44,7 @@ import javax.media.jai.RasterFactory;
 import javax.media.jai.operator.ConstantDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -796,7 +797,7 @@ class DirectRasterRenderer {
         if (CRS.getAxisOrder(crs) != CRS.AxisOrder.NORTH_EAST) {
             return envelope;
         }
-        String code = CRS.lookupIdentifier(crs, true);
+        String code = ResourcePool.lookupIdentifier(crs, true);
         if (code == null) {
             return envelope;
         } else {

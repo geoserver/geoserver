@@ -119,9 +119,6 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 || authentication instanceof AnonymousAuthenticationToken
                 || accessToken != null) {
 
-            if (authentication instanceof AnonymousAuthenticationToken) {
-                SecurityContextHolder.getContext().setAuthentication(null);
-            }
             OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
             if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
@@ -369,8 +366,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
             }
             result.setDetails(getAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(result);
         }
-        SecurityContextHolder.getContext().setAuthentication(result);
     }
 
     @Override

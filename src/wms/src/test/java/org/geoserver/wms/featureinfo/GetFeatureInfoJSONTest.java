@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +33,7 @@ import net.opengis.wfs.WfsFactory;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -39,8 +42,10 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -91,6 +96,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
     public static final QName TASMANIA_SPY = new QName(WCS_URI, "BlueMarbleSpy", WCS_PREFIX);
 
+    public static QName RAT = new QName(MockTestData.CITE_URI, "rat", MockTestData.CITE_PREFIX);
+
+    public static final String RAT_STYLE = "rat";
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -112,12 +121,25 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         testData.addStyle(RASTER_VECTOR, getClass(), catalog);
         testData.addStyle(JIFFLE_CONDITION, getClass(), catalog);
         testData.addStyle(FOOTPRINT_RASTER, getClass(), catalog);
+        testData.addStyle(RAT_STYLE, getClass(), catalog);
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(SystemTestData.LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
                 TASMANIA_DEM, "tazdem.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
         testData.addRasterLayer(
                 TASMANIA_SPY, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
+
+        // setup a raster with attribute table
+        testData.addRasterLayer(RAT, "rat.tiff", "tiff", null, getClass(), getCatalog());
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource aux = dd.get("rat", "rat.tiff.aux.xml");
+        try (InputStream is = getClass().getResourceAsStream("rat.tiff.aux.xml");
+                OutputStream os = aux.out()) {
+            IOUtils.copy(is, os);
+            os.close();
+        }
+        // force reload so that it reads the aux.xml file
+        getCatalog().getResourcePool().clear(getCatalog().getCoverageByName(getLayerId(RAT)));
     }
 
     /** Tests JSONP outside of expected polygon */
@@ -1333,5 +1355,45 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             }
         }
         return null;
+    }
+
+    @Test
+    public void testRATAttributes() throws Exception {
+        JSONObject p00 = testRATAttributes(0, 0);
+        assertEquals(1.1, p00.getDouble("GRAY_INDEX"), 0d);
+        assertEquals(1, p00.getDouble("con_min"), 0d);
+        assertEquals(1.2, p00.getDouble("con_max"), 0d);
+        assertEquals("green", p00.getString("test"));
+
+        JSONObject p31 = testRATAttributes(3, 1);
+        assertEquals(9.1, p31.getDouble("GRAY_INDEX"), 0d);
+        assertEquals(9, p31.getDouble("con_min"), 0d);
+        assertEquals(9.2, p31.getDouble("con_max"), 1e-3);
+        assertEquals("orange", p31.getString("test"));
+    }
+
+    private JSONObject testRATAttributes(int x, int y) throws Exception {
+        String layerId = getLayerId(RAT);
+        String url =
+                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetFeatureInfo&SRS=EPSG:26918&BBOX=737662,4603974,737678,4603982"
+                        + "&LAYERS="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&info_format="
+                        + JSONType.json
+                        + "&styles=rat"
+                        + "&WIDTH=4&HEIGHT=2"
+                        + "&x="
+                        + x
+                        + "&y="
+                        + y;
+        JSONObject json = (JSONObject) getAsJSON(url);
+        // raster output does not carry a geometry, we only check a feature has been generated
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(1, features.size());
+
+        return features.getJSONObject(0).getJSONObject("properties");
     }
 }

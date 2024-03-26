@@ -77,7 +77,7 @@ public enum ProjType {
         throw new IllegalArgumentException(v);
     }
 
-    public String getEpsgCode() {
-        return "EPSG:" + epsgCode;
+    public String getCRSCode() {
+        return "MapML:" + value;
     }
 }

@@ -8,6 +8,7 @@ package org.geoserver.wfs.request;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.List;
+import java.util.function.Supplier;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs20.Wfs20Factory;
@@ -22,7 +23,14 @@ import org.geotools.feature.FeatureCollection;
  */
 public abstract class FeatureCollectionResponse extends RequestObject {
 
-    private boolean getFeatureById = false;
+    protected boolean getFeatureById = false;
+
+    /**
+     * It can be expensive to determine the total number of features up front, by using a supplier
+     * we can defer calculation until the end of the request (when the value may already have been
+     * established).
+     */
+    protected Supplier<BigInteger> lazyTotalNumberOfFeatures = null;
 
     public static FeatureCollectionResponse adapt(Object adaptee) {
         if (adaptee instanceof FeatureCollectionType) {
@@ -53,15 +61,66 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         eSet(adaptee, "timeStamp", timeStamp);
     }
 
+    /**
+     * Factory method creating a new FeatureCollectionResponse.
+     *
+     * @return feature collection response
+     */
     public abstract FeatureCollectionResponse create();
 
+    /**
+     * Number of features included in this response. Number reflect the number of features included,
+     * which may be less than {@link #getTotalNumberOfFeatures()} when paging through more content
+     * than can be obtained in a single request.
+     *
+     * @return number of features included in this response.
+     */
     public abstract BigInteger getNumberOfFeatures();
 
+    /**
+     * Number of features included in response.
+     *
+     * @param n Number of features included in response
+     */
     public abstract void setNumberOfFeatures(BigInteger n);
 
-    public abstract BigInteger getTotalNumberOfFeatures();
+    /**
+     * Used to calculate total number of features on demand (only if needed). This allows formats
+     * that do not need the total to avoid calculating this expensive result, it also may be that
+     * some data stores can better estimate this total is obtained after traversing results.
+     *
+     * @param totalNumberOfFeatures Delayed calculation of total number of featuers.
+     */
+    public void setLazyTotalNumberOfFeatures(Supplier<BigInteger> totalNumberOfFeatures) {
+        this.lazyTotalNumberOfFeatures = totalNumberOfFeatures;
+    }
 
-    public abstract void setTotalNumberOfFeatures(BigInteger n);
+    /**
+     * Total number of features hits matched, or {@code null} for "unknown". Total is used as a
+     * guide when paging through more content than can be obtained in a single request.
+     *
+     * <p>This value is set by calling {@link #setLazyTotalNumberOfFeatures(Supplier)} (deferred
+     * value), or {@link #setTotalNumberOfFeatures(BigInteger)}.
+     *
+     * @return total number of features available, or null for "unknown".
+     */
+    public BigInteger getTotalNumberOfFeatures() {
+        if (lazyTotalNumberOfFeatures != null) {
+            return lazyTotalNumberOfFeatures.get();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Total number of Features hits matched, which may be greater than the number included in an
+     * individual result.
+     *
+     * @param totalHits total number of feature hits matched, or {@code null} for "unknown".
+     */
+    public void setTotalNumberOfFeatures(final BigInteger totalHits) {
+        lazyTotalNumberOfFeatures = () -> totalHits;
+    }
 
     public abstract void setPrevious(String previous);
 
@@ -90,8 +149,8 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         return getFeatureById;
     }
 
+    /** FeatureCollection response adapted from {@link net.opengis.wfs20.FeatureCollectionType}. */
     public static class WFS11 extends FeatureCollectionResponse {
-        BigInteger totalNumberOfFeatures;
 
         public WFS11(EObject adaptee) {
             super(adaptee);
@@ -111,16 +170,6 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         @Override
         public void setNumberOfFeatures(BigInteger n) {
             eSet(adaptee, "numberOfFeatures", n);
-        }
-
-        @Override
-        public BigInteger getTotalNumberOfFeatures() {
-            return totalNumberOfFeatures;
-        }
-
-        @Override
-        public void setTotalNumberOfFeatures(BigInteger n) {
-            this.totalNumberOfFeatures = n;
         }
 
         @Override
@@ -177,6 +226,7 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
     }
 
+    /** FeatureCollectionResponse from {@link net.opengis.wfs20.FeatureCollectionType}. */
     public static class WFS20 extends FeatureCollectionResponse {
         public WFS20(EObject adaptee) {
             super(adaptee);
@@ -200,14 +250,29 @@ public abstract class FeatureCollectionResponse extends RequestObject {
 
         @Override
         public BigInteger getTotalNumberOfFeatures() {
-            BigInteger result = eGet(adaptee, "numberMatched", BigInteger.class);
-            if (result != null && result.signum() < 0) return null;
-            return result;
+            if (lazyTotalNumberOfFeatures != null) {
+                return lazyTotalNumberOfFeatures.get();
+            } else {
+                BigInteger result = eGet(adaptee, "numberMatched", BigInteger.class);
+                if (result != null && result.signum() < 0) {
+                    // indicates "unknown"
+                    return null;
+                }
+                return result;
+            }
         }
 
         @Override
         public void setTotalNumberOfFeatures(BigInteger n) {
             eSet(adaptee, "numberMatched", n);
+            this.lazyTotalNumberOfFeatures =
+                    () -> {
+                        BigInteger result = eGet(adaptee, "numberMatched", BigInteger.class);
+                        if (result != null && result.signum() < 0) {
+                            return null; // indicates "unknown"
+                        }
+                        return result;
+                    };
         }
 
         @Override
@@ -245,6 +310,7 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         @SuppressWarnings("unchecked") // EMF model without generics
         public Object unadapt(Class<?> target) {
             if (target.equals(net.opengis.wfs20.FeatureCollectionType.class)) {
+                eSet(adaptee, "numberMatched", getTotalNumberOfFeatures());
                 return adaptee;
             } else if (target.equals(FeatureCollectionType.class)) {
                 net.opengis.wfs20.FeatureCollectionType source =

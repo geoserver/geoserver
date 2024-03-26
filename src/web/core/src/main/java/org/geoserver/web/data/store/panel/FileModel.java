@@ -7,13 +7,15 @@ package org.geoserver.web.data.store.panel;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.model.IModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.FilePaths;
+import org.geoserver.platform.resource.Paths;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -40,13 +42,6 @@ public class FileModel implements IModel<String> {
         this.rootDir = rootDir;
     }
 
-    private boolean isSubfile(File root, File selection) {
-        if (selection == null || "".equals(selection.getPath())) return false;
-        if (selection.equals(root)) return true;
-
-        return isSubfile(root, selection.getParentFile());
-    }
-
     @Override
     public String getObject() {
         Object obj = delegate.getObject();
@@ -67,27 +62,18 @@ public class FileModel implements IModel<String> {
     public void setObject(String location) {
 
         if (location != null) {
-            File dataDirectory = canonicalize(rootDir);
-            File file = canonicalize(new File(location));
-            if (isSubfile(dataDirectory, file)) {
-                File curr = file;
-                String path = null;
-                // paranoid check to avoid infinite loops
-                while (curr != null && !curr.equals(dataDirectory)) {
-                    if (path == null) {
-                        path = curr.getName();
-                    } else {
-                        path = curr.getName() + "/" + path;
-                    }
-                    curr = curr.getParentFile();
-                }
-                location = "file:" + path;
-            } else {
-                File dataFile = Files.url(rootDir, location);
-                if (dataFile == null || dataFile.equals(file)) {
-                    // not relative to the data directory, does not need fixing
-                    location = "file://" + file.getAbsolutePath();
-                }
+            location = Paths.convert(location);
+            String locationPath;
+            try {
+                locationPath = new URL(location).getFile();
+            } catch (MalformedURLException e) {
+                locationPath = location;
+            }
+            locationPath = Paths.convert(rootDir, new File(locationPath));
+            if (FilePaths.isAbsolute(locationPath)) {
+                location = "file://" + locationPath;
+            } else if (!locationPath.equals(location)) {
+                location = "file:" + locationPath;
             }
         }
         delegate.setObject(location);

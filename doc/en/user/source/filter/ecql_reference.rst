@@ -63,9 +63,9 @@ Predicates are boolean-valued expressions which specify relationships between va
        *like-pattern* uses the ``%`` character as a wild-card for any number of characters.
        ``ILIKE`` does case-insensitive matching.
    * - :ref:`ecql_attr` **[** ``NOT`` **]** ``IN (`` :ref:`ecql_expr`  **{** ``,``:ref:`ecql_expr`  **}**  ``)`` 
-     - Tests whether an expression value is (not) in a set of values
-   * - ``IN (`` :ref:`ecql_literal`  **{** ``,``:ref:`ecql_literal`  **}**  ``)`` 
-     - Tests whether a feature ID value is in a given set. ID values are integers or string literals
+     - Tests whether an attribute value is (not) in a set of values.
+   * - **[** ``NOT`` **]** ``IN (`` :ref:`ecql_literal`  **{** ``,``:ref:`ecql_literal`  **}**  ``)`` 
+     - Tests whether a feature ID value is (not) in a given set. ID values are integers or string literals
    * - :ref:`ecql_expr` ``IS`` **[** ``NOT`` **]** ``NULL``
      - Tests whether a value is (non-)null
    * - :ref:`ecql_attr` ``EXISTS`` **|** ``DOES-NOT-EXIST``
@@ -193,8 +193,9 @@ Attribute
 
 An attribute name denotes the value of a feature attribute.
 
-* Simple attribute names are sequences of letters and numbers,
-* Attribute names quoted with double-quotes may be any sequence of characters.
+* Simple attribute names are sequences of letters and numbers, e.g. `States123`
+* Attribute names quoted with double-quotes may be any sequence of characters, e.g. `"States!@#"`
+* `Note <https://gis.stackexchange.com/a/475826/68995>`_: `id` is one of a few `reserved keywords <https://github.com/geotools/geotools/blob/2058be01323c3dea23d6df4d84b623be7f0b4102/modules/library/cql/src/main/jjtree/ECQLGrammar.jjt#L180>`_ in ECQL and thus an attribute (or database column) named `id` must be quoted, e.g. `"id"`
 
 .. _ecql_literal:
  

@@ -1,4 +1,4 @@
-.. _wms_configuration: 
+.. _wms_configuration:
 
 WMS configuration
 =================

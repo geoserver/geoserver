@@ -73,7 +73,7 @@ With the example values shown in the above configuration panel, this block would
    </inspire_common:ResponseLanguage>
   </inspire_vs:ExtendedCapabilities>
 
-ISNPIRE recommends that every layer offered by a INSPIRE WMTS should use the InspireCRS84Quad grid set which is already configured in GeoServer, but is up to the user to select it when publishing a INSPIRE WMTS layer. 
+INSPIRE recommends that every layer offered by an INSPIRE WMTS should use the InspireCRS84Quad grid set which is already configured in GeoServer, but is up to the user to select it when publishing an INSPIRE WMTS layer. 
 
 Extended WFS and WCS configuration
 ----------------------------------

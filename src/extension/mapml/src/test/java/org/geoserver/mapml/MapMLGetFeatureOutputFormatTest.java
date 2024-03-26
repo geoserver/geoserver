@@ -5,15 +5,18 @@
 package org.geoserver.mapml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.HashMap;
-import org.custommonkey.xmlunit.NamespaceContext;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import java.util.Map;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -30,6 +33,7 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeodeticCRS;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.w3c.dom.Document;
@@ -38,13 +42,24 @@ import org.w3c.dom.Document;
 public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
     private XpathEngine xpath;
 
+    /**
+     * Reset layers so that they don't carry on configuration changes across tests
+     *
+     * @throws IOException
+     */
+    @Before
+    public void resetLayers() throws IOException {
+        revertLayer(MockData.FIFTEEN);
+    }
+
+    @Override
+    protected void setUpNamespaces(Map<String, String> namespaces) {
+        super.setUpNamespaces(namespaces);
+        namespaces.put("html", "http://www.w3.org/1999/xhtml");
+    }
+
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-        HashMap<String, String> m = new HashMap<>();
-        m.put("html", "http://www.w3.org/1999/xhtml");
-
-        NamespaceContext ctx = new SimpleNamespaceContext(m);
-        XMLUnit.setXpathNamespaceContext(ctx);
         xpath = XMLUnit.newXpathEngine();
 
         WFSInfo wfs = getWFS();
@@ -60,6 +75,16 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureTypeInfo fi = catalog.getFeatureTypeByName(SystemTestData.FIFTEEN.getLocalPart());
         cb.setupBounds(fi);
         catalog.save(fi);
+    }
+
+    @Test
+    public void testCapabilities() throws Exception {
+        Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.0.0");
+
+        // the WFS caps does not have a list of CRS, but we can check the MapML output format
+        assertXpathExists(
+                "//wfs:WFS_Capabilities/wfs:Capability/wfs:Request/wfs:GetFeature/wfs:ResultFormat/wfs:MAPML",
+                doc);
     }
 
     @Test
@@ -314,7 +339,16 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
     }
 
     @Test
-    public void testMapMLOutputFormatCoordinates() throws Exception {
+    public void testMapMLOutputFormatCoordinatesEPSG() throws Exception {
+        testMapMLOutputFormatCoordinates("urn:x-ogc:def:crs:EPSG:3978");
+    }
+
+    @Test
+    public void testMapMLOutputFormatCoordinatesTCRS() throws Exception {
+        testMapMLOutputFormatCoordinates("urn:x-ogc:def:crs:MapML:CBMTILE");
+    }
+
+    private void testMapMLOutputFormatCoordinates(String srsName) throws Exception {
         FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
         MetadataMap layerMeta = layerInfo.getMetadata();
         layerMeta.clear();
@@ -328,9 +362,10 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         vars.put("request", "GetFeature");
         vars.put("typename", "cdf:Fifteen");
         vars.put("outputFormat", "MAPML");
-        vars.put("srsName", "urn:x-ogc:def:crs:EPSG:3978");
+        vars.put("srsName", srsName);
 
         Document doc = getMapML("wfs", vars);
+        print(doc);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
         String coords =
@@ -391,6 +426,19 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 "With forcedDecimals=false, very large or very small numbers should be returned as scientific notation",
                 "-1.03526624685E7 504135.1496",
                 coords);
+
+        // check links for alternate projections
+        String linkPath =
+                "//html:map-head/html:map-link[@rel='alternate' and @projection='%s']/@href";
+        assertThat(
+                xpath.evaluate(String.format(linkPath, "OSMTILE"), doc),
+                containsString("SRSNAME=MapML:OSMTILE"));
+        assertThat(
+                xpath.evaluate(String.format(linkPath, "CBMTILE"), doc),
+                containsString("SRSNAME=MapML:CBMTILE"));
+        assertThat(
+                xpath.evaluate(String.format(linkPath, "WGS84"), doc),
+                containsString("SRSNAME=MapML:WGS84"));
     }
 
     @Test

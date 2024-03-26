@@ -206,4 +206,16 @@ public interface Resource {
             IOUtils.write(byteArray, os);
         }
     }
+
+    /**
+     * Flag that says if this resource is a true resource, part of the internal resource store (and
+     * not for instance a resource adaptor of a file that may be anywhere on the hard drive.) Can
+     * for instance be used for security purposes. If this returns 'false', then path() will return
+     * a file path rather than a resource path.
+     *
+     * @return
+     */
+    default boolean isInternal() {
+        return true;
+    }
 }

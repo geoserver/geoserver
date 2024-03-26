@@ -15,12 +15,12 @@ import net.opengis.wcs10.AxisSubsetType;
 import net.opengis.wcs10.GetCoverageType;
 import net.opengis.wcs10.IntervalType;
 import net.opengis.wcs10.RangeSubsetType;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.geometry.GeneralBounds;
-import org.geotools.referencing.CRS;
 import org.geotools.wcs.WCSConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -148,7 +148,8 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
         GeneralBounds envelope =
                 ((GeneralBounds) gc.getDomainSubset().getSpatialSubset().getEnvelope().get(0));
         assertEquals(
-                "EPSG:32633", CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
+                "EPSG:32633",
+                ResourcePool.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
         assertEquals(347649.93086859107, envelope.getLowerCorner().getOrdinate(0), 0);
         assertEquals(5176214.082539256, envelope.getLowerCorner().getOrdinate(1), 0);
         assertEquals(370725.976428591, envelope.getUpperCorner().getOrdinate(0), 0);

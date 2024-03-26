@@ -3,7 +3,9 @@
 JWT Headers configuration
 =========================
 
-The JWT Headers module covers three main use cases;
+
+The JWT Headers module covers three main use cases:
+
 
 #. Simple Text, JSON, or JWT headers for the username
 #. Verification of JWT Access Tokens

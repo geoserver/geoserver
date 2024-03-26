@@ -33,6 +33,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
@@ -606,7 +607,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             for (String crsName : supportedCRSs) {
                 CoordinateReferenceSystem crs = CRS.decode(crsName, true);
                 // element("requestResponseCRSs", urnIdentifier(crs));
-                element("wcs:requestResponseCRSs", CRS.lookupIdentifier(crs, false));
+                element("wcs:requestResponseCRSs", ResourcePool.lookupIdentifier(crs, false));
             }
             end("wcs:supportedCRSs");
         }

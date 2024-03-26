@@ -9,7 +9,7 @@ To be able to encode XML responses conforming to a GML application schema, the a
 Schema downloading is now automatic for most users
 --------------------------------------------------
 
-GeoServer will automatically download and cache (see `Cache`_ below) all the schemas it needs the first time it starts if:
+GeoServer will automatically download and cache (see :ref:`Cache <app-schema-cache>` below) all the schemas it needs the first time it starts if:
 
 #. All the application schemas you use are accessed via http/https URLs, and
 #. Your GeoServer instance is deployed on a network that permits it to download them.

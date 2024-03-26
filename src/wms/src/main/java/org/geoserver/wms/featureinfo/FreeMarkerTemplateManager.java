@@ -47,6 +47,13 @@ import org.geotools.util.logging.Logging;
  */
 public abstract class FreeMarkerTemplateManager {
 
+    /**
+     * System property to control whether or not to enable FreeMarker's auto-escaping of HTML
+     * output. This property will override the WMS setting to enable/disable auto-escaping. Default
+     * is true.
+     */
+    public static final String FORCE_FREEMARKER_ESCAPING = "GEOSERVER_FORCE_FREEMARKER_ESCAPING";
+
     /** Config key determining the restrictions for accessing static members */
     static final String KEY_STATIC_MEMBER_ACCESS = "org.geoserver.htmlTemplates.staticMemberAccess";
 
@@ -275,8 +282,11 @@ public abstract class FreeMarkerTemplateManager {
             templateLoader.setResource(ri);
             templateConfig.setTemplateLoader(templateLoader);
             templateConfig.unsetOutputFormat();
-            if (format.equals(OutputFormat.HTML) && wms.isAutoEscapeTemplateValues()) {
-                templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
+            if (format.equals(OutputFormat.HTML)) {
+                String prop = GeoServerExtensions.getProperty(FORCE_FREEMARKER_ESCAPING);
+                if (!"false".equalsIgnoreCase(prop) || wms.isAutoEscapeTemplateValues()) {
+                    templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
+                }
             }
             Template t = null;
             try {

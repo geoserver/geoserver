@@ -169,7 +169,18 @@ If you wish to change this behavior you can do so through the following properti
 .. warning::
     The ``ALLOW-FROM`` option is not supported by modern browsers and should only be used if you know
     that browsers interacting with your GeoServer will support it. Applying this policy will be treated
-    as if no policy was set by browsers that do not support this (i.e., **NO** protection).
+    as if no policy was set by browsers that do not support this (i.e., **NO** protection). The
+    ``Content-Security-Policy`` header provides more robust support for allowing certain hosts to
+    display frames from GeoServer using the ``frame-ancestors`` directive.
+
+If the ``geoserver.csp.frameAncestors`` system property has not been set, the ``frame-ancestors``
+directive of the ``Content-Security-Policy`` header will be set depending on the value of the
+``X-Frame-Options`` header.
+
+* ``SAMEORIGIN`` will be ``frame-ancestors 'self'``
+* ``DENY`` will be ``frame-ancestors 'none'``
+* if the ``X-Frame-Options`` header is not set or has any other value, the ``frame-ancestors``
+  directive will be omitted
 
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
@@ -218,6 +229,23 @@ If you wish to change this behavior you can do so through the following properti
 
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
+
+.. _production_config_csp:
+
+Content-Security-Policy
+-----------------------
+
+In order to mitigate cross-site scripting and clickjacking attacks GeoServer defaults to setting
+the Content-Security-Policy HTTP header based on rules loaded from a configuration file. See the
+:ref:`security_csp` page for more details about this header, GeoServer's default configuration and
+how to change the configuration.
+
+* ``geoserver.csp.shouldSetPolicy``: controls whether to set the Content-Security-Policy header.
+  Default is true.
+* ``geoserver.csp.policy``: controls the value of the Content-Security-Policy header. Default is to
+  leave this property blank, which will use the configuration file that will set the header based
+  on the request and server environment but this property allows the administrator to set a fixed
+  header value, which can be useful in cases where JavaScript is not needed at all.
 
 OWS ServiceException XML mimeType
 --------------------------------------------------

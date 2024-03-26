@@ -166,6 +166,23 @@ Auto-Escaping
 `````````````
 Auto-escaping can be used to escape special characters so that they are displayed correctly in clients and to prevent injection. GeoServer administrators can enable or disable auto-escaping for FreeMarker template values for the HTML output format on a global or per virtual service basis. Template authors are able to override the WMS service setting to enable or disable escaping on a per template, per block or per value basis. See `Auto-escaping <https://freemarker.apache.org/docs/dgui_misc_autoescaping.html>`_ for more information.
 
+.. _tutorials_getfeatureinfo_html_csp:
+
+Content Security Policy
+```````````````````````
+The ``Content-Security-Policy`` header will block unsafe JavaScript by default. In order to allow
+``'unsafe-inline'`` and ``'unsafe-eval'`` scripts or loading font, image, style or script resources
+from remote hosts, the ``GEOSERVER_FEATUREINFO_HTML_SCRIPT`` property can be set either via Java
+system property, command line argument (-D), environment variable or web.xml init parameter. The
+property can be set to either ``SELF`` or ``UNSAFE`` with ``SELF`` being the default value.
+
+See :ref:`security_csp` for instructions to modify the CSP header if it is continuing to block
+certain functionality of custom HTML templates even with the ``UNSAFE`` property.
+
+.. warning::
+    Allowing unsafe scripts could allow cross-site scripting attacks and should only be done if you
+    can fully trust your template authors.
+
 Accessing static methods
 ````````````````````````
 It is possible to call static methods and variables from within Freemarker templates to enable more sophisticated templates. 

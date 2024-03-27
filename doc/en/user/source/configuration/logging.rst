@@ -178,6 +178,8 @@ Copy built-in logging profile and customize:
 
 5. This result provides minimal feedback to the console, only reporting when GeoServer encounters an error.
 
+.. _logging_location:
+
 Overriding the log location setup in the GeoServer configuration
 ----------------------------------------------------------------
 

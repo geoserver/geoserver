@@ -149,9 +149,6 @@ Log output of this exchange is as follows:
    DEBUG  [oauth2.pkce] - CODE_VERIFIER: yQat4Y...
 
 
-
-
-
 Reference:
 
 * `rfc7636 Proof Key for Code Exchange by OAuth Public Clients <https://datatracker.ietf.org/doc/html/rfc7636>`_
@@ -162,6 +159,21 @@ JSON Web Key set URI
 The ``JSON Web Key set URI`` provides the location of a document of public keys that can be used to check the signature of the provided accessToken.
 
 Optional: It is no longer required to use ``Check Token Endpoint URL`` - if you leave that field blank you may rely only on the ``JSON Web Key set URI`` signature check. When use in this manner roles cannot be extracted from access token.
+
+Enforce Token Validation
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+`True` by default.
+
+Check this option to enforce the validation of the token signature.
+
+Per the `RFC 7517` or this doc from `auth0`, the parameters does not include neither `public_key_use` (but use nor `key_id` (but `kid`)
+
+The RFC specifies that kid is optional (`RFC 7517: JSON Web Key (JWK)`) Use of this member is `OPTIONAL`.
+
+Reference:
+
+* `RFC 7517: JSON Web Key (JWK) <https://www.rfc-editor.org/rfc/rfc7517#section-4.5>`_
 
 Azure AD and ADFS setup
 ^^^^^^^^^^^^^^^^^^^^^^^

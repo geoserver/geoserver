@@ -141,19 +141,10 @@ public class GetRecordById {
             Query q = new Query(typeName.getLocalPart());
             q.setFilter(filter);
 
-            // perform some necessary query adjustments
-            Query adapted = rd.adaptQuery(q);
-
-            // the specification demands that we throw an error if a spatial operator
-            // is used against a non spatial property
-            if (q.getFilter() != null) {
-                rd.verifySpatialFilters(q.getFilter());
-            }
-
             // smuggle base url
-            adapted.getHints().put(GetRecords.KEY_BASEURL, request.getBaseUrl());
+            q.getHints().put(GetRecords.KEY_BASEURL, request.getBaseUrl());
 
-            result.add(new GetRecords.WrappedQuery(adapted, rd));
+            result.add(new GetRecords.WrappedQuery(q, rd));
         }
 
         return result;

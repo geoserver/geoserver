@@ -7,9 +7,18 @@ package org.geoserver.filters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.csp.CSPHeaderDAO;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -17,16 +26,55 @@ import org.springframework.mock.web.MockHttpServletResponse;
 /** Simple test to make sure the XFrameOptions filter works and is configurable. */
 public class XFrameOptionsFilterTest {
 
+    @ClassRule public static TemporaryFolder folder = new TemporaryFolder();
+
+    @BeforeClass
+    public static void initDAO() throws IOException {
+        GeoServerDataDirectory dd = new GeoServerDataDirectory(folder.getRoot());
+        XStreamPersisterFactory xpf = new XStreamPersisterFactory();
+        CSPHeaderDAO dao = new CSPHeaderDAO(null, dd, xpf);
+        GeoServerExtensionsHelper.singleton("cspHeaderDAO", dao);
+    }
+
+    @AfterClass
+    public static void clearExtensions() {
+        GeoServerExtensionsHelper.clear();
+    }
+
     @Before
     @After
     public void resetProperties() {
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY);
+        System.clearProperty(XFrameOptionsFilter.GEOSERVER_CSP_POLICY);
+        System.clearProperty(XFrameOptionsFilter.GEOSERVER_CSP_SHOULD_SET_POLICY);
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_HSTS_POLICY);
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_HSTS_SHOULD_SET_POLICY);
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_POLICY);
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY);
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_XXSS_PROTECTION_POLICY);
         System.clearProperty(XFrameOptionsFilter.GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY);
+    }
+
+    @Test
+    public void testFilterDefaultCSP() throws Exception {
+        String expected =
+                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
+                        + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
+                        + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
+                        + "frame-ancestors 'self';";
+        assertEquals(expected, getHeader("Content-Security-Policy"));
+    }
+
+    @Test
+    public void testFilterWithoutCSP() throws Exception {
+        System.setProperty(XFrameOptionsFilter.GEOSERVER_CSP_SHOULD_SET_POLICY, "false");
+        assertNull(getHeader("Content-Security-Policy"));
+    }
+
+    @Test
+    public void testFilterCustomCSP() throws Exception {
+        System.setProperty(XFrameOptionsFilter.GEOSERVER_CSP_POLICY, "default-src: 'none';");
+        assertEquals("default-src: 'none';", getHeader("Content-Security-Policy"));
     }
 
     @Test

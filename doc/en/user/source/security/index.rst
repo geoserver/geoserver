@@ -19,5 +19,6 @@ The first page discusses configuration options in the web administration interfa
    layer
    rest
    urlchecks
+   csp
    disable
    tutorials/index

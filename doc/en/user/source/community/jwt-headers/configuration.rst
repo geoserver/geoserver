@@ -24,10 +24,10 @@ User Name Options
      - The name of the HTTP header item that contains the user name.
    * - Format the Header value is in
      - Format that the user name is in:
-	 
-	   * Simple String - user name is the header's value.
-	   * JSON - The header is a JSON string.  Use "JSON path" for where the user name is in the JSON. 
-	   * JWT -  The header is a JWT (base64) string.  Use "JSON path" for where the user name is in the JWT claims. 
+     
+       * Simple String - user name is the header's value.
+       * JSON - The header is a JSON string.  Use "JSON path" for where the user name is in the JSON. 
+       * JWT -  The header is a JWT (base64) string.  Use "JSON path" for where the user name is in the JWT claims. 
    * - JSON path for the User Name
      - If the user name is in JSON or JWT format, this is the JSON path to the user's name.
    
@@ -81,9 +81,9 @@ You can use the standard role source options in GeoServer (`Request Header`, `Us
      - Meaning
    * - Role Source
      - Which Role Source to use:
-	 
-	   * Header containing JSON String - Header contains a JSON claims object
-	   * Header Containing JWT - Header contains a Base64 JWT Access Token
+     
+       * Header containing JSON String - Header contains a JSON claims object
+       * Header Containing JWT - Header contains a Base64 JWT Access Token
    * - Request Header attribute for Roles
      - Name of the header item the JSON or JWT is contained in
    * - JSON Path 
@@ -96,40 +96,40 @@ Using the example `OIDC_id_token_payload` (JSON) or `OIDC_access_token` (JWT) sh
 .. code-block:: json
 
    {
-	   "exp": 1708555947,
-	   "iat": 1708555647,
-	   "auth_time": 1708555288,
-	   "jti": "42ee833e-89d3-4779-bd9d-06b979329c9f",
-	   "iss": "http://localhost:7777/realms/dave-test2",
-	   "aud": "live-key2",
-	   "sub": "98cfe060-f980-4a05-8612-6c609219ffe9",
-	   "typ": "ID",
-	   "azp": "live-key2",
-	   "nonce": "4PhqmZSJ355KBtJPbAP_PdwqiLnc7B1lA2SGpB0zXr4",
-	   "session_state": "7712b364-339a-4053-ae0c-7d3adfca9005",
-	   "at_hash": "2Tyw8q4ZMewuYrD38alCug",
-	   "acr": "0",
-	   "sid": "7712b364-339a-4053-ae0c-7d3adfca9005",
-	   "upn": "david.blasby@geocat.net",
-	   "resource_access":
-	   {
-		   "live-key2":
-		   {
-				"roles": 
-					[
-						"GeonetworkAdministrator", 
-						"GeoserverAdministrator"
-					]
-		   }
-	   },
-	   "email_verified": false,
-	   "address": { },
-	   "name": "david blasby",
-	   "groups": ["default-roles-dave-test2", "offline_access", "uma_authorization"],
-	   "preferred_username": "david.blasby@geocat.net",
-	   "given_name": "david",
-	   "family_name": "blasby",
-	   "email": "david.blasby@geocat.net"
+       "exp": 1708555947,
+       "iat": 1708555647,
+       "auth_time": 1708555288,
+       "jti": "42ee833e-89d3-4779-bd9d-06b979329c9f",
+       "iss": "http://localhost:7777/realms/dave-test2",
+       "aud": "live-key2",
+       "sub": "98cfe060-f980-4a05-8612-6c609219ffe9",
+       "typ": "ID",
+       "azp": "live-key2",
+       "nonce": "4PhqmZSJ355KBtJPbAP_PdwqiLnc7B1lA2SGpB0zXr4",
+       "session_state": "7712b364-339a-4053-ae0c-7d3adfca9005",
+       "at_hash": "2Tyw8q4ZMewuYrD38alCug",
+       "acr": "0",
+       "sid": "7712b364-339a-4053-ae0c-7d3adfca9005",
+       "upn": "david.blasby@geocat.net",
+       "resource_access":
+       {
+           "live-key2":
+           {
+                "roles": 
+                    [
+                        "GeonetworkAdministrator", 
+                        "GeoserverAdministrator"
+                    ]
+           }
+       },
+       "email_verified": false,
+       "address": { },
+       "name": "david blasby",
+       "groups": ["default-roles-dave-test2", "offline_access", "uma_authorization"],
+       "preferred_username": "david.blasby@geocat.net",
+       "given_name": "david",
+       "family_name": "blasby",
+       "email": "david.blasby@geocat.net"
    }
 
 
@@ -148,7 +148,7 @@ The JWT Headers module also allows for converting roles (from the external IDP) 
    * - Role Converter Map from External Roles to Geoserver Roles
      - This is a ";" delimited map in the form of `ExternalRole1=GeoServerRole1;ExternalRole2=GeoServerRole2`
    * - Only allow External Roles that are explicitly named above
-     - If checked, external roles that are not mentioned in the conversion map will be ignored.  If unchecked, those external roles will be turned into GeoServer roles of the same name.	 
+     - If checked, external roles that are not mentioned in the conversion map will be ignored.  If unchecked, those external roles will be turned into GeoServer roles of the same name.
 
 For example, a conversion map like `GeoserverAdministrator=ROLE_ADMINISTRATOR` will convert our IDP "GeoserverAdministrator" role to GeoServer's "ROLE_ADMINISTRATOR".
 
@@ -205,7 +205,4 @@ You can also extract roles from the Access Token in a similar manner - make sure
      - The name of the claim the audience is in (`aud`, `azp`, or `appid` claim) the Access Token.
    * - Required Claim Value
      - The value this claim must be (if the claim is a list of string, then it must contain this value).  
-	 
-	 
-	 
 

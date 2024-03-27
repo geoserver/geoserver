@@ -1,0 +1,4 @@
+| Property   | Required? | Description                                                                                                                                       | Default value                                                       |
+|------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
+| `geometry` | No        | Specifies which attribute to use as the geometry (see [Geometry transformations in SLD](../../../../sld/extensions/geometry-transformations.md)) | First geometry attribute found (usually named `geom` or `the_geom`) |
+| `uom`      | No        | Unit of measure used for width calculations (see [Specifying symbolizer sizes in ground units](../../../../sld/extensions/uom.md))               | pixel                                                               |

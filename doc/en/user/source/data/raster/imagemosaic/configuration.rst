@@ -123,7 +123,7 @@ If needed, different storage can be used for the index - like a spatial DBMS, wh
    :widths: 15 5 80
    :header-rows: 1
 
-   * - `Parameter`
+   * - Parameter
      - Mandatory
      - Description
    * - StoreName

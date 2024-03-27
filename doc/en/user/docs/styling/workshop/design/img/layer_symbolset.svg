@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="334px" height="234px" viewBox="0 0 334 234" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>layer_symbolset</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs>
+        <filter x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0.99993962   0 0 0 0 1  0 0 0 0.7 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0.99993962   0 0 0 0 1  0 0 0 0.7 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0.99993962   0 0 0 0 1  0 0 0 0.7 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0.99993962   0 0 0 0 1  0 0 0 0.7 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <filter x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" id="filter-5">
+            <feOffset dx="1" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 1   0 0 0 0 0.99993962   0 0 0 0 1  0 0 0 0.7 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="layer_symbolset" sketch:type="MSArtboardGroup">
+            <rect id="Rectangle-7-copy" stroke="#979797" stroke-width="0.5" fill="#898989" sketch:type="MSShapeGroup" x="233" y="48" width="97" height="21"></rect>
+            <rect id="Rectangle-3-copy-2" stroke="#979797" stroke-width="0.5" fill="#D4D4D4" sketch:type="MSShapeGroup" x="238" y="103" width="12" height="12"></rect>
+            <rect id="Rectangle-7-copy-2" stroke="#979797" stroke-width="0.5" sketch:type="MSShapeGroup" x="233" y="69" width="97" height="50"></rect>
+            <circle id="Oval-1-copy-3" fill="#000000" sketch:type="MSShapeGroup" cx="243.5" cy="108.5" r="2.5"></circle>
+            <text id="Legend" fill="#FFFFFF" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="12" font-weight="526">
+                <tspan x="253" y="62">Legend</tspan>
+            </text>
+            <text id="Populated-Places" fill="#000000" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                <tspan x="237" y="82">Populated Places</tspan>
+            </text>
+            <rect id="Rectangle-3-copy" stroke="#979797" stroke-width="0.5" fill="#D4D4D4" sketch:type="MSShapeGroup" x="238" y="88" width="12" height="12"></rect>
+            <text id="Captial" fill="#000000" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                <tspan x="253" y="97">Captial</tspan>
+            </text>
+            <text id="City" fill="#000000" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                <tspan x="253" y="112">City</tspan>
+            </text>
+            <rect id="Rectangle-3-copy-5" stroke="#979797" stroke-width="0.5" fill="#D4D4D4" sketch:type="MSShapeGroup" x="238" y="123" width="12" height="12"></rect>
+            <rect id="Rectangle-7-copy-2" stroke="#979797" stroke-width="0.5" sketch:type="MSShapeGroup" x="233" y="119" width="97" height="21"></rect>
+            <path d="M239.5,129 L248.5,129" id="Line-copy-2" stroke="#000000" stroke-dasharray="3,2" sketch:type="MSShapeGroup"></path>
+            <text id="Border" fill="#000000" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                <tspan x="253" y="132">Border</tspan>
+            </text>
+            <path d="M9,221 L222,221 L222,22 L9,22 L9,221 Z" id="Path-1-copy-4" fill="#7AAAC8" sketch:type="MSShapeGroup"></path>
+            <polygon id="Star-1" stroke="#FFFFFF" fill="#000000" sketch:type="MSShapeGroup" points="244.5 96.75 241.854967 98.1405766 242.360123 95.1952883 240.220246 93.1094236 243.177484 92.6797115 244.5 90 245.822517 92.6797121 248.779755 93.1094258 246.639877 95.1952889 247.145033 98.1405767 "></polygon>
+            <path d="M132.685547,21.4111328 L222.703125,21.4111328 L222.925781,67.0146484 L216.351562,71.8466797 L210.037109,72.5888672 L210.167969,83.5146484 L210.037109,92.1630859 L194.222656,100.920898 L171.59375,109.069336 L174.814453,112.051758 L170.722656,112.420898 L157.148438,128.069336 L160.082031,138.329102 L165.111328,140.680664 L155.705078,145.143555 L149.5,156.125977 L136.648438,160.069336 L129.482422,170.569336 L87.3339844,174.40332 L80.5820312,181.588867 L70.5371094,180.34668 L65.2226562,169.588867 L54.5742188,165.383789 L42.4453125,167.866211 L33.3164062,166.272461 L23.5371094,167.272461 L27.5019531,145.143555 L21.5566406,145.143555 L18.0742188,140.163086 L31.6484375,105.588867 L26.2226562,88.5322266 L22.1308594,73.9580078 L36.9453125,70.1064453 L38.4277344,65.1435547 L49.796875,64.6435547 L52.5195312,67.4951172 L94.1308594,70.0888672 L104.582031,68.2373047 L134.556641,70.5888672 L139.667969,66.2373047 L145.462891,27.5888672 L132.685547,21.4111328 Z" id="Land" stroke="#979797" stroke-width="0.5" fill="#DCDAB7" sketch:type="MSShapeGroup"></path>
+            <path d="M133.259766,71.9433594 L138.205078,72.6835938 L137.962891,76.6464844 L159.962891,81.7382812 L171.574219,82.2207031 L172.814453,78.7382812 L190.59375,85.3125 L200.111328,87.4433594 L208.648438,86.4609375" id="Path-63" stroke="#000000" stroke-dasharray="4,3" sketch:type="MSShapeGroup"></path>
+            <path d="M26.7695312,92.1640625 L34.4550781,89.4433594 L34.7128906,92.7949219 L49.6582031,94.7753906 L52.3984375,91.7949219 L60.9160156,92.1640625 L60.4355469,96.3691406 L66.8808594,97.8496094 L56.1386719,106.738281 L57.9902344,118 L54.5273438,118 L55.0273438,121.238281 L54.3984375,125.960938 L47.2128906,127.8125 L52.8613281,138.183594 L48.5273438,145.609375 L54.0839844,151.3125 L49.0273438,154.886719 L45.8242188,160.072266 L47.5644531,165.052734" id="Path-62" stroke="#000000" stroke-dasharray="4,3" sketch:type="MSShapeGroup"></path>
+            <path d="M44.234375,220.417969 L54.6230469,215.603516 L70.4375,188.935547 L78.3632812,185.5 L86.6230469,195.083984 L97.5,197.677734 L116.289062,194.455078 L130.123047,199.529297 L153,185.5 L160.251953,188.769531 L166.048828,182.324219 L180.271484,177.75 L204.974609,174.417969 L211.900391,169.34375 L222.029297,166.251953 L222.380859,221.046875 L44.234375,220.417969 Z" id="Path-61" stroke="#979797" fill="#DCDAB7" sketch:type="MSShapeGroup"></path>
+            <path d="M126.037109,198.609375 L132.59375,204.404297 L133.705078,210.589844 L138.648438,220.367188" id="Path-64" stroke="#000000" stroke-dasharray="4,3" sketch:type="MSShapeGroup"></path>
+            <polygon id="Star-1" stroke="#FFFFFF" fill="#000000" sketch:type="MSShapeGroup" points="104.5 118.75 101.854967 120.140577 102.360123 117.195288 100.220246 115.109424 103.177484 114.679711 104.5 112 105.822517 114.679712 108.779755 115.109426 106.639877 117.195289 107.145033 120.140577 "></polygon>
+            <polygon id="Star-1-copy" stroke="#FFFFFF" fill="#000000" sketch:type="MSShapeGroup" points="21.4999999 144.75 18.8549666 146.140577 19.3601229 143.195288 17.2202456 141.109424 20.1774836 140.679711 21.5000001 138 22.8225173 140.679712 25.7797551 141.109426 23.639877 143.195289 24.1450333 146.140577 "></polygon>
+            <polygon id="Star-1-copy-2" stroke="#FFFFFF" fill="#000000" sketch:type="MSShapeGroup" points="56.4999999 215.75 53.8549666 217.140577 54.3601229 214.195288 52.2202456 212.109424 55.1774836 211.679711 56.5000001 209 57.8225173 211.679712 60.7797551 212.109426 58.639877 214.195289 59.1450333 217.140577 "></polygon>
+            <polygon id="Star-1-copy-3" stroke="#FFFFFF" fill="#000000" sketch:type="MSShapeGroup" points="206.5 174.75 203.854967 176.140577 204.360123 173.195288 202.220246 171.109424 205.177484 170.679711 206.5 168 207.822517 170.679712 210.779755 171.109426 208.639877 173.195289 209.145033 176.140577 "></polygon>
+            <polygon id="Star-1-copy-4" stroke="#FFFFFF" fill="#000000" sketch:type="MSShapeGroup" points="182.5 86.75 179.854967 88.1405766 180.360123 85.1952883 178.220246 83.1094236 181.177484 82.6797115 182.5 80 183.822517 82.6797121 186.779755 83.1094258 184.639877 85.1952889 185.145033 88.1405767 "></polygon>
+            <path d="M9,221 L222,221 L222,22 L9,22 L9,221 Z" id="Path-1-copy-5" stroke="#000000" sketch:type="MSShapeGroup"></path>
+            <text id="Andorra" filter="url(#filter-1)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#000000">
+                <tspan x="177" y="78">Andorra</tspan>
+            </text>
+            <text id="Madrid" filter="url(#filter-2)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#000000">
+                <tspan x="107" y="111">Madrid</tspan>
+            </text>
+            <text id="Barcelona" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="7" font-weight="260" fill="#000000">
+                <tspan x="179" y="107">Barcelona</tspan>
+            </text>
+            <text id="Algiers" filter="url(#filter-3)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#000000">
+                <tspan x="193" y="183">Algiers</tspan>
+            </text>
+            <text id="Lisbon" filter="url(#filter-4)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#000000">
+                <tspan x="27" y="141">Lisbon</tspan>
+            </text>
+            <text id="Casablanca" filter="url(#filter-5)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#000000">
+                <tspan x="61" y="211">Casablanca</tspan>
+            </text>
+            <circle id="Oval-1-copy-3" fill="#000000" sketch:type="MSShapeGroup" cx="191.5" cy="98.5" r="1.5"></circle>
+            <text id="Toulouse" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="7" font-weight="260" fill="#000000">
+                <tspan x="159" y="57">Toulouse</tspan>
+            </text>
+            <circle id="Oval-1-copy-4" fill="#000000" sketch:type="MSShapeGroup" cx="171.5" cy="48.5" r="1.5"></circle>
+            <text id="Valencia" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="7" font-weight="260" fill="#000000">
+                <tspan x="141" y="137">Valencia</tspan>
+            </text>
+            <circle id="Oval-1-copy-4" fill="#000000" sketch:type="MSShapeGroup" cx="153.5" cy="128.5" r="1.5"></circle>
+            <text id="Seville" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="7" font-weight="260" fill="#000000">
+                <tspan x="63" y="167">Seville</tspan>
+            </text>
+            <circle id="Oval-1-copy-5" fill="#000000" sketch:type="MSShapeGroup" cx="73.5" cy="158.5" r="1.5"></circle>
+            <text id="Zaragoza" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="7" font-weight="260" fill="#000000">
+                <tspan x="134" y="94">Zaragoza</tspan>
+            </text>
+            <circle id="Oval-1-copy-6" fill="#000000" sketch:type="MSShapeGroup" cx="148.5" cy="98.5" r="1.5"></circle>
+        </g>
+    </g>
+</svg>

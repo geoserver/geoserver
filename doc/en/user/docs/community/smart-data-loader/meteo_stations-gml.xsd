@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><xs:schema xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:st="http://www.stations.org/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.stations.org/1.0" version="1.0">
+  <xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <xs:complexType name="MeteoStationsType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="id" type="xs:int"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="code" type="xs:string"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="common_name" type="xs:string"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="position" type="gml:GeometryPropertyType"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="meteoObservations" type="st:MeteoObservationsPropertyType"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="meteoStationsMaintainers" type="st:MeteoStationsMaintainersPropertyType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MeteoStationsFeature" substitutionGroup="gml:AbstractFeature" type="st:MeteoStationsType"/>
+  <xs:complexType name="MeteoObservationsType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="id" type="xs:int"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="time" type="xs:dateTime"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="value" type="xs:double"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="meteoParameters" type="st:MeteoParametersPropertyType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MeteoObservationsFeature" substitutionGroup="gml:AbstractFeature" type="st:MeteoObservationsType"/>
+  <xs:complexType name="MeteoObservationsPropertyType">
+    <xs:sequence minOccurs="0">
+      <xs:element ref="st:MeteoObservationsFeature"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="MeteoParametersType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="id" type="xs:int"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="param_name" type="xs:string"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="param_unit" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MeteoParametersFeature" substitutionGroup="gml:AbstractFeature" type="st:MeteoParametersType"/>
+  <xs:complexType name="MeteoParametersPropertyType">
+    <xs:sequence minOccurs="0">
+      <xs:element ref="st:MeteoParametersFeature"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="MeteoStationsMaintainersType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="id" type="xs:int"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="meteoMaintainers" type="st:MeteoMaintainersPropertyType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MeteoStationsMaintainersFeature" substitutionGroup="gml:AbstractFeature" type="st:MeteoStationsMaintainersType"/>
+  <xs:complexType name="MeteoStationsMaintainersPropertyType">
+    <xs:sequence minOccurs="0">
+      <xs:element ref="st:MeteoStationsMaintainersFeature"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="MeteoMaintainersType">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element maxOccurs="1" minOccurs="0" name="id" type="xs:int"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="surname" type="xs:string"/>
+          <xs:element maxOccurs="1" minOccurs="0" name="company" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MeteoMaintainersFeature" substitutionGroup="gml:AbstractFeature" type="st:MeteoMaintainersType"/>
+  <xs:complexType name="MeteoMaintainersPropertyType">
+    <xs:sequence minOccurs="0">
+      <xs:element ref="st:MeteoMaintainersFeature"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xs:complexType>
+</xs:schema>

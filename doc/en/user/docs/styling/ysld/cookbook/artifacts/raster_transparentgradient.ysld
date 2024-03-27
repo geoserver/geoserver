@@ -1,0 +1,12 @@
+title: 'YSLD Cook Book: Transparent gradient'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - raster:
+        opacity: 0.3
+        color-map:
+          type: ramp
+          entries:
+          - ['#008000',1,70,'']
+          - ['#663333',1,256,'']

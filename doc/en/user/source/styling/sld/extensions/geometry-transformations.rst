@@ -65,10 +65,9 @@ Applied to the sample `tasmania_roads` layer this will result in:
 Start and end point
 ^^^^^^^^^^^^^^^^^^^
 
-The `startPoint` and `endPoint` functions can be used to extract the start and end point of a line. 
+The ``startPoint`` and ``endPoint`` functions can be used to extract the start and end point of a line. 
 
 .. code-block:: xml
-   :linenos:
      
    <PointSymbolizer>
      <Geometry>

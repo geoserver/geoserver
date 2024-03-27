@@ -1,0 +1,31 @@
+// $ANTLR 2.7.4: subtree-specification.g -> AntlrSubtreeSpecificationParserTokenTypes.txt$
+AntlrSubtreeSpecificationParser    // output token vocab name
+LITERAL_end="end"=4
+OPEN_CURLY=5
+SP=6
+SEP=7
+CLOSE_CURLY=8
+ID_base="base"=9
+ID_specificExclusions="specificExclusions"=10
+ID_chopBefore="chopBefore"=11
+COLON=12
+ID_chopAfter="chopAfter"=13
+ID_minimum="minimum"=14
+ID_maximum="maximum"=15
+ID_specificationFilter="specificationFilter"=16
+FILTER=17
+SAFEUTF8STRING=18
+INTEGER=19
+DESCR=20
+NUMERICOID=21
+ID_item="item"=22
+ID_and="and"=23
+ID_or="or"=24
+ID_not="not"=25
+INTEGER_OR_NUMERICOID=26
+DOT=27
+DIGIT=28
+LDIGIT=29
+ALPHA=30
+SAFEUTF8CHAR=31
+FILTER_VALUE=32

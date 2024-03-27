@@ -29,13 +29,13 @@ In order to initiate an import of the ``c:\data\tasmania`` directory into the ex
 
 2. This curl command can be used for the purpose:
 
-  .. code-block:: bash
+   .. code-block:: bash
   
-     curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
-       -d @import.json \
-       "http://localhost:8080/geoserver/rest/imports"
+      curl -u admin:geoserver -XPOST -H "Content-type: application/json" \
+        -d @import.json \
+        "http://localhost:8080/geoserver/rest/imports"
 
-  The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response:
+   The importer will locate the files to be imported, and automatically prepare the tasks, returning the following response:
 
    .. code-block:: json
 
@@ -610,7 +610,7 @@ To update the ``values`` layer with new content:
    The csv file has an additional column:
         
    .. literalinclude:: files/replace.csv
-      :language: text
+      :language: csv
       :caption:  replace.csv
 
 #. Update task with as a "REPLACE" and supply srs information:
@@ -870,7 +870,9 @@ the target store:
 
     curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
 
-Where import.json is::
+Where import.json is:
+
+.. code-block:: json
 
     {
        "import": {
@@ -891,19 +893,25 @@ Where import.json is::
        }
     }
 
-We are then going to append the transformations to harmonize the file with the rest of the mosaic::
+We are then going to append the transformations to harmonize the file with the rest of the mosaic:
+
+.. code-block:: bash
 
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gtx.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @gad.json "http://localhost:8080/geoserver/rest/imports/0/tasks/0/transforms"
    
-``gtx.json`` is::
+``gtx.json`` is:
+
+.. code-block:: json
 
     {
       "type": "GdalTranslateTransform",
       "options": [ "-co", "TILED=YES"]
     }
 
-``gad.json`` is::
+``gad.json`` is:
+
+.. code-block:: json
 
     {
       "type": "GdalAddoTransform",
@@ -912,7 +920,9 @@ We are then going to append the transformations to harmonize the file with the r
     }
 
     
-Now the import is ready to run, and we'll execute it using::
+Now the import is ready to run, and we'll execute it using:
+
+.. code-block:: bash
 
     curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
 
@@ -925,11 +935,15 @@ We assume a remote FTP server contains multiple shapefiles that we need to impor
 as new layers. The files are large, and the server has much better bandwidth than the client,
 so it's best if GeoServer performs the data fetching on its own.
 
-In this case a asynchronous request using ``remote`` data will be the best fit::
+In this case a asynchronous request using ``remote`` data will be the best fit:
+
+.. code-block:: bash
 
     curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports?async=true"
 
-Where import.json is::
+Where import.json is:
+
+.. code-block:: json
 
     {
        "import": {
@@ -950,7 +964,9 @@ Where import.json is::
 The request will return immediately with an import context in "INIT" state, and it will remain in such
 state until the data is fetched and the tasks created.
 Once the state switches to "PENDING" the import will be ready for execution. Since there is
-a lot of shapefiles to process, also the import run will be done in asynchronous mode::
+a lot of shapefiles to process, also the import run will be done in asynchronous mode:
+
+.. code-block:: bash
 
     curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0?async=true"
     
@@ -969,11 +985,15 @@ to avoid waiting on a possibly large command.
 In this case the request will also contains the "exec=true" parameter to force the importer
 an immediate execution of the command.
 
-The request will then look as follows::
+The request will then look as follows:
+
+.. code-block:: bash
 
     curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports?async=true&exec=true"
 
-Where import.json is::
+Where import.json is:
+
+.. code-block:: json
 
     {
       "import": {

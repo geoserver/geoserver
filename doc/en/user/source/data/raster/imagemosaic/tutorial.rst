@@ -13,23 +13,23 @@ This is a process very similar to creating a featuretype. More specifically, one
 Create a new store
 ~~~~~~~~~~~~~~~~~~
 
-#. Go to :menuselection:`Data Panel --> Stores` and click :guilabel:`Add new Store`.
+1. Go to :menuselection:`Data Panel --> Stores` and click :guilabel:`Add new Store`.
 
-#. Select :guilabel:`ImageMosaic` under :guilabel:`Raster Data Source`:
+2. Select :guilabel:`ImageMosaic` under :guilabel:`Raster Data Source`:
 
    .. figure:: images/imagemosaiccreate.png
 
       ImageMosaic in the list of raster data stores
 
-#. In order to create a new mosaic it is necessary to choose a workspace and store name in the :guilabel:`Basic Store Info` section, as well as a URL in the :guilabel:`Connection Parameters` section. Valid URLs include:
+3. In order to create a new mosaic it is necessary to choose a workspace and store name in the :guilabel:`Basic Store Info` section, as well as a URL in the :guilabel:`Connection Parameters` section. Valid URLs include:
 
-     * The absolute path to the shapefile index, or a directory containing the shapefile index.
+   * The absolute path to the shapefile index, or a directory containing the shapefile index.
 
-     * The absolute path to the configuration file (`*.properties``) or a directory containing the configuration file. If ``datastore.properties`` and ``indexer.properties`` exist, they should be in the same directory as this configuration file.
+   * The absolute path to the configuration file (``*.properties``) or a directory containing the configuration file. If :file:`datastore.properties` and :file:`indexer.properties` exist, they should be in the same directory as this configuration file.
 
-     * The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.
+   * The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.
 
-#. Click :guilabel:`Save`:
+4. Click :guilabel:`Save`:
 
    .. figure:: images/imagemosaicconfigure.png
 
@@ -281,20 +281,20 @@ A mosaic need not be static. It can contain granules which change, are added or 
 
 #. Create a mosaic in the standard way. (The specific configuration isn't important.)
 
-.. figure:: images/tutorial_dynamic1.png
+   .. figure:: images/tutorial_dynamic1.png
+   
+      This mosaic contains 5 granules. Note that ``InputTransparentColor`` is set to ``#FFFFFF`` here.
 
-   This mosaic contains 5 granules. Note that ``InputTransparentColor`` is set to ``#FFFFFF`` here.
+#. To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:
 
-To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:
+   * Manually through the file system
+   * Through the :ref:`rest` interface
 
-* Manually through the file system
-* Through the :ref:`rest` interface
+#. To update an ImageMosaic through the file system:
 
-To update an ImageMosaic through the file system:
+   Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)
 
-#. Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)
-
-#. Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:
+   Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:
 
    * :file:`<mosaic_name>.dbf`
    * :file:`<mosaic_name>.fix`
@@ -307,9 +307,9 @@ To update an ImageMosaic through the file system:
 
 #. Save the layer. The index will be recreated.
 
-.. figure:: images/tutorial_dynamic2.png
-
-   This mosaic contains 9 granules
+   .. figure:: images/tutorial_dynamic2.png
+   
+      This mosaic contains 9 granules
 
 .. note:: Please see the REST section for information on :ref:`rest_imagemosaic`.
 
@@ -371,12 +371,12 @@ specific limitations of the storage (e.g., forced uppercase attribute usage, lim
 
 The above will be sufficient in case the image mosaic can create the index table and perform normal indexing, using 
 the directory name as the table name.
-In case a specific table name needs to be used, add an **``indexer.properties``** specifying the ``TypeName`` property,
+In case a specific table name needs to be used, add an :file:`indexer.properties` specifying the ``TypeName`` property,
 e.g.:
 
    TypeName=myMosaicTypeName
 
-In case the index "table" already exists instead, then a **``indexer.properties``** file will be required, with the following contents::
+In case the index "table" already exists instead, then a :file:`indexer.properties` file will be required, with the following contents::
 
    UseExistingSchema=true
    TypeName=nameOfTheFeatureTypeContainingTheIndex

@@ -18,7 +18,6 @@ import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
-import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
@@ -217,8 +216,6 @@ public class GetRecords {
                             "typeNames");
                 }
 
-                RecordDescriptor rd = getRecordDescriptor(typeName);
-
                 Query q = new Query(typeName.getLocalPart());
                 q.setFilter(filter);
                 q.setProperties(getPropertyNames(outputRd, query));
@@ -228,19 +225,13 @@ public class GetRecords {
                 } catch (URISyntaxException e) {
                 }
 
-                // perform some necessary query adjustments
-                Query adapted = rd.adaptQuery(q);
-
-                // the specification demands that we throw an error if a spatial operator
-                // is used against a non spatial property
-                if (q.getFilter() != null) {
-                    rd.verifySpatialFilters(q.getFilter());
-                }
+                // prepare later for multiple queryables mappings support
+                q.getHints().put(CatalogStore.KEY_UNPREPARED, true);
 
                 // smuggle base url
-                adapted.getHints().put(KEY_BASEURL, request.getBaseUrl());
+                q.getHints().put(KEY_BASEURL, request.getBaseUrl());
 
-                result.add(new WrappedQuery(adapted, outputRd));
+                result.add(new WrappedQuery(q, outputRd));
             }
         }
 
@@ -293,25 +284,6 @@ public class GetRecords {
         }
 
         return result;
-    }
-
-    /**
-     * Search for the record descriptor maching the typename, throws a service exception in case
-     * none is found
-     */
-    private RecordDescriptor getRecordDescriptor(Name typeName) {
-        if (typeName == null) {
-            return CSWRecordDescriptor.getInstance();
-        }
-
-        for (RecordDescriptor rd : recordDescriptors) {
-            if (typeName.equals(rd.getFeatureDescriptor().getName())) {
-                return rd;
-            }
-        }
-
-        throw new ServiceException(
-                "Unknown type: " + typeName, ServiceException.INVALID_PARAMETER_VALUE, "typeNames");
     }
 
     /**

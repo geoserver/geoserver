@@ -98,8 +98,8 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     @Test
     public void testenforceTokenValidation() throws Exception {
         String baseUrl = "https://localhost:8080";
-        navigateToOpenIdPanel("OpenIdFilter2");
-        formTester.setValue("panel:content:name", "OpenIdFilter2");
+        navigateToOpenIdPanel("OpenIdFilter4");
+        formTester.setValue("panel:content:name", "OpenIdFilter4");
         formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
         formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
         formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
@@ -113,7 +113,7 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
 
         clickSave();
         tester.assertNoErrorMessage();
-        clickNamedServiceConfig("OpenIdFilter2");
+        clickNamedServiceConfig("OpenIdFilter4");
         tester.assertModelValue("panel:panel:form:panel:enforceTokenValidation", true);
     }
 

@@ -113,6 +113,10 @@ public class STACService {
 
     public static final String STAC_VERSION = "1.0.0";
 
+    public static final String STAC_CONFORMANCE_VERSION = "v" + STAC_VERSION;
+    public static final String STAC_AUTHORITY = "https://api.stacspec.org/";
+    public static final String STAC_CONFORMANCE_ROOT = STAC_AUTHORITY + STAC_CONFORMANCE_VERSION;
+
     public static final String FEATURE_CORE =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
     public static final String FEATURE_HTML =
@@ -121,18 +125,16 @@ public class STACService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
     public static final String FEATURE_OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-    public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.5/core";
-    public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.5/item-search";
-    public static final String STAC_SEARCH_SORT =
-            "https://api.stacspec.org/v1.0.0-beta.5/item-search#sort";
+    public static final String STAC_CORE = STAC_CONFORMANCE_ROOT + "/core";
+    public static final String STAC_SEARCH = STAC_CONFORMANCE_ROOT + "/item-search";
+    public static final String STAC_SEARCH_SORT = STAC_CONFORMANCE_ROOT + "/item-search#sort";
 
-    public static final String STAC_SEARCH_FIELDS =
-            "https://api.stacspec.org/v1.0.0-beta.5/item-search#fields";
+    public static final String STAC_SEARCH_FIELDS = STAC_CONFORMANCE_ROOT + "/item-search#fields";
 
-    public static final String STAC_SEARCH_FILTER =
-            "https://api.stacspec.org/v1.0.0-beta.5/item-search#filter";
-    public static final String STAC_FEATURES =
-            "https://api.stacspec.org/spec/v1.0.0-beta.1/ogcapi-features";
+    public static final String STAC_SEARCH_FILTER = STAC_CONFORMANCE_ROOT + "/item-search#filter";
+    public static final String STAC_FEATURES = STAC_CONFORMANCE_ROOT + "/ogcapi-features";
+
+    public static final String STAC_COLLECTIONS = STAC_CONFORMANCE_ROOT + "/collections";
 
     /** Container type: catalog */
     public static String TYPE_CATALOG = "Catalog";
@@ -195,6 +197,7 @@ public class STACService {
                         FEATURE_OAS30,
                         FEATURE_HTML,
                         FEATURE_GEOJSON,
+                        STAC_COLLECTIONS,
                         STAC_CORE,
                         STAC_FEATURES,
                         STAC_SEARCH,
@@ -311,13 +314,15 @@ public class STACService {
             HttpServletRequest request)
             throws Exception {
         // run just to check the collection exists, and throw an appropriate exception otherwise
-        getCollection(collectionId);
+        collectionAvailableAndEnabled(collectionId);
 
         Query q = new Query();
-        q.setFilter(
-                FF.and(
-                        getEnabledFilter(),
-                        FF.equals(FF.property("identifier"), FF.literal(itemId))));
+        Filter collectionFilter = getCollectionsFilter(Collections.singletonList(collectionId));
+        // make sure the item is in the collection
+        Filter collectionAndItem =
+                FF.and(collectionFilter, FF.equals(FF.property("identifier"), FF.literal(itemId)));
+        // make sure the item is enabled
+        q.setFilter(FF.and(getEnabledFilter(), collectionAndItem));
 
         FeatureSource<FeatureType, Feature> products =
                 accessProvider.getOpenSearchAccess().getProductSource();
@@ -364,13 +369,7 @@ public class STACService {
             throws Exception {
 
         // check the collection is enabled
-        Feature collection = getCollection(collectionId);
-        if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
-            throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "Collection " + collectionId + " is not avialable",
-                    HttpStatus.NOT_FOUND);
-        }
+        collectionAvailableAndEnabled(collectionId);
         boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(
@@ -409,6 +408,22 @@ public class STACService {
         response.setSelf(linksBuilder.getSelf());
         response.setTemplateMap(qr.getTemplateMap());
         return response;
+    }
+
+    /**
+     * Check the collection is available and enabled
+     *
+     * @param collectionId the collection identifier
+     * @throws IOException problem accessing the collection
+     */
+    private void collectionAvailableAndEnabled(String collectionId) throws IOException {
+        Feature collection = getCollection(collectionId);
+        if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
+            throw new APIException(
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "Collection " + collectionId + " is not available",
+                    HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path = "search", name = "searchGet")

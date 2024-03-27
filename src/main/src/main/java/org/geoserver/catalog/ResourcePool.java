@@ -2234,7 +2234,7 @@ public class ResourcePool {
                     "Could not extract a UserStyle definition from " + info.getName());
         }
         // Make sure we don't change the name of an object in sldCache
-        return new StyleBuilder().reset(style).name(info.getName()).buildStyle();
+        return new StyleBuilder().reset(style).name(info.prefixedName()).buildStyle();
     }
 
     /**

@@ -1,8 +1,10 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geotools.renderer.lite;
+package org.geoserver.wms.map;
+
+import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
 
 import com.google.common.base.Preconditions;
 import java.awt.Graphics2D;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.data.FeatureSource;
@@ -20,7 +23,6 @@ import org.geotools.api.data.Query;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.api.filter.Filter;
-import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
@@ -30,7 +32,6 @@ import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.Rule;
 import org.geotools.api.style.Style;
 import org.geotools.data.DataUtilities;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
@@ -44,19 +45,46 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.ConcatenatedTransform;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
+import org.geotools.renderer.lite.MetaBufferEstimator;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
 /**
- * Utility methods to deal with transformations and style based queries.
- *
- * <p>Note, most code in this class has been taken and adapted from GeoTools' StreamingRenderer.
+ * Utility class for creating a query selecting those features relevant to the style and extent of
+ * the given map, for the given layer. Note that this functionality is an adaption of methods
+ * originally in org.geotools.renderer.lite.StreamingRenderer, currently used by
+ * VectorTileMapOutputFormat and MapMLMapOutputFormat. Unlike the original, it does not build a list
+ * of style attributes due to a need to dump all properties to the output format.
  */
-public class VectorMapRenderUtils {
+public final class StyleQueryUtil {
+    public static final Logger LOGGER = Logging.getLogger(StyleQueryUtil.class);
 
-    private static final Logger LOGGER = Logging.getLogger(VectorMapRenderUtils.class);
+    /** Prevent instantiation */
+    private StyleQueryUtil() {
+        // prevent instantiation
+    }
 
-    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
+    /**
+     * Creates a list of queries selecting those features relevant to the style and extent of the
+     * given map, for the given layers.
+     *
+     * @param layers the layers
+     * @param mapContent the map content
+     * @return a list of queries
+     */
+    public static List<Query> getStyleQuery(List<Layer> layers, WMSMapContent mapContent) {
+        return layers.stream()
+                .map(
+                        layer -> {
+                            try {
+                                return getStyleQuery(layer, mapContent);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                .collect(Collectors.toList());
+    }
 
     /**
      * Creates a query selecting those features relevant to the style and extent of the given map,
@@ -75,13 +103,11 @@ public class VectorMapRenderUtils {
 
         FeatureSource<?, ?> featureSource = layer.getFeatureSource();
         FeatureType schema = featureSource.getSchema();
-        List<LiteFeatureTypeStyle> styleList =
-                getFeatureStyles(layer, screenSize, mapScale, schema);
+        List<LiteFeatureTypeStyle> styleList = getFeatureStyles(layer, mapScale, schema);
 
         // if there aren't any styles to render, we don't need to get any data....
         if (styleList.isEmpty()) {
             Query query = new Query(schema.getName().getLocalPart());
-            query.setProperties(Query.NO_PROPERTIES);
             query.setFilter(Filter.EXCLUDE);
             return query;
         }
@@ -95,9 +121,7 @@ public class VectorMapRenderUtils {
 
         Query styleQuery;
         try {
-            styleQuery =
-                    VectorMapRenderUtils.getStyleQuery(
-                            featureSource, styleList, queryArea, screenSize, geometryDescriptor);
+            styleQuery = getStyleQuery(featureSource, styleList, queryArea, geometryDescriptor);
         } catch (IllegalFilterException | FactoryException e) {
             throw new RuntimeException(e);
         }
@@ -111,11 +135,25 @@ public class VectorMapRenderUtils {
         return query;
     }
 
+    /**
+     * Computes the scale denominator for the given map content and rendering area
+     *
+     * @param mapContent the map content
+     * @param renderingArea the rendering area
+     * @return the scale denominator
+     */
     public static double getMapScale(
             WMSMapContent mapContent, final ReferencedEnvelope renderingArea) {
         return RendererUtilities.calculateOGCScale(renderingArea, mapContent.getMapWidth(), null);
     }
 
+    /**
+     * Computes the buffer to be used for rendering, taking into account the request buffer screen
+     *
+     * @param requestBufferScreen the buffer requested by the user
+     * @param styleList the list of styles to be rendered
+     * @return the buffer to be used for rendering
+     */
     public static int getComputedBuffer(
             final int requestBufferScreen, List<LiteFeatureTypeStyle> styleList) {
         final int bufferScreen;
@@ -135,17 +173,22 @@ public class VectorMapRenderUtils {
         return bufferScreen;
     }
 
+    /**
+     * Gets the feature styles for the given layer, screen size, map scale and feature type
+     *
+     * @param layer the layer
+     * @param mapScale the map scale
+     * @param schema the feature type
+     * @return the list of feature type styles
+     */
     public static List<LiteFeatureTypeStyle> getFeatureStyles(
-            Layer layer, final Rectangle screenSize, final double mapScale, FeatureType schema)
-            throws IOException {
+            Layer layer, final double mapScale, FeatureType schema) {
         Style style = layer.getStyle();
         List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
-        List<LiteFeatureTypeStyle> styleList =
-                createLiteFeatureTypeStyles(layer, featureStyles, schema, mapScale, screenSize);
-        return styleList;
+        return createLiteFeatureTypeStyles(layer, featureStyles, schema, mapScale);
     }
 
-    protected static double[] getPixelSize(
+    private static double[] getPixelSize(
             final ReferencedEnvelope renderingArea, final Rectangle screenSize) {
         double[] pixelSize;
         try {
@@ -170,13 +213,24 @@ public class VectorMapRenderUtils {
         return pixelSize;
     }
 
+    /**
+     * Creates a query selecting those features relevant to the style and extent of the given map,
+     * for the given layer.
+     *
+     * @param source the feature source
+     * @param styleList the list of styles
+     * @param queryArea the query area
+     * @param geometryAttribute the geometry attribute
+     * @return the query
+     * @throws IllegalFilterException in case of error
+     * @throws FactoryException in case of error
+     */
     private static Query getStyleQuery(
             FeatureSource<?, ?> source,
             List<LiteFeatureTypeStyle> styleList,
             ReferencedEnvelope queryArea,
-            Rectangle screenSize,
             GeometryDescriptor geometryAttribute)
-            throws IllegalFilterException, IOException, FactoryException {
+            throws IllegalFilterException, FactoryException {
 
         final FeatureType schema = source.getSchema();
         Query query = new Query(schema.getName().getLocalPart());
@@ -233,52 +287,107 @@ public class VectorMapRenderUtils {
         DefaultCRSFilterVisitor defaulter = new DefaultCRSFilterVisitor(FF, declaredCRS);
         Filter defaulted = (Filter) filter.accept(defaulter, null);
         ReprojectingFilterVisitor reprojector = new ReprojectingFilterVisitor(FF, schema);
-        Filter reprojected = (Filter) defaulted.accept(reprojector, null);
-        return reprojected;
+        return (Filter) defaulted.accept(reprojector, null);
     }
+
     /**
-     * Builds the transform from sourceCRS to destCRS/
+     * Creates a list of LiteFeatureTypeStyles for the given layer, feature styles, feature type,
+     * scale denominator and screen size
      *
-     * <p>Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore
-     * implementations are capable. With that in mind if the provided soruceCRS is not 2D we are
-     * going to manually post-process the Geomtries into {@link DefaultGeographicCRS#WGS84} - and
-     * the {@link MathTransform2D} returned here will transition from WGS84 to the requested
-     * destCRS.
-     *
-     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
-     *     transform if the the two crs are equal
-     * @throws FactoryException If no transform is available to the destCRS
+     * @param layer the layer
+     * @param featureStyles the feature styles
+     * @param ftype the feature type
+     * @param scaleDenominator the scale denominator
+     * @return a list of LiteFeatureTypeStyles
      */
-    public static MathTransform buildTransform(
-            CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem destCRS)
-            throws FactoryException {
-        Preconditions.checkNotNull(sourceCRS, "sourceCRS");
-        Preconditions.checkNotNull(destCRS, "destCRS");
+    private static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(
+            Layer layer,
+            List<FeatureTypeStyle> featureStyles,
+            FeatureType ftype,
+            double scaleDenominator) {
 
-        MathTransform transform = null;
-        if (sourceCRS.getCoordinateSystem().getDimension() >= 3) {
-            // We are going to transform over to DefaultGeographic.WGS84 on the fly
-            // so we will set up our math transform to take it from there
-            MathTransform toWgs84_3d =
-                    CRS.findMathTransform(sourceCRS, DefaultGeographicCRS.WGS84_3D);
-            MathTransform toWgs84_2d =
-                    CRS.findMathTransform(
-                            DefaultGeographicCRS.WGS84_3D, DefaultGeographicCRS.WGS84);
-            transform = ConcatenatedTransform.create(toWgs84_3d, toWgs84_2d);
-            sourceCRS = DefaultGeographicCRS.WGS84;
+        ArrayList<LiteFeatureTypeStyle> result = new ArrayList<>();
+
+        LiteFeatureTypeStyle lfts;
+
+        for (FeatureTypeStyle fts : featureStyles) {
+            if (isFeatureTypeStyleActive(ftype, fts)) {
+                // DJB: this FTS is compatible with this FT.
+
+                // get applicable rules at the current scale
+                List<Rule>[] splittedRules = splitRules(fts, scaleDenominator);
+                List<Rule> ruleList = splittedRules[0];
+                List<Rule> elseRuleList = splittedRules[1];
+
+                // if none, skip it
+                if ((ruleList.isEmpty()) && (elseRuleList.isEmpty())) continue;
+
+                // we can optimize this one and draw directly on the graphics, assuming
+                // there is no composition
+                Graphics2D graphics = null;
+                lfts =
+                        new LiteFeatureTypeStyle(
+                                layer, graphics, ruleList, elseRuleList, fts.getTransformation());
+
+                result.add(lfts);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Splits the rules of a feature type style into two lists: one for the rules that are active at
+     * the current scale and one for the else rules
+     *
+     * @param fts the feature type style
+     * @param scaleDenominator the scale denominator
+     * @return an array of two lists: the first one contains the rules that are active at the
+     *     current
+     */
+    private static List<Rule>[] splitRules(
+            final FeatureTypeStyle fts, final double scaleDenominator) {
+
+        List<Rule> ruleList = new ArrayList<>();
+        List<Rule> elseRuleList = new ArrayList<>();
+
+        for (Rule r : fts.rules()) {
+            if (isWithInScale(r, scaleDenominator)) {
+                if (r.isElseFilter()) {
+                    elseRuleList.add(r);
+                } else {
+                    ruleList.add(r);
+                }
+            }
         }
 
-        // the basic crs transformation, if any
-        MathTransform2D sourceToTarget =
-                (MathTransform2D) CRS.findMathTransform(sourceCRS, destCRS, true);
+        @SuppressWarnings({"unchecked", "PMD.UseShortArrayInitializer"})
+        List<Rule>[] ret = new List[] {ruleList, elseRuleList};
+        return ret;
+    }
 
-        if (transform == null) {
-            return sourceToTarget;
-        }
-        if (sourceToTarget.isIdentity()) {
-            return transform;
-        }
-        return ConcatenatedTransform.create(transform, sourceToTarget);
+    /**
+     * Checks if a rule can be triggered at the current scale level
+     *
+     * @return true if the scale is compatible with the rule settings
+     */
+    private static boolean isWithInScale(Rule r, double scaleDenominator) {
+        // Tolerance used to compare doubles for equality
+        final double TOLERANCE = 1e-6;
+        return ((r.getMinScaleDenominator() - TOLERANCE) <= scaleDenominator)
+                && ((r.getMaxScaleDenominator() + TOLERANCE) > scaleDenominator);
+    }
+
+    /**
+     * Checks if a feature type style is active for a given feature type
+     *
+     * @param ftype the feature type
+     * @param fts the feature type style
+     * @return true if the feature type style is active
+     */
+    private static boolean isFeatureTypeStyleActive(FeatureType ftype, FeatureTypeStyle fts) {
+        // TODO: find a complex feature equivalent for this check
+        return fts.featureTypeNames().isEmpty()
+                || fts.featureTypeNames().stream().anyMatch(tn -> FeatureTypes.matches(ftype, tn));
     }
 
     /**
@@ -349,79 +458,48 @@ public class VectorMapRenderUtils {
         }
     }
 
-    static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(
-            Layer layer,
-            List<FeatureTypeStyle> featureStyles,
-            FeatureType ftype,
-            double scaleDenominator,
-            Rectangle screenSize)
-            throws IOException {
-
-        ArrayList<LiteFeatureTypeStyle> result = new ArrayList<>();
-
-        LiteFeatureTypeStyle lfts;
-
-        for (FeatureTypeStyle fts : featureStyles) {
-            if (isFeatureTypeStyleActive(ftype, fts)) {
-                // DJB: this FTS is compatible with this FT.
-
-                // get applicable rules at the current scale
-                List<Rule>[] splittedRules = splitRules(fts, scaleDenominator);
-                List<Rule> ruleList = splittedRules[0];
-                List<Rule> elseRuleList = splittedRules[1];
-
-                // if none, skip it
-                if ((ruleList.isEmpty()) && (elseRuleList.isEmpty())) continue;
-
-                // we can optimize this one and draw directly on the graphics, assuming
-                // there is no composition
-                Graphics2D graphics = null;
-                lfts =
-                        new LiteFeatureTypeStyle(
-                                layer, graphics, ruleList, elseRuleList, fts.getTransformation());
-
-                result.add(lfts);
-            }
-        }
-        return result;
-    }
-
-    private static List<Rule>[] splitRules(
-            final FeatureTypeStyle fts, final double scaleDenominator) {
-
-        List<Rule> ruleList = new ArrayList<>();
-        List<Rule> elseRuleList = new ArrayList<>();
-
-        for (Rule r : fts.rules()) {
-            if (isWithInScale(r, scaleDenominator)) {
-                if (r.isElseFilter()) {
-                    elseRuleList.add(r);
-                } else {
-                    ruleList.add(r);
-                }
-            }
-        }
-
-        @SuppressWarnings({"unchecked", "PMD.UseShortArrayInitializer"})
-        List<Rule>[] ret = new List[] {ruleList, elseRuleList};
-        return ret;
-    }
-
     /**
-     * Checks if a rule can be triggered at the current scale level
+     * Builds the transform from sourceCRS to destCRS/
      *
-     * @return true if the scale is compatible with the rule settings
+     * <p>Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore
+     * implementations are capable. With that in mind if the provided soruceCRS is not 2D we are
+     * going to manually post-process the Geomtries into {@link DefaultGeographicCRS#WGS84} - and
+     * the {@link MathTransform2D} returned here will transition from WGS84 to the requested
+     * destCRS.
+     *
+     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
+     *     transform if the the two crs are equal
+     * @throws FactoryException If no transform is available to the destCRS
      */
-    private static boolean isWithInScale(Rule r, double scaleDenominator) {
-        /** Tolerance used to compare doubles for equality */
-        final double TOLERANCE = 1e-6;
-        return ((r.getMinScaleDenominator() - TOLERANCE) <= scaleDenominator)
-                && ((r.getMaxScaleDenominator() + TOLERANCE) > scaleDenominator);
-    }
+    public static MathTransform buildTransform(
+            CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem destCRS)
+            throws FactoryException {
+        Preconditions.checkNotNull(sourceCRS, "sourceCRS");
+        Preconditions.checkNotNull(destCRS, "destCRS");
 
-    private static boolean isFeatureTypeStyleActive(FeatureType ftype, FeatureTypeStyle fts) {
-        // TODO: find a complex feature equivalent for this check
-        return fts.featureTypeNames().isEmpty()
-                || fts.featureTypeNames().stream().anyMatch(tn -> FeatureTypes.matches(ftype, tn));
+        MathTransform transform = null;
+        if (sourceCRS.getCoordinateSystem().getDimension() >= 3) {
+            // We are going to transform over to DefaultGeographic.WGS84 on the fly
+            // so we will set up our math transform to take it from there
+            MathTransform toWgs84_3d =
+                    CRS.findMathTransform(sourceCRS, DefaultGeographicCRS.WGS84_3D);
+            MathTransform toWgs84_2d =
+                    CRS.findMathTransform(
+                            DefaultGeographicCRS.WGS84_3D, DefaultGeographicCRS.WGS84);
+            transform = ConcatenatedTransform.create(toWgs84_3d, toWgs84_2d);
+            sourceCRS = DefaultGeographicCRS.WGS84;
+        }
+
+        // the basic crs transformation, if any
+        MathTransform2D sourceToTarget =
+                (MathTransform2D) CRS.findMathTransform(sourceCRS, destCRS, true);
+
+        if (transform == null) {
+            return sourceToTarget;
+        }
+        if (sourceToTarget.isIdentity()) {
+            return transform;
+        }
+        return ConcatenatedTransform.create(transform, sourceToTarget);
     }
 }

@@ -82,6 +82,7 @@ import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
@@ -701,6 +702,54 @@ public class XStreamPersisterTest {
         assertEquals("EPSG:4326", ft.getSRS());
         assertEquals(new Measure(10, SI.METRE), ft.getLinearizationTolerance());
         assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), ft.getNativeCRS()));
+    }
+
+    @Test
+    public void testAstronomicFeautureType() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName("foo");
+        catalog.add(ws);
+
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix("acme");
+        ns.setURI("http://acme.org");
+        catalog.add(ns);
+
+        DataStoreInfo ds = cFactory.createDataStore();
+        ds.setWorkspace(ws);
+        ds.setName("foo");
+        catalog.add(ds);
+
+        FeatureTypeInfo ft = cFactory.createFeatureType();
+        ft.setStore(ds);
+        ft.setNamespace(ns);
+        ft.setName("ft");
+        ft.setAbstract("abstract");
+        ft.setSRS("IAU:49900");
+        CoordinateReferenceSystem crs = CRS.decode("IAU:49900");
+        ft.setNativeCRS(crs);
+        ft.setNativeBoundingBox(new ReferencedEnvelope(0, 1000, 0, 1000, crs));
+        ft.setLinearizationTolerance(new Measure(10, SI.METRE));
+
+        ByteArrayOutputStream out = out();
+        persister.save(ft, out);
+
+        persister.setCatalog(catalog);
+        ft = persister.load(in(out), FeatureTypeInfo.class);
+        assertNotNull(ft);
+
+        assertEquals("ft", ft.getName());
+        assertEquals(ds, ft.getStore());
+        assertEquals(ns, ft.getNamespace());
+        assertEquals("IAU:49900", ft.getSRS());
+        assertEquals(new Measure(10, SI.METRE), ft.getLinearizationTolerance());
+        assertTrue(CRS.equalsIgnoreMetadata(crs, ft.getNativeCRS()));
+        assertTrue(
+                CRS.equalsIgnoreMetadata(
+                        crs, ft.getNativeBoundingBox().getCoordinateReferenceSystem()));
     }
 
     @Test

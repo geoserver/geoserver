@@ -41,7 +41,7 @@ If the ``Represent multi-layer requests as multiple elements`` is checked (and t
 Styles
 ------
 
-Like any WMS layer or layer group available from GeoServer, a comma-separated list of styles may be supplied in the WMS GetMap `styles` parameter.  If no style name is requested, the default style will be used for that layer.  For single-layer (or layer group) requests, the set of alternate styles is presented as an option list in the layer preview map's layer control, with the currently requested style indicated.
+Like any WMS layer or layer group available from GeoServer, a comma-separated list of styles may be supplied in the WMS GetMap `styles` parameter.  If no style name is requested, the default style will be used for that layer.  For single-layer or single-layer group requests, the set of alternate styles is presented as an option list in the layer preview map's layer control, with the currently requested style indicated.
 
 .. figure:: images/mapml_preview_multiple_styles_menu.png
 
@@ -75,12 +75,137 @@ Vector Settings
 MapML supports the serving of vector feature representations of the data.  This results in a smoother user navigation experience, smaller bandwidth requirements, and more options for dynamic styling on the client-side.
 
 **Use Features**
-  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  For multi-layer requests, all of the layers must have the feature option enabled or image-based links will be returned instead.
+  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  MapML <map-extent> element with a feature link:
+
+.. code-block:: html
+
+    <map-extent units="WGS84" label="Manhattan (NY) points of interest" checked="checked">
+      <map-input name="z" type="zoom" min="0" max="21"/>
+      <map-input name="xmin" type="location" rel="map" position="top-left" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
+      <map-input name="ymin" type="location" rel="map" position="bottom-left" axis="latitude" units="gcrs" min="40.70754683896324" max="40.719885123828675"/>
+      <map-input name="xmax" type="location" rel="map" position="top-right" axis="longitude" units="gcrs" min="-74.0118315772888" max="-74.00153046439813"/>
+      <map-input name="ymax" type="location" rel="map" position="top-left" axis="latitude" units="gcrs" min="40.70754683896324" max="40.719885123828675"/>
+      <map-input name="w" type="width" min="1" max="10000"/>
+      <map-input name="h" type="height" min="1" max="10000"/>
+      <map-link tref="http://localhost:8080/geoserver/tiger/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:WGS84&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=true&amp;service=WMS&amp;layers=poi&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
+    </map-extent>
+
+When both "Use Tiles" and "Use Features" are checked, the MapML extension will request tiled maps in ``text/mapml`` format.
+The contents of the tiles will be clipped to the requested area, and feature attributes will be skiipped, as the MapML client cannot leverage them for the moment.
+
+
+**Feature Styling**
+  Basic styling of vector features is supported by the MapML extension.  The style is defined in the WMS GetMap request, and the MapML extension will convert the rules and style attributes defined in the SLD into CSS classes and apply those classes to the appropriate features.  Note that this conversion is currently limited to basic styling and does not include transformation functions, external graphics, or styling dependent on individual feature attributes (non-static style values).  See below for a more detailed compatibility table: 
+
++------------------+-------------------+-----------+
+| Symbolizer       | Style Attribute   | Supported |
++==================+===================+===========+
+| PointSymbolizer  | Opacity           | yes       |
+|                  +-------------------+-----------+
+|                  | Default Radius    | yes       |
+|                  +-------------------+-----------+
+|                  | Radius            | yes       |
+|                  +-------------------+-----------+
+|                  | Rotation          | no        |
+|                  +-------------------+-----------+
+|                  | Displacement      | no        |
+|                  +-------------------+-----------+
+|                  | Anchor Point      | no        |
+|                  +-------------------+-----------+
+|                  | Gap               | no        |
+|                  +-------------------+-----------+
+|                  | Initial Gap       | no        |
+|                  +-------------------+-----------+
+|                  | Well Known Name   | yes       |
+|                  +-------------------+-----------+
+|                  | External Mark     | no        |
+|                  +-------------------+-----------+
+|                  | Graphic Fill      | no        |
+|                  +-------------------+-----------+
+|                  | Fill Color        | yes       |
+|                  +-------------------+-----------+
+|                  | Fill Opacity      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Color      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Opacity    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Width      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Linecap    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Array | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Offset| yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Line Join  | no        |
++------------------+-------------------+-----------+
+| LineSymbolizer   | Stroke Linecap    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Array | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Offset| yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Line Join  | no        |
++------------------+-------------------+-----------+
+| PolygonSymbolizer| Displacement      | no        |
+|                  +-------------------+-----------+
+|                  | Perpendicular Offs| no        |
+|                  +-------------------+-----------+
+|                  | Graphic Fill      | no        |
+|                  +-------------------+-----------+
+|                  | Fill Color        | yes       |
+|                  +-------------------+-----------+
+|                  | Fill Opacity      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Color      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Opacity    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Width      | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Linecap    | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Array | yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Dash Offset| yes       |
+|                  +-------------------+-----------+
+|                  | Stroke Line Join  | no        |
++------------------+-------------------+-----------+
+| TextSymbolizer   | ALL               | no        |
++------------------+-------------------+-----------+
+| RasterSymbolizer | ALL               | no        |
++------------------+-------------------+-----------+
+| Transformation   | ALL               | no        |
+| Functions        |                   |           |
++------------------+-------------------+-----------+
+| Zoom             | ALL               | yes       |
+| Denominators     |                   |           |
++------------------+-------------------+-----------+
+
+
+WMS GetMap considerations
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, each layer/style pair that is requested via the GetMap parameters is composed into a single <map-extent>...<map-link tref="...">...</map-extent> structure as exemplified above.  
+
+If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <layer-> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
+
+.. figure:: images/mapml_wms_multi_extent.png
+
+With 'Represent multi-layer requests as multiple elements' checked, if two or more layers are requested in MapML format via the GetMap 'layers' parameter, the MapML extension serialize each layer's <map-extent> according to its "Use Features" and "Use Tiles" settings.  Note that there is currently no "Use Features" setting available for layer groups.
 
 Tile Caching
 ^^^^^^^^^^^^
 
-In the Tile Caching tab panel of the Edit Layer or Edit Layer Group page, at the bottom of the page you will see the table of GridSets that are assigned to the layer or layer group.  The values "WGS84" and "OSMTILE" are equivalent to the EPSG:4326 and EPSG:900913 built in GeoWebCache GridSets. However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is "WGS84" (equivalent to EPSG:4326), "OSMTILE" (equivalent to EPSG:900913), "CBMTILE" (Canada Base Map) and "APSTILE" (Alaska Polar Stereographic).
+In the Tile Caching tab panel of the Edit Layer or Edit Layer Group page, at the bottom of the page you will see the table of GridSets that are assigned to the layer or layer group.  
+
+The values ``WGS84`` and ``OSMTILE`` are equivalent to the EPSG:4326 and EPSG:900913 built in GeoWebCache GridSets. 
+However, for the MapML module to recognize these GridSets, you must select and use the MapML names.   For new layers or layer groups, or newly created grid subsets for a layer or layer group, the MapML values are selected by default.  For existing layers that you wish to enable the use of cached tile references by the MapML service, you will have to select and add those values you wish to support from the dropdown of available GridSets.  The set of recognized values for MapML is ``WGS84`` (equivalent to EPSG:4326), ``OSMTILE`` (equivalent to EPSG:900913), ``CBMTILE`` (Canada Base Map) and ``APSTILE`` (Alaska Polar Stereographic).
+
+The MapML client will normally request image tiles against WMTS, but if configured to use feature output,
+it will try to use tiles in ``text/mapml`` format, which should be configured as a cacheable format
+in order to enable WMTS requests.
 
 .. figure:: images/mapml_tile_caching_panel_ui.png
 

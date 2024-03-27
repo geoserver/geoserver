@@ -29,6 +29,7 @@ officially part of the GeoServer releases. They are however built along with the
    cov-json/index
    dds/index
    elasticsearch/index
+   features-autopopulate/index
    features-templating/index
    flatgeobuf/index
    gdal/index

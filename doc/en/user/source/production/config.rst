@@ -159,8 +159,17 @@ kinds of security vulnerabilities. See the `OWASP Clickjacking entry <https://ww
 
 If you wish to change this behavior you can do so through the following properties:
 
-* ``geoserver.xframe.shouldSetPolicy``: controls whether the X-Frame-Options filter should be set at all. Default is true.
-* ``geoserver.xframe.policy``: controls what the set the X-Frame-Options header to. Default is ``SAMEORIGIN`` valid options are ``DENY``, ``SAMEORIGIN`` and ``ALLOW-FROM`` [uri]
+* ``geoserver.xframe.shouldSetPolicy``: controls whether the X-Frame-Options header should be set at all. Default is true.
+* ``geoserver.xframe.policy``: controls what to set the X-Frame-Options header to. Default is ``SAMEORIGIN``. Valid options are ``DENY``, ``SAMEORIGIN`` and ``ALLOW-FROM [uri]``.
+
+.. note::
+    The WMS GetMap OpenLayers output format uses iframes to display the WMS GetFeatureInfo output and
+    this may not function properly if the policy is set to something other than ``SAMEORIGIN``.
+
+.. warning::
+    The ``ALLOW-FROM`` option is not supported by modern browsers and should only be used if you know
+    that browsers interacting with your GeoServer will support it. Applying this policy will be treated
+    as if no policy was set by browsers that do not support this (i.e., **NO** protection).
 
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
@@ -176,6 +185,38 @@ If you wish to change this behavior you can do so through the following property
 * ``geoserver.xContentType.shouldSetPolicy``: controls whether the X-Content-Type-Options header should be set. Default is true.
 
 This property can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+
+X-XSS-Protection Policy
+-----------------------
+
+GeoServer supports setting the X-XSS-Protection HTTP header in order to control the built-in reflected XSS filtering that existed in
+some older browsers. This header is **NOT** enabled by default since it does not affect modern browsers. Enabling the header without
+specifying a policy will default to Spring Security's default of ``0`` (which is also the current OWASP recommendation). See the
+`OWASP X-XSS-Protection entry <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-xss-protection>`_ for details.
+
+If you wish to change this behavior you can do so through the following properties:
+
+* ``geoserver.xXssProtection.shouldSetPolicy``: controls whether the X-XSS-Protection header should be set at all. Default is false.
+* ``geoserver.xXssProtection.policy``: controls what to set the X-XSS-Protection header to. Default is ``0``. Valid options are ``0``, ``1`` and ``1; mode=block``.
+
+These properties can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+
+Strict-Transport-Security Policy
+--------------------------------
+
+In order to reduce the possibility of man-in-the-middle attacks GeoServer supports setting the Strict-Transport-Security HTTP header.
+This header is **NOT** enabled by default and, when enabled, this header will only be set on HTTPS requests. If a policy has not been
+set, the default policy will be the same as Spring Security's default of ``max-age=31536000 ; includeSubDomains``. See the
+`OWASP Strict-Transport-Security entry <https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#strict-transport-security-hsts>`_ for details.
+
+If you wish to change this behavior you can do so through the following properties:
+
+* ``geoserver.hsts.shouldSetPolicy``: controls whether the Strict-Transport-Security header should be set at all. Default is false.
+* ``geoserver.hsts.policy``: controls what to set the Strict-Transport-Security header to. Default is ``max-age=31536000 ; includeSubDomains``. Valid options can change the max-age to the desired age in seconds and can omit the includeSubDomains directive.
+
+These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
 
 OWS ServiceException XML mimeType

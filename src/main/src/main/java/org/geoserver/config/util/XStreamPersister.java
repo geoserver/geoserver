@@ -192,10 +192,12 @@ public class XStreamPersister {
         protected CatalogInfo getCatalogObject() {
             return null;
         }
+
         /** Return the ServiceInfo object being modified by the current request */
         protected ServiceInfo getServiceObject() {
             return null;
         }
+
         /** Return the class of the object being acted upon by the current request */
         protected Class<? extends Info> getObjectClass() {
             return null;
@@ -687,6 +689,7 @@ public class XStreamPersister {
             LOGGER.log(level, msg);
         }
     }
+
     /**
      * Saves an object to persistence.
      *
@@ -1391,6 +1394,7 @@ public class XStreamPersister {
             return context.convertAnother(current, theClass, new ReferenceConverter(theClass));
         }
     }
+
     /** Converter which unwraps proxies in a collection. */
     class ProxyCollectionConverter extends CollectionConverter {
 
@@ -1430,19 +1434,25 @@ public class XStreamPersister {
 
         @Override
         public Object fromString(String str) {
-            if (str.toUpperCase().startsWith("EPSG:")) {
-                try {
-                    return CRS.decode(str);
-                } catch (Exception e) {
-                    XStreamPersister.LOGGER.log(Level.WARNING, "Error decode epsg code: " + str, e);
-                }
-            } else {
-                try {
-                    return CRS.parseWKT(str);
-                } catch (FactoryException e) {
-                    XStreamPersister.LOGGER.log(Level.WARNING, "Error decode wkt: " + str, e);
+            // try with the supported authorities
+            Set<String> authorities = CRS.getSupportedAuthorities(false);
+            for (String authority : authorities) {
+                if (str.toLowerCase().startsWith(authority.toLowerCase() + ":")) {
+                    try {
+                        return CRS.decode(str);
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
             }
+
+            // if none was supported, try with WKT
+            try {
+                return CRS.parseWKT(str);
+            } catch (FactoryException e) {
+                XStreamPersister.LOGGER.log(Level.WARNING, "Error decode wkt: " + str, e);
+            }
+
             return null;
         }
     }
@@ -1715,6 +1725,7 @@ public class XStreamPersister {
             }
         }
     }
+
     /**
      * Converter for all {@link CatalogInfo} resources. Obtains the appropriate catalog object in
      * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to
@@ -1754,6 +1765,7 @@ public class XStreamPersister {
             return emptyObject;
         }
     }
+
     /** Converter for {@link DataStoreInfo}, {@link CoverageStoreInfo}, and {@link WMSStoreInfo} */
     public class StoreInfoConverter extends AbstractCatalogInfoConverter {
 

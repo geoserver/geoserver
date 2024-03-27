@@ -31,13 +31,13 @@ To perform the installation of the libjpeg-turbo binaries (or native library) yo
 Installing the GeoServer libjpeg-turbo extension
 ------------------------------------------------
 
-  .. warning:: Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.
+   .. warning:: Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.
 
 #. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`libjpeg-turbo`
    
    .. warning:: Make sure to match the version of the extension (for example |release| above) to the version of the GeoServer instance!
 
- #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 
 Checking if the extension is enabled
 ------------------------------------

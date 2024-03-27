@@ -65,6 +65,8 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
             RecordDescriptor rd, RecordDescriptor outputRd, Query q, Transaction t)
             throws IOException {
 
+        Query pq = prepareQuery(q, rd, rd);
+
         int startIndex = 0;
         if (q.getStartIndex() != null) {
             startIndex = q.getStartIndex();
@@ -73,8 +75,8 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
                 new RecordsFeatureCollection(root, startIndex);
 
         // filtering
-        if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
-            Filter filter = q.getFilter();
+        if (pq.getFilter() != null && pq.getFilter() != Filter.INCLUDE) {
+            Filter filter = pq.getFilter();
             CSWAnyExpander expander = new CSWAnyExpander();
             Filter expanded = (Filter) filter.accept(expander, null);
 
@@ -82,10 +84,10 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         }
 
         // sorting
-        if (q.getSortBy() != null && q.getSortBy().length > 0) {
+        if (pq.getSortBy() != null && pq.getSortBy().length > 0) {
             Feature[] features = records.toArray(new Feature[records.size()]);
             Comparator<Feature> comparator =
-                    ComplexComparatorFactory.buildComparator(q.getSortBy());
+                    ComplexComparatorFactory.buildComparator(pq.getSortBy());
             Arrays.sort(features, comparator);
 
             records = new MemoryFeatureCollection(records.getSchema(), Arrays.asList(features));

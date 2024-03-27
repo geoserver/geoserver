@@ -93,7 +93,7 @@
     <gwc.version>1.26-SNAPSHOT</gwc.version>
     <jts.version>1.19.0</jts.version>
     <spring.version>5.3.32</spring.version>
-    <spring.security.version>5.7.11</spring.security.version>
+    <spring.security.version>5.7.12</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <servlet-api.version>3.1.0</servlet-api.version>
@@ -145,7 +145,7 @@
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <oracle.jdbc.version>19.18.0.0</oracle.jdbc.version>
     <mysql.jdbc.version>8.0.28</mysql.jdbc.version>
-    <solrj.version>7.2.1</solrj.version>
+    <solrj.version>8.11.3</solrj.version>
     <mockito.version>5.6.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
     <hazelcast.version>5.3.6</hazelcast.version>

@@ -14,6 +14,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -37,11 +38,12 @@ import javax.xml.bind.annotation.XmlType;
         propOrder = {"threeOrMoreCoordinatePairs"})
 public class Polygon {
 
+    @XmlMixed
     @XmlElementRef(
             name = "map-coordinates",
-            type = JAXBElement.class,
+            type = Coordinates.class,
             namespace = "http://www.w3.org/1999/xhtml")
-    protected List<JAXBElement<List<String>>> threeOrMoreCoordinatePairs;
+    protected List<Coordinates> threeOrMoreCoordinatePairs;
 
     /**
      * Gets the value of the threeOrMoreCoordinatePairs property.
@@ -59,7 +61,7 @@ public class Polygon {
      * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
      * <}{@link List }{@code <}{@link String }{@code >}{@code >}
      */
-    public List<JAXBElement<List<String>>> getThreeOrMoreCoordinatePairs() {
+    public List<Coordinates> getThreeOrMoreCoordinatePairs() {
         if (threeOrMoreCoordinatePairs == null) {
             threeOrMoreCoordinatePairs = new ArrayList<>();
         }

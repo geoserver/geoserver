@@ -5,11 +5,13 @@
 package org.geoserver.mapml;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.feature.ReprojectingFeatureCollection;
@@ -19,20 +21,32 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
-import org.geotools.map.Layer;
+import org.geotools.util.factory.Hints;
+import org.geotools.util.logging.Logging;
 
 public class MapMLFeaturesBuilder {
-    private List<FeatureSource> featureSources;
+
+    static final Logger LOGGER = Logging.getLogger(MapMLFeaturesBuilder.class);
+    private MapMLSimplifier simplifier;
+    private final SimpleFeatureSource featureSource;
     private final GeoServer geoServer;
     private final WMSMapContent mapContent;
     private final GetMapRequest getMapRequest;
+    private final Query query;
+
+    private boolean skipAttributes = false;
+
+    private boolean skipHeadStyles = false;
 
     /**
      * Constructor
@@ -40,14 +54,50 @@ public class MapMLFeaturesBuilder {
      * @param mapContent the WMS map content
      * @param geoServer the GeoServer
      */
-    public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer) {
+    public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer, Query query) {
+        if (mapContent.layers().size() != 1)
+            throw new ServiceException(
+                    "MapML WMS Feature format does not currently support Multiple Feature Type output.");
+        FeatureSource fs = mapContent.layers().get(0).getFeatureSource();
+        if (!(fs instanceof SimpleFeatureSource))
+            throw new ServiceException(
+                    "MapML WMS Feature format does not currently support Complex Features.");
+        this.featureSource = (SimpleFeatureSource) fs;
+
         this.geoServer = geoServer;
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
-        featureSources =
-                mapContent.layers().stream()
-                        .map(Layer::getFeatureSource)
-                        .collect(Collectors.toList());
+        this.query = new Query(query);
+        this.simplifier = getSimplifier(mapContent, query);
+    }
+
+    private MapMLSimplifier getSimplifier(WMSMapContent mapContent, Query query) {
+        try {
+            CoordinateReferenceSystem layerCRS =
+                    featureSource.getSchema().getCoordinateReferenceSystem();
+            MapMLSimplifier simplifier = new MapMLSimplifier(mapContent, layerCRS);
+            if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_DISTANCE)) {
+                query.getHints()
+                        .put(Hints.GEOMETRY_DISTANCE, simplifier.getQuerySimplificationDistance());
+            }
+            return simplifier;
+        } catch (FactoryException e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Unable to create MapML Simplifier, proceeding with full geometries",
+                    e);
+        }
+        return null;
+    }
+
+    /** Enables/disables attribute representation skipping (false by default) */
+    public void setSkipAttributes(boolean skipAttributes) {
+        this.skipAttributes = skipAttributes;
+    }
+
+    /** Enables/disables attribute representation skipping (false by default) */
+    public void setSkipHeadStyles(boolean skipHeadStyles) {
+        this.skipHeadStyles = skipHeadStyles;
     }
 
     /**
@@ -57,22 +107,17 @@ public class MapMLFeaturesBuilder {
      * @throws IOException If an error occurs while producing the map
      */
     public Mapml getMapMLDocument() throws IOException {
-        if (featureSources.size() != 1) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-        }
-
         if (!getMapRequest.getLayers().isEmpty()
                 && MapLayerInfo.TYPE_VECTOR != getMapRequest.getLayers().get(0).getType()) {
             throw new ServiceException(
                     "MapML WMS Feature format does not currently support non-vector layers.");
         }
-        FeatureCollection featureCollection = featureSources.get(0).getFeatures();
-        if (!(featureCollection instanceof SimpleFeatureCollection)) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Complex Features.");
+        SimpleFeatureCollection fc = null;
+        if (query != null) {
+            fc = featureSource.getFeatures(query);
+        } else {
+            fc = featureSource.getFeatures();
         }
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
 
         GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
         if (sourceGeometryDescriptor == null) {
@@ -96,19 +141,48 @@ public class MapMLFeaturesBuilder {
             reprojectedFeatureCollection = fc;
         }
 
+        Map<String, MapMLStyle> styles = getMapMLStyleMap();
+
         LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
         FeatureType featureType = fc.getSchema();
         ResourceInfo meta =
                 geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
+        if (query != null
+                && query.getFilter() != null
+                && query.getFilter().equals(Filter.EXCLUDE)) {
+            // if the filter is exclude, return an empty MapML that has header metadata
+            return MapMLFeatureUtil.getEmptyMapML(layerInfo, crs);
+        }
+
         return MapMLFeatureUtil.featureCollectionToMapML(
                 reprojectedFeatureCollection,
                 layerInfo,
+                getMapRequest.getBbox(), // clip on bound
                 crs,
                 null, // for WMS GetMap we don't include alternate projections
                 getNumberOfDecimals(meta),
                 getForcedDecimal(meta),
-                getPadWithZeros(meta));
+                getPadWithZeros(meta),
+                styles,
+                skipHeadStyles,
+                skipAttributes,
+                simplifier);
+    }
+
+    private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {
+        Style style = getMapRequest.getStyles().get(0);
+        if (style == null) {
+            StyleInfo styleInfo = getMapRequest.getLayers().get(0).getLayerInfo().getDefaultStyle();
+            if (styleInfo != null && styleInfo.getStyle() != null) {
+                style = styleInfo.getStyle();
+            } else {
+                throw new ServiceException(
+                        "No style or default style found for layer"
+                                + getMapRequest.getLayers().get(0).getLayerInfo().getName());
+            }
+        }
+        return MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
     }
 
     /**

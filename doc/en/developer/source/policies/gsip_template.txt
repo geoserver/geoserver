@@ -39,6 +39,7 @@ Project Steering Committee:
 * Simone Giannecchini:
 * Torben Barsballe:
 * Nuno Oliveira:
+* Peter Smythe: 
 
 ## Links
 

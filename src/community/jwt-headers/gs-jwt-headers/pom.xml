@@ -22,6 +22,13 @@
 
   <dependencies>
 
+    <!--Use at least this version for security fixes-->
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>9.37.3</version>
+    </dependency>
+
     <dependency>
       <groupId>org.geoserver.community.jwt-headers</groupId>
       <artifactId>jwt-headers-util</artifactId>

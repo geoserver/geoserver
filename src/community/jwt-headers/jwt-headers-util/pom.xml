@@ -30,6 +30,10 @@
     -->
 
   <dependencies>
+    <!--
+        set to compile scope because GeoNetwork supplies its on JAR of this.
+        (Use at least this version for security fixes.)
+    -->
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>nimbus-jose-jwt</artifactId>

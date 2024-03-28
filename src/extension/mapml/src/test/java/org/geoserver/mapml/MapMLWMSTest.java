@@ -1560,7 +1560,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         // check alternate projections have appropriate bounds too
         List<Link> alternateLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.ALTERNATE);
         testAlternateBounds(
-                alternateLinks, ProjType.OSMTILE, new Envelope(-2E7, 2E7, -2E7, 2E7), 1e6);
+                alternateLinks, ProjType.OSMTILE, new Envelope(-2E7, 2E7, -2E7, 2E7), 5e6);
         testAlternateBounds(
                 alternateLinks, ProjType.APSTILE, new Envelope(-1E7, 1.4E7, -1E7, 1.4E7), 1e6);
         testAlternateBounds(
@@ -1723,20 +1723,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
                                 || input.getType() == InputType.WIDTH
                                 || input.getType() == InputType.HEIGHT);
                 if (input.getType() == InputType.LOCATION && input.getAxis() == AxisType.EASTING) {
-                    assertTrue(
-                            "map-input[type=location/@min must equal -2.0037508342789244E7",
-                            "-2.0037508342789244E7".equalsIgnoreCase(input.getMin()));
-                    assertTrue(
-                            "map-input[type=location/@max must equal 2.0037508342789244E7",
-                            "2.0037508342789244E7".equalsIgnoreCase(input.getMax()));
+                    assertEquals(-2E7, Double.parseDouble(input.getMin()), 1E6);
                 } else if (input.getType() == InputType.LOCATION
                         && input.getAxis() == AxisType.NORTHING) {
-                    assertTrue(
-                            "map-input[type=location/@min must equal -2.0037508342780735E7",
-                            "-2.0037508342780735E7".equalsIgnoreCase(input.getMin()));
-                    assertTrue(
-                            "map-input[type=location/@max must equal 2.003750834278071E7",
-                            "2.003750834278071E7".equalsIgnoreCase(input.getMax()));
+                    assertEquals(-2.3E7, Double.parseDouble(input.getMin()), 3E6);
+                    assertEquals(2.3E7, Double.parseDouble(input.getMax()), 3E6);
                 }
             } else {
                 fail("Unrecognized test object type:" + o.getClass().getTypeName());

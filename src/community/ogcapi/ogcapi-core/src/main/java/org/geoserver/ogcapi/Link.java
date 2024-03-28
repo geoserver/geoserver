@@ -30,6 +30,8 @@ public class Link {
     public static final String REL_SERVICE_DESC = "service-desc";
     public static final String REL_SERVICE_DOC = "service-doc";
     public static final String REL_CONFORMANCE = "conformance";
+    public static final String REL_ROOT = "root";
+
     /**
      * Refers to a resource that identifies the specifications that the link’s context conforms to.
      *

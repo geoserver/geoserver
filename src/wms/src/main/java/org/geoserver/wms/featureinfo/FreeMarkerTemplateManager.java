@@ -46,9 +46,8 @@ import org.geotools.util.logging.Logging;
 public abstract class FreeMarkerTemplateManager {
 
     /**
-     * System property to control whether or not to enable FreeMarker's auto-escaping of HTML
-     * output. This property will override the WMS setting to enable/disable auto-escaping. Default
-     * is true.
+     * System property to control whether to enable FreeMarker's auto-escaping of HTML output. This
+     * property will override the WMS setting to enable/disable auto-escaping. Default is true.
      */
     public static final String FORCE_FREEMARKER_ESCAPING = "GEOSERVER_FORCE_FREEMARKER_ESCAPING";
 
@@ -75,7 +74,7 @@ public abstract class FreeMarkerTemplateManager {
     private static DirectTemplateFeatureCollectionFactory tfcFactory =
             new DirectTemplateFeatureCollectionFactory();
 
-    private static Logger logger = Logging.getLogger(FreeMarkerTemplateManager.class);
+    private static final Logger logger = Logging.getLogger(FreeMarkerTemplateManager.class);
     private static FreemarkerStaticsAccessRule staticsAccessRule;
 
     /** Initializes the {@link #staticsAccessRule}. */
@@ -144,8 +143,9 @@ public abstract class FreeMarkerTemplateManager {
                         return (TemplateHashModel) getStaticModels().get(path);
                     }
                 });
-        // as we want to look up different templates for each resource, the templates cannot
-        // be cached by name. Freemarker used to clear the cache when setting the loader,
+        // As we want to look up different templates for each resource, name cannot
+        // cache the templates.
+        // Freemarker used to clear the cache when setting the loader,
         // but does not do that anymore since
         // https://github.com/apache/freemarker/commit/fc9eba51492c3cd4da3547ba15b95c7db9b3d237
         // because we use the same loader, we just re-configure it to point to a different resource
@@ -300,7 +300,7 @@ public abstract class FreeMarkerTemplateManager {
      */
     protected abstract String getTemplateFileName(String filename);
 
-    /** Check the needed files exists according to the output format */
+    /** Check the needed files exists, according to the output format */
     protected abstract boolean templatesExist(
             Template header, Template footer, List<FeatureCollection> collections)
             throws IOException;

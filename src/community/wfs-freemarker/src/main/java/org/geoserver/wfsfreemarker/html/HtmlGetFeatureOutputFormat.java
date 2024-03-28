@@ -6,6 +6,9 @@ package org.geoserver.wfsfreemarker.html;
 
 import static org.geoserver.wms.featureinfo.FreeMarkerTemplateManager.OutputFormat.HTML;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
@@ -16,10 +19,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.FreeMarkerTemplateManager;
 import org.geoserver.wms.featureinfo.HTMLTemplateManager;
 import org.geotools.feature.FeatureCollection;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
 /**
  * A GetFeature response handler specialized in producing HTML data for a GetFeature request through

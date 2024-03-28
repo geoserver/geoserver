@@ -84,6 +84,14 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                     return mtypes;
                 };
 
+        // only allow JSON, for compatibility with pySTAC
+        Function<List<MediaType>, List<MediaType>> jsonOnlyUpdater =
+                mtypes -> {
+                    mtypes.clear();
+                    mtypes.add(OGCAPIMediaTypes.JSON);
+                    return mtypes;
+                };
+
         // search, GET
         new LinksBuilder(SearchResponse.class, basePath)
                 .segment("search")
@@ -92,6 +100,13 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                 .classification("searchGet")
                 .updater((t1, l2) -> l2.setMethod(HttpMethod.GET))
                 .mediaTypeCustomizer(jsonFirstUpdater)
+                .add(this);
+
+        // root
+        new LinksBuilder(STACLandingPage.class, basePath)
+                .title("Root Catalog as ")
+                .rel(Link.REL_ROOT)
+                .mediaTypeCustomizer(jsonOnlyUpdater)
                 .add(this);
 
         // search, POST

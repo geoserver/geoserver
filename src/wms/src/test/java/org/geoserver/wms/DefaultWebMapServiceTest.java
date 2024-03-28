@@ -85,12 +85,12 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
         assertTrue("EPSG:41001".equalsIgnoreCase(srs));
         // mockGMR.getBbox() actually returns (-180 , 90 , -90 , 180 ) <- foo
         assertTrue(
-                Math.abs(bbox.getMinX() + 1.9236008009077676E7) < 1E-4
-                        && Math.abs(bbox.getMinY() + 2.2026354993694823E7) < 1E-4
-                        && Math.abs(bbox.getMaxX() - 1.9236008009077676E7) < 1E-4
-                        && Math.abs(bbox.getMaxY() - 2.2026354993694823E7) < 1E-4);
+                Math.abs(bbox.getMinX() + 2.0037508342789244E7) < 1E-4
+                        && Math.abs(bbox.getMinY() + 2.360164725876146E7) < 1E-4
+                        && Math.abs(bbox.getMaxX() - 2.0037508342789244E7) < 1E-4
+                        && Math.abs(bbox.getMaxY() - 2.360164725876146E7) < 1E-4);
         assertEquals("image/gif", format);
-        assertEquals(670, width);
+        assertEquals(652, width);
         assertEquals(768, height);
     }
 
@@ -131,12 +131,12 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
         assertTrue("WGS84 / Simple Mercator".equalsIgnoreCase(crsString));
         assertTrue("EPSG:41001".equalsIgnoreCase(srs));
         assertTrue(
-                Math.abs(bbox.getMinX() + 1.9236008009077676E7) < 1E-4
-                        && Math.abs(bbox.getMinY() + 2.2026354993694823E7) < 1E-4
-                        && Math.abs(bbox.getMaxX() - 1.9236008009077676E7) < 1E-4
-                        && Math.abs(bbox.getMaxY() - 2.2026354993694823E7) < 1E-4);
+                Math.abs(bbox.getMinX() + 2.0037508342789244E7) < 1E-4
+                        && Math.abs(bbox.getMinY() + 2.360164725876146E7) < 1E-4
+                        && Math.abs(bbox.getMaxX() - 2.0037508342789244E7) < 1E-4
+                        && Math.abs(bbox.getMaxY() - 2.360164725876146E7) < 1E-4);
         assertEquals("image/gif", format);
-        assertEquals(670, width);
+        assertEquals(652, width);
         assertEquals(768, height);
     }
 

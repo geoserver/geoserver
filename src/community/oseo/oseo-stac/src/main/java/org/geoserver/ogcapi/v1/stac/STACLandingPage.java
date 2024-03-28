@@ -50,6 +50,12 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                 basePath);
         this.conformsTo = conformsTo;
 
+        // root
+        new LinksBuilder(STACLandingPage.class, basePath)
+                .title("Root Catalog as ")
+                .rel(Link.REL_ROOT)
+                .add(this);
+
         // conformance
         new LinksBuilder(ConformanceDocument.class, basePath)
                 .segment("conformance")

@@ -77,4 +77,5 @@ officially part of the GeoServer releases. They are however built along with the
    xslt/index
    web-service-auth/index
    webp/index
+   wfs-freemarker/index
    wps-longitudinal-profile/index

@@ -17,7 +17,6 @@ import java.util.List;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.json.GeoJSONBuilder;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
-import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.FeatureCollection;
@@ -57,10 +56,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     }
 
     @Override
-    protected void handleContent(
-            List<FeatureCollection> collections,
-            OutputStreamWriter osw,
-            GetFeatureInfoRequest request)
+    protected void handleContent(List<FeatureCollection> collections, OutputStreamWriter osw)
             throws IOException {
         for (int i = 0; i < collections.size(); i++) {
             FeatureCollection fc = collections.get(i);

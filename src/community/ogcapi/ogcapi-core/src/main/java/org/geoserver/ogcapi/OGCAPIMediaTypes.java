@@ -11,8 +11,15 @@ public class OGCAPIMediaTypes {
 
     /** GeoJSON media type */
     public static final String GEOJSON_VALUE = "application/geo+json";
+
     /** GeoJSON media type */
     public static MediaType GEOJSON = MediaType.parseMediaType(GEOJSON_VALUE);
+
+    /** JSON media type */
+    public static final String JSON_VALUE = "application/json";
+
+    /** JSON media type */
+    public static MediaType JSON = MediaType.parseMediaType(JSON_VALUE);
 
     /** Not meant to be instantiated */
     private OGCAPIMediaTypes() {}

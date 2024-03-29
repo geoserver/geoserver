@@ -11,11 +11,16 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.jms.Message;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -31,6 +36,8 @@ import org.geoserver.cluster.impl.handlers.catalog.JMSCatalogStylesFileHandlerSP
 import org.geoserver.cluster.server.events.StyleModifyEvent;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.rest.RestBaseController;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
@@ -38,6 +45,7 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /** Tests related with styles events. */
 public final class JmsStylesTest extends GeoServerSystemTestSupport {
@@ -54,6 +62,7 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
             "JMSCatalogStylesFileHandlerSPI";
     private static final String CATALOG_REMOVE_EVENT_HANDLER_KEY =
             "JMSCatalogRemoveEventHandlerSPI";
+    public static final int MESSAGES_TIMEOUT = 5000;
 
     private WorkspaceInfo testWorkspace;
 
@@ -115,7 +124,7 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         // waiting for a catalog add event and a style file event
         List<Message> messages =
                 JmsEventsListener.getMessagesByHandlerKey(
-                        5000,
+                        MESSAGES_TIMEOUT,
                         (selected) -> selected.size() >= 2,
                         CATALOG_ADD_EVENT_HANDLER_KEY,
                         CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);
@@ -150,7 +159,7 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         // waiting for a catalog add event and a style file event
         List<Message> messages =
                 JmsEventsListener.getMessagesByHandlerKey(
-                        5000,
+                        MESSAGES_TIMEOUT,
                         (selected) -> selected.size() >= 2,
                         CATALOG_ADD_EVENT_HANDLER_KEY,
                         CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);
@@ -190,7 +199,9 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         // waiting for a catalog modify event and a style file event
         List<Message> messages =
                 JmsEventsListener.getMessagesByHandlerKey(
-                        5000, (selected) -> selected.size() >= 1, CATALOG_MODIFY_EVENT_HANDLER_KEY);
+                        MESSAGES_TIMEOUT,
+                        (selected) -> selected.size() >= 1,
+                        CATALOG_MODIFY_EVENT_HANDLER_KEY);
         assertThat(messages.size(), is(1));
         // checking that the correct catalog style was published
         List<CatalogEvent> styleModifiedEvent =
@@ -230,7 +241,9 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         // waiting for a catalog remove event
         List<Message> messages =
                 JmsEventsListener.getMessagesByHandlerKey(
-                        5000, (selected) -> selected.size() >= 1, CATALOG_REMOVE_EVENT_HANDLER_KEY);
+                        MESSAGES_TIMEOUT,
+                        (selected) -> selected.size() >= 1,
+                        CATALOG_REMOVE_EVENT_HANDLER_KEY);
         assertThat(messages.size(), is(1));
         // checking that the correct style was published
         List<CatalogEvent> styleRemoveEvent =
@@ -241,6 +254,82 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         assertThat(removedStyle.getName(), is(TEST_STYLE_NAME));
     }
 
+    @Test
+    public void testRestStyleUploadTwoSteps() throws Exception {
+        // become superuser
+        login("admin", "geoserver", GeoServerRole.ADMIN_ROLE.toString());
+
+        // REST creation
+        String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
+        MockHttpServletResponse response =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+        assertEquals(201, response.getStatus());
+
+        // check that we get the catalog add event
+        List<Message> messages =
+                JmsEventsListener.getMessagesByHandlerKey(
+                        MESSAGES_TIMEOUT,
+                        (selected) -> selected.size() >= 1,
+                        CATALOG_ADD_EVENT_HANDLER_KEY);
+        assertThat(messages.size(), is(1));
+
+        assertNotNull(getCatalog().getStyleByName("foo"));
+
+        // now upload the body
+        String sld = loadResource("/test_style.sld");
+        response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/styles/foo.sld?raw=true",
+                        sld,
+                        "application/vnd.ogc.sld+xml");
+        assertEquals(200, response.getStatus());
+
+        // wait for the upload event
+        messages =
+                JmsEventsListener.getMessagesByHandlerKey(
+                        MESSAGES_TIMEOUT,
+                        (selected) -> selected.size() >= 2,
+                        CATALOG_MODIFY_EVENT_HANDLER_KEY,
+                        CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);
+        assertThat(messages.size(), is(1));
+
+        // style is now usable
+        assertNotNull(getCatalog().getStyleByName("foo").getStyle());
+    }
+
+    @Test
+    public void testRestStyleUploadOneStep() throws Exception {
+        // become superuser
+        login("admin", "geoserver", GeoServerRole.ADMIN_ROLE.toString());
+
+        // now upload the body
+        String sld = loadResource("/test_style.sld");
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/styles?raw=true&name=foo",
+                        sld,
+                        "application/vnd.ogc.sld+xml");
+        assertEquals(201, response.getStatus());
+
+        // wait for the upload event
+        List<Message> messages =
+                JmsEventsListener.getMessagesByHandlerKey(
+                        MESSAGES_TIMEOUT,
+                        (selected) -> selected.size() >= 2,
+                        CATALOG_ADD_EVENT_HANDLER_KEY,
+                        CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);
+        assertThat(messages.size(), is(2));
+
+        // style is now usable
+        assertNotNull(getCatalog().getStyleByName("foo").getStyle());
+    }
+
+    private String loadResource(String path) throws IOException {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            return IOUtils.toString(is, StandardCharsets.UTF_8);
+        }
+    }
+
     /** Helper method that adds the test style to the catalog and consume the produced events. */
     private void addTestStyle() throws Exception {
         // add the test to the style catalog
@@ -249,7 +338,7 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         // waiting for a catalog add event and a style file event
         List<Message> messages =
                 JmsEventsListener.getMessagesByHandlerKey(
-                        5000,
+                        MESSAGES_TIMEOUT,
                         (selected) -> selected.size() >= 2,
                         CATALOG_ADD_EVENT_HANDLER_KEY,
                         CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);

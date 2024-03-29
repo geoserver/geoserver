@@ -113,6 +113,12 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
             // the test style exists so let's remove it
             catalog.remove(style);
         }
+        // search the upload style
+        style = catalog.getStyleByName("foo");
+        if (style != null) {
+            // the test style exists so let's remove it
+            catalog.remove(style);
+        }
         // clear all pending events
         JmsEventsListener.clear();
     }

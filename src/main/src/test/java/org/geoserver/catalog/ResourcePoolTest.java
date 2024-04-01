@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -161,20 +162,21 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
+        Catalog catalog = getCatalog();
+        testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, catalog);
         testData.addStyle(
                 "relative_protocol",
                 "se_relativepath_protocol.sld",
                 ResourcePoolTest.class,
-                getCatalog());
-        testData.addStyle(HUMANS, "humans.sld", ResourcePoolTest.class, getCatalog());
-        testData.addStyle(EXTERNAL_ENTITIES, "externalEntities.sld", TestData.class, getCatalog());
-        StyleInfo style = getCatalog().getStyleByName("relative");
+                catalog);
+        testData.addStyle(HUMANS, "humans.sld", ResourcePoolTest.class, catalog);
+        testData.addStyle(EXTERNAL_ENTITIES, "externalEntities.sld", TestData.class, catalog);
+        StyleInfo style = catalog.getStyleByName("relative");
         style.setFormatVersion(new Version("1.1.0"));
-        getCatalog().save(style);
-        style = getCatalog().getStyleByName(HUMANS);
+        catalog.save(style);
+        style = catalog.getStyleByName(HUMANS);
         style.setFormatVersion(new Version("1.1.0"));
-        getCatalog().save(style);
+        catalog.save(style);
         File images = new File(testData.getDataDirectoryRoot(), "styles/images");
         assertTrue(images.mkdir());
         File image = new File("./src/test/resources/org/geoserver/catalog/rockFillSymbol.png");
@@ -183,11 +185,30 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         rockFillSymbolFile = new File(images, image.getName()).getCanonicalFile();
 
         testData.addRasterLayer(
-                TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+                TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, catalog);
 
         FileUtils.copyFileToDirectory(
                 new File("./src/test/resources/geoserver-environment.properties"),
                 testData.getDataDirectoryRoot());
+
+        // add the states shapefile with odd CRS definition from prj file (non EPSG)
+        try (InputStream is = getClass().getResourceAsStream("mini-states.zip")) {
+            File dir = getDataDirectory().get("data/mini-states").dir();
+            dir.mkdirs();
+            org.geoserver.util.IOUtils.decompress(is, dir);
+        }
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        DataStoreInfo dataStoreInfo = cb.buildDataStore("mini-states");
+        dataStoreInfo.getConnectionParameters().put("url", "file:data/mini-states/mini-states.shp");
+        catalog.add(dataStoreInfo);
+        DataStore ds = (DataStore) dataStoreInfo.getDataStore(null);
+        cb.setStore(dataStoreInfo);
+        FeatureTypeInfo typeInfo = cb.buildFeatureType(ds.getFeatureSource(ds.getTypeNames()[0]));
+        List<AttributeTypeInfo> attributes = catalog.getResourcePool().getAttributes(typeInfo);
+        typeInfo.getAttributes().addAll(attributes);
+        catalog.add(typeInfo);
+        LayerInfo layerInfo = cb.buildLayer(typeInfo);
+        catalog.add(layerInfo);
     }
 
     @Override
@@ -1496,5 +1517,14 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                         + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         assertEquals("IAU:1000", ResourcePool.lookupIdentifier(crs, true));
+    }
+
+    @Test
+    public void testCustomizeAttributesCRS() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName("mini-states");
+        SimpleFeatureType schema = (SimpleFeatureType) fti.getFeatureType();
+        CoordinateReferenceSystem crs = schema.getCoordinateReferenceSystem();
+        assertEquals(CRS.decode("EPSG:4326", true), crs);
     }
 }

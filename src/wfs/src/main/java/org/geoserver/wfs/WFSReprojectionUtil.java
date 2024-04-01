@@ -5,10 +5,12 @@
  */
 package org.geoserver.wfs;
 
+import org.geoserver.catalog.ResourcePool;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
@@ -40,7 +42,19 @@ class WFSReprojectionUtil {
                         GML2EncodingUtils.toURI(nativeCRS, SrsSyntax.OGC_URN_EXPERIMENTAL, false);
                 // it's possible that we can't do the CRS -> code -> CRS conversion...so we'll just
                 // return what we have
-                return code == null ? nativeCRS : CRS.decode(code);
+                try {
+                    return code == null ? nativeCRS : CRS.decode(code);
+                } catch (NoSuchAuthorityCodeException e) {
+                    String identifier = ResourcePool.lookupIdentifier(nativeCRS, true);
+                    if (identifier != null) {
+                        CoordinateReferenceSystem equivalentCRS = CRS.decode(identifier);
+                        return getDeclaredCrs(equivalentCRS, wfsVersion);
+                    } else {
+                        // we can only use the CRS as is, not part of the EPSG database, so we
+                        // cannot determine the EPSG native axis order
+                        return nativeCRS;
+                    }
+                }
             }
         } catch (Exception e) {
             throw new WFSException("We have had issues trying to flip axis of " + nativeCRS, e);

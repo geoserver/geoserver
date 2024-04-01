@@ -98,15 +98,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         cat.save(li);
 
         Mapml mapmlFeatures =
-                getWMSAsMapML(
-                        MockData.BASIC_POLYGONS.getLocalPart(),
-                        null,
-                        null,
-                        "-180,-90,180,90",
-                        "EPSG:4326",
-                        null,
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.BASIC_POLYGONS.getLocalPart())
+                        .bbox("-180,-90,180,90")
+                        .srs("EPSG:4326")
+                        .feature(true)
+                        .getAsMapML();
 
         assertEquals(
                 "Basic Polygons layer has three features, so one should show up in the conversion",
@@ -140,15 +137,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         cat.save(li);
         String bbox = "-0.1,-0.1,0.1,0.1";
         Mapml mapmlFeatures =
-                getWMSAsMapML(
-                        MockData.BUILDINGS.getLocalPart(),
-                        null,
-                        null,
-                        bbox,
-                        "EPSG:4326",
-                        "polygonOneFilter",
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.BUILDINGS.getLocalPart())
+                        .bbox(bbox)
+                        .srs("EPSG:4326")
+                        .styles("polygonOneFilter")
+                        .feature(true)
+                        .getAsMapML();
 
         assertEquals(
                 "Buildings layer has two features, only one should show up after the SLD is applied",
@@ -156,15 +151,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 mapmlFeatures.getBody().getFeatures().size());
 
         Mapml mapmlFeaturesElse =
-                getWMSAsMapML(
-                        MockData.BUILDINGS.getLocalPart(),
-                        null,
-                        null,
-                        bbox,
-                        "EPSG:4326",
-                        "polygonElseFilter",
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.BUILDINGS.getLocalPart())
+                        .bbox(bbox)
+                        .srs("EPSG:4326")
+                        .styles("polygonElseFilter")
+                        .feature(true)
+                        .getAsMapML();
 
         assertEquals(
                 "Buildings layer has two features, both should show up after the SLD with elseFilter is applied",
@@ -182,7 +175,8 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         kvp.put("width", "256");
         kvp.put("height", "256");
         kvp.put("BBOX", bbox);
-        Mapml mapmlFeaturesCQL = getWMSAsMapML(null, kvp, null, bbox, null, null, null, true);
+        Mapml mapmlFeaturesCQL =
+                new MapMLWMSRequest().kvp(kvp).bbox(bbox).feature(true).getAsMapML();
 
         assertEquals(
                 "SLD filters yield two features, only one should show up after the CQL filter is applied",
@@ -190,7 +184,8 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 mapmlFeaturesCQL.getBody().getFeatures().size());
 
         kvp.put("CQL_FILTER", "ADDRESS = '99 Minor Street'");
-        Mapml mapmlNoFeaturesCQL = getWMSAsMapML(null, kvp, null, bbox, null, null, null, true);
+        Mapml mapmlNoFeaturesCQL =
+                new MapMLWMSRequest().kvp(kvp).bbox(bbox).feature(true).getAsMapML();
         assertEquals(
                 "SLD filters yield two features, none should show up after the CQL filter is applied",
                 0,
@@ -207,28 +202,22 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
 
         // test small bbox, the two features are big enough that they should both be returned
         Mapml mapmlFeatures =
-                getWMSAsMapML(
-                        MockData.BUILDINGS.getLocalPart(),
-                        null,
-                        null,
-                        "-0.1,-0.1,0.1,0.1",
-                        "EPSG:4326",
-                        null,
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.BUILDINGS.getLocalPart())
+                        .bbox("-0.1,-0.1,0.1,0.1")
+                        .srs("EPSG:4326")
+                        .feature(true)
+                        .getAsMapML();
         assertEquals(2, mapmlFeatures.getBody().getFeatures().size());
 
         // test larger bbox, this time they are smaller than a pixel, only one remains
         mapmlFeatures =
-                getWMSAsMapML(
-                        MockData.BUILDINGS.getLocalPart(),
-                        null,
-                        null,
-                        "-10,-10,10,10",
-                        "EPSG:4326",
-                        null,
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.BUILDINGS.getLocalPart())
+                        .bbox("-10,-10,10,10")
+                        .srs("EPSG:4326")
+                        .feature(true)
+                        .getAsMapML();
         assertEquals(1, mapmlFeatures.getBody().getFeatures().size());
     }
 
@@ -243,15 +232,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
 
         // test with a small bbox, that should still lead to a geometric simplification
         Mapml mapml =
-                getWMSAsMapML(
-                        MockData.ROAD_SEGMENTS.getLocalPart(),
-                        null,
-                        null,
-                        "-0.1,-0.1,0.1,0.1",
-                        "EPSG:4326",
-                        null,
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.ROAD_SEGMENTS.getLocalPart())
+                        .bbox("-0.1,-0.1,0.1,0.1")
+                        .srs("EPSG:4326")
+                        .feature(true)
+                        .getAsMapML();
         List<Feature> features = mapml.getBody().getFeatures();
         assertEquals(5, features.size());
         for (Feature feature : features) {
@@ -315,15 +301,11 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         lgi.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(lgi);
         String response =
-                getWMSAsMapMLString(
-                        "layerGroup" + "," + MockData.BASIC_POLYGONS.getLocalPart(),
-                        null,
-                        null,
-                        null,
-                        "EPSG:4326",
-                        null,
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name("layerGroup" + "," + MockData.BASIC_POLYGONS.getLocalPart())
+                        .srs("EPSG:4326")
+                        .feature(true)
+                        .getAsString();
 
         assertTrue(
                 "MapML response contains an exception due to multiple feature types",
@@ -339,15 +321,11 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         liRaster.getResource().getMetadata().put(MAPML_USE_TILES, false);
         cat.save(liRaster);
         String response =
-                getWMSAsMapMLString(
-                        MockData.WORLD.getLocalPart(),
-                        null,
-                        null,
-                        null,
-                        "EPSG:3857",
-                        null,
-                        null,
-                        true);
+                new MapMLWMSRequest()
+                        .name(MockData.WORLD.getLocalPart())
+                        .srs("EPSG:3857")
+                        .feature(true)
+                        .getAsString();
 
         assertTrue(
                 "MapML response contains an exception due to non-vector type",

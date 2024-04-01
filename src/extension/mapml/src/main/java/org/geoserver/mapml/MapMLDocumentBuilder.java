@@ -105,6 +105,9 @@ public class MapMLDocumentBuilder {
     public static final String MAPML_MULTILAYER_AS_MULTIEXTENT = "mapmlMultiLayerAsMultiExtent";
 
     protected static final Boolean MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT = Boolean.FALSE;
+    public static final String MINIMUM_WIDTH_HEIGHT = "1";
+    private static final int BYTES_PER_PIXEL_TRANSPARENT = 4;
+    private static final int BYTES_PER_KILOBYTE = 1024;
     private final WMS wms;
 
     private final GeoServer geoServer;
@@ -1427,21 +1430,7 @@ public class MapMLDocumentBuilder {
         input.setMax(Double.toString(bbbox.getMaxY()));
         extentList.add(input);
 
-        // width
-        input = new Input();
-        input.setName("w");
-        input.setType(InputType.WIDTH);
-        input.setMin("1");
-        input.setMax("10000");
-        extentList.add(input);
-
-        // height
-        input = new Input();
-        input.setName("h");
-        input.setType(InputType.HEIGHT);
-        input.setMin("1");
-        input.setMax("10000");
-        extentList.add(input);
+        createMinAndMaxWidthHeight();
 
         // image link
         Link imageLink = new Link();
@@ -1487,6 +1476,38 @@ public class MapMLDocumentBuilder {
         }
         imageLink.setTref(urlTemplate);
         extentList.add(imageLink);
+    }
+
+    private void createMinAndMaxWidthHeight() {
+        String max = null;
+        // Zero maxRequestMemory means no limit
+        if (wms != null && wms.getMaxRequestMemory() != 0) {
+            int maxMemory = wms.getMaxRequestMemory() * BYTES_PER_KILOBYTE;
+            // square root because we assume a square image for the max calculation
+            // 4 bytes per pixel @see ImageUtils#getDrawingSurfaceMemoryUse, assume worst case
+            // scenario, which is transparent
+            double memoryDividedByBytes = maxMemory / (double) BYTES_PER_PIXEL_TRANSPARENT;
+            Long maxPixelsPerDimension = (long) Math.sqrt(memoryDividedByBytes);
+            max = maxPixelsPerDimension.toString();
+        }
+
+        Input inputWidth;
+        // width
+        inputWidth = new Input();
+        inputWidth.setName("w");
+        inputWidth.setType(InputType.WIDTH);
+        inputWidth.setMin(MINIMUM_WIDTH_HEIGHT);
+        inputWidth.setMax(max);
+        extentList.add(inputWidth);
+
+        Input inputHeight;
+        // height
+        inputHeight = new Input();
+        inputHeight.setName("h");
+        inputHeight.setType(InputType.HEIGHT);
+        inputHeight.setMin(MINIMUM_WIDTH_HEIGHT);
+        inputHeight.setMax(max);
+        extentList.add(inputHeight);
     }
 
     /**

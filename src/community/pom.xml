@@ -72,6 +72,7 @@
             <descriptor>release/ext-cog.xml</descriptor>
             <descriptor>release/ext-s3-geotiff.xml</descriptor>
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
+            <descriptor>release/ext-jwt-headers.xml</descriptor>
             <descriptor>release/ext-ogcapi-coverages.xml</descriptor>
             <descriptor>release/ext-ogcapi-dggs.xml</descriptor>
             <descriptor>release/ext-ogcapi-features.xml</descriptor>
@@ -470,7 +471,8 @@
     <profile>
       <id>jwt-headers</id>
       <modules>
-        <module>jwt-headers</module>
+        <module>jwt-headers/jwt-headers-util</module>
+        <module>jwt-headers/gs-jwt-headers</module>
       </modules>
     </profile>
 

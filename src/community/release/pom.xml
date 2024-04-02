@@ -175,6 +175,18 @@
       <artifactId>gs-sec-oauth2-github</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community.jwt-headers</groupId>
+      <artifactId>gs-jwt-headers</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community.jwt-headers</groupId>
+      <artifactId>jwt-headers-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-sec-oauth2-geonode</artifactId>

@@ -10,20 +10,30 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>jwt-headers</artifactId>
     <version>2.26-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
-  <artifactId>jwt-headers</artifactId>
-  <packaging>pom</packaging>
-  <name>JWT Headers Community Modules</name>
-  <modules>
-    <module>jwt-headers-util</module>
-    <module>gs-jwt-headers</module>
-  </modules>
+  <groupId>org.geoserver.community.jwt-headers</groupId>
+  <artifactId>jwt-headers-util</artifactId>
+  <packaging>jar</packaging>
+  <name>JWT Headers Shared Library</name>
+
+  <!--
+
+      This module should have minimal dependencies.
+      This module should have NO GeoServer/GeoTools dependencies.
+
+      This is a shared module and used by both GeoServer and GeoNetwork.
+
+    -->
+
   <dependencies>
+    <!--
+        set to compile scope because GeoNetwork supplies its on JAR of this.
+        (Use at least this version for security fixes.)
+    -->
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>nimbus-jose-jwt</artifactId>
@@ -31,44 +41,20 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>net.minidev</groupId>
-      <artifactId>json-smart</artifactId>
-      <version>2.4.7</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
-
-  <profiles>
-
-    <profile>
-      <id>jwt-headers</id>
-      <modules>
-        <module>jwt-headers-util</module>
-        <module>gs-jwt-headers</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>communityRelease</id>
-      <modules>
-        <module>jwt-headers-util</module>
-        <module>gs-jwt-headers</module>
-      </modules>
-    </profile>
-
-  </profiles>
-
 </project>

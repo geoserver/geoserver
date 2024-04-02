@@ -17,8 +17,8 @@ For example:
   @mode 'Flat';
   @styleName 'The name';
   @styleTitle 'The title;
-  @styleAbstract 'This is a longer description'
-  @uniqueRuleNames
+  @styleAbstract 'This is a longer description';
+  @uniqueRuleNames 'true';
   
   * { 
     stroke: black 
@@ -58,7 +58,7 @@ Supported directives
       * The generated SLD style abstract/description
       * No
     - * ``uniqueRuleNames`` 
-      * Flag
-      * When present, instructs the translator to generate unique SLD Rule Names. This may be desired if individual Rules from the generated SLD is later
+      * Boolean
+      * If set to `'true'`, instructs the translator to generate unique SLD Rule Names. This may be desired if individual Rules from the generated SLD is later
         to be referenced in a ``GetLegendGraphic``-request.
       * No

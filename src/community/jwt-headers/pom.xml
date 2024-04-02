@@ -61,6 +61,14 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>communityRelease</id>
+      <modules>
+        <module>jwt-headers-util</module>
+        <module>gs-jwt-headers</module>
+      </modules>
+    </profile>
+
   </profiles>
 
 </project>

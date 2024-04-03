@@ -24,7 +24,7 @@ import org.geotools.feature.FeatureCollection;
  * A GetFeature response handler specialized in producing HTML data for a GetFeature request through
  * the {@link FreeMarkerTemplateManager}.
  */
-public class HtmlGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
+public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
     private final HTMLTemplateManager templateManager;
 

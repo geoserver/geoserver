@@ -3,7 +3,7 @@
 <beans>
 
     <!-- GetFeature HTML -->
-    <bean id="HtmlGetFeatureOutputFormat" class="org.geoserver.wfsfreemarker.html.HtmlGetFeatureOutputFormat">
+    <bean id="HtmlGetFeatureOutputFormat" class="org.geoserver.wfsfreemarker.html.HTMLGetFeatureOutputFormat">
         <constructor-arg ref="geoServer"/>
     </bean>
 

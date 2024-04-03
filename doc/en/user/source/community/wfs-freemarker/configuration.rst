@@ -6,29 +6,20 @@ WFS FreeMarker Extension configuration
 Template Lookup
 ```````````````
 
-GeoServer looks up templates in three different places, allowing for various levels of customization. For example given the ``content.ftl`` template used to generate WMS GetFeatureInfo content:
-
-* Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/<featuretype>/content.ftl`` to see if there is a feature type specific template
-* Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/content.ftl`` to see if there is a store specific template
-* Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/content.ftl`` to see if there is a workspace specific template
-* Look into ``GEOSERVER_DATA_DIR/workspaces/content.ftl`` looking for a global override
-* Look into ``GEOSERVER_DATA_DIR/templates/content.ftl`` looking for a global override
-* Look into the GeoServer classpath and load the default template
-
-Each templated output format tutorial should provide you with the template names, and state whether the templates can be type specific, or not.  If you can't find the source files for the default template, look in the service jar of the geoserver distribution (for example, wms-x.y.z.jar). You just have to unzip it, and you'll find the xxx.ftl files GeoServer is using as the default templates.
+Reference: :ref:`_tutorials_getfeatureinfo`
 
 Example Configuration on a Vector Layer
 ``````````````````````````````````````````
 
-The WFS GetFeature can generate output in various formats: GML, GeoJSON, ... and, through this extention, also HTML.
+The WFS GetFeature can generate output in various formats: GML, GeoJSON, ... and, through this extension, also HTML.
 
 WFS Templating is concerned with the HTML one.
 
-Assume we have a vectorial layer named :guilabel:`geosolutions:bplandmarks`
+Assume we have a Vectorial layer named :guilabel:`geosolutions:bplandmarks`
 
 #. Go to the Layer preview to show :guilabel:`geosolutions:bplandmarks` layer.
 
-#. Search for the HTML format from the :guilabel:`All Formats` selectbox, under the WFS ones.
+#. Search for the HTML format from the :guilabel:`All Formats` select-box, under the WFS ones.
 
     .. figure:: images/info1.png
 
@@ -97,7 +88,7 @@ Assume we have a vectorial layer named :guilabel:`geosolutions:bplandmarks`
                </style>
                <body>
 
-#. In content.ftl file enter the following HMTL:
+#. In content.ftl file enter the following HTML:
 
     .. code::
   
@@ -115,7 +106,7 @@ Assume we have a vectorial layer named :guilabel:`geosolutions:bplandmarks`
        </#list>
        </ul>
 
-#. In footer.ftl file enter the following HMTL:
+#. In footer.ftl file enter the following HTML:
 
     .. code::
   

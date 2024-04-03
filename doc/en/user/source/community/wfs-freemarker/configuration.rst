@@ -17,7 +17,7 @@ GeoServer looks up templates in three different places, allowing for various lev
 
 Each templated output format tutorial should provide you with the template names, and state whether the templates can be type specific, or not.  If you can't find the source files for the default template, look in the service jar of the geoserver distribution (for example, wms-x.y.z.jar). You just have to unzip it, and you'll find the xxx.ftl files GeoServer is using as the default templates.
 
-Example Configuration on a Vectorial Layer
+Example Configuration on a Vector Layer
 ``````````````````````````````````````````
 
 The WFS GetFeature can generate output in various formats: GML, GeoJSON, ... and, through this extention, also HTML.

@@ -6,7 +6,7 @@ WFS FreeMarker Extension configuration
 Template Lookup
 ```````````````
 
-Reference: :ref:`_tutorials_getfeatureinfo`
+Reference: :ref:`tutorials_getfeatureinfo`
 
 Example Configuration on a Vector Layer
 ``````````````````````````````````````````

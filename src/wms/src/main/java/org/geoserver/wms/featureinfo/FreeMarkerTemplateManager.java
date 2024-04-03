@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
@@ -32,6 +33,7 @@ import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
+import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.RuleItem;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -143,8 +145,8 @@ public abstract class FreeMarkerTemplateManager {
                         return (TemplateHashModel) getStaticModels().get(path);
                     }
                 });
-        // As we want to look up different templates for each resource, name cannot
-        // cache the templates.
+        // As we want to look up different templates for each resource, the templates cannot
+        // be cached by name. Freemarker used to clear the cache when setting the loader,
         // Freemarker used to clear the cache when setting the loader,
         // but does not do that anymore since
         // https://github.com/apache/freemarker/commit/fc9eba51492c3cd4da3547ba15b95c7db9b3d237
@@ -169,7 +171,17 @@ public abstract class FreeMarkerTemplateManager {
         this.format = format;
     }
 
-    /** Writes the features to the output */
+    /**
+     * Writes the features to the output
+     *
+     * @deprecated Use {@link #write(List, OutputStream)}
+     */
+    public boolean write(
+            FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+            throws ServiceException, IOException {
+        return write(results.getFeature(), out);
+    }
+
     public boolean write(List<FeatureCollection> collections, OutputStream out)
             throws ServiceException, IOException {
         // setup the writer

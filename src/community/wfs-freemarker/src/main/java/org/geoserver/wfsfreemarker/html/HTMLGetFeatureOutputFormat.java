@@ -15,6 +15,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.FreeMarkerTemplateManager;
 import org.geoserver.wms.featureinfo.HTMLTemplateManager;
@@ -24,11 +25,11 @@ import org.geotools.feature.FeatureCollection;
  * A GetFeature response handler specialized in producing HTML data for a GetFeature request through
  * the {@link FreeMarkerTemplateManager}.
  */
-public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
+public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
 
     private final HTMLTemplateManager templateManager;
 
-    public HtmlGetFeatureOutputFormat(
+    public HTMLGetFeatureOutputFormat(
             GeoServer gs, final WMS wms, GeoServerResourceLoader resourceLoader) {
         super(gs, HTML.getFormat());
         this.templateManager = new HTMLTemplateManager(HTML, wms, resourceLoader);

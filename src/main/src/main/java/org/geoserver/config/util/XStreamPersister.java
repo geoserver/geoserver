@@ -149,6 +149,8 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.urlchecks.AbstractURLCheck;
+import org.geoserver.security.urlchecks.RegexURLCheck;
 import org.geotools.api.coverage.grid.GridGeometry;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -356,6 +358,7 @@ public class XStreamPersister {
         xs.aliasField("abstract", ResourceInfoImpl.class, "_abstract");
         xs.alias("AuthorityURL", AuthorityURLInfo.class);
         xs.alias("Identifier", LayerIdentifierInfo.class);
+        xs.alias("urlCheck", AbstractURLCheck.class);
 
         // GeoServerInfo
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");
@@ -759,6 +762,7 @@ public class XStreamPersister {
         xs.addDefaultImplementation(CoverageAccessInfoImpl.class, CoverageAccessInfo.class);
         xs.addDefaultImplementation(ContactInfoImpl.class, ContactInfo.class);
         xs.addDefaultImplementation(AttributionInfoImpl.class, AttributionInfo.class);
+        xs.addDefaultImplementation(RegexURLCheck.class, AbstractURLCheck.class);
 
         // catalog
         xs.addDefaultImplementation(CatalogImpl.class, Catalog.class);
@@ -806,8 +810,9 @@ public class XStreamPersister {
         if (interfce == AttributeTypeInfo.class) {
             return AttributeTypeInfoImpl.class;
         }
-
-        if (interfce == LayerGroupStyle.class) return LayerGroupStyleImpl.class;
+        if (interfce == LayerGroupStyle.class) {
+            return LayerGroupStyleImpl.class;
+        }
 
         Class<?> clazz = getXStream().getMapper().defaultImplementationOf(interfce);
         if (clazz == null) {

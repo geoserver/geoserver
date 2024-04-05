@@ -16,7 +16,7 @@ import org.geotools.data.ows.URLChecker;
 public abstract class AbstractURLCheck implements URLChecker {
     protected String name;
     protected String description;
-    protected boolean enabled = true;
+    protected Boolean enabled = true;
 
     public AbstractURLCheck() {
         super();
@@ -43,20 +43,24 @@ public abstract class AbstractURLCheck implements URLChecker {
         this.description = description;
     }
 
-    /** @return the enable */
+    /** @return the enabled status */
     @Override
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    /** @param enabled the enable to set */
-    public void setEnabled(boolean enabled) {
+    /** @param enabled the enabled status to set */
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    /**
-     * A short string representation of the configuration of this checker, to be used for generic
-     * display purposes
-     */
+    /** @return the configuration of this checker */
     public abstract String getConfiguration();
+
+    /**
+     * Sets the configuration of this checker.
+     *
+     * @param configuration the configuration to set
+     */
+    public abstract void setConfiguration(String configuration);
 }

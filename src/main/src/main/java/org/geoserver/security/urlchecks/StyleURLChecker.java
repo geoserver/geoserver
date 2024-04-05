@@ -36,7 +36,7 @@ public class StyleURLChecker implements URLChecker, DisposableBean {
     }
 
     @Override
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return true;
     }
 

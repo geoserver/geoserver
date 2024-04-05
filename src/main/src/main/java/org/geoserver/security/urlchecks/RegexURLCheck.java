@@ -71,6 +71,11 @@ public class RegexURLCheck extends AbstractURLCheck implements Serializable {
 
     @Override
     public String getConfiguration() {
-        return regex;
+        return getRegex();
+    }
+
+    @Override
+    public void setConfiguration(String configuration) {
+        setRegex(configuration);
     }
 }

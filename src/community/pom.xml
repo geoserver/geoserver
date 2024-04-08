@@ -93,6 +93,7 @@
             <descriptor>release/ext-stac-datastore.xml</descriptor>
             <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
+            <descriptor>release/ext-wfs-freemarker.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -249,6 +250,7 @@
         <module>vector-mosaic</module>
         <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
+        <module>wfs-freemarker</module>
       </modules>
     </profile>
     <profile>
@@ -706,6 +708,12 @@
       <id>wps-longitudinal-profile</id>
       <modules>
         <module>wps-longitudinal-profile</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wfs-freemarker</id>
+      <modules>
+        <module>wfs-freemarker</module>
       </modules>
     </profile>
   </profiles>

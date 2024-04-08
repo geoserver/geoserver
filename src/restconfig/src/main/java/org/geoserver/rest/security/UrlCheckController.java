@@ -196,4 +196,12 @@ public class UrlCheckController extends RestBaseController {
                     ex);
         }
     }
+
+    @Override
+    protected String getTemplateName(Object object) {
+        if (object instanceof AbstractURLCheck) {
+            return "AbstractUrlCheck";
+        }
+        return null;
+    }
 }

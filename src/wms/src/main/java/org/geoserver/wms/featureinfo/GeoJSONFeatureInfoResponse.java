@@ -7,11 +7,13 @@ package org.geoserver.wms.featureinfo;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
+import org.geotools.feature.FeatureCollection;
 
 /**
  * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a
@@ -55,9 +57,12 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
             throws IOException {
         boolean usedTemplates = false;
 
-        if (templateManager != null)
+        if (templateManager != null) {
             // check before if there are free marker templates to customize response
-            usedTemplates = templateManager.write(features, fInfoReq, out);
+            @SuppressWarnings("unchecked")
+            List<FeatureCollection> collections = features.getFeature();
+            usedTemplates = templateManager.write(collections, out);
+        }
 
         if (!usedTemplates) {
             GeoJSONGetFeatureResponse format =

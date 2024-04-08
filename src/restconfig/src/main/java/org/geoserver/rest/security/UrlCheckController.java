@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.rest.catalog;
+package org.geoserver.rest.security;
 
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -135,7 +135,7 @@ public class UrlCheckController extends RestBaseController {
                 MediaType.APPLICATION_JSON_VALUE
             })
     @ResponseStatus(HttpStatus.OK)
-    public void workspacePut(
+    public void urlCheckPut(
             @RequestBody AbstractURLCheck providedCheck, @PathVariable String urlCheckName) {
         try {
 

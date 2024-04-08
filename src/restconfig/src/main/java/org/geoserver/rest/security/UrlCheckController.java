@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 public class UrlCheckController extends RestBaseController {
 
     private static final Logger LOGGER = Logging.getLogger(UrlCheckController.class);
+
     private final URLCheckDAO urlCheckDao;
 
     @Autowired
@@ -58,9 +59,6 @@ public class UrlCheckController extends RestBaseController {
         if (check == null) {
             throw new ResourceNotFoundException("No such URL check found: '" + urlCheckName + "'");
         }
-
-        LOGGER.log(Level.INFO, "GET {0}", urlCheckName);
-        LOGGER.log(Level.INFO, "got {0}", check.getName());
 
         return wrapObject(check, AbstractURLCheck.class);
     }
@@ -93,8 +91,8 @@ public class UrlCheckController extends RestBaseController {
             urlCheckDao.save(urlCheck);
 
             String name = urlCheck.getName();
-            LOGGER.log(Level.INFO, "Added urlCheck {0}", name);
-            LOGGER.log(Level.INFO, "POST urlCheck {0}", name);
+
+            LOGGER.log(Level.FINEST, "Added urlCheck {0}", name);
 
             return new ResponseEntity<>(
                     name, composeResponseHeaders(builder, name), HttpStatus.CREATED);
@@ -159,6 +157,8 @@ public class UrlCheckController extends RestBaseController {
 
             urlCheckDao.save(urlCheck);
 
+            LOGGER.log(Level.FINEST, "Edited urlCheck {0}", urlCheckName);
+
         } catch (IOException ex) {
             throw new RestException(
                     "Error occurred in changing the URL check",
@@ -187,7 +187,7 @@ public class UrlCheckController extends RestBaseController {
 
             urlCheckDao.removeByName(urlCheckName);
 
-            LOGGER.log(Level.INFO, "DELETE urlCheck {0}", urlCheckName);
+            LOGGER.log(Level.FINEST, "Deleted urlCheck {0}", urlCheckName);
 
         } catch (IOException ex) {
             throw new RestException(

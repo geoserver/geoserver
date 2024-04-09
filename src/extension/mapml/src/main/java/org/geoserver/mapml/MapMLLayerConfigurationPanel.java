@@ -4,6 +4,8 @@
  */
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
@@ -32,11 +38,16 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.wms.WMS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.layer.TileLayer;
 
 /**
  * Resource configuration panel for MapML
@@ -48,7 +59,15 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
     static final Logger LOGGER = Logging.getLogger(MapMLLayerConfigurationPanel.class);
 
     private static final long serialVersionUID = 1L;
+    public static final String PNG_MIME_TYPE = "image/png";
     ListMultipleChoice<String> featureCaptionAttributes;
+
+    private static final String MIME_PATTERN = "png|jpeg";
+
+    public static final Pattern mimePattern =
+            Pattern.compile(MIME_PATTERN, Pattern.CASE_INSENSITIVE);
+
+    DropDownChoice<String> mime;
 
     /**
      * Adds MapML configuration panel
@@ -80,6 +99,15 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                         new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_USE_TILES);
         CheckBox useTiles = new CheckBox(MapMLConstants.USE_TILES, useTilesModel);
+        useTiles.add(
+                new OnChangeAjaxBehavior() {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                        ajaxRequestTarget.add(mime);
+                        boolean useTilesChecked = useTiles.getConvertedInput();
+                        mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
+                    }
+                });
         add(useTiles);
 
         // add the checkbox to select features or not
@@ -93,6 +121,15 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 useFeatures.setEnabled(false);
             }
         }
+        useFeatures.add(
+                new OnChangeAjaxBehavior() {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.add(mime);
+                        // if we are using features, we don't use a default mime type
+                        mime.setEnabled(!useFeatures.getConvertedInput());
+                    }
+                });
         add(useFeatures);
 
         // add the checkbox to enable sharding or not
@@ -130,6 +167,31 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         dimension.setNullValid(true);
         add(dimension);
 
+        MapModel<String> mimeModel =
+                new MapModel<>(
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_MIME);
+        boolean useTilesFromModel =
+                Boolean.TRUE.equals(
+                        model.getObject()
+                                .getResource()
+                                .getMetadata()
+                                .get(MAPML_USE_TILES, Boolean.class));
+        mime =
+                new DropDownChoice<>(
+                        MapMLConstants.MIME,
+                        mimeModel,
+                        getAvailableMimeTypes(model.getObject(), useTilesFromModel));
+        mime.setOutputMarkupId(true);
+        mime.setNullValid(false);
+        // if we are using features, we don't use a mime type
+        if (useFeaturesModel.getObject() != null) {
+            String useFeaturesString = String.valueOf(useFeaturesModel.getObject());
+            boolean useFeaturesBoolean = Boolean.parseBoolean(useFeaturesString);
+            mime.setEnabled(!useFeaturesBoolean);
+        }
+        add(mime);
+
         featureCaptionAttributes =
                 new ListMultipleChoice<>(
                         MapMLConstants.FEATURE_CAPTION_ATTRIBUTES,
@@ -145,6 +207,46 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         TextArea<String> featureCaptionTemplate =
                 new TextArea<>(MapMLConstants.FEATURE_CAPTION_TEMPLATE, featureCaptionModel);
         add(featureCaptionTemplate);
+    }
+
+    /**
+     * Get the available mime types for the layer
+     *
+     * @param layer the layer to get the mime types for
+     * @return a list of strings of mime types
+     */
+    public static List<String> getAvailableMimeTypes(PublishedInfo layer, boolean useTiles) {
+        List<String> mimeTypes = new ArrayList<>();
+        if (useTiles) {
+            GWC gwc = GWC.get();
+            if (gwc != null) {
+                try {
+                    TileLayer tileLayer = gwc.getTileLayerByName(layer.prefixedName());
+                    // if the useTiles flag is set and the cache is enabled we get cache mime types
+                    if (tileLayer instanceof GeoServerTileLayer && tileLayer.isEnabled()) {
+                        GeoServerTileLayer geoServerTileLayer = (GeoServerTileLayer) tileLayer;
+                        GeoServerTileLayerInfo info = geoServerTileLayer.getInfo();
+                        mimeTypes.addAll(
+                                info.getMimeFormats().stream()
+                                        .filter(mimeType -> mimePattern.matcher(mimeType).find())
+                                        .collect(Collectors.toList()));
+                        return mimeTypes;
+                    }
+                } catch (IllegalArgumentException e) {
+                    LOGGER.fine("No tile layer found for " + layer.prefixedName());
+                }
+            }
+        }
+        // if the useTiles flag is not set or the tile cache is not enabled we get WMS mime types
+        WMS wms = WMS.get();
+        if (wms != null) {
+            mimeTypes.addAll(
+                    wms.getAllowedMapFormatNames().stream()
+                            .filter(mimeType -> mimePattern.matcher(mimeType).find())
+                            .collect(Collectors.toList()));
+        }
+
+        return mimeTypes;
     }
 
     /**

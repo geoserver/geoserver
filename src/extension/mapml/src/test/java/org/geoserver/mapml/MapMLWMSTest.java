@@ -358,6 +358,63 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Test
+    public void testMapMLDefaultMimeType() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WMSInfo wms = geoServer.getService(WMSInfo.class);
+        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
+        geoServer.save(wms);
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        li.getResource().getMetadata().put(MapMLConstants.MAPML_MIME, "img/jpeg");
+        LayerInfo li2 = cat.getLayerByName(MockData.LINES.getLocalPart());
+        li2.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
+        li2.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li);
+        cat.save(li2);
+        Mapml mapmlExtent =
+                new MapMLWMSRequest()
+                        .name(MockData.POLYGONS.getLocalPart())
+                        .srs("EPSG:3857")
+                        .getAsMapML();
+
+        List<Link> extentLinks =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtent.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksForSingle = getLinkByRelType(extentLinks, RelType.IMAGE);
+        assertTrue(
+                "Image link tref should contain img/jpeg format despite no format passed into request",
+                imageLinksForSingle.get(0).getTref().contains("format=img/jpeg"));
+        Mapml mapmlExtentWithTwo =
+                new MapMLWMSRequest()
+                        .name(
+                                MockData.POLYGONS.getLocalPart()
+                                        + ","
+                                        + MockData.LINES.getLocalPart())
+                        .srs("EPSG:3857")
+                        .getAsMapML();
+        List<Link> extentLinksOne =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtentWithTwo.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksOne = getLinkByRelType(extentLinksOne, RelType.IMAGE);
+        assertTrue(
+                "Image link tref should contain img/jpeg format despite no format passed into request",
+                imageLinksOne.get(0).getTref().contains("format=img/jpeg"));
+        List<Link> extentLinksTwo =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtentWithTwo.getBody().getExtents().get(1).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksTwo = getLinkByRelType(extentLinksTwo, RelType.IMAGE);
+        assertTrue(
+                "Image link tref should contain img/jpeg format despite no format passed into request "
+                        + "and no default set in metadata because first requested layer has default set",
+                imageLinksTwo.get(0).getTref().contains("format=img/jpeg"));
+    }
+
+    @Test
     public void testMapMLUseFeaturesLinks() throws Exception {
         GeoServer geoServer = getGeoServer();
         WMSInfo wms = geoServer.getService(WMSInfo.class);

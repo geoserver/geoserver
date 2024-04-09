@@ -286,7 +286,7 @@ The link is generated so that it always work, if the CRS configured for the laye
 
 **MapML Output Format**
 
-The output image format for the MapML resource should be specified using the format_options parameter with a key called ``mapml-wms-format``.  If provided, the provided mime type must be a valid WMS format specifier. If not provided, it defaults to ``image/png``.   
+The output image format for the MapML resource should be specified using the format_options parameter with a key called ``mapml-wms-format``.  If provided, the provided mime type must be a valid WMS format specifier. If not provided, it defaults to to the format set with the Default Mime Type dropdown under MapML Settings in the Publishing tab of the Edit Layer settings page.   
 
 Example::
 

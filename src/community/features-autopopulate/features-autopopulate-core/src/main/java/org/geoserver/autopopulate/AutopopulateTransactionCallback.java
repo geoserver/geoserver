@@ -32,12 +32,13 @@ import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geoserver.wfs.request.Update;
 import org.geotools.api.data.FeatureSource;
-import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 
@@ -162,8 +163,9 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                 for (Object of : affectedFeatures(element)) {
                     if (of instanceof SimpleFeature) {
                         try {
-                            LOGGER.info("Updating feature: " + of);
+                            LOGGER.fine("Inserting feature: " + of);
                             SimpleFeature transformed = applyTemplate((SimpleFeature) of);
+                            LOGGER.fine("... transformed: " + transformed);
                             newFeatures.add(transformed);
                         } catch (RuntimeException | IOException e) {
                             // Do never make the transaction fail due to an
@@ -185,37 +187,41 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                         getFeatureTypeInfo(new NameImpl(element.getTypeName()));
                 try {
                     Update updateElement = (Update) element;
-                    SimpleFeature feature =
-                            DataUtilities.first(getTransactionSource(updateElement).getFeatures());
-                    LOGGER.info("Updating feature: " + feature);
-                    SimpleFeature transformed = applyTemplate(feature);
-                    List<Property> properties = updateElement.getUpdateProperties();
-                    for (org.geotools.api.feature.Property p : transformed.getProperties()) {
-                        if (properties.stream().anyMatch(prop -> match(p, prop))) {
-                            properties.stream()
-                                    .filter(prop -> match(p, prop))
-                                    .forEach(prop -> prop.setValue(p.getValue()));
-                        } else {
-                            Property updateProperty = updateElement.createProperty();
-                            updateProperty.setName(
-                                    new QName(
-                                            featureTypeInfo.getNamespace().getURI(),
-                                            p.getName().getLocalPart()));
-                            updateProperty.setValue(p.getValue());
-                            properties.add(updateProperty);
+                    SimpleFeatureIterator featureIterator =
+                            getTransactionSource(updateElement).features();
+                    while (featureIterator.hasNext()) {
+                        SimpleFeature feature = featureIterator.next();
+                        LOGGER.fine("Updating feature: " + feature);
+                        SimpleFeature transformed = applyTemplate(feature);
+                        LOGGER.fine("... transformed: " + transformed);
+                        List<Property> properties = updateElement.getUpdateProperties();
+                        for (org.geotools.api.feature.Property p : transformed.getProperties()) {
+                            if (properties.stream().anyMatch(prop -> match(p, prop))) {
+                                properties.stream()
+                                        .filter(prop -> match(p, prop))
+                                        .forEach(prop -> prop.setValue(prop.getValue()));
+                            } else {
+                                Property updateProperty = updateElement.createProperty();
+                                updateProperty.setName(
+                                        new QName(
+                                                featureTypeInfo.getNamespace().getURI(),
+                                                p.getName().getLocalPart()));
+                                updateProperty.setValue(p.getValue());
+                                properties.add(updateProperty);
+                            }
                         }
+                        updateElement.setUpdateProperties(properties);
+                        transformed.getProperties().stream()
+                                .forEach(p -> LOGGER.info("Feature Property: " + p));
+                        updateElement.getUpdateProperties().stream()
+                                .forEach(
+                                        p ->
+                                                LOGGER.info(
+                                                        "Update Property: "
+                                                                + p.getName()
+                                                                + " "
+                                                                + p.getValue()));
                     }
-                    updateElement.setUpdateProperties(properties);
-                    transformed.getProperties().stream()
-                            .forEach(p -> LOGGER.info("Feature Property: " + p));
-                    updateElement.getUpdateProperties().stream()
-                            .forEach(
-                                    p ->
-                                            LOGGER.info(
-                                                    "Update Property: "
-                                                            + p.getName()
-                                                            + " "
-                                                            + p.getValue()));
                 } catch (IOException e) {
                     // Do never make the transaction fail due to an
                     // AutopopulateTransactionCallback error.
@@ -288,7 +294,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @param update the update
      * @return SimpleFeatureSource the feature source
      */
-    private SimpleFeatureSource getTransactionSource(Update update) throws IOException {
+    private SimpleFeatureCollection getTransactionSource(Update update) throws IOException {
         QName typeName = update.getTypeName();
 
         final String name = typeName.getLocalPart();
@@ -308,7 +314,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         }
 
         FeatureSource source = meta.getFeatureSource(null, null);
-        return DataUtilities.simple(source);
+        return DataUtilities.simple(source.getFeatures(update.getFilter()));
     }
 
     /**

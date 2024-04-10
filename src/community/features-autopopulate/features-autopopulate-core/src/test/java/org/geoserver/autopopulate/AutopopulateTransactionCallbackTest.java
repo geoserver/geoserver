@@ -82,7 +82,10 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
                             .getResourceAsStream("test-data/transactionCustomizer.properties"),
                     fout);
         }
-        template = new AutopopulateTemplate("cite/NamedPlaces/transactionCustomizer.properties");
+        template =
+                new AutopopulateTemplate(
+                        getDataDirectory()
+                                .get("cite/NamedPlaces/transactionCustomizer.properties"));
         Map templateCache = mock(Map.class);
         when(templateCache.get(any())).thenReturn(template);
         listener.setTemplateCache(templateCache);
@@ -166,7 +169,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
 
         listener.beforeTransaction(request);
 
-        verify(element, times(2)).getUpdateProperties();
+        verify(element, times(4)).getUpdateProperties();
         assertTrue(properties.stream().anyMatch(p -> p.getName().getLocalPart().equals("NAME")));
         while (properties.iterator().hasNext()) {
             Property p = properties.iterator().next();

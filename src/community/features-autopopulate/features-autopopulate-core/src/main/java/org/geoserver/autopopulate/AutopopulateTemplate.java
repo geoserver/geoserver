@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.text.cql2.CQLException;
@@ -38,13 +39,13 @@ public class AutopopulateTemplate {
     /**
      * Constructs the template loader.
      *
-     * @param filePath The file path to load the properties from
+     * @param templateResource The file path to load the properties from
      */
-    public AutopopulateTemplate(String filePath) {
+    public AutopopulateTemplate(Resource templateResource) {
         this.propertiesMap = new HashMap<>();
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        this.watcher = new PropertyFileWatcher(loader.get(filePath));
-        loadProperties(filePath);
+        this.watcher = new PropertyFileWatcher(templateResource);
+        loadProperties(templateResource.path());
     }
 
     /**

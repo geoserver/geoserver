@@ -69,17 +69,14 @@ public class AutopopulateTemplateLoader {
     public AutopopulateTemplate loadTemplate(String path) throws IOException {
         Resource template = null;
 
-        // template look up order
-        // 1. Relative to resource
-        // 2. Relative to store of the resource
-        // 3. Relative to workspace of resource
-        // 4. Relative to workspaces directory
+        // Template looks up relative to resource
         if (resource != null) {
-            // first check relative to set resource
             template = dd.get(resource, path);
+            LOGGER.fine("Template looks up relative to resource " + template.path());
             return new AutopopulateTemplate(template);
         }
 
+        LOGGER.warning("No Resource found!");
         return null;
     }
 }

@@ -99,7 +99,7 @@
     <servlet-api.version>3.1.0</servlet-api.version>
     <jetty.version>9.4.52.v20230823</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
-    <poi.version>4.1.1</poi.version>
+    <poi.version>5.2.5</poi.version>
     <wicket.version>7.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.14</httpclient.version>
@@ -1353,6 +1353,12 @@
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
         <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <!-- version override for version included in Apache POI 5.2.5 (which is 1.25.0) -->
+        <version>1.26.1</version>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>

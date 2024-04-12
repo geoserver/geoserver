@@ -9,10 +9,10 @@ import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.urlchecks.AbstractURLCheck;
 import org.geoserver.security.urlchecks.RegexURLCheck;
@@ -21,8 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import java.util.List;
 
 public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 

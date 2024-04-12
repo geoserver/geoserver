@@ -99,7 +99,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     public void testAutopopulateTemplateResolvesProperties() {
         String key = "UPDATED";
         String value = "now()";
-        String resolved = template.getProperty(key);
+        String resolved = template.getAllProperties().get(key);
         log.info("Resolved value: " + resolved);
         assertNotSame(value, resolved);
     }
@@ -196,7 +196,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     protected JSON getJson(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
         String contentType = response.getContentType();
-        // in the case of GEOSJSON response with ogcapi, the output format is not
+        // in the case of GeoJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
         if (contentType != null) assertEquals(contentType, "application/json;charset=UTF-8");
         return json(response);

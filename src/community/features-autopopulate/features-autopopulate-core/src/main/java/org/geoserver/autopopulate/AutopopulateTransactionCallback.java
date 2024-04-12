@@ -333,12 +333,8 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @return SimpleFeature the feature to be persisted
      */
     private SimpleFeature applyTemplate(SimpleFeature source) throws IOException {
-        LOGGER.info("Feature: " + source.getID());
-
         AutopopulateTemplate t =
                 lookupTemplate(source.getFeatureType(), TRANSACTION_CUSTOMIZER_PROPERTIES);
-        LOGGER.info("Template: " + t);
-
         if (t != null) {
             for (Map.Entry<String, String> entry : t.getAllProperties().entrySet()) {
                 String key = entry.getKey();

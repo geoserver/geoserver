@@ -16,6 +16,8 @@ import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * AutopopulateTemplate class is used to load the properties from the file and store them in a map
@@ -59,10 +61,7 @@ public class AutopopulateTemplate {
 
                     // First check on the Syntax of the expression
                     try {
-                        Expression ecql = ECQL.toExpression(expression);
-                        if (ecql != null) {
-                            propertiesMap.put(key, ecql.evaluate(null, String.class));
-                        }
+                        propertiesMap.put(key, getValue(expression));
                     } catch (CQLException e) {
                         LOGGER.warning(
                                 "Unable to parse the following Expression" + e.getSyntaxError());
@@ -75,6 +74,18 @@ public class AutopopulateTemplate {
             throw new RuntimeException("Unable to load the properties file: " + e.getMessage());
         }
         return propertiesMap;
+    }
+
+    private static String getValue(String expression) throws CQLException {
+        Expression ecql = ECQL.toExpression(expression);
+        String value = ecql.evaluate(null, String.class);
+        if (value == null && expression.contains("GSUSER")) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null) {
+                value = auth.getName();
+            }
+        }
+        return value;
     }
 
     /**

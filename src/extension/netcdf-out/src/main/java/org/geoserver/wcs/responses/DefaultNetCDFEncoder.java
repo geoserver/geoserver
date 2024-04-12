@@ -156,7 +156,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
             }
             if (inputUoM != null && hasDefinedUoM) {
                 try {
-                    Unit<?> outputUoM = NetCDFUnitFormat.parse(variableUoM);
+                    Unit<?> outputUoM = NetCDFUnitFormat.getInstance().parse(variableUoM);
                     if (outputUoM != null && !inputUoM.equals(outputUoM)) {
                         if (!inputUoM.isCompatible(outputUoM)) {
                             if (LOGGER.isLoggable(Level.WARNING)) {

@@ -598,6 +598,18 @@
               <language/>
             </configuration>
           </execution>
+          <execution>
+            <id>urlchecks</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/urlchecks.yaml</inputSpec>
+              <output>${project.build.directory}/api/urlchecks</output>
+              <language/>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       

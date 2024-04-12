@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.api.filter.expression.Expression;
@@ -30,8 +28,6 @@ import org.geotools.util.logging.Logging;
 public class AutopopulateTemplate {
     /** logger */
     private static final Logger LOGGER = Logging.getLogger(AutopopulateTransactionCallback.class);
-    /** The properties map */
-    private final Map<String, String> propertiesMap;
 
     /** The file watcher */
     private final PropertyFileWatcher watcher;
@@ -42,23 +38,20 @@ public class AutopopulateTemplate {
      * @param templateResource The file path to load the properties from
      */
     public AutopopulateTemplate(Resource templateResource) {
-        this.propertiesMap = new HashMap<>();
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         this.watcher = new PropertyFileWatcher(templateResource);
-        loadProperties(templateResource.path());
     }
 
     /**
      * Load the properties from the file and store them in the map.
      *
-     * @param filePath The file path to load the properties from
+     * @return propertiesMap
      */
-    private void loadProperties(String filePath) {
+    private Map<String, String> loadProperties() {
+        HashMap<String, String> propertiesMap = new HashMap<>();
         try {
             Properties properties = this.watcher.getProperties();
             if (properties == null) {
-                LOGGER.warning("Unable to load the properties file: " + filePath);
-                return;
+                LOGGER.warning("Unable to load the properties file: " + this.watcher.getFile());
             } else {
                 for (String key : properties.stringPropertyNames()) {
                     String expression = properties.getProperty(key);
@@ -81,16 +74,7 @@ public class AutopopulateTemplate {
             LOGGER.severe("Unable to load the properties file: " + e.getMessage());
             throw new RuntimeException("Unable to load the properties file: " + e.getMessage());
         }
-    }
-
-    /**
-     * Get the property from the map.
-     *
-     * @param key The key to get the property
-     * @return The property value
-     */
-    public String getProperty(String key) {
-        return propertiesMap.get(key);
+        return propertiesMap;
     }
 
     /**
@@ -99,7 +83,7 @@ public class AutopopulateTemplate {
      * @return The properties map
      */
     public Map<String, String> getAllProperties() {
-        return propertiesMap;
+        return loadProperties();
     }
 
     /**
@@ -108,13 +92,12 @@ public class AutopopulateTemplate {
      * @return true if the template file has been modified and must be reloaded, false otherwise
      */
     public boolean needsReload() {
-        if (watcher != null) return watcher.isStale();
-        return true;
+        return watcher.isStale();
     }
 
     @Override
     public String toString() {
-        return "AutopopulateTemplate{" + "propertiesMap=" + propertiesMap + '}';
+        return "AutopopulateTemplate{" + "file=" + watcher.getFile().getAbsolutePath() + '}';
     }
 
     @Override
@@ -122,11 +105,12 @@ public class AutopopulateTemplate {
         if (this == o) return true;
         if (!(o instanceof AutopopulateTemplate)) return false;
         AutopopulateTemplate that = (AutopopulateTemplate) o;
-        return Objects.equals(propertiesMap, that.propertiesMap);
+        return Objects.equals(
+                watcher.getFile().getAbsolutePath(), that.watcher.getFile().getAbsolutePath());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertiesMap);
+        return Objects.hashCode(watcher.getFile().getAbsolutePath());
     }
 }

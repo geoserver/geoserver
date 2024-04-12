@@ -211,16 +211,6 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                             }
                         }
                         updateElement.setUpdateProperties(properties);
-                        transformed.getProperties().stream()
-                                .forEach(p -> LOGGER.info("Feature Property: " + p));
-                        updateElement.getUpdateProperties().stream()
-                                .forEach(
-                                        p ->
-                                                LOGGER.info(
-                                                        "Update Property: "
-                                                                + p.getName()
-                                                                + " "
-                                                                + p.getValue()));
                     }
                 } catch (IOException e) {
                     // Do never make the transaction fail due to an

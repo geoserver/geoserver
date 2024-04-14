@@ -189,7 +189,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                     Update updateElement = (Update) element;
                     SimpleFeatureIterator featureIterator =
                             getTransactionSource(updateElement).features();
-                    while (featureIterator.hasNext()) {
+                    if (featureIterator.hasNext()) {
                         SimpleFeature feature = featureIterator.next();
                         LOGGER.fine("Updating feature: " + feature);
                         SimpleFeature transformed = applyTemplate(feature);

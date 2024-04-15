@@ -146,20 +146,29 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
             throws IOException {
 
         Collection<GeoServerRole> roles;
-        if (PreAuthenticatedUserNameRoleSource.RoleService.equals(getRoleSource())) {
-            roles = getRolesFromRoleService(request, principal);
-        } else if (PreAuthenticatedUserNameRoleSource.UserGroupService.equals(getRoleSource())) {
-            roles = getRolesFromUserGroupService(request, principal);
-        } else if (PreAuthenticatedUserNameRoleSource.Header.equals(getRoleSource())) {
-            roles = getRolesFromHttpAttribute(request, principal);
-        } else {
-            throw new RuntimeException("Never should reach this point");
+        PreAuthenticatedUserNameRoleSource aurs =
+                (PreAuthenticatedUserNameRoleSource) getRoleSource();
+        switch (aurs) {
+            case RoleService:
+                roles = getRolesFromRoleService(request, principal);
+                break;
+            case UserGroupService:
+                roles = getRolesFromUserGroupService(request, principal);
+                break;
+            case Header:
+                roles = getRolesFromHttpAttribute(request, principal);
+                break;
+            default:
+                throw new RuntimeException(
+                        "Couldn't determine roles based on the specified role source ["
+                                + aurs
+                                + "].");
         }
 
         LOGGER.log(
                 Level.FINE,
                 "Got roles {0} from {1} for principal {2}",
-                new Object[] {roles, getRoleSource(), principal});
+                new Object[] {roles, aurs, principal});
 
         return roles;
     }

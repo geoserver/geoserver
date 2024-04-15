@@ -4,14 +4,10 @@
  */
 package org.geoserver.security.oauth2;
 
-import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.AccessToken;
-import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.IdToken;
-import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.MSGraphAPI;
-import static org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo;
-
 import com.jayway.jsonpath.JsonPath;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +26,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
+import org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource;
 import org.geoserver.security.oauth2.bearer.TokenValidator;
 import org.geoserver.security.oauth2.pkce.PKCERequestEnhancer;
 import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
@@ -149,31 +147,52 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal)
             throws IOException {
         RoleSource rs = getRoleSource();
+        if (rs == null) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "OIDC: None of the supported token claims [{}] have been set for delivering roles.",
+                    Arrays.stream(OpenIdRoleSource.values())
+                            .map(v -> v.toString())
+                            .collect(Collectors.joining(", ")));
+
+            return null;
+        }
+        if (!(rs instanceof OpenIdRoleSource)) {
+            super.getRoles(request, principal);
+        }
+        OpenIdRoleSource oirs = (OpenIdRoleSource) getRoleSource();
 
         if (filterConfig.isAllowUnSecureLogging()) {
             String rolesAttributePath =
                     ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
             LOGGER.log(
                     Level.FINE,
-                    "OIDC: Getting Roles from " + rs + ", location=" + rolesAttributePath);
+                    "OIDC: Getting Roles from {0}, location={1}",
+                    new Object[] {oirs, rolesAttributePath});
         }
         Collection<GeoServerRole> result = null;
-
-        if (AccessToken.equals(rs)) {
-            result =
-                    getRolesFromToken(
-                            (String)
-                                    request.getAttribute(
-                                            OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
-        } else if (IdToken.equals(rs)) {
-            result = getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
-        } else if (UserInfo.equals(rs)) {
-            result = getRolesFromUserInfo(request);
-        } else if (MSGraphAPI.equals(rs)) {
-            result = getRolesFromMSGraphAPI(request);
-        } else {
-            result = super.getRoles(request, principal);
+        switch (oirs) {
+            case AccessToken:
+                result =
+                        getRolesFromToken(
+                                (String)
+                                        request.getAttribute(
+                                                OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
+                break;
+            case IdToken:
+                result = getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
+                break;
+            case UserInfo:
+                result = getRolesFromUserInfo(request);
+                break;
+            case MSGraphAPI:
+                result = getRolesFromMSGraphAPI(request);
+                break;
+            default:
+                LOGGER.log(Level.FINE, "OIDC: Unknown OpenIdRoleSource = {0}", oirs);
+                result = super.getRoles(request, principal);
         }
+
         if (filterConfig.isAllowUnSecureLogging()) {
             if (result == null) {
                 LOGGER.log(Level.FINE, "OIDC: roles returned null (unexpected)");

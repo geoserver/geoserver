@@ -311,8 +311,7 @@ This feature can improve performance, particularly when handling large files sto
 
 By default, memory mapping is enabled on Linux and disabled on Windows. However, users have the flexibility to explicitly control this setting by defining a Java system variable:
 
-* ``org.geotools.coverage.io.netcdf.memorymap`` : A boolean variable. Set it to true to enable memory-mapped RandomAccessFile.
-The underlying memory mapped buffer, by default, maps the entire file, up to a limit of 2GB. For larger files, the mapped portion adjusts dynamically based on read and seek operations.
+* ``org.geotools.coverage.io.netcdf.memorymap`` : A boolean variable. Set it to true to enable memory-mapped RandomAccessFile. The underlying memory mapped buffer, by default, maps the entire file, up to a limit of 2GB. For larger files, the mapped portion adjusts dynamically based on read and seek operations.
 
 Users can further customize the behavior by specifying the maximum size of the buffer using another Java system variable:
 

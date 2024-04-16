@@ -307,12 +307,12 @@ These Java system variables can be set to enable and configure the file caching:
 MemoryMapped RandomAccessFile
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Starting from Version 2.26, GeoServer introduced a new feature: a RandomAccessFile implementation utilizing Memory Mapping. 
-This feature provides advantageous, particularly when handling large files stored on network drives. With Memory Mapping, a portion of the file is loaded into memory, thereby ensuring that read and seek operations are not impeded by Disk I/O or Network I/O latency once the file is loaded into memory.
+This feature can improve performance, particularly when handling large files stored on network drives. With Memory Mapping a program asks to allow access to a file as if it was a block of main memory, allowing the operating system to better optimize access to it and reducing the amount of system calls (Windows maps the file in memory, Linux adopts an opportunistic caching strategy instead).
 
 By default, memory mapping is enabled on Linux and disabled on Windows. However, users have the flexibility to explicitly control this setting by defining a Java system variable:
 
 * ``org.geotools.coverage.io.netcdf.memorymap`` : A boolean variable. Set it to true to enable memory-mapped RandomAccessFile.
-The underlying MemoryMapped byteBuffer, by default, maps the entire file into memory, up to a limit of 2GB. For larger files, the mapped portion adjusts dynamically based on read and seek operations.
+The underlying memory mapped buffer, by default, maps the entire file, up to a limit of 2GB. For larger files, the mapped portion adjusts dynamically based on read and seek operations.
 
 Users can further customize the behavior by specifying the maximum size of the buffer using another Java system variable:
 

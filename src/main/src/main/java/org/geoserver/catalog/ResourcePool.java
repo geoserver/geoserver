@@ -173,7 +173,7 @@ import si.uom.SI;
 public class ResourcePool {
 
     /**
-     * OGC "cilyndrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
+     * OGC "cylindrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
      */
     static final double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
 
@@ -1978,8 +1978,20 @@ public class ResourcePool {
         if (entityResolver != null) {
             hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
         }
-
-        return new WebMapServer(serverURL, client, hints);
+        WebMapServer wms;
+        if (StringUtils.isNotEmpty(expandedStore.getHeaderName())
+                && StringUtils.isNotEmpty(expandedStore.getHeaderValue())) {
+            wms =
+                    new WebMapServer(
+                            serverURL,
+                            client,
+                            hints,
+                            Collections.singletonMap(
+                                    expandedStore.getHeaderName(), expandedStore.getHeaderValue()));
+        } else {
+            wms = new WebMapServer(serverURL, client, hints);
+        }
+        return wms;
     }
 
     /**

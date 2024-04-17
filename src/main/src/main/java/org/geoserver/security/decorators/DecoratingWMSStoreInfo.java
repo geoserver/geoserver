@@ -157,6 +157,26 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
     }
 
     @Override
+    public String getHeaderName() {
+        return delegate.getHeaderName();
+    }
+
+    @Override
+    public void setHeaderName(String headerName) {
+        delegate.setHeaderName(headerName);
+    }
+
+    @Override
+    public String getHeaderValue() {
+        return delegate.getHeaderValue();
+    }
+
+    @Override
+    public void setHeaderValue(String headerValue) {
+        delegate.setHeaderName(headerValue);
+    }
+
+    @Override
     public int getMaxConnections() {
         return delegate.getMaxConnections();
     }

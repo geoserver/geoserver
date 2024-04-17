@@ -173,7 +173,7 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
 
     @Override
     public void setHeaderValue(String headerValue) {
-        delegate.setHeaderName(headerValue);
+        delegate.setHeaderValue(headerValue);
     }
 
     @Override

@@ -24,6 +24,8 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     String capabilitiesURL;
     private String user;
     private String password;
+    private String headerName;
+    private String headerValue;
     private int maxConnections;
     private int readTimeout;
     private int connectTimeout;
@@ -92,6 +94,26 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     @Override
     public void setConnectTimeout(int timeoutSeconds) {
         this.connectTimeout = timeoutSeconds;
+    }
+
+    @Override
+    public String getHeaderName() {
+        return headerName;
+    }
+
+    @Override
+    public void setHeaderName(String headerName) {
+        this.headerName = headerName;
+    }
+
+    @Override
+    public String getHeaderValue() {
+        return headerValue;
+    }
+
+    @Override
+    public void setHeaderValue(String headerValue) {
+        this.headerValue = headerValue;
     }
 
     @Override

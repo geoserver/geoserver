@@ -28,4 +28,12 @@ public interface WMSStoreInfo extends HTTPStoreInfo {
      * @throws IOException Any I/O problems.
      */
     WebMapServer getWebMapServer(ProgressListener listener) throws IOException;
+
+    String getHeaderName();
+
+    void setHeaderName(String headerName);
+
+    String getHeaderValue();
+
+    void setHeaderValue(String headerValue);
 }

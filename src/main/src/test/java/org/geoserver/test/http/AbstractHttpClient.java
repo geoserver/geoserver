@@ -18,6 +18,8 @@ public abstract class AbstractHttpClient implements HTTPClient {
 
     protected String password;
 
+    protected String authKey;
+
     protected int connectTimeout;
 
     protected int readTimeout;
@@ -42,6 +44,16 @@ public abstract class AbstractHttpClient implements HTTPClient {
     @Override
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String getAuthKey() {
+        return this.authKey;
+    }
+
+    @Override
+    public void setAuthKey(String authKey) {
+        this.authKey = authKey;
     }
 
     @Override

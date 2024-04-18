@@ -36,4 +36,8 @@ public interface WMTSStoreInfo extends HTTPStoreInfo {
     String getHeaderValue();
 
     void setHeaderValue(String headerValue);
+
+    String getAuthKey();
+
+    void setAuthKey(String authKey);
 }

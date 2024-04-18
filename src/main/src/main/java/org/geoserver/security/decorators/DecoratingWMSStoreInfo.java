@@ -177,6 +177,16 @@ public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
     }
 
     @Override
+    public String getAuthKey() {
+        return delegate.getAuthKey();
+    }
+
+    @Override
+    public void setAuthKey(String authKey) {
+        delegate.setAuthKey(authKey);
+    }
+
+    @Override
     public int getMaxConnections() {
         return delegate.getMaxConnections();
     }

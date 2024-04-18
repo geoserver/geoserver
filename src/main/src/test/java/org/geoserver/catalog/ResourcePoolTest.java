@@ -116,6 +116,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.WebMapServer;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.util.SoftValueHashMap;
@@ -1449,7 +1450,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testCovergaeStoreInfoAutodisable() throws Exception {
+    public void testCoverageStoreInfoAutodisable() throws Exception {
         GeoServerExtensions.extensions(ResourcePoolInitializer.class)
                 .get(0)
                 .initialize(getGeoServer());

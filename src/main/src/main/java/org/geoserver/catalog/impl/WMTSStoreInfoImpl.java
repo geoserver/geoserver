@@ -31,6 +31,7 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     // Map<String, String> headers;
     private String headerName; // todo: replace with Map<String, String>
     private String headerValue; // todo: replace with Map<String, String>
+    private String authKey;
 
     protected WMTSStoreInfoImpl() {}
 
@@ -116,6 +117,16 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     @Override
     public void setHeaderValue(String headerValue) {
         this.headerValue = headerValue;
+    }
+
+    @Override
+    public String getAuthKey() {
+        return authKey;
+    }
+
+    @Override
+    public void setAuthKey(String authKey) {
+        this.authKey = authKey;
     }
 
     @Override

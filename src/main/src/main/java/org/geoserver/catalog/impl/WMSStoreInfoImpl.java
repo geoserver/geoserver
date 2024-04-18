@@ -26,6 +26,7 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     private String password;
     private String headerName;
     private String headerValue;
+    private String authKey;
     private int maxConnections;
     private int readTimeout;
     private int connectTimeout;
@@ -114,6 +115,16 @@ public class WMSStoreInfoImpl extends StoreInfoImpl implements WMSStoreInfo {
     @Override
     public void setHeaderValue(String headerValue) {
         this.headerValue = headerValue;
+    }
+
+    @Override
+    public String getAuthKey() {
+        return authKey;
+    }
+
+    @Override
+    public void setAuthKey(String authKey) {
+        this.authKey = authKey;
     }
 
     @Override

@@ -49,6 +49,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
     protected TextParamPanel<String> headerNamePanel;
     protected TextParamPanel<String> headerValuePanel;
+    protected TextParamPanel<String> authKeyPanel;
 
     void initUI(final WMSStoreInfo store) {
         IModel<WMSStoreInfo> model = new Model<>(store);
@@ -142,6 +143,14 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                         new ResourceModel("AbstractWMSStorePage.headerValue"),
                         false);
         form.add(headerValuePanel);
+
+        authKeyPanel =
+                new TextParamPanel<>(
+                        "authKeyPanel",
+                        new PropertyModel<>(model, "authKey"),
+                        new ResourceModel("AbstractWMSStorePage.authKey"),
+                        false);
+        form.add(authKeyPanel);
 
         // max concurrent connections
         final PropertyModel<Boolean> useHttpConnectionPoolModel =

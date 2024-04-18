@@ -4,14 +4,13 @@
  */
 package org.geoserver.autopopulate;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resource;
 
 /**
  * AutopopulateTemplateLoader class is used to load the template from the file system and return the
@@ -68,51 +67,16 @@ public class AutopopulateTemplateLoader {
      * @throws IOException If the template cannot be loaded
      */
     public AutopopulateTemplate loadTemplate(String path) throws IOException {
-        File template = null;
+        Resource template = null;
 
-        // template look up order
-        // 1. Relative to resource
-        // 2. Relative to store of the resource
-        // 3. Relative to workspace of resource
-        // 4. Relative to workspaces directory
+        // Template looks up relative to resource
         if (resource != null) {
-            // first check relative to set resource
-            template = Resources.file(dd.get(resource, path));
-
-            if (template == null) {
-                // next try relative to the store
-                template = Resources.file(dd.get(resource.getStore(), path));
-            }
-
-            if (template == null) {
-                // next try relative to the workspace
-                template = Resources.file(dd.get(resource.getStore().getWorkspace(), path));
-            }
-
-            if (template == null) {
-                // try global supplementary files
-                template = Resources.file(dd.getWorkspaces(path));
-            }
-
-            if (template != null) {
-                return new AutopopulateTemplate(template.getAbsolutePath());
-            }
-
-            if (resource.getStore() != null && resource.getStore().getWorkspace() != null) {
-                // next try relative to the workspace
-                template = Resources.file(dd.get(resource.getStore().getWorkspace(), path));
-
-                if (template == null) {
-                    // try global supplementary files
-                    template = Resources.file(dd.getWorkspaces(path));
-                }
-
-                if (template != null) {
-                    return new AutopopulateTemplate(template.getAbsolutePath());
-                }
-            }
+            template = dd.get(resource, path);
+            LOGGER.fine("Template looks up relative to resource " + template.path());
+            return new AutopopulateTemplate(template);
         }
 
+        LOGGER.warning("No Resource found!");
         return null;
     }
 }

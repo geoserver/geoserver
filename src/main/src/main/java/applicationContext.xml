@@ -221,6 +221,7 @@
      <property name="mappings">
        <props>
         <prop key="/schemas/**">classpathPublisher</prop>
+        <prop key="/webresources/**">classpathPublisher</prop>
         <prop key="/j_acegi_security_check">classpathPublisher</prop>
         <prop key="/j_spring_security_check">classpathPublisher</prop>
         <prop key="/login">classpathPublisher</prop>

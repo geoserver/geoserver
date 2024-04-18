@@ -4,8 +4,9 @@
  */
 package org.vfny.geoserver.wfs.servlets;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -254,6 +255,22 @@ public class TestWfsPostTest {
                     }
                 };
         assertEquals("https://foo.com/geoserver", servlet.getProxyBaseURL());
+    }
+
+    @Test
+    public void testRemovedInlineJavaScript() throws Exception {
+        TestWfsPost servlet = buildMockServlet();
+        MockHttpServletRequest request = buildMockRequest();
+        request.setMethod("GET");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        servlet.service(request, response);
+        String result = response.getContentAsString();
+        assertThat(
+                result,
+                containsString("<script src=\"webresources/wfs/TestWfsPost.js\"></script>"));
+        assertThat(result, not(containsString("<script language=\"JavaScript\">")));
+        assertThat(result, not(containsString("action=\"JavaScript:")));
+        assertThat(result, not(containsString(" onclick=")));
     }
 
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")

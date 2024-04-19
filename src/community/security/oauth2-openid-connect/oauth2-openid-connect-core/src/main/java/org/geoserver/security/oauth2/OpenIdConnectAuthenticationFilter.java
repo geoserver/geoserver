@@ -160,7 +160,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         if (!(rs instanceof OpenIdRoleSource)) {
             super.getRoles(request, principal);
         }
-        OpenIdRoleSource oirs = (OpenIdRoleSource) getRoleSource();
+        OpenIdRoleSource oirs = (OpenIdRoleSource) rs;
 
         if (filterConfig.isAllowUnSecureLogging()) {
             String rolesAttributePath =

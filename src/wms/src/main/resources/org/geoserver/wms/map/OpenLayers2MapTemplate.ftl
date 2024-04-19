@@ -12,6 +12,11 @@
                 font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
                 font-size: small;
             }
+            iframe {
+                width: 100%;
+                height: 250px;
+                border: none;
+            }
             /* Toolbar styles */
             #toolbar {
                 position: relative;
@@ -105,34 +110,35 @@
         <!-- Import OpenLayers, reduced, wms read only version -->
         <script src="${relBaseUrl}/openlayers/OpenLayers.js" type="text/javascript">
         </script>
+        <script src="${relBaseUrl}/webresources/wms/OpenLayers2Map.js" type="text/javascript"></script>
     </head>
-    <body onload="init()">
+    <body>
         <div id="toolbar" class="d-none">
             <ul>
                 <li>
                     <a>WMS version:</a>
-                    <select id="wmsVersionSelector" onchange="setWMSVersion(value)">
+                    <select id="wmsVersionSelector">
                         <option value="1.1.1">1.1.1</option>
                         <option value="1.3.0">1.3.0</option>
                     </select>
                 </li>
                 <li>
                     <a>Tiling:</a>
-                    <select id="tilingModeSelector" onchange="setTileMode(value)">
+                    <select id="tilingModeSelector">
                         <option value="untiled">Single tile</option>
                         <option value="tiled">Tiled</option>
                     </select>
                 </li>
                 <li>
                     <a>Transition effect:</a>
-                    <select id="transitionEffectSelector" onchange="setTransitionMode(value)">
+                    <select id="transitionEffectSelector">
                         <option value="">None</option>
                         <option value="resize">Resize</option>
                     </select>
                 </li>
                 <li>
                     <a>Antialias:</a>
-                    <select id="antialiasSelector" onchange="setAntialiasMode(value)">
+                    <select id="antialiasSelector">
                         <option value="full">Full</option>
                         <option value="text">Text only</option>
                         <option value="none">Disabled</option>
@@ -140,7 +146,7 @@
                 </li>
                 <li>
                     <a>Format:</a>
-                    <select id="imageFormatSelector" onchange="setImageFormat(value)">
+                    <select id="imageFormatSelector">
                         <option value="image/png">PNG 24bit</option>
                         <option value="image/png8">PNG 8bit</option>
                         <option value="image/gif">GIF</option>
@@ -151,7 +157,7 @@
                 </li>
                 <li>
                     <a>Styles:</a>
-                    <select id="imageFormatSelector" onchange="setStyle(value)">
+                    <select id="styleSelector">
                         <option value="">Default</option>
                         <#list styles as style>          
                           <option value="${style}">${style}</option>  
@@ -162,7 +168,7 @@
                      order to list the available palettes
                 <li>
                     <a>Palette:</a>
-                    <select id="paletteSelector" onchange="setPalette(value)">
+                    <select id="paletteSelector">
                         <option value="">None</option>
                         <option value="safe">Web safe</option>
                     </select>
@@ -170,7 +176,7 @@
                 -->
                 <li>
                     <a>Width/Height:</a>
-                    <select id="widthSelector" onchange="setWidth(value)">
+                    <select id="widthSelector">
                         <!--
                         These values come from a statistics of the viewable area given a certain screen area
                         (but have been adapted a litte, simplified numbers, added some resolutions for wide screen)
@@ -185,7 +191,7 @@
                         <option value="1600">1600</option>
                         <option value="1900">1900</option>
                     </select>
-                    <select id="heigthSelector" onchange="setHeight(value)">
+                    <select id="heightSelector">
                         <option value="auto">Auto</option>
                         <option value="300">300</option>
                         <option value="400">400</option>
@@ -205,13 +211,13 @@
                         <option value="fid">FeatureID</option>
                     </select>
                     <input type="text" size="80" id="filter"/>
-                    <img id="updateFilterButton" src="${baseUrl}/openlayers/img/east-mini.png" onClick="updateFilter()" title="Apply filter"/>
-                    <img id="resetFilterButton" src="${baseUrl}/openlayers/img/cancel.png" onClick="resetFilter()" title="Reset filter"/>
+                    <img id="updateFilterButton" src="${relBaseUrl}/openlayers/img/east-mini.png" title="Apply filter"/>
+                    <img id="resetFilterButton" src="${relBaseUrl}/openlayers/img/cancel.png" title="Reset filter"/>
                 </li>
             </ul>
         </div>
         <div id="map">
-            <img id="options" title="Toggle options toolbar" src="${baseUrl}/options.png"/>
+            <img id="options" title="Toggle options toolbar" src="${relBaseUrl}/options.png"/>
         </div>
         <div id="wrapper">
             <div id="location">location</div>
@@ -221,5 +227,21 @@
         <div id="nodelist">
             <em>Click on the map to get feature info</em>
         </div>
+        <input type="hidden" id="pureCoverage" value="${pureCoverage}"/>
+        <input type="hidden" id="supportsFiltering" value="${supportsFiltering}"/>
+        <input type="hidden" id="minX" value="${request.bbox.minX?c}"/>
+        <input type="hidden" id="minY" value="${request.bbox.minY?c}"/>
+        <input type="hidden" id="maxX" value="${request.bbox.maxX?c}"/>
+        <input type="hidden" id="maxY" value="${request.bbox.maxY?c}"/>
+        <input type="hidden" id="SRS" value="${request.SRS}"/>
+        <input type="hidden" id="yx" value="${yx}"/>
+        <input type="hidden" id="maxResolution" value="${maxResolution}"/>
+        <input type="hidden" id="baseUrl" value="${baseUrl}"/>
+        <input type="hidden" id="servicePath" value="${servicePath}"/>
+        <input type="hidden" id="units" value="${units}"/>
+        <input type="hidden" id="layerName" value="${layerName}"/>
+        <#list parameters as param>
+        <input type="hidden" class="param" title="${param.name}" value="${param.value}"/>
+        </#list>
     </body>
 </html>

@@ -5,10 +5,9 @@
  */
 package org.geoserver.wms.map;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -143,10 +142,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             assertThat(
                     htmlDoc,
                     containsString(
-                            "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
-            assertThat(htmlDoc, containsString("\"25064;ALERT(1)//419\": '1'"));
+                            "&lt;/script&gt;&lt;script&gt;alert(&#39;x-scripted&#39;);&lt;/script&gt;&lt;script&gt;"));
+            assertThat(htmlDoc, containsString("25064;ALERT(1)//419"));
             assertThat(htmlDoc, not(containsString(layer.getTitle())));
-            assertThat(htmlDoc, containsString("Title<\\/foo"));
+            assertThat(htmlDoc, containsString("Title&lt;/foo"));
             assertThat(htmlDoc, not(containsString(otherStyle.getName())));
             assertThat(htmlDoc, containsString("style&lt;&gt;"));
         } finally {
@@ -164,7 +163,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                                 + "14.592757149389236,44.55808294568743&width=768&height=330"
                                 + "&srs=EPSG:4326&format=application/openlayers");
         String content = response.getContentAsString();
-        assertThat(content.contains("var supportsFiltering = true;"), is(true));
+        assertThat(
+                content,
+                containsString("<input type=\"hidden\" id=\"supportsFiltering\" value=\"true\"/>"));
         // world raster layer doesn't support filtering
         response =
                 getAsServletResponse(
@@ -173,7 +174,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                                 + "14.592757149389236,44.55808294568743&width=768&height=330"
                                 + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
-        assertThat(content.contains("var supportsFiltering = false;"), is(true));
+        assertThat(
+                content,
+                containsString(
+                        "<input type=\"hidden\" id=\"supportsFiltering\" value=\"false\"/>"));
 
         // if at least one layer supports filtering, overall filtering should be supported
         response =
@@ -183,7 +187,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                                 + "14.592757149389236,44.55808294568743&width=768&height=330"
                                 + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
-        assertThat(content.contains("var supportsFiltering = true;"), is(true));
+        assertThat(
+                content,
+                containsString("<input type=\"hidden\" id=\"supportsFiltering\" value=\"true\"/>"));
     }
 
     @Test
@@ -200,7 +206,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                                 + "14.592757149389236,44.55808294568743&width=768&height=330"
                                 + "&srs=EPSG:4326&format=application/openlayers");
         String content = response.getContentAsString();
-        assertThat(content.contains("var supportsFiltering = false;"), is(true));
+        assertThat(
+                content,
+                containsString(
+                        "<input type=\"hidden\" id=\"supportsFiltering\" value=\"false\"/>"));
 
         // wmts along with filterable layer should support filtering
         response =
@@ -210,7 +219,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                                 + "14.592757149389236,44.55808294568743&width=768&height=330"
                                 + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
-        assertThat(content.contains("var supportsFiltering = true;"), is(true));
+        assertThat(
+                content,
+                containsString("<input type=\"hidden\" id=\"supportsFiltering\" value=\"true\"/>"));
     }
 
     /** Helper method that creates a static raster store and adds it to the catalog. */
@@ -332,9 +343,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         request.setFormat("application/openlayers");
 
         String htmlDoc = getAsHTML(map);
-        int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}");
-
-        assertTrue(index > -1);
+        assertThat(
+                htmlDoc, containsString("<input type=\"hidden\" id=\"SRS\" value=\"EPSG:4326\"/>"));
+        assertThat(htmlDoc, containsString("<input type=\"hidden\" id=\"yx\" value=\"true\"/>"));
     }
 
     @Test
@@ -428,7 +439,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                         + "&srs=EPSG:4326&format=application/openlayers";
 
         String html = getAsString(path);
-        assertThat(html, containsString("\"exceptions\": 'application/vnd.ogc.se_inimage'"));
+        assertThat(
+                html,
+                containsString(
+                        "<input type=\"hidden\" class=\"param\" title=\"EXCEPTIONS\" value=\"application/vnd.ogc.se_inimage\"/>"));
     }
 
     @Test
@@ -442,8 +456,15 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                         + "&exceptions=application/vnd.ogc.se_xml";
 
         String html = getAsString(path);
-        assertThat(html, containsString("\"EXCEPTIONS\": 'application/vnd.ogc.se_xml'"));
-        assertThat(html, not(containsString("\"exceptions\": 'application/vnd.ogc.se_inimage'")));
+        assertThat(
+                html,
+                containsString(
+                        "<input type=\"hidden\" class=\"param\" title=\"EXCEPTIONS\" value=\"application/vnd.ogc.se_xml\"/>"));
+        assertThat(
+                html,
+                not(
+                        containsString(
+                                "<input type=\"hidden\" class=\"param\" title=\"EXCEPTIONS\" value=\"application/vnd.ogc.se_inimage\"/>")));
     }
 
     @Test
@@ -488,8 +509,8 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             assertThat(
                     htmlDoc,
                     containsString(
-                            "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
-            assertThat(htmlDoc, containsString("\"25064;ALERT(1)//419\": '1'"));
+                            "&lt;/script&gt;&lt;script&gt;alert(&#39;x-scripted&#39;);&lt;/script&gt;&lt;script&gt;"));
+            assertThat(htmlDoc, containsString("25064;ALERT(1)//419"));
             assertThat(htmlDoc, not(containsString(otherStyle.getName())));
             assertThat(htmlDoc, containsString("style&lt;&gt;"));
         } finally {
@@ -544,11 +565,39 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             request.setFormat("application/openlayers");
 
             String htmlDoc = getAsHTML(map);
-            int index = htmlDoc.indexOf("yx : {'EPSG:4326' : false}");
-            assertTrue(index > -1);
+            assertThat(
+                    htmlDoc,
+                    containsString("<input type=\"hidden\" id=\"SRS\" value=\"EPSG:4326\"/>"));
+            assertThat(
+                    htmlDoc, containsString("<input type=\"hidden\" id=\"yx\" value=\"false\"/>"));
 
             appender.assertFalse("Error was logged", "Failed to determine CRS axis order");
             appender.stopRecording("org.geoserver.wms.map");
         }
+    }
+
+    @Test
+    public void testRemovedInlineJavaScriptOL2() throws Exception {
+        WMSMapContent map = new WMSMapContent();
+        map.setRequest(createGetMapRequest(MockData.BASIC_POLYGONS));
+        String htmlDoc = getAsHTML(map);
+        assertThat(htmlDoc, containsString("<script src=\""));
+        assertThat(
+                htmlDoc, not(containsString("<script defer=\"defer\" type=\"text/javascript\">")));
+        assertThat(htmlDoc, not(containsString(" onload=")));
+        assertThat(htmlDoc, not(containsString(" onchange=")));
+        assertThat(htmlDoc, not(containsString(" onClick=")));
+    }
+
+    @Test
+    public void testRemovedInlineJavaScriptOL3() throws Exception {
+        WMSMapContent map = new WMSMapContent();
+        map.setRequest(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.getRequest().putHttpRequestHeader("USER-AGENT", "Firefox 40.1");
+        String htmlDoc = getAsHTMLOL3(map);
+        assertThat(htmlDoc, containsString("<script src=\""));
+        assertThat(htmlDoc, not(containsString("<script type=\"text/javascript\">")));
+        assertThat(htmlDoc, not(containsString(" onchange=")));
+        assertThat(htmlDoc, not(containsString(" onClick=")));
     }
 }

@@ -6,6 +6,8 @@
 package org.geoserver.security;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -302,7 +304,11 @@ public class AuthenticationKeyOWSTest extends GeoServerSystemTestSupport {
                                 + citeKey);
         byte[] responseContent = getBinary(response);
         String htmlDoc = new String(responseContent, StandardCharsets.UTF_8);
-        assertTrue(
-                htmlDoc.indexOf("http://localhost:8080/geoserver/cite/wms?authkey=" + citeKey) > 0);
+        assertThat(
+                htmlDoc,
+                containsString(
+                        "<input type=\"hidden\" id=\"servicePath\" value=\"cite/wms?authkey="
+                                + citeKey
+                                + "\"/>"));
     }
 }

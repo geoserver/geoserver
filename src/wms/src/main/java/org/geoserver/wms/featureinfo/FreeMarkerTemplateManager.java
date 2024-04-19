@@ -48,9 +48,8 @@ import org.geotools.util.logging.Logging;
 public abstract class FreeMarkerTemplateManager {
 
     /**
-     * System property to control whether or not to enable FreeMarker's auto-escaping of HTML
-     * output. This property will override the WMS setting to enable/disable auto-escaping. Default
-     * is true.
+     * System property to control whether to enable FreeMarker's auto-escaping of HTML output. This
+     * property will override the WMS setting to enable/disable auto-escaping. Default is true.
      */
     public static final String FORCE_FREEMARKER_ESCAPING = "GEOSERVER_FORCE_FREEMARKER_ESCAPING";
 
@@ -67,7 +66,7 @@ public abstract class FreeMarkerTemplateManager {
 
         private String format;
 
-        String getFormat() {
+        public String getFormat() {
             return format;
         }
     }
@@ -77,7 +76,7 @@ public abstract class FreeMarkerTemplateManager {
     private static DirectTemplateFeatureCollectionFactory tfcFactory =
             new DirectTemplateFeatureCollectionFactory();
 
-    private static Logger logger = Logging.getLogger(FreeMarkerTemplateManager.class);
+    private static final Logger logger = Logging.getLogger(FreeMarkerTemplateManager.class);
     private static FreemarkerStaticsAccessRule staticsAccessRule;
 
     /** Initializes the {@link #staticsAccessRule}. */
@@ -146,8 +145,9 @@ public abstract class FreeMarkerTemplateManager {
                         return (TemplateHashModel) getStaticModels().get(path);
                     }
                 });
-        // as we want to look up different templates for each resource, the templates cannot
+        // As we want to look up different templates for each resource, the templates cannot
         // be cached by name. Freemarker used to clear the cache when setting the loader,
+        // Freemarker used to clear the cache when setting the loader,
         // but does not do that anymore since
         // https://github.com/apache/freemarker/commit/fc9eba51492c3cd4da3547ba15b95c7db9b3d237
         // because we use the same loader, we just re-configure it to point to a different resource
@@ -171,9 +171,19 @@ public abstract class FreeMarkerTemplateManager {
         this.format = format;
     }
 
-    /** Writes the features to the output */
+    /**
+     * Writes the features to the output
+     *
+     * @deprecated Use {@link #write(List, OutputStream)}
+     */
+    @SuppressWarnings("unchecked")
     public boolean write(
             FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+            throws ServiceException, IOException {
+        return write(results.getFeature(), out);
+    }
+
+    public boolean write(List<FeatureCollection> collections, OutputStream out)
             throws ServiceException, IOException {
         // setup the writer
         final Charset charSet = wms.getCharSet();
@@ -183,9 +193,6 @@ public abstract class FreeMarkerTemplateManager {
             // if there is only one feature type loaded, we allow for header/footer customization,
             // otherwise we stick with the default ones for html, or for those
             // in the template directory for JSON
-            @SuppressWarnings("unchecked")
-            List<FeatureCollection> collections = results.getFeature();
-
             ResourceInfo ri = null;
             if (collections.size() == 1) {
                 ri = wms.getResourceInfo(FeatureCollectionDecorator.getName(collections.get(0)));
@@ -204,7 +211,7 @@ public abstract class FreeMarkerTemplateManager {
 
             processTemplate("header", null, header, osw);
 
-            handleContent(collections, osw, request);
+            handleContent(collections, osw);
 
             // if a template footer was loaded (ie, there were only one feature
             // collection), process it
@@ -306,16 +313,13 @@ public abstract class FreeMarkerTemplateManager {
      */
     protected abstract String getTemplateFileName(String filename);
 
-    /** Check the needed files exists according to the output format */
+    /** Check the needed files exists, according to the output format */
     protected abstract boolean templatesExist(
             Template header, Template footer, List<FeatureCollection> collections)
             throws IOException;
 
     protected abstract void handleContent(
-            List<FeatureCollection> collections,
-            OutputStreamWriter osw,
-            GetFeatureInfoRequest request)
-            throws IOException;
+            List<FeatureCollection> collections, OutputStreamWriter osw) throws IOException;
 
     public void setTemplateLoader(GeoServerTemplateLoader templateLoader) {
         this.templateLoader = templateLoader;

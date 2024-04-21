@@ -6,6 +6,7 @@
 package org.geoserver.test.http;
 
 import org.geotools.http.HTTPClient;
+import java.util.Map;
 
 /**
  * A base class for HTTPClient
@@ -18,7 +19,7 @@ public abstract class AbstractHttpClient implements HTTPClient {
 
     protected String password;
 
-    protected String authKey;
+    protected Map<String, Object> extraParams;
 
     protected int connectTimeout;
 
@@ -47,13 +48,13 @@ public abstract class AbstractHttpClient implements HTTPClient {
     }
 
     @Override
-    public String getAuthKey() {
-        return this.authKey;
+    public Map<String, Object> getExtraParams() {
+        return this.extraParams;
     }
 
     @Override
-    public void setAuthKey(String authKey) {
-        this.authKey = authKey;
+    public void setExtraParams(Map<String, Object> extraParams) {
+        this.extraParams = extraParams;
     }
 
     @Override

@@ -2100,8 +2100,12 @@ public class ResourcePool {
         int readTimeout = info.getReadTimeout();
         client.setUser(username);
         client.setPassword(password);
-        String[] kv = authKey.split("=");
-        client.setExtraParams(Map.of(kv[0], kv[1]));
+        if (authKey != null) {
+	        String[] kv = authKey.split("=");
+	        if (kv.length == 2) {
+        		client.setExtraParams(Map.of(kv[0], kv[1]));
+	        }
+        }
         client.setConnectTimeout(connectTimeout);
         client.setReadTimeout(readTimeout);
 

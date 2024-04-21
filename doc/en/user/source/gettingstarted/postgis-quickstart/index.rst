@@ -68,6 +68,8 @@ Creating a store
 Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the database. 
 
 #. Navigate to :menuselection:`Data-->Stores`.
+
+#. Click on ``Add new Store``.
     
 #. You should see a list of stores, including the type of store and the workspace that the store belongs to.
 

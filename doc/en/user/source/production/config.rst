@@ -26,7 +26,7 @@ Suggestions:
 
   This message is be shown to visitors at the top of welcome page. The contact details and organisation information are included in the welcome page, and used to describe each web service in the capabilities documents.
   
-* When setting up a workspace you can provide more more detailed service metadata and contact information.
+* When setting up a workspace you can provide more detailed service metadata and contact information.
 * Serve your data with your own namespace (and provide a correct URI)
 * Remove default layers (such as ``topp:states``)
 
@@ -358,7 +358,7 @@ GeoServer provides a number of facilities to control external entity resolution:
   Access is provided to the proxy base url from global settings.
   Access to local `file` references remains restricted.
 
-* To allow all `http` and `https` entity resolution ise `*` wildcard::
+* To allow all `http` and `https` entity resolution use `*` wildcard::
 
      -DENTITY_RESOLUTION_ALLOWLIST=*
   

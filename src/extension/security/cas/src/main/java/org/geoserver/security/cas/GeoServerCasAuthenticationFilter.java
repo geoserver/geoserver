@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,6 +25,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.LogoutFilterChain;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -31,6 +34,7 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
+import org.geotools.util.logging.Logging;
 import org.jasig.cas.client.configuration.ConfigurationKeys;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
@@ -58,6 +62,8 @@ import org.springframework.util.StringUtils;
  */
 public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter
         implements LogoutHandler {
+
+    private static final Logger LOGGER = Logging.getLogger(GeoServerCasAuthenticationFilter.class);
 
     protected Cas20ProxyTicketValidator validator;
     protected ServiceAuthenticationDetailsSource casAuthenticationDetailsSource;
@@ -136,14 +142,15 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
 
     protected static String retrieveService(HttpServletRequest request) {
 
-        String serviceBaseUrl = null;
-        String proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
-        if (StringUtils.hasLength(proxyBaseUrl)) {
-            serviceBaseUrl = proxyBaseUrl;
-        } else {
-            serviceBaseUrl = request.getRequestURL().toString();
-        }
-        StringBuffer buff = new StringBuffer(serviceBaseUrl);
+        String requestBaseUrl = ResponseUtils.baseURL(request);
+        String requestPath = request.getRequestURI().substring(request.getContextPath().length());
+
+        // Will run the URL through various manglers, to handle proxying, etc.
+        String serviceBaseUrl =
+                ResponseUtils.buildURL(
+                        requestBaseUrl, requestPath, null, URLMangler.URLType.SERVICE);
+
+        StringBuilder buff = new StringBuilder(serviceBaseUrl);
 
         if (StringUtils.hasLength(request.getQueryString())) {
             String query = request.getQueryString();

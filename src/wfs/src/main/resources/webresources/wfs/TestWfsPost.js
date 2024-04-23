@@ -2,7 +2,7 @@
 window.onload = function() {
     document.getElementById('submitButton').onclick = function() {
         if (document.frm.url.value == '') {
-            alert('Please give URL before you sumbit this form!');
+            alert('Please provide a URL before you submit this form!');
         } else {
             document.frm.submit();
         }

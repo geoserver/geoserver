@@ -36,7 +36,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
       <!-- The rule reports false positives for closeable arguments that are used             -->
       <!-- closed within the method body. This suppression tries to avoid false positives for -->
       <!-- this case, until we can switch to Java 9 and just use try(variable) {...} without  -->
-      <!-- the need to instatiate the variable in the try                                     -->
+      <!-- the need to instantiate the variable in the try                                     -->
       <property name="violationSuppressXPath">
         <value>
           <![CDATA[
@@ -46,7 +46,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
               ]
               [ pmd-java:typeIs('java.lang.AutoCloseable') and
                 fn:substring-before(@Image, '.') = ancestor::MethodDeclaration/MethodDeclarator//VariableDeclaratorId/@Name
-              ]"/>
+              ]
             ]]>
         </value>
       </property>

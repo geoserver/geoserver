@@ -28,7 +28,7 @@ public class GeoServerPropertyFactoryBeanTest {
     @Before
     public void setUp() {
         factory =
-                new GeoServerPropertyFactoryBean<String>(PROPERTY_NAME) {
+                new GeoServerPropertyFactoryBean<>(PROPERTY_NAME) {
 
                     @Override
                     protected String createInstance(String propertyValue) {

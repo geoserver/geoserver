@@ -93,7 +93,7 @@ public class XmlTestUtil {
      */
     public Matcher<Document> hasNodes(
             final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
-        return new BaseMatcher<Document>() {
+        return new BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {
@@ -139,7 +139,7 @@ public class XmlTestUtil {
 
     /** Make a Java List out of a DOM NodeList. */
     public static List<Node> nodeCollection(final NodeList nl) {
-        return new AbstractList<Node>() {
+        return new AbstractList<>() {
 
             @Override
             public Node get(int index) {

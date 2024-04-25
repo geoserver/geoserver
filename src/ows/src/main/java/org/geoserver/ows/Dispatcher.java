@@ -676,7 +676,7 @@ public class Dispatcher extends AbstractController {
                 boolean kvpParsed = false;
                 boolean xmlParsed = false;
 
-                if (req.getKvp() != null && req.getKvp().size() > 0) {
+                if (req.getKvp() != null && !req.getKvp().isEmpty()) {
                     // use the kvp reader mechanism
                     try {
                         requestBean = parseRequestKVP(parameterType, req);

@@ -33,7 +33,8 @@ public class FileItemCleanupCallback extends AbstractDispatcherCallback {
         List<FileItem> items = FILE_ITEMS.get();
         FILE_ITEMS.remove();
         if (!items.isEmpty()) {
-            try (Reader r = request.getInput()) {
+            //noinspection EmptyTryBlock
+            try (Reader ignored = request.getInput()) {
                 // just closing the input which may be pointing to a temp file
             } catch (Exception e) {
                 LOGGER.log(Level.FINEST, "Unable to close request input", e);

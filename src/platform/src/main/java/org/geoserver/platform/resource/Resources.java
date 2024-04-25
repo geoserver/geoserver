@@ -457,7 +457,7 @@ public class Resources {
 
         public static final DirectoryFilter INSTANCE = new DirectoryFilter();
 
-        private DirectoryFilter() {};
+        private DirectoryFilter() {}
 
         @Override
         public boolean accept(Resource obj) {
@@ -469,7 +469,7 @@ public class Resources {
 
         public static final AnyFilter INSTANCE = new AnyFilter();
 
-        private AnyFilter() {};
+        private AnyFilter() {}
 
         @Override
         public boolean accept(Resource obj) {

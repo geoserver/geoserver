@@ -30,6 +30,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Files;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -470,7 +471,7 @@ public class IOUtils {
      */
     public static void rename(File source, File dest) throws IOException {
         // same path? Do nothing
-        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath())) return;
+        if (source.getCanonicalPath().equals(dest.getCanonicalPath())) return;
 
         // windows needs special treatment, we cannot rename onto an existing file
         boolean win = System.getProperty("os.name").startsWith("Windows");
@@ -482,7 +483,9 @@ public class IOUtils {
             }
         }
         // make sure the rename actually succeeds
-        if (!source.renameTo(dest)) {
+        // using Files.move() instead of File.renameTo() to get better cross-platform support
+        // see also the javadoc of File.renameTo for more details
+        if (!Files.move(source, dest)) {
             FileUtils.deleteQuietly(dest);
             if (source.isDirectory()) {
                 FileUtils.moveDirectory(source, dest);

@@ -72,6 +72,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
   <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
   <rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
+  <rule ref="category/java/codestyle.xml/UnnecessarySemicolon"/>
   <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
   <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
   <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues"/>
@@ -79,7 +80,6 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/errorprone.xml/CheckSkipResult"/>
   <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray"/>
   <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
-  <rule ref="category/java/errorprone.xml/UnnecessarySemicolon"/>
   <rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
   <rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
   <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode"/>
@@ -108,7 +108,6 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
     </description>
     <priority>3</priority>
     <properties>
-      <property name="version" value="2.0"/>
       <property name="xpath">
         <value><![CDATA[
           //ImportDeclaration[@ImportedName=@PackageName]

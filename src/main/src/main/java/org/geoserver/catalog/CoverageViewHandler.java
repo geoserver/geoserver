@@ -162,7 +162,7 @@ class CoverageViewHandler {
         void visit(GridCoverage2DReader reader);
 
         GeneralBounds getOriginalEnvelope();
-    };
+    }
 
     abstract class AbstractEnvelopeComposer implements EnvelopeComposer {
         GeneralBounds env = null;

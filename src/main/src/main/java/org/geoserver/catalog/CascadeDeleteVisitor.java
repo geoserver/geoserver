@@ -240,7 +240,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             dirty = true;
 
             StyleInfo newDefaultStyle;
-            if (layer.getStyles().size() > 0) {
+            if (!layer.getStyles().isEmpty()) {
                 newDefaultStyle = layer.getStyles().iterator().next();
                 layer.getStyles().remove(newDefaultStyle);
             } else {
@@ -366,7 +366,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                     group.getStyles().remove(index);
                     index = getLayerGroupIndex(layerGroupToRemove, group.getLayers());
                 }
-                if (group.getLayers().size() == 0) {
+                if (group.getLayers().isEmpty()) {
                     // if group is empty, delete it
                     visit(group);
                 } else {

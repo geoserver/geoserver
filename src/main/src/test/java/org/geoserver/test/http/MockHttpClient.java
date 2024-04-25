@@ -54,10 +54,8 @@ public class MockHttpClient extends AbstractHttpClient {
     }
 
     private byte[] toByteArray(InputStream is) throws IOException {
-        try {
+        try (is) {
             return IOUtils.toByteArray(is);
-        } finally {
-            is.close();
         }
     }
 

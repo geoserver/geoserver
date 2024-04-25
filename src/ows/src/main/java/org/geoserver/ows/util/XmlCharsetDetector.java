@@ -81,19 +81,19 @@ public class XmlCharsetDetector {
             // But using StringBuffer will make this uglier, not?
             LOGGER.finer(
                     "First 4 bytes of XML doc are : "
-                            + Integer.toHexString((int) b4[0] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[0] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[0]
                             + "') "
-                            + Integer.toHexString((int) b4[1] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[1] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[1]
                             + "') "
-                            + Integer.toHexString((int) b4[2] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[2] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[2]
                             + "') "
-                            + Integer.toHexString((int) b4[3] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[3] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[3]
                             + "')");

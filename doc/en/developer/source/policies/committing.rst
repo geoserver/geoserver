@@ -8,11 +8,11 @@ Getting commit access
 
 All contributors are asked to provide an assignment agreement for working on the project:
 
-* `corporate_contributor <https://www.osgeo.org/resources/corporate-contributor-license/>`__
+* `individual_contributor <https://www.osgeo.org/resources/individual-contributor-license/>`__
 
   Individual contributor agreement.
 
-* `individual_contributor <https://www.osgeo.org/resources/individual-contributor-license/>`__
+* `corporate_contributor <https://www.osgeo.org/resources/corporate-contributor-license/>`__
 
   Corporate contributor agreement to authorize employees to work on project. May also be used as a software grant to donate software to the project.
 

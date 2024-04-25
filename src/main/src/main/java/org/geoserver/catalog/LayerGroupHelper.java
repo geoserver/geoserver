@@ -59,7 +59,7 @@ public class LayerGroupHelper {
             PublishedInfo p = group.getLayers().get(i);
             StyleInfo s;
             // Handle incomplete layer groups, especially those constructed by the XStreamPersister
-            if (group.getStyles() == null || group.getStyles().size() == 0) {
+            if (group.getStyles() == null || group.getStyles().isEmpty()) {
                 s = null;
             } else {
                 s = group.getStyles().get(i);
@@ -145,7 +145,7 @@ public class LayerGroupHelper {
             PublishedInfo p = group.getLayers().get(i);
             StyleInfo s;
             // Handle incomplete layer groups, especially those constructed by the XStreamPersister
-            if (group.getStyles() == null || group.getStyles().size() == 0) {
+            if (group.getStyles() == null || group.getStyles().isEmpty()) {
                 s = null;
             } else {
                 s = group.getStyles().get(i);

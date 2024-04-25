@@ -49,7 +49,7 @@ public class GeoServerConfigurationLock {
     public static enum LockType {
         READ,
         WRITE
-    };
+    }
 
     private boolean enabled;
 

@@ -64,11 +64,11 @@ public class ElevationParser {
             return Collections.emptyList();
         }
         value = value.trim();
-        if (value.length() == 0) {
+        if (value.isEmpty()) {
             return Collections.emptyList();
         }
         final Set values =
-                new TreeSet(
+                new TreeSet<>(
                         (o1, o2) -> {
                             final boolean o1Double = o1 instanceof Double;
                             final boolean o2Double = o2 instanceof Double;
@@ -138,7 +138,7 @@ public class ElevationParser {
             checkMaxElevations(values, maxValues);
         }
 
-        return new ArrayList(values);
+        return new ArrayList<>(values);
     }
 
     /** Maximum number of elevations this parser will parse before throwing an exception */

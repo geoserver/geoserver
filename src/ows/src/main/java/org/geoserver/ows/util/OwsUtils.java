@@ -363,11 +363,11 @@ public class OwsUtils {
                     }
                     if (value == null) {
                         if (Map.class.isAssignableFrom(type)) {
-                            value = new HashMap();
+                            value = new HashMap<>();
                         } else if (List.class.isAssignableFrom(type)) {
-                            value = new ArrayList();
+                            value = new ArrayList<>();
                         } else if (Set.class.isAssignableFrom(type)) {
-                            value = new HashSet();
+                            value = new HashSet<>();
                         } else {
                             throw new RuntimeException("Unknown collection type:" + type.getName());
                         }

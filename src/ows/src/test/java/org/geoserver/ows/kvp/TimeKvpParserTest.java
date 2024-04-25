@@ -26,6 +26,7 @@ import org.junit.Test;
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
  */
+@SuppressWarnings({"rawtypes", "PMD.UseDiamondOperator"})
 public class TimeKvpParserTest {
     /** A time period for testing. */
     private static final String PERIOD = "2007-01-01T12Z/2007-01-31T12Z/P1DT12H";

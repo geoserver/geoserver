@@ -116,7 +116,6 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
-import org.geotools.ows.wms.WebMapServer;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.util.SoftValueHashMap;

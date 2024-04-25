@@ -2101,10 +2101,10 @@ public class ResourcePool {
         client.setUser(username);
         client.setPassword(password);
         if (authKey != null) {
-	        String[] kv = authKey.split("=");
-	        if (kv.length == 2) {
-        		client.setExtraParams(Map.of(kv[0], kv[1]));
-	        }
+            String[] kv = authKey.split("=");
+            if (kv.length == 2) {
+                client.setExtraParams(Map.of(kv[0], kv[1]));
+            }
         }
         client.setConnectTimeout(connectTimeout);
         client.setReadTimeout(readTimeout);

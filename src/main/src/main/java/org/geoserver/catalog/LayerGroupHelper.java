@@ -473,6 +473,7 @@ public class LayerGroupHelper {
      *
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public Stack<LayerGroupInfo> checkLoops() {
         Stack<LayerGroupInfo> path = new Stack<>();
         if (checkLoops(group, group.getLayers(), group.getStyles(), path)) {

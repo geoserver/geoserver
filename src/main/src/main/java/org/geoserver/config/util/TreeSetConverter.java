@@ -59,7 +59,7 @@ public class TreeSetConverter extends CollectionConverter {
         boolean inFirstElement = unmarshalledComparator instanceof Mapper.Null;
         Comparator comparator = inFirstElement ? null : unmarshalledComparator;
         final PresortedSet set = new PresortedSet(comparator);
-        TreeSet result = comparator == null ? new TreeSet() : new TreeSet(comparator);
+        TreeSet result = comparator == null ? new TreeSet<>() : new TreeSet<>(comparator);
         if (inFirstElement) {
             // we are already within the first element
             addCurrentElementToCollection(reader, context, result, set);

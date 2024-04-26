@@ -150,7 +150,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
             } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }
-            return new String(Hex.encode(md.digest(SecurityUtils.toBytes(array, charSet))));
+            return String.valueOf(Hex.encode(md.digest(SecurityUtils.toBytes(array, charSet))));
 
         } finally {
             if (array != null) manager.disposePassword(array);

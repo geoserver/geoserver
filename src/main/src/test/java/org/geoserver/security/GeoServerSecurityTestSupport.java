@@ -18,7 +18,7 @@ public class GeoServerSecurityTestSupport extends GeoServerSystemTestSupport {
 
     /** Accessor for the geoserver master password. */
     protected String getMasterPassword() {
-        return new String(getSecurityManager().getMasterPassword());
+        return String.valueOf(getSecurityManager().getMasterPassword());
     }
 
     @Override

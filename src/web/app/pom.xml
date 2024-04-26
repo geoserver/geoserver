@@ -1871,7 +1871,7 @@
       <id>rat</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-rat</artifactId>
           <version>${gs.version}</version>
         </dependency>

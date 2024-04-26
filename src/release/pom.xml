@@ -407,6 +407,11 @@
       <artifactId>gs-metadata</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-rat</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

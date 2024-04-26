@@ -509,6 +509,7 @@ public class WCSUtils {
     }
 
     /** Guesses the size of the sample able to contain the range fully */
+    @SuppressWarnings("PMD.UnnecessaryCast")
     static int guessSizeFromRange(NumberRange range) {
         double min = range.getMinimum();
         double max = range.getMaximum();

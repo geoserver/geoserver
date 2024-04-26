@@ -72,8 +72,8 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
                         LOGGER.log(Level.WARNING, "Failed to load resource '" + r.name() + "'", e);
                     }
                 }
-            } catch (InterruptedException e) {
-                return;
+            } catch (InterruptedException ignored) {
+                // ignore
             }
         }
     }

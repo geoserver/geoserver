@@ -101,7 +101,6 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
                 arrays = new ConcurrentLinkedQueue<>();
                 arrays.add(getBankReference(db));
                 put(key, arrays);
-                return;
             } else {
                 arrays.add(getBankReference(db));
             }

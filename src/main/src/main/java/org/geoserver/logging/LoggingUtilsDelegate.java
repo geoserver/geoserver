@@ -88,7 +88,7 @@ class LoggingUtilsDelegate {
         List<Appender> savedAppenders = new ArrayList<>();
         {
             @SuppressWarnings({
-                    "PMD.CloseResource"
+                "PMD.CloseResource"
             }) // current context, no need to enforce AutoClosable
             LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = loggerContext.getConfiguration();

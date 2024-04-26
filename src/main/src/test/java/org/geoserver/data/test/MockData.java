@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -630,7 +631,7 @@ public class MockData implements TestData {
         AbstractGridFormat format = GridFormatFinder.findFormat(coverage);
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(CatalogWriter.COVERAGE_TYPE_KEY, format.getName());
         params.put(CatalogWriter.COVERAGE_URL_KEY, relpath);
         coverageStores.put(name.getLocalPart(), params);

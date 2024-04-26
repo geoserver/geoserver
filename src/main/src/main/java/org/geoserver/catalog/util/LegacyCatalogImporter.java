@@ -626,7 +626,10 @@ public class LegacyCatalogImporter {
             CoverageDimensionInfo cd = factory.createCoverageDimension();
             cd.setName((String) stringObjectMap.get("name"));
             cd.setDescription((String) stringObjectMap.get("description"));
-            cd.setRange(NumberRange.create((Double) stringObjectMap.get("min"), (Double) stringObjectMap.get("max")));
+            cd.setRange(
+                    NumberRange.create(
+                            (Double) stringObjectMap.get("min"),
+                            (Double) stringObjectMap.get("max")));
             coverage.getDimensions().add(cd);
         }
 

@@ -217,7 +217,7 @@ class CoverageViewHandler {
 
         private static double DELTA = 1E-10;
 
-        private Set<ParameterDescriptor<List>> dynamicParameters; //NOPMD
+        private Set<ParameterDescriptor<List>> dynamicParameters; // NOPMD
 
         private String[] metadataNames;
 

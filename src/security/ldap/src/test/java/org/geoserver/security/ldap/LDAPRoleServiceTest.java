@@ -123,7 +123,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
         SortedSet<GeoServerRole> roles = service.getRoles();
         assertNotNull(roles);
-        assertTrue(roles.size() > 0);
+        assertTrue(!roles.isEmpty());
         GeoServerRole role = roles.first();
         assertTrue(role.toString().startsWith("ROLE_"));
         assertEquals(role.toString().toUpperCase(), role.toString());
@@ -132,7 +132,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
         roles = service.getRoles();
         assertNotNull(roles);
-        assertTrue(roles.size() > 0);
+        assertTrue(!roles.isEmpty());
         role = roles.first();
         assertTrue(role.toString().startsWith("test_"));
         assertNotEquals(role.toString().toUpperCase(), role.toString());
@@ -143,7 +143,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         SortedSet<GeoServerRole> allRoles = service.getRoles();
         SortedSet<GeoServerRole> roles = service.getRolesForUser(username);
         assertNotNull(roles);
-        assertTrue(roles.size() > 0);
+        assertTrue(!roles.isEmpty());
         assertTrue(roles.size() < allRoles.size());
         GeoServerRole role = roles.first();
         assertTrue(role.toString().startsWith("ROLE_"));
@@ -153,7 +153,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         allRoles = service.getRoles();
         roles = service.getRolesForUser(username);
         assertNotNull(roles);
-        assertTrue(roles.size() > 0);
+        assertTrue(!roles.isEmpty());
         assertTrue(roles.size() < allRoles.size());
         role = roles.first();
         assertTrue(role.toString().startsWith("test_"));

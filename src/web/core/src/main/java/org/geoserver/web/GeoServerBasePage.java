@@ -178,7 +178,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                             org.apache.wicket.markup.ComponentTag tag) {
                                         String loginPath = getResourcePath(info.getLoginPath());
                                         tag.put("action", loginPath);
-                                    };
+                                    }
                                 };
 
                         Image image;

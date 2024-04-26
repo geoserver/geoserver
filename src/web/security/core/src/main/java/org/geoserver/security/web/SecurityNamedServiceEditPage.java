@@ -162,7 +162,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
 
         public String getLabelKey() {
             return "error";
-        };
+        }
 
         String handleStackTrace(Exception error) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();

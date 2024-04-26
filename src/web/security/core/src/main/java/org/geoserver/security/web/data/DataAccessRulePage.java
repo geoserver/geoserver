@@ -66,7 +66,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(rules.getSelection().size() > 0);
+                                removal.setEnabled(!rules.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });

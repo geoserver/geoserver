@@ -67,12 +67,12 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
     @Override
     protected String getTabbedPanelPath() {
         return "panel:panel";
-    };
+    }
 
     @Override
     protected String getItemsPath() {
         return getTabbedPanelPath() + ":panel:table:listContainer:items";
-    };
+    }
 
     @Test
     public void testEditParentRole() throws Exception {

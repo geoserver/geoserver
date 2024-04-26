@@ -98,7 +98,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             }
             names = Collections.unmodifiableSet(tmp);
         }
-    };
+    }
 
     public WCS20GetCapabilitiesTransformer(
             GeoServer gs, CoverageResponseDelegateFinder responseFactory) {

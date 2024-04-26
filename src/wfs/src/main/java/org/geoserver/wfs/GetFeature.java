@@ -298,7 +298,7 @@ public class GetFeature {
 
         // grab the view params is any
         List<Map<String, String>> viewParams = null;
-        if (request.getViewParams() != null && request.getViewParams().size() > 0) {
+        if (request.getViewParams() != null && !request.getViewParams().isEmpty()) {
             viewParams = request.getViewParams();
         }
 

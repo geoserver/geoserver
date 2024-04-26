@@ -578,7 +578,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
             for (String style : styleNames) {
                 Map<String, String> parameters;
-                if (style.length() == 0 || style.equals(defaultStyle)) {
+                if (style.isEmpty() || style.equals(defaultStyle)) {
                     log.finer(
                             "'"
                                     + style
@@ -2671,7 +2671,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         map.put("Last-Modified", lastModified);
 
         final Date ifModifiedSince;
-        if (ifModSinceHeader != null && ifModSinceHeader.length() > 0) {
+        if (ifModSinceHeader != null && !ifModSinceHeader.isEmpty()) {
             ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
             if (ifModifiedSince != null) {
                 // the HTTP header has second precision

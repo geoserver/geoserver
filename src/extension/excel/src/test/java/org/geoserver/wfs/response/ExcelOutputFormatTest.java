@@ -144,7 +144,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
                 getAsServletResponse(
                         "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");
         try (InputStream in = getBinaryInputStream(resp);
-                Workbook wb = new XSSFWorkbook(in); ) {
+                Workbook wb = new XSSFWorkbook(in)) {
             testMultipleFeatureTypes(wb);
         }
     }

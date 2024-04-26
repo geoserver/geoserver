@@ -884,7 +884,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;
-                    };
+                    }
                 };
 
         // setup all the mocks

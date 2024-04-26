@@ -126,7 +126,7 @@ public class DataLinkEditor extends Panel {
 
     private void updateLinksVisibility() {
         ResourceInfo ri = (ResourceInfo) getDefaultModelObject();
-        boolean anyLink = ri.getDataLinks().size() > 0;
+        boolean anyLink = !ri.getDataLinks().isEmpty();
         table.setVisible(anyLink);
         noData.setVisible(!anyLink);
     }

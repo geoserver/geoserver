@@ -103,7 +103,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
                             public Component buildComponent(String id) {
 
                                 return current = new LDAPAuthProviderPanel(id, new Model<>(config));
-                            };
+                            }
                         },
                         new CompoundPropertyModel<>(config)));
     }

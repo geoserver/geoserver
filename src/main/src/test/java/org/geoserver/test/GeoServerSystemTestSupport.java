@@ -1043,7 +1043,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         int status = response.getStatus();
         if (responseCode != status) {
             String content = response.getContentAsString();
-            if (content == null || content.length() == 0) {
+            if (content == null || content.isEmpty()) {
                 throw new ServiceException(
                         "expected status <" + responseCode + "> but was <" + status + ">");
             } else {
@@ -1345,7 +1345,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         int status = response.getStatus();
         if (statusCode != status) {
             String content = response.getContentAsString();
-            if (content == null || content.length() == 0) {
+            if (content == null || content.isEmpty()) {
                 throw new ServiceException(
                         "expected status <" + statusCode + "> but was <" + status + ">");
             } else {
@@ -1362,7 +1362,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         int status = response.getStatus();
         if (statusCode != status) {
             String content = response.getContentAsString();
-            if (content == null || content.length() == 0) {
+            if (content == null || content.isEmpty()) {
                 throw new ServiceException(
                         "expected status <" + statusCode + "> but was <" + status + ">");
             } else {

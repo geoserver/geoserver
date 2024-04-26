@@ -712,7 +712,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         JSONArray jsonArr = json.getJSONArray("long-array-array");
         assertNotNull(jsonArr);
-        assertTrue(jsonArr.size() > 0);
+        assertTrue(!jsonArr.isEmpty());
     }
 
     @Test

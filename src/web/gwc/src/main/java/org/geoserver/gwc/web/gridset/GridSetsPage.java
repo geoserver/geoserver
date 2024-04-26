@@ -66,7 +66,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
 
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
-            removal.setEnabled(table.getSelection().size() > 0);
+            removal.setEnabled(!table.getSelection().isEmpty());
             target.add(removal);
         }
 
@@ -234,7 +234,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
                         public void onClose(AjaxRequestTarget target) {
                             // if the selection has been cleared out it's sign a deletion
                             // occurred, so refresh the table
-                            if (gridsets.getSelection().size() == 0) {
+                            if (gridsets.getSelection().isEmpty()) {
                                 setEnabled(false);
                                 target.add(SelectionRemovalLink.this);
                                 target.add(gridsets);

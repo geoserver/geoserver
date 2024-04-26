@@ -36,7 +36,7 @@ public class StorePage extends GeoServerSecuredPage {
                 new StorePanel("table", provider, true) {
                     @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        removal.setEnabled(table.getSelection().size() > 0);
+                        removal.setEnabled(!table.getSelection().isEmpty());
                         target.add(removal);
                     }
                 };

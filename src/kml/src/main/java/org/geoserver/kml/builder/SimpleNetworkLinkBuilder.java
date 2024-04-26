@@ -68,7 +68,7 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             MapLayerInfo layerInfo = layers.get(i);
             NetworkLink nl = container.createAndAddNetworkLink();
             nl.setName(layerInfo.getLabel());
-            if (layerInfo.getDescription() != null && layerInfo.getDescription().length() > 0) {
+            if (layerInfo.getDescription() != null && !layerInfo.getDescription().isEmpty()) {
                 nl.setDescription(layerInfo.getDescription());
             }
 

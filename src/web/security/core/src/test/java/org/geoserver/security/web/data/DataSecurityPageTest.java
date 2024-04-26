@@ -80,7 +80,7 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
     protected void simulateDeleteSubmit() throws Exception {
 
         DataAccessRuleDAO.get().reload();
-        assertTrue(DataAccessRuleDAO.get().getRules().size() > 0);
+        assertTrue(!DataAccessRuleDAO.get().getRules().isEmpty());
 
         SelectionDataRuleRemovalLink link = (SelectionDataRuleRemovalLink) getRemoveLink();
         Method m =

@@ -234,7 +234,7 @@ public class CachingOptionsPanel extends Panel {
                     validatable.error(error);
                 }
             }
-        };
+        }
         FormatsValidator validator = new FormatsValidator();
         vectorFormatsGroup.add(validator);
         rasterFormatsGroup.add(validator);

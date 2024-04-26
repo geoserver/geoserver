@@ -56,11 +56,11 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
             String userGroupServiceName =
                     ((GeoServerWebAuthenticationDetails) authentication.getDetails())
                             .getUserGroupServiceName();
-            if (userGroupServiceName == null || userGroupServiceName.trim().length() == 0)
+            if (userGroupServiceName == null || userGroupServiceName.trim().isEmpty())
                 return ""; // no service specified --> no remember me
             return encode(super.retrieveUserName(authentication), userGroupServiceName);
         } else return ""; // no remember me feature without a user group service name
-    };
+    }
 
     String encode(String username, String userGroupServiceName) {
         if (userGroupServiceName == null) {

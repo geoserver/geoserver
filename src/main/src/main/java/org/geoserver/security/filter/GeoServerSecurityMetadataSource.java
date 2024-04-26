@@ -72,7 +72,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
 
             return true;
         }
-    };
+    }
 
     static final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 

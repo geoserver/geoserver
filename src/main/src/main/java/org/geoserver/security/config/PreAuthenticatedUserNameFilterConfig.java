@@ -51,7 +51,7 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
         public boolean equals(RoleSource other) {
             return other != null && other.toString().equals(toString());
         }
-    };
+    }
 
     private static final long serialVersionUID = 1L;
 

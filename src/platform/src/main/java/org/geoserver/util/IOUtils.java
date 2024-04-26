@@ -69,19 +69,13 @@ public class IOUtils {
      */
     public static void copy(InputStream in, OutputStream out, int copyBufferSize)
             throws IOException {
-        try {
+        try (in;
+                out) {
             byte[] buffer = new byte[copyBufferSize];
             int bytes = 0;
             while ((bytes = in.read(buffer)) != -1) out.write(buffer, 0, bytes);
 
             out.flush();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.close();
-            }
         }
     }
 
@@ -104,15 +98,13 @@ public class IOUtils {
         if (input == null) {
             return null;
         }
-        ByteArrayOutputStream output;
-        try {
-            output = new ByteArrayOutputStream();
+        final String toReturn;
+        try (input;
+                ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             copy(input, output);
-        } finally {
-            input.close();
-            input.close();
+            toReturn = output.toString();
         }
-        return output.toString();
+        return toReturn;
     }
 
     /**
@@ -129,7 +121,8 @@ public class IOUtils {
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             escapedMap.put("${" + entry.getKey() + "}", entry.getValue());
         }
-        try (BufferedWriter out = new BufferedWriter(new FileWriter(to))) {
+        try (from;
+                BufferedWriter out = new BufferedWriter(new FileWriter(to))) {
             String line = null;
             while ((line = from.readLine()) != null) {
                 for (Map.Entry<String, String> entry : escapedMap.entrySet()) {
@@ -139,8 +132,6 @@ public class IOUtils {
                 out.newLine();
             }
             out.flush();
-        } finally {
-            from.close();
         }
     }
 

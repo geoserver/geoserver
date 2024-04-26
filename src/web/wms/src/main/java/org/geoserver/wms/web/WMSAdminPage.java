@@ -643,7 +643,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
                                         target.add(textField);
                                         dialog.close(target);
-                                    };
+                                    }
                                 };
                         chooser.setFileTableHeight(null);
                         modal.setContent(chooser);

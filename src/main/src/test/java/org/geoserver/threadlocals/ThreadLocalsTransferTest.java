@@ -148,5 +148,5 @@ public class ThreadLocalsTransferTest extends GeoServerSystemTestSupport {
         abstract void assertThreadLocalCleaned();
 
         abstract void assertThreadLocalApplied();
-    };
+    }
 }

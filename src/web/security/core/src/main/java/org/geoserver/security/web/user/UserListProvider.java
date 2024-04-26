@@ -78,7 +78,7 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
 
                 @Override
                 public Object getPropertyValue(GeoServerUser item) {
-                    if (item.getProperties().size() == 0) return Boolean.FALSE;
+                    if (item.getProperties().isEmpty()) return Boolean.FALSE;
                     else return Boolean.TRUE;
                 }
 

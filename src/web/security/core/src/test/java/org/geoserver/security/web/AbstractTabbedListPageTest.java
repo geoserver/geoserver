@@ -47,7 +47,7 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
 
     protected String getItemsPath() {
         return getTabbedPanelPath() + ":panel:table:listContainer:items";
-    };
+    }
 
     protected abstract String getTabbedPanelPath();
 

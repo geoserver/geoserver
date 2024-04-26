@@ -50,7 +50,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
     SecurityManagerConfig secMgrConfig;
 
     Form<? extends RequestFilterChainWrapper> form;
-    CheckBox[] methodList = new CheckBox[7];;
+    CheckBox[] methodList = new CheckBox[7];
 
     protected boolean isNew;
 
@@ -183,7 +183,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
     protected void doReturn() {
         ((AuthenticationPage) returnPage).updateChainComponents();
         super.doReturn();
-    };
+    }
 
     protected boolean isNew() {
         return isNew;

@@ -206,7 +206,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
 
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
-            remove.setEnabled(blobStoresPanel.getSelection().size() > 0);
+            remove.setEnabled(!blobStoresPanel.getSelection().isEmpty());
             target.add(remove);
         }
     }

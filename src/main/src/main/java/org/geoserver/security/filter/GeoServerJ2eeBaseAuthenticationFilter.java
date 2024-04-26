@@ -38,7 +38,7 @@ public abstract class GeoServerJ2eeBaseAuthenticationFilter
 
         Collection<GeoServerRole> roles = new ArrayList<>();
         boolean useActiveService =
-                getRoleServiceName() == null || getRoleServiceName().trim().length() == 0;
+                getRoleServiceName() == null || getRoleServiceName().trim().isEmpty();
 
         GeoServerRoleService service =
                 useActiveService

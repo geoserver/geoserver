@@ -284,7 +284,7 @@ class FeatureCountProcessor {
                                         }
                                     }
                                 });
-                    };
+                    }
                 };
         getMap.run(getMapRequest);
 

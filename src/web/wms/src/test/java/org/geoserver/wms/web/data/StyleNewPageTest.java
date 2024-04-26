@@ -469,7 +469,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
 
         tester.assertRenderedPage(StyleNewPage.class);
-        assertTrue(tester.getMessages(FeedbackMessage.ERROR).size() > 0);
+        assertTrue(!tester.getMessages(FeedbackMessage.ERROR).isEmpty());
     }
 
     @Test

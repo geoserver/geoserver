@@ -923,7 +923,7 @@ public class LegendMerger {
         BufferedImage labelImg = null;
         if (!options.isForceLabelsOff() && rule != null) {
             String label = LegendUtils.getRuleLabel(rule, req);
-            if (label != null && label.length() > 0) {
+            if (label != null && !label.isEmpty()) {
                 final BufferedImage renderedLabel =
                         getRenderedLabel((BufferedImage) img, label, req);
                 labelImg = renderedLabel;

@@ -142,7 +142,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
                 headers != null && headers.hasMoreElements()
                         ? headers.nextElement().toString()
                         : null;
-        if (header != null && header.length() > 0) {
+        if (header != null && !header.isEmpty()) {
             long ifModSinceSeconds = lastModified(header);
             // the HTTP header has second precision
             long timeStampSeconds = 1000 * (timeStamp / 1000);

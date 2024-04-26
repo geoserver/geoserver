@@ -2334,7 +2334,7 @@ public class XStreamPersister {
                     writer.endNode();
                 }
             }
-            if (vt.getParameterNames().size() > 0) {
+            if (!vt.getParameterNames().isEmpty()) {
                 for (String name : vt.getParameterNames()) {
                     VirtualTableParameter param = vt.getParameter(name);
                     writer.startNode("parameter");

@@ -216,7 +216,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         tablePanel.clearSelection();
         removeLink.setEnabled(false);
         super.onBeforeRender();
-    };
+    }
 
     private class RemoveLink extends AjaxLink {
         public RemoveLink() {

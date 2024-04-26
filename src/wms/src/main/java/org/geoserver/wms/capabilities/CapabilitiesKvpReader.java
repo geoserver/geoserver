@@ -37,7 +37,7 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
         request.setRawKvp(rawKvp);
 
         String version = request.getVersion();
-        if (null == version || version.length() == 0) {
+        if (null == version || version.isEmpty()) {
             version = (String) rawKvp.get("WMTVER");
         }
 

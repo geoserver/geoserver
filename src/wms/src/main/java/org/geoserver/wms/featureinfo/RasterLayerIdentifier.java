@@ -614,7 +614,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
      * @return valid XML NCName
      */
     static String descriptionToNcName(String description) {
-        if (description == null || description.length() == 0) {
+        if (description == null || description.isEmpty()) {
             return "Unknown";
         } else {
             char[] result = description.toCharArray();

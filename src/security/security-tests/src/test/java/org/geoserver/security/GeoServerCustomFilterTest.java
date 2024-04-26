@@ -39,8 +39,8 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         FIRST,
         LAST,
         BEFORE,
-        AFTER;
-    };
+        AFTER
+    }
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {

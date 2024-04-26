@@ -165,7 +165,7 @@ public class LoggingFilter implements GeoServerFilter {
                                 "Request character set not recognized, using default character set");
                     }
                     float maxBytesPerCharacter = charset.newEncoder().maxBytesPerChar();
-                    int byteSize = (int) (requestLogBufferSize * (double) maxBytesPerCharacter);
+                    int byteSize = (int) (requestLogBufferSize * maxBytesPerCharacter);
                     byte[] reqCharacters = new byte[byteSize];
                     BufferedInputStream bufferedStream = new BufferedInputStream(is);
                     bufferedStream.mark(byteSize);

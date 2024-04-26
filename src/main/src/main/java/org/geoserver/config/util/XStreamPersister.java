@@ -1000,7 +1000,7 @@ public class XStreamPersister {
                 List<Class<?>> matches = new ArrayList<>();
                 collectSuperclasses(clazz, matches);
                 for (Iterator<Class<?>> it = matches.iterator(); it.hasNext(); ) {
-                    Class<?> sper = (Class<?>) it.next();
+                    Class<?> sper = it.next();
                     if (backwardBreifMap.get(sper) == null) {
                         it.remove();
                     }

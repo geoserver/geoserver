@@ -85,6 +85,44 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testReloadPAMDataset() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
+        assertEquals(200, response.getStatus());
+        assertThat(response.getContentType(), Matchers.startsWith("application/xml"));
+        Document doc = dom(getBinaryInputStream(response));
+        // check the first entry has green color
+        assertXpathEvaluatesTo(
+                "green",
+                "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable/Row[@index=0]/F[3]",
+                doc);
+
+        // copy over a RAT with a different color
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource aux = dd.get("rat", "rat.tiff.aux.xml");
+        Class<RasterAttributeTableConfigTest> clazz = RasterAttributeTableConfigTest.class;
+        try (InputStream is = clazz.getResourceAsStream("rat.tiff.aux2.xml");
+                OutputStream os = aux.out()) {
+            IOUtils.copy(is, os);
+            os.close();
+        }
+
+        // force reload
+        response =
+                postAsServletResponse(
+                        "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam/reload", "");
+        assertEquals(200, response.getStatus());
+
+        // grab again and check color
+        doc = getAsDOM("rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
+        assertXpathEvaluatesTo(
+                "olive",
+                "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable/Row[@index=0]/F[3]",
+                doc);
+    }
+
+    @Test
     public void testCreateStyle() throws Exception {
         String createCommand =
                 "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam?band=0&styleName=test123&classification=test";

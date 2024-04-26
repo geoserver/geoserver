@@ -1874,6 +1874,7 @@
             <descriptor>release/ext-wps-jdbc.xml</descriptor>
             <descriptor>release/ext-wps.xml</descriptor>
             <descriptor>release/ext-ysld.xml</descriptor>
+            <descriptor>release/ext-rat.xml</descriptor>
           </descriptors>
           <outputDirectory>${project.build.directory}/release</outputDirectory>
         </configuration>

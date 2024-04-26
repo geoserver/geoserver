@@ -84,8 +84,8 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         if (check == null) {
             configuration.addAppender(this);
             this.start();
-        } else if (check == this) {
-            return; // already configured, so that is okay then
+        } else if (check == this) { // NOPMD
+            // already configured, so that is okay then
         } else {
             throw new IllegalStateException(
                     "Unable to configure '"
@@ -160,8 +160,8 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         Configuration configuration = ctx.getConfiguration();
 
         Appender check = configuration.getAppender(getName());
-        if (check == null) {
-            return; // already de-configured, so nothing to do
+        if (check == null) { // NOPMD
+            // already de-configured, so nothing to do
         } else if (check == this) {
             configuration.getAppenders().remove(getName(), this);
             this.stopRecording();

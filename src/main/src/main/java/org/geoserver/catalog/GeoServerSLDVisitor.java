@@ -318,7 +318,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
             List<LayerInfo> layers = new ArrayList<>();
             // not sure if this has side-effects
-            Style[] layerStyles = ul.getUserStyles(); //NOPMD
+            Style[] layerStyles = ul.getUserStyles(); // NOPMD
 
             for (FeatureTypeConstraint featureConstraint : featureConstraints) {
                 // make sure the layer is there

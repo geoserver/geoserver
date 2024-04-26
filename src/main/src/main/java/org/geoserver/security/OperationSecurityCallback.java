@@ -71,7 +71,7 @@ public class OperationSecurityCallback implements DispatcherCallback {
             if (!allowedRoles.contains(ServiceAccessRule.ANY) && !allowedRoles.isEmpty()) {
                 Authentication user = SecurityContextHolder.getContext().getAuthentication();
 
-                if (user == null || user.getAuthorities().size() == 0)
+                if (user == null || user.getAuthorities().isEmpty())
                     throw new InsufficientAuthenticationException(
                             "Cannot access " + service + "." + method + " as anonymous");
 

@@ -32,7 +32,7 @@ public class DecimalConverter extends DoubleConverter {
 
     @Override
     public Double convertToObject(String value, Locale locale) {
-        if (value == null || value.trim().length() == 0) {
+        if (value == null || value.trim().isEmpty()) {
             return null;
         }
         final NumberFormat format = getNumberFormat(locale);

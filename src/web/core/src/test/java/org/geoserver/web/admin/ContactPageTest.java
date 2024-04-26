@@ -324,7 +324,6 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
     private void assertI18NContent(InternationalString internationalString) {
         GrowableInternationalString growable = (GrowableInternationalString) internationalString;
-        growable.getLocales()
-                .forEach(l -> assertTrue(internationalString.toString(l).length() > 0));
+        growable.getLocales().forEach(l -> assertTrue(!internationalString.toString(l).isEmpty()));
     }
 }

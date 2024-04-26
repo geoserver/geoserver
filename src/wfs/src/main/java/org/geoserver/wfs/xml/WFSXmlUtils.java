@@ -191,7 +191,7 @@ public class WFSXmlUtils {
                 return true;
             }
             return super.isResolvable(container, adapter, expectedType);
-        };
+        }
 
         @Override
         public Object resolveInstance(

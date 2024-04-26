@@ -83,7 +83,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     public enum MixedModeBehavior {
         HIDE,
         CHALLENGE
-    };
+    }
 
     protected ResourceAccessManager accessManager;
 
@@ -1065,7 +1065,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // not hide, and not filtering out a list, this
         // is an unauthorized direct resource access, complain
         Authentication user = user();
-        if (user == null || user.getAuthorities().size() == 0)
+        if (user == null || user.getAuthorities().isEmpty())
             return new InsufficientAuthenticationException(
                     "Cannot access " + resourceName + " as anonymous");
         else
@@ -1077,7 +1077,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         // not hide, and not filtering out a list, this
         // is an unauthorized direct resource access, complain
         Authentication user = user();
-        if (user == null || user.getAuthorities().size() == 0)
+        if (user == null || user.getAuthorities().isEmpty())
             return new InsufficientAuthenticationException(
                     "Operation unallowed with the current privileges");
         else return new AccessDeniedException("Operation unallowed with the current privileges");

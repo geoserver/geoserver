@@ -527,7 +527,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             int limit = 100;
 
             try (CloseableIterator<StoreInfo> iter =
-                    catalog.list(StoreInfo.class, filter, null, limit, null); ) {
+                    catalog.list(StoreInfo.class, filter, null, limit, null)) {
                 List<Tuple> stores =
                         Lists.newArrayList(
                                 Iterators.transform(

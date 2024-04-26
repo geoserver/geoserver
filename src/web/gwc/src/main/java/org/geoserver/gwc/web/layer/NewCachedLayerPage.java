@@ -222,5 +222,5 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                         }
                     });
         }
-    };
+    }
 }

@@ -42,7 +42,7 @@ public class GeoServerX509CertificateAuthenticationFilter
         X509Certificate cert = certs[0];
         String principal = (String) principalExtractor.extractPrincipal(cert);
 
-        if (principal != null && principal.trim().length() == 0) principal = null;
+        if (principal != null && principal.trim().isEmpty()) principal = null;
 
         return principal;
     }

@@ -86,7 +86,7 @@ public class GeoServerTileLayerInfoSerializableTest {
             out.writeObject(info);
         }
         GeoServerTileLayerInfo unmarshalled;
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f)); ) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {
             unmarshalled = (GeoServerTileLayerInfo) in.readObject();
         }
 

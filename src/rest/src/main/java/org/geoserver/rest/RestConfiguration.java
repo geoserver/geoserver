@@ -171,7 +171,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         // scan and register media types for style handlers
         List<StyleHandler> styleHandlers = GeoServerExtensions.extensions(StyleHandler.class);
         for (StyleHandler handler : styleHandlers) {
-            if (handler.getVersions() != null && handler.getVersions().size() > 0) {
+            if (handler.getVersions() != null && !handler.getVersions().isEmpty()) {
                 // Spring configuration allows associating a single mime to extensions, pick the
                 // latest
                 List<Version> versions = handler.getVersions();

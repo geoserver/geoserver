@@ -34,7 +34,7 @@ public class FileTest {
                 @Override
                 public String getName() {
                     return "TestGAService";
-                };
+                }
 
                 @Override
                 protected void deserialize() throws IOException {
@@ -54,7 +54,7 @@ public class FileTest {
                 @Override
                 public String getName() {
                     return "TestUGService";
-                };
+                }
 
                 @Override
                 protected void deserialize() throws IOException {

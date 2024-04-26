@@ -101,7 +101,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
                             public Component buildComponent(String id) {
 
                                 return current = new LDAPRoleServicePanel(id, new Model<>(config));
-                            };
+                            }
                         },
                         new CompoundPropertyModel<>(config)) {
 

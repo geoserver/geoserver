@@ -102,7 +102,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /** Helper method for inserting user properties */
     protected void addUserProperties(GeoServerUser user, Connection con)
             throws SQLException, IOException {
-        if (user.getProperties().size() == 0) return; // nothing to do
+        if (user.getProperties().isEmpty()) return; // nothing to do
 
         PreparedStatement ps = getDMLStatement("userprops.insert", con);
         try {

@@ -20,7 +20,7 @@ public abstract class AbstractSecurityValidator {
     }
 
     protected boolean isNotEmpty(String aString) {
-        return aString != null && aString.length() > 0;
+        return aString != null && !aString.isEmpty();
     }
 
     protected boolean isNotEmpty(char[] aString) {

@@ -520,8 +520,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         TIFFImageReader readerOverviewSF = null;
         try (FileImageInputStream streamNative = new FileImageInputStream(fileNative);
                 FileImageInputStream streamOverviewTS = new FileImageInputStream(fileOverviewTS);
-                FileImageInputStream streamOverviewSF =
-                        new FileImageInputStream(fileOverviewSF); ) {
+                FileImageInputStream streamOverviewSF = new FileImageInputStream(fileOverviewSF)) {
             readerNative = (TIFFImageReader) spi.createReaderInstance();
             readerNative.setInput(streamNative);
 

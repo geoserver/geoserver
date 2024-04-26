@@ -63,7 +63,7 @@ class LayerTree {
     private void addToNode(LayerTree tree, String[] treeStructure, LayerInfo layer) {
         final int length = treeStructure.length;
 
-        if ((length == 0) || (treeStructure[0].length() == 0)) {
+        if ((length == 0) || (treeStructure[0].isEmpty())) {
             tree.data.add(layer);
         } else {
             LayerTree node = tree.getNode(treeStructure[0]);

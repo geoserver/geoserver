@@ -81,7 +81,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
         public boolean isSearchable() {
             return true;
         }
-    };
+    }
 
     public static final Property<GeoServerRole> HASROLEPARAMS =
             new Property<GeoServerRole>() {
@@ -93,7 +93,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
 
                 @Override
                 public Object getPropertyValue(GeoServerRole item) {
-                    if (item.getProperties().size() == 0) return Boolean.FALSE;
+                    if (item.getProperties().isEmpty()) return Boolean.FALSE;
                     else return Boolean.TRUE;
                 }
 

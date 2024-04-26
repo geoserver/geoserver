@@ -38,7 +38,7 @@ abstract class AbstractVectorLayerIdentifier
                 if ((r.getMinScaleDenominator() - TOLERANCE <= scaleDenominator)
                         && (r.getMaxScaleDenominator() + TOLERANCE > scaleDenominator)
                         && r.symbolizers() != null
-                        && r.symbolizers().size() > 0) {
+                        && !r.symbolizers().isEmpty()) {
                     result.add(r);
                 }
             }

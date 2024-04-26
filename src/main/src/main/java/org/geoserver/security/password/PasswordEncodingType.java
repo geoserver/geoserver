@@ -23,5 +23,5 @@ public enum PasswordEncodingType {
     EMPTY,
     PLAIN,
     ENCRYPT,
-    DIGEST;
+    DIGEST
 }

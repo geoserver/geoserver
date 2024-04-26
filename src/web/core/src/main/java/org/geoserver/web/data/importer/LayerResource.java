@@ -24,7 +24,7 @@ public class LayerResource implements Comparable<LayerResource>, Serializable {
         UPDATED,
         NEW,
         PUBLISHED
-    };
+    }
 
     /** The resource name */
     String name;

@@ -15,7 +15,7 @@ public class JDBCEditUserPageTest extends EditUserPageTest {
     @Override
     protected void doInitialize() throws Exception {
         initializeForJDBC();
-    };
+    }
 
     @Override
     @Test

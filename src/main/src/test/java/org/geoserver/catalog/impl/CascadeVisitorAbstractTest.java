@@ -29,7 +29,7 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
     @Override
     protected void setUpTestData(org.geoserver.data.test.SystemTestData testData) throws Exception {
         // add nothing here
-    };
+    }
 
     @Override
     protected void onSetUp(org.geoserver.data.test.SystemTestData testData) throws Exception {
@@ -75,5 +75,5 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
         // add a workspace specific style
         WorkspaceInfo ws = catalog.getWorkspaceByName(CITE_PREFIX);
         testData.addStyle(ws, WS_STYLE, "Streams.sld", SystemTestData.class, catalog);
-    };
+    }
 }

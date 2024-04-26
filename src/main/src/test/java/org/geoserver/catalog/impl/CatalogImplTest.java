@@ -2891,7 +2891,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
                 catalog.add(layer);
             }
         }
-    };
+    }
 
     @Test
     public void testGet() {

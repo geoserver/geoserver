@@ -33,7 +33,7 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
         } else {
             name = null;
         }
-    };
+    }
 
     @Override
     @SuppressWarnings("unchecked")

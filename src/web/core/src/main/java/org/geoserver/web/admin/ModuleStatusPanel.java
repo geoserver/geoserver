@@ -102,7 +102,7 @@ public class ModuleStatusPanel extends Panel {
         Fragment f = new Fragment(id, "iconFragment", this);
         f.add(new Image("statusIcon", icon));
         return f;
-    };
+    }
 
     class MessagePanel extends Panel {
 

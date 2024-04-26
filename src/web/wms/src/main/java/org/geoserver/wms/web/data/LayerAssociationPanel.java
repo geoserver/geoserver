@@ -145,7 +145,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                         } else {
                             return new Label(id, text);
                         }
-                    };
+                    }
                 };
         add(layerTable);
     }
@@ -170,7 +170,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
             if (b) {
                 layer.setDefaultStyle(parent.getStyleInfo());
             } else {
-                if (layer.getStyles().size() == 0) {
+                if (layer.getStyles().isEmpty()) {
                     layer.setDefaultStyle(parent.getCatalog().getStyleByName("generic"));
                 } else {
                     StyleInfo s = layer.getStyles().iterator().next();

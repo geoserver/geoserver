@@ -1124,7 +1124,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             return gml32Schema;
-        };
+        }
 
         XSDSchema createGml32Schema() {
             try {

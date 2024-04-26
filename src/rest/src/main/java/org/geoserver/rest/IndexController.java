@@ -81,7 +81,7 @@ public class IndexController extends RestBaseController {
                                 if (path.endsWith("/**")) {
                                     path = path.substring(0, path.length() - 3);
                                 }
-                                if (path.length() > 0) {
+                                if (!path.isEmpty()) {
                                     s.add(path);
                                 }
                             }

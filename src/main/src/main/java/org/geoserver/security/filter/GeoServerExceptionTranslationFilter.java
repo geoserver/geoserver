@@ -81,7 +81,7 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
             // 403, FORBIDDEN
             defaultEntryPoint.commence(request, response, authException);
         }
-    };
+    }
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {

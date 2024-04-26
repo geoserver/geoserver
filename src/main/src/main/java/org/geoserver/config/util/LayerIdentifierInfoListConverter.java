@@ -73,7 +73,7 @@ public class LayerIdentifierInfoListConverter {
             array.add(jsonId);
         }
 
-        if (array.size() == 0) {
+        if (array.isEmpty()) {
             // list was made of only null objects?
             return null;
         }

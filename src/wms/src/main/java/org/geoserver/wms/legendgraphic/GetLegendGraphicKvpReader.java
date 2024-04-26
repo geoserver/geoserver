@@ -119,7 +119,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         request.setKvp(kvp);
         request.setWms(wms);
 
-        if (request.getVersion() == null || request.getVersion().length() == 0) {
+        if (request.getVersion() == null || request.getVersion().isEmpty()) {
             String version = (String) rawKvp.get("WMTVER");
             if (version == null) {
                 version = wms.getVersion();

@@ -34,7 +34,7 @@ class GetCoverageRequest implements Serializable {
         public String toString() {
             return name;
         }
-    };
+    }
 
     Version version = Version.v1_0_0;
 

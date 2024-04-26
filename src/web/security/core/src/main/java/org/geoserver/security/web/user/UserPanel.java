@@ -50,9 +50,9 @@ public class UserPanel extends Panel {
                         new UserTablePanel("table", serviceName, provider, true) {
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(users.getSelection().size() > 0);
+                                removal.setEnabled(!users.getSelection().isEmpty());
                                 target.add(removal);
-                                removalWithRoles.setEnabled(users.getSelection().size() > 0);
+                                removalWithRoles.setEnabled(!users.getSelection().isEmpty());
                                 target.add(removalWithRoles);
                             }
                         });

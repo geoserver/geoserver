@@ -128,7 +128,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     protected PreparedStatement getJDBCStatement(String key, Properties props, Connection con)
             throws IOException, SQLException {
         String statementString = props.getProperty(key);
-        if (statementString == null || statementString.trim().length() == 0)
+        if (statementString == null || statementString.trim().isEmpty())
             throw new IOException("No sql statement for key : " + key);
         return con.prepareStatement(statementString.trim());
     }

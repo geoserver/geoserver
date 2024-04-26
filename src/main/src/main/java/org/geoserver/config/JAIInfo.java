@@ -20,7 +20,7 @@ public interface JAIInfo extends Cloneable, Serializable {
         JDK,
         NATIVE,
         PNGJ
-    };
+    }
 
     /** Flag controlling image interpolation. */
     boolean getAllowInterpolation();

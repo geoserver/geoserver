@@ -140,7 +140,7 @@ public abstract class NearestMatchFinder {
     enum FilterDirection {
         HIGHEST_AMONG_LOWERS,
         LOWEST_AMONG_HIGHER
-    };
+    }
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 

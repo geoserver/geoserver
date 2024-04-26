@@ -60,7 +60,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             gc.setNamespace(ws.getName());
             return;
         }
-    };
+    }
 
     String qualifyLayerNamesKVP(String layers, WorkspaceInfo ws) {
         List<String> list = KvpUtils.readFlat(layers);

@@ -91,7 +91,7 @@ public interface WatermarkInfo extends Serializable {
 
             return null;
         }
-    };
+    }
 
     /** Flag indicating if water marking is enabled. */
     boolean isEnabled();

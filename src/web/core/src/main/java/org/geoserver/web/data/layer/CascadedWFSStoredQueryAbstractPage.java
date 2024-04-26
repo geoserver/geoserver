@@ -225,7 +225,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         for (TitleType t : object.getTitle()) {
             if (title == null) {
                 title = t;
-            } else if (title.getValue() == null || title.getValue().length() == 0) {
+            } else if (title.getValue() == null || title.getValue().isEmpty()) {
                 title = t;
             }
         }
@@ -366,7 +366,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         ret.setType(pet.getType());
         StringBuilder title = new StringBuilder();
         for (TitleType t : pet.getTitle()) {
-            if (t.getValue() != null && t.getValue().length() > 0) {
+            if (t.getValue() != null && !t.getValue().isEmpty()) {
                 title.append(t.getValue());
                 break;
             }

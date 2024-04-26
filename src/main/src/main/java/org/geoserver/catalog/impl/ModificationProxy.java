@@ -674,6 +674,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         @Override
         protected <U> U unwrapProxy(U proxy, java.lang.Class<U> proxyInterface) {
             return ModificationProxy.unwrap(proxy);
-        };
+        }
     }
 }

@@ -24,7 +24,7 @@ public class WFSException extends ServiceException {
 
     public enum Code {
         OperationProcessingFailed
-    };
+    }
 
     public WFSException(RequestObject request, String message) {
         this(message);

@@ -252,7 +252,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 destinationG2W = null;
                 destinationSize =
                         new Rectangle(lowers[0], lowers[1], limits.getSpan(0), limits.getSpan(1));
-            } else if (grid.getOffsetVector() != null && grid.getOffsetVector().size() > 0) {
+            } else if (grid.getOffsetVector() != null && !grid.getOffsetVector().isEmpty()) {
                 //
                 // we have NO imposed limits from the request, we need to create a proper G2W with
                 // the RESOLUTION we where given.
@@ -505,7 +505,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     private GridCoverage2D bandSelection(GetCoverageType request, GridCoverage2D coverage) {
         // extract the band indexes
         EList axisSubset = request.getRangeSubset().getAxisSubset();
-        if (axisSubset.size() > 0) {
+        if (!axisSubset.isEmpty()) {
             for (Object o : axisSubset) {
                 AxisSubsetType axis = (AxisSubsetType) o;
 
@@ -513,12 +513,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     String axisName = axis.getName();
                     if (axisName.equalsIgnoreCase("Band")) {
                         int[] bands = null;
-                        if (axis.getSingleValue().size() > 0) {
+                        if (!axis.getSingleValue().isEmpty()) {
                             bands = new int[axis.getSingleValue().size()];
                             for (int s = 0; s < axis.getSingleValue().size(); s++) {
                                 bands[s] = getBandFromAxis(axis, s);
                             }
-                        } else if (axis.getInterval().size() > 0) {
+                        } else if (!axis.getInterval().isEmpty()) {
                             IntervalType interval = (IntervalType) axis.getInterval().get(0);
                             int min = Integer.parseInt(interval.getMin().getValue());
                             int max = Integer.parseInt(interval.getMax().getValue());
@@ -959,13 +959,13 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
                 // check indexes
                 int[] bands = null;
-                if (axisSubset.getSingleValue().size() > 0) {
+                if (!axisSubset.getSingleValue().isEmpty()) {
                     bands = new int[1];
                     bands[0] =
                             Integer.parseInt(
                                     ((TypedLiteralType) axisSubset.getSingleValue().get(0))
                                             .getValue());
-                } else if (axisSubset.getInterval().size() > 0) {
+                } else if (!axisSubset.getInterval().isEmpty()) {
                     IntervalType interval = (IntervalType) axisSubset.getInterval().get(0);
                     int min = Integer.parseInt(interval.getMin().getValue());
                     int max = Integer.parseInt(interval.getMax().getValue());

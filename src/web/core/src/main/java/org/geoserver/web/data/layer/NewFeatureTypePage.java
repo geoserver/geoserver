@@ -161,7 +161,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                     throw new RuntimeException(e);
                 }
 
-                if (attributesProvider.getAttributes().size() == 0) {
+                if (attributesProvider.getAttributes().isEmpty()) {
                     error(new ParamResourceModel("noAttributes", this).getString());
                     return;
                 }

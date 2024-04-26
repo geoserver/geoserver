@@ -187,7 +187,7 @@ public interface GeoServerInfo extends Info {
          * submit problem)
          */
         DO_NOT_REDIRECT
-    };
+    }
 
     /**
      * Get the WebUIMode

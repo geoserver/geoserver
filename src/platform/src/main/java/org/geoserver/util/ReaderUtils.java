@@ -663,9 +663,9 @@ public class ReaderUtils {
         //
         /////
         if (keywords == null
-                || keywords.length() == 0
+                || keywords.isEmpty()
                 || delimiter == null
-                || delimiter.length() == 0
+                || delimiter.isEmpty()
                 || keywords.indexOf(delimiter) < 0) return Collections.emptyList();
 
         ////
@@ -680,7 +680,7 @@ public class ReaderUtils {
             if (index > 0) elements.add(keywords.substring(0, index));
             keywords = keywords.substring(index);
         }
-        if (keywords.length() > 0) elements.add(keywords);
+        if (!keywords.isEmpty()) elements.add(keywords);
         return elements;
     }
 }

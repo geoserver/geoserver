@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.geoserver.config.ServiceInfo;
-import org.geotools.util.Version;
 
 public interface WFSInfo extends ServiceInfo {
 
@@ -68,7 +67,7 @@ public interface WFSInfo extends ServiceInfo {
         public static Version latest() {
             return V_20;
         }
-    };
+    }
 
     static enum Operation {
         GETCAPABILITIES {
@@ -189,7 +188,7 @@ public interface WFSInfo extends ServiceInfo {
 
             return null;
         }
-    };
+    }
 
     /** A map of wfs version to gml encoding configuration. */
     Map<Version, GMLInfo> getGML();

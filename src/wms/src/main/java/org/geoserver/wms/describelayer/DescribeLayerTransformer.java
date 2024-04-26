@@ -167,8 +167,7 @@ public class DescribeLayerTransformer extends TransformerBase {
 
                 // add workspace name to typename when not already present and not empty
                 String qAttsLyrName = layer.getName();
-                if (workspaceName.length() > 0
-                        && !layer.getName().startsWith(workspaceName + ":")) {
+                if (!workspaceName.isEmpty() && !layer.getName().startsWith(workspaceName + ":")) {
                     qAttsLyrName = workspaceName + ":" + layer.getName();
                 }
                 queryAtts.setAttribute(0, "", "typeName", "typeName", "", qAttsLyrName);

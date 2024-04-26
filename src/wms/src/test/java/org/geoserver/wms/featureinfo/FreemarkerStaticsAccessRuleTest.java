@@ -18,10 +18,10 @@ import org.junit.Test;
 public class FreemarkerStaticsAccessRuleTest {
     // used for testing inner classes
     public static final class Dummy {
-        public static final class String {};
+        public static final class String {}
     }
 
-    public static final class String {};
+    public static final class String {}
 
     /** Tests most common case: no value set */
     @Test

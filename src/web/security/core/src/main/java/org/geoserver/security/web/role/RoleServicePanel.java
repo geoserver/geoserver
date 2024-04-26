@@ -52,5 +52,5 @@ public class RoleServicePanel<T extends SecurityRoleServiceConfig>
     @Override
     public void doLoad(T config) throws Exception {
         getSecurityManager().loadRoleService(config.getName());
-    };
+    }
 }

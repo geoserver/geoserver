@@ -2400,7 +2400,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 StringTokenizer tokenizer = new StringTokenizer((String) entry.getValue(), ",");
                 while (tokenizer.hasMoreTokens()) {
                     String roleName = tokenizer.nextToken().trim();
-                    if (roleName.length() > 0) {
+                    if (!roleName.isEmpty()) {
                         if (roleStore.getRoleByName(roleName) == null) {
                             roleStore.addRole(roleStore.createRoleObject(roleName));
                         }
@@ -2418,7 +2418,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 StringTokenizer tokenizer = new StringTokenizer((String) entry.getValue(), ",");
                 while (tokenizer.hasMoreTokens()) {
                     String roleName = tokenizer.nextToken().trim();
-                    if (roleName.length() > 0 && roleName.equals("*") == false) {
+                    if (!roleName.isEmpty() && roleName.equals("*") == false) {
                         if (roleStore.getRoleByName(roleName) == null)
                             roleStore.addRole(roleStore.createRoleObject(roleName));
                     }
@@ -2518,8 +2518,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                                     GeoServerSecurityFilterChain
                                             .DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
                 // inject form login filter if necessary
-                if (chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER)
-                        == -1) {
+                if (!chain.getFilterNames()
+                        .contains(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER)) {
                     index =
                             chain.getFilterNames()
                                     .indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
@@ -3325,7 +3325,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 writer.addAttribute(
                         "matchHTTPMethod", Boolean.toString(requestChain.isMatchHTTPMethod()));
                 if (requestChain.getHttpMethods() != null
-                        && requestChain.getHttpMethods().size() > 0) {
+                        && !requestChain.getHttpMethods().isEmpty()) {
                     writer.addAttribute(
                             "httpMethods",
                             StringUtils.collectionToCommaDelimitedString(

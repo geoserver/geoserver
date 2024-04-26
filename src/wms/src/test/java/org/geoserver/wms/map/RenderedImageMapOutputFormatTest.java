@@ -210,7 +210,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         @Override
         public void stop() {}
-    };
+    }
 
     @Before
     public void setRasterMapProducer() throws Exception {

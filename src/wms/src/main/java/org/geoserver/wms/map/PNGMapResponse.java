@@ -44,7 +44,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     public enum QuantizeMethod {
         Octree,
         MedianCut
-    };
+    }
 
     /**
      * Default capabilities for PNG format.

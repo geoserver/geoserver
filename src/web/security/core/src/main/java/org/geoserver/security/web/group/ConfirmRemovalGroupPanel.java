@@ -41,7 +41,7 @@ public class ConfirmRemovalGroupPanel extends AbstractConfirmRemovalPanel<GeoSer
             for (GeoServerRole role : roles) {
                 buffer.append(role.getAuthority()).append(" ");
             }
-            if (roles.size() > 0) { // remove last delimiter
+            if (!roles.isEmpty()) { // remove last delimiter
                 buffer.setLength(buffer.length() - 1);
             }
             buffer.append("]");

@@ -99,7 +99,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
     @Override
     protected void registerNamespaces(java.util.Map<String, String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
-    };
+    }
 
     LayerInfo layer(Catalog cat, QName name) {
         return cat.getLayerByName(getLayerId(name));

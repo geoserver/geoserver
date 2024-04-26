@@ -75,7 +75,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         sourceCRS = srs;
                         updateTransformation(target);
-                    };
+                    }
                 };
         sourcePanel.setRequired(true);
         form.add(sourcePanel);
@@ -88,7 +88,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         targetCRS = srs;
                         updateTransformation(target);
-                    };
+                    }
                 };
         targetPanel.setRequired(true);
         form.add(targetPanel);

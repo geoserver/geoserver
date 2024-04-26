@@ -396,7 +396,7 @@ public class GetMap {
 
         // see if we can merge this layer with the previous one
         boolean merged = false;
-        if (mapContent.layers().size() > 0) {
+        if (!mapContent.layers().isEmpty()) {
             org.geotools.map.Layer lastLayer =
                     mapContent.layers().get(mapContent.layers().size() - 1);
             if (lastLayer instanceof WMSLayer) {

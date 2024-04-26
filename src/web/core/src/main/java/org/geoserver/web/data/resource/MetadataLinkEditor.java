@@ -169,7 +169,7 @@ public class MetadataLinkEditor extends Panel {
     }
 
     private void updateLinksVisibility() {
-        boolean anyLink = metadataLinksModel.getObject().size() > 0;
+        boolean anyLink = !metadataLinksModel.getObject().isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }

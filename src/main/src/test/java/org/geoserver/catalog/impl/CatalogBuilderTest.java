@@ -822,7 +822,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;
-                    };
+                    }
                 };
         cat.setResourcePool(rp);
 

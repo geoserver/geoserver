@@ -107,7 +107,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
                                 return current =
                                         new LDAPUserGroupServicePanel(id, new Model<>(config));
-                            };
+                            }
                         },
                         new CompoundPropertyModel<>(config)) {
 

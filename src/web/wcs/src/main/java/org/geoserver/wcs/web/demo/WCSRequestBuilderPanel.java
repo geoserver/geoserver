@@ -64,7 +64,7 @@ public class WCSRequestBuilderPanel extends Panel {
         Automatic,
         Resolution,
         Affine
-    };
+    }
 
     static final Logger LOGGER = Logging.getLogger(WCSRequestBuilderPanel.class);
 

@@ -141,7 +141,7 @@ public class StyleGeneratorTest {
                     @Override
                     protected void randomizeRamp() {
                         // do not randomize for this test
-                    };
+                    }
                 };
         gen.setWorkspace(ws);
 
@@ -206,7 +206,7 @@ public class StyleGeneratorTest {
                     @Override
                     protected void randomizeRamp() {
                         // do not randomize for this test
-                    };
+                    }
                 };
         gen.setWorkspace(ws);
 

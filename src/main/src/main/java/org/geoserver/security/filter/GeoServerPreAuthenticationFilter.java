@@ -91,7 +91,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
     protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response) {
 
         String principal = getPreAuthenticatedPrincipal(request);
-        if (principal == null || principal.trim().length() == 0) {
+        if (principal == null || principal.trim().isEmpty()) {
             return;
         }
 

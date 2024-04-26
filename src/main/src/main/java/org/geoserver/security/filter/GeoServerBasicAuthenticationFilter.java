@@ -114,7 +114,7 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             try {
                 MessageDigest md = (MessageDigest) digest.clone();
                 digestString =
-                        new String(
+                        String.valueOf(
                                 Hex.encode(
                                         md.digest(
                                                 buff.toString().getBytes(StandardCharsets.UTF_8))));

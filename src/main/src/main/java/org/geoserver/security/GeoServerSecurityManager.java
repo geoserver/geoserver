@@ -1854,7 +1854,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     char[] extractMasterPasswordForMigration(Properties props) throws Exception {
 
         Map<String, String> candidates = new HashMap<>();
-        String defaultPasswordAsString = new String(MASTER_PASSWD_DEFAULT);
+        String defaultPasswordAsString = String.valueOf(MASTER_PASSWD_DEFAULT);
 
         if (props != null) {
             // load user.properties populate the services

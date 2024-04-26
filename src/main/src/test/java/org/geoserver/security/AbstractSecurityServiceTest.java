@@ -643,6 +643,6 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
 
     /** Accessor for the geoserver master password. */
     protected String getMasterPassword() {
-        return new String(getSecurityManager().getMasterPassword());
+        return String.valueOf(getSecurityManager().getMasterPassword());
     }
 }

@@ -2527,7 +2527,6 @@
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
               <includeTests>true</includeTests>
-              <outputEncoding>UTF-8</outputEncoding>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>

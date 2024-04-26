@@ -23,7 +23,10 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.catalog.AbstractCatalogController;
+import org.geotools.api.data.ResourceInfo;
 import org.geotools.api.style.Style;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.PAMResourceInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,6 +71,20 @@ public class PAMController extends AbstractCatalogController {
 
     private CoverageRATs getRATSupport(
             String workspaceName, String storeName, String coverageName) {
+        CoverageInfo coverage = getCoverageInfo(workspaceName, storeName, coverageName);
+
+        CoverageRATs rats = new CoverageRATs(catalog, coverage);
+        if (rats.getPAMDataset() == null) {
+            throw new ResourceNotFoundException(
+                    format(
+                            "No PAMDataset found for coverage: '%s:%s'",
+                            workspaceName, coverageName));
+        }
+        return rats;
+    }
+
+    private CoverageInfo getCoverageInfo(
+            String workspaceName, String storeName, String coverageName) {
         WorkspaceInfo wsInfo = catalog.getWorkspaceByName(workspaceName);
         if (wsInfo == null) {
             // could not find the namespace associated with the desired workspace
@@ -88,15 +105,7 @@ public class PAMController extends AbstractCatalogController {
             throw new ResourceNotFoundException(
                     format("No such coverage: '%s' in store '%s'", coverageName, storeName));
         }
-
-        CoverageRATs rats = new CoverageRATs(catalog, coverage);
-        if (rats.getPAMDataset() == null) {
-            throw new ResourceNotFoundException(
-                    format(
-                            "No PAMDataset found for coverage: '%s:%s'",
-                            workspaceName, coverageName));
-        }
-        return rats;
+        return coverage;
     }
 
     @PostMapping
@@ -160,5 +169,31 @@ public class PAMController extends AbstractCatalogController {
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(
                 "", headers, exists ? HttpStatus.SEE_OTHER : HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/reload")
+    public void reload(
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName)
+            throws IOException {
+        CoverageInfo ci = getCoverageInfo(workspaceName, storeName, coverageName);
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) ci.getStore().getGridCoverageReader(null, null);
+        ResourceInfo resourceInfo = reader.getInfo(ci.getNativeCoverageName());
+        if (!(resourceInfo instanceof PAMResourceInfo)) {
+            throw new RestException(
+                    format(
+                            "No Raster Attribute Table found for coverage '%s:%s'",
+                            workspaceName, coverageName),
+                    HttpStatus.BAD_REQUEST);
+        }
+        PAMResourceInfo pamInfo = (PAMResourceInfo) resourceInfo;
+        // if the reload does not work, a clear should help (e.g. with GeoTIFF)
+        // as the PAM is normally cached in memory. The mosaic is the odd case that
+        // needs the full reload, as it caches the summary PAM from all its sources
+        if (!pamInfo.reloadPAMDataset()) {
+            catalog.getResourcePool().clear(ci);
+        }
     }
 }

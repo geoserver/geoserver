@@ -300,7 +300,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             add = true;
 
             // TODO: should check if the store actually supports charset
-            if (characterset != null && characterset.length() > 0) {
+            if (characterset != null && !characterset.isEmpty()) {
                 info.getConnectionParameters().put("charset", characterset);
             }
             DataAccessFactory targetFactory = factory;
@@ -352,7 +352,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         DataAccess<?, ?> source;
         try {
             Map<String, Serializable> params = new HashMap<>();
-            if (characterset != null && characterset.length() > 0) {
+            if (characterset != null && !characterset.isEmpty()) {
                 params.put("charset", characterset);
             }
             params.put("namespace", namespace.getURI());

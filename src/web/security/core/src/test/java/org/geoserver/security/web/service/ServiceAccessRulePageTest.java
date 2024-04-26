@@ -64,7 +64,7 @@ public class ServiceAccessRulePageTest extends AbstractListPageTest<ServiceAcces
     @Override
     protected void simulateDeleteSubmit() throws Exception {
 
-        assertTrue(ServiceAccessRuleDAO.get().getRules().size() > 0);
+        assertTrue(!ServiceAccessRuleDAO.get().getRules().isEmpty());
 
         SelectionServiceRemovalLink link = (SelectionServiceRemovalLink) getRemoveLink();
         Method m =

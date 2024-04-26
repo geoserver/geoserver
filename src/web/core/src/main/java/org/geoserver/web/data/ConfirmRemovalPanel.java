@@ -125,8 +125,8 @@ public class ConfirmRemovalPanel extends Panel {
         // modified objects root (we show it if any modified object is on the list)
         WebMarkupContainer modified = new WebMarkupContainer("modifiedObjects");
         modified.setVisible(
-                visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET).size()
-                        > 0);
+                !visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET)
+                        .isEmpty());
         add(modified);
 
         // layers modified

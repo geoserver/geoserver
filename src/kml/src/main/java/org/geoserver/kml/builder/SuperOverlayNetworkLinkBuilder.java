@@ -131,7 +131,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         Layer layer = mapContent.layers().get(layerIndex);
         Folder folder = container.createAndAddFolder();
         folder.setName(layerInfo.getLabel());
-        if (layerInfo.getDescription() != null && layerInfo.getDescription().length() > 0) {
+        if (layerInfo.getDescription() != null && !layerInfo.getDescription().isEmpty()) {
             folder.setDescription(layerInfo.getDescription());
         }
 
@@ -537,7 +537,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         }
 
         // no sql view params
-        if (request.getViewParams() != null && request.getViewParams().size() > 0) {
+        if (request.getViewParams() != null && !request.getViewParams().isEmpty()) {
             return false;
         }
 

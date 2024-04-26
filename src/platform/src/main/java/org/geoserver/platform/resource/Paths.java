@@ -297,7 +297,7 @@ public class Paths {
      *     name or directory name.
      */
     public static List<String> names(String path) {
-        if (path == null || path.length() == 0) {
+        if (path == null || path.isEmpty()) {
             return Collections.emptyList();
         }
         int index = 0;
@@ -312,14 +312,14 @@ public class Paths {
             item = path.substring(index, split);
             // ignoring zero length items resulting from double slash
             // path breaks (occasionally produced when concatenating paths without due care).
-            if (item.length() != 0) {
+            if (!item.isEmpty()) {
                 names.add(item);
             }
             index = split + 1;
             split = path.indexOf('/', index);
         } while (split != -1);
         item = path.substring(index);
-        if (item != null && item.length() != 0 && !item.equals("/")) {
+        if (item != null && !item.isEmpty() && !item.equals("/")) {
             names.add(item);
         }
 
@@ -446,7 +446,7 @@ public class Paths {
         if (filePath == null) {
             return null;
         }
-        if (filePath.length() == 0) {
+        if (filePath.isEmpty()) {
             return filePath;
         }
         if (File.separatorChar == '/') {

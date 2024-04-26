@@ -33,7 +33,7 @@ public class PercentageTextField extends TextField<Double> {
 
                 @Override
                 public Double convertToObject(String value, Locale locale) {
-                    if (value == null || value.trim().length() == 0) {
+                    if (value == null || value.trim().isEmpty()) {
                         return null;
                     }
                     if (!value.endsWith("%")) {

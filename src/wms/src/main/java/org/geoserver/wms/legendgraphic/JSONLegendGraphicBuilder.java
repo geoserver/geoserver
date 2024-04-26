@@ -482,7 +482,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             entries.add(ent);
         }
         JSONObject cm = new JSONObject();
-        if (entries.size() > 0) {
+        if (!entries.isEmpty()) {
             cm.element(ENTRIES, entries);
             int type = colorMap.getType();
             switch (type) {

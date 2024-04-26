@@ -16,5 +16,5 @@ public enum DimensionPresentation {
     /** Start, end and resolution */
     DISCRETE_INTERVAL,
     /** Start and end, all possible values in between are valid */
-    CONTINUOUS_INTERVAL;
+    CONTINUOUS_INTERVAL
 }

@@ -50,7 +50,7 @@ public class GetMapOutputFormatTest extends WMSTestSupport {
         for (GetMapOutputFormat producer : producers) {
             assertNotNull(producer.getMimeType());
             assertNotNull(producer.getOutputFormatNames());
-            assertTrue(producer.getOutputFormatNames().size() > 0);
+            assertTrue(!producer.getOutputFormatNames().isEmpty());
         }
     }
 }

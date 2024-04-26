@@ -151,7 +151,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         // serializeXML(dom);
 
         assertNotNull(resource);
-        assertTrue(((Element) resource).getAttribute("name").length() > 0);
+        assertTrue(!((Element) resource).getAttribute("name").isEmpty());
     }
 
     protected static void serializeXML(Document domDoc) throws TransformerException {

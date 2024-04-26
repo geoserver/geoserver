@@ -5,6 +5,7 @@
 package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import it.geosolutions.imageio.pam.PAMDataset;
 import it.geosolutions.imageio.pam.PAMDataset.PAMRasterBand;
@@ -60,7 +61,7 @@ public class AttributeTableEnricherTest {
         enricher.addRowValues(values, new double[] {1e6});
         assertEquals(3, values.size());
         for (int i = 0; i < 3; i++) {
-            assertEquals(null, values.get(i));
+            assertNull(values.get(i));
         }
     }
 
@@ -104,7 +105,7 @@ public class AttributeTableEnricherTest {
         enricher.addRowValues(values, new double[] {-10});
         assertEquals(8, values.size());
         for (int i = 0; i < 8; i++) {
-            assertEquals(null, values.get(i));
+            assertNull(values.get(i));
         }
     }
 }

@@ -73,9 +73,9 @@ public class GroupPanel extends Panel {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(groups.getSelection().size() > 0);
+                                removal.setEnabled(!groups.getSelection().isEmpty());
                                 target.add(removal);
-                                removalWithRoles.setEnabled(groups.getSelection().size() > 0);
+                                removalWithRoles.setEnabled(!groups.getSelection().isEmpty());
                                 target.add(removalWithRoles);
                             }
                         });

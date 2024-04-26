@@ -257,7 +257,7 @@ public abstract class TransactionRequest extends RequestObject {
                 }
             }
             return false;
-        };
+        }
     }
 
     public static class WFS20 extends TransactionRequest {

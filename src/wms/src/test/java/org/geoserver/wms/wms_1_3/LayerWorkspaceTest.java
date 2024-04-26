@@ -32,7 +32,7 @@ public class LayerWorkspaceTest extends WMSTestSupport {
     @Override
     protected void registerNamespaces(java.util.Map<String, String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
-    };
+    }
 
     @Test
     public void testGlobalCapabilities() throws Exception {

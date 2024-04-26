@@ -325,7 +325,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     @Override
     protected void doSaveInternal() {
         // validation
-        if (lgEntryPanel.getEntries().size() == 0) {
+        if (lgEntryPanel.getEntries().isEmpty()) {
             error(new ParamResourceModel("oneLayerMinimum", getPage()).getObject());
             return;
         }

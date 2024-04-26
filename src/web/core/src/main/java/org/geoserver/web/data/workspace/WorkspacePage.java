@@ -77,7 +77,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(table.getSelection().size() > 0);
+                                removal.setEnabled(!table.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });

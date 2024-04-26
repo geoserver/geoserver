@@ -85,10 +85,10 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
                     (GeoServerTileLayerInfo) context.convertAnother(current, type);
             String id = info.getId();
             String name = info.getName();
-            if (id != null && id.length() == 0) {
+            if (id != null && id.isEmpty()) {
                 id = null;
             }
-            if (name != null && name.length() == 0) {
+            if (name != null && name.isEmpty()) {
                 name = null;
             }
             if (name == null) { // name is mandatory

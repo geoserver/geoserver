@@ -63,7 +63,7 @@ public class ReaderDimensionAccessorTest {
         public String getMetadataValue(String name) {
             return metadata.get(name);
         }
-    };
+    }
 
     @Test
     public void testMixedTimeExtraction() throws IOException, ParseException {

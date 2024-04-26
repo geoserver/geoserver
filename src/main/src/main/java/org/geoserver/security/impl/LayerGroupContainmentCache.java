@@ -42,7 +42,7 @@ public class LayerGroupContainmentCache implements ApplicationListener<ContextRe
 
     /** Builds a concurrent set wrapping a {@link ConcurrentHashMap} */
     static final Function<? super String, ? extends Set<LayerGroupSummary>> CONCURRENT_SET_BUILDER =
-            k -> Collections.newSetFromMap(new ConcurrentHashMap<LayerGroupSummary, Boolean>());
+            k -> Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /** Verifies a certain {@link PublishedInfo} is actually a {@link LayerInfo} */
     static final Predicate<PublishedInfo> IS_LAYER =

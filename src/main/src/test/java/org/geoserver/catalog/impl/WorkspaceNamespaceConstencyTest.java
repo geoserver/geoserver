@@ -13,7 +13,9 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
@@ -163,9 +165,9 @@ public class WorkspaceNamespaceConstencyTest {
 
         DataStoreInfo ds = createNiceMock(DataStoreInfo.class);
 
-        expect(cat.getDataStoresByWorkspace(ws)).andReturn(Arrays.asList(ds));
+        expect(cat.getDataStoresByWorkspace(ws)).andReturn(Collections.singletonList(ds));
 
-        HashMap params = new HashMap();
+        HashMap<String, Serializable> params = new HashMap<>();
         params.put("namespace", "http://bar.org");
         expect(ds.getConnectionParameters()).andReturn(params).anyTimes();
 

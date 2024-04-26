@@ -51,10 +51,9 @@ public class HTTPHeadersCollector implements GeoServerFilter {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void collectHeaders(HttpServletRequest request) {
         Enumeration<String> names = request.getHeaderNames();
-        Map<String, String> headers = new CaseInsensitiveMap(new HashMap<>());
+        Map<String, String> headers = new CaseInsensitiveMap<>(new HashMap<>());
         while (names.hasMoreElements()) {
             String header = names.nextElement();
             String value = request.getHeader(header);

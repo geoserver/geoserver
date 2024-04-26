@@ -86,7 +86,7 @@ public class TreeMapConverter extends MapConverter {
         TreeMap result = null;
         final Comparator comparator = unmarshalComparator(mapper(), reader, context, result);
         if (result == null) {
-            result = comparator == null ? new TreeMap() : new TreeMap(comparator);
+            result = comparator == null ? new TreeMap<>() : new TreeMap<>(comparator);
         }
         populateTreeMap(reader, context, result, comparator);
         return result;

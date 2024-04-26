@@ -295,7 +295,7 @@ public class LegacyCatalogReader {
         final String pre = namespaceElement.getAttribute("prefix");
         final String uri = namespaceElement.getAttribute("uri");
 
-        return new Map.Entry<String, String>() {
+        return new Map.Entry<>() {
             @Override
             public String getKey() {
                 return pre;

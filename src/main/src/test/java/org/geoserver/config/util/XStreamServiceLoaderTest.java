@@ -29,7 +29,7 @@ public class XStreamServiceLoaderTest {
         GeoServerResourceLoader rl = new GeoServerResourceLoader(folder.getRoot());
 
         XStreamServiceLoader<ServiceInfo> loader =
-                new XStreamServiceLoader<ServiceInfo>(rl, "test") {
+                new XStreamServiceLoader<>(rl, "test") {
 
                     @Override
                     public Class<ServiceInfo> getServiceClass() {

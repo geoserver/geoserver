@@ -188,7 +188,7 @@ public class NamespaceController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<NamespaceInfo>(NamespaceInfo.class) {
+        return new ObjectToMapWrapper<>(NamespaceInfo.class) {
             @Override
             protected void wrapInternal(
                     Map<String, Object> properties, SimpleHash model, NamespaceInfo namespace) {

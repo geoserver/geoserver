@@ -22,7 +22,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = 4712657652337914993L;
 
     public IModel<GeoServer> getGeoServerModel() {
-        return new LoadableDetachableModel<GeoServer>() {
+        return new LoadableDetachableModel<>() {
             @Override
             public GeoServer load() {
                 return getGeoServerApplication().getGeoServer();
@@ -68,7 +68,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     }
 
     public IModel<ContactInfo> getContactInfoModel() {
-        return new LoadableDetachableModel<ContactInfo>() {
+        return new LoadableDetachableModel<>() {
             @Override
             public ContactInfo load() {
                 return getGeoServerApplication()
@@ -81,7 +81,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
     }
 
     public IModel<LoggingInfo> getLoggingInfoModel() {
-        return new LoadableDetachableModel<LoggingInfo>() {
+        return new LoadableDetachableModel<>() {
             @Override
             protected LoggingInfo load() {
                 return getGeoServer().getLogging();

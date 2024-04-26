@@ -90,7 +90,7 @@ public class DummyQuotaStore implements QuotaStore {
     @Override
     public Future<List<PageStats>> addHitsAndSetAccesTime(
             Collection<PageStatsPayload> statsUpdates) {
-        return new Future<List<PageStats>>() {
+        return new Future<>() {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {

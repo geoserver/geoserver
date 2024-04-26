@@ -48,7 +48,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
                         "keywords",
                         new Model<ArrayList<KeywordInfo>>(),
                         new ArrayList<>(keywords.getObject()),
-                        new ChoiceRenderer<KeywordInfo>() {
+                        new ChoiceRenderer<>() {
                             private static final long serialVersionUID = 1L;
 
                             @Override
@@ -75,7 +75,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
                         "lang",
                         new Model<>(),
                         Arrays.asList(Locale.getISOLanguages()),
-                        new ChoiceRenderer<String>() {
+                        new ChoiceRenderer<>() {
                             private static final long serialVersionUID = 1L;
 
                             @Override

@@ -156,7 +156,7 @@ public class ExternalGraphicPanel extends Panel {
         container.add(table);
 
         showhideForm =
-                new Form<StyleInfo>("showhide") {
+                new Form<>("showhide") {
                     @Override
                     protected void onSubmit() {
                         super.onSubmit();

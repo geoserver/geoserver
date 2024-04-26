@@ -155,7 +155,7 @@ public class VectorCustomDimensionsPanel extends Panel {
     private RefreshingView<VectorCustomDimensionEntry> buildVectorCustomDimensionsView(
             final IModel<FeatureTypeInfo> typeInfoModel) {
         final RefreshingView<VectorCustomDimensionEntry> view =
-                new RefreshingView<VectorCustomDimensionEntry>("vectorCustomDimensionsView") {
+                new RefreshingView<>("vectorCustomDimensionsView") {
 
                     @Override
                     protected Iterator<IModel<VectorCustomDimensionEntry>> getItemModels() {

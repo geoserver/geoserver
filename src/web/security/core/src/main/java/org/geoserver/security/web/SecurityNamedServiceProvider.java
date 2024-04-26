@@ -33,7 +33,7 @@ public abstract class SecurityNamedServiceProvider<T extends SecurityNamedServic
 
     /** type/implementation of the config */
     public static final Property<SecurityNamedServiceConfig> TYPE =
-            new AbstractProperty<SecurityNamedServiceConfig>("type") {
+            new AbstractProperty<>("type") {
 
                 @Override
                 public Object getPropertyValue(SecurityNamedServiceConfig item) {

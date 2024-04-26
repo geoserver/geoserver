@@ -30,7 +30,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     public LayerGroupListPanel(String id, WorkspaceInfo workspace) {
         super(
                 id,
-                new GeoServerDataProvider<LayerGroupInfo>() {
+                new GeoServerDataProvider<>() {
 
                     private static final long serialVersionUID = 6471805356307807737L;
 
@@ -62,7 +62,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
             String id, final IModel<LayerGroupInfo> itemModel, Property<LayerGroupInfo> property) {
         IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
-            return new SimpleAjaxLink<String>(id, (IModel<String>) model) {
+            return new SimpleAjaxLink<>(id, (IModel<String>) model) {
                 private static final long serialVersionUID = -5189072047640596694L;
 
                 @Override

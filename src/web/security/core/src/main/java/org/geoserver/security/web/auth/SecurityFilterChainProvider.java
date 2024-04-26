@@ -45,7 +45,7 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
             new BeanProperty<>("matchHTTPMethod", "matchHTTPMethod");
 
     public static final Property<RequestFilterChain> PATTERNS =
-            new AbstractProperty<RequestFilterChain>("patternString") {
+            new AbstractProperty<>("patternString") {
                 @Override
                 public Object getPropertyValue(RequestFilterChain item) {
                     return StringUtils.collectionToCommaDelimitedString(item.getPatterns());
@@ -53,7 +53,7 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
             };
 
     public static final Property<RequestFilterChain> HTTPMETHODS =
-            new AbstractProperty<RequestFilterChain>("httpMethods") {
+            new AbstractProperty<>("httpMethods") {
                 @Override
                 public Object getPropertyValue(RequestFilterChain item) {
                     return StringUtils.collectionToCommaDelimitedString(item.getHttpMethods());
@@ -61,7 +61,7 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
             };
 
     public static final Property<RequestFilterChain> HASROLEFILTER =
-            new AbstractProperty<RequestFilterChain>("hasRoleFilter") {
+            new AbstractProperty<>("hasRoleFilter") {
                 @Override
                 public Object getPropertyValue(RequestFilterChain item) {
                     return StringUtils.hasLength(item.getRoleFilterName());

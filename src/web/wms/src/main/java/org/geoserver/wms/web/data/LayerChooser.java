@@ -42,7 +42,7 @@ public class LayerChooser extends Panel {
         }
 
         public static Property<LayerInfo> workspace =
-                new AbstractProperty<LayerInfo>("Workspace") {
+                new AbstractProperty<>("Workspace") {
                     private static final long serialVersionUID = -7055816211775541759L;
 
                     @Override
@@ -52,7 +52,7 @@ public class LayerChooser extends Panel {
                 };
 
         public static Property<LayerInfo> store =
-                new AbstractProperty<LayerInfo>("Store") {
+                new AbstractProperty<>("Store") {
                     private static final long serialVersionUID = -4021230907568644439L;
 
                     @Override
@@ -62,7 +62,7 @@ public class LayerChooser extends Panel {
                 };
 
         public static Property<LayerInfo> name =
-                new AbstractProperty<LayerInfo>("Layer") {
+                new AbstractProperty<>("Layer") {
                     private static final long serialVersionUID = 8913729089849537790L;
 
                     @Override
@@ -95,7 +95,7 @@ public class LayerChooser extends Panel {
         super(id);
         LayerProvider provider = new LayerProvider(parent);
         GeoServerTablePanel<LayerInfo> table =
-                new GeoServerTablePanel<LayerInfo>("layer.table", provider) {
+                new GeoServerTablePanel<>("layer.table", provider) {
                     private static final long serialVersionUID = 1196129584558094662L;
 
                     @Override

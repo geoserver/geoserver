@@ -419,7 +419,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             mapMarkFactoryList.setObject("");
         }
         IModel<Collection<String>> collectionModel =
-                new IModel<Collection<String>>() {
+                new IModel<>() {
 
                     @Override
                     public void detach() {}
@@ -464,7 +464,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     private IModel<List<String>> buildMarkFactoryListModel(MapModel<String> mapMarkFactoryList) {
-        return new IModel<List<String>>() {
+        return new IModel<>() {
 
             @Override
             public void detach() {}
@@ -514,7 +514,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private IModel<Boolean> buildEnableModel(
             LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel) {
-        return new IModel<Boolean>() {
+        return new IModel<>() {
 
             @Override
             public void detach() {}
@@ -538,7 +538,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private Palette<String> buildMarkFactoryPalleteComponent(
             LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel) {
-        return new Palette<String>(
+        return new Palette<>(
                 "MarkFactoryPalette",
                 markFactoriesLiveCollectionModel,
                 new MarkFactoriesModel(),

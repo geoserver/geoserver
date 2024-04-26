@@ -209,7 +209,7 @@ public class GeoServerDialog extends Panel {
         public InfoPage(IModel<String> title, IModel<String>... messages) {
             add(new Label("title", title));
             add(
-                    new ListView<IModel<String>>("messages", Arrays.asList(messages)) {
+                    new ListView<>("messages", Arrays.asList(messages)) {
                         @Override
                         protected void populateItem(ListItem<IModel<String>> item) {
                             item.add(

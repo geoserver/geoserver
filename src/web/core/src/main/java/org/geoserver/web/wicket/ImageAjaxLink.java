@@ -33,7 +33,7 @@ public abstract class ImageAjaxLink<T> extends Panel {
     public ImageAjaxLink(String id, PackageResourceReference imageRef, String label) {
         super(id);
         link =
-                new AjaxLink<T>("link") {
+                new AjaxLink<>("link") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         ImageAjaxLink.this.onClick(target);

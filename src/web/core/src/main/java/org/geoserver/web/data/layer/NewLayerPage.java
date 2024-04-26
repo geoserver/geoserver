@@ -108,7 +108,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         provider.setStoreId(storeId);
         provider.setShowPublished(true);
         layers =
-                new GeoServerTablePanel<Resource>("layers", provider) {
+                new GeoServerTablePanel<>("layers", provider) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -316,7 +316,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
 
     SimpleAjaxLink<Resource> resourceChooserLink(
             String id, IModel<Resource> itemModel, IModel<String> label) {
-        return new SimpleAjaxLink<Resource>(id, itemModel, label) {
+        return new SimpleAjaxLink<>(id, itemModel, label) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

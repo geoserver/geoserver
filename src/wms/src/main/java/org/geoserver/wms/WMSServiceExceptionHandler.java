@@ -82,7 +82,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
     /** Map from content type to ImageIO format name for {@link ImageIO#write} */
     static final Map<String, String> IMAGEIO_FORMATS =
-            new HashMap<String, String>() {
+            new HashMap<>() {
                 private static final long serialVersionUID = 1L;
 
                 {

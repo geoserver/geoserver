@@ -22,12 +22,10 @@ public class SRSPanelTest extends GeoServerWicketTestSupport implements Serializ
                                 id ->
                                         new SRSListPanel(id) {
 
-                                            private String codeClicked;
-
                                             @Override
                                             protected void onCodeClicked(
                                                     AjaxRequestTarget target, String epsgCode) {
-                                                codeClicked = epsgCode;
+                                                // do nothing
                                             }
                                         }));
 

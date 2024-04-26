@@ -61,7 +61,7 @@ public abstract class SRSListPanel extends Panel {
         super(id);
 
         table =
-                new GeoServerTablePanel<SRS>("table", srsProvider) {
+                new GeoServerTablePanel<>("table", srsProvider) {
 
                     private static final long serialVersionUID = 6182776235846912573L;
 
@@ -109,7 +109,7 @@ public abstract class SRSListPanel extends Panel {
      */
     @SuppressWarnings("unchecked")
     protected Component createLinkForCode(String linkId, IModel<SRS> itemModel) {
-        return new SimpleAjaxLink<Object>(
+        return new SimpleAjaxLink<>(
                 linkId, (IModel<Object>) SRSProvider.IDENTIFIER.getModel(itemModel)) {
 
             private static final long serialVersionUID = -1330723116026268069L;

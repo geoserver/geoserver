@@ -66,7 +66,7 @@ class AttributeTypeInfoEditor extends Panel {
     // to avoid serialization issues seen in GEOS-8273
     private static final LoadableDetachableModel<List<Property<AttributeTypeInfo>>>
             propertiesModel =
-                    new LoadableDetachableModel<List<Property<AttributeTypeInfo>>>() {
+                    new LoadableDetachableModel<>() {
                         @Override
                         protected List<Property<AttributeTypeInfo>> load() {
                             return Arrays.asList(
@@ -213,7 +213,7 @@ class AttributeTypeInfoEditor extends Panel {
                 PackageResourceReference icon =
                         new PackageResourceReference(getClass(), "../../img/icons/silk/delete.png");
                 ImageAjaxLink<Object> link =
-                        new ImageAjaxLink<Object>(id, icon) {
+                        new ImageAjaxLink<>(id, icon) {
 
                             @Override
                             protected void onClick(AjaxRequestTarget target) {

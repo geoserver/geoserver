@@ -98,7 +98,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         LiveCollectionModel<StyleInfo, Set<StyleInfo>> stylesModel =
                 LiveCollectionModel.set(new PropertyModel<Set<StyleInfo>>(layerModel, "styles"));
         Palette<StyleInfo> extraStyles =
-                new Palette<StyleInfo>(
+                new Palette<>(
                         "extraStyles", stylesModel, styles, new StyleNameRenderer(), 10, false) {
                     private static final long serialVersionUID = -3494299396410932090L;
 

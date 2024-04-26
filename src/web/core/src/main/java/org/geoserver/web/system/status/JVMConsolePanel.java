@@ -46,7 +46,7 @@ public class JVMConsolePanel extends Panel {
         final TextArea<String> logs =
                 new TextArea<>(
                         "dumpContent",
-                        new LoadableDetachableModel<String>() {
+                        new LoadableDetachableModel<>() {
                             @Override
                             protected String load() {
                                 return dumpLog;

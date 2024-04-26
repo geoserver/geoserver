@@ -155,7 +155,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         container.add(table);
 
         grids =
-                new ListView<XMLGridSubset>("gridSubsets", new ArrayList<>(model.getObject())) {
+                new ListView<>("gridSubsets", new ArrayList<>(model.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -301,8 +301,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         item.add(gridSetBounds);
 
                         final Component removeLink =
-                                new ImageAjaxLink<Object>(
-                                        "removeLink", GWCIconFactory.DELETE_ICON) {
+                                new ImageAjaxLink<>("removeLink", GWCIconFactory.DELETE_ICON) {
 
                                     private static final long serialVersionUID =
                                             -5072597940769821889L;

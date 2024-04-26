@@ -65,7 +65,7 @@ public class MapPreviewPage extends GeoServerBasePage {
 
         // build the table
         table =
-                new GeoServerTablePanel<PreviewLayer>("table", provider) {
+                new GeoServerTablePanel<>("table", provider) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -88,8 +88,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                         } else if (property == COMMON) {
                             Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
                             ListView<ExternalLink> lv =
-                                    new ListView<ExternalLink>(
-                                            "commonFormat", commonFormatLinks(layer)) {
+                                    new ListView<>("commonFormat", commonFormatLinks(layer)) {
                                         @Override
                                         public void populateItem(ListItem<ExternalLink> item) {
                                             final ExternalLink link = item.getModelObject();

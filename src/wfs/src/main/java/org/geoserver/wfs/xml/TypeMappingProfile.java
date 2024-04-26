@@ -110,7 +110,7 @@ public class TypeMappingProfile /*extends ProfileImpl*/ {
             ProfileImpl profile = (ProfileImpl) o;
 
             for (Map.Entry<Name, AttributeType> nameAttributeTypeEntry : profile.entrySet()) {
-                Map.Entry entry = (Map.Entry) nameAttributeTypeEntry;
+                Map.Entry entry = nameAttributeTypeEntry;
                 AttributeType type = (AttributeType) entry.getValue();
 
                 if (type.getBinding().isAssignableFrom(clazz)) {

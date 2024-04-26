@@ -169,8 +169,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         container.add(table);
 
         filters =
-                new ListView<ParameterFilter>(
-                        "parameterFilters", new ArrayList<>(model.getObject())) {
+                new ListView<>("parameterFilters", new ArrayList<>(model.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -274,7 +273,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         "availableFilterTypes",
                         new Model<>(),
                         new Model<>(filterTypes),
-                        new ChoiceRenderer<Class<? extends ParameterFilter>>() {
+                        new ChoiceRenderer<>() {
 
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;

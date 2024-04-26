@@ -22,7 +22,7 @@ public class PercentageTextField extends TextField<Double> {
     private int maximumFractionDigits = 1;
 
     private IConverter<Double> percentConverter =
-            new IConverter<Double>() {
+            new IConverter<>() {
                 private static final long serialVersionUID = -8409029711658542273L;
 
                 @Override

@@ -45,10 +45,8 @@ public class InputStreamConverter extends BaseMessageConverter<InputStream> {
     @Override
     protected void writeInternal(InputStream inputStream, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        try {
+        try (inputStream) {
             IOUtils.copy(inputStream, outputMessage.getBody());
-        } finally {
-            inputStream.close();
         }
     }
 }

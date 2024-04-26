@@ -39,7 +39,7 @@ public class LayerIdentifierFormField extends FormComponentPanel<LayerIdentifier
                                 "identifier", new PropertyModel<>(identifierModel, "identifier"))));
 
         add(
-                new IValidator<LayerIdentifierInfo>() {
+                new IValidator<>() {
                     private static final long serialVersionUID = 1L;
 
                     @Override

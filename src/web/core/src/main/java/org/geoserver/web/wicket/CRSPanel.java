@@ -187,7 +187,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                 });
 
         findLink =
-                new AjaxLink<Void>("find") {
+                new AjaxLink<>("find") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         popupWindow.setContent(srsListPanel());

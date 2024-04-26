@@ -42,7 +42,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     @Test
     @SuppressWarnings("unchecked")
     public void testInvalidTypeNameBbox() throws Exception {
-        Map raw = new HashMap();
+        Map raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
@@ -67,7 +67,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     @SuppressWarnings("unchecked")
     @Test
     public void testInvalidTypeName() throws Exception {
-        Map raw = new HashMap();
+        Map raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");

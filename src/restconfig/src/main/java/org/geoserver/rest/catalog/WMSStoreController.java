@@ -267,7 +267,7 @@ public class WMSStoreController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<WMSStoreInfo>(WMSStoreInfo.class) {
+        return new ObjectToMapWrapper<>(WMSStoreInfo.class) {
 
             @Override
             protected void wrapInternal(

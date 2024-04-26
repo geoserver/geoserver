@@ -139,7 +139,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
                             getGeoServerApplication()
                                     .getBeansOfType(ResourceConfigurationPanelInfo.class));
             ListView<ResourceConfigurationPanelInfo> dataPanelList =
-                    new ListView<ResourceConfigurationPanelInfo>(id, dataPanels) {
+                    new ListView<>(id, dataPanels) {
 
                         private static final long serialVersionUID = -845785165778837024L;
 

@@ -47,7 +47,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
         DataAccessRuleProvider provider = new DataAccessRuleProvider();
         add(
                 rules =
-                        new GeoServerTablePanel<DataAccessRule>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -108,7 +108,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
 
     Component editRuleLink(
             String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
-        return new SimpleAjaxLink<DataAccessRule>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

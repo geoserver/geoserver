@@ -53,7 +53,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
         add(container);
 
         listView =
-                new ListView<Tuple>("list") {
+                new ListView<>("list") {
                     private static final long serialVersionUID = -7250612551499360015L;
 
                     @Override
@@ -62,7 +62,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                         item.add(new TextField<String>("key").add(getEmptyBlurBehavior()));
                         item.add(new TextField<String>("value").add(getEmptyBlurBehavior()));
                         item.add(
-                                new AjaxLink<Tuple>("remove", item.getModel()) {
+                                new AjaxLink<>("remove", item.getModel()) {
                                     private static final long serialVersionUID =
                                             3201264868229144613L;
 

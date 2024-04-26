@@ -222,7 +222,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         /* init main form */
         styleForm =
-                new Form<StyleInfo>("styleForm", styleModel) {
+                new Form<>("styleForm", styleModel) {
                     @Override
                     protected void onSubmit() {
                         onStyleFormSubmit();
@@ -442,7 +442,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                 });
         Link<StylePage> cancelLink =
-                new Link<StylePage>("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         doReturn(StylePage.class);

@@ -86,7 +86,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
             String id, IModel<StyleInfo> itemModel, Property<StyleInfo> property) {
         final StyleInfo style = itemModel.getObject();
         if (property == NAME) {
-            return new SimpleAjaxLink<String>(id, (IModel<String>) NAME.getModel(itemModel)) {
+            return new SimpleAjaxLink<>(id, (IModel<String>) NAME.getModel(itemModel)) {
                 private static final long serialVersionUID = -2537227506881638001L;
 
                 @Override

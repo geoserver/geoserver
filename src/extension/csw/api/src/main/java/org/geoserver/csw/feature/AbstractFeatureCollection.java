@@ -44,7 +44,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     @Override
     @SuppressWarnings("unchecked")
     public FeatureIterator<F> features() {
-        FeatureIterator iter = new DelegateFeatureIterator(openIterator());
+        FeatureIterator iter = new DelegateFeatureIterator<>(openIterator());
         getOpenIterators().add(iter);
         return iter;
     }

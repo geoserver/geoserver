@@ -197,7 +197,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         Component createEditLink(String id, final IModel<T> model, Property<T> property) {
             @SuppressWarnings("unchecked")
             IModel<Object> cast = (IModel<Object>) property.getModel(model);
-            return new SimpleAjaxLink<Object>(id, cast) {
+            return new SimpleAjaxLink<>(id, cast) {
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {

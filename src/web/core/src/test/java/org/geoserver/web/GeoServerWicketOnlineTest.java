@@ -206,8 +206,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         HttpURLConnection connection =
                 prepareGet("rest/security/acl/services", null, "application/json");
         connection.setRequestProperty(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("admin:geoserver").getBytes())));
+                "Authorization", "Basic " + Base64.encodeBytes(("admin:geoserver").getBytes()));
         connection = doGet(connection);
         String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         connection.disconnect();
@@ -234,8 +233,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         HttpURLConnection connection =
                 prepareDelete("rest/security/acl/services/" + ruleName, null);
         connection.setRequestProperty(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("admin:geoserver").getBytes())));
+                "Authorization", "Basic " + Base64.encodeBytes(("admin:geoserver").getBytes()));
         connection = doGet(connection);
         int responseCode = connection.getResponseCode();
         connection.disconnect();

@@ -530,7 +530,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         Filter filter =
                 ff.id(
-                        new LinkedHashSet<Identifier>(
+                        new LinkedHashSet<Identifier>( // NOPMD
                                 Arrays.asList(
                                         ff.featureId("Fifteen.5"),
                                         ff.featureId("Fifteen.6"),

@@ -268,7 +268,7 @@ public class CoverageStoreController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<CoverageStoreInfo>(CoverageStoreInfo.class) {
+        return new ObjectToMapWrapper<>(CoverageStoreInfo.class) {
 
             @Override
             protected void wrapInternal(

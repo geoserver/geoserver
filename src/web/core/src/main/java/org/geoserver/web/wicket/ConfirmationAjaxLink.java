@@ -34,7 +34,7 @@ public abstract class ConfirmationAjaxLink<T> extends SimpleAjaxLink<T> {
 
     @Override
     protected AjaxLink<T> buildAjaxLink(IModel<T> linkModel) {
-        return new AjaxLink<T>("link", linkModel) {
+        return new AjaxLink<>("link", linkModel) {
 
             @Override
             protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {

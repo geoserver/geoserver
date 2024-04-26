@@ -40,7 +40,7 @@ public class StylePage extends GeoServerSecuredPage {
         StyleProvider provider = new StyleProvider();
         add(
                 table =
-                        new GeoServerTablePanel<StyleInfo>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(

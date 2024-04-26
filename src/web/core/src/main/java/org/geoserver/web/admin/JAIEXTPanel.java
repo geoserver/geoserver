@@ -28,10 +28,11 @@ public class JAIEXTPanel extends Panel {
 
         @SuppressWarnings("unchecked")
         Palette jaiextSelector =
-                new Palette<String>(
+                new Palette<>(
                         "jaiextOps",
-                        LiveCollectionModel.set(new PropertyModel(jaiextModel, "JAIOperations")),
-                        LiveCollectionModel.set(new PropertyModel(jaiextModel, "JAIEXTOperations")),
+                        LiveCollectionModel.set(new PropertyModel<>(jaiextModel, "JAIOperations")),
+                        LiveCollectionModel.set(
+                                new PropertyModel<>(jaiextModel, "JAIEXTOperations")),
                         new JAChoiceRenderer(),
                         7,
                         false) {

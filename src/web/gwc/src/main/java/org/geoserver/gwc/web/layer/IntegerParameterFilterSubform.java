@@ -31,7 +31,7 @@ public class IntegerParameterFilterSubform
     private static final long serialVersionUID = 4625052381807389891L;
 
     private static final IConverter<Integer> INTEGER =
-            new IConverter<Integer>() {
+            new IConverter<>() {
 
                 private static final long serialVersionUID = -998131942023964739L;
 
@@ -57,7 +57,7 @@ public class IntegerParameterFilterSubform
             };
 
     private static final IConverter<List<Integer>> CONVERT =
-            new IConverter<List<Integer>>() {
+            new IConverter<>() {
                 /** serialVersionUID */
                 private static final long serialVersionUID = 1L;
 
@@ -99,7 +99,7 @@ public class IntegerParameterFilterSubform
         add(defaultValue);
 
         final TextArea<List<Integer>> values =
-                new TextArea<List<Integer>>("values", new PropertyModel<>(model, "values")) {
+                new TextArea<>("values", new PropertyModel<>(model, "values")) {
                     private static final long serialVersionUID = 1397063859210766872L;
 
                     @SuppressWarnings("unchecked")

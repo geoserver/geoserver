@@ -84,7 +84,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
     }
 
     private AjaxLink<T> buildToggleLink(ListItem<T> item, IModel<T> model) {
-        return new AjaxLink<T>("toggle", model) {
+        return new AjaxLink<>("toggle", model) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (item.get("panel") instanceof ContentPanel) {

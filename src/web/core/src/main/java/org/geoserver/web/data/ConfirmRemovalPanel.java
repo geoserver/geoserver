@@ -171,7 +171,7 @@ public class ConfirmRemovalPanel extends Panel {
     ListView<CatalogInfo> notRemovedList(final Map<CatalogInfo, StringResourceModel> notRemoved) {
         List<CatalogInfo> items = new ArrayList<>(notRemoved.keySet());
         ListView<CatalogInfo> lv =
-                new ListView<CatalogInfo>("notRemovedList", items) {
+                new ListView<>("notRemovedList", items) {
 
                     @Override
                     protected void populateItem(ListItem<CatalogInfo> item) {

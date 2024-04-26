@@ -378,7 +378,7 @@ public abstract class TransactionRequest extends RequestObject {
                             .getAbstractTransactionAction()
                             .iterator();
             while (it.hasNext()) {
-                EObject el = (EObject) it.next();
+                EObject el = it.next();
                 if (pElement.getAdaptee() == el) {
                     it.remove();
                     return true;

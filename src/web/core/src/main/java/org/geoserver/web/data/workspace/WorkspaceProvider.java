@@ -60,7 +60,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
      * @see #isDefaultWorkspace(WorkspaceInfo)
      */
     public static Property<WorkspaceInfo> DEFAULT =
-            new AbstractProperty<WorkspaceInfo>("default") {
+            new AbstractProperty<>("default") {
 
                 private static final long serialVersionUID = 7732697329315316826L;
 

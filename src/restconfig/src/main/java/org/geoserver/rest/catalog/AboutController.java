@@ -139,7 +139,7 @@ public class AboutController extends RestBaseController {
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
 
         if (AboutModel.class.isAssignableFrom(clazz)) {
-            return new ObjectToMapWrapper<AboutModel>(AboutModel.class) {
+            return new ObjectToMapWrapper<>(AboutModel.class) {
                 @Override
                 protected void wrapInternal(
                         Map<String, Object> properties, SimpleHash model, AboutModel object) {

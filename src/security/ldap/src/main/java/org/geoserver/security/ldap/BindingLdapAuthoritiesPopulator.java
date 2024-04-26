@@ -216,7 +216,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                             authTemplate.search(
                                     getGroupSearchBase(),
                                     formattedFilter,
-                                    new AbstractContextMapper<Pair<String, String>>() {
+                                    new AbstractContextMapper<>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(
                                                 DirContextOperations ctx) {
@@ -287,7 +287,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                             authTemplate.search(
                                     getGroupSearchBase(),
                                     formattedFilter,
-                                    new AbstractContextMapper<Pair<String, String>>() {
+                                    new AbstractContextMapper<>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(
                                                 DirContextOperations ctx) {

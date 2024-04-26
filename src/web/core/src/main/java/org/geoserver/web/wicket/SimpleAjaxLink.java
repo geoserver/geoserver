@@ -40,7 +40,7 @@ public abstract class SimpleAjaxLink<T> extends Panel {
     }
 
     protected AjaxLink<T> buildAjaxLink(IModel<T> linkModel) {
-        return new AjaxLink<T>("link", linkModel) {
+        return new AjaxLink<>("link", linkModel) {
 
             @Override
             public void onClick(AjaxRequestTarget target) {

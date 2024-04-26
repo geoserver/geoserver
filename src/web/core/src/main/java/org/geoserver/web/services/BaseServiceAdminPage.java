@@ -217,7 +217,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        return new ListView<AdminPagePanelInfo>(id, panels) {
+        return new ListView<>(id, panels) {
 
             @Override
             protected void populateItem(ListItem<AdminPagePanelInfo> item) {

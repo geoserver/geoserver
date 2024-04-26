@@ -6,7 +6,7 @@
 package org.geoserver.web.admin;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
@@ -324,6 +324,6 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
     private void assertI18NContent(InternationalString internationalString) {
         GrowableInternationalString growable = (GrowableInternationalString) internationalString;
-        growable.getLocales().forEach(l -> assertTrue(!internationalString.toString(l).isEmpty()));
+        growable.getLocales().forEach(l -> assertFalse(internationalString.toString(l).isEmpty()));
     }
 }

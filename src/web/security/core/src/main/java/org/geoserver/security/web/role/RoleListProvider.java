@@ -84,7 +84,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
     }
 
     public static final Property<GeoServerRole> HASROLEPARAMS =
-            new Property<GeoServerRole>() {
+            new Property<>() {
 
                 @Override
                 public String getName() {

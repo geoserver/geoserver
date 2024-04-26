@@ -12,11 +12,11 @@ import org.apache.wicket.model.Model;
 public class ConfirmationAjaxLinkTestPage extends WebPage {
 
     public ConfirmationAjaxLinkTestPage() {
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         ConfirmationAjaxLink<String> link =
-                new ConfirmationAjaxLink<String>(
+                new ConfirmationAjaxLink<>(
                         "confirmationLink",
                         new Model<>("model"),
                         new Model<>("label"),

@@ -409,7 +409,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         @SuppressWarnings("unchecked") // EMF model without generics
         protected void handleSupportedCRSs(CoverageInfo ci) throws Exception {
-            Set supportedCRSs = new LinkedHashSet();
+            Set supportedCRSs = new LinkedHashSet<>();
             if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());
             if (ci.getResponseSRS() != null) supportedCRSs.addAll(ci.getResponseSRS());
             for (Object crSs : supportedCRSs) {

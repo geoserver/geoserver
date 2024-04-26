@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -235,7 +234,7 @@ public class WCSDimensionsSubsetHelper {
 
         // check if we have to subset, if not let's send back the basic coverage
         final EList<DimensionSubsetType> requestedDimensions = request.getDimensionSubset();
-        if (requestedDimensions == null || requestedDimensions.size() <= 0) {
+        if (requestedDimensions == null || requestedDimensions.isEmpty()) {
             return sourceEnvelopeInSubsettingCRS;
         }
 
@@ -1175,10 +1174,8 @@ public class WCSDimensionsSubsetHelper {
         Filter dimensionsFilter = filter;
         if (subset != null && !subset.isEmpty()) {
             Set<String> dimensions = subset.keySet();
-            Iterator<String> dimensionsIt = dimensions.iterator();
             // Filtering over the dimensions
-            while (dimensionsIt.hasNext()) {
-                final String dimensionName = dimensionsIt.next();
+            for (String dimensionName : dimensions) {
                 List<Object> dimensionValues = subset.get(dimensionName);
                 if (dimensionValues == null || dimensionValues.isEmpty()) {
                     continue;

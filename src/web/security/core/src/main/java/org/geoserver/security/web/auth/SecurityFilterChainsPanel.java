@@ -149,7 +149,7 @@ public class SecurityFilterChainsPanel extends Panel {
                 final Property<RequestFilterChain> property) {
             @SuppressWarnings("unchecked")
             IModel<String> cast = (IModel<String>) property.getModel(model);
-            return new SimpleAjaxLink<String>(id, cast) {
+            return new SimpleAjaxLink<>(id, cast) {
 
                 String chainName = (String) property.getModel(model).getObject();
 

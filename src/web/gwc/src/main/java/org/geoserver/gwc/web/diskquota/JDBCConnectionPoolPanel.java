@@ -58,7 +58,7 @@ public class JDBCConnectionPoolPanel extends Panel {
 
         PasswordTextField password =
                 new PasswordTextFieldWriteOnlyModel(
-                        "jdbcPassword", new PropertyModel<String>(model, "password"));
+                        "jdbcPassword", new PropertyModel<>(model, "password"));
         password.setResetPassword(false);
         add(password);
 
@@ -107,7 +107,7 @@ public class JDBCConnectionPoolPanel extends Panel {
 
         public ContainsAutoCompleteBehavior(List<String> choices) {
             super(
-                    new AbstractAutoCompleteTextRenderer<String>() {
+                    new AbstractAutoCompleteTextRenderer<>() {
                         private static final long serialVersionUID = 3192368880726583011L;
 
                         @Override

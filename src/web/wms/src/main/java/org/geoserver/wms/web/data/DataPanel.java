@@ -65,7 +65,7 @@ public class DataPanel extends Panel {
         DataAttributesProvider summaries = new DataAttributesProvider(sample);
 
         final GeoServerTablePanel<DataAttribute> attributes =
-                new GeoServerTablePanel<DataAttribute>("attributes", summaries) {
+                new GeoServerTablePanel<>("attributes", summaries) {
 
                     private static final long serialVersionUID = 7753093373969576568L;
 

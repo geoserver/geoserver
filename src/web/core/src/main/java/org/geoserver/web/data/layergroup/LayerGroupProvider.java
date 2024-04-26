@@ -32,7 +32,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
             new BeanProperty<>("datecreated", "dateCreated");
 
     public static Property<LayerGroupInfo> ENABLED =
-            new AbstractProperty<LayerGroupInfo>("Enabled") {
+            new AbstractProperty<>("Enabled") {
 
                 @Override
                 public Boolean getPropertyValue(LayerGroupInfo item) {

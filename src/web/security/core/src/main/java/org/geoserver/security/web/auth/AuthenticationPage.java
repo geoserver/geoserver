@@ -143,7 +143,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         form.add(bfMaxDelay);
 
         final TextField<List<String>> netmasks =
-                new TextField<List<String>>(
+                new TextField<>(
                         "bfWhitelistedNetmasks",
                         new PropertyModel<>(this, "config.bruteForcePrevention.whitelistedMasks")) {
 

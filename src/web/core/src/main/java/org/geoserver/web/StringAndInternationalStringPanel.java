@@ -83,7 +83,7 @@ public class StringAndInternationalStringPanel extends Panel {
         }
 
         InternationalStringPanel<TextField<String>> internationalStringField =
-                new InternationalStringPanel<TextField<String>>(
+                new InternationalStringPanel<>(
                         "internationalField",
                         new PropertyModel<>(model, internationalProperty),
                         title,

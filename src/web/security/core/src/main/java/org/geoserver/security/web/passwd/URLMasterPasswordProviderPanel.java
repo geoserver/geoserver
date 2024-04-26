@@ -25,10 +25,10 @@ public class URLMasterPasswordProviderPanel
 
         add(new HelpLink("urlHelp", this).setDialog(dialog));
         add(
-                new TextField<URL>("uRL", URL.class) {
+                new TextField<>("uRL", URL.class) {
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
-                        return new IConverter<C>() {
+                        return new IConverter<>() {
                             @Override
                             public String convertToString(Object value, Locale locale) {
                                 return ((URL) value).toExternalForm();

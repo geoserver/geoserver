@@ -74,7 +74,7 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         if (vcMap == null) {
             @SuppressWarnings("unchecked")
             Class<T> uncheked = (Class<T>) vc;
-            vcMap = maps.computeIfAbsent(uncheked, k -> new ConcurrentSkipListMap<K, T>());
+            vcMap = maps.computeIfAbsent(uncheked, k -> new ConcurrentSkipListMap<>());
         }
         return vcMap;
     }

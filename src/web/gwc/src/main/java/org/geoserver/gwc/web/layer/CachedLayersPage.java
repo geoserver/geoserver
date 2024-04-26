@@ -79,7 +79,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     public CachedLayersPage() {
 
         table =
-                new GeoServerTablePanel<TileLayer>("table", provider, true) {
+                new GeoServerTablePanel<>("table", provider, true) {
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings({"unchecked"})
@@ -202,7 +202,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         IModel<String> labelModel = new ResourceModel("truncate");
 
         SimpleAjaxLink<String> link =
-                new SimpleAjaxLink<String>(id, model, labelModel) {
+                new SimpleAjaxLink<>(id, model, labelModel) {
                     private static final long serialVersionUID = 1L;
 
                     @Override

@@ -63,7 +63,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
         final IModel paramsModel = new PropertyModel<>(model, "parameters");
         ListView<String> paramsList =
-                new ListView<String>("parameters", keys) {
+                new ListView<>("parameters", keys) {
 
                     @Override
                     protected void populateItem(ListItem item) {

@@ -128,7 +128,7 @@ public class WicketHierarchyPrinter {
     String tab(int level) {
         char[] spaces = new char[level * 3];
         Arrays.fill(spaces, ' ');
-        return new String(spaces);
+        return String.valueOf(spaces);
     }
 
     /** If the page relative path dumping is enabled */

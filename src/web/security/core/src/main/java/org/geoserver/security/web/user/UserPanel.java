@@ -92,7 +92,7 @@ public class UserPanel extends Panel {
         // the add button
         h.add(
                 add =
-                        new Link<NewUserPage>("addNew") {
+                        new Link<>("addNew") {
                             @Override
                             public void onClick() {
                                 setResponsePage(

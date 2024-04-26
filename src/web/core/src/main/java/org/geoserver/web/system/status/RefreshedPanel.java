@@ -68,7 +68,7 @@ public class RefreshedPanel extends Panel {
         add(time);
 
         ListView<MetricValue> list =
-                new ListView<MetricValue>("metrics", metricMdl) {
+                new ListView<>("metrics", metricMdl) {
                     private static final long serialVersionUID = -5654700538264617274L;
 
                     private int counter;

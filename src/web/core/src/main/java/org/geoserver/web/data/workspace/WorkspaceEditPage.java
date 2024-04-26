@@ -170,7 +170,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
 
         tabbedPanel =
-                new TabbedPanel<ITab>("tabs", tabs) {
+                new TabbedPanel<>("tabs", tabs) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -591,7 +591,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             services = services(wsModel);
             ListView<Service> serviceList =
-                    new ListView<Service>("services", services) {
+                    new ListView<>("services", services) {
 
                         private static final long serialVersionUID = -4142739871430618450L;
 

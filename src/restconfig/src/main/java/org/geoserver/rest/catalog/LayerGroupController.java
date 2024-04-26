@@ -298,7 +298,7 @@ public class LayerGroupController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<LayerGroupInfo>(LayerGroupInfo.class) {
+        return new ObjectToMapWrapper<>(LayerGroupInfo.class) {
             @Override
             protected void wrapInternal(
                     Map<String, Object> properties, SimpleHash model, LayerGroupInfo layerGroup) {

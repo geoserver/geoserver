@@ -113,9 +113,7 @@ public class TransactionResponse extends WFSResponse {
 
                 if (first
                         || ((lastHandle == null) && (handle != null))
-                        || ((lastHandle != null)
-                                && (handle != null)
-                                && handle.equals(lastHandle))) {
+                        || ((handle != null) && handle.equals(lastHandle))) {
                     if (!first) {
                         // close last one, if not the first time through
                         writer.write("</wfs:InsertResult>");

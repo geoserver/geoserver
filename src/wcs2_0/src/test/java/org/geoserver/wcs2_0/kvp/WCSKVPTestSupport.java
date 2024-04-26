@@ -65,10 +65,9 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
         super();
     }
 
-    @SuppressWarnings("unchecked")
     protected GetCoverageType parse(String url) throws Exception {
-        Map<String, Object> rawKvp = new CaseInsensitiveMap(KvpUtils.parseQueryString(url));
-        Map<String, Object> kvp = new CaseInsensitiveMap(parseKvp(rawKvp));
+        Map<String, Object> rawKvp = new CaseInsensitiveMap<>(KvpUtils.parseQueryString(url));
+        Map<String, Object> kvp = new CaseInsensitiveMap<>(parseKvp(rawKvp));
         WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType gc = (GetCoverageType) reader.createRequest();
         return (GetCoverageType) reader.read(gc, kvp, rawKvp);

@@ -42,7 +42,7 @@ public abstract class LayerGroupStylePanel extends FormComponentPanel<LayerGroup
         add(titleAndAbstractPanel);
         add(removeLink());
         this.groupEntryPanel =
-                new LayerGroupEntryPanel<LayerGroupStyle>(
+                new LayerGroupEntryPanel<>(
                         "layerGroupEntryPanel", model, workspaceInfo, true, false) {
                     @Override
                     protected List<PublishedInfo> getLayers(LayerGroupStyle object) {
@@ -59,7 +59,7 @@ public abstract class LayerGroupStylePanel extends FormComponentPanel<LayerGroup
     }
 
     private AjaxLink<LayerGroupStyle> removeLink() {
-        return new AjaxLink<LayerGroupStyle>("remove") {
+        return new AjaxLink<>("remove") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {

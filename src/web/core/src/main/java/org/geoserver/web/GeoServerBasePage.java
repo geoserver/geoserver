@@ -166,7 +166,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class));
 
         add(
-                new ListView<LoginFormInfo>("loginforms", loginforms) {
+                new ListView<>("loginforms", loginforms) {
                     @Override
                     public void populateItem(ListItem<LoginFormInfo> item) {
                         LoginFormInfo info = item.getModelObject();
@@ -289,7 +289,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         Collections.sort(categories);
 
         add(
-                new ListView<Category>("category", categories) {
+                new ListView<>("category", categories) {
                     @Override
                     public void populateItem(ListItem<Category> item) {
                         Category category = item.getModelObject();
@@ -298,7 +298,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 });
 
         add(
-                new ListView<MenuPageInfo<GeoServerBasePage>>("standalone", standalone) {
+                new ListView<>("standalone", standalone) {
                     @Override
                     public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
@@ -441,8 +441,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         "category.header",
                         new StringResourceModel(category.getNameKey(), null, null)));
         item.add(
-                new ListView<MenuPageInfo<GeoServerBasePage>>(
-                        "category.links", links.get(category)) {
+                new ListView<>("category.links", links.get(category)) {
                     @Override
                     public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
                         createMenuComponent(item);
@@ -453,7 +452,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
         BookmarkablePageLink<Page> link =
-                new BookmarkablePageLink<Page>("link", info.getComponentClass()) {
+                new BookmarkablePageLink<>("link", info.getComponentClass()) {
 
                     @Override
                     public PageParameters getPageParameters() {
@@ -490,9 +489,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         HttpServletRequest hr =
                 ((GeoServerApplication) getApplication()).servletRequest(getRequest());
         String baseURL = ResponseUtils.baseURL(hr);
-        String logoutPath =
-                ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.RESOURCE);
-        return logoutPath;
+        return ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.RESOURCE);
     }
 
     @Override

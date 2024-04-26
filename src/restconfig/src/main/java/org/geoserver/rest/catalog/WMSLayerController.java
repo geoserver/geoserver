@@ -466,7 +466,7 @@ public class WMSLayerController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<WMSLayerInfo>(WMSLayerInfo.class) {
+        return new ObjectToMapWrapper<>(WMSLayerInfo.class) {
             @SuppressWarnings("unchecked")
             @Override
             protected void wrapInternal(Map properties, SimpleHash model, WMSLayerInfo object) {

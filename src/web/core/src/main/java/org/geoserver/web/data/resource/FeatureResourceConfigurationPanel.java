@@ -211,7 +211,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
         // just use the direct attributes, this is not editable atm
         attributes =
-                new ListView<AttributeTypeInfo>("attributes", new AttributeListModel()) {
+                new ListView<>("attributes", new AttributeListModel()) {
                     @Override
                     protected void populateItem(ListItem item) {
 

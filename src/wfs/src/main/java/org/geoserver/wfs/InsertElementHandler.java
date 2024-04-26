@@ -85,7 +85,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
         try {
             // group features by their schema
-            HashMap /* <SimpleFeatureType,FeatureCollection> */ schema2features = new HashMap();
+            HashMap /* <SimpleFeatureType,FeatureCollection> */ schema2features = new HashMap<>();
 
             List featureList = insert.getFeatures();
             for (Object item : featureList) {

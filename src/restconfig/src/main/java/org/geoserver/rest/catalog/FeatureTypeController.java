@@ -575,7 +575,7 @@ public class FeatureTypeController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<FeatureTypeInfo>(FeatureTypeInfo.class) {
+        return new ObjectToMapWrapper<>(FeatureTypeInfo.class) {
             @Override
             protected void wrapInternal(
                     Map<String, Object> properties, SimpleHash model, FeatureTypeInfo object) {

@@ -135,7 +135,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         add(defaultGridsetsTable);
 
         IModel<List<String>> availableModel =
-                new LoadableDetachableModel<List<String>>() {
+                new LoadableDetachableModel<>() {
                     private static final long serialVersionUID = 1L;
 
                     @Override

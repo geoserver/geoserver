@@ -35,12 +35,9 @@ public class GeoServerBasicAuthenticationFilterTest {
     @Before
     public void setUp() throws Exception {
         authenticationFilter = createAuthenticationFilter();
-        StringBuffer buff = new StringBuffer(PASSWORD);
-        buff.append(":");
-        buff.append(authenticationFilter.getName());
+        String buff = PASSWORD + ":" + authenticationFilter.getName();
         MessageDigest digest = MessageDigest.getInstance("MD5");
-        String digestString =
-                new String(Hex.encode(digest.digest(buff.toString().getBytes(UTF_8))));
+        String digestString = String.valueOf(Hex.encode(digest.digest(buff.getBytes(UTF_8))));
         expected = USERNAME + digestString;
     }
 
@@ -66,7 +63,7 @@ public class GeoServerBasicAuthenticationFilterTest {
     private GeoServerBasicAuthenticationFilter createAuthenticationFilter() {
         GeoServerBasicAuthenticationFilter authenticationFilter =
                 new GeoServerBasicAuthenticationFilter();
-        GeoServerSecurityManager sm = null;
+        GeoServerSecurityManager sm;
         try {
             sm = new GeoServerSecurityManager(new GeoServerDataDirectory(new File("target")));
             authenticationFilter.setSecurityManager(sm);

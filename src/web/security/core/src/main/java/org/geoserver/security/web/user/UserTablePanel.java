@@ -59,7 +59,7 @@ public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
 
     protected Component editUserLink(
             String id, IModel<GeoServerUser> itemModel, Property<GeoServerUser> property) {
-        return new SimpleAjaxLink<GeoServerUser>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

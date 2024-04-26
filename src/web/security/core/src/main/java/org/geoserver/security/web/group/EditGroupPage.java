@@ -34,7 +34,7 @@ public class EditGroupPage extends AbstractGroupPage {
         get("form:groupname").setEnabled(false);
 
         GeoServerDataProvider<GeoServerUser> usersDataProvider =
-                new GeoServerDataProvider<GeoServerUser>() {
+                new GeoServerDataProvider<>() {
                     @Override
                     protected List<Property<GeoServerUser>> getProperties() {
                         return Arrays.asList(UserListProvider.USERNAME);

@@ -252,7 +252,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
             add(
                     lgEntryPanel =
-                            new LayerGroupEntryPanel<LayerGroupInfo>(
+                            new LayerGroupEntryPanel<>(
                                     "layers", getPublishedInfo(), wsChoice.getModel()) {
 
                                 @Override

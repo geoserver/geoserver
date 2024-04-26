@@ -128,7 +128,7 @@ public class UserConcurrentFlowController extends QueueController {
             synchronized (this) {
                 for (String key : queues.keySet()) {
                     TimedBlockingQueue tbq = queues.get(key);
-                    if (now - tbq.lastModified > maxAge && tbq.size() == 0) {
+                    if (now - tbq.lastModified > maxAge && tbq.isEmpty()) {
                         queues.remove(key);
                         cleanupCount++;
                     }

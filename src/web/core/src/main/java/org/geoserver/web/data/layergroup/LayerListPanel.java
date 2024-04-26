@@ -137,7 +137,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
             String id, final IModel<LayerInfo> itemModel, Property<LayerInfo> property) {
         IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
-            return new SimpleAjaxLink<String>(id, (IModel<String>) model) {
+            return new SimpleAjaxLink<>(id, (IModel<String>) model) {
                 private static final long serialVersionUID = -2968338284881141281L;
 
                 @Override

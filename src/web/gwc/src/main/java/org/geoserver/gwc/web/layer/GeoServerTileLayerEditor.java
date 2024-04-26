@@ -210,7 +210,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(enabled);
 
         ChoiceRenderer<String> blobStoreRenderer =
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     private static final long serialVersionUID = 1L;
 
                     final String defaultStore = getDefaultBlobStoreId();
@@ -242,7 +242,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
 
         add(
-                new IValidator<GeoServerTileLayerInfo>() {
+                new IValidator<>() {
                     private static final long serialVersionUID = 5240602030478856537L;
 
                     @Override
@@ -300,7 +300,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         mergeExisting(formats, mimeFormatsModel.getObject());
 
         ListView<String> cacheFormatsList =
-                new ListView<String>("cacheFormats", formats) {
+                new ListView<>("cacheFormats", formats) {
                     private static final long serialVersionUID = 1L;
 
                     @Override

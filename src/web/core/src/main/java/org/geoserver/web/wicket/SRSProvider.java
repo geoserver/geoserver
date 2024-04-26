@@ -91,7 +91,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
     }
 
     public static final Property<SRS> IDENTIFIER =
-            new BeanProperty<SRS>("identifier", "identifier") {
+            new BeanProperty<>("identifier", "identifier") {
 
                 private static final long serialVersionUID = -1638823520421390286L;
 
@@ -102,7 +102,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             };
 
     public static final Property<SRS> DESCRIPTION =
-            new BeanProperty<SRS>("description", "description") {
+            new BeanProperty<>("description", "description") {
 
                 private static final long serialVersionUID = 3549074714488486991L;
 

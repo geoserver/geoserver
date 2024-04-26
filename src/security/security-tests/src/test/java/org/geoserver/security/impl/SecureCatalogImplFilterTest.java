@@ -50,14 +50,12 @@ public class SecureCatalogImplFilterTest {
 
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
         if (it == null) return null;
-        try {
+        try (it) {
             LinkedList<T> list = new LinkedList<>();
             while (it.hasNext()) {
                 list.add(it.next());
             }
             return list;
-        } finally {
-            it.close();
         }
     }
 

@@ -128,7 +128,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         wmc.add(logHeadersCheckBox);
         wmc.add(xmlPostRequestLogBufferSize);
         MetadataMapModel<Boolean> requestCheckModel =
-                new MetadataMapModel<Boolean>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
+                new MetadataMapModel<>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
                     @Override
                     public void setObject(Boolean object) {
                         super.setObject(object);
@@ -288,7 +288,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     logProfiles.add(res.name());
                 }
 
-                Collections.sort(logProfiles, String.CASE_INSENSITIVE_ORDER);
+                logProfiles.sort(String.CASE_INSENSITIVE_ORDER);
             }
         } catch (Exception e) {
             LOGGER.log(
@@ -337,7 +337,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         @Override
         public ResourceErrorHandling getObject(
                 String id, IModel<? extends List<? extends ResourceErrorHandling>> choices) {
-            return id == null || "".equals(id) ? null : ResourceErrorHandling.valueOf(id);
+            return id == null || id.isEmpty() ? null : ResourceErrorHandling.valueOf(id);
         }
     }
 }

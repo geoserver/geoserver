@@ -106,7 +106,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         transformer = createTransformer();
 
         FeatureTypeNamespaces ftNames = transformer.getFeatureTypeNamespaces();
-        Map ftNamespaces = new HashMap();
+        Map ftNamespaces = new HashMap<>();
 
         // TODO: the crs is a back, it only will work property when there is
         // one type, we really need to set it on the feature level

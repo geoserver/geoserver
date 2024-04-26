@@ -147,8 +147,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                         });
         provider = new InternationalEntriesProvider();
         GeoServerTablePanel<GrowableStringModel.InternationalStringEntry> tablePanel =
-                new GeoServerTablePanel<GrowableStringModel.InternationalStringEntry>(
-                        "tablePanel", provider) {
+                new GeoServerTablePanel<>("tablePanel", provider) {
                     @Override
                     protected Component getComponentForProperty(
                             String id,

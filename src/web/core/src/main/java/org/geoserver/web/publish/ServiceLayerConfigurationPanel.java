@@ -53,7 +53,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
         PropertyModel<List<String>> dsModel =
                 new PropertyModel<>(layerModel, "resource.disabledServices");
         final IChoiceRenderer<String> renderer =
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public String getObject(
                             String id, IModel<? extends List<? extends String>> choices) {
@@ -73,7 +73,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
                 };
 
         servicesMultiSelector =
-                new Palette<String>(
+                new Palette<>(
                         "servicesSelection",
                         dsModel,
                         servicesVotedModel(layerModel.getObject().getResource()),
@@ -110,7 +110,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
     }
 
     private LoadableDetachableModel<List<String>> servicesVotedModel(ResourceInfo resource) {
-        return new LoadableDetachableModel<List<String>>() {
+        return new LoadableDetachableModel<>() {
             private static final long serialVersionUID = 1L;
 
             @Override

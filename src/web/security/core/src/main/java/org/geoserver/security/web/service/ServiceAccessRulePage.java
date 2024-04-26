@@ -30,7 +30,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         ServiceAccessRuleProvider provider = new ServiceAccessRuleProvider();
         add(
                 rules =
-                        new GeoServerTablePanel<ServiceAccessRule>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -75,7 +75,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
 
     Component editRuleLink(
             String id, IModel<ServiceAccessRule> itemModel, Property<ServiceAccessRule> property) {
-        return new SimpleAjaxLink<ServiceAccessRule>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

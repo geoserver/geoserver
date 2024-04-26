@@ -129,7 +129,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     public void addCustomButton(String title, String cssClass, CustomButtonAction action) {
         customButtons.add(
-                new AjaxLink<Object>(customButtons.newChildId()) {
+                new AjaxLink<>(customButtons.newChildId()) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         action.onClick(target);

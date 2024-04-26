@@ -44,7 +44,7 @@ public class RolePanel extends Panel {
         RoleListProvider provider = new RoleListProvider(this.roleServiceName);
         add(
                 roles =
-                        new GeoServerTablePanel<GeoServerRole>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(

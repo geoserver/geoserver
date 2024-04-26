@@ -40,7 +40,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         LayerGroupProvider provider = new LayerGroupProvider();
         add(
                 table =
-                        new GeoServerTablePanel<LayerGroupInfo>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             private static final long serialVersionUID = 714777934301159139L;
 

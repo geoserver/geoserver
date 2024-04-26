@@ -45,7 +45,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
                         "locale",
                         localeModel,
                         getLocales(),
-                        new ChoiceRenderer<Locale>() {
+                        new ChoiceRenderer<>() {
 
                             private static final long serialVersionUID = -2122570049478633429L;
 
@@ -67,7 +67,7 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
                         "case",
                         caseModel,
                         Arrays.asList(Case.values()),
-                        new ChoiceRenderer<Case>() {
+                        new ChoiceRenderer<>() {
 
                             private static final long serialVersionUID = -129788130907421097L;
 

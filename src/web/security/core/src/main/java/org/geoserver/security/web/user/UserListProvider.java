@@ -69,7 +69,7 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
 
     */
     public static final Property<GeoServerUser> HASATTRIBUTES =
-            new Property<GeoServerUser>() {
+            new Property<>() {
 
                 @Override
                 public String getName() {

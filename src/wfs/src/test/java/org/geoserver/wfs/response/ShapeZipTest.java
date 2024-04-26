@@ -124,7 +124,7 @@ public class ShapeZipTest extends WFSTestSupport {
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
 
-        Map params = new HashMap();
+        Map params = new HashMap<>();
         params.put(SystemTestData.LayerProperty.SRS, 4326);
         dataDirectory.addVectorLayer(ALL_TYPES, params, ShapeZipTest.class, getCatalog());
         dataDirectory.addVectorLayer(ALL_DOTS, params, ShapeZipTest.class, getCatalog());
@@ -156,7 +156,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
-        Map options = new HashMap();
+        Map options = new HashMap<>();
         options.put("CHARSET", Charset.forName("ISO-8859-15"));
         gft.setFormatOptions(options);
         zip.write(fct, bos, op);
@@ -484,7 +484,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
-        Map options = new HashMap();
+        Map options = new HashMap<>();
         options.put("PRJFILEFORMAT", "ESRI");
         gft.setFormatOptions(options);
         zip.write(fct, bos, op);
@@ -508,7 +508,7 @@ public class ShapeZipTest extends WFSTestSupport {
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         fct.getFeature().add(getFeatureSource(ALL_TYPES).getFeatures());
-        Map options = new HashMap();
+        Map options = new HashMap<>();
         options.put("PRJFILEFORMAT", "ESRI");
         gft.setFormatOptions(options);
         zip.write(fct, bos, op);
@@ -545,7 +545,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
-        Map options = new HashMap();
+        Map options = new HashMap<>();
         gft.setFormatOptions(options);
         zip.write(fct, bos, op);
 
@@ -575,7 +575,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
-        Map options = new HashMap();
+        Map options = new HashMap<>();
         gft.setFormatOptions(options);
         zip.write(fct, bos, op);
 
@@ -722,7 +722,7 @@ public class ShapeZipTest extends WFSTestSupport {
         ZipEntry entry = null;
 
         final String[] extensions = {".shp", ".shx", ".dbf", ".prj", ".cst"};
-        Set names = new HashSet();
+        Set names = new HashSet<>();
         for (String name : typeNames) {
             for (String extension : extensions) {
                 names.add(name + extension);
@@ -752,8 +752,7 @@ public class ShapeZipTest extends WFSTestSupport {
     private void checkForWFSRequestDumpFile(final InputStream in, boolean includeWFSRequestDumpFile)
             throws IOException {
         ZipInputStream zis = new ZipInputStream(in);
-        ZipEntry entry = null;
-        byte[] bytes = new byte[1024];
+        ZipEntry entry;
         boolean foundWFSRequestDumpFile = false;
         while ((entry = zis.getNextEntry()) != null) {
             if (entry.getName().endsWith(".txt")) {
@@ -969,7 +968,7 @@ public class ShapeZipTest extends WFSTestSupport {
     /**
      * Extracts bytes only for the shp file from zip
      *
-     * @param zip zip byte array
+     * @param zipBytes zip byte array
      * @return shp file byte array
      */
     private byte[] getShpOnlyBytes(byte[] zipBytes) throws IOException {
@@ -1003,7 +1002,7 @@ public class ShapeZipTest extends WFSTestSupport {
         fct.getFeature().add(fs.getFeatures());
 
         // add the charset
-        Map options = new HashMap();
+        Map options = new HashMap<>();
         gft.setFormatOptions(options);
         zip.write(fct, bos, op);
 

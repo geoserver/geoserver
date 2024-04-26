@@ -149,8 +149,8 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
         r.setNewPassword(r.getCurrentPassword());
 
         checkCurrentEqualsNewPassword(r);
-        r.setConfirmPassword((new String(r.getCurrentPassword()) + "1").toCharArray());
-        r.setNewPassword((new String(r.getCurrentPassword()) + "1").toCharArray());
+        r.setConfirmPassword((String.valueOf(r.getCurrentPassword()) + "1").toCharArray());
+        r.setNewPassword((String.valueOf(r.getCurrentPassword()) + "1").toCharArray());
 
         validator.validateChangeRequest(r);
     }

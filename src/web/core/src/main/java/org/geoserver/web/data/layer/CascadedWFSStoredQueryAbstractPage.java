@@ -82,8 +82,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         parameterProvider = new StoredQueryParameterAttributeProvider();
 
         parameters =
-                new GeoServerTablePanel<StoredQueryParameterAttribute>(
-                        "parameters", parameterProvider) {
+                new GeoServerTablePanel<>("parameters", parameterProvider) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 8282438267732625198L;
 

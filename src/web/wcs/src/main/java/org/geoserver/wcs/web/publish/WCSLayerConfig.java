@@ -117,7 +117,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         new WCSInterpolationModel()));
 
         Palette<String> interpolationMethods =
-                new Palette<String>(
+                new Palette<>(
                         "interpolationMethods",
                         LiveCollectionModel.list(
                                 new PropertyModel<List<String>>(coverage, "interpolationMethods")),
@@ -153,7 +153,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(nativeFormat);
 
         Palette<String> formatPalette =
-                new Palette<String>(
+                new Palette<>(
                         "formatPalette",
                         LiveCollectionModel.list(
                                 new PropertyModel<List<String>>(coverage, "supportedFormats")),

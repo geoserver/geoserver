@@ -26,12 +26,12 @@ public class GeoserverTestPasswordEncoder extends AbstractGeoserverPasswordEncod
 
             @Override
             public boolean isPasswordValid(String encPass, char[] rawPass, Object salt) {
-                return encPass.equals(new String(rawPass));
+                return encPass.equals(String.valueOf(rawPass));
             }
 
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
-                return new String(rawPass);
+                return String.valueOf(rawPass);
             }
         };
     }

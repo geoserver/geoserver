@@ -131,8 +131,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getProxy().doFilter(request, response, chain);
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -144,10 +144,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName, testUserName, null, null);
@@ -183,12 +180,12 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         request.addHeader(
                 "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("unknwon:" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes(("unknwon:" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth("unknow", testPassword, null, null);
         assertNull(auth);
@@ -203,10 +200,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                                .getBytes())));
+                        + Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
+                                        .getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(GeoServerUser.ROOT_USERNAME, "geoserver", null, null);
@@ -223,10 +219,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName, testUserName, null, null);
@@ -246,15 +239,12 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -485,8 +475,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
         // test successful login
@@ -537,8 +527,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(testFilterName2, "unknown", 300, 300);
         assertNull(auth);
@@ -581,8 +571,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(testFilterName2, GeoServerUser.ROOT_USERNAME, 300, 300);
         assertNull(auth);
@@ -620,8 +610,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(testFilterName2, testUserName, 300, 300);
         assertNull(auth);
@@ -674,8 +664,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
 
         request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
+                "Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName5, "abc@xyz.com", null, null);
@@ -709,8 +698,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
+                "Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName5, "abc@xyz.com", null, null);
@@ -729,10 +717,9 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                                .getBytes())));
+                        + Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
+                                        .getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
 
@@ -906,8 +893,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
         // test successful login for digest
@@ -937,10 +924,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName, testUserName, null, null);

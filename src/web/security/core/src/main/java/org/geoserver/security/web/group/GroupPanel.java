@@ -54,7 +54,7 @@ public class GroupPanel extends Panel {
         GroupListProvider provider = new GroupListProvider(serviceName);
         add(
                 groups =
-                        new GeoServerTablePanel<GeoServerUserGroup>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -153,7 +153,7 @@ public class GroupPanel extends Panel {
             String id,
             IModel<GeoServerUserGroup> itemModel,
             Property<GeoServerUserGroup> property) {
-        return new SimpleAjaxLink<GeoServerUserGroup>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 setResponsePage(

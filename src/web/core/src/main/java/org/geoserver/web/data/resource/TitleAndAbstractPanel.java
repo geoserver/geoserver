@@ -108,7 +108,7 @@ public class TitleAndAbstractPanel extends Panel {
                 new TextField<>("title", new PropertyModel<>(model, titleProperty));
         add(title);
         InternationalStringPanel<TextField<String>> internationalStringPanelTitle =
-                new InternationalStringPanel<TextField<String>>(
+                new InternationalStringPanel<>(
                         "internationalTitle",
                         new PropertyModel<>(model, internationalTitleProperty),
                         title,
@@ -130,7 +130,7 @@ public class TitleAndAbstractPanel extends Panel {
                 new TextArea<>("abstract", new PropertyModel<>(model, abstractProperty));
         add(area);
         InternationalStringPanel<TextArea<String>> internationalStringPanelAbstract =
-                new InternationalStringPanel<TextArea<String>>(
+                new InternationalStringPanel<>(
                         "internationalAbstract",
                         new PropertyModel<>(model, internationalAbstractProperty),
                         area,

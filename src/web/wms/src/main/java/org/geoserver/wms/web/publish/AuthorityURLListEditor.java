@@ -66,7 +66,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         table.setOutputMarkupId(true);
         container.add(table);
         authorityURLs =
-                new ListView<AuthorityURLInfo>("authorities", new ArrayList<>(list.getObject())) {
+                new ListView<>("authorities", new ArrayList<>(list.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -102,7 +102,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
                         // remove link
                         AjaxLink<Integer> link =
-                                new AjaxLink<Integer>("removeLink", new Model<>(item.getIndex())) {
+                                new AjaxLink<>("removeLink", new Model<>(item.getIndex())) {
 
                                     private static final long serialVersionUID = 1L;
 

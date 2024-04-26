@@ -22,7 +22,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
     static final Property<GridSet> NAME = new BeanProperty<>("name", "name");
 
     static final Property<GridSet> EPSG_CODE =
-            new AbstractProperty<GridSet>("epsg_code") {
+            new AbstractProperty<>("epsg_code") {
                 private static final long serialVersionUID = -4311392731568045337L;
 
                 @Override
@@ -32,7 +32,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
             };
 
     static final Property<GridSet> TILE_DIMENSION =
-            new AbstractProperty<GridSet>("tile_dimension") {
+            new AbstractProperty<>("tile_dimension") {
                 private static final long serialVersionUID = 7300188694215155063L;
 
                 @Override
@@ -42,7 +42,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
             };
 
     static final Property<GridSet> ZOOM_LEVELS =
-            new AbstractProperty<GridSet>("zoom_levels") {
+            new AbstractProperty<>("zoom_levels") {
                 private static final long serialVersionUID = 3155098860179765581L;
 
                 @Override
@@ -52,7 +52,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
             };
 
     static final Property<GridSet> QUOTA_USED =
-            new AbstractProperty<GridSet>("quota_used") {
+            new AbstractProperty<>("quota_used") {
                 private static final long serialVersionUID = 1152149141759317288L;
 
                 @Override
@@ -64,7 +64,7 @@ public abstract class GridSetTableProvider extends GeoServerDataProvider<GridSet
             };
 
     static final Property<GridSet> ACTION_LINK =
-            new AbstractProperty<GridSet>("") {
+            new AbstractProperty<>("") {
                 private static final long serialVersionUID = -7593097569735264194L;
 
                 @Override

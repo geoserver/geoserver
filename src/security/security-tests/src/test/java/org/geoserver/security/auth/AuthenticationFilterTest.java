@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.Cookie;
@@ -126,8 +127,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         SecurityContext ctx =
                 (SecurityContext)
@@ -147,10 +148,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         ctx =
@@ -185,13 +183,12 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(Base64.encodeBytes((testUserName + ":wrongpass").getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":wrongpass").getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -209,13 +206,13 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         request.addHeader(
                 "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("unknwon:" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes(("unknwon:" + testPassword).getBytes()));
         request.setMethod("GET");
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -243,10 +240,9 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                                .getBytes())));
+                        + Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
+                                        .getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         ctx =
@@ -272,14 +268,13 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":geoserver1").getBytes())));
+                        + Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":geoserver1").getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -300,15 +295,12 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Basic") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -433,7 +425,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        String masterPassword = URLEncoder.encode(getMasterPassword(), "UTF-8");
+        String masterPassword = URLEncoder.encode(getMasterPassword(), StandardCharsets.UTF_8);
         request.addHeader(
                 "X-Credentials",
                 "private-user=" + GeoServerUser.ROOT_USERNAME + "&private-pw=" + masterPassword);
@@ -796,8 +788,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         SecurityContext ctx =
                 (SecurityContext)
                         request.getSession(true)
@@ -844,8 +836,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -867,8 +859,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -927,8 +919,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -951,8 +943,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         ctx =
                 (SecurityContext)
@@ -1012,8 +1004,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
+                "Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         SecurityContext ctx =
@@ -1061,8 +1052,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
+                "Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         ctx =
@@ -1096,10 +1086,9 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                                .getBytes())));
+                        + Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
+                                        .getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         ctx =
@@ -1681,8 +1670,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
-        assert (tmp.indexOf(GeoServerSecurityManager.REALM) != -1);
-        assert (tmp.indexOf("Digest") != -1);
+        assert (tmp.contains(GeoServerSecurityManager.REALM));
+        assert (tmp.contains("Digest"));
         SecurityContext ctx =
                 (SecurityContext)
                         request.getSession(true)
@@ -1726,10 +1715,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         ctx =

@@ -39,7 +39,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
         // the middle table
         add(
                 table =
-                        new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
                             private static final long serialVersionUID = 8028081894753417294L;
 
                             @Override

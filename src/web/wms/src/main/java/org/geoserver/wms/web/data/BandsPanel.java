@@ -34,8 +34,7 @@ public class BandsPanel extends Panel {
 
         // the parameters table
         bands =
-                new GeoServerTablePanel<CoverageDimensionInfo>(
-                        "bands", new CoverageDimensionsProvider(), true) {
+                new GeoServerTablePanel<>("bands", new CoverageDimensionsProvider(), true) {
 
                     @Override
                     protected GeoServerTablePanel<CoverageDimensionInfo> getComponentForProperty(
@@ -63,7 +62,7 @@ public class BandsPanel extends Panel {
             List<Property<CoverageDimensionInfo>> result = new ArrayList<>();
             result.add(new BeanProperty<>("band", "name"));
             result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("dimensionType") {
+                    new AbstractProperty<>("dimensionType") {
 
                         @Override
                         public Object getPropertyValue(CoverageDimensionInfo item) {
@@ -83,7 +82,7 @@ public class BandsPanel extends Panel {
                         }
                     });
             result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("nullValues") {
+                    new AbstractProperty<>("nullValues") {
 
                         @Override
                         public Object getPropertyValue(CoverageDimensionInfo item) {

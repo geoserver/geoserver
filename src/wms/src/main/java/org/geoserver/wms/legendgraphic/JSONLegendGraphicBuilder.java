@@ -882,7 +882,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         ret = processFill(ret, symbolizer.getFill());
         if (symbolizer instanceof TextSymbolizer) {
             // handle font graphic
-            TextSymbolizer tSymb = (TextSymbolizer) symbolizer;
+            TextSymbolizer tSymb = symbolizer;
             JSONObject graphic = new JSONObject();
             graphic = processGraphic(graphic, tSymb.getGraphic());
             ret.element(GRAPHIC, graphic);

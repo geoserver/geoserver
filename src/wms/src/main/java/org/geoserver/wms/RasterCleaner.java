@@ -71,8 +71,8 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
                 if (image instanceof RenderedImageList) {
                     RenderedImageList ril = (RenderedImageList) image;
-                    for (int i = 0; i < ril.size(); i++) {
-                        disposeImage((RenderedImage) ril.get(i));
+                    for (Object o : ril) {
+                        disposeImage((RenderedImage) o);
                     }
                 } else {
                     disposeImage(image);

@@ -81,8 +81,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         new PropertyModel<>(settingsModel, "verboseExceptions")));
         form.add(new CheckBox("globalServices"));
         form.add(
-                new TextField<Integer>(
-                                "numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
+                new TextField<>("numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
                         .add(RangeValidator.minimum(0)));
         form.add(
                 new Select2DropDownChoice<>(
@@ -95,7 +94,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         Arrays.asList(ResourceErrorHandling.values()),
                         new ResourceErrorHandlingRenderer()));
         form.add(
-                new TextField<String>(
+                new TextField<>(
                         "proxyBaseUrl", new PropertyModel<>(settingsModel, "proxyBaseUrl")));
         form.add(new CheckBox("useHeadersProxyURL"));
 
@@ -155,7 +154,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(new CheckBox("trailingSlashMatch"));
 
-        form.add(new TextField<Integer>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
+        form.add(new TextField<>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
 
         IModel<String> lockProviderModel = new PropertyModel<>(globalInfoModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();

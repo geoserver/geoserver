@@ -46,7 +46,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
         choices =
                 new ListMultipleChoice<>(
                         "keywords",
-                        new Model<ArrayList<KeywordInfo>>(),
+                        new Model<>(),
                         new ArrayList<>(keywords.getObject()),
                         new ChoiceRenderer<>() {
                             private static final long serialVersionUID = 1L;

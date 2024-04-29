@@ -136,7 +136,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         LinkedList<WorkspaceInfo> list;
         try (CloseableIterator<WorkspaceInfo> items =
                 catalog.list(WorkspaceInfo.class, filter, (int) first, (int) count, sortOrder)) {
-            Stream<WorkspaceInfo> stream = Streams.stream(items);
+            Stream<WorkspaceInfo> stream = Streams.stream(items); // NOPMD
             if (null != defaultWorkspace) {
                 WorkspaceInfo def = defaultWorkspace;
                 stream = stream.map(item -> decorateDefault(def, item));

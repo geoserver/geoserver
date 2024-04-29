@@ -62,7 +62,7 @@ public class NewDataPage extends GeoServerSecuredPage {
             super.error(new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject());
         }
 
-        final Form storeForm = new Form("storeForm");
+        final Form storeForm = new Form<>("storeForm");
         add(storeForm);
 
         final ArrayList<String> sortedDsNames = new ArrayList<>(getAvailableDataStores().keySet());

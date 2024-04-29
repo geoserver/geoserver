@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +15,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.wicket.AttributeModifier;
@@ -353,6 +354,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             }
         }
 
+        @SuppressWarnings("PMD.UseTryWithResources")
         public String convertStreamToString(InputStream is) {
             /*
              * To convert the InputStream to String we use the Reader.read(char[] buffer) method. We
@@ -361,21 +363,18 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
              */
             try {
                 if (is != null) {
-                    Writer writer = new StringWriter();
+                    try (Writer writer = new StringWriter();
+                            Reader reader = new BufferedReader(new InputStreamReader(is, UTF_8))) {
 
-                    char[] buffer = new char[1024];
-                    try {
-                        Reader reader =
-                                new BufferedReader(
-                                        new InputStreamReader(is, StandardCharsets.UTF_8));
+                        char[] buffer = new char[1024];
                         int n;
                         while ((n = reader.read(buffer)) != -1) {
                             writer.write(buffer, 0, n);
                         }
+                        return writer.toString();
                     } finally {
                         is.close();
                     }
-                    return writer.toString();
                 } else {
                     return "";
                 }

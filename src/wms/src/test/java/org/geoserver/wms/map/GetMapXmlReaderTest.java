@@ -75,7 +75,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         try (BufferedReader input =
                 getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
-            request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
             String layer = MockData.BASIC_POLYGONS.getLocalPart();
             assertEquals(1, request.getLayers().size());
@@ -94,7 +94,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         try (BufferedReader input =
                 getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml")) {
 
-            request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
             // Named layer
             String linesLayer = MockData.LINES.getLocalPart();
@@ -122,7 +122,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             GetMapXmlReader reader = new GetMapXmlReader(wms);
             boolean error = false;
             try {
-                reader.read(request, input, new HashMap());
+                reader.read(request, input, new HashMap<>());
             } catch (ServiceException e) {
                 error = true;
             }

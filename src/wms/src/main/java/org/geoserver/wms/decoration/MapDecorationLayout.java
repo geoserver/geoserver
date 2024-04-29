@@ -543,7 +543,7 @@ public class MapDecorationLayout {
     /** Evaluates the expression with the given target class. Null safe. */
     static <T> T evaluate(Expression expression, Class<T> target) {
         if (expression == null) return null;
-        T result = (T) expression.evaluate(null, target);
+        T result = expression.evaluate(null, target);
         // did the conversion fail? throw an exception with some context as to what happened
         if (result == null && expression != null)
             throw new IllegalArgumentException(

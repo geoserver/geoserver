@@ -501,8 +501,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> getLegendOptions() {
-        return (Map<String, Object>)
-                (legendOptions == null ? Collections.emptyMap() : legendOptions);
+        return legendOptions == null ? Collections.emptyMap() : legendOptions;
     }
 
     /**

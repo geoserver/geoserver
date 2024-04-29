@@ -181,7 +181,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         FilterFactory ff = params.getFilterFactory();
         BBOX filter = ff.bbox(ff.property(""), bbox);
 
-        return new FilteringFeatureCollection(fc, filter);
+        return new FilteringFeatureCollection<>(fc, filter);
     }
 
     private List<FeatureCollection> toFeatures(
@@ -624,7 +624,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                     result[i] = '_';
                 }
             }
-            return new String(result);
+            return String.valueOf(result);
         }
     }
 

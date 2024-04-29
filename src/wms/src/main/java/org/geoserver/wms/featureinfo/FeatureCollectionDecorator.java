@@ -131,6 +131,7 @@ public class FeatureCollectionDecorator implements FeatureCollection<FeatureType
     }
 
     @Override
+    @SuppressWarnings("PMD.UnnecessaryCast")
     public <O> O[] toArray(O[] a) {
         return (O[]) fc.toArray(a);
     }

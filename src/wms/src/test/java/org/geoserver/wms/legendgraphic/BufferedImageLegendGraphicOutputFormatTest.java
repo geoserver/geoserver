@@ -108,7 +108,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(multipleRulesStyle);
         req.setRule(rule.getName());
-        req.setLegendOptions(new HashMap());
+        req.setLegendOptions(new HashMap<>());
 
         final int HEIGHT_HINT = 30;
         req.setHeight(HEIGHT_HINT);
@@ -152,7 +152,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                     FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
-            req.setLegendOptions(new HashMap());
+            req.setLegendOptions(new HashMap<>());
 
             final int HEIGHT_HINT = 30;
             req.setHeight(HEIGHT_HINT);
@@ -959,7 +959,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                     FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(transformStyle);
-            req.setLegendOptions(new HashMap());
+            req.setLegendOptions(new HashMap<>());
 
             this.legendProducer.buildLegendGraphic(req);
 
@@ -1032,7 +1032,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
                     FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(style);
-            req.setLegendOptions(new HashMap());
+            req.setLegendOptions(new HashMap<>());
 
             final int HEIGHT_HINT = 30;
             req.setHeight(HEIGHT_HINT);
@@ -1090,7 +1090,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(transformStyle);
-        req.setLegendOptions(new HashMap());
+        req.setLegendOptions(new HashMap<>());
 
         this.legendProducer.buildLegendGraphic(req);
 

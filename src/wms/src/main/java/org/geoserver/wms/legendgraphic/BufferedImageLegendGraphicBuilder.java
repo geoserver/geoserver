@@ -581,6 +581,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         }
     }
 
+    @SuppressWarnings("PMD.UnnecessaryCast")
     private double getScale(int original, int target) {
         return (double) target / (double) original;
     }

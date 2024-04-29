@@ -612,7 +612,6 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             String operationName = op.getOperationName();
             if (opName.equalsIgnoreCase(operationName)) {
                 returnedOp[0] = op;
-                return;
             } else {
                 List sources = op.getSources();
                 if (sources != null && !sources.isEmpty()) {

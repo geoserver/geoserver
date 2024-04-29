@@ -310,8 +310,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     @Override
     public void visit(TextSymbolizer text) {
         if (text instanceof TextSymbolizer) {
-            if (((TextSymbolizer) text).getGraphic() != null)
-                ((TextSymbolizer) text).getGraphic().accept(this);
+            if (text.getGraphic() != null) text.getGraphic().accept(this);
         }
 
         if (text.getFill() != null) {
@@ -328,7 +327,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     public void visit(Graphic gr) {
         for (GraphicalSymbol symbol : gr.graphicalSymbols()) {
             if (symbol instanceof Symbol) {
-                ((Symbol) symbol).accept(this);
+                symbol.accept(this);
             } else {
                 throw new RuntimeException("Don't know how to copy " + symbol);
             }

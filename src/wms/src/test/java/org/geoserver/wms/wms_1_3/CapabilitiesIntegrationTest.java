@@ -1043,7 +1043,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         return layerGroup;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
     private LayerGroupInfo unwrap(AbstractDecorator decorator) {
         return (LayerGroupInfo) decorator.unwrap(LayerGroupInfo.class);
     }

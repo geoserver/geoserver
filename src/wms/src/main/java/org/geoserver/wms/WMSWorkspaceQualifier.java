@@ -58,7 +58,6 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         GetCapabilitiesRequest gc = parameter(operation, GetCapabilitiesRequest.class);
         if (gc != null) {
             gc.setNamespace(ws.getName());
-            return;
         }
     }
 

@@ -154,6 +154,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * http://www.opengeospatial.org/docs/02-017r1.pdf (page 18) NOTE: see handlePostGet() for
      * people who put the SLD in the POST and the parameters in the GET.
      */
+    @SuppressWarnings("PMD.UseTryWithResources")
     private void parseGetMapXML(Reader xml, GetMapRequest getMapRequest, boolean validateSchema)
             throws Exception {
         File temp = null;

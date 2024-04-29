@@ -40,7 +40,7 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         }
         Symbolizer[] symsCopy = symArray.toArray(new Symbolizer[symArray.size()]);
 
-        Graphic legendCopy = copy((Graphic) rule.getLegend());
+        Graphic legendCopy = copy(rule.getLegend());
         Description descCopy = rule.getDescription();
         descCopy = copy(descCopy);
 

@@ -75,7 +75,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (16 + 1 + 1 + 1) * 4;
@@ -133,7 +133,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (16 + 1 + 1 + 1) * 4;
@@ -191,7 +191,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
@@ -243,7 +243,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (16 + 0 + 1 + 1) * 4;
@@ -292,7 +292,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
@@ -343,7 +343,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (42 + 0 + 1 + 1) * 4;
@@ -392,7 +392,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (42 + 0 + 1 + 1) * 4;
@@ -441,7 +441,7 @@ public class IconRendererTest {
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
-        BufferedImage img = IconRenderer.renderIcon((org.geotools.api.style.Style) s);
+        BufferedImage img = IconRenderer.renderIcon(s);
 
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int size = (42 + 0 + 1 + 1) * 4;

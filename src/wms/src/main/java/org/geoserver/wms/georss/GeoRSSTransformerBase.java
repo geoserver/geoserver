@@ -263,7 +263,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                 throw (IOException) (new IOException("Unable to decode WGS84...").initCause(e));
             }
 
-            List featureCollections = new ArrayList();
+            List featureCollections = new ArrayList<>();
             for (Layer layer : map.layers()) {
                 Query query = layer.getQuery();
 

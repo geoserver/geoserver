@@ -209,7 +209,7 @@ class AttributeTypeInfoEditor extends Panel {
                 f.add(check);
                 return f;
             } else if (property == REMOVE) {
-                final AttributeTypeInfo entry = (AttributeTypeInfo) itemModel.getObject();
+                final AttributeTypeInfo entry = itemModel.getObject();
                 PackageResourceReference icon =
                         new PackageResourceReference(getClass(), "../../img/icons/silk/delete.png");
                 ImageAjaxLink<Object> link =

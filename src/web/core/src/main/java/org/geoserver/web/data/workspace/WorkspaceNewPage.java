@@ -57,7 +57,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
         this.model = new CompoundPropertyModel<>(ws);
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         List<ITab> tabs = new ArrayList<>();
 
         tabs.add(

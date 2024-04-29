@@ -121,8 +121,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(
-                new BookmarkablePageLink<LayerGroupEditPage>("addNew", LayerGroupEditPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", LayerGroupEditPage.class));
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

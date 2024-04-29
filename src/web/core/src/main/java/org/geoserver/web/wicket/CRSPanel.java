@@ -212,7 +212,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         wktLink.setEnabled(getModelObject() != null);
         add(wktLink);
 
-        wktLabel = new Label("wktLabel", new Model<String>());
+        wktLabel = new Label("wktLabel", new Model<>());
         wktLink.add(wktLabel);
         wktLabel.setOutputMarkupId(true);
     }

@@ -234,7 +234,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                         setResponsePage(new AttributeEditPage(attribute, NewFeatureTypePage.this));
                     }
                 };
-        link.add(new Label("name", new PropertyModel<String>(itemModel, "name")));
+        link.add(new Label("name", new PropertyModel<>(itemModel, "name")));
         return link;
     }
 

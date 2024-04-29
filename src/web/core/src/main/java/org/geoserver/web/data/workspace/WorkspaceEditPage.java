@@ -190,7 +190,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         form.add(tabbedPanel);
         form.add(submitLink());
         form.add(applyLink());
-        form.add(new BookmarkablePageLink<WorkspacePage>("cancel", WorkspacePage.class));
+        form.add(new BookmarkablePageLink<>("cancel", WorkspacePage.class));
         add(form);
     }
 
@@ -492,7 +492,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             otherSettingsPanel.add(
                     new DropDownChoice<>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             // Formerly provided a new UrlValidator(), but removed with placeholder compatibility
-            otherSettingsPanel.add(new TextField<String>("proxyBaseUrl"));
+            otherSettingsPanel.add(new TextField<>("proxyBaseUrl"));
             otherSettingsPanel.add(new CheckBox("useHeadersProxyURL"));
 
             // Addition of pluggable extension points

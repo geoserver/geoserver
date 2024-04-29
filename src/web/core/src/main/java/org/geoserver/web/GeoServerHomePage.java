@@ -569,30 +569,25 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             numberFormat.setGroupingUsed(true);
 
             catalogLinks.add(
-                    new BookmarkablePageLink<LayerPage>("layersLink", LayerPage.class)
+                    new BookmarkablePageLink<>("layersLink", LayerPage.class)
                             .add(new Label("nlayers", numberFormat.format(layerCount))));
-            catalogLinks.add(
-                    new BookmarkablePageLink<NewLayerPage>("addLayerLink", NewLayerPage.class));
+            catalogLinks.add(new BookmarkablePageLink<>("addLayerLink", NewLayerPage.class));
 
             catalogLinks.add(
-                    new BookmarkablePageLink<LayerGroupPage>("groupsLink", LayerGroupPage.class)
+                    new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class)
                             .add(new Label("ngroups", numberFormat.format(groupCount))));
-            catalogLinks.add(
-                    new BookmarkablePageLink<LayerGroupEditPage>(
-                            "addGroupLink", LayerGroupEditPage.class));
+            catalogLinks.add(new BookmarkablePageLink<>("addGroupLink", LayerGroupEditPage.class));
 
             catalogLinks.add(
-                    new BookmarkablePageLink<StorePage>("storesLink", StorePage.class)
+                    new BookmarkablePageLink<>("storesLink", StorePage.class)
                             .add(new Label("nstores", numberFormat.format(storesCount))));
-            catalogLinks.add(
-                    new BookmarkablePageLink<NewDataPage>("addStoreLink", NewDataPage.class));
+            catalogLinks.add(new BookmarkablePageLink<>("addStoreLink", NewDataPage.class));
 
             catalogLinks.add(
-                    new BookmarkablePageLink<WorkspacePage>("workspacesLink", WorkspacePage.class)
+                    new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class)
                             .add(new Label("nworkspaces", numberFormat.format(wsCount))));
             catalogLinks.add(
-                    new BookmarkablePageLink<WorkspaceNewPage>(
-                            "addWorkspaceLink", WorkspaceNewPage.class));
+                    new BookmarkablePageLink<>("addWorkspaceLink", WorkspaceNewPage.class));
             return catalogLinks;
         } finally {
             sw.stop();

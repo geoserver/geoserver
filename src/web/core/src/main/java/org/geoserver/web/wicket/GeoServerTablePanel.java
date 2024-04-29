@@ -730,7 +730,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             super(id);
 
             add(navigator = updatingPagingNavigator());
-            add(matched = new Label("filterMatch", new Model<String>()));
+            add(matched = new Label("filterMatch", new Model<>()));
             updateMatched();
         }
 

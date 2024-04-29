@@ -98,7 +98,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         selectLayers.setVisible(storeId != null);
         selectLayersContainer.add(selectLayers);
 
-        selectLayers.add(storeName = new Label("storeName", new Model<String>()));
+        selectLayers.add(storeName = new Label("storeName", new Model<>()));
         if (storeId != null) {
             StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
             storeName.setDefaultModelObject(store.getName());

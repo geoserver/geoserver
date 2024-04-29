@@ -58,7 +58,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         mainDiv.setOutputMarkupId(true);
         add(mainDiv);
 
-        final Form addForm = new Form("form");
+        final Form addForm = new Form<>("form");
         addForm.setOutputMarkupId(true);
         mainDiv.add(addForm);
 

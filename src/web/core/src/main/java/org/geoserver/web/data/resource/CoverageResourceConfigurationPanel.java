@@ -196,7 +196,8 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
             // anything else is a text, with some target type and eventual validation
             TextParamPanel panel =
-                    new TextParamPanel(id, new MapModel<>(paramsModel, keyName), labelModel, false);
+                    new TextParamPanel<>(
+                            id, new MapModel<>(paramsModel, keyName), labelModel, false);
             if (Number.class.isAssignableFrom(valueClass)) {
                 panel.getFormComponent().setType(valueClass);
 

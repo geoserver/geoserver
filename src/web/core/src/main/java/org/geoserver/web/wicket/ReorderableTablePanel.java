@@ -161,7 +161,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                                             downTitle);
 
                         } else if (property == RENDERING_ORDER) {
-                            component = new Label("component", new Model<String>());
+                            component = new Label("component", new Model<>());
                         } else {
                             component = getComponentForProperty("component", itemModel, property);
                         }

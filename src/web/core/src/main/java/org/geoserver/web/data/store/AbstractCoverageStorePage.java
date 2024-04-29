@@ -72,7 +72,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
 
         // description and enabled
         paramsForm.add(
-                new TextParamPanel<String>(
+                new TextParamPanel<>(
                         "descriptionPanel",
                         new PropertyModel<>(model, "description"),
                         new ResourceModel("AbstractCoverageStorePage.description", "Description"),
@@ -115,7 +115,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         paramsForm.add(storeEditPanel);
 
         // cancel/submit buttons
-        paramsForm.add(new BookmarkablePageLink<StorePage>("cancel", StorePage.class));
+        paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
         paramsForm.add(saveLink());
         paramsForm.add(applyLink());
         paramsForm.setDefaultButton(saveLink());

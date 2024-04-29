@@ -111,7 +111,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                         "service.enabled",
                         new StringResourceModel("service.enabled", this)
                                 .setParameters(getServiceName())));
-        form.add(new TextField("maintainer"));
+        form.add(new TextField<>("maintainer"));
         TextField<String> onlineResource = new TextField<>("onlineResource");
 
         final GeoServerEnvironment gsEnvironment =
@@ -136,8 +136,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 new KeywordsEditor(
                         "keywords",
                         LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
-        form.add(new TextField("fees"));
-        form.add(new TextField("accessConstraints"));
+        form.add(new TextField<>("fees"));
+        form.add(new TextField<>("accessConstraints"));
 
         build(infoModel, form);
 
@@ -387,7 +387,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         public LocalWorkspacePanel(String id, T service) {
             super(id);
 
-            add(new Label("workspace", new PropertyModel(service, "workspace.name")));
+            add(new Label("workspace", new PropertyModel<>(service, "workspace.name")));
         }
     }
 
@@ -409,8 +409,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                             "titleAndAbstract", infoModel, "titleMsg", "abstract", this));
         } else {
             fragment = new Fragment(id, "stringFragment", this);
-            fragment.add(new TextField<String>("title"));
-            fragment.add(new TextArea<String>("abstract"));
+            fragment.add(new TextField<>("title"));
+            fragment.add(new TextArea<>("abstract"));
         }
         return fragment;
     }

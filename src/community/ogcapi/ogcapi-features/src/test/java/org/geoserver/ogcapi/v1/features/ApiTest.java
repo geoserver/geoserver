@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -112,7 +113,13 @@ public class ApiTest extends FeaturesTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/features/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/api.js\">"));
+        assertThat(
+                html,
+                containsString(
+                        "<input type=\"hidden\" id=\"apiLocation\" value="
+                                + "\"http://localhost:8080/geoserver/ogc/features/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0\"/>"));
+        assertThat(html, not(containsString("<script>")));
     }
 
     @Test

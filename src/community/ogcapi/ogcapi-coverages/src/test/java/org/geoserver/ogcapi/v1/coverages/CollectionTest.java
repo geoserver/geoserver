@@ -6,8 +6,10 @@ package org.geoserver.ogcapi.v1.coverages;
 
 import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -128,5 +130,16 @@ public class CollectionTest extends CoveragesTestSupport {
         assertEquals(
                 "Temporal extent: 2014-01-01T00:00:00Z/2019-01-01T00:00:00Z",
                 document.select("#" + id + "_temporal").text());
+    }
+
+    @Test
+    public void testCollectionHTMLRemovedInlineJS() throws Exception {
+        String html = getAsString("ogc/coverages/v1/collections/rs:DEM?f=html");
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/common.js\"></script>"));
+        assertThat(html, containsString("form-select-open-basic"));
+        assertThat(html, not(containsString("onchange")));
     }
 }

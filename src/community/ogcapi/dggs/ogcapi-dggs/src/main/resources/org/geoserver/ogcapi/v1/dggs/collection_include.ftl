@@ -23,8 +23,7 @@
     <#if collection.mapPreviewURL??>
     <li>The layer can also be explored in this <a href="${collection.mapPreviewURL}">map preview</a></li>
     </#if>
-    <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping --> 
-    ${htmlExtensions(collection)}
+    ${htmlExtensions(collection)?no_esc}
   </ul>
 </div>
       

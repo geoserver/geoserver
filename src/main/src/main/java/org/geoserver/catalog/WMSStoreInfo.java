@@ -37,7 +37,9 @@ public interface WMSStoreInfo extends HTTPStoreInfo {
 
     void setHeaderValue(String headerValue);
 
+    @Override
     String getAuthKey();
 
+    @Override
     void setAuthKey(String authKey);
 }

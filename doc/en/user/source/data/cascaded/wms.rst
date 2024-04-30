@@ -41,6 +41,12 @@ To connect to an external WMS, it is necessary to load it as a new store.  To st
      - If the WMS requires authentication, the user name to connect as.
    * - :guilabel:`Password`
      - If the WMS requires authentication, the password to connect with.
+   * - :guilabel:`HTTP header name`
+     - If the WMS requires a custom HTTP header, the header name.
+   * - :guilabel:`HTTP header value`
+     - If the WMS requires a custom HTTP header, the header value.
+   * - :guilabel:`AuthKey/API key`
+     - If the WMS requires an Authentication key in the querystring, provide a key=value pair.
    * - :guilabel:`Max concurrent connections`
      - The maximum number of persistent connections to keep for this WMS.
 

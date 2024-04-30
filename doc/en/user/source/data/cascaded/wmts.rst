@@ -51,6 +51,8 @@ To connect to an external WMTS, it is necessary to load it as a new store.  To s
      - If the WMTS requires a custom HTTP header, the header name.
    * - :guilabel:`HTTP header value`
      - If the WMTS requires a custom HTTP header, the header value.
+   * - :guilabel:`AuthKey/API key`
+     - If the WMTS requires an Authentication key in the querystring, provide a key=value pair.
    * - :guilabel:`Max concurrent connections`
      - The maximum number of persistent connections to keep for this WMTS.
 

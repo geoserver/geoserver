@@ -1,6 +1,10 @@
 <#global pagetitle=model.id>
 <#global pagepath="/collections/"+model.id>
-<#global pagecrumbs="<a href='"+serviceLink("")+"'>Home</a><a href='"+serviceLink("collections")+"/collections'>Collections</a><b>"+model.id+"</b>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item'><a href='${serviceLink("collections")}'>Collections</a></li>
+  <li class='breadcrumb-item active'>${model.id}</li>
+</#global>
 <#include "common-header.ftl">
 <h2>${model.id}</h2>
 <ul>

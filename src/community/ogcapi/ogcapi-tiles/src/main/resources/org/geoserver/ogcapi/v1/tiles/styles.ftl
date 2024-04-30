@@ -1,5 +1,10 @@
 <#global pagetitle=model.tileLayerId>
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item'><a href='"+serviceLink("collections")+"'>Collections</a></li><li class='breadcrumb-item'><a href='" + serviceLink("collections/" + model.tileLayerId) + "'>" + pagetitle+ "</a></li><li class='breadcrumb-item'>styles</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item'><a href='${serviceLink("collections")}'>Collections</a></li>
+  <li class='breadcrumb-item'><a href='${serviceLink("collections/" + model.tileLayerId)}'>${pagetitle}</a></li>
+  <li class='breadcrumb-item active'>styles</li>
+</#global>
 <#include "common-header.ftl">
        <h2>Styles for ${model.tileLayerId}</h2>
        <p>This document lists the styles available for the ${model.tileLayerId} collection:</p>

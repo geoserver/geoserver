@@ -8,6 +8,8 @@ import static java.util.Map.entry;
 import static junit.framework.TestCase.assertEquals;
 import static org.geoserver.data.test.MockData.BUILDINGS;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -148,6 +150,17 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals(
                 "Default Polygon: polygon.",
                 doc.select("#layers>ul>li").first().textNodes().get(0).text().trim());
+    }
+
+    @Test
+    public void testGetMetadataHTMLRemovedInlineJS() throws Exception {
+        String html = getAsString("ogc/styles/v1/styles/polygon/metadata?f=html");
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/common.js\"></script>"));
+        assertThat(html, containsString("form-select-open-basic"));
+        assertThat(html, not(containsString("onchange")));
     }
 
     @Test

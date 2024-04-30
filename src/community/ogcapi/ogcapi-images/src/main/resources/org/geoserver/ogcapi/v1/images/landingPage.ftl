@@ -1,5 +1,7 @@
 <#global pagetitle=service.title!"GeoServer Images 1.0 Service">
-<#global pagecrumbs="<li class='breadcrumb-item active'>Home</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item active'>Home</li>
+</#global>
 <#include "common-header.ftl">
    <div id="content">
        <h2>${service.title!"GeoServer Images 1.0 Service"}</h2>

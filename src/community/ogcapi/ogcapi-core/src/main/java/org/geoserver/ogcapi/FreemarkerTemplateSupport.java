@@ -6,6 +6,7 @@ package org.geoserver.ogcapi;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.core.Environment;
+import freemarker.core.HTMLOutputFormat;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -112,6 +113,7 @@ public class FreemarkerTemplateSupport {
                     Configuration cfg = TemplateUtils.getSafeConfiguration();
                     cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
                     cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
+                    cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
                     return cfg;
                 });
     }

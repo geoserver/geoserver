@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -213,6 +214,30 @@ public class CollectionTest extends FeaturesTestSupport {
                         + getLayerId(ROAD_SEGMENTS)
                         + "?f=application/x-yaml");
         // System.out.println(yaml);
+    }
+
+    @Test
+    public void testCollectionHTMLRemovedInlineJS() throws Exception {
+        String html =
+                getAsString(
+                        "ogc/features/v1/collections/"
+                                + getLayerId(MockData.ROAD_SEGMENTS)
+                                + "?f=text/html");
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/common.js\"></script>"));
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/features.js\"></script>"));
+        assertThat(
+                html,
+                containsString(
+                        "<input type=\"hidden\" id=\"maxNumberOfFeaturesForPreview\" value=\"50\"/>"));
+        assertThat(html, containsString("form-select-open-basic"));
+        assertThat(html, containsString("form-select-open-limit"));
+        assertThat(html, not(containsString("onchange")));
     }
 
     @Test

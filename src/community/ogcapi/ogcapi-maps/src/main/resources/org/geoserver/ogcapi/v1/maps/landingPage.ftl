@@ -13,8 +13,7 @@
        <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('data', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service. 
        </p>
        
-       <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping --> 
-       ${htmlExtensions('landing')}
+       ${htmlExtensions('landing')?no_esc}
        
        <#include "landingpage-conformance.ftl">
 

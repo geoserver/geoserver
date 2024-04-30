@@ -1,5 +1,8 @@
 <#global pagetitle=service.title!"GeoServer Tiles 1.0 Service">
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>"+pagetitle+"</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item active'>${pagetitle}</li>
+</#global>
 <#include "common-header.ftl">
 
   <h1>${pagetitle}</h1>

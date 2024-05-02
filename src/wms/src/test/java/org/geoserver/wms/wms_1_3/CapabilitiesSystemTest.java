@@ -328,7 +328,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
 
         try {
             // version not required for GetCapabilities
-            Document dom = getAsDOM("wms?request=GetCapabilities");
+            Document dom = getAsDOM("wms?service=WMS&request=GetCapabilities");
             assertEquals("WMS_Capabilities", dom.getDocumentElement().getNodeName());
         } finally {
             wms.setCiteCompliant(false);

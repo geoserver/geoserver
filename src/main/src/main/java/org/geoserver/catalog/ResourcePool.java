@@ -173,7 +173,7 @@ import si.uom.SI;
 public class ResourcePool {
 
     /**
-     * OGC "cilyndrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
+     * OGC "cylindrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
      */
     static final double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
 
@@ -1970,16 +1970,27 @@ public class ResourcePool {
             WMSStoreInfo expandedStore, EntityResolver entityResolver)
             throws IOException, org.geotools.ows.ServiceException {
         HTTPClient client = getHTTPClient(expandedStore);
-        String capabilitiesURL = expandedStore.getCapabilitiesURL();
-        URL serverURL = new URL(capabilitiesURL);
+        URL serverURL = new URL(expandedStore.getCapabilitiesURL());
         Map<String, Object> hints = new HashMap<>();
         hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
         hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
         if (entityResolver != null) {
             hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
         }
-
-        return new WebMapServer(serverURL, client, hints);
+        WebMapServer wms;
+        if (StringUtils.isNotEmpty(expandedStore.getHeaderName())
+                && StringUtils.isNotEmpty(expandedStore.getHeaderValue())) {
+            wms =
+                    new WebMapServer(
+                            serverURL,
+                            client,
+                            hints,
+                            Collections.singletonMap(
+                                    expandedStore.getHeaderName(), expandedStore.getHeaderValue()));
+        } else {
+            wms = new WebMapServer(serverURL, client, hints);
+        }
+        return wms;
     }
 
     /**
@@ -2084,10 +2095,17 @@ public class ResourcePool {
         }
         String username = info.getUsername();
         String password = info.getPassword();
+        String authKey = info.getAuthKey();
         int connectTimeout = info.getConnectTimeout();
         int readTimeout = info.getReadTimeout();
         client.setUser(username);
         client.setPassword(password);
+        if (authKey != null) {
+            String[] kv = authKey.split("=");
+            if (kv.length == 2) {
+                client.setExtraParams(Map.of(kv[0], kv[1]));
+            }
+        }
         client.setConnectTimeout(connectTimeout);
         client.setReadTimeout(readTimeout);
 

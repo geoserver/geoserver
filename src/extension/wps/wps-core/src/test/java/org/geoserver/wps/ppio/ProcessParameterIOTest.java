@@ -19,7 +19,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 public class ProcessParameterIOTest {
 
-    public static class TestType {};
+    public static class TestType {}
 
     private static ProcessParameterIO testPPIO =
             new ProcessParameterIO(TestType.class, TestType.class, "testPPIO") {};

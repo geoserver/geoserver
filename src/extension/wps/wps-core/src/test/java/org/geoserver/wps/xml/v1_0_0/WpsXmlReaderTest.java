@@ -5,6 +5,7 @@
 package org.geoserver.wps.xml.v1_0_0;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -54,13 +55,13 @@ public class WpsXmlReaderTest extends WPSTestSupport {
         assertTrue(parsed instanceof ExecuteType);
 
         ExecuteType request = (ExecuteType) parsed;
-        assertTrue(request.getDataInputs().eContents().size() > 0);
+        assertFalse(request.getDataInputs().eContents().isEmpty());
         InputType features = (InputType) request.getDataInputs().eContents().get(0);
         assertNotNull(features.getReference());
         assertNotNull(features.getReference().getBody());
         assertTrue(features.getReference().getBody() instanceof GetFeatureType);
         GetFeatureType getFeature = (GetFeatureType) features.getReference().getBody();
-        assertTrue(getFeature.getViewParams().size() > 0);
+        assertFalse(getFeature.getViewParams().isEmpty());
         Map viewParams = (Map) getFeature.getViewParams().get(0);
         assertEquals(2, viewParams.keySet().size());
         assertEquals("b", viewParams.get("A"));

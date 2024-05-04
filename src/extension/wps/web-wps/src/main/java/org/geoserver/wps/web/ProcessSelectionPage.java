@@ -64,7 +64,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
         }
         this.title = pf.getTitle().toString(getLocale());
 
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
@@ -83,7 +83,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
         settings.setShowListOnFocusGain(true);
         settings.setMaxHeightInPx(100);
         processSelector =
-                new GeoServerTablePanel<FilteredProcess>("selectionTable", provider) {
+                new GeoServerTablePanel<>("selectionTable", provider) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -109,7 +109,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                             @SuppressWarnings("unchecked")
                             IModel<Object> pm = (IModel<Object>) property.getModel(itemModel);
                             TextArea<?> roles =
-                                    new TextArea<Object>("roles", pm) {
+                                    new TextArea<>("roles", pm) {
                                         @Override
                                         @SuppressWarnings("unchecked")
                                         public <C> IConverter<C> getConverter(Class<C> type) {
@@ -129,7 +129,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                         } else if (property.getName().equals("validated")) {
                             final IModel<Boolean> hasValidatorsModel = model;
                             IModel<String> availableModel =
-                                    new AbstractReadOnlyModel<String>() {
+                                    new AbstractReadOnlyModel<>() {
 
                                         @Override
                                         public String getObject() {

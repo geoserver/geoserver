@@ -92,7 +92,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         settings.setMaxHeightInPx(100);
 
         GeoServerTablePanel<ProcessGroupInfo> processFilterEditor =
-                new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
+                new GeoServerTablePanel<>("processFilterTable", provider) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -121,7 +121,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                             @SuppressWarnings("unchecked")
                             IModel<String> pm = (IModel<String>) property.getModel(itemModel);
                             TextArea<String> roles =
-                                    new TextArea<String>("roles", pm) {
+                                    new TextArea<>("roles", pm) {
                                         @Override
                                         @SuppressWarnings("unchecked")
                                         public <C extends Object> IConverter<C> getConverter(

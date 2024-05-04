@@ -14,7 +14,7 @@ import org.apache.wicket.markup.html.form.Form;
 public class SubProcessBuilder extends WebPage {
 
     public SubProcessBuilder(ExecuteRequest request, final ModalWindow window) {
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         final WPSRequestBuilderPanel builder = new WPSRequestBuilderPanel("builder", request);

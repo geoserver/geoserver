@@ -44,7 +44,7 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
         ComplexDataType cd = (ComplexDataType) super.parse(instance, node, value);
 
         // handle non xml content as well
-        if (cd.getData().size() == 0) {
+        if (cd.getData().isEmpty()) {
             cd.getData().add(instance.getText().toString());
         }
 

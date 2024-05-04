@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import javax.xml.datatype.XMLGregorianCalendar;
 import net.opengis.ows11.BoundingBoxType;
@@ -186,7 +187,7 @@ public class ExecuteResponseBuilder {
         // *If lineage is "false" then/ these elements shall be omitted from the response
         if (helper.isLineageRequested()) {
             // inputs
-            if (request.getDataInputs() != null && request.getDataInputs().getInput().size() > 0) {
+            if (request.getDataInputs() != null && !request.getDataInputs().getInput().isEmpty()) {
                 response.setDataInputs(f.createDataInputsType1());
                 for (Object o : request.getDataInputs().getInput()) {
                     InputType input = (InputType) o;
@@ -212,10 +213,11 @@ public class ExecuteResponseBuilder {
 
             Map<String, Parameter<?>> resultInfo = pf.getResultInfo(processName, null);
 
-            if (request.getResponseForm() != null
-                    && request.getResponseForm().getResponseDocument() != null
-                    && request.getResponseForm().getResponseDocument().getOutput() != null
-                    && request.getResponseForm().getResponseDocument().getOutput().size() > 0) {
+            if (Optional.ofNullable(request.getResponseForm())
+                    .map(rf -> rf.getResponseDocument())
+                    .map(rd -> rd.getOutput())
+                    .filter(output -> !output.isEmpty())
+                    .isPresent()) {
                 // we have a selection of outputs, possibly with indication of mime type
                 // and reference encoding
                 EList outputs = request.getResponseForm().getResponseDocument().getOutput();

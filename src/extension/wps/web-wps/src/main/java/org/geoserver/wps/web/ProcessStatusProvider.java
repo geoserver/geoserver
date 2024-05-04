@@ -38,7 +38,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
     private static Logger LOGGER = Logging.getLogger(ProcessStatusProvider.class);
     private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     static final Property<ExecutionStatus> TYPE =
-            new AbstractProperty<ExecutionStatus>("type") {
+            new AbstractProperty<>("type") {
                 @Override
                 public Object getPropertyValue(ExecutionStatus item) {
                     // we might want to have a "C" state for the chained processes

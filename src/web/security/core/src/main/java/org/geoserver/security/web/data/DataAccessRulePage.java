@@ -135,9 +135,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(
-                new BookmarkablePageLink<NewDataAccessRulePage>(
-                        "addNew", NewDataAccessRulePage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewDataAccessRulePage.class));
 
         // the removal button
         header.add(removal = new SelectionDataRuleRemovalLink("removeSelected", rules, dialog));

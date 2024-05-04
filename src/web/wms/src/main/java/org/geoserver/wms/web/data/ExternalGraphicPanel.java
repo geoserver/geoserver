@@ -430,7 +430,6 @@ public class ExternalGraphicPanel extends Panel {
                         error.setMessage("Unable to access image");
                         error.addKey("imageUnavailable");
                         input.error(error);
-                        return; // error message back!
                     }
                 } catch (IOException e) {
                     ValidationError error = new ValidationError();
@@ -438,7 +437,6 @@ public class ExternalGraphicPanel extends Panel {
                     error.addKey("imageUnavailable");
                     input.error(error);
                 }
-                return; // no further checks possible
             } else {
                 try {
 

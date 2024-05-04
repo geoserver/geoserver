@@ -61,9 +61,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(
-                new BookmarkablePageLink<NewServiceAccessRulePage>(
-                        "addNew", NewServiceAccessRulePage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewServiceAccessRulePage.class));
 
         // the removal button
         header.add(removal = new SelectionServiceRemovalLink("removeSelected", rules, dialog));

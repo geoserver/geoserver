@@ -20,7 +20,6 @@
         <include>spring-security-jwt*</include>
         <include>commons-codec*</include>
         <include>jackson-core-*</include>
-        <include>jackson-mapper-asl-*</include>
         <include>jackson-databind-*</include>
         <include>jackson-annotations-*</include>
         <include>jettison-*</include>

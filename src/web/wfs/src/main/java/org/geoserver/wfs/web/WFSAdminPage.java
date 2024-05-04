@@ -79,8 +79,8 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     @SuppressWarnings("unchecked")
     protected void build(final IModel info, Form form) {
         // max features
-        form.add(new TextField<Integer>("maxFeatures").add(RangeValidator.minimum(0)));
-        form.add(new TextField<Integer>("maxNumberOfFeaturesForPreview"));
+        form.add(new TextField<>("maxFeatures").add(RangeValidator.minimum(0)));
+        form.add(new TextField<>("maxNumberOfFeaturesForPreview"));
         TextField<String> dateFormatField = new TextField<>("csvDateFormat");
         dateFormatField.setModel(new PropertyModel<>(info, "csvDateFormat"));
         form.add(dateFormatField);
@@ -89,14 +89,14 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         form.add(new CheckBox("simpleConversionEnabled"));
 
         // service level
-        RadioGroup sl = new RadioGroup("serviceLevel");
+        RadioGroup sl = new RadioGroup<>("serviceLevel");
         form.add(sl);
-        sl.add(new Radio("basic", new Model(WFSInfo.ServiceLevel.BASIC)));
-        sl.add(new Radio("transactional", new Model(WFSInfo.ServiceLevel.TRANSACTIONAL)));
+        sl.add(new Radio<>("basic", new Model<>(WFSInfo.ServiceLevel.BASIC)));
+        sl.add(new Radio<>("transactional", new Model<>(WFSInfo.ServiceLevel.TRANSACTIONAL)));
         sl.add(
-                new Radio(
+                new Radio<>(
                         "complete",
-                        new Model(WFSInfo.ServiceLevel.COMPLETE))); // mime types for GetMap
+                        new Model<>(WFSInfo.ServiceLevel.COMPLETE))); // mime types for GetMap
 
         getFeatureAvailable = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (WFSGetFeatureOutputFormat format :
@@ -158,12 +158,12 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         form.add(new CheckBox("canonicalSchemaLocation"));
 
         // Encode response with one featureMembers element or multiple featureMember elements
-        RadioGroup eo = new RadioGroup("encodeFeatureMember");
+        RadioGroup eo = new RadioGroup<>("encodeFeatureMember");
         form.add(eo);
-        eo.add(new Radio("featureMembers", new Model(Boolean.FALSE)));
-        eo.add(new Radio("featureMember", new Model(Boolean.TRUE)));
+        eo.add(new Radio<>("featureMembers", new Model<>(Boolean.FALSE)));
+        eo.add(new Radio<>("featureMember", new Model<>(Boolean.TRUE)));
 
-        PropertyModel metadataModel = new PropertyModel(info, "metadata");
+        PropertyModel metadataModel = new PropertyModel<>(info, "metadata");
         IModel<Boolean> prjFormatModel =
                 new MapModel(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
         CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
@@ -182,7 +182,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
                 defaultPrjFormat.add(
                         new AttributeModifier(
                                 "title",
-                                new Model(
+                                new Model<>(
                                         "No esri.properties file "
                                                 + "found in the data directory's user_projections folder. "
                                                 + "This option is not available")));
@@ -194,7 +194,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         // other srs list
         TextArea srsList =
                 new SRSListTextArea(
-                        "srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+                        "srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
         form.add(srsList);
         form.add(
                 new AjaxLink("otherSRSHelp") {

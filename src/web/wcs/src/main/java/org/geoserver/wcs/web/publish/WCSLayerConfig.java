@@ -53,7 +53,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(
                 new ListMultipleChoice<>(
                         "requestSRS",
-                        new PropertyModel<List<String>>(this, "selectedRequestSRSs"),
+                        new PropertyModel<>(this, "selectedRequestSRSs"),
                         coverage.getRequestSRS()));
 
         add(new TextField<>("newRequestSRS", new PropertyModel<>(this, "newRequestSRS")));
@@ -83,7 +83,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(
                 new ListMultipleChoice<>(
                         "responseSRS",
-                        new PropertyModel<List<String>>(this, "selectedResponseSRSs"),
+                        new PropertyModel<>(this, "selectedResponseSRSs"),
                         coverage.getResponseSRS()));
 
         add(new TextField<>("newResponseSRS", new PropertyModel<>(this, "newResponseSRS")));
@@ -120,7 +120,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Palette<>(
                         "interpolationMethods",
                         LiveCollectionModel.list(
-                                new PropertyModel<List<String>>(coverage, "interpolationMethods")),
+                                new PropertyModel<>(coverage, "interpolationMethods")),
                         new WCSInterpolationModel(),
                         new SimpleChoiceRenderer<>(),
                         7,
@@ -155,8 +155,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         Palette<String> formatPalette =
                 new Palette<>(
                         "formatPalette",
-                        LiveCollectionModel.list(
-                                new PropertyModel<List<String>>(coverage, "supportedFormats")),
+                        LiveCollectionModel.list(new PropertyModel<>(coverage, "supportedFormats")),
                         new WCSFormatsModel(),
                         new SimpleChoiceRenderer<>(),
                         10,

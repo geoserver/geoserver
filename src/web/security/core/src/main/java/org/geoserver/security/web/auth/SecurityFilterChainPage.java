@@ -89,15 +89,15 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
         form.add(
                 new Label(
                         "message",
-                        isAdmin ? new Model() : new StringResourceModel("notAdmin", this, null)));
+                        isAdmin ? new Model<>() : new StringResourceModel("notAdmin", this, null)));
         if (!isAdmin) {
             form.get("message").add(new AttributeAppender("class", new Model<>("info-link"), " "));
         }
 
         setOutputMarkupId(true);
 
-        form.add(new TextField<String>("name").setEnabled(isNew));
-        form.add(new TextField<String>("patternString"));
+        form.add(new TextField<>("name").setEnabled(isNew));
+        form.add(new TextField<>("patternString"));
         form.add(new CheckBox("disabled"));
         form.add(new CheckBox("allowSessionCreation"));
         form.add(new CheckBox("requireSSL"));

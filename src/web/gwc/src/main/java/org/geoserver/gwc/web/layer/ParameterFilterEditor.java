@@ -201,7 +201,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
                         // Create form
                         final Label keyLabel =
-                                new Label("key", new PropertyModel<String>(item.getModel(), "key"));
+                                new Label("key", new PropertyModel<>(item.getModel(), "key"));
                         item.add(keyLabel);
 
                         final Component subForm =

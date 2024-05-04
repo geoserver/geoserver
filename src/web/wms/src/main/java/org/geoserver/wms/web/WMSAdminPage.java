@@ -134,7 +134,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         "rootLayerTitle",
                         "rootLayerAbstract",
                         this));
-        PropertyModel<Map<String, ?>> metadataModel = new PropertyModel(info, "metadata");
+        PropertyModel<Map<String, ?>> metadataModel = new PropertyModel<>(info, "metadata");
         MapModel rootLayerEnabled =
                 defaultedModel(
                         metadataModel,
@@ -151,7 +151,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         // limited srs list
         TextArea srsList =
                 new SRSListTextArea(
-                        "srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+                        "srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
         form.add(srsList);
 
         form.add(new CheckBox("bBOXForEachCRS"));
@@ -194,7 +194,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
         // general
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "interpolation",
                         Arrays.asList(WMSInfo.WMSInterpolation.values()),
                         new InterpolationRenderer()));
@@ -227,7 +227,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         // watermark
         form.add(new CheckBox("watermark.enabled"));
         TextField watermarkUrlField =
-                new TextField(
+                new TextField<>(
                         "watermark.uRL",
                         new FileModel(new PropertyModel<>(form.getModel(), "watermark.URL")));
         watermarkUrlField.add(new FileExistsValidator(true));
@@ -242,16 +242,16 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         transparency.add(new RangeValidator<>(0, 100));
         form.add(transparency);
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "watermark.position",
                         Arrays.asList(Position.values()),
                         new WatermarkPositionRenderer()));
         // svg
-        form.add(new CheckBox("svg.antialias", new MapModel(metadataModel, "svgAntiAlias")));
+        form.add(new CheckBox("svg.antialias", new MapModel<>(metadataModel, "svgAntiAlias")));
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "svg.producer",
-                        new MapModel(metadataModel, "svgRenderer"),
+                        new MapModel<>(metadataModel, "svgRenderer"),
                         SVG_RENDERERS,
                         new SVGMethodRenderer()));
         // png compression levels
@@ -274,7 +274,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 defaultedModel(
                         metadataModel, WMS.KML_REFLECTOR_MODE, WMS.KML_REFLECTOR_MODE_DEFAULT);
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "kml.defaultReflectorMode", kmlReflectorMode, KML_REFLECTOR_MODES));
 
         MapModel kmlSuperoverlayMode =
@@ -283,7 +283,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         WMS.KML_SUPEROVERLAY_MODE,
                         WMS.KML_SUPEROVERLAY_MODE_DEFAULT);
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "kml.superoverlayMode", kmlSuperoverlayMode, KML_SUPEROVERLAY_MODES));
 
         form.add(
@@ -398,7 +398,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new HTTPURLsListTextArea(
                         "allowedURLsForAuthForwarding",
                         LiveCollectionModel.list(
-                                new PropertyModel(info, "allowedURLsForAuthForwarding")));
+                                new PropertyModel<>(info, "allowedURLsForAuthForwarding")));
         form.add(allowedRemoteSLDUrlsForAuthorizationForwarding);
 
         form.add(new CheckBox("defaultGroupStyleEnabled"));

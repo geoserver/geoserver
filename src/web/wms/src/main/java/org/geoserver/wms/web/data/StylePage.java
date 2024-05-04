@@ -90,7 +90,7 @@ public class StylePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<StyleNewPage>("addNew", StyleNewPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", StyleNewPage.class));
 
         // the removal button
         header.add(

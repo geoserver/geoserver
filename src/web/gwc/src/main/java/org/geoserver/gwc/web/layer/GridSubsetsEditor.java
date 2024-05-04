@@ -196,7 +196,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         final Label gridSetLabel =
                                 new Label(
                                         "gridSet",
-                                        new PropertyModel<String>(item.getModel(), "gridSetName"));
+                                        new PropertyModel<>(item.getModel(), "gridSetName"));
                         if (!gridsetExists) {
                             gridSetLabel.add(
                                     new AttributeModifier(
@@ -291,7 +291,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                             gridSetBounds =
                                     new Label(
                                             "bounds",
-                                            new PropertyModel<Integer>(item.getModel(), "extent"));
+                                            new PropertyModel<>(item.getModel(), "extent"));
                         } else {
                             gridSetBounds =
                                     new Label(

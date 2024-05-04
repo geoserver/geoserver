@@ -121,8 +121,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     public CatalogStressTester() {
         super();
-        setDefaultModel(new Model());
-        Form form = new Form("form", new Model());
+        setDefaultModel(new Model<>());
+        Form form = new Form<>("form", new Model<>());
         add(form);
 
         IModel<List<Tuple>> wsModel = new WorkspacesTestModel();

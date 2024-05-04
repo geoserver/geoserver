@@ -99,7 +99,7 @@ public class RolePanel extends Panel {
                     new Label("message", new StringResourceModel("noCreateStore", this, null))
                             .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
-            h.add(new Label("message", new Model()));
+            h.add(new Label("message", new Model<>()));
         }
 
         // the add button

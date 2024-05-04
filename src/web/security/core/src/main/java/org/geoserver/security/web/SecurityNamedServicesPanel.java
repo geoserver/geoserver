@@ -68,7 +68,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
 
         add(
                 tablePanel =
-                        new SecurityNamedServiceTablePanel<T>("table", dataProvider) {
+                        new SecurityNamedServiceTablePanel<>("table", dataProvider) {
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
                                 if (isAdmin) {

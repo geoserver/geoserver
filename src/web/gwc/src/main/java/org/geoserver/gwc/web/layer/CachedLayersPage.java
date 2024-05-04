@@ -89,8 +89,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
                         if (property == TYPE) {
                             Fragment f = new Fragment(id, "iconFragment", CachedLayersPage.this);
-                            DynamicImageResource dynamicImage =
-                                    new DelayedImageResource(itemModel, property);
+                            DynamicImageResource dynamicImage = new DelayedImageResource(itemModel);
                             f.add(new Image("layerIcon", dynamicImage));
                             return f;
                         } else if (property == NAME) {
@@ -325,7 +324,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<String>("addNew", NewCachedLayerPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewCachedLayerPage.class));
 
         // the removal button
         header.add(removal = new CachedLayerSelectionRemovalLink("removeSelected"));
@@ -339,14 +338,11 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     }
 
     private static class DelayedImageResource extends DynamicImageResource {
-        private static final long serialVersionUID = 657353636149402818L;
         private final IModel<TileLayer> itemModel;
-        private final Property<TileLayer> property;
 
-        public DelayedImageResource(IModel<TileLayer> itemModel, Property<TileLayer> property) {
+        public DelayedImageResource(IModel<TileLayer> itemModel) {
             super("image/png");
             this.itemModel = itemModel;
-            this.property = property;
         }
 
         @Override
@@ -363,8 +359,6 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     }
 
     private class CachedLayerSelectionRemovalLink extends AjaxLink<TileLayer> {
-
-        private static final long serialVersionUID = 1L;
 
         public CachedLayerSelectionRemovalLink(String string) {
             super(string);
@@ -458,7 +452,6 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
             GeoServerDialog.DialogDelegate delegate =
                     new GeoServerDialog.DialogDelegate() {
-                        private static final long serialVersionUID1 = 1L;
                         private TruncateAllRequest truncateAllRequest;
 
                         @Override

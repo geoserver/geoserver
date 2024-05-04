@@ -64,7 +64,7 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
     public void encode(Object value, Map<String, Object> encodingParameters, OutputStream os)
             throws Exception {
         encode(value, os);
-    };
+    }
 
     /**
      * Provides a suitable extension for the output file. Implement this if the file extension is

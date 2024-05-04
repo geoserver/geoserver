@@ -34,7 +34,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
     public SecurityNamedServicesTogglePanel(String id, IModel<List<T>> model) {
         super(id);
 
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         form.add(new ServicesListView(model));
@@ -70,7 +70,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
         protected void populateItem(final ListItem<T> item) {
             IModel<T> model = item.getModel();
             AjaxLink toggle = buildToggleLink(item, model);
-            toggle.add(new Label("name", new PropertyModel(model, "name")));
+            toggle.add(new Label("name", new PropertyModel<>(model, "name")));
 
             boolean first = item.getIndex() == 0;
             toggle.add(

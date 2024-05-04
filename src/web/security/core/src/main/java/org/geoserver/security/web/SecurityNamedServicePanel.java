@@ -47,7 +47,7 @@ public abstract class SecurityNamedServicePanel<T extends SecurityNamedServiceCo
         add(
                 new Label(
                         "message",
-                        isAdmin ? new Model() : new StringResourceModel("notAdmin", this, null)));
+                        isAdmin ? new Model<>() : new StringResourceModel("notAdmin", this, null)));
         if (!isAdmin) {
             get("message").add(new AttributeAppender("class", new Model<>("info-link"), " "));
         }

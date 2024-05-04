@@ -38,10 +38,10 @@ public class CredentialsFromRequestHeaderFilterPanel
 
         add(new HelpLink("authHeaderParametersHelp", this).setDialog(dialog));
 
-        add(new TextField<String>("userNameHeaderName"));
-        add(new TextField<String>("passwordHeaderName"));
-        add(new TextField<String>("userNameRegex"));
-        add(new TextField<String>("passwordRegex"));
+        add(new TextField<>("userNameHeaderName"));
+        add(new TextField<>("passwordHeaderName"));
+        add(new TextField<>("userNameRegex"));
+        add(new TextField<>("passwordRegex"));
         add(new CheckBox("parseAsUriComponents"));
     }
 }

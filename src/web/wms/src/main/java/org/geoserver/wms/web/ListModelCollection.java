@@ -21,7 +21,7 @@ class ListModelCollection implements Collection<String>, Serializable {
         this.markFactoryList = markFactoryList;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.ClassCastExceptionWithToArray"})
     @Override
     public <T> T[] toArray(T[] arg0) {
         return (T[]) markFactoryList.getObject().toArray();

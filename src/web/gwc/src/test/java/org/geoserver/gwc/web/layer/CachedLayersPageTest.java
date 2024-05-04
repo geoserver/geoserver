@@ -32,6 +32,7 @@ import org.junit.Test;
 
 public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     private static final Method getReplaceModelMethod;
+
     /*
      * Yes, we do need to use reflection here as the stupid wicket model is private and has no setter which
      * makes it hard to test!
@@ -152,7 +153,6 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
                     model.getObject()
                             .toString()
                             .contains("http://localhost/context/cgf/gwc/demo/cgf"));
-            return;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -181,7 +181,6 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
             assertTrue(
                     "Mangled names fail",
                     model.getObject().toString().contains("http://rewrite/gwc/demo/cgf"));
-            return;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

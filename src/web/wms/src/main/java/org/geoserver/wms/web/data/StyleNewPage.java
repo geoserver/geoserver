@@ -81,7 +81,6 @@ public class StyleNewPage extends AbstractStylePage {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             error(e.getMessage());
-            return;
         }
     }
 }

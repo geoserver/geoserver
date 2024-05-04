@@ -45,11 +45,11 @@ public class DemoRequestResponse extends WebPage {
         // super(PageMap.forName("demoRequestResponse"));
         super(model);
 
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
-        form.add(new HiddenField<String>("url", new PropertyModel<>(model, "requestUrl")));
+        form.add(new HiddenField<>("url", new PropertyModel<>(model, "requestUrl")));
         form.add(new TextArea<>("body", new PropertyModel<>(model, "requestBody")));
-        form.add(new HiddenField<String>("username", new PropertyModel<>(model, "userName")));
+        form.add(new HiddenField<>("username", new PropertyModel<>(model, "userName")));
         // [WICKET-6211] Wicket clears the password after submission, so we need to save as a string
         // now.
         HiddenField<String> passwordField =

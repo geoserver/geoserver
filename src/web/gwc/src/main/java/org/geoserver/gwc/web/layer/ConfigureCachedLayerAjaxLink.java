@@ -38,7 +38,7 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
      */
     public ConfigureCachedLayerAjaxLink(
             String id, IModel<TileLayer> itemModel, Class<? extends Page> returnPage) {
-        super(id, itemModel, new PropertyModel<String>(itemModel, "name"));
+        super(id, itemModel, new PropertyModel<>(itemModel, "name"));
         this.returnPage = returnPage;
     }
 

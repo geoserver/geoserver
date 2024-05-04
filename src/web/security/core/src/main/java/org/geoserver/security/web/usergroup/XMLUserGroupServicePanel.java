@@ -21,8 +21,8 @@ public class XMLUserGroupServicePanel extends UserGroupServicePanel<XMLUserGroup
     public XMLUserGroupServicePanel(String id, IModel<XMLUserGroupServiceConfig> model) {
         super(id, model);
 
-        add(new TextField("fileName").setEnabled(isNew()));
+        add(new TextField<>("fileName").setEnabled(isNew()));
         add(new CheckBox("validating"));
-        add(new TextField("checkInterval"));
+        add(new TextField<>("checkInterval"));
     }
 }

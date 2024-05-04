@@ -216,7 +216,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 });
         add(formatChoice);
 
-        formatReadOnlyMessage = new WebMarkupContainer("formatReadOnly", new Model<String>());
+        formatReadOnlyMessage = new WebMarkupContainer("formatReadOnly", new Model<>());
         formatReadOnlyMessage.setVisible(false);
         add(formatReadOnlyMessage);
         // add the Legend fields

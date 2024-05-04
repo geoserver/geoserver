@@ -39,7 +39,7 @@ public class PaletteFormComponent<T extends Serializable> extends FormComponentP
 
         add(
                 palette =
-                        new Palette<T>("palette", model, choicesModel, renderer, 10, false) {
+                        new Palette<>("palette", model, choicesModel, renderer, 10, false) {
                             @Override
                             protected Recorder<T> newRecorderComponent() {
                                 Recorder<T> rec = super.newRecorderComponent();

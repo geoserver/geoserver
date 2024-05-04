@@ -60,7 +60,7 @@ class ChooseImagePanel extends Panel {
             }
         }
 
-        FileUploadField upload = new FileUploadField("upload", new Model<ArrayList<FileUpload>>());
+        FileUploadField upload = new FileUploadField("upload", new Model<>());
 
         Model<String> imageModel = new Model<>();
         DropDownChoice<String> image =

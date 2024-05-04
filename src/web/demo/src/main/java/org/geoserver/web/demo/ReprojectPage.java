@@ -64,7 +64,7 @@ public class ReprojectPage extends GeoServerBasePage {
         add(popupWindow);
 
         // the main form
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         // the source CRS

@@ -175,7 +175,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
                         onFormSubmit(rule);
                     }
                 });
-        form.add(new BookmarkablePageLink<DataAccessRule>("cancel", DataSecurityPage.class));
+        form.add(new BookmarkablePageLink<>("cancel", DataSecurityPage.class));
     }
 
     /** Implements the actual save action */

@@ -22,7 +22,7 @@ public class FormAuthFilterPanel
             String id, IModel<UsernamePasswordAuthenticationFilterConfig> model) {
         super(id, model);
 
-        add(new TextField("usernameParameterName"));
-        add(new TextField("passwordParameterName"));
+        add(new TextField<>("usernameParameterName"));
+        add(new TextField<>("passwordParameterName"));
     }
 }

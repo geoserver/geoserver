@@ -85,7 +85,7 @@ public class UserPanel extends Panel {
                             .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
             h.add(
-                    new Label("message", new Model())
+                    new Label("message", new Model<>())
                             .add(new AttributeAppender("class", new Model<>("d-none"), " ")));
         }
 

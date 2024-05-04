@@ -139,6 +139,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
             // get("userGroupServiceName").setDefaultModelObject(null);
         }
 
+        @SuppressWarnings({"PMD.EmptyControlStatement", "PMD.UnusedLocalVariable"})
         @Override
         public void test() throws Exception {
             // since this wasn't a regular form submission, we need to manually update component
@@ -172,6 +173,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
             // get("groupSearchFilter").setDefaultModelObject(null);
         }
 
+        @SuppressWarnings({"PMD.EmptyControlStatement", "PMD.UnusedLocalVariable"})
         @Override
         public void test() throws Exception {
             // since this wasn't a regular form submission, we need to manually update component

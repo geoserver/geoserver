@@ -54,7 +54,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
     public WPSRequestBuilder(String procName) {
         // the form
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         // the actual request builder component
@@ -103,7 +103,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                     @SuppressWarnings("unchecked")
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        responseWindow.setDefaultModel(new Model(getRequestXML()));
+                        responseWindow.setDefaultModel(new Model<>(getRequestXML()));
                         responseWindow.show(target);
                     }
 

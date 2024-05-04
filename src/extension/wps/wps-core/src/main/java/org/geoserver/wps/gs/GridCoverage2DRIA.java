@@ -496,10 +496,10 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     private static float[] rect2PointArr(Rectangle rect) {
-        float dx0 = (float) rect.x;
-        float dy0 = (float) rect.y;
-        float dw = (float) (rect.width);
-        float dh = (float) (rect.height);
+        float dx0 = rect.x;
+        float dy0 = rect.y;
+        float dw = rect.width;
+        float dh = rect.height;
 
         return new float[] {dx0, dy0, (dx0 + dw), dy0, (dx0 + dw), (dy0 + dh), dx0, (dy0 + dh)};
     }

@@ -245,13 +245,13 @@ public class GetExecutionsTransformer extends TransformerBase {
                     // *If lineage is "false" then/ these elements shall be omitted from the
                     // response
                     if (responseType.getDataInputs() != null
-                            && responseType.getDataInputs().getInput().size() > 0) {
+                            && !responseType.getDataInputs().getInput().isEmpty()) {
                         EList inputs = responseType.getDataInputs().getInput();
                         encodeDataInputs(status, inputs, attributes);
                     }
 
                     if (responseType.getOutputDefinitions() != null
-                            && responseType.getOutputDefinitions().getOutput().size() > 0) {
+                            && !responseType.getOutputDefinitions().getOutput().isEmpty()) {
                         EList outputs = responseType.getOutputDefinitions().getOutput();
                         encodeDataOutputs(status, outputs, attributes);
                     }

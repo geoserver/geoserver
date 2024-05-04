@@ -162,8 +162,7 @@ class WPSExecuteTransformer extends TransformerBase {
         public void handleInputs(List<InputParameterValues> inputs) {
             start("wps:DataInputs");
             for (InputParameterValues pv : inputs) {
-                for (int i = 0; i < pv.values.size(); i++) {
-                    ParameterValue value = pv.values.get(i);
+                for (ParameterValue value : pv.values) {
                     if (value == null || value.value == null) {
                         continue;
                     }

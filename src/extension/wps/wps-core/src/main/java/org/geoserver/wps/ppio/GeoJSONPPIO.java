@@ -27,7 +27,7 @@ import org.locationtech.jts.geom.Geometry;
  */
 public abstract class GeoJSONPPIO extends CDataPPIO {
 
-    private static JsonFactory JSON_FACTORY = new JsonFactory();;
+    private static JsonFactory JSON_FACTORY = new JsonFactory();
     static final ObjectMapper MAPPER;
 
     static {

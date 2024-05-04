@@ -53,7 +53,7 @@ public class XStreamPPIO extends XMLPPIO {
                     @Override
                     protected MapperWrapper wrapMapper(MapperWrapper next) {
                         return new UppercaseTagMapper(new PackageStrippingMapper(next));
-                    };
+                    }
                 };
         stream.allowTypes(new Class[] {getType()});
         return stream;

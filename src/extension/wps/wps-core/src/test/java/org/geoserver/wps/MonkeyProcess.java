@@ -46,7 +46,7 @@ public class MonkeyProcess {
             throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exit, value));
         if (wait) {
-            while (getCommandQueue(id).size() > 0) {
+            while (!getCommandQueue(id).isEmpty()) {
                 Thread.sleep(10);
             }
         }
@@ -66,7 +66,7 @@ public class MonkeyProcess {
             throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.SetProgress, progress));
         if (wait) {
-            while (getCommandQueue(id).size() > 0) {
+            while (!getCommandQueue(id).isEmpty()) {
                 Thread.sleep(10);
             }
         }
@@ -80,7 +80,7 @@ public class MonkeyProcess {
             throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exception, exception));
         if (wait) {
-            while (getCommandQueue(id).size() > 0) {
+            while (!getCommandQueue(id).isEmpty()) {
                 Thread.sleep(10);
             }
         }
@@ -122,7 +122,7 @@ public class MonkeyProcess {
 
     public static void clearCommands() {
         for (Map.Entry<String, BlockingQueue<MonkeyProcess.Command>> entry : commands.entrySet()) {
-            if (entry.getValue().size() > 0) {
+            if (!entry.getValue().isEmpty()) {
                 throw new IllegalStateException(
                         "The command queue is not clean, queue "
                                 + entry.getKey()

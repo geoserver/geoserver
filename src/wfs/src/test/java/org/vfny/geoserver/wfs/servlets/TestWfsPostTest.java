@@ -256,6 +256,31 @@ public class TestWfsPostTest {
         assertEquals("https://foo.com/geoserver", servlet.getProxyBaseURL());
     }
 
+    @Test
+    // https://osgeo-org.atlassian.net/browse/GEOS-11385
+    public void testGetProxyBaseURLfromEnv() {
+        SettingsInfo settings = new SettingsInfoImpl();
+        settings.setProxyBaseUrl("https://foo.com/geoserver1");
+        // Override the Proxy Base Url with the Environment variable
+        System.setProperty("PROXY_BASE_URL", "https://foo.com/geoserver2");
+
+        GeoServerInfo info = new GeoServerInfoImpl();
+        info.setSettings(settings);
+
+        GeoServer gs = new GeoServerImpl();
+        gs.setGlobal(info);
+
+        TestWfsPost servlet =
+                new TestWfsPost() {
+                    @Override
+                    protected GeoServer getGeoServer() {
+                        return gs;
+                    }
+                };
+        assertEquals("https://foo.com/geoserver2", servlet.getProxyBaseURL());
+        System.clearProperty("PROXY_BASE_URL");
+    }
+
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected static MockHttpServletRequest buildMockRequest() {
         MockHttpServletRequest request = new MockHttpServletRequest();

@@ -283,9 +283,9 @@ public class TestWfsPost extends HttpServlet {
     }
 
     String getProxyBaseURL() {
-    	if (GeoServerExtensions.getProperty("PROXY_BASE_URL") != null) {
-    		return GeoServerExtensions.getProperty("PROXY_BASE_URL");
-    	}
+        if (GeoServerExtensions.getProperty("PROXY_BASE_URL") != null) {
+            return GeoServerExtensions.getProperty("PROXY_BASE_URL");
+        }
         GeoServer geoServer = getGeoServer();
         if (geoServer != null) {
             return geoServer.getGlobal().getSettings().getProxyBaseUrl();

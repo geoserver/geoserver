@@ -94,7 +94,7 @@ public class UrlCheckController extends RestBaseController {
             LOGGER.log(Level.FINEST, "Added urlCheck {0}", name);
 
             return new ResponseEntity<>(
-                    name, composeResponseHeaders(builder, name), HttpStatus.CREATED);
+                    name, composeCreatedResponseHeaders(builder, name), HttpStatus.CREATED);
 
         } catch (IOException ex) {
             throw new RestException(
@@ -111,16 +111,12 @@ public class UrlCheckController extends RestBaseController {
         }
     }
 
-    private HttpHeaders composeResponseHeaders(UriComponentsBuilder builder, String name) {
+    private HttpHeaders composeCreatedResponseHeaders(UriComponentsBuilder builder, String checkIdentifier) {
         HttpHeaders headers = new HttpHeaders();
-        UriComponents uriComponents = composeUriComponents(name, builder);
+        UriComponents uriComponents = builder.path("/urlchecks/{id}").buildAndExpand(checkIdentifier);
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return headers;
-    }
-
-    private UriComponents composeUriComponents(String name, UriComponentsBuilder builder) {
-        return builder.path("/urlchecks/{id}").buildAndExpand(name);
     }
 
     @PutMapping(

@@ -31,6 +31,10 @@ public class TokenValidator {
 
     public void validate(String accessToken) throws Exception {
 
+        accessToken = accessToken.replaceFirst("^Bearer", "");
+        accessToken = accessToken.replaceFirst("^bearer", "");
+        accessToken = accessToken.trim();
+
         if (!jwtHeadersConfig.isValidateToken()) {
             return;
         }

@@ -16,7 +16,7 @@ import org.geoserver.security.jwtheaders.JwtConfiguration;
  */
 public class RoleConverter {
 
-    Map<String, String> conversionMap;
+    Map<String, List<String>> conversionMap;
 
     boolean externalNameMustBeListed;
 
@@ -39,11 +39,11 @@ public class RoleConverter {
         if (externalRoles == null) return result; // empty
 
         for (String externalRole : externalRoles) {
-            String gsRole = conversionMap.get(externalRole);
+            List<String> gsRole = conversionMap.get(externalRole);
             if (gsRole == null && !externalNameMustBeListed) {
                 result.add(externalRole);
             } else if (gsRole != null) {
-                result.add(gsRole);
+                result.addAll(gsRole);
             }
         }
         return result;

@@ -810,9 +810,8 @@ public class XStreamPersister {
         if (interfce == AttributeTypeInfo.class) {
             return AttributeTypeInfoImpl.class;
         }
-        if (interfce == LayerGroupStyle.class) {
-            return LayerGroupStyleImpl.class;
-        }
+
+        if (interfce == LayerGroupStyle.class) return LayerGroupStyleImpl.class;
 
         Class<?> clazz = getXStream().getMapper().defaultImplementationOf(interfce);
         if (clazz == null) {

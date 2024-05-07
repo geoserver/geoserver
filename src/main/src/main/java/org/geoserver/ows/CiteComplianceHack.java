@@ -5,12 +5,16 @@
  */
 package org.geoserver.ows;
 
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.platform.Service;
+import org.geoserver.platform.ServiceException;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Configures the dispatcher to be cite compliant based on the specified service configuration.
@@ -36,10 +40,48 @@ public class CiteComplianceHack implements HandlerInterceptor {
             throws Exception {
         if (handler instanceof Dispatcher) {
             Dispatcher dispatcher = (Dispatcher) handler;
-            dispatcher.setCiteCompliant(getInfo().isCiteCompliant());
+            Service service = findService(dispatcher, request, response);
+            if (service != null
+                    && (service.getId().equalsIgnoreCase(getInfo().getId())
+                            || service.getId().equalsIgnoreCase(getInfo().getName()))) {
+                dispatcher.setCiteCompliant(getInfo().isCiteCompliant());
+            }
         }
 
         return true;
+    }
+
+    private Service findService(
+            Dispatcher dispatcher, HttpServletRequest request, HttpServletResponse response) {
+        // create a new request instance
+        Request req = new Request();
+
+        // set request / response
+        req.setHttpRequest(request);
+        req.setHttpResponse(response);
+
+        // find the service
+        try {
+            return dispatcher.service(req);
+        } catch (Throwable t) {
+            // load from teh context
+            UriComponentsBuilder builder =
+                    UriComponentsBuilder.fromUriString(request.getServletPath());
+            Service serviceDescriptor =
+                    dispatcher.findService(
+                            Objects.requireNonNull(builder.build().getPath()),
+                            req.getVersion(),
+                            req.getNamespace());
+            if (serviceDescriptor != null) {
+                req.setServiceDescriptor(serviceDescriptor);
+                try {
+                    return dispatcher.fireServiceDispatchedCallback(req, serviceDescriptor);
+                } catch (ServiceException se) {
+                    return null;
+                }
+            }
+            return null;
+        }
     }
 
     @Override

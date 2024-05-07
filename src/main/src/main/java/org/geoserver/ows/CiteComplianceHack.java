@@ -6,12 +6,15 @@
 package org.geoserver.ows;
 
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,6 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public class CiteComplianceHack implements HandlerInterceptor {
 
+    private static final Logger LOGGER = Logging.getLogger(CiteComplianceHack.class);
     GeoServer gs;
     Class<? extends ServiceInfo> serviceClass;
 
@@ -64,21 +68,37 @@ public class CiteComplianceHack implements HandlerInterceptor {
         try {
             return dispatcher.service(req);
         } catch (Throwable t) {
+            LOGGER.log(Level.FINE, "Exception while looking for the 'Service' from the request", t);
             // load from teh context
-            UriComponentsBuilder builder =
-                    UriComponentsBuilder.fromUriString(request.getServletPath());
-            Service serviceDescriptor =
-                    dispatcher.findService(
-                            Objects.requireNonNull(builder.build().getPath()),
-                            req.getVersion(),
-                            req.getNamespace());
-            if (serviceDescriptor != null) {
-                req.setServiceDescriptor(serviceDescriptor);
-                try {
-                    return dispatcher.fireServiceDispatchedCallback(req, serviceDescriptor);
-                } catch (ServiceException se) {
-                    return null;
+            try {
+                UriComponentsBuilder builder =
+                        UriComponentsBuilder.fromUriString(request.getServletPath());
+                if (builder != null
+                        && builder.build() != null
+                        && builder.build().getPath() != null) {
+                    Service serviceDescriptor =
+                            dispatcher.findService(
+                                    Objects.requireNonNull(builder.build().getPath()),
+                                    req.getVersion(),
+                                    req.getNamespace());
+                    if (serviceDescriptor != null) {
+                        req.setServiceDescriptor(serviceDescriptor);
+                        try {
+                            return dispatcher.fireServiceDispatchedCallback(req, serviceDescriptor);
+                        } catch (ServiceException se) {
+                            LOGGER.log(
+                                    Level.FINE,
+                                    "Exception while searching for the 'Service Descriptor'",
+                                    se);
+                            return null;
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Exception while decoding OWS URL " + request.getServletPath(),
+                        e);
             }
             return null;
         }

@@ -23,7 +23,7 @@ public class ExceptionHandlingTest extends GeoServerSystemTestSupport {
      * Override getAsServletResponse(path) to quiet RestControllerAdvice logger.
      */
     @Override
-    protected MockHttpServletResponse getAsServletResponse(String path) throws Exception {
+    public MockHttpServletResponse getAsServletResponse(String path) throws Exception {
         Level level = RestControllerAdvice.LOGGER.getLevel();
         RestControllerAdvice.LOGGER.setLevel(Level.OFF);
         try {

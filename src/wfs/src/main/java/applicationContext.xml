@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
     <bean class="org.geoserver.platform.ModuleStatusImpl">
       <constructor-arg index="0" value="gs-wfs"/>
@@ -252,9 +251,9 @@
 	<!-- cite compliance hack -->
 	<bean id="wfsCiteComplianceHack" class="org.geoserver.ows.CiteComplianceHack">
 		<constructor-arg ref="geoServer"/>
-        <constructor-arg value="org.geoserver.wfs.WFSInfo"/>
+		<constructor-arg value="org.geoserver.wfs.WFSInfo"/>
 	</bean>
-	
+
 	<!-- test servlet -->
 	<bean id="wfsTestServlet" class="org.springframework.web.servlet.mvc.ServletWrappingController">
 	  <property name="servletClass" value="org.vfny.geoserver.wfs.servlets.TestWfsPost"/>
@@ -271,7 +270,6 @@
 				<ref bean="wfsCiteComplianceHack"/>
 			</list>
 		</property>
-	
 		<property name="mappings">
 			<props>
 				<prop key="/wfs">dispatcher</prop>

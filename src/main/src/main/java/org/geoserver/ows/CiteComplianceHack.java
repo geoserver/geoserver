@@ -69,7 +69,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
             return dispatcher.service(req);
         } catch (Throwable t) {
             LOGGER.log(Level.FINE, "Exception while looking for the 'Service' from the request", t);
-            // load from teh context
+            // load from the context
             try {
                 UriComponentsBuilder builder =
                         UriComponentsBuilder.fromUriString(request.getServletPath());

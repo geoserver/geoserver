@@ -418,11 +418,11 @@
 		class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>
 		<property name="alwaysUseFullPath" value="true"/>
-        <property name="interceptors">
-            <list>
-                <ref bean="wmsCiteComplianceHack"/>
-            </list>
-        </property>
+		<property name="interceptors">
+			<list>
+			    <ref bean="wmsCiteComplianceHack"/>
+			</list>
+		</property>
 		<property name="mappings">
 			<props>
 			    <prop key="/kml/icon/**/*">kmlIconService</prop>

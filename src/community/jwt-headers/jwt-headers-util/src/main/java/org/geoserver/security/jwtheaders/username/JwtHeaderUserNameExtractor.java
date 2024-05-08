@@ -34,7 +34,12 @@ public class JwtHeaderUserNameExtractor {
     // if this is trivial (single item in pathList), return the value.
     // otherwise, go into the map one level (pathList[0]) and recurse on the result.
     private static Object getClaim(Map<String, Object> map, List<String> pathList) {
-        if (pathList.size() == 1) return map.get(pathList.get(0));
+        if (map == null) {
+            return null;
+        }
+        if (pathList.size() == 1) {
+            return map.get(pathList.get(0));
+        }
 
         String first = pathList.get(0);
         pathList.remove(0);

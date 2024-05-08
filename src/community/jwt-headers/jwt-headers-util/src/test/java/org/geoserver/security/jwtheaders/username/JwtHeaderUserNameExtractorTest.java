@@ -31,10 +31,11 @@ public class JwtHeaderUserNameExtractorTest {
         Assert.assertEquals("david.blasby@geocat.net", username);
     }
 
+    String json =
+            "{\"exp\":1707155912,\"iat\":1707155612,\"jti\":\"888715ae-a79d-4633-83e5-9b97dee02bbc\",\"iss\":\"https://login-live-dev.geocat.live/realms/dave-test2\",\"aud\":\"account\",\"sub\":\"ea33e3cc-f0e1-4218-89cb-8d48c27eee3d\",\"typ\":\"Bearer\",\"azp\":\"live-key2\",\"session_state\":\"ae7796fa-b374-4754-a294-e0eb834b23b5\",\"acr\":\"1\",\"realm_access\":{\"roles\":[\"default-roles-dave-test2\",\"offline_access\",\"uma_authorization\"]},\"resource_access\":{\"live-key2\":{\"roles\":[\"GeoserverAdministrator\"]},\"account\":{\"roles\":[\"manage-account\",\"manage-account-links\",\"view-profile\"]}},\"scope\":\"openidprofileemail\",\"sid\":\"ae7796fa-b374-4754-a294-e0eb834b23b5\",\"email_verified\":false,\"name\":\"davidblasby\",\"preferred_username\":\"david.blasby@geocat.net\",\"given_name\":\"david\",\"family_name\":\"blasby\",\"email\":\"david.blasby@geocat.net\"}";
+
     @Test
     public void testSimpleJson() throws ParseException {
-        String json =
-                "{\"exp\":1707155912,\"iat\":1707155612,\"jti\":\"888715ae-a79d-4633-83e5-9b97dee02bbc\",\"iss\":\"https://login-live-dev.geocat.live/realms/dave-test2\",\"aud\":\"account\",\"sub\":\"ea33e3cc-f0e1-4218-89cb-8d48c27eee3d\",\"typ\":\"Bearer\",\"azp\":\"live-key2\",\"session_state\":\"ae7796fa-b374-4754-a294-e0eb834b23b5\",\"acr\":\"1\",\"realm_access\":{\"roles\":[\"default-roles-dave-test2\",\"offline_access\",\"uma_authorization\"]},\"resource_access\":{\"live-key2\":{\"roles\":[\"GeoserverAdministrator\"]},\"account\":{\"roles\":[\"manage-account\",\"manage-account-links\",\"view-profile\"]}},\"scope\":\"openidprofileemail\",\"sid\":\"ae7796fa-b374-4754-a294-e0eb834b23b5\",\"email_verified\":false,\"name\":\"davidblasby\",\"preferred_username\":\"david.blasby@geocat.net\",\"given_name\":\"david\",\"family_name\":\"blasby\",\"email\":\"david.blasby@geocat.net\"}";
         String username =
                 getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "preferred_username")
                         .extractUserName(json);
@@ -48,5 +49,34 @@ public class JwtHeaderUserNameExtractorTest {
                 getExtractor(JwtConfiguration.UserNameHeaderFormat.STRING, "xxxyyy")
                         .extractUserName(json);
         Assert.assertEquals("david.blasby@geocat.net", username);
+    }
+
+    @Test
+    public void testNonExistentClaim() {
+        String claimValue =
+                getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "notThere")
+                        .extractUserName(json);
+        Assert.assertNull(claimValue);
+
+        claimValue =
+                getExtractor(
+                                JwtConfiguration.UserNameHeaderFormat.JSON,
+                                "resource_access.notThere.abc")
+                        .extractUserName(json);
+        Assert.assertNull(claimValue);
+
+        claimValue =
+                getExtractor(
+                                JwtConfiguration.UserNameHeaderFormat.JSON,
+                                "resource_access.live-key2.notThere")
+                        .extractUserName(json);
+        Assert.assertNull(claimValue);
+
+        claimValue =
+                getExtractor(
+                                JwtConfiguration.UserNameHeaderFormat.JSON,
+                                "resource_access.live-key2.roles.notThere")
+                        .extractUserName(json);
+        Assert.assertNull(claimValue);
     }
 }

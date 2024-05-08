@@ -495,4 +495,19 @@ public class GetFeatureTest extends WFSTestSupport {
             assertXpathEvaluatesTo(srs, "//iau:MarsPoi/iau:geom/gml:Point/@srsName", doc);
         }
     }
+
+    @Test
+    public void testCiteCompliant() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
+
+        try {
+            testPostForm();
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+        }
+    }
 }

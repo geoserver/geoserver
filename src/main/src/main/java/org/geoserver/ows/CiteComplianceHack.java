@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.Service;
-import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,10 +43,10 @@ public class CiteComplianceHack implements HandlerInterceptor {
             throws Exception {
         if (handler instanceof Dispatcher) {
             Dispatcher dispatcher = (Dispatcher) handler;
-            Service service = findService(dispatcher, request, response);
+            String service = findService(dispatcher, request, response);
             if (service != null
-                    && (service.getId().equalsIgnoreCase(getInfo().getId())
-                            || service.getId().equalsIgnoreCase(getInfo().getName()))) {
+                    && (service.equalsIgnoreCase(getInfo().getId())
+                            || service.equalsIgnoreCase(getInfo().getName()))) {
                 dispatcher.setCiteCompliant(getInfo().isCiteCompliant());
             }
         }
@@ -55,7 +54,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
         return true;
     }
 
-    private Service findService(
+    private String findService(
             Dispatcher dispatcher, HttpServletRequest request, HttpServletResponse response) {
         // create a new request instance
         Request req = new Request();
@@ -66,9 +65,10 @@ public class CiteComplianceHack implements HandlerInterceptor {
 
         // find the service
         try {
-            return dispatcher.service(req);
-        } catch (Throwable t) {
-            LOGGER.log(Level.FINE, "Exception while looking for the 'Service' from the request", t);
+            return dispatcher.getServiceFromRequest(req);
+        } catch (Exception ex1) {
+            LOGGER.log(
+                    Level.FINE, "Exception while looking for the 'Service' from the request", ex1);
             // load from the context
             try {
                 UriComponentsBuilder builder =
@@ -82,23 +82,14 @@ public class CiteComplianceHack implements HandlerInterceptor {
                                     req.getVersion(),
                                     req.getNamespace());
                     if (serviceDescriptor != null) {
-                        req.setServiceDescriptor(serviceDescriptor);
-                        try {
-                            return dispatcher.fireServiceDispatchedCallback(req, serviceDescriptor);
-                        } catch (ServiceException se) {
-                            LOGGER.log(
-                                    Level.FINE,
-                                    "Exception while searching for the 'Service Descriptor'",
-                                    se);
-                            return null;
-                        }
+                        return serviceDescriptor.getId();
                     }
                 }
-            } catch (Exception e) {
+            } catch (Exception ex2) {
                 LOGGER.log(
                         Level.FINE,
                         "Exception while decoding OWS URL " + request.getServletPath(),
-                        e);
+                        ex2);
             }
             return null;
         }

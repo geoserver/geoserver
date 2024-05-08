@@ -66,7 +66,7 @@ The process of getting community commit access is as follows:
 Core commit access
 ^^^^^^^^^^^^^^^^^^
 
-The second allows a developer to make commits to the core modules of geoserver.
+The second stage allows a developer to make commits to the core modules of GeoServer.
 Being granted this stage of access takes time, and is obtained only after the
 developer has gained the trust of the other core committers.
 

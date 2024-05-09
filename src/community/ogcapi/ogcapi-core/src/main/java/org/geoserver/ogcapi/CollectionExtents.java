@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,14 +53,27 @@ public class CollectionExtents {
 
         public List<String[]> getInterval() {
             if (temporal != null) {
+                java.util.Date minValue = temporal.getMinValue();
+                java.util.Date maxValue = temporal.getMaxValue();
+                if (minValue instanceof java.sql.Date) {
+                    return Collections.singletonList(
+                            new String[] {
+                                ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) minValue)),
+                                ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) maxValue))
+                            });
+                }
                 return Collections.singletonList(
                         new String[] {
-                            ISO_INSTANT.format(temporal.getMinValue().toInstant()),
-                            ISO_INSTANT.format(temporal.getMaxValue().toInstant())
+                            ISO_INSTANT.format(minValue.toInstant()),
+                            ISO_INSTANT.format(maxValue.toInstant())
                         });
             } else {
                 return null;
             }
+        }
+
+        private Instant sqlDateToInstant(java.sql.Date minValue) {
+            return minValue.toLocalDate().atStartOfDay(ZoneOffset.UTC).toInstant();
         }
 
         public String getTrs() {

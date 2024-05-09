@@ -20,8 +20,7 @@ import org.junit.Test;
 public class MapsTest extends MapsTestSupport {
     @Test
     public void testDatetimeJson() throws Exception {
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
         Integer[] values = {1, 1, 1, 1, 0, 1};
         // work with different time resolutions
         String[] dates = {
@@ -44,8 +43,7 @@ public class MapsTest extends MapsTestSupport {
 
     @Test
     public void testDatetimeHTMLMapsFormat() throws Exception {
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
         Document document =
                 getAsJSoup(
                         "ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html&datetime=2012-02-12T00:00:00Z");
@@ -55,8 +53,7 @@ public class MapsTest extends MapsTestSupport {
 
     @Test
     public void testHTMLNoDatetime() throws Exception {
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        setupStartEndTimeDimension(TIME_WITH_START_END, "time", "startTime", "endTime");
         // failed here when no datetime provided, FTL processing error, null on js_string
         Document document =
                 getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html");

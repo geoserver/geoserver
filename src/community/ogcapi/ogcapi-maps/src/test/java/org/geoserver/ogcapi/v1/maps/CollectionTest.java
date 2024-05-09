@@ -99,6 +99,39 @@ public class CollectionTest extends MapsTestSupport {
                 document.select("#" + id + "_temporal").text());
     }
 
+    /**
+     * Checks a temporal dimension defined over java.sql.date works in HTML
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTemporalSqlDateHTML() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END_DATE, "time", "startTime", "endTime");
+        org.jsoup.nodes.Document document =
+                getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEndDate?f=html");
+
+        String id = getLayerId(TIME_WITH_START_END_DATE).replace(":", "__");
+
+        // check temporal extent
+        assertEquals(
+                "Temporal extent: 2012-02-11/2012-02-14",
+                document.select("#" + id + "_temporal").text());
+    }
+
+    /**
+     * Checks a temporal dimension defined over java.sql.date works in JSON
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTemporalSqlDateJSON() throws Exception {
+        setupStartEndTimeDimension(TIME_WITH_START_END_DATE, "time", "startTime", "endTime");
+        DocumentContext json =
+                getAsJSONPath("ogc/maps/v1/collections/sf:TimeWithStartEndDate", 200);
+        assertEquals("2012-02-11T00:00:00Z", json.read("$.extent.temporal.interval[0][0]"));
+        assertEquals("2012-02-14T00:00:00Z", json.read("$.extent.temporal.interval[0][1]"));
+    }
+
     @Test
     public void testCollectionJson() throws Exception {
         setupRasterDimension(TIMESERIES, TIME, DimensionPresentation.LIST, null, null, null);

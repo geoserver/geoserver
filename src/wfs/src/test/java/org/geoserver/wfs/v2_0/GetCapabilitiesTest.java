@@ -35,6 +35,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.CreateStoredQuery;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
@@ -912,5 +913,41 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         String poiXPath = "//wfs:FeatureTypeList/wfs:FeatureType[wfs:Name = 'iau:MarsPoi']";
         assertXpathExists(poiXPath, doc);
         assertXpathEvaluatesTo("urn:ogc:def:crs:IAU::49900", poiXPath + "/wfs:DefaultCRS ", doc);
+    }
+
+    @Test
+    public void testCiteCompliant() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
+
+        try {
+            // version not required for GetCapabilities
+            Document dom = getAsDOM("wfs?service=WFS&request=GetCapabilities");
+            assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
+
+            MockHttpServletResponse response =
+                    getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0");
+            assertEquals("application/xml", response.getContentType());
+            assertEquals(400, response.getStatus());
+
+            // check the returned xml
+            dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+            Element root = dom.getDocumentElement();
+            assertEquals("ows:ExceptionReport", root.getNodeName());
+            assertEquals("2.0.0", root.getAttribute("version"));
+
+            // look into exception code and locator
+            assertEquals(1, dom.getElementsByTagName("ows:Exception").getLength());
+            Element ex = (Element) dom.getElementsByTagName("ows:Exception").item(0);
+            assertEquals(
+                    ServiceException.MISSING_PARAMETER_VALUE, ex.getAttribute("exceptionCode"));
+            assertEquals("service", ex.getAttribute("locator"));
+            assertEquals(1, dom.getElementsByTagName("ows:ExceptionText").getLength());
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+        }
     }
 }

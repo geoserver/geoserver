@@ -118,14 +118,12 @@ public class DispatcherTest {
         DelegatingServletInputStream input =
                 new DelegatingServletInputStream(new ByteArrayInputStream(body.getBytes()));
 
-        Dispatcher dispatcher = new Dispatcher();
-
         try (BufferedReader buffered = new BufferedReader(new InputStreamReader(input))) {
             buffered.mark(2048);
             Request req = new Request();
             req.setInput(buffered);
 
-            Request res = dispatcher.readOpPost(req);
+            Request res = Dispatcher.readOpPost(req);
             assertSame(req, res);
             assertEquals("Hello", res.getRequest());
             assertEquals("hello", res.getService());

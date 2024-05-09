@@ -1,5 +1,5 @@
 
-<!-- 
+ <!--
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
@@ -418,6 +418,11 @@
 		class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>
 		<property name="alwaysUseFullPath" value="true"/>
+		<property name="interceptors">
+			<list>
+			    <ref bean="wmsCiteComplianceHack"/>
+			</list>
+		</property>
 		<property name="mappings">
 			<props>
 			    <prop key="/kml/icon/**/*">kmlIconService</prop>

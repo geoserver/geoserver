@@ -33,6 +33,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.xsd.XML;
@@ -328,8 +329,11 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
 
         try {
             // version not required for GetCapabilities
-            Document dom = getAsDOM("wms?request=GetCapabilities");
+            Document dom = getAsDOM("wms?service=WMS&request=GetCapabilities");
             assertEquals("WMS_Capabilities", dom.getDocumentElement().getNodeName());
+
+            dom = getAsDOM("wms?request=GetCapabilities&version=1.3.0");
+            checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
         } finally {
             wms.setCiteCompliant(false);
             gs.save(wms);

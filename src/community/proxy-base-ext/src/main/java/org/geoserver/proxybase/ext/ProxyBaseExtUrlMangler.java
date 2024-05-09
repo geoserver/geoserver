@@ -45,13 +45,19 @@ public class ProxyBaseExtUrlMangler implements URLMangler {
      */
     public ProxyBaseExtUrlMangler(GeoServerDataDirectory dataDirectory) {
         Resource resource = dataDirectory.get(ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_PATH);
-        proxyBaseExtensionRules = getProxyBaseExtensionRules(resource);
-        resource.addListener(
-                notify -> proxyBaseExtensionRules = getProxyBaseExtensionRules(resource));
+        updateRules(resource);
+        resource.addListener(notify -> updateRules(resource));
+    }
+
+    private void updateRules(Resource resource) {
+        List<ProxyBaseExtensionRule> rules = getProxyBaseExtensionRules(resource);
+        rules.sort(ProxyBaseExtensionRule::compareTo);
+        proxyBaseExtensionRules = rules;
     }
 
     /** Constructor for testing purposes */
     public ProxyBaseExtUrlMangler(List<ProxyBaseExtensionRule> proxyBaseExtensionRules) {
+        proxyBaseExtensionRules.sort(ProxyBaseExtensionRule::compareTo);
         this.proxyBaseExtensionRules = proxyBaseExtensionRules;
     }
 
@@ -196,7 +202,6 @@ public class ProxyBaseExtUrlMangler implements URLMangler {
     }
 
     private Optional<String> getFirstMatchingTransformer(String path) {
-        proxyBaseExtensionRules.sort(ProxyBaseExtensionRule::compareTo);
         return proxyBaseExtensionRules.stream()
                 .filter(rule -> ruleMatches(path, rule))
                 .map(ProxyBaseExtensionRule::getTransformer)

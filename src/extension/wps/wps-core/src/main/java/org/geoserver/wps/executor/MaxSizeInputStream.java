@@ -4,9 +4,10 @@
  */
 package org.geoserver.wps.executor;
 
-import java.io.IOException;
+import static org.apache.commons.io.IOUtils.EOF;
+
 import java.io.InputStream;
-import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.input.ProxyInputStream;
 import org.geoserver.wps.WPSException;
 
 /**
@@ -14,11 +15,13 @@ import org.geoserver.wps.WPSException;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class MaxSizeInputStream extends CountingInputStream {
+class MaxSizeInputStream extends ProxyInputStream {
 
     private long maxSize;
 
     private String inputId;
+
+    private long count;
 
     protected MaxSizeInputStream(InputStream in, String inputId, long maxSize) {
         super(in);
@@ -27,31 +30,11 @@ class MaxSizeInputStream extends CountingInputStream {
     }
 
     @Override
-    public int read() throws IOException {
-        int result = super.read();
-        checkSize();
-
-        return result;
-    }
-
-    @Override
-    public int read(byte[] bts) throws IOException {
-        int result = super.read(bts);
-        checkSize();
-
-        return result;
-    }
-
-    @Override
-    public int read(byte[] bts, int off, int len) throws IOException {
-        int result = super.read(bts, off, len);
-        checkSize();
-
-        return result;
-    }
-
-    private void checkSize() {
-        if (getByteCount() > maxSize) {
+    protected synchronized void afterRead(int n) {
+        if (n != EOF) {
+            count += n;
+        }
+        if (count > maxSize) {
             throw new WPSException(
                     "Exceeded maximum input size of "
                             + maxSize

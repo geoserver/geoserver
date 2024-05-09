@@ -1,4 +1,7 @@
 <#setting locale="en_US">
+<#setting time_zone="utc">
+<#setting date_format="iso">
+<#setting datetime_format="iso">
 <!DOCTYPE html>
 <html lang="en">
   <head>

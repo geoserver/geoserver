@@ -15,7 +15,7 @@
       </li>
       <#if collection.extent.temporal??>
             <#assign temporal = collection.extent.temporal>
-            <li id="${collection.htmlId}_temporal"><b>Temporal extent</b>: ${temporal.minValue?datetime?iso_utc}/${temporal.maxValue?datetime?iso_utc}</li>
+            <li id="${collection.htmlId}_temporal"><b>Temporal extent</b>: ${temporal.minValue}/${temporal.maxValue}</li>
       </#if>
       <li> <a id="html_${collection.htmlId}_link" href="${collection.getLinkUrl('styles', 'text/html')!}">Map styles</a>.
                  

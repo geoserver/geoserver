@@ -6,7 +6,10 @@ package org.geoserver.rest.security;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
@@ -125,12 +128,12 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         Document dom = getAsDOM(ROOT_PATH + "/urlchecks/check1.xml");
 
-        assertXpathEvaluatesTo("1", "count(/urlCheck)", dom);
+        assertXpathEvaluatesTo("1", "count(/regexUrlCheck)", dom);
 
-        assertXpathEvaluatesTo("check1", "/urlCheck/name", dom);
-        assertXpathEvaluatesTo("regex check 1", "/urlCheck/description", dom);
-        assertXpathEvaluatesTo("true", "/urlCheck/enabled", dom);
-        assertXpathEvaluatesTo("check1://.*", "/urlCheck/regex", dom);
+        assertXpathEvaluatesTo("check1", "/regexUrlCheck/name", dom);
+        assertXpathEvaluatesTo("regex check 1", "/regexUrlCheck/description", dom);
+        assertXpathEvaluatesTo("true", "/regexUrlCheck/enabled", dom);
+        assertXpathEvaluatesTo("check1://.*", "/regexUrlCheck/regex", dom);
     }
 
     @Test
@@ -138,7 +141,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         JSON json = getAsJSON(ROOT_PATH + "/urlchecks/check2.json");
 
-        JSONObject urlCheck = ((JSONObject) json).getJSONObject("urlCheck");
+        JSONObject urlCheck = ((JSONObject) json).getJSONObject("regexUrlCheck");
 
         assertFalse(urlCheck.isNullObject());
 
@@ -178,7 +181,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         String checkJson =
                 "{"
-                        + "    \"urlCheck\": {"
+                        + "    \"regexUrlCheck\": {"
                         + "        \"name\": \"check\","
                         + "        \"description\": \"this is another check\","
                         + "        \"enabled\": \"true\","
@@ -208,7 +211,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         String checkJson =
                 "{"
-                        + "    \"urlCheck\": {"
+                        + "    \"regexUrlCheck\": {"
                         + "        \"name\": \"check\","
                         + "        \"description\": \"this is another check\","
                         + "        \"enabled\": \"true\","
@@ -231,7 +234,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         String checkJson =
                 "{"
-                        + "    \"urlCheck\": {"
+                        + "    \"regexUrlCheck\": {"
                         + "        \"description\": \"this is another check\","
                         + "        \"enabled\": \"true\","
                         + "        \"regex\": \"http://example.com/.*\""
@@ -251,7 +254,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         String checkJson =
                 "{"
-                        + "    \"urlCheck\": {"
+                        + "    \"regexUrlCheck\": {"
                         + "        \"name\": \"check\","
                         + "        \"description\": \"this is another check\","
                         + "        \"enabled\": \"true\""
@@ -267,11 +270,11 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
     }
 
     @Test
-    public void testPostEnforcedDefaultEnabledStatus() throws Exception {
+    public void testPostWithoutEnabled() throws Exception {
 
         String checkJson =
                 "{"
-                        + "    \"urlCheck\": {"
+                        + "    \"regexUrlCheck\": {"
                         + "        \"name\": \"check\","
                         + "        \"description\": \"this is another check\","
                         + "        \"regex\": \"http://example.com/.*\""
@@ -279,10 +282,17 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
                         + "}";
 
         String requestPath = ROOT_PATH + "/urlchecks";
-        postAsServletResponse(requestPath, checkJson, APPLICATION_JSON_VALUE);
+        MockHttpServletResponse response =
+                postAsServletResponse(requestPath, checkJson, APPLICATION_JSON_VALUE);
+
+        assertEquals(201, response.getStatus());
+        assertEquals("check", response.getContentAsString());
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/urlchecks/check",
+                response.getHeader("location"));
 
         AbstractURLCheck check = urlCheckDao.getCheckByName("check");
-        assertTrue(check.isEnabled());
+        assertFalse(check.isEnabled());
     }
 
     @Test
@@ -290,8 +300,8 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         String editCheckJson =
                 "{"
-                        + "    \"urlCheck\": {"
-                        + "        \"name\": \"ignored name change\","
+                        + "    \"regexUrlCheck\": {"
+                        + "        \"name\": \"new-check\","
                         + "        \"description\": \"new description\","
                         + "        \"enabled\": \"false\","
                         + "        \"regex\": \"new regex\""
@@ -304,8 +314,8 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
 
         assertEquals(200, response.getStatus());
 
-        AbstractURLCheck check = urlCheckDao.getCheckByName("check1");
-        assertEquals("check1", check.getName());
+        AbstractURLCheck check = urlCheckDao.getCheckByName("new-check");
+        assertEquals("new-check", check.getName());
         assertEquals("new description", check.getDescription());
         assertFalse(check.isEnabled());
         assertEquals("new regex", check.getConfiguration());
@@ -315,7 +325,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
     public void testPutUnknown() throws Exception {
 
         String checkName = "unknown";
-        String editCheckJson = "{\"urlCheck\": {}}";
+        String editCheckJson = "{\"regexUrlCheck\": {}}";
 
         String requestPath = ROOT_PATH + "/urlchecks/" + checkName;
         MockHttpServletResponse response =
@@ -330,7 +340,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testPutWithEmptyConfiguration() throws Exception {
 
-        String editCheckJson = "{\"urlCheck\": {\"regex\": \"\"}}";
+        String editCheckJson = "{\"regexUrlCheck\": {\"regex\": \"\"}}";
 
         String requestPath = ROOT_PATH + "/urlchecks/check1";
         MockHttpServletResponse response =
@@ -343,7 +353,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
     @Test
     public void testPutNoChanges() throws Exception {
 
-        String editCheckJson = "{\"urlCheck\": {}}";
+        String editCheckJson = "{\"regexUrlCheck\": {}}";
 
         String requestPath = ROOT_PATH + "/urlchecks/check1";
         MockHttpServletResponse response =
@@ -354,7 +364,7 @@ public class UrlCheckControllerTest extends SecurityRESTTestSupport {
         AbstractURLCheck check = urlCheckDao.getCheckByName("check1");
         assertEquals("check1", check.getName());
         assertEquals("regex check 1", check.getDescription());
-        assertTrue(check.isEnabled());
+        assertFalse(check.isEnabled());
         assertEquals("check1://.*", check.getConfiguration());
     }
 

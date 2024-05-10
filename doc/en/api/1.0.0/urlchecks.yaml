@@ -102,6 +102,7 @@ paths:
 
     put:
       operationId: putUrlChecks
+      description: Not permitted.
       tags:
         - "UrlChecks"
       responses:
@@ -110,6 +111,7 @@ paths:
 
     delete:
       operationId: deleteUrlChecks
+      description: Not permitted.
       tags:
         - "UrlChecks"
       responses:
@@ -161,9 +163,16 @@ paths:
           description: URL check does not exist
 
     post:
-      operationId: postUrlCheck
       tags:
         - "UrlChecks"
+      operationId: postUrlCheck
+      description: Not permitted.
+      parameters:
+        - name: urlcheckname
+          description: the name of the URL check to fetch.
+          in: path
+          required: true
+          type: string
       responses:
         405:
           description: Not permitted
@@ -216,6 +225,39 @@ paths:
 definitions:
   urlCheck:
     type: object
+    description: >
+
+      The body for a URL check request.
+      
+      For a PUT, only values which should be changed need to be included.
+      
+      
+      JSON or XML style requests should follow the schemas below:
+
+        - application/xml: 
+      
+          ```
+          <regexUrlCheck>
+          	<name>string</name>
+          	<description>string</description>
+          	<enabled>false</enabled>
+          	<regex>string</regex>
+          </regexUrlCheck>
+          ```
+
+        - application/json: 
+      
+          ```
+          {
+            "regexUrlCheck": {
+              "name": "string",
+              "description": "string",
+              "enabled": false,
+              "regex": "string"
+            }
+          }
+          ```
+
     required:
       - name
       - regex
@@ -229,7 +271,7 @@ definitions:
       enabled:
         type: boolean
         description: enabled status of the URL check
-        default: true
+        default: false
       regex:
         type: string
         description: regex to perform the check with

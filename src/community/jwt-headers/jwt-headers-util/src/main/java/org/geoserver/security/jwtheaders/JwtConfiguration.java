@@ -1,7 +1,14 @@
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.jwtheaders;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JwtConfiguration implements Serializable {
 

@@ -116,7 +116,12 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
     /** what formats we support for roles in the header. */
     public enum JWTHeaderRoleSource implements RoleSource {
         JSON,
-        JWT;
+        JWT,
+
+        // From: PreAuthenticatedUserNameFilterConfig
+        Header,
+        UserGroupService,
+        RoleService;
 
         @Override
         public boolean equals(RoleSource other) {

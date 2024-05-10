@@ -98,7 +98,6 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         notifyExceptionToCallbacks(request, response, e);
 
         if (e.getStatus().is4xxClientError()) {
-            /* TODO: this prevents errors responses to PUT requests to be returned to the caller */
             response.sendError(e.getStatus().value(), message(e));
         } else {
             response.setStatus(e.getStatus().value());

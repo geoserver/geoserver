@@ -102,3 +102,32 @@ paths:
           description: No PAM dataset found
         400:
           description: Invalid parameters used (e.g., band or classification not found)
+  /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/pam/reload:
+    post:
+      operationId: reloadPAMDataset
+      summary: Reloads/recomputes the PAM dataset
+      description: The PAM is often cached, this operation forces the source to reload it, eventually recomputing it, if for example it's a mosaic with a summary PAM dataset obtained from all its sources
+      tags:
+        - RasterAttributeTable
+      parameters:
+        - name: workspace
+          in: path
+          description: The name of the workspace
+          required: true
+          type: string
+        - name: store
+          in: path
+          description: The name of the coverage datastore
+          required: true
+          type: string
+        - name: coverage
+          in: path
+          description: The name of the coverage
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: No PAM dataset found
+          

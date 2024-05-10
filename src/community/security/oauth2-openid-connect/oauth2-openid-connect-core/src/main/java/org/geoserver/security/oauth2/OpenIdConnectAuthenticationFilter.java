@@ -158,7 +158,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             return null;
         }
         if (!(rs instanceof OpenIdRoleSource)) {
-            super.getRoles(request, principal);
+            return super.getRoles(request, principal);
         }
         OpenIdRoleSource oirs = (OpenIdRoleSource) rs;
 

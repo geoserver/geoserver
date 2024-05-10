@@ -60,6 +60,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xsd.EMFUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -118,7 +119,7 @@ import org.xml.sax.SAXException;
  */
 public class Dispatcher extends AbstractController {
     /** Logging instance */
-    static Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    static Logger logger = Logging.getLogger("org.geoserver.ows");
 
     /** flag to control wether the dispatcher is cite compliant */
     boolean citeCompliant = false;
@@ -129,7 +130,7 @@ public class Dispatcher extends AbstractController {
     static final Charset UTF8 = StandardCharsets.UTF_8;
 
     /** The amount of bytes to be read to determine the proper xml reader in POST request */
-    int XML_LOOKAHEAD = 8192;
+    static int XML_LOOKAHEAD = 8192;
 
     /** list of callbacks */
     List<DispatcherCallback> callbacks = Collections.emptyList();
@@ -501,47 +502,7 @@ public class Dispatcher extends AbstractController {
     }
 
     Service service(Request req) throws Exception {
-        // check kvp
-        if (req.getKvp() != null) {
-
-            req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
-            req.setVersion(
-                    normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
-            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
-            req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
-        }
-        // check the body
-        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
-            req = readOpPost(req);
-        }
-
-        // try to infer from context
-        // JD: for cite compliance, a service *must* be specified explicitley by
-        // either a kvp, or an xml attribute, however in reality the context
-        // is often a good way to infer the service or request
-        String service = req.getService();
-
-        if ((service == null) || (req.getRequest() == null)) {
-            Map map = readOpContext(req);
-
-            if (service == null) {
-                service = normalize((String) map.get("service"));
-
-                if ((service != null) && !citeCompliant) {
-                    req.setService(service);
-                }
-            }
-
-            if (req.getRequest() == null) {
-                req.setRequest(normalize((String) map.get("request")));
-            }
-        }
-
-        if (service == null) {
-            // give up
-            throw new ServiceException(
-                    "Could not determine service", "MissingParameterValue", "service");
-        }
+        String service = getServiceFromRequest(req);
 
         // load from teh context
         Service serviceDescriptor = findService(service, req.getVersion(), req.getNamespace());
@@ -567,6 +528,61 @@ public class Dispatcher extends AbstractController {
         }
         req.setServiceDescriptor(serviceDescriptor);
         return fireServiceDispatchedCallback(req, serviceDescriptor);
+    }
+
+    /**
+     * Retrieves the service name from the given request object, which may contain key-value pairs
+     * (KVP) or a request body. If the service name is not explicitly provided in the request,
+     * attempts to infer it from the request context.
+     *
+     * @param req The request object containing information about the service and request.
+     * @return The name of the service extracted from the request.
+     * @throws ServiceException If the service name cannot be determined from the request.
+     * @throws Exception If an unexpected error occurs during the extraction process.
+     */
+    public String getServiceFromRequest(Request req) throws Exception {
+        // check kvp
+        if (req.getKvp() != null) {
+
+            req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
+            req.setVersion(
+                    normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
+            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
+            req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
+        }
+        // check the body
+        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
+            readOpPost(req);
+        }
+
+        // try to infer from context
+        // JD: for cite compliance, a service *must* be specified explicitly by
+        // either a kvp, or a xml attribute, however in reality the context
+        // is often a good way to infer the service or request
+        String service = req.getService();
+
+        if ((service == null) || (req.getRequest() == null)) {
+            Map map = readOpContext(req);
+
+            if (service == null) {
+                service = normalize((String) map.get("service"));
+
+                if ((service != null) && !citeCompliant) {
+                    req.setService(service);
+                }
+            }
+
+            if (req.getRequest() == null) {
+                req.setRequest(normalize((String) map.get("request")));
+            }
+        }
+
+        if (service == null) {
+            // give up
+            throw new ServiceException(
+                    "Could not determine service", "MissingParameterValue", "service");
+        }
+        return service;
     }
 
     Service fireServiceDispatchedCallback(Request req, Service service) {
@@ -1590,7 +1606,7 @@ public class Dispatcher extends AbstractController {
      * @return a {@link Map} containing the parsed parameters.
      * @throws Exception if there was an error reading the input.
      */
-    public Request readOpPost(Request req) throws Exception {
+    public static Request readOpPost(Request req) throws Exception {
         String namespace;
         String elementName;
         String request;
@@ -1635,7 +1651,7 @@ public class Dispatcher extends AbstractController {
         return req;
     }
 
-    private XMLStreamReader createParserForRootElement(Request req)
+    private static XMLStreamReader createParserForRootElement(Request req)
             throws IOException, FactoryConfigurationError, XMLStreamException {
         char[] buff = new char[XML_LOOKAHEAD];
         {

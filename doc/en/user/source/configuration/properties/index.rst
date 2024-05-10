@@ -91,7 +91,7 @@ GeoServer Property Reference
      - x
    * - org.geoserver.catalog.loadingThreads
        
-       Number of treads used to load catalogue (Default 4).
+       Number of threads used to load catalogue (Default 4).
      - x
      - x
      - x
@@ -109,7 +109,7 @@ GeoServer Property Reference
      - x
    * - GEOSERVER_XSTREAM_WHITELIST
        
-       Used to restrict catalogue persistance.
+       Used to restrict catalogue persistence.
      - x
      - x
      - x
@@ -316,20 +316,20 @@ Using ``GEOSERVER_DATA_DIR`` as an example:
       
       -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data
    
-   * For Tomcat on linux edit :file:`setenv.sh` to append additional java system properties:
+   * For Tomcat on Linux edit :file:`setenv.sh` to append additional java system properties:
      
      .. code-block:: bash
      
         # Append system properties
         CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data"
 
-   * For Tomcat on windows use :command:`Apache Tomcat Properties` application, navigating to the :guilabel:`Java` tab to edit :guilabel:`Java Options`:
+   * For Tomcat on Windows use :command:`Apache Tomcat Properties` application, navigating to the :guilabel:`Java` tab to edit :guilabel:`Java Options`:
      
      .. code-block:: text
      
         -DGEOSERVER_DATA_DIR=C:\ProgramData\GeoServer\data
    
-   While not commonly used for GEOSERVER_DATA_DIR, this approach is a popular way to enable/disable optional geoserver functionality.
+   While not commonly used for GEOSERVER_DATA_DIR, this approach is a popular way to enable/disable optional GeoServer functionality.
 
 2. Web Application context parameter:
    
@@ -342,11 +342,11 @@ Using ``GEOSERVER_DATA_DIR`` as an example:
                      value="/var/opt/geoserver/data" override="false"/>
         </Context>
           
-     .. note:: Tomcat management of application properties as using ``overide="false"`` is not the most straight forward to understand. This setting prevents parameter defined in :file:`WEB-INF/web.xml` (from the :file:`geoserver.war` ) to overide the provided file location.
+     .. note:: Tomcat management of application properties as using ``override="false"`` is not the most straight forward to understand. This setting prevents parameter defined in :file:`WEB-INF/web.xml` (from the :file:`geoserver.war` ) to override the provided file location.
         
-        Other application servers provide a user inteface to manage web application properties and are more intuitive.
+        Other application servers provide a user interface to manage web application properties and are more intuitive.
      
-   * Not recommended: Hand editing the `webapps/geoservere/WEB-INF/web.xml` file:
+   * Not recommended: Hand editing the `webapps/geoserver/WEB-INF/web.xml` file:
      
      .. code-block:: xml
      

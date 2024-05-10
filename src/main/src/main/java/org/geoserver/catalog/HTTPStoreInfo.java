@@ -32,6 +32,10 @@ public interface HTTPStoreInfo extends StoreInfo {
 
     void setPassword(String password);
 
+    String getAuthKey();
+
+    void setAuthKey(String authKey);
+
     /**
      * @return Upper limit on the number of http connections the store should hold in the pool if
      *     {@link #isUseConnectionPooling()} is {@code true}.

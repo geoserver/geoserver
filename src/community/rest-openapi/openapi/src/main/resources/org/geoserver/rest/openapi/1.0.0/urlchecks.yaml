@@ -166,7 +166,7 @@ paths:
           description: name of URL check.
           required: true
           type: string
-        - name: workspaceBody
+        - name: urlcheckBody
           description: The url check body to perform the change against.
           in: body
           required: true
@@ -192,6 +192,39 @@ paths:
 definitions:
   urlCheck:
     type: object
+    description: >
+
+      The body for a URL check request.
+      
+      For a PUT, only values which should be changed need to be included.
+      
+      
+      JSON or XML style requests should follow the schemas below:
+
+        - application/xml: 
+      
+          ```
+          <regexUrlCheck>
+          	<name>string</name>
+          	<description>string</description>
+          	<enabled>false</enabled>
+          	<regex>string</regex>
+          </regexUrlCheck>
+          ```
+
+        - application/json: 
+      
+          ```
+          {
+            "regexUrlCheck": {
+              "name": "string",
+              "description": "string",
+              "enabled": false,
+              "regex": "string"
+            }
+          }
+          ```
+
     required:
       - name
       - regex
@@ -205,7 +238,7 @@ definitions:
       enabled:
         type: boolean
         description: enabled status of the URL check
-        default: true
+        default: false
       regex:
         type: string
         description: regex to perform the check with
@@ -213,3 +246,4 @@ definitions:
     type: array
     items:
       $ref: "#/definitions/urlCheck"
+

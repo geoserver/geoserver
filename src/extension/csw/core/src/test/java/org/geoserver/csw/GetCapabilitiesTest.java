@@ -248,7 +248,11 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
             csw.setCiteCompliant(true);
             getGeoServer().save(csw);
 
-            Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities");
+            // version not required for GetCapabilities
+            Document dom = getAsDOM(BASEPATH + "?service=CSW&request=GetCapabilities");
+            assertEquals("csw:Capabilities", dom.getDocumentElement().getNodeName());
+
+            dom = getAsDOM(BASEPATH + "?request=GetCapabilities");
             checkOws10Exception(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
         } finally {
             csw.setCiteCompliant(false);

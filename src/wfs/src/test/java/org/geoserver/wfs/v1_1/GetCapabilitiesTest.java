@@ -21,12 +21,14 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
@@ -533,5 +535,25 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         String poiXPath = "//wfs:FeatureTypeList/wfs:FeatureType[wfs:Name = 'iau:MarsPoi']";
         assertXpathExists(poiXPath, doc);
         assertXpathEvaluatesTo("urn:x-ogc:def:crs:IAU:49900", poiXPath + "/wfs:DefaultSRS ", doc);
+    }
+
+    @Test
+    public void testCiteCompliant() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setCiteCompliant(true);
+        gs.save(wfs);
+
+        try {
+            // version not required for GetCapabilities
+            Document dom = getAsDOM("wfs?service=WFS&request=GetCapabilities");
+            assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
+
+            dom = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
+            checkOws10Exception(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
+        } finally {
+            wfs.setCiteCompliant(false);
+            gs.save(wfs);
+        }
     }
 }

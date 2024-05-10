@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -21,7 +22,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -83,10 +92,6 @@ public class UrlCheckController extends RestBaseController {
             verifyCheckName(urlCheck);
             verifyCheckConfiguration(urlCheck);
 
-            /* enforce URL check enabled status by default */
-            if (urlCheck.isEnabled() == null) {
-                urlCheck.setEnabled(true);
-            }
             urlCheckDao.save(urlCheck);
 
             String name = urlCheck.getName();
@@ -111,9 +116,11 @@ public class UrlCheckController extends RestBaseController {
         }
     }
 
-    private HttpHeaders composeCreatedResponseHeaders(UriComponentsBuilder builder, String checkIdentifier) {
+    private HttpHeaders composeCreatedResponseHeaders(
+            UriComponentsBuilder builder, String checkIdentifier) {
         HttpHeaders headers = new HttpHeaders();
-        UriComponents uriComponents = builder.path("/urlchecks/{id}").buildAndExpand(checkIdentifier);
+        UriComponents uriComponents =
+                builder.path("/urlchecks/{id}").buildAndExpand(checkIdentifier);
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return headers;
@@ -134,22 +141,16 @@ public class UrlCheckController extends RestBaseController {
 
             AbstractURLCheck urlCheck = urlCheckDao.getCheckByName(urlCheckName);
             if (urlCheck == null) {
-                throw new RestException(
-                        "Can't change a non existent URL check (" + urlCheckName + ")",
-                        HttpStatus.NOT_FOUND);
+                throw new ResourceNotFoundException(
+                        "Can't change a non existent URL check (" + urlCheckName + ")");
             }
 
+            verifyCheckType(providedCheck, urlCheck);
             if (providedCheck.getConfiguration() != null) {
                 verifyCheckConfiguration(providedCheck);
-                urlCheck.setConfiguration(providedCheck.getConfiguration());
-            }
-            if (providedCheck.getDescription() != null) {
-                urlCheck.setDescription(providedCheck.getDescription());
-            }
-            if (providedCheck.isEnabled() != null) {
-                urlCheck.setEnabled(providedCheck.isEnabled());
             }
 
+            OwsUtils.copy(providedCheck, urlCheck, urlCheck.getClass());
             urlCheckDao.save(urlCheck);
 
             LOGGER.log(Level.FINEST, "Edited urlCheck {0}", urlCheckName);
@@ -159,6 +160,14 @@ public class UrlCheckController extends RestBaseController {
                     "Error occurred in changing the URL check",
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     ex);
+        }
+    }
+
+    private static void verifyCheckType(AbstractURLCheck providedCheck, AbstractURLCheck urlCheck) {
+        if (!providedCheck.getClass().equals(urlCheck.getClass())) {
+            throw new RestException(
+                    "The existent URL check type differs from the provided one",
+                    HttpStatus.BAD_REQUEST);
         }
     }
 

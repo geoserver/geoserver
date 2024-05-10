@@ -359,6 +359,7 @@ public class XStreamPersister {
         xs.alias("AuthorityURL", AuthorityURLInfo.class);
         xs.alias("Identifier", LayerIdentifierInfo.class);
         xs.alias("urlCheck", AbstractURLCheck.class);
+        xs.alias("regexUrlCheck", RegexURLCheck.class);
 
         // GeoServerInfo
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");
@@ -762,7 +763,6 @@ public class XStreamPersister {
         xs.addDefaultImplementation(CoverageAccessInfoImpl.class, CoverageAccessInfo.class);
         xs.addDefaultImplementation(ContactInfoImpl.class, ContactInfo.class);
         xs.addDefaultImplementation(AttributionInfoImpl.class, AttributionInfo.class);
-        xs.addDefaultImplementation(RegexURLCheck.class, AbstractURLCheck.class);
 
         // catalog
         xs.addDefaultImplementation(CatalogImpl.class, Catalog.class);

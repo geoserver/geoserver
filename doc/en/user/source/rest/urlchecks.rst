@@ -77,12 +77,12 @@ Listing URL Check details
 
 .. code-block:: xml
 
-        <urlCheck>
+        <regexUrlCheck>
             <name>icons</name>
             <description>External graphic icons</description>
             <enabled>true</enabled>
             <regex>^https://styles.server.net/icons/.*$</regex>
-        </urlCheck>
+        </regexUrlCheck>
 
 
 Creating a URL Check
@@ -97,12 +97,12 @@ Creating a URL Check
    ::
 
      curl -u admin:geoserver -XPOST -H "Content-type: text/xml" \
-     -d "<urlCheck> \
+     -d "<regexUrlCheck> \
             <name>icons</name> \
             <description>External graphic icons</description> \
             <enabled>true</enabled> \
             <regex>^https://styles\.server\.net/icons/.*$</regex> \
-        </urlCheck>" \
+        </regexUrlCheck>" \
      http://localhost:8080/geoserver/rest/urlchecks
 
 *Response*
@@ -123,11 +123,11 @@ Changing an existing URL Check
    ::
 
      curl -u admin:geoserver -XPUT -H "Content-type: text/xml" \
-     -d "<urlCheck> \
+     -d "<regexUrlCheck> \
             <description>External graphic icons (disabled) </description> \
             <enabled>false</enabled> \
             <regex>^https://styles\.server\.com/icons/.*$</regex> \
-        </urlCheck>" \
+        </regexUrlCheck>" \
      http://localhost:8080/geoserver/rest/urlchecks/icons
 
 *Response*

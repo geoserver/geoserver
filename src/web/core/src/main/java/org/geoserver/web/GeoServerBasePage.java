@@ -267,7 +267,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // home page link
         add(
                 new BookmarkablePageLink<>("home", GeoServerHomePage.class)
-                        .add(new Label("label", new StringResourceModel("home", null, null))));
+                        .add(new Label("label", "")));
 
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");

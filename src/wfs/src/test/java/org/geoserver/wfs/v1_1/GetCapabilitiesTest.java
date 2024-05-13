@@ -339,7 +339,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     }
 
     @Test
-    public void testMetadataLinksTransormToProxyBaseURL() throws Exception {
+    public void testMetadataLinksTransformToProxyBaseURL() throws Exception {
         FeatureTypeInfo mpolys =
                 getCatalog().getFeatureTypeByName(getLayerId(MockTestData.MPOLYGONS));
         // a valid link whose metadata type needs tweaking

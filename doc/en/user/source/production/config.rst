@@ -139,6 +139,37 @@ In some circumstances, you might want to completely disable the web administrati
 * Set the Java system property ``GEOSERVER_CONSOLE_DISABLED`` to true by adding ``-DGEOSERVER_CONSOLE_DISABLED=true`` to your container's JVM options
 * Remove all of the :file:`gs-web*-.jar` files from :file:`WEB-INF/lib`
 
+.. _module_status_security_environment_vars:
+
+Showing Environment Variables and Java System Properties
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Module status information is available describing the operational environment.
+
+* The :guilabel:`GeoServer Status` page :ref:`config_serverstatus_module`.
+* The REST ``/geoserver/rest/about/status`` endpoint lists module status information
+
+1. By default GeoServer does **not** show Environment Variables and Java System Properties.
+
+2. To show environment variables and Java system properties on the status page and REST API, start GeoServer with these environment variables set to ``true``:
+
+   * `GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED`
+   * `GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED`
+
+3. In a production system, these should be set to ``false`` (or leave them undefined).
+
+   .. warning::
+
+      While this feature can help an administrator debug a GeoServer instance's configuration, environment variables can include sensitive information such as database passwords and API access keys/tokens, particularly when running in a containerised environment (such as Docker or Kubernetes) or with ``ALLOW_ENV_PARAMETRIZATION=true``.
+
+   .. note:: Linux
+   
+      Linux administrators can get a list of all environment variables set at GeoServer startup with:
+
+      .. code-block:: bash
+
+         tr '\0' '\n' < /proc/${GEOSERVER_PID}/environ
+
 Application Server Guidance
 ---------------------------
 

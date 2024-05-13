@@ -31,6 +31,18 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED
+       
+       :ref:`module_status_security_environment_vars`
+     -  
+     -  
+     - x
+   * - GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED
+       
+       :ref:`module_status_security_environment_vars`     
+     -  
+     -  
+     - x
    * - GEOWEBCACHE_CACHE_DIR
        
        :doc:`/geowebcache/config`

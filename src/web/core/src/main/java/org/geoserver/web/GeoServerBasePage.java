@@ -265,9 +265,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         logoutForm.setVisible(!anonymous);
 
         // home page link
-        add(
-                new BookmarkablePageLink<>("home", GeoServerHomePage.class)
-                        .add(new Label("label", new StringResourceModel("home", null, null))));
+        add(new BookmarkablePageLink<>("home", GeoServerHomePage.class));
 
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");

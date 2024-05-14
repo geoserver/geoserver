@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -711,10 +712,13 @@ public class GetFeature {
             long total = getTotalCount(totalCountExecutors);
             return () -> BigInteger.valueOf(total);
         } else {
+            AtomicLong cache = new AtomicLong(Long.MIN_VALUE);
             return () -> {
                 try {
-                    long totalCount1 = getTotalCount(totalCountExecutors);
-                    return BigInteger.valueOf(totalCount1);
+                    if (cache.get() == Long.MIN_VALUE) {
+                        cache.set(getTotalCount(totalCountExecutors));
+                    }
+                    return BigInteger.valueOf(cache.get());
                 } catch (IOException ioException) {
                     throw new RuntimeException(
                             "Lazy total count unavailable " + ioException.getMessage(),

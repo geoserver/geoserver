@@ -1449,7 +1449,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testCovergaeStoreInfoAutodisable() throws Exception {
+    public void testCoverageStoreInfoAutodisable() throws Exception {
         GeoServerExtensions.extensions(ResourcePoolInitializer.class)
                 .get(0)
                 .initialize(getGeoServer());

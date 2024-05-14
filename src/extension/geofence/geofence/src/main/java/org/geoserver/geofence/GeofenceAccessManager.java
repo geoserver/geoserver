@@ -546,7 +546,7 @@ public class GeofenceAccessManager
                 ruleFilter.setUser(username);
             }
         } else {
-            LOGGER.log(Level.WARNING, "No user given");
+            LOGGER.log(Level.INFO, "No user given");
             ruleFilter.setUser(RuleFilter.SpecialFilterType.DEFAULT);
         }
     }

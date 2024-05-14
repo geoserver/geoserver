@@ -8,8 +8,15 @@ Getting commit access
 
 All contributors are asked to provide an assignment agreement for working on the project:
 
-* `corporate_contributor <https://www.osgeo.org/resources/corporate-contributor-license/>`__
 * `individual_contributor <https://www.osgeo.org/resources/individual-contributor-license/>`__
+
+  Individual contributor agreement.
+
+* `corporate_contributor <https://www.osgeo.org/resources/corporate-contributor-license/>`__
+
+  Corporate contributor agreement to authorize employees to work on project. May also be used as a software grant to donate software to the project.
+
+GeoServer is grateful that organizations of all shapes and sizes support our project with in-kind participation of their employees. Extending commit access is made to individuals directly based on their expertise demonstrated over time.
 
 This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_ is the  non-profit which holds the GeoServer codebase for the community.
 
@@ -59,7 +66,7 @@ The process of getting community commit access is as follows:
 Core commit access
 ^^^^^^^^^^^^^^^^^^
 
-The second allows a developer to make commits to the core modules of geoserver.
+The second stage allows a developer to make commits to the core modules of GeoServer.
 Being granted this stage of access takes time, and is obtained only after the
 developer has gained the trust of the other core committers.
 

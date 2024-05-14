@@ -48,6 +48,8 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -66,6 +68,11 @@ public class ChangesetIndexProvider {
     public ChangesetIndexProvider(GeoServerDataDirectory dd, Catalog catalog) throws IOException {
         this.checkpointIndex = getCheckpointDataStore(dd);
         catalog.addListener(new IndexCatalogListener());
+    }
+
+    @EventListener
+    public void handleContextClosedEvent(ContextClosedEvent event) {
+        this.checkpointIndex.dispose();
     }
 
     DataStore getCheckpointDataStore(GeoServerDataDirectory dd) throws IOException {

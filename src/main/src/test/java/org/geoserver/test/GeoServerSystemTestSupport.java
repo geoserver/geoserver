@@ -258,6 +258,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     return path.matches(".*modules[\\\\/]extension[\\\\/]xsd[\\\\/].*\\.xsd")
                             || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
                 }
+
+                @Override
+                public String toString() {
+                    return "PreventLocalEntityResolver";
+                }
             };
 
     @Override

@@ -5,6 +5,9 @@
  */
 package org.geoserver.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.PreventLocalEntityResolver;
@@ -70,7 +73,7 @@ public class EntityResolverProvider {
      * preventing local file access. This implementation allows access to XSD files included in the
      * geoserver application.
      *
-     * @return EntityResolver, or null if
+     * @return EntityResolver, or {@code null} if unrestricted
      */
     public EntityResolver getEntityResolver() {
         if (geoServer != null) {
@@ -79,21 +82,19 @@ public class EntityResolverProvider {
                 // XML parser is unrestricted, and can access any XSD location
                 return null;
             }
-
-            if (ALLOW_LIST != null) {
-                // External entity resolution limited to those approved for use
-                // those built-in to GeoSever, while restricting file access
-                return ALLOWLIST_ENTITY_RESOLVER;
-            }
         }
         if (entityResolver != null) {
             // override provided (usually by a test case)
             return entityResolver;
-        } else {
-            // Allows access to any http(s) location, and those built-in to GeoServer jars, while
-            // restricting file access.
-            return PreventLocalEntityResolver.INSTANCE;
         }
+        if (ALLOW_LIST != null) {
+            // External entity resolution limited to those approved for use
+            // those built-in to GeoSever, while restricting file access
+            return ALLOWLIST_ENTITY_RESOLVER;
+        }
+        // Allows access to any http(s) location, and those built-in to GeoServer jars, while
+        // restricting file access.
+        return PreventLocalEntityResolver.INSTANCE;
     }
 
     /**
@@ -101,7 +102,7 @@ public class EntityResolverProvider {
      * "ENTITY_RESOLUTION_ALLOWLIST".
      *
      * <ul>
-     *   <li><code>"*" or undefined</code>: Allow all http(s) schema locations
+     *   <li><code>"*" or null</code>: Allow all http(s) schema locations
      *   <li><code>"": Restrict to schemas provided by w3c, ogc and inspire</code>
      *   <li><code>
      *       "location1,location2": Restrict to the provided locations, and those list by w4c, ogc and inspire
@@ -118,14 +119,37 @@ public class EntityResolverProvider {
      */
     public static String[] entityResolutionAllowlist() {
         String allowed = GeoServerExtensions.getProperty(ENTITY_RESOLUTION_ALLOWLIST);
-        if (allowed == null || "*".equals(allowed.trim())) {
-            // allow all external http(s) access
+        return entityResolutionAllowlist(allowed);
+    }
+
+    /**
+     * Provides parsing of ENTITY_RESOLUTION_ALLOWLIST property for {@link
+     * #entityResolutionAllowlist()}.
+     *
+     * @param allowed Allowed list of expansion locations seperated by | character.
+     * @return set of allowed http(s) entity expansion external locations.
+     */
+    static String[] entityResolutionAllowlist(String allowed) {
+        final String[] DEFAULT_LIST = {
+            AllowListEntityResolver.W3C,
+            AllowListEntityResolver.OGC1,
+            AllowListEntityResolver.OGC2,
+            AllowListEntityResolver.INSPIRE
+        };
+
+        // 2.24 defaults to UNRESTRICTED
+        if (allowed == null || allowed.equals(AllowListEntityResolver.UNRESTRICTED)) {
             return null;
-        } else if (!"".equals(allowed.trim())) {
-            // allow external http(s) access to ogc, w3c, and
-            return new String[0];
+        } else if (allowed.trim().isEmpty()) {
+            return DEFAULT_LIST;
         } else {
-            return allowed.split("\\s*,\\s*|\\s+");
+            Set<String> allowedList = new HashSet<>(Arrays.asList(DEFAULT_LIST));
+            for (String domain : allowed.split("\\s*,\\s*|\\s+")) {
+                if (!domain.isEmpty()) {
+                    allowedList.add(domain);
+                }
+            }
+            return allowedList.toArray(new String[allowedList.size()]);
         }
     }
 }

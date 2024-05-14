@@ -10,139 +10,137 @@ import static org.junit.Assert.assertFalse;
 import java.util.Iterator;
 import java.util.List;
 import org.geotools.api.filter.Filter;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.ows.wms.Layer;
 import org.junit.Test;
 
 public class GeoServerDataProviderTest {
 
-    private final GeoServerDataProvider<Object> geoServerDataProvider =
+    private final GeoServerDataProvider<Layer> geoServerLayerDataProviderMock =
             new GeoServerDataProvider<>() {
                 @Override
-                protected List<Property<Object>> getProperties() {
+                protected List<Property<Layer>> getProperties() {
                     return List.of(new BeanProperty<>("title", "title"));
                 }
 
                 @Override
-                protected List<Object> getItems() {
+                protected List<Layer> getItems() {
                     return List.of(new Layer("key"), new Layer("keyword"));
                 }
             };
 
     @Test
     public void fullTextFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"keyword"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"keyword"});
 
-        Filter filter = geoServerDataProvider.getFilter();
+        Filter filter = geoServerLayerDataProviderMock.getFilter();
 
-        assertEquals("[ AnyText is like *keyword* ]", filter.toString());
+        assertEquals("AnyText ILIKE '*keyword*'", ECQL.toCQL(filter));
     }
 
     @Test
     public void exactTermFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"'keyword'"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"'keyword'"});
 
-        Filter filter = geoServerDataProvider.getFilter();
+        Filter filter = geoServerLayerDataProviderMock.getFilter();
 
-        assertEquals("[ AnyText is like keyword ]", filter.toString());
+        assertEquals("AnyText ILIKE 'keyword'", ECQL.toCQL(filter));
     }
 
     @Test
     public void mixedFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"keyword", "'keyword'"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"keyword", "'keyword'"});
 
-        Filter filter = geoServerDataProvider.getFilter();
+        Filter filter = geoServerLayerDataProviderMock.getFilter();
 
-        assertEquals(
-                "[[ AnyText is like *keyword* ] OR [ AnyText is like keyword ]]",
-                filter.toString());
+        assertEquals("AnyText ILIKE '*keyword*' OR AnyText ILIKE 'keyword'", ECQL.toCQL(filter));
     }
 
     @Test
     public void emptyFilter() {
-        geoServerDataProvider.setKeywords(null);
+        geoServerLayerDataProviderMock.setKeywords(null);
 
-        Filter filter = geoServerDataProvider.getFilter();
+        Filter filter = geoServerLayerDataProviderMock.getFilter();
 
         assertEquals(Filter.INCLUDE, filter);
     }
 
     @Test
     public void mismatchedQuotedExactTermFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"\"keyword'", "'keyword"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"\"keyword'", "'keyword"});
 
-        Filter filter = geoServerDataProvider.getFilter();
+        Filter filter = geoServerLayerDataProviderMock.getFilter();
 
         assertEquals(
-                "[[ AnyText is like *\"keyword'* ] OR [ AnyText is like *'keyword* ]]",
-                filter.toString());
+                "AnyText ILIKE '*\"keyword'*' OR AnyText ILIKE '*'keyword*'", ECQL.toCQL(filter));
     }
 
     @Test
     public void emptyQuotedExactTermFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"\"\""});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"\"\""});
 
-        Filter filter = geoServerDataProvider.getFilter();
+        Filter filter = geoServerLayerDataProviderMock.getFilter();
 
-        assertEquals("[ AnyText is like *\"\"* ]", filter.toString());
+        assertEquals("AnyText ILIKE '*\"\"*'", ECQL.toCQL(filter));
     }
 
     @Test
     public void fullTextRegexFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"key"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"key"});
 
-        Iterator<Object> iterator = geoServerDataProvider.iterator(0, Long.MAX_VALUE);
+        Iterator<Layer> iterator = geoServerLayerDataProviderMock.iterator(0, Long.MAX_VALUE);
 
-        assertEquals("key", iterator.next().toString());
-        assertEquals("keyword", iterator.next().toString());
+        assertEquals("key", iterator.next().getTitle());
+        assertEquals("keyword", iterator.next().getTitle());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public void exactTermRegexFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"'key'"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"'key'"});
 
-        Iterator<Object> iterator = geoServerDataProvider.iterator(0, Long.MAX_VALUE);
+        Iterator<Layer> iterator = geoServerLayerDataProviderMock.iterator(0, Long.MAX_VALUE);
 
-        assertEquals("key", iterator.next().toString());
+        assertEquals("key", iterator.next().getTitle());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public void mixedRegexFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"key", "'key'"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"key", "'key'"});
 
-        Iterator<Object> iterator = geoServerDataProvider.iterator(0, Long.MAX_VALUE);
+        Iterator<Layer> iterator = geoServerLayerDataProviderMock.iterator(0, Long.MAX_VALUE);
 
-        assertEquals("key", iterator.next().toString());
-        assertEquals("keyword", iterator.next().toString());
+        assertEquals("key", iterator.next().getTitle());
+        assertEquals("keyword", iterator.next().getTitle());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public void emptyRegexFilter() {
-        geoServerDataProvider.setKeywords(new String[] {});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {});
 
-        Iterator<Object> iterator = geoServerDataProvider.iterator(0, Long.MAX_VALUE);
+        Iterator<Layer> iterator = geoServerLayerDataProviderMock.iterator(0, Long.MAX_VALUE);
 
-        assertEquals("key", iterator.next().toString());
-        assertEquals("keyword", iterator.next().toString());
+        assertEquals("key", iterator.next().getTitle());
+        assertEquals("keyword", iterator.next().getTitle());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public void mismatchedQuotedExactTermRegexFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"\"keyword'", "'keyword"});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"\"keyword'", "'keyword"});
 
-        Iterator<Object> iterator = geoServerDataProvider.iterator(0, Long.MAX_VALUE);
+        Iterator<Layer> iterator = geoServerLayerDataProviderMock.iterator(0, Long.MAX_VALUE);
 
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public void emptyQuotedExactTermRegexFilter() {
-        geoServerDataProvider.setKeywords(new String[] {"\"\""});
+        geoServerLayerDataProviderMock.setKeywords(new String[] {"\"\""});
 
-        Iterator<Object> iterator = geoServerDataProvider.iterator(0, Long.MAX_VALUE);
+        Iterator<Layer> iterator = geoServerLayerDataProviderMock.iterator(0, Long.MAX_VALUE);
 
         assertFalse(iterator.hasNext());
     }

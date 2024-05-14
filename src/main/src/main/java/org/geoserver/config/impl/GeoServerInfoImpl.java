@@ -268,8 +268,9 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     /**
-     * If true it enables evaluation of XML entities contained in XML files received in a service
-     * (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     * If true it enables unrestricted evaluation of XML entities contained in XML files received in
+     * a service (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security
+     * risk.
      */
     @Override
     public void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled) {
@@ -277,8 +278,9 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     /**
-     * If true it enables evaluation of XML entities contained in XML files received in a service
-     * (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     * If true it enables unrestricted evaluation of XML entities contained in XML files received in
+     * a service (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security
+     * risk.
      */
     @Override
     public Boolean isXmlExternalEntitiesEnabled() {

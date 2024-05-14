@@ -44,13 +44,15 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
     /**
      * Matches a search keyword term enclosed by either double or single quotes.
-     * <p>
-     * The first matching group captures either a double quote (<code>"</code>) or a single quote (<code>'</code>).
-     * The "keyword" named capturing group matches any sequence of one or more characters.
-     * The backreference (<code>\\1</code>) ensures that the start and end quotes are the same, maintaining balance.
+     *
+     * <p>The first matching group captures either a double quote (<code>"</code>) or a single quote
+     * (<code>'</code>). The "keyword" named capturing group matches any sequence of one or more
+     * characters. The backreference (<code>\\1</code>) ensures that the start and end quotes are
+     * the same, maintaining balance.
      */
     private static final Pattern EXACT_TERM_KEYWORD_PATTERN =
             Pattern.compile("^([\"'])(?<keyword>.+)\\1$");
+
     private static final long serialVersionUID = -6876929036365601443L;
 
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);

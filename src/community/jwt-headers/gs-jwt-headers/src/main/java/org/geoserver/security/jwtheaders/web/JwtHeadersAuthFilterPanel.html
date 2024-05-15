@@ -45,16 +45,21 @@
                 visibilityDiv.style.display = "none";
         }
 
-        // When the page is loaded, we hide  the username "json path" input if its not needed.
-        window.addEventListener('load', function () {
+        function reset() {
             usernameFormatChanged();
             showTokenValidationChanged();
             toggleVisible(document.getElementById('validateTokenSignature'),'validateTokenSignatureURLDiv');
             toggleVisible(document.getElementById('validateTokenAgainstURL'),'validateTokenAgainstURLDiv');
             toggleVisible(document.getElementById('validateTokenAudience'),'validateTokenAudienceDiv');
+        }
 
-
+        // When the page is loaded, we hide  the username "json path" input if its not needed.
+        window.addEventListener('load', function () {
+                reset();
         });
+
+        // when creating a new jwt headers filter, we need to "kick" it.
+        setTimeout(reset,100);
     </script>
 </wicket:head>
 <wicket:extend>

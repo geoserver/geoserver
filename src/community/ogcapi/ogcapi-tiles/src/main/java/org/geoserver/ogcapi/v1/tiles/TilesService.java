@@ -134,6 +134,12 @@ public class TilesService {
         return geoServer.getService(TilesServiceInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public TilesServiceInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",

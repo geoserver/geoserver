@@ -1,7 +1,13 @@
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.jwtheaders;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JwtConfiguration implements Serializable {
@@ -58,8 +64,8 @@ public class JwtConfiguration implements Serializable {
     // convert string of the form:
     // "externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2"
     // To a Map<String,String>
-    public Map<String, String> getRoleConverterAsMap() {
-        Map<String, String> result = new HashMap<>();
+    public Map<String, List<String>> getRoleConverterAsMap() {
+        Map<String, List<String>> result = new HashMap<>();
 
         if (roleConverterString == null || roleConverterString.isBlank()) return result; // empty
 
@@ -72,7 +78,13 @@ public class JwtConfiguration implements Serializable {
             String key = goodCharacters(keyValue[0]);
             String val = goodCharacters(keyValue[1]);
             if (key.isBlank() || val.isBlank()) continue;
-            result.put(key, val);
+            if (!result.containsKey(key)) {
+                var list = new ArrayList<String>();
+                list.add(val);
+                result.put(key, list);
+            } else {
+                result.get(key).add(val);
+            }
         }
         return result;
     }

@@ -91,6 +91,7 @@ import org.geotools.api.filter.MultiValuedFilter.MatchAction;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -3609,19 +3610,19 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
         assertEquals(newHashSet(ft), asSet(catalog.list(ResourceInfo.class, filter)));
         assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
-        assertTrue(asSet(catalog.list(CoverageInfo.class, filter)).isEmpty());
+        assertThat(asSet(catalog.list(CoverageInfo.class, filter)), Matchers.empty());
 
         filter = Predicates.exactTermSearch("dewpointdepression");
         assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
         assertEquals(newHashSet(cv), asSet(catalog.list(ResourceInfo.class, filter)));
-        assertTrue(asSet(catalog.list(FeatureTypeInfo.class, filter)).isEmpty());
+        assertThat(asSet(catalog.list(FeatureTypeInfo.class, filter)), Matchers.empty());
         assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
 
         filter = Predicates.exactTermSearch("pressure");
-        assertTrue(asSet(catalog.list(LayerInfo.class, filter)).isEmpty());
-        assertTrue(asSet(catalog.list(ResourceInfo.class, filter)).isEmpty());
-        assertTrue(asSet(catalog.list(FeatureTypeInfo.class, filter)).isEmpty());
-        assertTrue(asSet(catalog.list(CoverageInfo.class, filter)).isEmpty());
+        assertThat(asSet(catalog.list(LayerInfo.class, filter)), Matchers.empty());
+        assertThat(asSet(catalog.list(ResourceInfo.class, filter)), Matchers.empty());
+        assertThat(asSet(catalog.list(FeatureTypeInfo.class, filter)), Matchers.empty());
+        assertThat(asSet(catalog.list(CoverageInfo.class, filter)), Matchers.empty());
     }
 
     @Test
@@ -3659,7 +3660,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         Filter filter = Predicates.exactTermSearch("water");
         assertEquals(newHashSet(ft), asSet(catalog.list(ResourceInfo.class, filter)));
         assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
-        assertTrue(asSet(catalog.list(CoverageInfo.class, filter)).isEmpty());
+        assertThat(asSet(catalog.list(CoverageInfo.class, filter)), Matchers.empty());
 
         assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
 

@@ -73,6 +73,8 @@ The :ref:`layerpreview` page allows you to quickly view the output of published 
    
       Search results for the query "top" on the Workspace page
 
+   .. hint:: Perform an exact term search by enclosing the search term in quotes or double-quotes, e.g. normally ``ads`` would also match ``roads``, but ``"ads"`` wouldn't.
+
    .. note:: Sorting and searching apply to all data configuration pages.
 
 .. note:: For more information, please see the :ref:`layerpreview` section.

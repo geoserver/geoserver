@@ -3645,6 +3645,15 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testExactTermSearchKeywordMiss() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+
+        Filter filter = Predicates.exactTermSearch("newKeyword");
+        assertThat(asSet(catalog.list(FeatureTypeInfo.class, filter)), Matchers.empty());
+    }
+
+    @Test
     public void testExclusiveExactTermSearch() {
         ft.setName("water");
         l.setResource(ft);

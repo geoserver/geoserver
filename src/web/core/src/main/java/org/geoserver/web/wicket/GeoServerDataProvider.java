@@ -5,9 +5,6 @@
  */
 package org.geoserver.web.wicket;
 
-import static org.geoserver.catalog.Predicates.acceptAll;
-import static org.geoserver.catalog.Predicates.or;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.stream.Streams;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
@@ -43,6 +41,18 @@ import org.geotools.util.logging.Logging;
  * @param <T>
  */
 public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, Object> {
+
+    /**
+     * Matches a search keyword term enclosed by either double or single quotes.
+     *
+     * <p>The first matching group captures either a double quote (<code>"</code>) or a single quote
+     * (<code>'</code>). The "keyword" named capturing group matches any sequence of one or more
+     * characters. The backreference (<code>\\1</code>) ensures that the start and end quotes are
+     * the same, maintaining balance.
+     */
+    private static final Pattern EXACT_TERM_KEYWORD_PATTERN =
+            Pattern.compile("^([\"'])(?<keyword>.+)\\1$");
+
     private static final long serialVersionUID = -6876929036365601443L;
 
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
@@ -86,7 +96,16 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         this.matchers = null;
     }
 
-    /** @return a regex matcher for each search keyword */
+    /**
+     * This method returns an array of regex matchers based on the defined {@link #keywords}, if
+     * any. If no keywords are defined, an empty array is returned.
+     *
+     * <p>If a keyword is enclosed in quotes or double-quotes, the regex for that specific search
+     * keyword is created for an exact match (word-bound).
+     *
+     * @return an array containing a regex matcher for each search keyword. If no keywords are
+     *     present, an empty array is returned.
+     */
     protected Matcher[] getMatchers() {
         if (matchers != null) {
             return matchers;
@@ -96,7 +115,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             return new Matcher[0];
         }
 
-        // build the case insensitive regex patterns
+        // build the case-insensitive regex patterns
         matchers = new Matcher[keywords.length];
 
         String keyword;
@@ -104,12 +123,21 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         Pattern pattern;
         for (int i = 0; i < keywords.length; i++) {
             keyword = keywords[i];
-            regex = ".*" + escape(keyword) + ".*";
+            regex = composeRegex(keyword);
             pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             matchers[i] = pattern.matcher("");
         }
 
         return matchers;
+    }
+
+    private String composeRegex(String keyword) {
+        Matcher exactTermKeywordMatcher = EXACT_TERM_KEYWORD_PATTERN.matcher(keyword);
+        if (exactTermKeywordMatcher.matches()) {
+            return ".*\\b" + escape(exactTermKeywordMatcher.group("keyword")) + "\\b.*";
+        } else {
+            return ".*" + escape(keyword) + ".*";
+        }
     }
 
     /** Escape any character that's special for the regex api */
@@ -154,6 +182,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     protected GeoServerApplication getApplication() {
         return GeoServerApplication.get();
     }
+
     /**
      * Provides catalog access for the provider (cannot be stored as a field, this class is going to
      * be serialized)
@@ -289,6 +318,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         }
         return null;
     }
+
     /**
      * This implementation uses the {@link #modelCache} to avoid recreating over and over different
      * models for the various items, this allows the grid panel to be editable
@@ -310,27 +340,30 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * This method returns a filter based on the defined keywords.
+     * This method returns a filter based on the defined {@link #keywords} if any, otherwise a
+     * {@link Filter#INCLUDE} is returned.
      *
-     * @return a {@link Filter} which uses the defined Keywords. If no keyword is present
-     *     Filter.INCLUDE is returned
+     * <p>Multiple keywords are joined with the <i>OR</i> operator. If a keyword is contained in
+     * quotes or double-quotes, the filter for that specific search term is created for the exact
+     * match.
+     *
+     * @return a {@link Filter} which uses the defined {@link #keywords}. If no keyword is present,
+     *     {@link Filter#INCLUDE} is returned.
      */
     protected Filter getFilter() {
-        final String[] keywords = getKeywords();
-        Filter filter = acceptAll();
-        if (null != keywords) {
-            for (String keyword : keywords) {
-                Filter propContains = Predicates.fullTextSearch(keyword);
-                // chain the filters together
-                if (Filter.INCLUDE == filter) {
-                    filter = propContains;
-                } else {
-                    filter = or(filter, propContains);
-                }
-            }
-        }
+        return Streams.of(getKeywords())
+                .map(this::computeKeywordFilter)
+                .reduce(Predicates::or)
+                .orElseGet(Predicates::acceptAll);
+    }
 
-        return filter;
+    private Filter computeKeywordFilter(String keyword) {
+        Matcher exactTermKeywordMatcher = EXACT_TERM_KEYWORD_PATTERN.matcher(keyword);
+        if (exactTermKeywordMatcher.matches()) {
+            return Predicates.exactTermSearch(exactTermKeywordMatcher.group("keyword"));
+        } else {
+            return Predicates.fullTextSearch(keyword);
+        }
     }
 
     /**

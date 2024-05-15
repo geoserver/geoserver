@@ -149,7 +149,7 @@ public class Predicates {
     }
 
     /**
-     * convienience method to escape any character that is special to the regex system.
+     * Convenience method to escape any character that is special to the regex system.
      *
      * @param inString the string to fix
      * @return the fixed string
@@ -171,7 +171,7 @@ public class Predicates {
     }
 
     /**
-     * convienience method to determine if a character is special to the regex system.
+     * Convenience method to determine if a character is special to the regex system.
      *
      * @param chr the character to test
      * @return is the character a special character.
@@ -196,6 +196,17 @@ public class Predicates {
 
     public static Filter fullTextSearch(final String subsequence) {
         return contains(ANY_TEXT, subsequence);
+    }
+
+    /**
+     * Returns a predicate for exact match search (case-insensitive) against the <code>AnyText
+     * </code> property with the provided term.
+     *
+     * @param term the exact term to search for, ignoring case
+     * @return the filter for exact match search
+     */
+    public static Filter exactTermSearch(final String term) {
+        return factory.like(ANY_TEXT, fixSpecials(term));
     }
 
     /**

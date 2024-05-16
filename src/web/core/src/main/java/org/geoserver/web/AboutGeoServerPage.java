@@ -8,8 +8,6 @@ package org.geoserver.web;
 import java.util.logging.Level;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.util.factory.GeoTools;
 
 /**
@@ -19,16 +17,12 @@ import org.geotools.util.factory.GeoTools;
  */
 public class AboutGeoServerPage extends GeoServerBasePage {
 
-    GeoServerSecurityManager getManager() {
-        return GeoServerExtensions.bean(GeoServerSecurityManager.class);
-    }
-
     public AboutGeoServerPage() {
         // hide info based on if the user is admin or not
         var privateInfo = new WebMarkupContainer("privateInfo");
         add(privateInfo);
 
-        var isAdmin = getManager().checkAuthenticationForAdminRole();
+        var isAdmin = getSession().isAdmin();
         if (isAdmin) {
             privateInfo.add(new Label("geotoolsVersion", GeoTools.getVersion().toString()));
             privateInfo.add(new Label("geotoolsRevision", GeoTools.getBuildRevision()));

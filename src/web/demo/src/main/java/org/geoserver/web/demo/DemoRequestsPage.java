@@ -15,14 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxCallListener;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -62,6 +59,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
     private TextField<String> username;
 
     private PasswordTextField password;
+
+    private CheckBox prettyXML;
 
     public DemoRequestsPage() {
         try {
@@ -223,6 +222,9 @@ public class DemoRequestsPage extends GeoServerBasePage {
         password.setRequired(false);
         demoRequestsForm.add(password);
 
+        prettyXML = new CheckBox("prettyXML", new PropertyModel<>(requestModel, "prettyXML"));
+        demoRequestsForm.add(prettyXML);
+
         final ModalWindow responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
 
@@ -231,34 +233,6 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         responseWindow.setPageCreator(
                 (ModalWindow.PageCreator) () -> new DemoRequestResponse(requestModel));
-
-        demoRequestsForm.add(
-                new AjaxSubmitLink("submit", demoRequestsForm) {
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target, Form testWfsPostForm) {
-                        responseWindow.show(target);
-                    }
-
-                    @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                        super.updateAjaxAttributes(attributes);
-                        // we need to force EditArea to update the textarea contents (which it
-                        // hides)
-                        // before submitting the form, otherwise the contents won't be the ones the
-                        // user
-                        // edited
-                        attributes
-                                .getAjaxCallListeners()
-                                .add(
-                                        new AjaxCallListener() {
-                                            @Override
-                                            public CharSequence getBeforeHandler(
-                                                    Component component) {
-                                                return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();";
-                                            }
-                                        });
-                    }
-                });
     }
 
     private List<String> getDemoList(final Resource demoDir) {

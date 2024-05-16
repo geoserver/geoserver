@@ -30,6 +30,8 @@ public class DemoRequest implements Serializable {
 
     private String password;
 
+    private boolean prettyXML = true;
+
     public DemoRequest(final String demoDir) {
         this.demoDir = demoDir;
     }
@@ -76,5 +78,13 @@ public class DemoRequest implements Serializable {
 
     public String getDemoDir() {
         return demoDir;
+    }
+
+    public boolean isPrettyXML() {
+        return prettyXML;
+    }
+
+    public void setPrettyXML(boolean prettyXML) {
+        this.prettyXML = prettyXML;
     }
 }

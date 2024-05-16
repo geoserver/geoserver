@@ -8,9 +8,13 @@
 <wicket:extend>
     <script   type="text/javascript" >
 
+        //when the user presses the "submit" button, make sure GET/POST request
         function submitRequest() {
             var url =    document.getElementById("requestUrl").value.trim();
-            var xml = document.getElementById("requestBody").value.trim();
+            //you cannot directly access the CodeMirror value in JS.  If you
+            // try, you will get the original (on page load) value, not what
+            // the user might have modified.
+            var xml = document.gsEditors.requestBody.getValue().trim();
 
             var username = document.getElementsByName("username")[0].value;
             var password = document.getElementsByName("password")[0].value;
@@ -22,22 +26,22 @@
         }
 
 
-
-
-
+        //Make the actual XMLHttpRequest GET/POST Request
         function makeRequest(url,xml,username,password) {
+            // show spinner
             document.getElementById("spinnerSpan").style.display = "block";
+
             let xhr = new XMLHttpRequest();
+            var verb = "GET";
             if (xml && xml !== "") {
-                xhr.open("POST", url, true,username,password);
+                verb = "POST";
             }
-            else {
-                xhr.open("GET", url, true,username,password);
-            }
+            xhr.open(verb, url, true,username,password);
             xhr.setRequestHeader( "Content-Type", "application/xml");
             xhr.responseType = 'arraybuffer';
 
             xhr.onreadystatechange = function () {
+                //4 = complete
                 if (this.readyState == 4)  {
                     document.getElementById("spinnerSpan").style.display = "none";
                     handleResponse(this);
@@ -50,55 +54,75 @@
             else {
                 xhr.send();
             }
-
         }
 
+        //given a complete response from the server, display it
+        //  error (turn border to red, process as normal)
+        // case 1 - image (convert to base64 Image representation and display)
+        // case 2 - other (XML - display the XML - might be pretty printed)
         function handleResponse(xhrResponse) {
             var contentType = xhrResponse.getResponseHeader("Content-Type");
             var status = xhrResponse.status;
+            //error status
             if (status > 400) {
                 document.getElementById("responseDiv").style.borderColor = 'red';
             }
             else {
                 document.getElementById("responseDiv").style.borderColor = 'black';
             }
+            //its an image - convert to Base64 representation and display in an <img> tag
             if (contentType.startsWith("image")) {
-                var base64Image = btoa(String.fromCharCode.apply(null, new Uint8Array(xhrResponse.response)));
+                //var base64Image = btoa(String.fromCharCode.apply(null, new Uint8Array(xhrResponse.response)));
+                var base64Image = arrayBufferToBase64(xhrResponse.response);
 
                 var responseDiv =    document.getElementById("responseDiv");
-                //remove content
+                //remove old content from the responseDiv
                 while(responseDiv.firstChild){
                     responseDiv.removeChild(responseDiv.firstChild);
                 }
+
+                //create the <img> and use the base64 image data
                 let imgElement = document.createElement("img");
                 imgElement.src = "data:"+contentType+";base64, "+base64Image;
                 responseDiv.append(imgElement);
             }
             else {
+                //its probably XML - process it for display in a <div><pre>...</pre><div>
                 var responseDiv =    document.getElementById("responseDiv");
-                //remove content
+                //remove old content from the responseDiv
                 while(responseDiv.firstChild){
                     responseDiv.removeChild(responseDiv.firstChild);
                 }
+
+                //decode binary -> text
                 var enc = new TextDecoder("utf-8");
                 var text = enc.decode(xhrResponse.response);
 
+                //pretty print XML if its checked
                 if (document.getElementById("prettyXML").checked) {
                     const options = {indent: 2, newline: '\n'}
                     text = prettifyXml(text, options);
                 }
 
+                //replace HTML/XML characters for display (and security)
                 text=text.replaceAll("<","&lt;");
                 text=text.replaceAll(">","&gt;");
 
+                //create the <pre> element and imbed inside the <div>
                 let preElement = document.createElement("pre");
-
                 preElement.innerHTML = text;
                 responseDiv.append(preElement);
             }
         }
 
-
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
 
         // ======================================================
         // https://www.npmjs.com/package/prettify-xml
@@ -195,8 +219,8 @@
         <td class="datum"><input wicket:id="url" type="text" class="text" style="width: 100%;" name="url" value=""/></td>
       </tr>
       <tr>
-          <td>Pretty XML</td>
-          <td><input type="checkbox" id="prettyXML" name="prettyXML" checked></td>
+          <td><wicket:message key="prettyXml">Pretty XML:</wicket:message>L</td>
+          <td><input type="checkbox" id="prettyXML" wicket:id="prettyXML"  name="prettyXML" checked></td>
       </tr>
       <tr style="height:100%">
         <td class="label"><wicket:message key="body">Body:</wicket:message></td>

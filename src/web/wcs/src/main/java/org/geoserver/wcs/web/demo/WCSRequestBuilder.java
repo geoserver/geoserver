@@ -99,9 +99,6 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                         parameters.add("xml", xml);
 
                         getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
-                        //                        responseWindow.setDefaultModel(new
-                        // Model<>(getRequestXML()));
-                        //                        responseWindow.show(target);
                     }
 
                     @Override

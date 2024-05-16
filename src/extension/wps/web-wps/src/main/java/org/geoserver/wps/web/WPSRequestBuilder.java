@@ -18,9 +18,11 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
+import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 
 /**
@@ -103,8 +105,21 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                     @SuppressWarnings("unchecked")
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        responseWindow.setDefaultModel(new Model(getRequestXML()));
-                        responseWindow.show(target);
+                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+
+                        String url =
+                                ResponseUtils.buildURL(
+                                        ResponseUtils.baseURL(http),
+                                        "ows",
+                                        Collections.singletonMap("strict", "true"),
+                                        URLType.SERVICE);
+                        var xml = getRequestXML();
+
+                        PageParameters parameters = new PageParameters();
+                        parameters.add("url", url);
+                        parameters.add("xml", xml);
+
+                        getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
                     }
 
                     @Override

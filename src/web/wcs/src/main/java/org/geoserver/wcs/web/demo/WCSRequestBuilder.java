@@ -15,6 +15,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -23,6 +24,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
+import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 import org.geotools.xml.transform.TransformerBase;
 
@@ -82,8 +84,24 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        responseWindow.setDefaultModel(new Model<>(getRequestXML()));
-                        responseWindow.show(target);
+                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+
+                        String url =
+                                ResponseUtils.buildURL(
+                                        ResponseUtils.baseURL(http),
+                                        "ows",
+                                        Collections.singletonMap("strict", "true"),
+                                        URLType.SERVICE);
+                        var xml = getRequestXML();
+
+                        PageParameters parameters = new PageParameters();
+                        parameters.add("url", url);
+                        parameters.add("xml", xml);
+
+                        getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
+                        //                        responseWindow.setDefaultModel(new
+                        // Model<>(getRequestXML()));
+                        //                        responseWindow.show(target);
                     }
 
                     @Override

@@ -255,11 +255,7 @@
         <constructor-arg value="org.geoserver.wfs.WFSInfo"/>
 	</bean>
 	
-	<!-- test servlet -->
-	<bean id="wfsTestServlet" class="org.springframework.web.servlet.mvc.ServletWrappingController">
-	  <property name="servletClass" value="org.vfny.geoserver.wfs.servlets.TestWfsPost"/>
-	  <property name="servletName" value="TestWfsPost"/>
-	</bean>
+
 	
 	<!-- http url mapping -->
 	<bean id="wfsURLMapping"
@@ -276,7 +272,6 @@
 			<props>
 				<prop key="/wfs">dispatcher</prop>
 				<prop key="/wfs/*">dispatcher</prop>
-				<prop key="/TestWfsPost">wfsTestServlet</prop>
 			</props>
 		</property>
 	</bean>

@@ -104,6 +104,20 @@ public class DemoRequestsPage extends GeoServerBasePage {
         setUpDemoRequestsForm(demoDir);
     }
 
+    DemoRequestsPage(final Resource demoDir, PageParameters parameters) {
+        this(demoDir);
+        if (parameters != null) {
+            if (parameters.get("xml") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestBody(parameters.get("xml").toString());
+            }
+            if (parameters.get("url") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestUrl(parameters.get("url").toString());
+            }
+        }
+    }
+
     /**
      * Loads the contents of the demo request file named {@code reqFileName} and located in the demo
      * directory.
@@ -240,6 +254,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         password = new PasswordTextField("password", new PropertyModel<>(requestModel, "password"));
         password.setRequired(false);
+        password.setResetPassword(false);
         demoRequestsForm.add(password);
 
         prettyXML = new CheckBox("prettyXML", new PropertyModel<>(requestModel, "prettyXML"));

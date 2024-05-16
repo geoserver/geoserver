@@ -8,7 +8,7 @@ package org.geoserver.web.demo;
 import java.io.Serializable;
 
 /**
- * Holds on the properties used as arguments for the TestWfsPost servlet
+ * Holds on the properties used as arguments for the Demo Request
  *
  * @author Gabriel Roldan (TOPP)
  * @version $Id$

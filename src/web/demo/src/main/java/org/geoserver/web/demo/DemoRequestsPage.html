@@ -22,7 +22,76 @@
             if (url =="")
                 return; //nothing to do - no url
 
-            makeRequest(url,xml,username,password);
+            if (document.getElementById("openNewWindow").checked) {
+                openInNewWindow(url, xml, username, password);
+            }
+            else {
+                makeRequest(url, xml, username, password);
+            }
+        }
+
+        function openInNewWindow(url,xml,user,pass) {
+            url = addAuth(url, user,pass);
+            if (xml && xml.trim() != "") {
+                return openInNewWindowPost(url,xml);
+            }
+            return openInNewWindowGet(url);
+        }
+
+        //open new window with GET
+        // (just set the browser lcoation);
+        function openInNewWindowGet(url) {
+            window.location.href = url;
+        }
+
+        //creates new URL by adding user/pass
+        //ie. http://user:pass@localhost:8080/geoserver/...
+        function addAuth(url, user,pass) {
+            if (!user || !pass || (user == "") || (pass==""))
+                return url;
+            var _url = new URL(url);
+            if (!_url.host || _url.host =="")
+                return url;
+            _url.username = user;
+            _url.password = pass;
+            return _url.toString();
+        }
+
+        function openInNewWindowPost(url,xml,user,pass) {
+            let formElement = document.createElement("form");
+            formElement.setAttribute("id", "formElement");
+            formElement.setAttribute("action", url);
+            formElement.setAttribute("method", "POST");
+            formElement.setAttribute("enctype", "text/plain");
+
+            //HACK.
+            // we break the XML into two piece, based on the first "="
+            // xml1 = before the "=", xml2 = everthing after the "="
+            // when submitting, browser will create:
+            // name=value in the post body.
+            // in our case, name=xml1 and value=xml2
+            // this will re-build the xml in the body.
+            var firstEquals = xml.indexOf("=");
+            var xml1, xml2;
+            if (firstEquals != -1) {
+                xml1 = xml.substring(0, xml.indexOf("="))
+                xml2 = xml.substring( xml.indexOf("=")+1);
+            }
+            else {
+                //no "=" in
+                window.alert("XML must have '=' somewhere in the text.  Please add an '='.  HINT: <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+                return;
+            }
+
+            var xmlInput = document.createElement("input");
+            xmlInput.setAttribute("type", "text");
+            xmlInput.setAttribute("name", xml1);
+            xmlInput.setAttribute("value", xml2);
+
+            formElement.append(xmlInput)
+
+            document.getElementById("responseDiv").append(formElement)
+            formElement.submit();
         }
 
 
@@ -219,7 +288,7 @@
         <td class="datum"><input wicket:id="url" type="text" class="text" style="width: 100%;" name="url" value=""/></td>
       </tr>
       <tr>
-          <td><wicket:message key="prettyXml">Pretty XML:</wicket:message>L</td>
+          <td><wicket:message key="prettyXml">Pretty XML:</wicket:message></td>
           <td><input type="checkbox" id="prettyXML" wicket:id="prettyXML"  name="prettyXML" checked></td>
       </tr>
       <tr style="height:100%">
@@ -243,6 +312,10 @@
           </div>
         </td>
       </tr>
+    <tr>
+        <td><wicket:message key="openNewWindow">openNewWindow:</wicket:message></td>
+        <td><input type="checkbox" id="openNewWindow" wicket:id="openNewWindow"  name="openNewWindow"></td>
+    </tr>
     </tbody>
   </table>
  </form>
@@ -274,7 +347,6 @@
     <span id="spinnerSpan" class="loader"></span>
     <div  id="responseDiv" style="border:5px solid black;min-height: 15px">
     </div>
-  <div wicket:id="responseWindow"></div>
 
 </wicket:extend>
 </body>

@@ -31,6 +31,7 @@ public class DemoRequest implements Serializable {
     private String password;
 
     private boolean prettyXML = true;
+    private boolean openNewWindow = false;
 
     public DemoRequest(final String demoDir) {
         this.demoDir = demoDir;
@@ -86,5 +87,13 @@ public class DemoRequest implements Serializable {
 
     public void setPrettyXML(boolean prettyXML) {
         this.prettyXML = prettyXML;
+    }
+
+    public boolean isOpenNewWindow() {
+        return openNewWindow;
+    }
+
+    public void setOpenNewWindow(boolean openNewWindow) {
+        this.openNewWindow = openNewWindow;
     }
 }

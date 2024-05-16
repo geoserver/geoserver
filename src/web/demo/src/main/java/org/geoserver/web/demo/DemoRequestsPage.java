@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,6 +27,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -50,7 +50,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
-    final Resource demoDir;
+    Resource demoDir;
 
     private TextField<String> urlTextField;
 
@@ -61,8 +61,24 @@ public class DemoRequestsPage extends GeoServerBasePage {
     private PasswordTextField password;
 
     private CheckBox prettyXML;
+    private CheckBox openNewPage;
 
-    public DemoRequestsPage() {
+    public DemoRequestsPage(PageParameters parameters) {
+        super(parameters);
+        setup();
+        if (parameters != null) {
+            if (parameters.get("xml") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestBody(parameters.get("xml").toString());
+            }
+            if (parameters.get("url") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestUrl(parameters.get("url").toString());
+            }
+        }
+    }
+
+    public void setup() {
         try {
             GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
             demoDir = Resources.serializable(loader.get("demo"));
@@ -74,6 +90,10 @@ public class DemoRequestsPage extends GeoServerBasePage {
         setDefaultModel(new Model<>(request));
 
         setUpDemoRequestsForm(demoDir);
+    }
+
+    public DemoRequestsPage() {
+        setup();
     }
 
     /** Package visible constructor aimed to help in setting up unit tests for this class */
@@ -225,14 +245,9 @@ public class DemoRequestsPage extends GeoServerBasePage {
         prettyXML = new CheckBox("prettyXML", new PropertyModel<>(requestModel, "prettyXML"));
         demoRequestsForm.add(prettyXML);
 
-        final ModalWindow responseWindow = new ModalWindow("responseWindow");
-        add(responseWindow);
-
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
-
-        responseWindow.setPageCreator(
-                (ModalWindow.PageCreator) () -> new DemoRequestResponse(requestModel));
+        openNewPage =
+                new CheckBox("openNewWindow", new PropertyModel<>(requestModel, "openNewWindow"));
+        demoRequestsForm.add(openNewPage);
     }
 
     private List<String> getDemoList(final Resource demoDir) {

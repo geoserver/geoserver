@@ -29,6 +29,7 @@ public class SystemEnvironmentTest {
 
         SystemEnvironmentStatus status =
                 new SystemEnvironmentStatus() {
+                    @Override
                     String getEnvironmentVariable(String envVar) {
                         return "true";
                     }
@@ -54,6 +55,7 @@ public class SystemEnvironmentTest {
         // if the request is for a different environment var -> throw
         SystemEnvironmentStatus status =
                 new SystemEnvironmentStatus() {
+                    @Override
                     String getEnvironmentVariable(String envVar) {
                         if (envVar.equals(
                                 SystemEnvironmentStatus
@@ -70,12 +72,12 @@ public class SystemEnvironmentTest {
         VALUE.clear();
         VALUE.add("true");
         assertTrue(status.isShow());
-        assertTrue(!status.getMessage().isEmpty());
+        assertFalse(status.getMessage().isEmpty());
 
         VALUE.clear();
         VALUE.add("TRUE");
         assertTrue(status.isShow());
-        assertTrue(!status.getMessage().isEmpty());
+        assertFalse(status.getMessage().isEmpty());
 
         VALUE.clear();
         VALUE.add("FALSE");

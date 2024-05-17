@@ -23,6 +23,7 @@ public class SystemPropertiesStatusTest {
 
         SystemPropertyStatus status =
                 new SystemPropertyStatus() {
+                    @Override
                     String getEnvironmentVariable(String envVar) {
                         return "true";
                     }
@@ -48,6 +49,7 @@ public class SystemPropertiesStatusTest {
         // if the request is for a different environment var -> throw
         SystemPropertyStatus status =
                 new SystemPropertyStatus() {
+                    @Override
                     String getEnvironmentVariable(String envVar) {
                         if (envVar.equals(
                                 SystemPropertyStatus.SystemPropertyStatusEnabledEnvironmentVar)) {
@@ -63,12 +65,12 @@ public class SystemPropertiesStatusTest {
         VALUE.clear();
         VALUE.add("true");
         assertTrue(status.isShow());
-        assertTrue(!status.getMessage().isEmpty());
+        assertFalse(status.getMessage().isEmpty());
 
         VALUE.clear();
         VALUE.add("TRUE");
         assertTrue(status.isShow());
-        assertTrue(!status.getMessage().isEmpty());
+        assertFalse(status.getMessage().isEmpty());
 
         VALUE.clear();
         VALUE.add("FALSE");

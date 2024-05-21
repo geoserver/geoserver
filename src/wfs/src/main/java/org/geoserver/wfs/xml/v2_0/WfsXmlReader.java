@@ -48,13 +48,17 @@ public class WfsXmlReader extends XmlRequestReader {
         WFSInfo wfs = wfs();
 
         WFSXmlUtils.initRequestParser(parser, wfs, gs, kvp);
-        Object parsed = null;
+        Object parsed;
         try {
             parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
         } catch (Exception e) {
             // check the exception, and set code to OperationParsingFailed if code not set
             if (!(e instanceof ServiceException) || ((ServiceException) e).getCode() == null) {
-                e = new WFSException("Request parsing failed", e, "OperationParsingFailed");
+                e =
+                        new WFSException(
+                                "Request parsing failed",
+                                cleanException(e),
+                                "OperationParsingFailed");
             }
             throw e;
         }

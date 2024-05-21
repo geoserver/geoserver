@@ -5,12 +5,16 @@
  */
 package org.geoserver.ows;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
+import org.xml.sax.SAXException;
 
 /**
  * Creates a request bean from xml.
@@ -24,6 +28,11 @@ import org.geotools.util.Version;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public abstract class XmlRequestReader {
+    /**
+     * Logger for XmlRequestReader subclass established in constructor for logging of parse errors.
+     */
+    final Logger LOGGER;
+
     /** the qualified name of the element this reader can read. */
     final QName element;
 
@@ -63,6 +72,8 @@ public abstract class XmlRequestReader {
         this.element = element;
         this.version = version;
         this.serviceId = serviceId;
+
+        LOGGER = Logging.getLogger(this.getClass());
 
         if (element == null) {
             throw new NullPointerException("element");
@@ -125,5 +136,77 @@ public abstract class XmlRequestReader {
 
     public String getServiceId() {
         return serviceId;
+    }
+
+    /**
+     * Wrap a request parsing failure in a SAXException to prevent generic FileNotFound and
+     * ConnectionRefused messages.
+     *
+     * <p>This communicates that there is a problem with the XML Document while avoiding providing
+     * internal details that are not useful to web service users.
+     *
+     * <p>The full stack trace is preserved to support development and debugging; so the line number
+     * can be used by developers.
+     *
+     * @param t Failure during parsing (such as SAXException or IOException)
+     * @return Clean SAXException for common parsing failures, or initial throwable
+     */
+    protected Exception cleanException(Exception t) {
+        if (t instanceof IOException) {
+            return createParseException(t);
+        }
+        if (t instanceof SAXException) {
+            // Double check SAXException does not echo caused by message
+            return cleanSaxException((SAXException) t);
+        }
+        return t;
+    }
+
+    /**
+     * Clean the localized message, in the case where it is reproduced by SAXException default
+     * constructor.
+     *
+     * @param saxException
+     * @return saxException with nested localized message removed.
+     */
+    protected SAXException cleanSaxException(SAXException saxException) {
+        Throwable cause = saxException.getCause();
+        // We only wish to check SAXException which echos internal caused by message
+        // Subclasses such as SAXParserException provide a useful message
+        if (saxException != null
+                && saxException.getCause() != null
+                && saxException.getClass() == SAXException.class) {
+            String saxMessage = saxException.getMessage();
+            String causeMessage = cause.getLocalizedMessage();
+            if (causeMessage != null && saxMessage.contains(causeMessage)) {
+                return createParseException(saxException);
+            }
+        }
+        return saxException;
+    }
+
+    /**
+     * Log the cause, and return a SAXException indicaitng a parse failure.
+     *
+     * <p>This is a replacement for the provided cause, and includes the same stack trace to assist
+     * with troubleshooting and debugging.
+     *
+     * @param cause
+     * @return SAXException indicating parse failure
+     */
+    protected SAXException createParseException(Throwable cause) {
+        // Log actual failure for debugging and troubleshooting
+        String requestFailure = "XML " + getElement().getLocalPart() + " Parsing Failure: ";
+        LOGGER.info(requestFailure + cause.toString());
+
+        // Provide clean SAXException message, keep stacktrace history (for verbose service
+        // exception document)
+        String cleanMessage =
+                "Parsing failed, the xml request is most probably not compliant to "
+                        + getElement().getLocalPart()
+                        + " element";
+        SAXException saxException = new SAXException(cleanMessage);
+        saxException.setStackTrace(cause.getStackTrace());
+        return saxException;
     }
 }

@@ -544,13 +544,7 @@ public class MapMLDocumentBuilder {
         String styleName = style != null ? style : "";
         String cqlFilter = null;
         boolean tileLayerExists = false;
-        String defaultMimeType =
-                Optional.ofNullable(
-                                layer.getPublishedInfo()
-                                        .getMetadata()
-                                        .get(MapMLConstants.MAPML_MIME))
-                        .orElse(DEFAULT_MIME_TYPE)
-                        .toString();
+        String defaultMimeType = DEFAULT_MIME_TYPE;
         if (isLayerGroup) {
             layerGroupInfo = (LayerGroupInfo) layer.getPublishedInfo();
             if (layerGroupInfo == null) {
@@ -568,6 +562,10 @@ public class MapMLDocumentBuilder {
             queryable = !layerGroupInfo.isQueryDisabled();
             layerName = layerGroupInfo.getName();
             layerTitle = getTitle(layerGroupInfo, layerName);
+            defaultMimeType =
+                    Optional.ofNullable(layerGroupInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
+                            .orElse(DEFAULT_MIME_TYPE)
+                            .toString();
         } else {
             layerInfo = (LayerInfo) layer.getPublishedInfo();
             resourceInfo = layerInfo.getResource();
@@ -583,6 +581,10 @@ public class MapMLDocumentBuilder {
             layerTitle = getTitle(layerInfo, layerName);
             // set the actual style name from the layer info
             if (style == null) styleName = layerInfo.getDefaultStyle().getName();
+            defaultMimeType =
+                    Optional.ofNullable(resourceInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
+                            .orElse(DEFAULT_MIME_TYPE)
+                            .toString();
         }
         ProjType projType = parseProjType();
         cqlFilter = cql != null ? cql : "";

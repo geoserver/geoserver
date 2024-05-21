@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.demo;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -50,6 +54,27 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
+    /**
+     * Javascript required by the Demo Request page to do the client-side requests. This is shared
+     * among other modules (cf WCS Request Builder, and WPS Request Builder).
+     *
+     * <p>See static block, below.
+     */
+    public static String demoRequestsJavascript;
+
+    static {
+        try {
+            demoRequestsJavascript =
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    DemoRequestsPage.class.getResourceAsStream(
+                                            "/org/geoserver/web/demo/demo-requests.js"),
+                                    Charsets.UTF_8));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "error occurred reading demoRequestsJavascript", e);
+        }
+    }
+
     Resource demoDir;
 
     private TextField<String> urlTextField;
@@ -76,6 +101,11 @@ public class DemoRequestsPage extends GeoServerBasePage {
                         .setRequestUrl(parameters.get("url").toString());
             }
         }
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.render(JavaScriptContentHeaderItem.forScript(demoRequestsJavascript, null));
     }
 
     public void setup() {

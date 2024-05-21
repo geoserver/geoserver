@@ -6,6 +6,7 @@
 package org.geoserver.wcs.web.demo;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
@@ -13,8 +14,12 @@ import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -41,10 +46,19 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
     WCSRequestBuilderPanel builder;
 
+    TextField<String> xml;
+
     public WCSRequestBuilder() {
         // the form
         Form form = new Form("form");
         add(form);
+
+        var model = new Model<>(new WCSRequestModel());
+        form.setDefaultModel(model);
+
+        xml = new TextField<>("xml", new PropertyModel<>(model, "xml"));
+        xml.setOutputMarkupId(true);
+        form.add(xml);
 
         // the actual request builder component
         builder = new WCSRequestBuilderPanel("requestBuilder", new GetCoverageRequest());
@@ -127,6 +141,28 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                         addFeedbackPanels(target);
                     }
                 });
+
+        form.add(
+                new AjaxSubmitLink("setXml") {
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                        try {
+                            var xmlText = getRequestXML();
+                            xml.setModelObject(xmlText);
+                            target.add(xml);
+                        } catch (Exception e) {
+                            error(e.getMessage());
+                            addFeedbackPanels(target);
+                        }
+                        target.appendJavaScript("getCoverage()");
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form form) {
+                        addFeedbackPanels(target);
+                    }
+                });
     }
 
     String getRequestXML() {
@@ -150,5 +186,43 @@ public class WCSRequestBuilder extends GeoServerBasePage {
             error(e);
         }
         return out.toString();
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.render(
+                JavaScriptContentHeaderItem.forScript(
+                        DemoRequestsPage.demoRequestsJavascript, null));
+        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+
+        String url =
+                ResponseUtils.buildURL(
+                        ResponseUtils.baseURL(http),
+                        "ows",
+                        Collections.singletonMap("strict", "true"),
+                        URLType.SERVICE);
+
+        String js = "";
+        js += "function getCoverage() {\n";
+        js += "    var url ='" + url + "';\n";
+        js += "    var xml = document.getElementById(\"xml\").value;\n";
+        js += "    var user ='';\n";
+        js += "    var pass= '';\n";
+        js += "    openInNewWindow(url,xml,user,pass);\n";
+        js += "}\n";
+
+        response.render(JavaScriptContentHeaderItem.forScript(js, null));
+    }
+
+    public class WCSRequestModel implements Serializable {
+        public String xml;
+
+        public String getXml() {
+            return xml;
+        }
+
+        public void setXml(String xml) {
+            this.xml = xml;
+        }
     }
 }

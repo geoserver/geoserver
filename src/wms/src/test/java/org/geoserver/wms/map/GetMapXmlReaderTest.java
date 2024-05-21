@@ -7,6 +7,7 @@ package org.geoserver.wms.map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,11 +17,14 @@ import java.util.HashMap;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -28,6 +32,7 @@ import org.geoserver.wms.WMSInfoImpl;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.api.style.Style;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     GetMapXmlReader reader;
@@ -129,6 +134,32 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             getGeoServer().remove(info);
             getGeoServer().add(oldInfo);
             assertTrue(error);
+        }
+    }
+
+    @Test
+    public void testCleanServiceException() throws Exception {
+        GeoServerInfo cfg = getGeoServer().getGlobal();
+        GetMapRequest request = reader.createRequest();
+        // this request forces an IOException
+        try (BufferedReader input = getResourceInputStream("WMSPostServiceException.xml")) {
+
+            cfg.setXmlExternalEntitiesEnabled(true);
+            getGeoServer().save(cfg);
+
+            request = (GetMapRequest) reader.read(request, input, new HashMap());
+            fail("ServiceException with IOException Expected");
+        } catch (ServiceException e) {
+            assertTrue(
+                    e.getMessage()
+                            .contains(
+                                    "xml request is most probably not compliant to GetMap element"));
+            assertTrue(e.getCause() instanceof SAXException);
+        } finally {
+            cfg.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(cfg);
+            EntityResolverProvider.setEntityResolver(
+                    GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
         }
     }
 

@@ -246,7 +246,8 @@ public class WCSRequestBuilderPanel extends Panel {
                                 WCSRequestBuilderPanel.this.getCoverage.coverage;
                         if (coverageName != null) {
                             var xmlText = getDescribeXML(coverageName);
-                            var xml = (TextField) form.get("xml");
+                            @SuppressWarnings("unchecked")
+                            var xml = (TextField<String>) form.get("xml");
                             xml.setModelObject(xmlText);
                             target.add(xml);
                             target.appendJavaScript("getCoverage()");

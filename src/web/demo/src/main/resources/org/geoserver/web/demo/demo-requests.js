@@ -1,3 +1,9 @@
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+
+
 //when the user presses the "submit" button, make sure GET/POST request
 function submitRequest() {
     var url =    document.getElementById("requestUrl").value.trim();

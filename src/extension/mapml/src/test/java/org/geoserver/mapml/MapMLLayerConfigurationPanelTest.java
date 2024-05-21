@@ -217,11 +217,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
                         "image/vnd.jpeg-png",
                         "image/jpeg",
                         "image/vnd.jpeg-png8",
-                        "image/tiff8",
                         "image/png",
-                        "image/geotiff",
-                        "image/geotiff8",
-                        "image/tiff",
                         "image/png8"));
         GWC mediator = GWC.get();
 

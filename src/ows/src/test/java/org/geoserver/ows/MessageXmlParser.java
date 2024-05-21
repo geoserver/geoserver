@@ -25,11 +25,22 @@ public class MessageXmlParser extends XmlRequestReader {
 
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-        Document doc = builder.parse(new InputSource(reader));
-        String message = doc.getDocumentElement().getAttribute("message");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-        return new Message(message);
+        dbf.setExpandEntityReferences(false);
+        dbf.setValidating(false);
+        dbf.setNamespaceAware(true);
+
+        DocumentBuilder builder = dbf.newDocumentBuilder();
+        // builder.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
+        try {
+            Document doc = builder.parse(new InputSource(reader));
+            String message = doc.getDocumentElement().getAttribute("message");
+
+            return new Message(message);
+        } catch (Exception e) {
+            throw cleanException(e);
+        }
     }
 }

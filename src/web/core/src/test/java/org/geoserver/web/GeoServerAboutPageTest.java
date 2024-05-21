@@ -7,6 +7,8 @@ package org.geoserver.web;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.TagTester;
 import org.junit.Test;
@@ -25,5 +27,25 @@ public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
         assertEquals(
                 "http://localhost/context/j_spring_security_check",
                 tagTester.getAttribute("action"));
+    }
+
+    /**
+     * The About page should hide the sensitive information (like version info, etc...). This test:
+     * gets the page as a non-admin -> version info should NOT be there gets the page as ADMIN ->
+     * version info SHOULD be there
+     */
+    @Test
+    public void testHideSensitiveInfo() throws Exception {
+        logout();
+        tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");
+
+        String responseTxt = tester.getLastResponse().getDocument();
+        assertFalse(responseTxt.contains("geotoolsInfo"));
+
+        login();
+        tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");
+
+        responseTxt = tester.getLastResponse().getDocument();
+        assertTrue(responseTxt.contains("geotoolsInfo"));
     }
 }

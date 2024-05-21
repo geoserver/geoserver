@@ -152,6 +152,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         String filenamePrefix = rootEntity;
         return filenamePrefix;
     }
+
     /**
      * Helper method that based on parameters, builds domainmodel, generates associated mapping
      * files and saves them in the workspace, returning the resulting DataStore.
@@ -202,7 +203,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             params.put("url", buildIncludeUrl(configFileUrl, include));
             createDataStore(params, true, sourceDataStoreMap, registeredAppSchemaStores);
         }
-        mappings = AppSchemaDataAccessConfigurator.buildMappings(config, sourceDataStoreMap);
+        mappings = AppSchemaDataAccessConfigurator.buildMappings(config, sourceDataStoreMap, false);
         dataStore = new AppSchemaDataAccess(mappings, hidden);
         registeredAppSchemaStores.add(dataStore);
         return dataStore;

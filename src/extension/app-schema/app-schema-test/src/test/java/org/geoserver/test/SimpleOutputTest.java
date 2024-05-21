@@ -285,7 +285,7 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
      *
      * @return TRUE if this is an online test not based on a JDBC data store
      */
-    private boolean notJdbcBased() throws Exception {
+    protected boolean notJdbcBased() throws Exception {
         // get the App-Schema data store
         FeatureTypeInfo featureTypeInfo = getCatalog().getFeatureTypeByName("Station_gml31");
         DataAccess dataAccess = featureTypeInfo.getStore().getDataStore(null);

@@ -13,6 +13,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateCollectionModel;
+import freemarker.template.TemplateDateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateSequenceModel;
@@ -225,6 +226,12 @@ public class FeatureWrapper extends BeansWrapper {
         }
 
         return super.wrap(object);
+    }
+
+    @Override
+    public int getDefaultDateType() {
+        // allows to just serialize dates without specifying a formatting
+        return TemplateDateModel.DATETIME;
     }
 
     private SimpleHash buildType(ComplexType ft) {

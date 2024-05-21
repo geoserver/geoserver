@@ -12,9 +12,9 @@ General Settings
 ----------------
 Configure the following settings here:
 
-- Geoserver instance name: the name under which this geoserver is known by the geofence server. This useful for when you use an external geofence server with multiple geoserver servers.
+- GeoServer instance name: the name under which this GeoServer is known by the GeoFence server. This is useful for when you use an external GeoFence server with multiple GeoServer servers.
 
-- GeoServer services URL: this is how geoserver knows how to connect to the external geofence server. When using an internal geofence server, this is not configurable. For example "http://localhost:9191/geofence/remoting/RuleReader" for an external geofence server on localhost.
+- GeoServer services URL: this is how GeoServer knows how to connect to the external GeoFence server. When using an internal GeoFence server, this is not configurable. For example "http://localhost:9191/geofence/remoting/RuleReader" for an external GeoFence server on localhost.
 
 
 Options
@@ -29,7 +29,7 @@ Configure the following settings here:
 - Use GeoServer roles to get authorizations
   
    - Disabled: For each authorization request, GeoServer sends only the user info to GeoFence.
-      GeoFence will retrieve all the roles associated to the user, and will merge 
+      GeoFence will retrieve all the roles associated with the user, and will merge 
       the permissions granted for each role.
 
    - Enabled: For each authorization request, GeoServer sends to GeoFence the user info AND the roles assigned in the current request session.
@@ -41,14 +41,14 @@ Configure the following settings here:
    - This field is mandatory when the previous option is enabled. 
       GeoServer will send to GeoFence the roles in the current request session which match the entries in this list.
       You can use the '*' symbol to match any session role.
-      When using "*", you can use the format "`-ROLENAME`" to exclude one or more roles from the the session roles list.
+      When using "*", you can use the format "`-ROLENAME`" to exclude one or more roles from the session roles list.
       
 Cache
 -----
 
 Configure the following settings here:
 
-- Size of the rule cache (amount of entries)
+- Size of the rule cache (number of entries)
 
 - Cache refresh interval (ms)
 

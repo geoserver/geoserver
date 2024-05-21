@@ -570,7 +570,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
                 }
 
                 if (value == null || value.equalsIgnoreCase("")) {
-                    LOGGER.finer("Found " + typeStr + varStr + " to be unset");
+                    LOGGER.finer("Found " + typeStr + " " + varStr + " to be unset");
                     continue;
                 }
 
@@ -578,7 +578,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
                 File fh = new File(value);
 
                 // Being a bit pessimistic here
-                msgPrefix = "Found " + typeStr + varStr + " set to " + value;
+                msgPrefix = "Found " + typeStr + " " + varStr + " set to " + value;
 
                 if (!fh.exists()) {
                     LOGGER.warning(msgPrefix + " , but this path does not exist");

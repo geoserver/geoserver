@@ -91,6 +91,7 @@ import org.geotools.api.filter.MultiValuedFilter.MatchAction;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -2891,7 +2892,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
                 catalog.add(layer);
             }
         }
-    };
+    }
 
     @Test
     public void testGet() {
@@ -3512,6 +3513,174 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         Filter filter = Predicates.fullTextSearch("newKeyword");
         assertEquals(newHashSet(ftproxy), asSet(catalog.list(FeatureTypeInfo.class, filter)));
         assertEquals(newHashSet(lproxy), asSet(catalog.list(LayerInfo.class, filter)));
+    }
+
+    @Test
+    public void testExactTermSearch() {
+        ft.setName("airTemp");
+        cv.setName("dewPoint");
+
+        ft.setDescription("Air_Temperature");
+        cv.setDescription("Dew_Point");
+
+        l.setResource(ft);
+        l.setTitle("Global");
+
+        addLayer();
+        catalog.add(cs);
+        catalog.add(cv);
+
+        LayerInfo l2 = newLayer(cv, s);
+        l2.setTitle("Global");
+        catalog.add(l2);
+
+        Filter filter = Predicates.exactTermSearch("global");
+        assertEquals(newHashSet(ft, cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("airtemp");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("dewpoint");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("Global");
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("air_temperature");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("dew_point");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+    }
+
+    @Test
+    public void testExactTermSearchLayerGroupTitle() {
+        addLayer();
+        lg.setTitle("LayerGroupTitle");
+        catalog.add(lg);
+
+        Filter filter = Predicates.exactTermSearch("layergrouptitle");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+
+    @Test
+    public void testExactTermSearchLayerGroupName() {
+        addLayer();
+        lg.setName("LayerGroupName");
+        catalog.add(lg);
+        Filter filter = Predicates.exactTermSearch("layergroupname");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+
+    @Test
+    public void testExactTermSearchLayerGroupAbstract() {
+        addLayer();
+        lg.setAbstract("GeoServerOpenSourceGIS");
+        catalog.add(lg);
+        Filter filter = Predicates.exactTermSearch("geoserveropensourcegis");
+        assertEquals(newHashSet(lg), asSet(catalog.list(LayerGroupInfo.class, filter)));
+    }
+
+    @Test
+    public void testExactTermSearchKeywords() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().addAll(List.of(new Keyword("temperature"), new Keyword("Air")));
+        cv.getKeywords().add(new Keyword("dwpt_dprs"));
+        cv.getKeywords()
+                .addAll(List.of(new Keyword("temperature"), new Keyword("DewpointDepression")));
+
+        l.setResource(ft);
+        addLayer();
+        catalog.add(cs);
+        catalog.add(cv);
+        LayerInfo l2 = newLayer(cv, s);
+        catalog.add(l2);
+
+        Filter filter = Predicates.exactTermSearch("temperature");
+        assertEquals(newHashSet(l, l2), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ft, cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("air");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertThat(asSet(catalog.list(CoverageInfo.class, filter)), Matchers.empty());
+
+        filter = Predicates.exactTermSearch("dewpointdepression");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(cv), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertThat(asSet(catalog.list(FeatureTypeInfo.class, filter)), Matchers.empty());
+        assertEquals(newHashSet(cv), asSet(catalog.list(CoverageInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("pressure");
+        assertThat(asSet(catalog.list(LayerInfo.class, filter)), Matchers.empty());
+        assertThat(asSet(catalog.list(ResourceInfo.class, filter)), Matchers.empty());
+        assertThat(asSet(catalog.list(FeatureTypeInfo.class, filter)), Matchers.empty());
+        assertThat(asSet(catalog.list(CoverageInfo.class, filter)), Matchers.empty());
+    }
+
+    @Test
+    public void testExactTermSearchAddedKeyword() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+
+        l.setResource(ft);
+        addLayer();
+
+        LayerInfo lproxy = catalog.getLayer(l.getId());
+        FeatureTypeInfo ftproxy = (FeatureTypeInfo) lproxy.getResource();
+
+        ftproxy.getKeywords().add(new Keyword("newKeyword"));
+        catalog.save(ftproxy);
+
+        Filter filter = Predicates.exactTermSearch("newKeyword");
+        assertEquals(newHashSet(ftproxy), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(lproxy), asSet(catalog.list(LayerInfo.class, filter)));
+    }
+
+    @Test
+    public void testExactTermSearchKeywordMiss() {
+        ft.getKeywords().add(new Keyword("air_temp"));
+        ft.getKeywords().add(new Keyword("temperatureAir"));
+
+        Filter filter = Predicates.exactTermSearch("newKeyword");
+        assertThat(asSet(catalog.list(FeatureTypeInfo.class, filter)), Matchers.empty());
+    }
+
+    @Test
+    public void testExclusiveExactTermSearch() {
+        ft.setName("water");
+        l.setResource(ft);
+
+        cv.setName("waterways");
+
+        addLayer();
+        catalog.add(cv);
+
+        LayerInfo l2 = newLayer(cv, s);
+        catalog.add(l2);
+
+        Filter filter = Predicates.exactTermSearch("water");
+        assertEquals(newHashSet(ft), asSet(catalog.list(ResourceInfo.class, filter)));
+        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertThat(asSet(catalog.list(CoverageInfo.class, filter)), Matchers.empty());
+
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("waterways");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("water");
+        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+
+        filter = Predicates.exactTermSearch("waterways");
+        assertEquals(newHashSet(l2), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
     @SuppressWarnings("PMD.UseTryWithResources")

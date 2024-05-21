@@ -11,8 +11,6 @@ import java.net.URLConnection;
 import java.time.Instant;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.time.Time;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 
 /**

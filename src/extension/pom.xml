@@ -500,17 +500,8 @@
         <module>wps-jdbc</module>
         <module>mapml</module>
         <module>geopkg-output</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
         <module>metadata</module>
         <module>rat</module>
-=======
-        <!-- TODO WICKET 8 - re-enable after it builds -->
-        <!-- <module>metadata</module> -->
->>>>>>> b1ec0919e6 (wip: initial work on Wicket 8 upgrade)
-=======
-        <module>metadata</module>
->>>>>>> 505537823e (wicket8: get metadata module compiling again)
       </modules>
     </profile>
   </profiles>

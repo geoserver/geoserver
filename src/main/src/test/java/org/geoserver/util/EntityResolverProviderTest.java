@@ -5,6 +5,7 @@
 package org.geoserver.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +52,8 @@ public class EntityResolverProviderTest {
         assertTrue(Arrays.stream(allowed).anyMatch(AllowListEntityResolver.OGC2::equals));
         // in addition to the provided domain
         assertTrue(Arrays.stream(allowed).anyMatch("how2map.com"::equals));
+        // and not allow other matches
+        assertFalse(Arrays.stream(allowed).anyMatch("geocat.net"::equals));
     }
 
     @Test
@@ -77,6 +80,59 @@ public class EntityResolverProviderTest {
     @Test
     public void testEntityResolverDefaultBehaviour() throws Exception {
         EntityResolverProvider provider = new EntityResolverProvider(null);
+        EntityResolver resolver = provider.getEntityResolver();
+
+        // Confirm schema is available from public location
+        // (this is a default from AllowListEntiryResolver)
+        InputSource filter =
+                resolver.resolveEntity(null, "http://schemas.opengis.net/filter/1.1.0/filter.xsd");
+        assertNull("Public Filter 1.1.0 connection allowed", filter);
+
+        // Confirm schema is available from jars, as is the case for those included in GeoTools
+        InputSource filterJar =
+                resolver.resolveEntity(
+                        null, "jar:file:/some/path/gs-main.jar!schemas/filter/1.1.0/filter.xsd");
+        assertNull("JAR Filter 1.1.0 connection allowed", filterJar);
+
+        // Confirm schema is available when war is unpacked into JBoss virtual filesystem
+        InputSource filterJBoss =
+                resolver.resolveEntity(
+                        null,
+                        "vfsfile:/home/userone/jboss-eap-5.1/jboss-as/server/default_WAR/deploy/geoserver.war/WEB-INF/lib/gs-main.jar!/filter/1.1.0/filter.xsd");
+        assertNull("JBoss Virtual File System Filter 1.1.0 connection allowed", filterJBoss);
+
+        // confirm that by default can access any random website http address
+        InputSource external =
+                resolver.resolveEntity(
+                        null,
+                        "https://how2map.geocat.live/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd");
+        assertNull("Website Filter 1.1.0 allowed", external);
+
+        // not allowed to access local file system
+        try {
+            InputSource filesystem =
+                    resolver.resolveEntity(
+                            null, "file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd");
+            assertNotNull("Filesystem Filter 1.1.0 not allowed", filesystem);
+            fail("Filter 1.1.0 is should not avalable as a file reference");
+        } catch (SAXException e) {
+            // Confirm the exception is clear, and contains the URI for folks to troubleshoot their
+            // xml document
+            assertTrue(
+                    "Filesystem XSD not allowed",
+                    e.getMessage().startsWith("Entity resolution disallowed for"));
+            assertTrue(
+                    "Filesystem XSD not allowed",
+                    e.getMessage()
+                            .contains("file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd"));
+        }
+    }
+
+    @Test
+    public void testEntityResolverAcceptsListBehaviour() throws Exception {
+        EntityResolverProvider provider = new EntityResolverProvider(null);
+
+        // this simulates -DENTITY_RESOLUTION_ALLOWLIST being defined with no value
         provider.setEntityResolver(new AllowListEntityResolver(null));
         EntityResolver resolver = provider.getEntityResolver();
 
@@ -119,6 +175,25 @@ public class EntityResolverProviderTest {
                     e.getMessage()
                             .contains(
                                     "https://how2map.geocat.live/geoserver/schemas/wfs/1.0.0/WFS-basic.xsd"));
+        }
+
+        // not allowed to access local file system
+        try {
+            InputSource filesystem =
+                    resolver.resolveEntity(
+                            null, "file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd");
+            assertNotNull("Filesystem Filter 1.1.0 not allowed", filesystem);
+            fail("Filter 1.1.0 is should not avalable as a file reference");
+        } catch (SAXException e) {
+            // Confirm the exception is clear, and contains the URI for folks to troubleshoot their
+            // xml document
+            assertTrue(
+                    "Filesystem XSD not allowed",
+                    e.getMessage().startsWith("Entity resolution disallowed for"));
+            assertTrue(
+                    "Filesystem XSD not allowed",
+                    e.getMessage()
+                            .contains("file:/var/opt/geoserver/data/www/schemas/WFS-basic.xsd"));
         }
     }
 }

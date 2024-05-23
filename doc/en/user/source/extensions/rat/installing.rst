@@ -9,6 +9,6 @@ To install the Raster Attribute Table support:
 
    .. warning:: Make sure to match the version of the extension to the version of GeoServer.
 
-#. Extract this these files and place the JARs in ``WEB-INF/lib``.
+#. Extract these files and place the JARs in ``WEB-INF/lib``.
 
 #. Perform any configuration required by your servlet container, and then restart.

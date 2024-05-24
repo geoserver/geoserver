@@ -12,7 +12,7 @@ Each GeoServer release is supported with bug fixes for a year, with releases mad
 
 This approach provides ample time for upgrading ensuring you are always working with a supported GeoServer release.
 
-If your organisation is making use of a GeoServer version that is no longer in use by the community all is not lost.
+If your organization is making use of a GeoServer version that is no longer in use by the community all is not lost.
 You can volunteer on the developer list to make additional releases, or engage with one of our
 [Commercial Support](http://geoserver.org/support/) providers.
 
@@ -53,6 +53,6 @@ Disclosure policy:
 4. A fix is included for the "stable" and "maintenance" downloads ([released as scheduled](https://github.com/geoserver/geoserver/wiki/Release-Schedule), or issued via emergency update)
 6. The CVE vulnerability is published with mitigation and patch instructions
 
-This represents a balance between transparency and particpation that does not overwhelm particpants. 
+This represents a balance between transparency and participation that does not overwhelm participants. 
 Those seeking greater visibility are encouraged to volunteer with the geoserver-security list;
 or work with one of the [commercial support providers](https://geoserver.org/support/) who participate on behalf of their customers.

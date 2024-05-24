@@ -402,7 +402,10 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         return getDelegateSource().getCount(mappedQuery);
     }
 
-    /** Maps query back the main underlying feature source */
+    /**
+     * Maps query back the main underlying feature source. When updating this method for joins,
+     * update also #needsJoins
+     */
     protected Query mapToSimpleCollectionQuery(Query query, boolean addJoins) throws IOException {
         Query result = new Query(getDelegateSource().getSchema().getTypeName());
         final Filter originalFilter = query.getFilter();
@@ -447,7 +450,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             result.setSortBy(defaultSort);
         }
 
-        if (addJoins) {
+        if (addJoins && needsJoins(query)) {
             // join output layer, if necessary
             if (hasOutputProperty(query, openSearchAccess.getName(LAYERS), true)) {
                 Filter filter = FF.equal(FF.property("id"), FF.property("layer.cid"), true);
@@ -476,6 +479,16 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
 
         return result;
+    }
+
+    /**
+     * Checks if the query at hand needs to join with other tables, or not. Subclasses should
+     * override if they override {@link #mapToSimpleCollectionQuery(Query, boolean)} and add extra
+     * joins
+     */
+    protected boolean needsJoins(Query query) {
+        return hasOutputProperty(query, openSearchAccess.getName(LAYERS), true)
+                || hasOutputProperty(query, OGC_LINKS_PROPERTY_NAME, true);
     }
 
     private Filter mapFilterToDelegateSchema(final Filter filter) {
@@ -530,10 +543,24 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     @Override
     public FeatureCollection<FeatureType, Feature> getFeatures(Query query) throws IOException {
+        // fast path for query with no paging or with no joins
+        if (!needsJoins(query)
+                || (query.getStartIndex() == null && query.getMaxFeatures() == Integer.MAX_VALUE)) {
+            Query mappedQuery = mapToSimpleCollectionQuery(query, true);
+            SimpleFeatureCollection fc = getDelegateSource().getFeatures(mappedQuery);
+            HashMap<String, Object> mapperState = new HashMap<>();
+            return new MappingFeatureCollection(
+                    schema, fc, it -> mapToComplexFeature(it, mapperState));
+        }
+
+        // Paging is active, and joins cause extra records to be returned, so we need to
+        // first collect the collection/product ids for the current page, and then use a
+        // paging-less query
+
         // first get the ids of the features we are going to return, no joins to support paging
         Query idsQuery = mapToSimpleCollectionQuery(query, false);
         // uncommenting causes a ClassCastException, need to figure out why
-        // idsQuery.setPropertyNames("eoIdentifier"); //  (no can do, there are mandatory fields)
+        idsQuery.setPropertyNames("eoIdentifier");
         SimpleFeatureCollection idFeatureCollection = getDelegateSource().getFeatures(idsQuery);
 
         Set<FeatureId> ids = new LinkedHashSet<>();

@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -15,10 +14,13 @@ import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
-import org.geotools.api.filter.identity.FeatureId;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /** Adds a workspace filter to the queries/filters, if a workspace is set */
 public class WorkspaceFeatureSource extends DecoratingSimpleFeatureSource {
@@ -27,6 +29,8 @@ public class WorkspaceFeatureSource extends DecoratingSimpleFeatureSource {
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     public static String WORKSPACES_FIELD = "workspaces";
+    /** Key used to cache the list of current collections in the request context holder */
+    public static String WS_COLLECTION_CACHE_KEY = "org.geoserver.os.workspaceCollections";
 
     /**
      * Constructor
@@ -68,20 +72,40 @@ public class WorkspaceFeatureSource extends DecoratingSimpleFeatureSource {
         return delegate.getFeatures(query);
     }
 
-    private Set<FeatureId> getCollectionIdsForWorkspace() throws IOException {
-        Set<FeatureId> ids = new LinkedHashSet<>();
-        SimpleFeatureCollection idFeatureCollection = getWorkspaceCollection();
-        idFeatureCollection.accepts(f -> ids.add(f.getIdentifier()), null);
-        return ids;
+    /**
+     * The collection names can be queried over and over during a STAC/OS interaction, cache it at
+     * the request level, since it depends only on the eventual workspace context
+     *
+     * @return
+     * @throws IOException
+     */
+    private Set<String> getCollectionNamesForWorkspace() throws IOException {
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            // no caching in this case
+            return queryCollectionNamesForWorkspace();
+        }
+        // there's a request, check if the collection names have been computed already
+        Object attribute =
+                attributes.getAttribute(WS_COLLECTION_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
+        Set<String> result;
+        if (attribute instanceof Set) {
+            result = (Set<String>) attribute;
+        } else {
+            result = queryCollectionNamesForWorkspace();
+            attributes.setAttribute(
+                    WS_COLLECTION_CACHE_KEY, result, RequestAttributes.SCOPE_REQUEST);
+        }
+        return result;
     }
 
-    private Set<String> getCollectionNamesForWorkspace() throws IOException {
-        String workspace = null;
-        Set<String> names = new LinkedHashSet<>();
+    private Set<String> queryCollectionNamesForWorkspace() throws IOException {
         SimpleFeatureCollection idFeatureCollection = getWorkspaceCollection();
-        idFeatureCollection.accepts(
-                f -> names.add(f.getProperty("eoIdentifier").getValue().toString()), null);
-        return names;
+        UniqueVisitor unique = new UniqueVisitor("eoIdentifier");
+        unique.setPreserveOrder(true);
+        idFeatureCollection.accepts(unique, null);
+        Set<String> result = unique.getUnique();
+        return result;
     }
 
     private SimpleFeatureCollection getWorkspaceCollection() throws IOException {
@@ -107,38 +131,31 @@ public class WorkspaceFeatureSource extends DecoratingSimpleFeatureSource {
     }
 
     private Filter appendWorkspaceToFilter(Filter filterIn) throws IOException {
-        if (delegate.getSchema().getTypeName().equals(JDBCOpenSearchAccess.COLLECTION)) {
-            Set<FeatureId> collectionIds = getCollectionIdsForWorkspace();
-            if (collectionIds != null && !collectionIds.isEmpty()) {
-                return appendWorkspaceIdsToFilter(filterIn, collectionIds);
-            }
-        } else if (delegate.getSchema().getTypeName().equals(JDBCOpenSearchAccess.PRODUCT)) {
-            Set<String> collectionNames = getCollectionNamesForWorkspace();
-            if (collectionNames != null && !collectionNames.isEmpty()) {
-                return appendWorkspaceNamesToFilter(filterIn, collectionNames);
+        Set<String> collectionNames = getCollectionNamesForWorkspace();
+        if (collectionNames != null && !collectionNames.isEmpty()) {
+            if (delegate.getSchema().getTypeName().equals(JDBCOpenSearchAccess.COLLECTION)) {
+                return appendWorkspaceNamesToFilter(filterIn, collectionNames, "eoIdentifier");
+            } else if (delegate.getSchema().getTypeName().equals(JDBCOpenSearchAccess.PRODUCT)) {
+                return appendWorkspaceNamesToFilter(
+                        filterIn, collectionNames, "eoParentIdentifier");
             }
         }
         return filterIn;
     }
 
-    private Filter appendWorkspaceIdsToFilter(Filter filterIn, Set<FeatureId> collectionIds) {
-        if (collectionIds == null || collectionIds.isEmpty()) {
-            return Filter.EXCLUDE;
-        }
-        return FF.and(filterIn, FF.id(collectionIds));
-    }
-
-    private Filter appendWorkspaceNamesToFilter(Filter filterIn, Set<String> collectionNames) {
+    private Filter appendWorkspaceNamesToFilter(
+            Filter filterIn, Set<String> collectionNames, String identifier) {
         if (collectionNames == null || collectionNames.isEmpty()) {
             return filterIn;
         }
-        return FF.and(filterIn, collectionNamesToOrFilter(collectionNames));
+        return FF.and(filterIn, collectionNamesToOrFilter(identifier, collectionNames));
     }
 
-    private Filter collectionNamesToOrFilter(Set<String> collectionNames) {
+    private Filter collectionNamesToOrFilter(String identifier, Set<String> collectionNames) {
         List<Filter> orClauses = new ArrayList<>();
+        PropertyName identifierProperty = FF.property(identifier);
         for (String collectionName : collectionNames) {
-            orClauses.add(FF.equals(FF.property("eoParentIdentifier"), FF.literal(collectionName)));
+            orClauses.add(FF.equals(identifierProperty, FF.literal(collectionName)));
         }
         return FF.or(orClauses);
     }

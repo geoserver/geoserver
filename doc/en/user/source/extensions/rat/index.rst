@@ -14,7 +14,7 @@ and may include information like land cover types, elevation values, or any othe
 may also contain color information that can be used to render the raster in a more visually appealing way.
 
 The RAT is stored in a separate file from the raster data itself, and is typically stored in a ".aux.xml" file,
-as part of a a PAMDataset. Each of the bands in the PAM can contain a separate RAT, allowing
+as part of a PAMDataset. Each of the bands in the PAM can contain a separate RAT, allowing
 for different attributes to be associated with each band.
 
 One example of RAT usage is the NOAA Bluetopo dataset, which contains 3 floating points bands:

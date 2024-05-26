@@ -353,12 +353,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /** Writes catalog.xml to the data directory. */
     private void setUpCatalog() {
         CatalogWriter writer = new CatalogWriter();
-        writer.dataStores(
-                datastoreParams, datastoreNamespacePrefixes, Collections.<String>emptySet());
-        writer.coverageStores(
-                new HashMap<String, Map<String, String>>(),
-                new HashMap<String, String>(),
-                Collections.<String>emptySet());
+        writer.dataStores(datastoreParams, datastoreNamespacePrefixes, Collections.emptySet());
+        writer.coverageStores(new HashMap<>(), new HashMap<>(), Collections.emptySet());
         writer.namespaces(namespaces, isolatedNamespaces);
         writer.styles(layerStyles);
         try {

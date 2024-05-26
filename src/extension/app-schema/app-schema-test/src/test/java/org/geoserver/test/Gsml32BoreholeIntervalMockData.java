@@ -24,7 +24,7 @@ public class Gsml32BoreholeIntervalMockData extends AbstractAppSchemaMockData {
 
     protected static final Map<String, String> GSML32_NAMESPACES =
             Collections.unmodifiableMap(
-                    new TreeMap<String, String>() {
+                    new TreeMap<>() {
                         /** serialVersionUID */
                         private static final long serialVersionUID = -4796243306761831446L;
 

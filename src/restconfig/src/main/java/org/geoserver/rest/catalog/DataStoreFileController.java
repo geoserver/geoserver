@@ -239,7 +239,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             return new ResponseEntity<>(
                     byteArrayOutputStream.toByteArray(), responseHeaders, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

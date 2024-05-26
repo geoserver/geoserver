@@ -45,6 +45,7 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
      *
      * Checks if a connection is possible
      */
+    @SuppressWarnings({"PMD.EmptyControlStatement", "PMD.UnusedLocalVariable"})
     @Override
     public boolean isTestDataAvailable() {
 

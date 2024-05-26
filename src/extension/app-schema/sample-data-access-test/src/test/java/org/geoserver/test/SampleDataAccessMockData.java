@@ -132,11 +132,8 @@ public class SampleDataAccessMockData extends SystemTestData {
         writer.dataStores(
                 Map.of(DATASTORE_NAME, SampleDataAccessFactory.PARAMS),
                 Map.of(DATASTORE_NAME, SampleDataAccessData.NAMESPACE_PREFIX),
-                Collections.<String>emptySet());
-        writer.coverageStores(
-                new HashMap<String, Map<String, String>>(),
-                new HashMap<String, String>(),
-                Collections.<String>emptySet());
+                Collections.emptySet());
+        writer.coverageStores(new HashMap<>(), new HashMap<>(), Collections.emptySet());
         writer.namespaces(
                 Map.of(SampleDataAccessData.NAMESPACE_PREFIX, SampleDataAccessData.NAMESPACE_URI));
 

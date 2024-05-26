@@ -288,8 +288,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
         if (gft.getFormatOptions().get("LAYERS") instanceof String) {
             layers = ((String) gft.getFormatOptions().get("LAYERS")).split(",");
         } else if (gft.getFormatOptions().get("LAYERS") instanceof List) {
-            layers =
-                    (String[]) ((List) gft.getFormatOptions().get("LAYERS")).toArray(new String[0]);
+            layers = ((List<String>) gft.getFormatOptions().get("LAYERS")).toArray(new String[0]);
         }
         return layers;
     }

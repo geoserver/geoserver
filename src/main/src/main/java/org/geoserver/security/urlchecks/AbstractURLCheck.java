@@ -43,13 +43,13 @@ public abstract class AbstractURLCheck implements URLChecker {
         this.description = description;
     }
 
-    /** @return the enable */
+    /** @return the enabled status */
     @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    /** @param enabled the enable to set */
+    /** @param enabled the enabled status to set */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

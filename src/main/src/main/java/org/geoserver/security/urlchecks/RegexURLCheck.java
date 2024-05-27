@@ -49,7 +49,7 @@ public class RegexURLCheck extends AbstractURLCheck implements Serializable {
 
     @Override
     public String toString() {
-        return "URLCheckInfo{"
+        return "RegexUrlCheck{"
                 + "name='"
                 + name
                 + '\''
@@ -71,6 +71,6 @@ public class RegexURLCheck extends AbstractURLCheck implements Serializable {
 
     @Override
     public String getConfiguration() {
-        return regex;
+        return getRegex();
     }
 }

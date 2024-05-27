@@ -1,0 +1,281 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer UrlCheck
+  description: An URL External Access Check is the check performed on user provided URLs that GeoServer will use to access remote resources.
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /urlchecks:
+    get:
+      operationId: getUrlChecks
+      tags:
+        - "UrlChecks"
+      summary: Get a list of URL checks
+      description: Displays a list of all URL checks on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/urlchecks.xml" for XML)
+      produces:
+        - text/html
+        - application/json
+        - application/xml
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/urlChecks"
+          examples:
+            text/html: |
+              <html>
+                <head>
+                    <title>GeoServer Configuration</title>
+                    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+                </head>
+                <body>
+                    <ul>
+                        <li><a href="http://localhost:8080/geoserver/rest/urlchecks/external.html">external</a></li>
+                        <li><a href="http://localhost:8080/geoserver/rest/urlchecks/icons.html">icons</a></li>
+                        <li><a href="http://localhost:8080/geoserver/rest/urlchecks/safeWFS.html">safeWFS</a></li>
+                    </ul>
+                </body>
+              </html>
+            application/xml: |
+              <urlChecks>
+                <urlCheck>
+                    <name>external</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/urlchecks/external.xml" type="application/atom+xml"/>
+                </urlCheck>
+                <urlCheck>
+                    <name>icons</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/urlchecks/icons.xml" type="application/atom+xml"/>
+                </urlCheck>
+                <urlCheck>
+                    <name>safeWFS</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/urlchecks/safeWFS.xml" type="application/atom+xml"/>
+                </urlCheck>
+              </urlChecks>
+            application/json: |
+              {"urlchecks":{"urlcheck":[
+                      {"name":"external","href":"http:\/\/localhost:8080\/geoserver\/rest\/urlchecks\/external.json"},
+                      {"name":"icons","href":"http:\/\/localhost:8080\/geoserver\/rest\/urlchecks\/icons.json"},
+                      {"name":"safeWFS","href":"http:\/\/localhost:8080\/geoserver\/rest\/urlchecks\/safeWFS.json"}]}}
+        401:
+          description: Unauthorized
+
+    post:
+      operationId: postUrlChecks
+      tags:
+        - "UrlChecks"
+      summary: add a new URL check to GeoServer
+      description: Adds a new URL check to the server
+      parameters:
+        - name: urlcheckBody
+          description: The url check body to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/urlCheck"
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - text/html
+        - application/json
+        - application/xml
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created URL check can be found
+              type: string
+        400:
+          description: Unable to add provided URL check as it misses required fields
+        409:
+          description: Unable to add URL check as it already exists
+
+    put:
+      operationId: putUrlChecks
+      description: Not permitted.
+      tags:
+        - "UrlChecks"
+      responses:
+        405:
+          description: Not permitted
+
+    delete:
+      operationId: deleteUrlChecks
+      description: Not permitted.
+      tags:
+        - "UrlChecks"
+      responses:
+        405:
+          description: Not permitted
+
+  /urlchecks/{urlcheckname}:
+    get:
+      operationId: getUrlCheck
+      tags:
+        - "UrlChecks"
+      summary: Retrieve a URL check
+      description: Retrieves a single URL check definition. Use the "Accept:" header to specify format or
+        append an extension to the endpoint (example "/urlchecks/{urlcheck}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: urlcheckname
+          description: the name of the URL check to fetch.
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/urlCheck"
+          examples:
+            application/xml: |
+              <urlChecks>
+                  <urlCheck>
+                      <name>icons</name>
+                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/urlchecks/icons.xml" type="application/atom+xml"/>
+                  </urlCheck>
+              </urlChecks>
+
+            application/json: |
+              {
+                "urlCheck": {
+                    "name": "icons",
+                    "description": "External graphic icons",
+                    "enabled": true,
+                    "regex": "^https://styles.server.net/icons/.*$"
+                }
+              }
+        404:
+          description: URL check does not exist
+
+    post:
+      tags:
+        - "UrlChecks"
+      operationId: postUrlCheck
+      description: Not permitted.
+      parameters:
+        - name: urlcheckname
+          description: the name of the URL check to fetch.
+          in: path
+          required: true
+          type: string
+      responses:
+        405:
+          description: Not permitted
+
+    put:
+      summary: Update a URL check
+      tags:
+        - "UrlChecks"
+      description: Changes the URL check with the provided data.
+      operationId: putUrlCheck
+      consumes:
+        - application/json
+        - application/xml
+      responses:
+        200:
+          description: Modified
+        400:
+          description: Cannot perform the change to the URL check as required fields are missing
+        404:
+          description: Url check not found
+      parameters:
+        - name: urlcheckname
+          in: path
+          description: name of URL check.
+          required: true
+          type: string
+        - name: urlcheckBody
+          description: The url check body to perform the change against.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/urlCheck"
+
+    delete:
+      operationId: deleteUrlCheck
+      tags:
+        - "UrlChecks"
+      parameters:
+        - name: urlcheckname
+          in: path
+          description: name of URL check to delete.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successfully deleted URL check
+        404:
+          description: Url check doesn't exist
+
+definitions:
+  urlCheck:
+    type: object
+    description: >
+
+      The body for a URL check request.
+      
+      For a PUT, only values which should be changed need to be included.
+      
+      
+      JSON or XML style requests should follow the schemas below:
+
+        - application/xml: 
+      
+          ```
+          <regexUrlCheck>
+          	<name>string</name>
+          	<description>string</description>
+          	<enabled>false</enabled>
+          	<regex>string</regex>
+          </regexUrlCheck>
+          ```
+
+        - application/json: 
+      
+          ```
+          {
+            "regexUrlCheck": {
+              "name": "string",
+              "description": "string",
+              "enabled": false,
+              "regex": "string"
+            }
+          }
+          ```
+
+    required:
+      - name
+      - regex
+    properties:
+      name:
+        type: string
+        description: name of the URL check
+      description:
+        type: string
+        description: description for the URL check
+      enabled:
+        type: boolean
+        description: enabled status of the URL check
+        default: false
+      regex:
+        type: string
+        description: regex to perform the check with
+  urlChecks:
+    type: array
+    items:
+      $ref: "#/definitions/urlCheck"

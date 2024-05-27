@@ -230,7 +230,7 @@ public class WPSRequestBuilderPanel extends Panel {
                             var xml = (TextField) form.get("xml");
                             xml.setModelObject(xmlText);
                             target.add(xml);
-                            target.appendJavaScript("getCoverage()");
+                            target.appendJavaScript("executeWPS()");
                         }
                     }
                 };

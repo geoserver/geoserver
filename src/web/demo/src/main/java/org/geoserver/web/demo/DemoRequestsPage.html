@@ -70,38 +70,19 @@
   </table>
  </form>
 
-    <!--https://cssloaders.github.io/-->
-    <style>
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 5px solid #DDD;
-            border-bottom-color: #FF3D00;
-            border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
-            margin: 10px;
-            display: none;
-        }
 
-        @keyframes rotation {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-    <span id="spinnerSpan" class="loader"></span>
+    <legend>
     <span><wicket:message key="headers">openNewWindow:</wicket:message></span>
-    <div  id="responseHeadersDiv" style="border:1px solid black;min-height: 15px;margin-bottom:7px">
+    </legend>
+    <div  id="responseHeadersDiv" style="min-height: 15px;margin-bottom:7px">
     </div>
+    <legend>
     <span><wicket:message key="result">result:</wicket:message></span>
+    </legend>
 
-    <div  id="responseDiv" style="border:5px solid black;min-height: 15px">
+    <div  id="responseDiv" style="min-height: 15px">
     </div>
+
 
 </wicket:extend>
 </body>

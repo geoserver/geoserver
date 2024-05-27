@@ -15,8 +15,17 @@ function submitRequest() {
     var username = document.getElementsByName("username")[0].value;
     var password = document.getElementsByName("password")[0].value;
 
-    if (url =="")
+    if (url =="") {
+        alert("Please enter a URL!");
         return; //nothing to do - no url
+    }
+    try{
+        var _url = new URL(url);
+    }
+    catch(e) {
+        alert("URL is is not valid!")
+        return;
+    }
 
     if (document.getElementById("openNewWindow").checked) {
         openInNewWindow(url, xml, username, password);
@@ -100,7 +109,7 @@ function openInNewWindowPost(url,xml,user,pass) {
 //Make the actual XMLHttpRequest GET/POST Request
 function makeRequest(url,xml,username,password) {
     // show spinner
-    document.getElementById("spinnerSpan").style.display = "block";
+    document.getElementById("ajaxFeedback").style.display = "block";
 
     let xhr = new XMLHttpRequest();
     var verb = "GET";
@@ -114,7 +123,7 @@ function makeRequest(url,xml,username,password) {
     xhr.onreadystatechange = function () {
         //4 = complete
         if (this.readyState == 4)  {
-            document.getElementById("spinnerSpan").style.display = "none";
+            document.getElementById("ajaxFeedback").style.display = "none"
             handleResponse(this);
         }
     }
@@ -128,7 +137,7 @@ function makeRequest(url,xml,username,password) {
 }
 
 function displayHeaders(xhrResponse) {
-    var div = document.getElementById("responseHeadersDiv");
+    var responseDiv = document.getElementById("responseHeadersDiv");
 
     //remove old content from the responseDiv
     while(responseDiv.firstChild){
@@ -136,7 +145,7 @@ function displayHeaders(xhrResponse) {
     }
     let preElement = document.createElement("pre");
     preElement.innerHTML = xhrResponse.getAllResponseHeaders();
-    div.append(preElement);
+    responseDiv.append(preElement);
 }
 
 //given a complete response from the server, display it
@@ -200,6 +209,7 @@ function handleResponse(xhrResponse) {
 
         //create the <pre> element and imbed inside the <div>
         let preElement = document.createElement("pre");
+        preElement.style.whiteSpace ="pre-wrap";
         preElement.innerHTML = text;
         responseDiv.append(preElement);
     }
@@ -214,70 +224,32 @@ function arrayBufferToBase64(buffer) {
     return btoa(binary);
 }
 
-// ======================================================
-// https://www.npmjs.com/package/prettify-xml
-//
-// The MIT License (MIT)
-// Copyright (c) 2016 Jonathan Werner
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-var stringTimesN = function stringTimesN(n, char) {
-    return Array(n + 1).join(char);
-};
-
-// Adapted from https://gist.github.com/sente/1083506
-function prettifyXml(xmlInput) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _options$indent = options.indent,
-        indentOption = _options$indent === undefined ? 2 : _options$indent,
-        _options$newline = options.newline,
-        newlineOption = _options$newline === undefined ? _os.EOL : _options$newline;
-
-    var indentString = stringTimesN(indentOption, ' ');
-
-    var formatted = '';
-    var regex = /(>)(<)(\/*)/g;
-    var xml = xmlInput.replace(regex, '$1' + newlineOption + '$2$3');
-    var pad = 0;
-    xml.split(/\r?\n/).forEach(function (l) {
-        var line = l.trim();
-
-        var indent = 0;
-        if (line.match(/.+<\/\w[^>]*>$/)) {
-            indent = 0;
-        } else if (line.match(/^<\/\w/)) {
-            // Somehow istanbul doesn't see the else case as covered, although it is. Skip it.
-            /* istanbul ignore else  */
-            if (pad !== 0) {
-                pad -= 1;
-            }
-        } else if (line.match(/^<\w([^>]*[^\/])?>.*$/)) {
-            indent = 1;
-        } else {
-            indent = 0;
-        }
-
-        var padding = stringTimesN(pad, indentString);
-        formatted += padding + line + newlineOption; // eslint-disable-line prefer-template
-        pad += indent;
-    });
-
-    return formatted.trim();
+function getBaseURL() {
+    return window.location.href.substring(0, window.location.href.indexOf("web/wicket"));
 }
+
+function getOWSUrl() {
+    return getBaseURL() + "ows?strict=true";
+}
+
+
+function getCoverage() {
+    var url =getOWSUrl();
+    var xml = document.getElementById("xml").value;
+    var user ='';
+    var pass= '';
+    openInNewWindow(url,xml,user,pass);
+}
+
+function executeWPS() {
+    var url =getOWSUrl();
+    var xml = document.getElementById("xml").value;
+    var user ='';
+    var pass= '';
+    if (document.getElementById('authenticate').checked) {
+        user =document.getElementById('WPSusername').value;
+        pass =document.getElementById('WPSpassword').value;
+    }
+    openInNewWindow(url,xml,user,pass);
+}
+

@@ -193,25 +193,6 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         response.render(
                 JavaScriptContentHeaderItem.forScript(
                         DemoRequestsPage.demoRequestsJavascript, null));
-        HttpServletRequest http = GeoServerApplication.get().servletRequest();
-
-        String url =
-                ResponseUtils.buildURL(
-                        ResponseUtils.baseURL(http),
-                        "ows",
-                        Collections.singletonMap("strict", "true"),
-                        URLType.SERVICE);
-
-        String js = "";
-        js += "function getCoverage() {\n";
-        js += "    var url ='" + url + "';\n";
-        js += "    var xml = document.getElementById(\"xml\").value;\n";
-        js += "    var user ='';\n";
-        js += "    var pass= '';\n";
-        js += "    openInNewWindow(url,xml,user,pass);\n";
-        js += "}\n";
-
-        response.render(JavaScriptContentHeaderItem.forScript(js, null));
     }
 
     public class WCSRequestModel implements Serializable {

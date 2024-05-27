@@ -126,7 +126,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                             error(e.getMessage());
                             addFeedbackPanels(target);
                         }
-                        target.appendJavaScript("getCoverage()");
+                        target.appendJavaScript("executeWPS()");
                     }
 
                     @Override
@@ -207,29 +207,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         response.render(
                 JavaScriptContentHeaderItem.forScript(
                         DemoRequestsPage.demoRequestsJavascript, null));
-        HttpServletRequest http = GeoServerApplication.get().servletRequest();
-
-        String url =
-                ResponseUtils.buildURL(
-                        ResponseUtils.baseURL(http),
-                        "ows",
-                        Collections.singletonMap("strict", "true"),
-                        URLType.SERVICE);
-
-        String js = "";
-        js += "function getCoverage() {\n";
-        js += "    var url ='" + url + "';\n";
-        js += "    var xml = document.getElementById(\"xml\").value;\n";
-        js += "    var user ='';\n";
-        js += "    var pass= '';\n";
-        js += "    if (document.getElementById('authenticate').checked) { \n";
-        js += "          var user =document.getElementById('WPSusername').value;\n";
-        js += "          var pass =document.getElementById('WPSpassword').value;\n";
-        js += "    }\n";
-        js += "    openInNewWindow(url,xml,user,pass);\n";
-        js += "}\n";
-
-        response.render(JavaScriptContentHeaderItem.forScript(js, null));
     }
 
     public class WPSRequestModel implements Serializable {

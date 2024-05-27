@@ -175,6 +175,18 @@
       <artifactId>gs-sec-oauth2-github</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community.jwt-headers</groupId>
+      <artifactId>gs-jwt-headers</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community.jwt-headers</groupId>
+      <artifactId>jwt-headers-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-sec-oauth2-geonode</artifactId>
@@ -437,17 +449,17 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-rat</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-monitor-kafka</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-graticule</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-wfs-freemarker</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

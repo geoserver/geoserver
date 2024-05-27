@@ -399,7 +399,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
         }
     }
 
-    private void addStationFeatures(File file) {
+    protected void addStationFeatures(File file) {
         extraStationFeatures()
                 .ifPresent(
                         content -> {
@@ -407,7 +407,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
                         });
     }
 
-    private void addMeasurementFeatures(File file) {
+    protected void addMeasurementFeatures(File file) {
         extraMeasurementFeatures()
                 .ifPresent(
                         content -> {

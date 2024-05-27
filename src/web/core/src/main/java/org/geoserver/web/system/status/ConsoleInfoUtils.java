@@ -7,7 +7,9 @@ package org.geoserver.web.system.status;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.management.LockInfo;
 import java.lang.management.ManagementFactory;
+import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.Optional;
@@ -28,8 +30,92 @@ public final class ConsoleInfoUtils {
         return Arrays.stream(
                         ManagementFactory.getThreadMXBean()
                                 .dumpAllThreads(lockedMonitors, lockedSynchronizers))
-                .map(ThreadInfo::toString)
+                .map(t -> getThreadStackTraces(t))
                 .collect(Collectors.joining("\n"));
+    }
+
+    static String getThreadStackTraces(ThreadInfo ti) {
+        StringBuilder sb =
+                new StringBuilder(
+                        "\""
+                                + ti.getThreadName()
+                                + "\""
+                                + (ti.isDaemon() ? " daemon" : "")
+                                + " prio="
+                                + ti.getPriority()
+                                + " Id="
+                                + ti.getThreadId()
+                                + " "
+                                + ti.getThreadState());
+        if (ti.getLockName() != null) {
+            sb.append(" on " + ti.getLockName());
+        }
+        if (ti.getLockOwnerName() != null) {
+            sb.append(" owned by \"" + ti.getLockOwnerName() + "\" Id=" + ti.getLockOwnerId());
+        }
+        if (ti.isSuspended()) {
+            sb.append(" (suspended)");
+        }
+        if (ti.isInNative()) {
+            sb.append(" (in native)");
+        }
+        sb.append('\n');
+        StackTraceElement[] stackTrace = ti.getStackTrace();
+        for (int i = 0; i < stackTrace.length; i++) {
+            StackTraceElement ste = stackTrace[i];
+            sb.append("\tat " + formatStackTraceElement(ste));
+            sb.append('\n');
+            LockInfo lockInfo = ti.getLockInfo();
+            if (i == 0 && lockInfo != null) {
+                Thread.State ts = ti.getThreadState();
+                switch (ts) {
+                    case BLOCKED:
+                        sb.append("\t-  blocked on " + lockInfo);
+                        sb.append('\n');
+                        break;
+                    case WAITING:
+                        sb.append("\t-  waiting on " + lockInfo);
+                        sb.append('\n');
+                        break;
+                    case TIMED_WAITING:
+                        sb.append("\t-  waiting on " + lockInfo);
+                        sb.append('\n');
+                        break;
+                    default:
+                }
+            }
+
+            for (MonitorInfo mi : ti.getLockedMonitors()) {
+                if (mi.getLockedStackDepth() == i) {
+                    sb.append("\t-  locked " + mi);
+                    sb.append('\n');
+                }
+            }
+        }
+
+        LockInfo[] locks = ti.getLockedSynchronizers();
+        if (locks.length > 0) {
+            sb.append("\n\tNumber of locked synchronizers = " + locks.length);
+            sb.append('\n');
+            for (LockInfo li : locks) {
+                sb.append("\t- " + li);
+                sb.append('\n');
+            }
+        }
+        sb.append('\n');
+        return sb.toString();
+    }
+
+    private static String formatStackTraceElement(StackTraceElement s) {
+        return s.getClassName()
+                + "."
+                + s.getMethodName()
+                + "("
+                + (s.isNativeMethod()
+                        ? "Native Method)"
+                        : (s.getFileName() != null && s.getLineNumber() >= 0)
+                                ? s.getFileName() + ":" + s.getLineNumber() + ")"
+                                : "");
     }
 
     /**

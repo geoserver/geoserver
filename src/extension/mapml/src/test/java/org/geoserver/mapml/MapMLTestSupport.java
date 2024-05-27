@@ -19,52 +19,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 /** MapML test support class */
 public class MapMLTestSupport extends WMSTestSupport {
-    /**
-     * Get the WMS response as a MapML object
-     *
-     * @param name the name of the layer
-     * @param kvp the key value pairs
-     * @param locale the locale
-     * @param bbox the bounding box
-     * @param srs the SRS
-     * @param styles the styles
-     * @param cqlFilter the CQL filter
-     * @return the MapML object
-     * @throws Exception if an error occurs
-     */
-    protected Mapml getWMSAsMapML(
-            String name,
-            Map kvp,
-            Locale locale,
-            String bbox,
-            String srs,
-            String styles,
-            String cqlFilter,
-            boolean isFeatureRepresentation)
-            throws Exception {
-        MockHttpServletRequest request =
-                getMapMLWMSRequest(
-                        name, kvp, locale, bbox, srs, styles, cqlFilter, isFeatureRepresentation);
-        MockHttpServletResponse response = dispatch(request);
-        return mapml(response);
-    }
-
-    protected String getWMSAsMapMLString(
-            String name,
-            Map kvp,
-            Locale locale,
-            String bbox,
-            String srs,
-            String styles,
-            String cqlFilter,
-            boolean isFeatureRepresentation)
-            throws Exception {
-        MockHttpServletRequest request =
-                getMapMLWMSRequest(
-                        name, kvp, locale, bbox, srs, styles, cqlFilter, isFeatureRepresentation);
-        MockHttpServletResponse response = dispatch(request);
-        return response.getContentAsString();
-    }
 
     /**
      * Get the response as a MapML object
@@ -99,62 +53,182 @@ public class MapMLTestSupport extends WMSTestSupport {
         return mapml;
     }
 
-    /**
-     * Get a MapML request
-     *
-     * @param name the name of the layer
-     * @param kvp the key value pairs
-     * @param locale the locale
-     * @param bbox the bounding box
-     * @param srs the SRS
-     * @param styles the styles
-     * @param cql the CQL filter
-     * @return the request
-     * @throws Exception if an error occurs
-     */
-    protected MockHttpServletRequest getMapMLWMSRequest(
-            String name,
-            Map kvp,
-            Locale locale,
-            String bbox,
-            String srs,
-            String styles,
-            String cql,
-            boolean isFeatureRepresentation)
-            throws Exception {
-        String path = null;
-        cql = cql != null ? cql : "";
-        MockHttpServletRequest request = null;
-        String formatOptions =
-                isFeatureRepresentation
-                        ? MapMLConstants.MAPML_FEATURE_FO + ":true"
-                        : MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
-        if (kvp != null) {
-            path = "wms";
-            request = createRequest(path, kvp);
-        } else {
-            path =
-                    "wms?LAYERS="
-                            + name
-                            + "&STYLES="
-                            + (styles != null ? styles : "")
-                            + "&FORMAT="
-                            + MapMLConstants.MAPML_MIME_TYPE
-                            + "&SERVICE=WMS&VERSION=1.3.0"
-                            + "&REQUEST=GetMap"
-                            + "&SRS="
-                            + srs
-                            + "&BBOX="
-                            + (bbox != null ? bbox : "0,0,1,1")
-                            + "&WIDTH=150"
-                            + "&HEIGHT=150"
-                            + "&cql_filter="
-                            + cql
-                            + "&format_options="
-                            + formatOptions;
-            request = createRequest(path);
+    @Override
+    protected MockHttpServletRequest createRequest(String path) {
+        return super.createRequest(path);
+    }
+
+    @Override
+    protected MockHttpServletRequest createRequest(String path, Map kvp) {
+        return super.createRequest(path, kvp);
+    }
+
+    public class MapMLWMSRequest {
+        private String name;
+        private Map kvp;
+        private Locale locale;
+        private String bbox;
+        private String srs;
+        private String styles;
+        private String cql;
+        private String width;
+        private String height;
+        private String format;
+        private boolean feature;
+
+        public String getName() {
+            return name;
         }
 
-        return request;
+        public Map getKvp() {
+            return kvp;
+        }
+
+        public Locale getLocale() {
+            return locale;
+        }
+
+        public String getBbox() {
+            return bbox;
+        }
+
+        public String getSrs() {
+            return srs;
+        }
+
+        public String getStyles() {
+            return styles;
+        }
+
+        public String getCql() {
+            return cql;
+        }
+
+        public String getWidth() {
+            return width;
+        }
+
+        public String getHeight() {
+            return height;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public boolean isFeature() {
+            return feature;
+        }
+
+        public MapMLWMSRequest cql(String cql) {
+            this.cql = cql;
+            return this;
+        }
+
+        public MapMLWMSRequest name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public MapMLWMSRequest kvp(Map kvp) {
+            this.kvp = kvp;
+            return this;
+        }
+
+        public MapMLWMSRequest locale(Locale locale) {
+            this.locale = locale;
+            return this;
+        }
+
+        public MapMLWMSRequest bbox(String bbox) {
+            this.bbox = bbox;
+            return this;
+        }
+
+        public MapMLWMSRequest srs(String srs) {
+            this.srs = srs;
+            return this;
+        }
+
+        public MapMLWMSRequest styles(String styles) {
+            this.styles = styles;
+            return this;
+        }
+
+        public MapMLWMSRequest width(String width) {
+            this.width = width;
+            return this;
+        }
+
+        public MapMLWMSRequest height(String height) {
+            this.height = height;
+            return this;
+        }
+
+        public MapMLWMSRequest format(String format) {
+            this.format = format;
+            return this;
+        }
+
+        public MapMLWMSRequest feature(boolean feature) {
+            this.feature = feature;
+            return this;
+        }
+
+        /** Get a MapML request */
+        protected MockHttpServletRequest toHttpRequest() throws Exception {
+            String path = null;
+            cql(getCql() != null ? getCql() : "");
+            MockHttpServletRequest httpRequest = null;
+            String formatOptions =
+                    isFeature()
+                            ? MapMLConstants.MAPML_FEATURE_FO + ":true"
+                            : MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
+            if (getKvp() != null) {
+                path = "wms";
+                httpRequest = createRequest(path, getKvp());
+            } else {
+                path =
+                        "wms?LAYERS="
+                                + getName()
+                                + "&STYLES="
+                                + (getStyles() != null ? getStyles() : "")
+                                + "&FORMAT="
+                                + (getFormat() != null
+                                        ? getFormat()
+                                        : MapMLConstants.MAPML_MIME_TYPE)
+                                + "&SERVICE=WMS&VERSION=1.3.0"
+                                + "&REQUEST=GetMap"
+                                + "&SRS="
+                                + getSrs()
+                                + "&BBOX="
+                                + (getBbox() != null ? getBbox() : "0,0,1,1")
+                                + "&WIDTH="
+                                + (getWidth() != null ? getWidth() : "150")
+                                + "&HEIGHT="
+                                + (getHeight() != null ? getHeight() : "150")
+                                + "&cql_filter="
+                                + getCql()
+                                + "&format_options="
+                                + formatOptions;
+                httpRequest = createRequest(path);
+            }
+
+            return httpRequest;
+        }
+
+        /** Get the WMS response as a MapML object */
+        protected Mapml getAsMapML() throws Exception {
+            MockHttpServletRequest request = toHttpRequest();
+            MockHttpServletResponse response = dispatch(request);
+            return mapml(response);
+        }
+
+        /** Get the WMS response as a string */
+        protected String getAsString() throws Exception {
+            MockHttpServletRequest request = toHttpRequest();
+            MockHttpServletResponse response = dispatch(request);
+            return response.getContentAsString();
+        }
     }
 }

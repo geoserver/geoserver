@@ -50,6 +50,7 @@ public class GenericRecordBuilder implements RecordBuilder {
     protected ComplexFeatureBuilder fb;
     protected List<ReferencedEnvelope> boxes = new ArrayList<>();
     protected RecordDescriptor recordDescriptor;
+    protected QueryablesMapping queryables;
     protected Map<Name, Name> substitutionMap = new HashMap<>();
 
     /**
@@ -127,7 +128,18 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param recordDescriptor The Record Descriptor
      */
     public GenericRecordBuilder(RecordDescriptor recordDescriptor) {
+        this(recordDescriptor, recordDescriptor);
+    }
+
+    /**
+     * Start Generic Record Builder based on the Record Descriptor
+     *
+     * @param recordDescriptor The Record Descriptor
+     * @param queryables The queryables
+     */
+    public GenericRecordBuilder(RecordDescriptor recordDescriptor, QueryablesMapping queryables) {
         this.recordDescriptor = recordDescriptor;
+        this.queryables = queryables;
         fb = new ComplexFeatureBuilder(recordDescriptor.getFeatureDescriptor());
 
         for (PropertyDescriptor descriptor : recordDescriptor.getFeatureType().getDescriptors()) {
@@ -372,11 +384,11 @@ public class GenericRecordBuilder implements RecordBuilder {
             geom = geom.getFactory().createMultiPolygon(new Polygon[] {(Polygon) geom});
         }
 
-        if (recordDescriptor.getBoundingBoxPropertyName() != null) {
+        if (queryables.getBoundingBoxPropertyName() != null) {
             Map<Object, Object> userData =
                     Collections.singletonMap(ORIGINAL_BBOXES, new ArrayList<>(boxes));
             addElement(
-                    recordDescriptor.getBoundingBoxPropertyName(),
+                    queryables.getBoundingBoxPropertyName(),
                     Collections.singletonList(geom),
                     userData,
                     new int[0]);

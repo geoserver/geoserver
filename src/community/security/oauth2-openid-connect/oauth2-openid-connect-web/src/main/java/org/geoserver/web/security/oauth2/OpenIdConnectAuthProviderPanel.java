@@ -139,6 +139,8 @@ public class OpenIdConnectAuthProviderPanel
 
         add(new HelpLink("jwkURIHelp", this).setDialog(dialog));
         add(new TextField<String>("jwkURI"));
+        add(new HelpLink("enforceTokenValidationHelp", this).setDialog(dialog));
+        add(new CheckBox("enforceTokenValidation"));
 
         add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));
         add(new TextField<String>("postLogoutRedirectUri"));

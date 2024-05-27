@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ (c) 2024 Open Source Geospatial Foundation - all rights reserved
+  ~ This code is licensed under the GPL 2.0 license, available at the root
+  ~ application directory.
+  ~
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>jwt-headers</artifactId>
+    <version>2.26-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community.jwt-headers</groupId>
+  <artifactId>jwt-headers-util</artifactId>
+  <packaging>jar</packaging>
+  <name>JWT Headers Shared Library</name>
+
+  <!--
+
+      This module should have minimal dependencies.
+      This module should have NO GeoServer/GeoTools dependencies.
+
+      This is a shared module and used by both GeoServer and GeoNetwork.
+
+    -->
+
+  <dependencies>
+    <!--
+        set to compile scope because GeoNetwork supplies its on JAR of this.
+        (Use at least this version for security fixes.)
+    -->
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>9.37.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+</project>

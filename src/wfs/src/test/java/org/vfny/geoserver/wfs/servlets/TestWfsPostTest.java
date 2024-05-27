@@ -4,8 +4,9 @@
  */
 package org.vfny.geoserver.wfs.servlets;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -254,6 +255,47 @@ public class TestWfsPostTest {
                     }
                 };
         assertEquals("https://foo.com/geoserver", servlet.getProxyBaseURL());
+    }
+
+    @Test
+    // https://osgeo-org.atlassian.net/browse/GEOS-11385
+    public void testGetProxyBaseURLfromEnv() {
+        SettingsInfo settings = new SettingsInfoImpl();
+        settings.setProxyBaseUrl("https://foo.com/geoserver1");
+        // Override the Proxy Base Url with the Environment variable
+        System.setProperty("PROXY_BASE_URL", "https://foo.com/geoserver2");
+
+        GeoServerInfo info = new GeoServerInfoImpl();
+        info.setSettings(settings);
+
+        GeoServer gs = new GeoServerImpl();
+        gs.setGlobal(info);
+
+        TestWfsPost servlet =
+                new TestWfsPost() {
+                    @Override
+                    protected GeoServer getGeoServer() {
+                        return gs;
+                    }
+                };
+        assertEquals("https://foo.com/geoserver2", servlet.getProxyBaseURL());
+        System.clearProperty("PROXY_BASE_URL");
+    }
+
+    @Test
+    public void testRemovedInlineJavaScript() throws Exception {
+        TestWfsPost servlet = buildMockServlet();
+        MockHttpServletRequest request = buildMockRequest();
+        request.setMethod("GET");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        servlet.service(request, response);
+        String result = response.getContentAsString();
+        assertThat(
+                result,
+                containsString("<script src=\"webresources/wfs/TestWfsPost.js\"></script>"));
+        assertThat(result, not(containsString("<script language=\"JavaScript\">")));
+        assertThat(result, not(containsString("action=\"JavaScript:")));
+        assertThat(result, not(containsString(" onclick=")));
     }
 
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")

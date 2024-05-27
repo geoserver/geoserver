@@ -3,7 +3,9 @@
 JWT Headers configuration
 =========================
 
+
 The JWT Headers module covers three main use cases:
+
 
 #. Simple Text, JSON, or JWT headers for the username
 #. Verification of JWT Access Tokens
@@ -153,6 +155,12 @@ The JWT Headers module also allows for converting roles (from the external IDP) 
 For example, a conversion map like `GeoserverAdministrator=ROLE_ADMINISTRATOR` will convert our IDP "GeoserverAdministrator" role to GeoServer's "ROLE_ADMINISTRATOR".
 
 In our example, the user has two roles "GeoserverAdministrator" and "GeonetworkAdministrator".  If the "Only allow External Roles that are explicitly named above" is checked, then GeoServer will only see the "ROLE_ADMINISTRATOR" role.  If unchecked, it will see "ROLE_ADMINISTRATOR" and "GeonetworkAdministrator".  In neither case will it see the converted "GeoserverAdministrator" roles.
+
+You can also have multiple GeoServer roles from one external (OIDC) role.  For example, this role conversion:
+
+`GeoserverAdministrator=ROLE_ADMINISTRATOR;GeoserverAdministrator=ADMIN`
+
+Will give users with the OIDC role `GeoserverAdministrator` two GeoServer roles - `ROLE_ADMINISTRATOR` and `ADMIN`.
 
 
 JWT Validation

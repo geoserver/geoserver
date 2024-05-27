@@ -29,7 +29,7 @@
   <name>WCS NetCDF output Module</name>
 
   <properties>
-    <netcdf.version>4.6.15</netcdf.version>
+    <netcdf.version>5.5.3</netcdf.version>
   </properties>
 
   <dependencies>

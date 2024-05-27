@@ -22,3 +22,4 @@ It also describes how to view the GeoServer instance status.
    internationalization/index
    demos/index
    tools/index
+   properties/index

@@ -127,17 +127,15 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             String templateName = getTemplateName(mapContent);
             Template template = cfg.getTemplate(templateName);
             HashMap<String, Object> map = new HashMap<>();
-            map.put("context", mapContent);
-            boolean hasOnlyCoverages = hasOnlyCoverages(mapContent);
-            map.put("pureCoverage", hasOnlyCoverages);
-            map.put("supportsFiltering", supportsFiltering(mapContent));
+            map.put("pureCoverage", Boolean.toString(hasOnlyCoverages(mapContent)));
+            map.put("supportsFiltering", Boolean.toString(supportsFiltering(mapContent)));
             map.put("styles", styleNames(mapContent));
             GetMapRequest request = mapContent.getRequest();
             map.put("request", request);
-            map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
+            map.put("yx", Boolean.toString(isWms13FlippedCRS(request.getCrs())));
             map.put(
                     "maxResolution",
-                    Double.valueOf(getMaxResolution(mapContent.getRenderingArea())));
+                    Double.toString(getMaxResolution(mapContent.getRenderingArea())));
             ProjectionHandler handler = null;
             try {
                 handler =
@@ -150,7 +148,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
             }
             map.put(
                     "global",
-                    String.valueOf(
+                    Boolean.toString(
                             handler != null && handler instanceof WrappingProjectionHandler));
 
             String baseUrl =
@@ -351,7 +349,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
         }
         if (!exceptionsFound) {
             Map<String, String> map = new HashMap<>();
-            map.put("name", "exceptions");
+            map.put("name", "EXCEPTIONS");
             map.put("value", "application/vnd.ogc.se_inimage");
             result.add(map);
         }

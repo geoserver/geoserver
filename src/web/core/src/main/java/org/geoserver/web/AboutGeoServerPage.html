@@ -2,37 +2,39 @@
   <body>
     <wicket:extend>
       <form>
-       <fieldset class="mt-3">
-         <legend>
-           <wicket:message key="buildInformation">Build Information</wicket:message>
-         </legend>
-         <ul>
-           <li>
-             <label for="version"><wicket:message key="geoserverVersion">Version</wicket:message></label>
-             <span id="version"><wicket:message key="version"></wicket:message></span>
-           </li>
-           <li>
-             <label for="buildRevision"><wicket:message key="gitRevision">Git Revision</wicket:message></label>
-             <span id="buildRevision"><wicket:message key="build.revision"></wicket:message></span>
-           </li>
-           <li>
-             <label for="buildDate"><wicket:message key="buildDate">Build Date</wicket:message></label>
-             <span id="buildDate"><wicket:message key="build.date"></wicket:message></span>
-           </li>
-           <li>
-             <label for="geotoolsInfo"><wicket:message key="geotoolsVersion">GeoTools Version</wicket:message></label>
-             <span id="geotoolsInfo">
-               <span wicket:id="geotoolsVersion"></span> (rev <span wicket:id="geotoolsRevision"></span>)
-             </span>
-           </li>
-           <li>
-             <label for="geowebcacheInfo"><wicket:message key="geowebcacheVersion">GeoWebCache Version</wicket:message></label>
-             <span id="geotoolsInfo">
-               <span wicket:id="geowebcacheVersion"></span> (rev <span wicket:id="geowebcacheRevision"></span>)
-             </span>
-           </li>
-         </ul>
-       </fieldset>
+          <wicket:container wicket:id="privateInfo">
+               <fieldset  class="mt-3">
+                 <legend>
+                   <wicket:message key="buildInformation">Build Information</wicket:message>
+                 </legend>
+                 <ul>
+                   <li>
+                     <label for="version"><wicket:message key="geoserverVersion">Version</wicket:message></label>
+                     <span id="version"><wicket:message key="version"></wicket:message></span>
+                   </li>
+                   <li>
+                     <label for="buildRevision"><wicket:message key="gitRevision">Git Revision</wicket:message></label>
+                     <span id="buildRevision"><wicket:message key="build.revision"></wicket:message></span>
+                   </li>
+                   <li>
+                     <label for="buildDate"><wicket:message key="buildDate">Build Date</wicket:message></label>
+                     <span id="buildDate"><wicket:message key="build.date"></wicket:message></span>
+                   </li>
+                   <li>
+                     <label for="geotoolsInfo"><wicket:message key="geotoolsVersion">GeoTools Version</wicket:message></label>
+                     <span id="geotoolsInfo">
+                       <span wicket:id="geotoolsVersion"></span> (rev <span wicket:id="geotoolsRevision"></span>)
+                     </span>
+                   </li>
+                   <li>
+                     <label for="geowebcacheInfo"><wicket:message key="geowebcacheVersion">GeoWebCache Version</wicket:message></label>
+                     <span id="geotoolsInfo">
+                       <span wicket:id="geowebcacheVersion"></span> (rev <span wicket:id="geowebcacheRevision"></span>)
+                     </span>
+                   </li>
+                 </ul>
+               </fieldset>
+          </wicket:container>
        <fieldset>
            <legend><wicket:message key="moreInformation">More Information</wicket:message></legend>
            <p>
@@ -50,10 +52,13 @@
                <li><wicket:message key="informationDemos"></wicket:message></li>
              </ul>
            </p>
-           <p>
-             <wicket:message key="usefulLinks"></wicket:message>
-           </p>
+       </fieldset>
+       <fieldset>
+           <legend><wicket:message key="usefulLinks">Useful Links</wicket:message></legend>
              <ul>
+              <li>
+                <a href="https://geoserver.org">geoserver.org</a>
+              </li>
               <li>
                 <a href="https://docs.geoserver.org"><wicket:message key="documentation">Documentation</wicket:message></a>
               </li>

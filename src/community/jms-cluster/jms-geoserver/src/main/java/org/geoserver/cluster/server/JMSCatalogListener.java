@@ -106,17 +106,20 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                 } else {
                     styleFile = loader.get("styles/" + sInfo.getFilename());
                 }
-                // checks
-                if (!Resources.exists(styleFile)
-                        || !Resources.canRead(styleFile)
-                        || !(styleFile.getType() == Type.RESOURCE)) {
-                    throw new IllegalStateException(
-                            "Unable to find style for event: " + sInfo.toString());
-                }
 
-                // transmit the file
-                jmsPublisher.publish(
-                        getTopic(), getJmsTemplate(), options, new DocumentFile(styleFile));
+                // according to the REST guide, one can create a style by first upload of the
+                // XML file and then the style (e.g., SLD) file. So the style file might be missing.
+                if (Resources.exists(styleFile)) {
+                    // checks
+                    if (!Resources.canRead(styleFile) || !(styleFile.getType() == Type.RESOURCE)) {
+                        throw new IllegalStateException(
+                                "Unable to find style for event: " + sInfo.toString());
+                    }
+
+                    // transmit the file
+                    jmsPublisher.publish(
+                            getTopic(), getJmsTemplate(), options, new DocumentFile(styleFile));
+                }
             }
 
             // propagate the event

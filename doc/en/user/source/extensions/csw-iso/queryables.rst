@@ -12,3 +12,12 @@ The ISO Metadata queryables mapping can be found in the file ``csw/MD_Metadata.q
 Bounding Box
 ~~~~~~~~~~~~
 The 'BoundingBox' queryable has an additional functionality. Changing it will not only alter the queryable as such, but also how the layers are mapped to ISO metadata records. The first XPath will be the place where the bounding box of the layers are encoded in each of the records.
+
+Multiple Mappings
+~~~~~~~~~~~~~~~~~
+The CSW module supports mapping each layer to multiple records (see :ref:`csw_mapping_file`). In this case one might want to have separate queryables mappings associated with these distinct mappings as well. (One could avoid this and map queryables to multiple XPaths instead as explained above, but that would not make it possible to map the bounding box to separate XPaths). The syntax of the queryables mappings file names is analogue to the regular mappings. For instance, or instance, one could have the following files in the ``csw`` directory:
+
+* ``csw/Record.properties``
+* ``csw/Record-otherRecord.properties``
+* ``csw/Record.queryables.properties``
+* ``csw/Record-otherRecord.queryables.properties``

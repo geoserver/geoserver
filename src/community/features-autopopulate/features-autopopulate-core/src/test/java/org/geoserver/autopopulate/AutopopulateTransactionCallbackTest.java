@@ -5,6 +5,7 @@
 package org.geoserver.autopopulate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +26,9 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.PropertyType;
 import net.opengis.wfs.WfsFactory;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -44,6 +48,7 @@ import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
 @TestSetup(run = TestSetupFrequency.REPEAT)
@@ -82,7 +87,10 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
                             .getResourceAsStream("test-data/transactionCustomizer.properties"),
                     fout);
         }
-        template = new AutopopulateTemplate("cite/NamedPlaces/transactionCustomizer.properties");
+        template =
+                new AutopopulateTemplate(
+                        getDataDirectory()
+                                .get("cite/NamedPlaces/transactionCustomizer.properties"));
         Map templateCache = mock(Map.class);
         when(templateCache.get(any())).thenReturn(template);
         listener.setTemplateCache(templateCache);
@@ -92,7 +100,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     public void testAutopopulateTemplateResolvesProperties() {
         String key = "UPDATED";
         String value = "now()";
-        String resolved = template.getProperty(key);
+        String resolved = template.getAllProperties().get(key);
         log.info("Resolved value: " + resolved);
         assertNotSame(value, resolved);
     }
@@ -145,7 +153,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     }
 
     @Test
-    public void testUpdateTransactionElement() {
+    public void testUpdateTransactionElement() throws Exception {
         Update element = mock(Update.class);
         List<Property> properties = new ArrayList<Property>();
         PropertyType property = WfsFactory.eINSTANCE.createPropertyType();
@@ -166,8 +174,17 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
 
         listener.beforeTransaction(request);
 
-        verify(element, times(2)).getUpdateProperties();
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                        .append("application/json");
+        JSONObject result = (JSONObject) getJson(sb.toString());
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(features.size(), 2);
+        verify(element, times(features.size())).getTypeName();
+
         assertTrue(properties.stream().anyMatch(p -> p.getName().getLocalPart().equals("NAME")));
+        assertFalse(properties.isEmpty());
         while (properties.iterator().hasNext()) {
             Property p = properties.iterator().next();
             if (p.getName().getLocalPart().equals("NAME")) {
@@ -175,5 +192,14 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
                 break;
             }
         }
+    }
+
+    protected JSON getJson(String path) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+        String contentType = response.getContentType();
+        // in the case of GeoJSON response with ogcapi, the output format is not
+        // set to MockHttpServlet request, so skipping
+        if (contentType != null) assertEquals(contentType, "application/json;charset=UTF-8");
+        return json(response);
     }
 }

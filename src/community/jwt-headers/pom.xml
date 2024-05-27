@@ -17,80 +17,38 @@
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>jwt-headers</artifactId>
-  <packaging>jar</packaging>
-  <name>GeoServer Security Plugin For JWT Headers</name>
-
+  <packaging>pom</packaging>
+  <name>JWT Headers Community Modules</name>
+  <modules>
+    <module>jwt-headers-util</module>
+    <module>gs-jwt-headers</module>
+  </modules>
   <dependencies>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-sec-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-sec-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver.security</groupId>
-      <artifactId>gs-security-tests</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.nimbusds</groupId>
-      <artifactId>nimbus-jose-jwt</artifactId>
-      <version>9.37.3</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!--
+        This is a just a module to contain gs-jwt-headers and jwt-headers-util, so it doesn't have any dependencies.
+    -->
 
   </dependencies>
+
+  <profiles>
+
+    <profile>
+      <id>jwt-headers</id>
+      <modules>
+        <module>jwt-headers-util</module>
+        <module>gs-jwt-headers</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>communityRelease</id>
+      <modules>
+        <module>jwt-headers-util</module>
+        <module>gs-jwt-headers</module>
+      </modules>
+    </profile>
+
+  </profiles>
+
 </project>

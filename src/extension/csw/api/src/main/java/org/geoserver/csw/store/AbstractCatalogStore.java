@@ -19,6 +19,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.csw.records.AbstractRecordDescriptor;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.records.QueryablesMapping;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.Transaction;
@@ -102,6 +103,20 @@ public abstract class AbstractCatalogStore implements CatalogStore {
             hasProperty |= ad != null;
         }
         return hasProperty;
+    }
+
+    protected Query prepareQuery(Query q, RecordDescriptor rd, QueryablesMapping qm) {
+        if (Boolean.TRUE.equals(q.getHints().get(KEY_UNPREPARED))) {
+            q = qm.adaptQuery(q);
+
+            // the specification demands that we throw an error if a spatial operator
+            // is used against a non spatial property
+            if (q.getFilter() != null) {
+                rd.verifySpatialFilters(q.getFilter());
+            }
+        }
+
+        return q;
     }
 
     @Override

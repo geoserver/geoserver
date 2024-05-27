@@ -63,7 +63,6 @@ officially part of the GeoServer releases. They are however built along with the
    opensearch-eo/index
    pgraster/pgraster
    proxy-base-ext/index
-   rat/index
    remote-wps/index
    s3-geotiff/index
    schemaless-features/index
@@ -77,4 +76,5 @@ officially part of the GeoServer releases. They are however built along with the
    xslt/index
    web-service-auth/index
    webp/index
+   wfs-freemarker/index
    wps-longitudinal-profile/index

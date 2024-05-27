@@ -17,14 +17,23 @@ Global Settings are used to configure how OGC Web Services function.
 Service Settings
 ^^^^^^^^^^^^^^^^
 
-.. _config_globalsettings_proxy_base:
+.. _proxy_base:
 
 Proxy Base URL
 ''''''''''''''
 
 GeoServer can have the capabilities documents report a proxy properly. "The Proxy Base URL" field is the base URL seen beyond a reverse proxy.
 
-The Proxy Base URL field support environment parametrization (see :ref:`Parameterize catalog settings <datadir_configtemplate>` ) by activating the JVM parameter::
+This setting is available in the Administration Console and REST API by GeoServer Administrator. This setting may also be managed using the ``PROXY_BASE_URL`` :ref`application property <application_properties>` defined by a System Administrator.
+
+.. code-block::bash
+
+    -DPROXY_BASE_URL=https://example.net/geoserver
+    
+
+The Proxy Base URL field support environment parametrization (see :ref:`Parameterize catalog settings <datadir_configtemplate>` ) by activating the JVM parameter:
+
+.. code-block::bash
 
     -DALLOW_ENV_PARAMETRIZATION=true
 

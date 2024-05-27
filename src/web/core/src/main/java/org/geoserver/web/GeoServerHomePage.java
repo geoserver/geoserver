@@ -643,6 +643,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     }
 
     private Label footerMessage(ContactInfo contactInfo, Locale locale) {
+        boolean admin = getSession().isAdmin();
+        if (!admin) {
+            Label footerMessage = new Label("footerMessage", "");
+            return footerMessage;
+        }
+
         String version = String.valueOf(new ResourceModel("version").getObject());
 
         HashMap<String, String> params = new HashMap<>();

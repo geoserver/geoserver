@@ -262,6 +262,22 @@
               <generateModelDocumentation>false</generateModelDocumentation>
             </configuration>
           </execution>
+          <execution>
+            <id>generate-urlchecks-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatorName>java</generatorName>
+              <inputSpec>${openapi-base-folder}/urlchecks.yaml</inputSpec>
+              <configurationFile>${project.basedir}/client-api-config.json</configurationFile>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModelDocumentation>false</generateModelDocumentation>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

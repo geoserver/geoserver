@@ -731,8 +731,13 @@
       <id>jwt-headers</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>jwt-headers</artifactId>
+          <groupId>org.geoserver.community.jwt-headers</groupId>
+          <artifactId>jwt-headers-util</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community.jwt-headers</groupId>
+          <artifactId>gs-jwt-headers</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1871,8 +1876,18 @@
       <id>rat</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-rat</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wfs-freemarker</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wfs-freemarker</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>

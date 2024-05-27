@@ -447,6 +447,8 @@ For each enabled dimension the following configuration options are available:
   Setting this value manually may be desired when working with layers consisting of huge amounts of data where the automatic determination can get slow.
   This parameter is only handled for WMS Layers in their capabilities document.
 
+.. _layer_security:
+
 Edit Layer: Security
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

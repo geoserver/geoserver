@@ -274,7 +274,7 @@ public final class IntegrationTest {
      * be reached and then checks if the expected number of events were consumed.
      */
     private void waitAndCheckEvents(GeoServerInstance instance, int expectedEvents) {
-        instance.waitEvents(expectedEvents, 1000_000);
+        instance.waitEvents(expectedEvents, 2000);
         assertThat(instance.getConsumedEventsCount(), is(expectedEvents));
         instance.resetConsumedEventsCount();
     }

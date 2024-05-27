@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.xml.v1_1_0;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -16,6 +17,7 @@ import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.util.Version;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
+import org.xml.sax.SAXException;
 
 /**
  * Xml reader for wfs 1.1.0 xml requests.
@@ -59,11 +61,17 @@ public class WfsXmlReader extends XmlRequestReader {
         // set entity expansion limit
         parser.setEntityExpansionLimit(WFSXmlUtils.getEntityExpansionLimitConfiguration());
 
-        WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
-        Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
+        try {
+            WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
+            Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
 
-        WFSXmlUtils.checkValidationErrors(parser, this);
+            WFSXmlUtils.checkValidationErrors(parser, this);
 
-        return parsed;
+            return parsed;
+        } catch (IOException e) {
+            throw cleanException(e);
+        } catch (SAXException e) {
+            throw cleanSaxException(e);
+        }
     }
 }

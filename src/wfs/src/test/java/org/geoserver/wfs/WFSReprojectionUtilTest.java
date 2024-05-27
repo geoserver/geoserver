@@ -81,4 +81,16 @@ public class WFSReprojectionUtilTest {
                         1669792.36, 2782987.269831839, 1118889.97, 2273030.92, webMercator);
         assertTrue(JTS.equals(expected, clonedBbox.getBounds(), 0.1)); // NOPMD
     }
+
+    @Test
+    public void testAxisOrderWKT() throws Exception {
+        String wkt =
+                "GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
+        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
+        assertEquals(CRS.AxisOrder.EAST_NORTH, CRS.getAxisOrder(crs));
+
+        // the code uses an EPSG database lookup to find an equivalent official code
+        CoordinateReferenceSystem declared = WFSReprojectionUtil.getDeclaredCrs(crs, "1.1.0");
+        assertEquals(CRS.AxisOrder.NORTH_EAST, CRS.getAxisOrder(declared));
+    }
 }

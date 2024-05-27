@@ -8,6 +8,7 @@ package org.geoserver.platform;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -26,10 +27,90 @@ public class SystemEnvironmentTest {
         String key = System.getenv().keySet().iterator().next();
         String value = System.getenv(key);
 
-        SystemEnvironmentStatus status = new SystemEnvironmentStatus();
+        SystemEnvironmentStatus status =
+                new SystemEnvironmentStatus() {
+                    @Override
+                    String getEnvironmentVariable(String envVar) {
+                        return "true";
+                    }
+                };
+
         assertTrue(status.getMessage().isPresent());
         assertTrue(status.getMessage().get().contains(key));
         assertTrue(status.getMessage().get().contains(value));
+    }
+
+    /**
+     * Tests the SystemEnvironmentStatusEnabledEnvironmentVar so it turns on/off the message (list
+     * of environment vars).
+     */
+    @Test
+    public void testEnabled() {
+        final var VALUE = new ArrayList<String>();
+
+        // create subclass of SystemEnvironmentStatus so we can change the value of the environment
+        // variable.
+        // VALUE empty -> null
+        // otherwise its the first item in the VALUE
+        // if the request is for a different environment var -> throw
+        SystemEnvironmentStatus status =
+                new SystemEnvironmentStatus() {
+                    @Override
+                    String getEnvironmentVariable(String envVar) {
+                        if (envVar.equals(
+                                SystemEnvironmentStatus
+                                        .SystemEnvironmentStatusEnabledEnvironmentVar)) {
+                            if (VALUE.isEmpty()) {
+                                return null;
+                            }
+                            return VALUE.get(0);
+                        }
+                        throw new RuntimeException("bad var");
+                    }
+                };
+
+        VALUE.clear();
+        VALUE.add("true");
+        assertTrue(status.isShow());
+        assertFalse(status.getMessage().isEmpty());
+
+        VALUE.clear();
+        VALUE.add("TRUE");
+        assertTrue(status.isShow());
+        assertFalse(status.getMessage().isEmpty());
+
+        VALUE.clear();
+        VALUE.add("FALSE");
+        assertFalse(status.isShow());
+        assertTrue(
+                status.getMessage()
+                        .get()
+                        .startsWith("Environment variables hidden for security reasons."));
+
+        VALUE.clear();
+        VALUE.add("false");
+        assertFalse(status.isShow());
+        assertTrue(
+                status.getMessage()
+                        .get()
+                        .startsWith("Environment variables hidden for security reasons."));
+
+        // default -> false
+        VALUE.clear();
+        assertFalse(status.isShow());
+        assertTrue(
+                status.getMessage()
+                        .get()
+                        .startsWith("Environment variables hidden for security reasons."));
+
+        // bad value -> false
+        VALUE.clear();
+        VALUE.add("maybe");
+        assertFalse(status.isShow());
+        assertTrue(
+                status.getMessage()
+                        .get()
+                        .startsWith("Environment variables hidden for security reasons."));
     }
 
     @Test

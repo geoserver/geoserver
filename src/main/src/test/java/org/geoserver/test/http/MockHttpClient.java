@@ -160,4 +160,12 @@ public class MockHttpClient extends AbstractHttpClient {
             }
         }
     }
+
+    @Override
+    public Map<String, String> getExtraParams() {
+        return null;
+    }
+
+    @Override
+    public void setExtraParams(Map<String, String> extraParams) {}
 }

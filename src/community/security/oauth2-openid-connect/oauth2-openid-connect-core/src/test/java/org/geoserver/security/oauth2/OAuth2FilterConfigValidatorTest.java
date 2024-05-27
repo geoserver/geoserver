@@ -104,7 +104,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         failed = false;
         try {
             validator.validateOAuth2FilterConfig(config);
-        } catch (OAuth2FilterConfigException ex) {
+        } catch (OpenIdConnectFilterConfigException ex) {
             assertEquals(
                     OpenIdConnectFilterConfigException
                             .OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED,

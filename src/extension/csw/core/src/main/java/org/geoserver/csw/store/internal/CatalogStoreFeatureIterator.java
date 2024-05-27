@@ -89,7 +89,10 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         nextInternal();
 
         this.outputRecordDescriptor = outputRecordDescriptor;
-        builder = new GenericRecordBuilder(outputRecordDescriptor);
+        builder =
+                new GenericRecordBuilder(
+                        outputRecordDescriptor,
+                        outputRecordDescriptor.getQueryablesMapping(mapping.getMappingName()));
     }
 
     @Override

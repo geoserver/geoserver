@@ -72,6 +72,7 @@
             <descriptor>release/ext-cog.xml</descriptor>
             <descriptor>release/ext-s3-geotiff.xml</descriptor>
             <descriptor>release/ext-ogr-datastore.xml</descriptor>
+            <descriptor>release/ext-jwt-headers.xml</descriptor>
             <descriptor>release/ext-ogcapi-coverages.xml</descriptor>
             <descriptor>release/ext-ogcapi-dggs.xml</descriptor>
             <descriptor>release/ext-ogcapi-features.xml</descriptor>
@@ -98,9 +99,9 @@
             <descriptor>release/ext-xslt.xml</descriptor>
             <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
             <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
-            <descriptor>release/ext-rat.xml</descriptor>
             <descriptor>release/ext-monitor-kafka.xml</descriptor>
             <descriptor>release/ext-graticule.xml</descriptor>
+            <descriptor>release/ext-wfs-freemarker.xml</descriptor>
           </descriptors>
           <finalName>geoserver-${project.version}</finalName>
         </configuration>
@@ -250,9 +251,9 @@
         <module>imagemap</module>
         <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
-        <module>rat</module>
         <module>monitor-kafka</module>
         <module>graticule</module>
+        <module>wfs-freemarker</module>
       </modules>
     </profile>
     <profile>
@@ -470,7 +471,8 @@
     <profile>
       <id>jwt-headers</id>
       <modules>
-        <module>jwt-headers</module>
+        <module>jwt-headers/jwt-headers-util</module>
+        <module>jwt-headers/gs-jwt-headers</module>
       </modules>
     </profile>
 
@@ -715,12 +717,6 @@
       </modules>
     </profile>
     <profile>
-      <id>rat</id>
-      <modules>
-        <module>rat</module>
-      </modules>
-    </profile>
-    <profile>
       <id>graticule</id>
       <build>
         <plugins>
@@ -736,6 +732,12 @@
       </build>
       <modules>
         <module>graticule</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wfs-freemarker</id>
+      <modules>
+        <module>wfs-freemarker</module>
       </modules>
     </profile>
   </profiles>

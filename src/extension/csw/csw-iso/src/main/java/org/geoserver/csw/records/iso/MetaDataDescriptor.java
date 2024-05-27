@@ -12,7 +12,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordFeatureTypeRegistryConfiguration;
 import org.geoserver.csw.records.SpatialFilterChecker;
-import org.geoserver.csw.store.internal.CatalogStoreMapping;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.AttributeType;
@@ -23,7 +22,6 @@ import org.geotools.api.filter.Filter;
 import org.geotools.csw.CSW;
 import org.geotools.data.complex.feature.type.FeatureTypeRegistry;
 import org.geotools.data.complex.util.EmfComplexFeatureReader;
-import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
@@ -209,17 +207,6 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
     }
 
     @Override
-    public String getBoundingBoxPropertyName() {
-        XPathUtil.StepList steps =
-                XPathUtil.steps(
-                        getFeatureDescriptor(),
-                        queryableMapping.get(QUERYABLE_BBOX).get(0).getPropertyName(),
-                        getNamespaceSupport());
-
-        return CatalogStoreMapping.toDotPath(steps);
-    }
-
-    @Override
     public List<Name> getQueryables() {
         return QUERYABLES;
     }
@@ -227,6 +214,11 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
     @Override
     public String getQueryablesDescription() {
         return "SupportedISOQueryables";
+    }
+
+    @Override
+    protected String getBoundingBoxQueryable() {
+        return QUERYABLE_BBOX;
     }
 
     @Override

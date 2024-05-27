@@ -32,6 +32,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
 
     @BeforeClass
     public static void init() {
+        WCSNetCDFBaseTest.init();
         System.setProperty("testdata.force.delete", "true");
     }
 

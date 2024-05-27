@@ -163,11 +163,9 @@ Requirements
 
 The following properties must hold true in order to promote a community module:
 
-#. **The module has at least a "handful" of users**
+#. **The module is not site-specific and can be configured for use by the general GeoServer community.**
 
-   In order to avoid cluttering the main code base, only those community 
-   modules which are of interest to at least 3 users (this may include the 
-   maintainer) are promoted.
+   A community module of interest to multiple users would meet this goal; while a community module that has hard-coded a domain name would not.
 
 #. **The module has a designated and active maintainer**
 

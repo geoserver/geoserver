@@ -9,7 +9,6 @@
     <version>2.22-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jms-geoserver</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer JMS clustering module</name>
@@ -35,7 +34,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -52,10 +50,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom2</artifactId>
     </dependency>
 
     <dependency>
@@ -177,7 +171,6 @@
     <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
-      <version>1.9.2</version>
     </dependency>
 
     <dependency>
@@ -243,7 +236,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -257,7 +249,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-platform</artifactId>
-      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

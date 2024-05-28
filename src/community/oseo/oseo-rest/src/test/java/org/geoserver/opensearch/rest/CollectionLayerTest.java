@@ -768,7 +768,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
                         .collect(Collectors.toList());
         assertEquals(1, styles.size());
         assertEquals("test123", styles.get(0).getAttribute("name"));
-        assertEquals("test123", styles.get(0).getAttribute("title"));
+        assertEquals("gs:test123", styles.get(0).getAttribute("title"));
     }
 
     @Nullable

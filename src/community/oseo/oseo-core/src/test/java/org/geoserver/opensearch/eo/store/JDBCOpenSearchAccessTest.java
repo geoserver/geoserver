@@ -11,6 +11,8 @@ import static org.geoserver.opensearch.eo.ProductClass.OPTICAL;
 import static org.geoserver.opensearch.eo.ProductClass.RADAR;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -41,15 +43,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.easymock.EasyMock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -60,12 +66,16 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OSEOInfoImpl;
 import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.store.Indexable.FieldType;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
 import org.geotools.api.data.DataAccessFinder;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.FeatureStore;
 import org.geotools.api.data.Query;
+import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.Attribute;
 import org.geotools.api.feature.Feature;
@@ -76,19 +86,24 @@ import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.api.style.Style;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeImpl;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.styling.StyleBuilder;
+import org.geotools.util.factory.GeoTools;
+import org.geotools.util.logging.DefaultLoggerFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -97,6 +112,10 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class JDBCOpenSearchAccessTest {
 
@@ -110,6 +129,12 @@ public class JDBCOpenSearchAccessTest {
 
     public static final ProductClass GS_PRODUCT =
             new ProductClass("geoServer", "gs", "http://www.geoserver.org/eo/test");
+
+    // make sure Java logging is used
+    @BeforeClass
+    public static void setupLogging() throws IOException, SQLException {
+        GeoTools.setLoggerFactory(DefaultLoggerFactory.getInstance());
+    }
 
     /**
      * Returns the test fixture to run tests against a PostGIS database
@@ -934,5 +959,86 @@ public class JDBCOpenSearchAccessTest {
         assertEquals(
                 "{\"a\":{\"archive\":7,\"hello\":6,\"meh\":{\"aver\":9,\"working\":8}},\"c\":5,\"f\":3,\"g\":1,\"h\":4,\"m\":2,\"opt:cloudCover\":34}",
                 f.getAttribute("string").toString());
+    }
+
+    @Test
+    public void testJDBCVisitQuery() throws Exception {
+        JDBCProductFeatureStore testSource =
+                new JDBCProductFeatureStore(
+                        (JDBCOpenSearchAccess) osAccess, osAccess.getProductSource().getSchema()) {
+                    @Override
+                    public SimpleFeatureSource getDelegateSource() throws IOException {
+                        SimpleFeatureSource delegate = super.getDelegateSource();
+                        return new DecoratingSimpleFeatureSource(delegate) {
+                            @Override
+                            public SimpleFeatureCollection getFeatures(Query query)
+                                    throws IOException {
+                                // query filter did not turn into a list of id matches
+                                assertEquals(Filter.INCLUDE, query.getFilter());
+                                return super.getFeatures(query);
+                            }
+                        };
+                    }
+                };
+
+        // max visitor, no paging, will use joining, should avoid loading all ids in advance
+        MaxVisitor visitor = new MaxVisitor("timeStart");
+        testSource.getFeatures().accepts(visitor, null);
+        Date maxDate = (Date) visitor.getMax();
+        FastDateFormat format =
+                FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ssZZ", TimeZone.getTimeZone("UTC"));
+        assertEquals("2018-02-27 09:20:21Z", format.format(maxDate));
+    }
+
+    @Test
+    public void testCollectionCaching() throws Exception {
+        // setup environment to cache stuff in
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        ServletRequestAttributes attrs = new ServletRequestAttributes(request);
+        RequestContextHolder.setRequestAttributes(attrs);
+        // simulate the presence of a OGC request
+        Dispatcher.REQUEST.set(new Request());
+
+        try {
+
+            // grab the collections, check two well known entries
+            FeatureSource<FeatureType, Feature> collections = osAccess.getCollectionSource();
+            Set<String> collectionIdentifiers = getCollectionIdentifiers(collections);
+            assertThat(collectionIdentifiers, hasItems("SENTINEL2", "LANDSAT8"));
+
+            // check it has been cached too
+            Set<String> cachedCollections =
+                    (Set<String>)
+                            attrs.getAttribute(
+                                    WorkspaceFeatureSource.WS_COLLECTION_CACHE_KEY,
+                                    RequestAttributes.SCOPE_REQUEST);
+            assertThat(cachedCollections, hasItems("SENTINEL2", "LANDSAT8"));
+
+            // now corrupt the cache, remove one of the two entries
+            cachedCollections.remove("SENTINEL2");
+
+            // the query should now miss SENTINEL2 too, since it's using the cached results
+            collectionIdentifiers = getCollectionIdentifiers(collections);
+            assertThat(
+                    collectionIdentifiers, allOf(hasItems("LANDSAT8"), not(hasItems("SENTINEL2"))));
+        } finally {
+            // clean up
+            Dispatcher.REQUEST.remove();
+            RequestContextHolder.resetRequestAttributes();
+        }
+    }
+
+    private static Set<String> getCollectionIdentifiers(
+            FeatureSource<FeatureType, Feature> collections) throws IOException {
+        Set<String> collectionIdentifiers = new LinkedHashSet<>();
+        collections
+                .getFeatures(Query.ALL)
+                .accepts(
+                        f -> {
+                            String id = (String) f.getProperty("identifier").getValue();
+                            collectionIdentifiers.add(id);
+                        },
+                        null);
+        return collectionIdentifiers;
     }
 }

@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.jdom2.JDOMException;
 
 /**
  * Class used to handle a text file
@@ -34,9 +33,9 @@ public class DocumentFile {
      * Constructor
      *
      * @param path the path referring to this file
-     * @param document the string containing the body of the file (should be a valid JDOM document)
+     * @param document the string containing the body of the file
      */
-    public DocumentFile(Resource path, final String document) throws JDOMException, IOException {
+    public DocumentFile(Resource path, final String document) throws IOException {
         if (!Resources.exists(path)) {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
@@ -45,7 +44,7 @@ public class DocumentFile {
         this.body = document;
     }
 
-    public DocumentFile(Resource path) throws JDOMException, IOException {
+    public DocumentFile(Resource path) throws IOException {
         if (!Resources.exists(path)) {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
@@ -65,7 +64,7 @@ public class DocumentFile {
     }
 
     /** write the body to the passed file argument */
-    public void writeTo(Resource file) throws JDOMException, IOException {
+    public void writeTo(Resource file) throws IOException {
         try (OutputStream out = file.out()) {
             IOUtils.write(body, out);
             out.flush();

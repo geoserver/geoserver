@@ -60,7 +60,7 @@ public class DeveloperToolbar extends Panel {
         final AjaxCheckBox wicketPaths =
                 new AjaxCheckBox(
                         "wicketPaths",
-                        new PropertyModel<>(gsApp, "debugSettings.outputComponentPath")) {
+                        new PropertyModel<>(gsApp, "debugSettings.componentPathAttributeName")) {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {}

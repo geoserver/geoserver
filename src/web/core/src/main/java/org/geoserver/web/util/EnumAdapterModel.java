@@ -46,9 +46,4 @@ public class EnumAdapterModel<T extends Enum> implements IModel<T> {
     public void setObject(T object) {
         delegate.setObject(object);
     }
-
-    @Override
-    public void detach() {
-        // nothing to do
-    }
 }

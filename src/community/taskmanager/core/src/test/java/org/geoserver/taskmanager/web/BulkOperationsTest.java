@@ -147,7 +147,6 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         formTester.setFile(
                 "tabs:panel:fileUpload", new org.apache.wicket.util.file.File(csv), "text/csv");
         formTester.submit("tabs:panel:import");
-
         tester.assertModelValue(
                 "form:tabs:panel:dialog:dialog:content:form:userPanel",
                 "Are you sure you want to import 2 configurations?");

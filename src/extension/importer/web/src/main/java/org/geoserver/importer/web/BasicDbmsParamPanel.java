@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.PropertyModel;
 
 /**
@@ -92,14 +91,7 @@ class BasicDbParamPanel extends Panel {
                 };
         connPoolLink.add(
                 new AttributeModifier(
-                        "class",
-                        new AbstractReadOnlyModel() {
-
-                            @Override
-                            public Object getObject() {
-                                return connPoolPanel.isVisible() ? "expanded" : "collapsed";
-                            }
-                        }));
+                        "class", () -> connPoolPanel.isVisible() ? "expanded" : "collapsed"));
         connPoolLink.setOutputMarkupId(true);
         return connPoolLink;
     }

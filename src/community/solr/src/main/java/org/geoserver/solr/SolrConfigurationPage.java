@@ -49,6 +49,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+// TODO WICKET8 - Verify this page works OK
 /**
  * Class to render and manage the SOLR modal dialog This dialog allow the user to choice which SOLR
  * attributes include in layers, selects attributes to use as PK, as GEOMETRY, and set native SRID
@@ -126,7 +127,7 @@ public abstract class SolrConfigurationPage extends Panel {
                     private static final long serialVersionUID = 819555072210390051L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         onSave(target);
                     }
                 });

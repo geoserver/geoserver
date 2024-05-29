@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +25,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.time.Time;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geotools.util.logging.Logging;
@@ -133,7 +132,7 @@ public class WebUtils {
         }
 
         @Override
-        public Time lastModifiedTime() {
+        public Instant lastModifiedTime() {
             Object source;
             try {
                 source = cfg.getTemplateLoader().findTemplateSource(templateName);
@@ -147,7 +146,7 @@ public class WebUtils {
 
             if (source != null) {
                 long modified = cfg.getTemplateLoader().getLastModified(source);
-                return Time.valueOf(new Date(modified));
+                return Instant.ofEpochMilli(modified);
             }
 
             return null;

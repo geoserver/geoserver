@@ -274,11 +274,6 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
         }
 
         @Override
-        public void detach() {
-            //
-        }
-
-        @Override
         public void setObject(String object) {
             //
         }

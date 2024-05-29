@@ -69,6 +69,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
+// TODO WICKET8 - Verify this page (and derived pages?) work OK
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
 
     protected GeoServerDialog dialog;
@@ -190,18 +191,18 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     onSave(infoModel, false);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.add(form);
+                    target.add(getForm());
                 }
             }
         };

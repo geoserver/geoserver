@@ -52,4 +52,13 @@ legend span.no-border {
   border-bottom-style: none;
 }
 
-  
+.header-title {
+    margin-left: 20px;
+    font-weight:normal;
+}
+
+.details-text {
+    width:100%;
+    height:50em;
+    font-size:small
+}

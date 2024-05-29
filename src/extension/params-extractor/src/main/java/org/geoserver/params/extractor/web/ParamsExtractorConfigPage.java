@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -27,6 +28,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
+// TODO WICKET8 - Verify this page works OK
 public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
     GeoServerTablePanel<RuleModel> rulesPanel;
@@ -155,19 +157,14 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
             super(id);
             this.setOutputMarkupId(true);
             CheckBox activateButton =
-                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated")) {
-
+                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated"));
+            activateButton.add(
+                    new FormComponentUpdatingBehavior() {
                         @Override
-                        public void onSelectionChanged() {
-                            super.onSelectionChanged();
+                        public void onUpdate() {
                             RulesModel.saveOrUpdate(ruleModel);
                         }
-
-                        @Override
-                        protected boolean wantOnSelectionChangedNotifications() {
-                            return true;
-                        }
-                    };
+                    });
             add(activateButton);
         }
     }

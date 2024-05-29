@@ -14,7 +14,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -57,6 +56,7 @@ import org.geoserver.security.xml.XMLRoleServiceTest;
 import org.geoserver.security.xml.XMLUserGroupServiceTest;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.junit.Before;
 
 public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketTestSupport {
@@ -263,7 +263,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         }
     }
 
-    public void executeModalWindowClosedCallback(ModalWindow modalWindow) {
+    public void executeModalWindowClosedCallback(GSModalWindow modalWindow) {
         for (Behavior behavior : modalWindow.getBehaviors()) {
             if (behavior instanceof AbstractDefaultAjaxBehavior) {
                 String name = behavior.getClass().getSimpleName();
@@ -274,7 +274,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         }
     }
 
-    public void executeModalWindowCloseButtonCallback(ModalWindow modalWindow) {
+    public void executeModalWindowCloseButtonCallback(GSModalWindow modalWindow) {
         for (Behavior behavior : modalWindow.getBehaviors()) {
             if (behavior instanceof AbstractDefaultAjaxBehavior) {
                 String name = behavior.getClass().getSimpleName();

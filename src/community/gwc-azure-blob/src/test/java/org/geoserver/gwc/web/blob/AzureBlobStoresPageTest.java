@@ -16,10 +16,10 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geowebcache.azure.AzureBlobStoreInfo;
@@ -176,8 +176,9 @@ public class AzureBlobStoresPageTest extends GeoServerWicketTestSupport {
         assertEquals(1, table.getSelection().size());
         assertEquals(dummy1, table.getSelection().get(0));
 
-        ModalWindow w =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("confirmDeleteDialog:dialog");
+        GSModalWindow w =
+                (GSModalWindow)
+                        tester.getComponentFromLastRenderedPage("confirmDeleteDialog:dialog");
         assertFalse(w.isShown());
         tester.clickLink("headerPanel:removeSelected", true);
         assertTrue(w.isShown());

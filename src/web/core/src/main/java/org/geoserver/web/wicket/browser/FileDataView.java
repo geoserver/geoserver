@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -28,6 +29,7 @@ import org.apache.wicket.util.convert.IConverter;
  *
  * @author Andrea Aime - OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public abstract class FileDataView extends Panel {
     private static final IConverter<File> FILE_NAME_CONVERTER =
@@ -117,7 +119,7 @@ public abstract class FileDataView extends Panel {
                                 new IndicatingAjaxFallbackLink<Void>("nameLink") {
 
                                     @Override
-                                    public void onClick(AjaxRequestTarget target) {
+                                    public void onClick(Optional<AjaxRequestTarget> target) {
                                         linkNameClicked(item.getModelObject(), target);
                                     }
                                 };
@@ -172,7 +174,7 @@ public abstract class FileDataView extends Panel {
         table.add(new OrderByBorder<>("sizeHeader", FileProvider.SIZE, fileProvider));
     }
 
-    protected abstract void linkNameClicked(File file, AjaxRequestTarget target);
+    protected abstract void linkNameClicked(File file, Optional<AjaxRequestTarget> target);
 
     private abstract static class StringConverter implements IConverter<File> {
 

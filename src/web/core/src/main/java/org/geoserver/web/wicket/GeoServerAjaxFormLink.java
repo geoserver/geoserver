@@ -24,6 +24,7 @@ import org.geoserver.web.GeoServerBasePage;
  *
  * @author Andrea Aime
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public abstract class GeoServerAjaxFormLink extends AjaxSubmitLink {
 
@@ -41,8 +42,8 @@ public abstract class GeoServerAjaxFormLink extends AjaxSubmitLink {
     }
 
     @Override
-    protected final void onSubmit(AjaxRequestTarget target, Form<?> form) {
-        onClick(target, form);
+    protected final void onSubmit(AjaxRequestTarget target) {
+        onClick(target, getForm());
         if (getPage() instanceof GeoServerBasePage) {
             ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
         }

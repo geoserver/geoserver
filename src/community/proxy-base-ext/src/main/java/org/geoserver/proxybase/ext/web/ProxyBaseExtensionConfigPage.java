@@ -14,6 +14,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -30,6 +31,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
+// TODO WICKET8 - Verify this page works OK
 /** The configuration page for the {@link ProxyBaseExtUrlMangler}. */
 public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
     GeoServerTablePanel<ProxyBaseExtensionRule> rulesPanel;
@@ -154,19 +156,14 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
             super(id);
             this.setOutputMarkupId(true);
             CheckBox activateButton =
-                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated")) {
-
+                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated"));
+            activateButton.add(
+                    new FormComponentUpdatingBehavior() {
                         @Override
-                        public void onSelectionChanged() {
-                            super.onSelectionChanged();
+                        protected void onUpdate() {
                             RulesDataProvider.saveOrUpdate(ruleModel);
                         }
-
-                        @Override
-                        protected boolean wantOnSelectionChangedNotifications() {
-                            return true;
-                        }
-                    };
+                    });
             add(activateButton);
         }
     }

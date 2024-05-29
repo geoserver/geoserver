@@ -320,7 +320,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
     private boolean isSaveSubmit() {
         boolean result = false;
-        IFormSubmitter submitBtn = getForm().findSubmittingButton();
+        IFormSubmitter submitBtn = getForm().findSubmitter();
         if (submitBtn != null && submitBtn instanceof Component) {
             Component submitLink = (Component) submitBtn;
             String id = submitLink.getId();

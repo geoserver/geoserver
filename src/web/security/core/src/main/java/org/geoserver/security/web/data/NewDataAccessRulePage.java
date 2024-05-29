@@ -55,7 +55,9 @@ public class NewDataAccessRulePage extends AbstractDataAccessRulePage {
 
         @Override
         public void validate(Form<?> form) {
-            if (form.findSubmittingButton() != form.get("save")) { // only validate on final submit
+            if (!form.findSubmitter()
+                    .getInputName()
+                    .equals("save")) { // only validate on final submit
                 return;
             }
 

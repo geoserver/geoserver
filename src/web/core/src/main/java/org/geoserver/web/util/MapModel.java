@@ -6,7 +6,6 @@
 package org.geoserver.web.util;
 
 import java.util.Map;
-import org.apache.wicket.model.IChainingModel;
 import org.apache.wicket.model.IModel;
 
 /**
@@ -17,7 +16,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class MapModel<T> implements IModel<T>, IChainingModel<T> {
+public class MapModel<T> implements IModel<T> {
     private static final long serialVersionUID = 3122822158252376260L;
     IModel<? extends Map<String, ?>> model;
     String expression;
@@ -72,12 +71,4 @@ public class MapModel<T> implements IModel<T>, IChainingModel<T> {
         @Override
         public void detach() {}
     }
-
-    @Override
-    public IModel<?> getChainedModel() {
-        return null;
-    }
-
-    @Override
-    public void setChainedModel(IModel<?> arg0) {}
 }

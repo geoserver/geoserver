@@ -16,7 +16,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -37,6 +36,7 @@ import org.geoserver.metadata.web.panel.ProgressPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -45,6 +45,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /** @author Niels Charlier */
+// TODO WICKET8 - Verify this page works OK
 public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 2273966783474224452L;
@@ -60,7 +61,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
         GeoServerDialog dialog;
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialHeight(100);
-        ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
+        ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(progressPanel = new ProgressPanel("progress"));
 
@@ -103,7 +104,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 6765654318639597167L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
 
                 dialog.showOkCancel(target, dialogDelegate());
             }
@@ -179,12 +180,12 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 6765654318639597167L;
 
             @Override
-            public void onError(AjaxRequestTarget target, Form<?> form) {
+            public void onError(AjaxRequestTarget target) {
                 addFeedbackPanels(target);
             }
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
 
                 String csvData =
                         csvCustom.getFileUpload() == null
@@ -287,12 +288,12 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 6765654318639597167L;
 
             @Override
-            public void onError(AjaxRequestTarget target, Form<?> form) {
+            public void onError(AjaxRequestTarget target) {
                 addFeedbackPanels(target);
             }
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
 
                 String csvData = new String(csvImport.getFileUpload().getBytes());
 

@@ -15,7 +15,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -43,6 +42,7 @@ import org.springframework.util.Assert;
  * @see LayerInfo#getIdentifiers()
  * @see LayerGroupInfo#getIdentifiers()
  */
+// TODO WICKET8 - Verify this page works OK
 public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIdentifierInfo>> {
 
     private static final long serialVersionUID = 5098470663723800345L;
@@ -195,7 +195,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         List<LayerIdentifierInfo> list = identifiers.getModelObject();
                         LayerIdentifierInfo newIdentifier = new LayerIdentifier();
                         list.add(newIdentifier);

@@ -75,6 +75,7 @@ import org.geoserver.web.wicket.XMLNameValidator;
 import org.geotools.util.logging.Logging;
 
 /** Allows editing a specific workspace */
+// TODO WICKET8 - Verify this page works OK
 public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 4341324830412716976L;
@@ -210,7 +211,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         return new GeoserverAjaxSubmitLink("apply", this) {
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 saveWorkspace(false);
             }
         };

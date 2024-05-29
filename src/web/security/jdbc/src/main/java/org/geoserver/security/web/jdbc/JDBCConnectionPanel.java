@@ -15,7 +15,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -34,6 +33,7 @@ import org.geotools.util.logging.Logging;
  * @author Chrisitian Mueller
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
         extends FormComponentPanel<T> {
 
@@ -75,7 +75,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
                 new AjaxSubmitLink("cxTest") {
                     @Override
                     @SuppressWarnings("unchecked")
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             ((ConnectionPanel)
                                             JDBCConnectionPanel.this.get(

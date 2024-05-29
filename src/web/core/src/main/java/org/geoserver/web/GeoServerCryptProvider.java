@@ -4,7 +4,7 @@
  */
 package org.geoserver.web;
 
-import org.apache.wicket.util.IProvider;
+import java.util.function.Supplier;
 import org.apache.wicket.util.crypt.ICrypt;
 import org.apache.wicket.util.crypt.NoCrypt;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -15,7 +15,7 @@ import org.geoserver.security.GeoServerSecurityManager;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class GeoServerCryptProvider implements IProvider<ICrypt> {
+class GeoServerCryptProvider implements Supplier<ICrypt> {
 
     GeoServerSecurityManager manager;
     volatile ICrypt theCrypt;

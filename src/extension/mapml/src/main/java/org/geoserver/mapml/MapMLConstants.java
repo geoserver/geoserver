@@ -100,10 +100,10 @@ public final class MapMLConstants {
     public static final String SHARD_SERVER_PATTERN = "shardServerPattern";
 
     /** LICENSE_TITLE */
-    public static final String LICENSE_TITLE = "license.title";
+    public static final String LICENSE_TITLE = "mapml.licenseTitle";
 
     /** LICENSE_LINK */
-    public static final String LICENSE_LINK = "license.link";
+    public static final String LICENSE_LINK = "mapml.licenseLink";
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 

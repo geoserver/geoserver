@@ -1647,6 +1647,47 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 alternateLinks, ProjType.CBMTILE, new Envelope(-8.1E6, 8.3E6, -3.6E6, 1.23E7), 1e5);
     }
 
+    @Test
+    public void testLicenseIsPopulated() throws Exception {
+        // set up mapml layer license data
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
+
+        layerMeta.getMetadata().put(MapMLConstants.LICENSE_TITLE, "Apache-2.0");
+        layerMeta
+                .getMetadata()
+                .put(MapMLConstants.LICENSE_LINK, "https://opensource.org/license/apache-2-0");
+
+        catalog.save(layerMeta);
+        assertTrue(layerMeta.getMetadata().containsKey(MapMLConstants.LICENSE_TITLE));
+        assertTrue(layerMeta.getMetadata().containsKey(MapMLConstants.LICENSE_LINK));
+
+        assertTrue(
+                layerMeta
+                        .getMetadata()
+                        .get(MapMLConstants.LICENSE_TITLE)
+                        .toString()
+                        .equalsIgnoreCase("Apache-2.0"));
+
+        MockRequestResponse requestResponseEnglish =
+                getMockRequestResponse(
+                        MockData.BASIC_POLYGONS.getPrefix()
+                                + ":"
+                                + MockData.BASIC_POLYGONS.getLocalPart(),
+                        null,
+                        Locale.ENGLISH,
+                        "EPSG:3857",
+                        null);
+
+        Mapml mapml = parseMapML(requestResponseEnglish);
+        List<Link> licenseLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.LICENSE);
+        assertEquals(1, licenseLinks.size());
+        Link licenseLink = licenseLinks.get(0);
+        assertEquals("Apache-2.0", licenseLink.getTitle());
+        assertEquals("https://opensource.org/license/apache-2-0", licenseLink.getHref());
+    }
+
     private void testAlternateBounds(
             List<Link> alternateLinks, ProjType projType, Envelope bounds, double tolerance) {
         Link osmLink =

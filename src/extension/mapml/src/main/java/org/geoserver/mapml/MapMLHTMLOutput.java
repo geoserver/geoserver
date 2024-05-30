@@ -37,6 +37,7 @@ public class MapMLHTMLOutput {
     private Double latitude = 0.0;
     private Double longitude = 0.0;
     private ReferencedEnvelope projectedBbox;
+    private String templateHeader;
 
     private MapMLHTMLOutput(HTMLOutputBuilder builder) {
         this.latitude = builder.latitude;
@@ -47,6 +48,7 @@ public class MapMLHTMLOutput {
         this.projType = builder.projType;
         this.sourceUrL = builder.sourceUrL;
         this.projectedBbox = builder.projectedBbox;
+        this.templateHeader = builder.templateHeader;
     }
 
     public static class HTMLOutputBuilder {
@@ -58,6 +60,7 @@ public class MapMLHTMLOutput {
         private int zoom = 0;
         private Double latitude = 0.0;
         private Double longitude = 0.0;
+        private String templateHeader = "";
 
         public HTMLOutputBuilder setLayerLabel(String layerLabel) {
             this.layerLabel = layerLabel;
@@ -76,6 +79,11 @@ public class MapMLHTMLOutput {
 
         public HTMLOutputBuilder setSourceUrL(String sourceUrL) {
             this.sourceUrL = sourceUrL;
+            return this;
+        }
+
+        public HTMLOutputBuilder setTemplateHeader(String templateHeader) {
+            this.templateHeader = templateHeader;
             return this;
         }
 
@@ -124,6 +132,7 @@ public class MapMLHTMLOutput {
                 .append("mapml-viewer:not(:defined) > :not(layer-) { display: initial; }\n")
                 .append("</style>\n")
                 .append("</noscript>\n")
+                .append(templateHeader)
                 .append("</head>\n")
                 .append("<body>\n")
                 .append("<mapml-viewer projection=\"")

@@ -6,29 +6,37 @@ package org.geoserver.mapml;
 
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Rectangle;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.xml.bind.JAXBElement;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.mapml.xml.Coordinates;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.LineString;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.MultiLineString;
+import org.geoserver.mapml.xml.MultiPolygon;
+import org.geoserver.mapml.xml.Point;
 import org.geoserver.mapml.xml.Polygon;
+import org.geoserver.mapml.xml.Span;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
@@ -245,12 +253,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             // all lines are small enough that they are simplified to start/end
             if (geometry instanceof LineString) {
                 LineString ls = (LineString) geometry;
-                assertEquals(4, ls.getCoordinates().size());
+                String lscoords = ls.getCoordinates().get(0).getCoordinates().get(0).toString();
+                assertEquals(4, lscoords.split(" ").length);
             } else if (geometry instanceof MultiLineString) {
                 MultiLineString mls = (MultiLineString) geometry;
-                for (JAXBElement je : mls.getTwoOrMoreCoordinatePairs()) {
-                    List<String> coordinates = (List<String>) je.getValue();
-                    assertEquals(4, coordinates.size());
+                for (Coordinates je : mls.getTwoOrMoreCoordinatePairs()) {
+                    String mlscoords = je.getCoordinates().get(0).toString();
+                    assertEquals(2, mlscoords.split(" ").length);
                 }
             }
         }
@@ -287,6 +296,321 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         assertFalse(
                 "Query filter does not include the SLD filter because the else clause is used",
                 qElse.getFilter().toString().contains("ADDRESS = 123 Main Street"));
+    }
+
+    @Test
+    public void testTemplateHeaderStyle() throws Exception {
+        File template = null;
+        try {
+            Catalog cat = getCatalog();
+            LayerInfo li = cat.getLayerByName(MockData.BRIDGES.getLocalPart());
+            li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+            li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+            cat.save(li);
+            String layerId = getLayerId(MockData.BRIDGES);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_FEATURE_HEAD_FTL);
+            FileUtils.write(
+                    template,
+                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                            + "<map-head>\n"
+                            + "  <map-style>.desired {stroke-dashoffset:3}</map-style>\n"
+                            + "</map-head>\n"
+                            + "</mapml->\n",
+                    "UTF-8");
+            Mapml mapmlFeatures =
+                    new MapMLWMSRequest()
+                            .name(MockData.BRIDGES.getLocalPart())
+                            .bbox("-180,-90,180,90")
+                            .srs("EPSG:4326")
+                            .feature(true)
+                            .getAsMapML();
+
+            String mapmlStyle = mapmlFeatures.getHead().getStyle();
+            assertTrue(mapmlStyle.contains(".desired {stroke-dashoffset:3}"));
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testMapMLFeaturePointHasClass() throws Exception {
+        File template = null;
+        try {
+            Catalog cat = getCatalog();
+            LayerInfo li = cat.getLayerByName(MockData.BRIDGES.getLocalPart());
+            li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+            li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+            cat.save(li);
+            String layerId = getLayerId(MockData.BRIDGES);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_FEATURE_FTL);
+            FileUtils.write(
+                    template,
+                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                            + "<map-head>\n"
+                            + "</map-head>\n"
+                            + "<map-body>\n"
+                            + "<map-feature>\n"
+                            + "  <#list attributes as attribute>\n"
+                            + "    <#if attribute.name == \"NAME\">\n"
+                            + "      <map-properties name=\"UPDATED ${attribute.name}\" value=\"CHANGED ${attribute.value}\"/>\n"
+                            + "    </#if>\n"
+                            + "  </#list>\n"
+                            + "  <#list attributes as gattribute>\n"
+                            + "    <#if gattribute.isGeometry>\n"
+                            + "      <map-geometry>"
+                            + "       <map-point>"
+                            + "       <map-coordinates><#list gattribute.rawValue.coordinates as coord>"
+                            + "        <#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y}</map-span><#else>${coord.x} ${coord.y}</#if></#list></map-coordinates></map-point>"
+                            + "      </map-geometry>"
+                            + "    </#if>\n"
+                            + "  </#list>\n"
+                            + "</map-feature>\n"
+                            + "</map-body>\n"
+                            + "</mapml->\n",
+                    "UTF-8");
+            Mapml mapmlFeatures =
+                    new MapMLWMSRequest()
+                            .name(MockData.BRIDGES.getLocalPart())
+                            .bbox("-180,-90,180,90")
+                            .srs("EPSG:4326")
+                            .feature(true)
+                            .getAsMapML();
+
+            Feature feature2 =
+                    mapmlFeatures
+                            .getBody()
+                            .getFeatures()
+                            .get(0); // get the first feature, which has a class
+            String attributes = feature2.getProperties().getAnyElement();
+            assertTrue(attributes.contains("UPDATED NAME"));
+            Point featurePoint = (Point) feature2.getGeometry().getGeometryContent().getValue();
+            Span span = ((Span) featurePoint.getCoordinates().get(0).getCoordinates().get(0));
+            assertEquals("desired", span.getClazz());
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testMapMLFeatureLineHasClass() throws Exception {
+        File template = null;
+        try {
+            Catalog cat = getCatalog();
+            LayerInfo li = cat.getLayerByName(MockData.MLINES.getLocalPart());
+            li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+            li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+            cat.save(li);
+            String layerId = getLayerId(MockData.MLINES);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_FEATURE_FTL);
+            FileUtils.write(
+                    template,
+                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                            + "<map-head>\n"
+                            + "</map-head>\n"
+                            + "<map-body>\n"
+                            + "<map-feature>\n"
+                            + "  <#list attributes as attribute>\n"
+                            + "    <#if attribute.isGeometry>\n"
+                            + "      <map-geometry><map-linestring><map-coordinates><#list attribute.rawValue.coordinates as coord><#if coord?index == 2> <map-span class=\"desired\">${coord.x} ${coord.y}<#elseif coord?index == 3>${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></map-linestring></map-geometry>\n"
+                            + "    </#if>\n"
+                            + "  </#list>\n"
+                            + "</map-feature>\n"
+                            + "</map-body>\n"
+                            + "</mapml->\n",
+                    "UTF-8");
+            Mapml mapmlFeatures =
+                    new MapMLWMSRequest()
+                            .name(MockData.MLINES.getLocalPart())
+                            .bbox("500000,500000,500999,500999")
+                            .srs("EPSG:32615")
+                            .feature(true)
+                            .getAsMapML();
+
+            Feature feature2 =
+                    mapmlFeatures
+                            .getBody()
+                            .getFeatures()
+                            .get(0); // get the second feature, which has a class
+            LineString featureLine =
+                    (LineString) feature2.getGeometry().getGeometryContent().getValue();
+            Span span = (Span) featureLine.getCoordinates().get(0).getCoordinates().get(1);
+            assertEquals("desired", span.getClazz());
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testMapMLFeaturePolygonHasClass() throws Exception {
+        File template = null;
+        try {
+            Catalog cat = getCatalog();
+            LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+            li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+            li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+            cat.save(li);
+            String layerId = getLayerId(MockData.POLYGONS);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_FEATURE_FTL);
+            FileUtils.write(
+                    template,
+                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                            + "<map-head>\n"
+                            + "</map-head>\n"
+                            + "<map-body>\n"
+                            + "<map-feature>\n"
+                            + "  <#list attributes as attribute>\n"
+                            + "    <#if attribute.isGeometry>\n"
+                            + "      <map-geometry>\n"
+                            + "       <map-polygon>"
+                            + "       <#assign shell = attribute.rawValue.getExteriorRing()><map-coordinates><#list shell.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y}<#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates>"
+                            + "      <#list 0 ..< attribute.rawValue.getNumInteriorRing() as index>"
+                            + "        <#assign hole = attribute.rawValue.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y} <#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></#list>"
+                            + "       </map-polygon>"
+                            + "      </map-geometry>\n"
+                            + "    </#if>\n"
+                            + "  </#list>\n"
+                            + "</map-feature>\n"
+                            + "</map-body>\n"
+                            + "</mapml- >\n",
+                    "UTF-8");
+            Mapml mapmlFeatures =
+                    new MapMLWMSRequest()
+                            .name(MockData.POLYGONS.getLocalPart())
+                            .bbox("500000,500000,500999,500999")
+                            .srs("EPSG:32615")
+                            .feature(true)
+                            .getAsMapML();
+
+            Feature feature2 =
+                    mapmlFeatures
+                            .getBody()
+                            .getFeatures()
+                            .get(0); // get the second feature, which has a class
+            Polygon featurePolygon =
+                    (Polygon) feature2.getGeometry().getGeometryContent().getValue();
+            Span span =
+                    (Span)
+                            featurePolygon
+                                    .getThreeOrMoreCoordinatePairs()
+                                    .get(0)
+                                    .getCoordinates()
+                                    .get(0);
+            assertEquals("desired", span.getClazz());
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testMapMLFeatureMultiPolygonHasClass() throws Exception {
+        File template = null;
+        try {
+            Catalog cat = getCatalog();
+            LayerInfo li = cat.getLayerByName(MockData.NAMED_PLACES.getLocalPart());
+            li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+            li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+            cat.save(li);
+            String layerId = getLayerId(MockData.NAMED_PLACES);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_FEATURE_FTL);
+            FileUtils.write(
+                    template,
+                    "<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                            + "<map-head>\n"
+                            + "</map-head>\n"
+                            + "<map-body>\n"
+                            + "<map-feature>\n"
+                            + "<#if attributes.FID.value == \"117\">\n"
+                            + "  <#list attributes as attribute>\n"
+                            + "    <#if attribute.isGeometry>\n"
+                            + "      <map-geometry>\n"
+                            + "        <map-multipolygon>"
+                            + "      <#list 0 ..< attribute.rawValue.getNumGeometries() as index>"
+                            + "        <#assign polygon = attribute.rawValue.getGeometryN(index)>"
+                            + "       <map-polygon>"
+                            + "       <#assign shell = polygon.getExteriorRing()><map-coordinates><#list shell.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y}<#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates>"
+                            + "      <#list 0 ..< polygon.getNumInteriorRing() as index>"
+                            + "        <#assign hole = polygon.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord><#if coord?index == 0><map-span class=\"desired\">${coord.x} ${coord.y} <#elseif coord?index == 4> ${coord.x} ${coord.y}</map-span><#else> ${coord.x} ${coord.y}</#if></#list></map-coordinates></#list>"
+                            + "       </map-polygon>"
+                            + "        </#list>"
+                            + "       </map-multipolygon>"
+                            + "      </map-geometry>\n"
+                            + "    </#if>\n"
+                            + "  </#list>\n"
+                            + "<#else>\n"
+                            + "  <#list attributes as attribute>\n"
+                            + "    <#if attribute.isGeometry>\n"
+                            + "      <map-geometry>\n"
+                            + "        <map-multipolygon>"
+                            + "      <#list 0 ..< attribute.rawValue.getNumGeometries() as index>"
+                            + "        <#assign polygon = attribute.rawValue.getGeometryN(index)>"
+                            + "       <map-polygon>"
+                            + "       <#assign shell = polygon.getExteriorRing()><map-coordinates><#list shell.coordinates as coord> ${coord.x} ${coord.y} </#list></map-coordinates>"
+                            + "      <#list 0 ..< polygon.getNumInteriorRing() as index>"
+                            + "        <#assign hole = polygon.getInteriorRingN(index)><map-coordinates><#list hole.coordinates as coord> ${coord.x} ${coord.y} </#list></map-coordinates></#list>"
+                            + "       </map-polygon>"
+                            + "        </#list>"
+                            + "       </map-multipolygon>"
+                            + "      </map-geometry>\n"
+                            + "    </#if>\n"
+                            + "  </#list>\n"
+                            + "</#if>\n"
+                            + "</map-feature>\n"
+                            + "</map-body>\n"
+                            + "</mapml- >\n",
+                    "UTF-8");
+            Mapml mapmlFeatures =
+                    new MapMLWMSRequest()
+                            .name(MockData.NAMED_PLACES.getLocalPart())
+                            .bbox("-180,-90,180,90")
+                            .srs("EPSG:4326")
+                            .feature(true)
+                            .getAsMapML();
+
+            Feature feature2 =
+                    mapmlFeatures
+                            .getBody()
+                            .getFeatures()
+                            .get(0); // get the first feature, which has a class
+            MultiPolygon featureMultiPolygon =
+                    (MultiPolygon) feature2.getGeometry().getGeometryContent().getValue();
+            Span span =
+                    (Span)
+                            featureMultiPolygon
+                                    .getPolygon()
+                                    .get(0)
+                                    .getThreeOrMoreCoordinatePairs()
+                                    .get(0)
+                                    .getCoordinates()
+                                    .get(0);
+            assertEquals("desired", span.getClazz());
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
     }
 
     @Test

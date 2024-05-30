@@ -750,8 +750,8 @@ public class MapMLDocumentBuilder {
         meta.setContent(projType.value());
         List<Link> links = head.getLinks();
 
-        String licenseLink = layerMeta.get("mapml.licenseLink", String.class);
-        String licenseTitle = layerMeta.get("mapml.licenseTitle", String.class);
+        String licenseLink = layerMeta.get(MapMLConstants.LICENSE_LINK, String.class);
+        String licenseTitle = layerMeta.get(MapMLConstants.LICENSE_TITLE, String.class);
         if (licenseLink != null || licenseTitle != null) {
             Link titleLink = new Link();
             titleLink.setRel(RelType.LICENSE);

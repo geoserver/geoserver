@@ -6,6 +6,7 @@
 package org.geoserver.wcs.web.demo;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
@@ -13,8 +14,13 @@ import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -23,6 +29,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
+import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 import org.geotools.xml.transform.TransformerBase;
 
@@ -39,10 +46,19 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
     WCSRequestBuilderPanel builder;
 
+    TextField<String> xml;
+
     public WCSRequestBuilder() {
         // the form
         Form form = new Form("form");
         add(form);
+
+        var model = new Model<>(new WCSRequestModel());
+        form.setDefaultModel(model);
+
+        xml = new TextField<>("xml", new PropertyModel<>(model, "xml"));
+        xml.setOutputMarkupId(true);
+        form.add(xml);
 
         // the actual request builder component
         builder = new WCSRequestBuilderPanel("requestBuilder", new GetCoverageRequest());
@@ -82,8 +98,21 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        responseWindow.setDefaultModel(new Model<>(getRequestXML()));
-                        responseWindow.show(target);
+                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+
+                        String url =
+                                ResponseUtils.buildURL(
+                                        ResponseUtils.baseURL(http),
+                                        "ows",
+                                        Collections.singletonMap("strict", "true"),
+                                        URLType.SERVICE);
+                        var xml = getRequestXML();
+
+                        PageParameters parameters = new PageParameters();
+                        parameters.add("url", url);
+                        parameters.add("xml", xml);
+
+                        getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
                     }
 
                     @Override
@@ -105,6 +134,28 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                             error(e.getMessage());
                             addFeedbackPanels(target);
                         }
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form form) {
+                        addFeedbackPanels(target);
+                    }
+                });
+
+        form.add(
+                new AjaxSubmitLink("setXml") {
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                        try {
+                            var xmlText = getRequestXML();
+                            xml.setModelObject(xmlText);
+                            target.add(xml);
+                        } catch (Exception e) {
+                            error(e.getMessage());
+                            addFeedbackPanels(target);
+                        }
+                        target.appendJavaScript("getCoverage()");
                     }
 
                     @Override
@@ -135,5 +186,24 @@ public class WCSRequestBuilder extends GeoServerBasePage {
             error(e);
         }
         return out.toString();
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.render(
+                JavaScriptContentHeaderItem.forScript(
+                        DemoRequestsPage.demoRequestsJavascript, null));
+    }
+
+    public class WCSRequestModel implements Serializable {
+        public String xml;
+
+        public String getXml() {
+            return xml;
+        }
+
+        public void setXml(String xml) {
+            this.xml = xml;
+        }
     }
 }

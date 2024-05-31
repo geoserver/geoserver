@@ -3,7 +3,11 @@
 <title><wicket:message key="page.title">Demo Request</wicket:message></title>
 </head>
 <body>
+
+
 <wicket:extend>
+
+
   <form wicket:id="demoRequestsForm">
   <table style="height:100%;width:100%;">
     <tbody>
@@ -27,6 +31,10 @@
         <td class="label"><wicket:message key="url">URL:</wicket:message></td>
         <td class="datum"><input wicket:id="url" type="text" class="text" style="width: 100%;" name="url" value=""/></td>
       </tr>
+      <tr>
+          <td><wicket:message key="prettyXml">Pretty XML:</wicket:message></td>
+          <td><input type="checkbox" id="prettyXML" wicket:id="prettyXML"  name="prettyXML" checked></td>
+      </tr>
       <tr style="height:100%">
         <td class="label"><wicket:message key="body">Body:</wicket:message></td>
         <td class="datum">
@@ -43,16 +51,38 @@
       <tr>
         <td class="label" style="width:1%"></td>
         <td class="datum" style="width:99%">
-          <div class="button-group selfclear">
-            <a href="#" wicket:id="submit"><wicket:message key="submit">Submit</wicket:message></a>
-          </div>
+            <div style="display:flex; flex-direction: row">
+                <div class="button-group selfclear">
+                    <a  onclick="document.getElementById('openNewWindow').checked = false; submitRequest()"  ><wicket:message key="submit">Submit</wicket:message></a>
+                </div>
+
+                <div class="button-group selfclear">
+                    <a  onclick="document.getElementById('openNewWindow').checked = true;submitRequest()"  ><wicket:message key="openNewWindow">openNewWindow</wicket:message></a>
+                </div>
+            </div>
         </td>
       </tr>
+    <tr style="display:none">
+        <td><wicket:message key="openNewWindow">openNewWindow:</wicket:message></td>
+        <td><input type="checkbox" id="openNewWindow" wicket:id="openNewWindow"  name="openNewWindow"></td>
+    </tr>
     </tbody>
   </table>
  </form>
 
-  <div wicket:id="responseWindow"></div>
+
+    <legend>
+    <span><wicket:message key="headers">openNewWindow:</wicket:message></span>
+    </legend>
+    <div  id="responseHeadersDiv" style="min-height: 15px;margin-bottom:7px">
+    </div>
+    <legend>
+    <span><wicket:message key="result">result:</wicket:message></span>
+    </legend>
+
+    <div  id="responseDiv" style="min-height: 15px">
+    </div>
+
 
 </wicket:extend>
 </body>

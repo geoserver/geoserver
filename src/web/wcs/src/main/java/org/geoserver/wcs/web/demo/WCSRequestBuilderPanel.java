@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -244,9 +245,12 @@ public class WCSRequestBuilderPanel extends Panel {
                         final String coverageName =
                                 WCSRequestBuilderPanel.this.getCoverage.coverage;
                         if (coverageName != null) {
-                            responseWindow.setDefaultModel(
-                                    new Model<>(getDescribeXML(coverageName)));
-                            responseWindow.show(target);
+                            var xmlText = getDescribeXML(coverageName);
+                            @SuppressWarnings("unchecked")
+                            var xml = (TextField<String>) form.get("xml");
+                            xml.setModelObject(xmlText);
+                            target.add(xml);
+                            target.appendJavaScript("getCoverage()");
                         }
                     }
                 };

@@ -7,12 +7,14 @@ package org.geoserver.security;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.api.filter.Filter;
 import org.springframework.security.core.Authentication;
 
@@ -71,4 +73,29 @@ public interface ResourceAccessManager {
      */
     public @Nullable Filter getSecurityFilter(
             Authentication user, final Class<? extends CatalogInfo> clazz);
+
+    /**
+     * Checks if {@code user} has admin privileges on at least one workspace of {@code catalog}.
+     *
+     * <p>This default implementation will potentially traverse all workspaces on the {@code
+     * Catalog} until {@link #getAccessLimits(Authentication, WorkspaceInfo)} returns {@link
+     * WorkspaceAccessLimits#isAdminable() == true}.
+     *
+     * <p>{@code ResourceAccessManager} implementations are encouraged to override this method with
+     * a more efficient implementation whenever possible.
+     */
+    default boolean isWorkspaceAdmin(Authentication user, Catalog catalog) {
+        try (CloseableIterator<WorkspaceInfo> workspaces =
+                catalog.list(WorkspaceInfo.class, Filter.INCLUDE)) {
+            while (workspaces.hasNext()) {
+                WorkspaceInfo ws = workspaces.next();
+                WorkspaceAccessLimits accessLimits = getAccessLimits(user, ws);
+                if (accessLimits != null && accessLimits.isAdminable()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

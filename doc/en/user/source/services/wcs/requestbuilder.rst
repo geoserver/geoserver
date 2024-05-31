@@ -67,12 +67,19 @@ Once selected, the remainder of the form will be displayed. The following option
 
 There is also a link for :guilabel:`Describe coverage` next to the :guilabel:`Coverage name` which will execute a :ref:`WCS DescribeCoverage <wcs_describecoverage>` request for the particular layer.
 
-At the bottom of the form are two buttons for form submission:
+At the bottom of the form are three buttons for form submission:
 
-* :guilabel:`Get Coverage`—Executes a GetCoverage request using the parameters in the form. This will usually result in a file which can be downloaded.
+* :guilabel:`Get Coverage in Demo Requests`—Opens the :ref:`demos_demorequests` page with the URL and XML Request filled out.
 
-* :guilabel:`Generate GetCoverage XML`—Generates the GetCoverage request using the parameters in the form and then, instead of executing it, outputs the request itself to the screen.
+* :guilabel:`Get Coverage in New Page`—Executes a GetCoverage request using the parameters in the form. This will usually result in a file which can be displayed or downloaded.
 
+* :guilabel:`Generate GetCoverage XML`—Generates the GetCoverage XML request using the parameters in the form and then, instead of executing it, outputs the request itself to the screen.
+
+.. figure:: img/wcsrequestbuilder_demo.png
+
+   Get Coverage request in Demo Requests
+   
 .. figure:: img/wcsrequestbuilder_xml.png
 
    WCS request builder showing GetCoverage XML
+

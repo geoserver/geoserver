@@ -44,18 +44,18 @@
           <legend><span><wicket:message key="authentication">authentication</wicket:message></span></legend>
           <ul>
             <li class="choiceItem">
-              <input type="checkbox" wicket:id="authenticate"/>
+              <input type="checkbox" wicket:id="authenticate" id="authenticate"/>
               <label for="authenticate"><wicket:message key="authenticate">authenticate</wicket:message></label>
             </li>
             <li wicket:id="userpwdContainer">
 	            <ul>
 		            <li>
 		              <label><wicket:message key="username">username</wicket:message></label>
-		              <input type="text" size="30" name="username" wicket:id="username" class="text"/>
+		              <input type="text" size="30" name="username" wicket:id="username"  id="WPSusername" class="text"/>
 		            </li>
 		            <li>
 		              <label><wicket:message key="password">password</wicket:message></label>
-		              <input type="password" size="30" name="password" wicket:id="password" class="text"/>
+		              <input type="password" size="30" name="password" wicket:id="password" id="WPSpassword" class="text"/>
 		            </li>
 	            </ul>
             </li>

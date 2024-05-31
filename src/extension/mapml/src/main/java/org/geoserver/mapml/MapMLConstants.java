@@ -69,8 +69,14 @@ public final class MapMLConstants {
     /** DIMENSION */
     public static final String DIMENSION = "dimension";
 
+    /** DEFAULT MIME TYPE */
+    public static final String MIME = "mime";
+
     /** MAPML_DIMENSION */
     public static final String MAPML_DIMENSION = MAPML_PREFIX + DIMENSION;
+
+    /** MAPML_DIMENSION */
+    public static final String MAPML_MIME = MAPML_PREFIX + MIME;
 
     /** SHARD_LIST */
     public static final String SHARD_LIST = "shardList";

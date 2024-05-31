@@ -108,6 +108,8 @@ public class MapMLDocumentBuilder {
     public static final String MINIMUM_WIDTH_HEIGHT = "1";
     private static final int BYTES_PER_PIXEL_TRANSPARENT = 4;
     private static final int BYTES_PER_KILOBYTE = 1024;
+    public static final String DEFAULT_MIME_TYPE = "image/png";
+
     private final WMS wms;
 
     private final GeoServer geoServer;
@@ -129,7 +131,7 @@ public class MapMLDocumentBuilder {
 
     private String defaultStyle;
     private String layerTitle;
-    private String imageFormat;
+    private String imageFormat = DEFAULT_MIME_TYPE;
     private String baseUrl;
     private String baseUrlPattern;
     private Boolean enableSharding;
@@ -326,7 +328,7 @@ public class MapMLDocumentBuilder {
             projType = mapMLLayerMetadata.getProjType();
             layerTitle = layerTitlesCommaDelimited;
             layerMeta = mapMLLayerMetadata.getLayerMeta();
-            imageFormat = (String) format.orElse("image/png");
+            imageFormat = (String) format.orElse(mapMLLayerMetadata.getDefaultMimeType());
             baseUrl = ResponseUtils.baseURL(request);
             baseUrlPattern = baseUrl;
             // handle shard config
@@ -402,6 +404,7 @@ public class MapMLDocumentBuilder {
         mapMLLayerMetadata.setQueryable(layersToQueryable(layers));
         mapMLLayerMetadata.setLayerLabel(layersToLabel(layers));
         mapMLLayerMetadata.setProjType(projType);
+        mapMLLayerMetadata.setDefaultMimeType(imageFormat);
 
         return mapMLLayerMetadata;
     }
@@ -541,6 +544,7 @@ public class MapMLDocumentBuilder {
         String styleName = style != null ? style : "";
         String cqlFilter = null;
         boolean tileLayerExists = false;
+        String defaultMimeType = DEFAULT_MIME_TYPE;
         if (isLayerGroup) {
             layerGroupInfo = (LayerGroupInfo) layer.getPublishedInfo();
             if (layerGroupInfo == null) {
@@ -558,6 +562,10 @@ public class MapMLDocumentBuilder {
             queryable = !layerGroupInfo.isQueryDisabled();
             layerName = layerGroupInfo.getName();
             layerTitle = getTitle(layerGroupInfo, layerName);
+            defaultMimeType =
+                    Optional.ofNullable(layerGroupInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
+                            .orElse(DEFAULT_MIME_TYPE)
+                            .toString();
         } else {
             layerInfo = (LayerInfo) layer.getPublishedInfo();
             resourceInfo = layerInfo.getResource();
@@ -573,6 +581,10 @@ public class MapMLDocumentBuilder {
             layerTitle = getTitle(layerInfo, layerName);
             // set the actual style name from the layer info
             if (style == null) styleName = layerInfo.getDefaultStyle().getName();
+            defaultMimeType =
+                    Optional.ofNullable(resourceInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
+                            .orElse(DEFAULT_MIME_TYPE)
+                            .toString();
         }
         ProjType projType = parseProjType();
         cqlFilter = cql != null ? cql : "";
@@ -600,7 +612,8 @@ public class MapMLDocumentBuilder {
                 tileLayerExists,
                 useTiles,
                 useFeatures,
-                cqlFilter);
+                cqlFilter,
+                defaultMimeType);
     }
 
     /**
@@ -1792,7 +1805,7 @@ public class MapMLDocumentBuilder {
         String formatOptions =
                 MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
                         + ":"
-                        + escapeHtml4((String) format.orElse("image/png"));
+                        + escapeHtml4((String) format.orElse(imageFormat));
         kvp.put("format_options", formatOptions);
         kvp.put("SERVICE", "WMS");
         kvp.put("REQUEST", "GetMap");
@@ -1938,6 +1951,7 @@ public class MapMLDocumentBuilder {
         private ReferencedEnvelope bbbox;
 
         private String layerLabel;
+        private String defaultMimeType;
 
         /**
          * get if the layer uses features
@@ -1974,6 +1988,7 @@ public class MapMLDocumentBuilder {
          * @param styleName String
          * @param tileLayerExists boolean
          * @param useTiles boolean
+         * @param defaultMimeType String
          */
         public MapMLLayerMetadata(
                 LayerInfo layerInfo,
@@ -1991,7 +2006,8 @@ public class MapMLDocumentBuilder {
                 boolean tileLayerExists,
                 boolean useTiles,
                 boolean useFeatures,
-                String cqFilter) {
+                String cqFilter,
+                String defaultMimeType) {
             this.layerInfo = layerInfo;
             this.bbox = bbox;
             this.isLayerGroup = isLayerGroup;
@@ -2008,6 +2024,7 @@ public class MapMLDocumentBuilder {
             this.useTiles = useTiles;
             this.useFeatures = useFeatures;
             this.cqlFilter = cqFilter;
+            this.defaultMimeType = defaultMimeType;
         }
 
         /** Constructor */
@@ -2365,6 +2382,24 @@ public class MapMLDocumentBuilder {
          */
         public void setCqlFilter(String cqlFilter) {
             this.cqlFilter = cqlFilter;
+        }
+
+        /**
+         * get the default mime type
+         *
+         * @return String
+         */
+        public String getDefaultMimeType() {
+            return defaultMimeType;
+        }
+
+        /**
+         * set the default mime type
+         *
+         * @param defaultMimeType String
+         */
+        public void setDefaultMimeType(String defaultMimeType) {
+            this.defaultMimeType = defaultMimeType;
         }
     }
 }

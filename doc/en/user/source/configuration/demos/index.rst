@@ -39,25 +39,37 @@ Both :ref:`wfs` as well as :ref:`wcs` requests will display the request URL and 
 
 .. figure:: img/demos_requests_WFS.png
    
-   WFS 1.1 DescribeFeatureType sample request
+   WFS 1.1 DescribeFeatureType sample request (Demo Request :guilabel:`WFS_describeFeatureType-1.1.xml`)
 
-Click :guilabel:`Submit` to send the request to GeoServer. For WFS and WCS requests, GeoServer will automatically generate an XML response.
+Click :guilabel:`Show Result` or :guilabel:`Show Result in New Page` to send the request to GeoServer. For WFS and WCS requests, GeoServer will automatically generate an XML response.
+
+:guilabel:`Show Result` will show GeoServer's response - both the response headers and the XML/image result - below the  :guilabel:`Show Result` button.  
+If GeoServer's response is XML and you have ticked :guilabel:`Pretty Print XML`, GeoServer's response will be shown with an easy to read styled formatting.
+
+:guilabel:`Show Result in New Page` will show GeoServer's result in a new page (your browser will render the result).
 
 .. figure:: img/demos_requests_schema.png
    
-   XML response from a WFS 1.1 DescribeFeatureType sample request
+   Headers and XML response from a WFS 1.1 DescribeFeatureType sample request after pressing :guilabel:`Show Result`. (Demo Request :guilabel:`WFS_describeFeatureType-1.1.xml`)
    
 Submitting a WMS GetMap request displays an image based on the provided geographic data. 
 
 .. figure:: img/demos_requests_WMS_map.png
    
-   OpenLayers WMS GetMap request
+   Headers and image response for a WMS GetMap request after pressing :guilabel:`Show Result`. (Demo Request :guilabel:`WMS_getMap_multilayer.url`)
    
-WMS GetFeatureInfo requests retrieve information regarding a particular feature on the map image.
+WMS GetFeatureInfo requests retrieve information regarding a particular feature on the map image. 
 
 .. figure:: img/demos_requests_WMS_feature.png
    
-   WMS GetFeatureInfo request
+   Plain text WMS GetFeatureInfo request after pressing :guilabel:`Show Result`.  (Demo Request :guilabel:`WMS_featureInfo.url`)
+
+.. figure:: img/demos_requests_transaction.png
+   
+   WFS Transaction result after pressing :guilabel:`Show Result in New Page` (Your browser may render this differently).  (Demo Request :guilabel:`WFS_transactionInsert.xml`) 
+
+
+
 
 .. _srs_list:
 

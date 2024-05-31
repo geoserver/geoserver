@@ -14,11 +14,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.web.GeoServerBasePage;
-import org.vfny.geoserver.wfs.servlets.TestWfsPost;
 
 /**
- * An intermediate page used to submit a demo request to the {@link TestWfsPost /TestWfsPost}
- * servlet.
+ * An intermediate page used to submit a demo request.
  *
  * <p>This page does not extend {@link GeoServerBasePage} since its just an intermediate form to
  * submit to the servlet.
@@ -30,9 +28,8 @@ import org.vfny.geoserver.wfs.servlets.TestWfsPost;
 public class DemoRequestResponse extends WebPage {
 
     /**
-     * Fills out the form to be submitted to {@code TestWfsPost} with the properties from the {@code
-     * DemoRequestModel} provided, and auto-submit the form on page load so the results get loaded
-     * in the page body.
+     * Fills out the form to be submitted with the properties from the {@code DemoRequestModel}
+     * provided, and auto-submit the form on page load so the results get loaded in the page body.
      *
      * @param model the demo request parameters holder, as a model for {@link DemoRequest}
      */
@@ -68,9 +65,7 @@ public class DemoRequestResponse extends WebPage {
 
         form.add(passwordField);
 
-        // override the action property of the form to submit to the TestWfsPost
-        // servlet
-        form.add(AttributeModifier.replace("action", "../../TestWfsPost"));
+        form.add(AttributeModifier.replace("action", ""));
 
         // Set the same markup is as in the html page so wicket does not
         // generates

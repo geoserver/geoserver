@@ -15,6 +15,7 @@
 
   <properties>
     <amq.version>5.15.16</amq.version>
+    <skipAssembly>false</skipAssembly>
   </properties>
 
   <dependencies>

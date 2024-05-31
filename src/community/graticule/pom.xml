@@ -40,6 +40,10 @@
     </developer>
   </developers>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <!-- =========================================================== -->
   <!--     Dependency Management                                   -->
   <!-- =========================================================== -->

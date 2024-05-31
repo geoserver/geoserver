@@ -16,6 +16,10 @@
   <packaging>jar</packaging>
   <name>GeoServer Elasticsearch Module</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>

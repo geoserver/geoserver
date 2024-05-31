@@ -13,6 +13,10 @@
   <packaging>jar</packaging>
   <name>Dynamic WMS dimension value defaults</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

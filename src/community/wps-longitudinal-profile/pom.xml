@@ -15,6 +15,10 @@
   <artifactId>gs-wps-longitudinal-profile</artifactId>
   <name>Web Processing Service - Longitudinal profile</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.extension</groupId>

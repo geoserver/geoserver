@@ -16,6 +16,10 @@
   <packaging>jar</packaging>
   <name>GDAL translate WPS</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
@@ -48,5 +52,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>

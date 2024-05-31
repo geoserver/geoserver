@@ -16,6 +16,10 @@
   <packaging>jar</packaging>
   <name>GDAL translate WCS</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
@@ -50,5 +54,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>

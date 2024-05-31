@@ -17,6 +17,10 @@
   <packaging>jar</packaging>
   <name>Solr Module</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -46,5 +50,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>

@@ -15,6 +15,10 @@
   <name>GSR Module</name>
   <description>GeoServices REST API plugin</description>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -96,5 +100,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>

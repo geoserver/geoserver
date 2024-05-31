@@ -20,6 +20,10 @@
   <packaging>jar</packaging>
   <name>WorldWind Format Module</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <!-- declare depenency on geoserver main -->
   <dependencies>
     <dependency>

@@ -17,6 +17,10 @@
   <name>ncWMS compatibility extension</name>
   <description>Adds support for some ncWMS extensions to the WMS protocol and configuration.</description>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <!-- declare depenency on geoserver main -->
   <dependencies>
     <dependency>

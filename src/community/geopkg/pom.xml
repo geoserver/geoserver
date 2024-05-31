@@ -16,6 +16,10 @@
   <packaging>jar</packaging>
   <name>GeoServer GeoPackage Extension</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -137,5 +141,4 @@
       </testResource>
     </testResources>
   </build>
-
 </project>

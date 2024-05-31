@@ -14,6 +14,10 @@
   <name>Features Autopopulate Core</name>
   <description>Features autopopulate core functionality, protocol agnostic</description>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

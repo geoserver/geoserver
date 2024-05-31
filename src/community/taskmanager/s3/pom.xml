@@ -16,6 +16,10 @@
   <name>GeoServer Task Manager S3</name>
   <description>GeoServer Task Manager S3</description>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
@@ -57,5 +61,4 @@
     </dependency>
 
   </dependencies>
-
 </project>

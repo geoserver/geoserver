@@ -16,6 +16,10 @@
   <artifactId>gs-gpxppio</artifactId>
   <packaging>jar</packaging>
   <name>GPX PPIO for WPS</name>
+
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.extension</groupId>

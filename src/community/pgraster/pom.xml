@@ -18,6 +18,10 @@
   <packaging>jar</packaging>
   <name>PGRaster DataStore Extension for automatic configuration</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>

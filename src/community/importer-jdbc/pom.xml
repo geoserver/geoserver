@@ -11,6 +11,10 @@
   <artifactId>gs-importer-jdbc</artifactId>
   <name>Importer status store based on jdbc datastores</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.importer</groupId>
@@ -80,5 +84,4 @@
     </dependency>
 
   </dependencies>
-
 </project>

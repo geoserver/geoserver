@@ -15,6 +15,10 @@
   <name>Schemaless Features MongoDB</name>
   <description>Schemaless Features MongoDB functionalities</description>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
@@ -77,5 +81,4 @@
     </dependency>
 
   </dependencies>
-
 </project>

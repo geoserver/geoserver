@@ -18,6 +18,10 @@
   <packaging>jar</packaging>
   <name>COG support module</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>

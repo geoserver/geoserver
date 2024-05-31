@@ -20,6 +20,10 @@
   <packaging>jar</packaging>
   <name>GeoServer Security Plugin For JWT Headers</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
 
     <!--Use at least this version for security fixes-->

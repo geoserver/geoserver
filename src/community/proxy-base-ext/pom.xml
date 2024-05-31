@@ -18,6 +18,10 @@
   <artifactId>gs-proxy-base-ext</artifactId>
   <name>Configurable control of GeoServer generated backlinks</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -56,5 +60,4 @@
     </dependency>
 
   </dependencies>
-
 </project>

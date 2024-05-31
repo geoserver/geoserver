@@ -18,6 +18,10 @@
   <packaging>jar</packaging>
   <name>Vector mosaic datastore community module</name>
 
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -29,5 +33,4 @@
       <artifactId>gs-web-core</artifactId>
     </dependency>
   </dependencies>
-
 </project>

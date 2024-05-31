@@ -12,6 +12,7 @@
   <packaging>pom</packaging>
 
   <name>GeoServer JMS based clustering modules</name>
+
   <repositories>
     <repository>
       <!-- needed for JMS deps -->

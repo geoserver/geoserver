@@ -48,4 +48,8 @@
         </dependency>
     </dependencies>
 
+
+  <properties>
+    <skipAssembly>false</skipAssembly>
+  </properties>
 </project>

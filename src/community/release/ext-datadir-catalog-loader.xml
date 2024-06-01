@@ -1,5 +1,5 @@
 <assembly>
-  <id>dataidr-catalog-loader-plugin</id>
+  <id>datadir-catalog-loader-plugin</id>
   <formats>
     <format>zip</format>
   </formats>

@@ -1,0 +1,14 @@
+# Introduction
+
+This section gives an overview of GeoServer the project, its background, and what it can do for you.
+
+For those who wish to get started with GeoServer right away, feel free to skip to the [Installation](../installation/index.md) section.
+
+<div class="grid cards" markdown>
+
+-   [Overview](overview.md)
+-   [History](history.md)
+-   [Getting involved](gettinginvolved.md)
+-   [License](license.md)
+
+</div>

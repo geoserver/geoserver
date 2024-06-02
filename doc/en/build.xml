@@ -152,7 +152,7 @@
     <echo message="Running sphinx-autobuild ${argLine}"/> 
     <exec executable="sphinx-autobuild" failonerror="true" dir="${basedir}/${id}/source">
       <env key="project.version" value="${project.version}"/>
-      <arg line="${argLine} --open-browser"/>
+      <arg line="${argLine} --open-browser --port 8001"/>
     </exec>
   </target>
 

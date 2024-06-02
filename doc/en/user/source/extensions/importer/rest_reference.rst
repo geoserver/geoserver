@@ -8,13 +8,15 @@ Importer concepts
 
 The importer REST api is built around a tree of objects representing a single import, structured as follows:
 
-   * import
-      * target workspace
-      * data
-      * task (one or more)
-          * data
-          * layer
-          * transformation (one or more)
+* import
+
+  * target workspace
+  * data
+  * task (one or more)
+  
+    * data
+    * layer
+    * transformation (one or more)
 
 An **import** refers to the top level object and is a "session" like entity the state of the entire import. It maintains information relevant to the import as a whole such as user information, timestamps 
 along with optional information that is uniform along all tasks, such as a target workspace, the shared input data (e.g., a directory, a database).
@@ -83,47 +85,47 @@ Retrieving the list of all imports
 
 results in::
 
-	Status: 200 OK
-	Content-Type: application/json
-	
-		{
-		   "imports": [{
-		     "id": 0,
-		     "state": "COMPLETE",
-		     "href": "http://localhost:8080/geoserver/rest/imports/0"
-		
-		   }, {
-		     "id": 1,
-		     "state": "PENDING",
-		     "href": "http://localhost:8080/geoserver/rest/imports/1"          
-		   }]
-		}
-	
+    Status: 200 OK
+    Content-Type: application/json
+    
+        {
+           "imports": [{
+             "id": 0,
+             "state": "COMPLETE",
+             "href": "http://localhost:8080/geoserver/rest/imports/0"
+        
+           }, {
+             "id": 1,
+             "state": "PENDING",
+             "href": "http://localhost:8080/geoserver/rest/imports/1"          
+           }]
+        }
+    
 Creating a new import
 """""""""""""""""""""
 
 Posting to the /imports path a import json object creates a new import session::
 
-	Content-Type: application/json
-	
-	{
-	   "import": {
-	      "targetWorkspace": {
-	         "workspace": {
-	            "name": "scratch"
-	         }
-	      },
-	      "targetStore": {
-	         "dataStore": {
-	            "name": "shapes"
-	         }
-	      },
-	      "data": {
-	        "type": "file",
-	        "file": "/data/spearfish/archsites.shp"
-	      }
-	   }
-	}
+    Content-Type: application/json
+    
+    {
+       "import": {
+          "targetWorkspace": {
+             "workspace": {
+                "name": "scratch"
+             }
+          },
+          "targetStore": {
+             "dataStore": {
+                "name": "shapes"
+             }
+          },
+          "data": {
+            "type": "file",
+            "file": "/data/spearfish/archsites.shp"
+          }
+       }
+    }
 
 The parameters are:
 
@@ -149,42 +151,42 @@ For example, by referring a directory of shapefiles to be importer, the creation
 
 The response to the above POST request will be::
 
-	Status: 201 Created
-	Location: http://localhost:8080/geoserver/rest/imports/2
-	Content-Type: application/json
-	
-	{  
-	  "import": {
-	    "id": 2, 
-	    "href": "http://localhost:8080/geoserver/rest/imports/2", 
-	    "state": "READY", 
-	    "targetWorkspace": {
-	      "workspace": {
-	        "name": "scratch"
-	      }
-	    }, 
-	    "targetStore": {
-	      "dataStore": {
-	        "name": "shapes", 
-	        "type": "PostGIS"
-	      }
-	    }, 
-	    "data": {
-	      "type": "file", 
-	      "format": "Shapefile", 
-	      "href": "http://localhost:8080/geoserver/rest/imports/2/data", 
-	      "file": "archsites.shp"
-	    }, 
-	    "tasks": [
-	      {
-	        "id": 0, 
-	        "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0", 
-	        "state": "READY"
-	      }
-	    ]
-	  }
-	}
-	
+    Status: 201 Created
+    Location: http://localhost:8080/geoserver/rest/imports/2
+    Content-Type: application/json
+    
+    {  
+      "import": {
+        "id": 2, 
+        "href": "http://localhost:8080/geoserver/rest/imports/2", 
+        "state": "READY", 
+        "targetWorkspace": {
+          "workspace": {
+            "name": "scratch"
+          }
+        }, 
+        "targetStore": {
+          "dataStore": {
+            "name": "shapes", 
+            "type": "PostGIS"
+          }
+        }, 
+        "data": {
+          "type": "file", 
+          "format": "Shapefile", 
+          "href": "http://localhost:8080/geoserver/rest/imports/2/data", 
+          "file": "archsites.shp"
+        }, 
+        "tasks": [
+          {
+            "id": 0, 
+            "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0", 
+            "state": "READY"
+          }
+        ]
+      }
+    }
+    
 The operation of populating the tasks can require time, especially if done against a large set of
 files, or against a "remote" data (more on this later), in this case the POST request can include ``?async=true``
 at the end of the URL to make the importer run it asynchronously. 
@@ -233,8 +235,8 @@ To get more information about transformations see the :ref:`transformations`.
 Import object
 ^^^^^^^^^^^^^
 
-/imports/<importId>
-"""""""""""""""""""
+``/imports/<importId>``
+"""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -309,8 +311,8 @@ tasks will be created over the result of unpacking.
 Tasks
 ^^^^^
 
-/imports/<importId>/tasks
-"""""""""""""""""""""""""
+``/imports/<importId>/tasks``
+"""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -342,18 +344,18 @@ Getting the list of tasks
 
 Results in::
 
-	Status: 200 OK
-	Content-Type: application/json
-	
-	{
-	  "tasks": [
-	    {
-	      "id": 0, 
-	      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0", 
-	      "state": "READY"
-	    }
-	  ]
-	}
+    Status: 200 OK
+    Content-Type: application/json
+    
+    {
+      "tasks": [
+        {
+          "id": 0, 
+          "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0", 
+          "state": "READY"
+        }
+      ]
+    }
 
 Creating a new task as a file upload
 """"""""""""""""""""""""""""""""""""
@@ -363,57 +365,57 @@ One or more file can be uploaded this way, and a task will be created for import
 
 The response to the upload will be the creation of a new task, for example::
 
-	Status: 201 Created
-	Location: http://localhost:8080/geoserver/rest/imports/1/tasks/1
-	Content-type: application/json
-	
-	{
-	  "task": {
-	    "id": 1, 
-	    "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1", 
-	    "state": "READY",
-	    "updateMode": "CREATE", 
-	    "data": {
-	      "type": "file", 
-	      "format": "Shapefile", 
-	      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/data", 
-	      "file": "bugsites.shp"
-	    }, 
-	    "target": {
-	      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/target", 
-	      "dataStore": {
-	        "name": "shapes", 
-	        "type": "PostGIS"
-	      }
-	    },
-	    "progress": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/progress", 
-	    "layer": {
-	      "name": "bugsites", 
-	      "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/layer"
-	    }, 
-	    "transformChain": {
-	      "type": "vector", 
-	      "transforms": []
-	    }
-	  }
-	}
+    Status: 201 Created
+    Location: http://localhost:8080/geoserver/rest/imports/1/tasks/1
+    Content-type: application/json
+    
+    {
+      "task": {
+        "id": 1, 
+        "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1", 
+        "state": "READY",
+        "updateMode": "CREATE", 
+        "data": {
+          "type": "file", 
+          "format": "Shapefile", 
+          "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/data", 
+          "file": "bugsites.shp"
+        }, 
+        "target": {
+          "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/target", 
+          "dataStore": {
+            "name": "shapes", 
+            "type": "PostGIS"
+          }
+        },
+        "progress": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/progress", 
+        "layer": {
+          "name": "bugsites", 
+          "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/layer"
+        }, 
+        "transformChain": {
+          "type": "vector", 
+          "transforms": []
+        }
+      }
+    }
 
 Creating a new task from form upload
 """"""""""""""""""""""""""""""""""""
 
 This creation mode assumes the POST to ``imports/<importId>/tasks`` of form url encoded data containing a ``url`` parameter::
 
-	Content-type: application/x-www-form-urlencoded
-	
-	url=file:///data/spearfish/
+    Content-type: application/x-www-form-urlencoded
+    
+    url=file:///data/spearfish/
 
 The creation response will be the same as the multipart upload.
 
 Single task resource
 ^^^^^^^^^^^^^^^^^^^^
 
-/imports/<importId>/tasks/<taskId>
-""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>``
+""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -476,8 +478,8 @@ Directory files representation
 
 The following operations are specific to data objects of type ``directory``.
 
-/imports/<importId>/tasks/<taskId>/data/files
-"""""""""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/data/files``
+"""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -495,32 +497,32 @@ The following operations are specific to data objects of type ``directory``.
 
 The response to a GET request will be::
 
-	Status: 200 OK
-	Content-Type: application/json
+    Status: 200 OK
+    Content-Type: application/json
 
-	{
-		files: [
-			{
-			file: "tasmania_cities.shp",
-			href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_cities.shp"
-			},
-			{
-			file: "tasmania_roads.shp",
-			href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_roads.shp"
-			},
-			{
-			file: "tasmania_state_boundaries.shp",
-			href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_state_boundaries.shp"
-			},
-			{
-			file: "tasmania_water_bodies.shp",
-			href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_water_bodies.shp"
-			}
-		]
-	}
+    {
+        files: [
+            {
+            file: "tasmania_cities.shp",
+            href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_cities.shp"
+            },
+            {
+            file: "tasmania_roads.shp",
+            href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_roads.shp"
+            },
+            {
+            file: "tasmania_state_boundaries.shp",
+            href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_state_boundaries.shp"
+            },
+            {
+            file: "tasmania_water_bodies.shp",
+            href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_water_bodies.shp"
+            }
+        ]
+    }
 
-/imports/<importId>/tasks/<taskId>/data/files/<fileId>
-""""""""""""""""""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/data/files/<fileId>``
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -543,23 +545,23 @@ The response to a GET request will be::
 
 
 Following the links we'll get to the representation of a single file, notice how in this case a main file can be associate to sidecar files::
-	
-	Status: 200 OK
-	Content-Type: application/json
+    
+    Status: 200 OK
+    Content-Type: application/json
 
-	{
-		type: "file",
-		format: "Shapefile",
-		location: "C:\devel\gs_data\release\data\taz_shapes",
-		file: "tasmania_cities.shp",
-		href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_cities.shp",
-		prj: "tasmania_cities.prj",
-		other: [
-			"tasmania_cities.dbf",
-			"tasmania_cities.shx"
-		]
-	}
-	
+    {
+        type: "file",
+        format: "Shapefile",
+        location: "C:\devel\gs_data\release\data\taz_shapes",
+        file: "tasmania_cities.shp",
+        href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/tasmania_cities.shp",
+        prj: "tasmania_cities.prj",
+        other: [
+            "tasmania_cities.dbf",
+            "tasmania_cities.shx"
+        ]
+    }
+    
 Mosaic extensions
 """""""""""""""""
 
@@ -568,27 +570,27 @@ for directly specifying the timestamp of a particular granule.
 
 In order to specify the timestamp a PUT request can be issued against the granule::
 
-	Content-Type: application/json
-	
-	{
-	   "timestamp": "2004-01-01T00:00:00.000+0000"
-	}
+    Content-Type: application/json
+    
+    {
+       "timestamp": "2004-01-01T00:00:00.000+0000"
+    }
 
 and the response will be::
 
-	Status: 200 OK
-	Content-Type: application/json
-	
-	{
-	  "type": "file", 
-	  "format": "GeoTIFF", 
-	  "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/bm_200401.tif", 
-	  "location": "/data/bluemarble/mosaic", 
-	  "file": "bm_200401.tiff", 
-	  "prj": null, 
-	  "other": [], 
-	  "timestamp": "2004-01-01T00:00:00.000+0000"
-	}
+    Status: 200 OK
+    Content-Type: application/json
+    
+    {
+      "type": "file", 
+      "format": "GeoTIFF", 
+      "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data/files/bm_200401.tif", 
+      "location": "/data/bluemarble/mosaic", 
+      "file": "bm_200401.tiff", 
+      "prj": null, 
+      "other": [], 
+      "timestamp": "2004-01-01T00:00:00.000+0000"
+    }
 
 Database data
 ^^^^^^^^^^^^^
@@ -596,8 +598,8 @@ Database data
 The following operations are specific to data objects of type ``database``. At the time or writing, the REST API does not allow
 the creation of a database data source, but it can provide a read only description of one that has been created using the GUI.
 
-/imports/<importId>/tasks/<taskId>/data
-"""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/data``
+"""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -615,34 +617,34 @@ the creation of a database data source, but it can provide a read only descripti
 
 Performing a GET on a database type data will result in the following response::
 
-	{
-		type: "database",
-		format: "PostGIS",
-		href: "http://localhost:8080/geoserver/rest/imports/0/data",
-		parameters: {
-			schema: "public",
-			fetch size: 1000,
-			validate connections: true,
-			Connection timeout: 20,
-			Primary key metadata table: null,
-			preparedStatements: true,
-			database: "gttest",
-			port: 5432,
-			passwd: "cite",
-			min connections: 1,
-			dbtype: "postgis",
-			host: "localhost",
-			Loose bbox: true,
-			max connections: 10,
-			user: "cite"
-		},
-		tables: [
-			"geoline",
-			"geopoint",
-			"lakes",
-			"line3d",
-		]
-	}
+    {
+        type: "database",
+        format: "PostGIS",
+        href: "http://localhost:8080/geoserver/rest/imports/0/data",
+        parameters: {
+            schema: "public",
+            fetch size: 1000,
+            validate connections: true,
+            Connection timeout: 20,
+            Primary key metadata table: null,
+            preparedStatements: true,
+            database: "gttest",
+            port: 5432,
+            passwd: "cite",
+            min connections: 1,
+            dbtype: "postgis",
+            host: "localhost",
+            Loose bbox: true,
+            max connections: 10,
+            user: "cite"
+        },
+        tables: [
+            "geoline",
+            "geopoint",
+            "lakes",
+            "line3d",
+        ]
+    }
 
 
 Database table
@@ -652,8 +654,8 @@ The following operations are specific to data objects of type ``table``. At the 
 the creation of a database data source, but it can provide a read only description of one that has been created using the GUI.
 A table description is normally linked to task, and refers to a database data linked to the overall import.
 
-/imports/<importId>/tasks/<taskId>/data
-"""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/data``
+"""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -671,19 +673,19 @@ A table description is normally linked to task, and refers to a database data li
 
 Performing a GET on a database type data will result in the following response::
 
-	{
-		type: "table",
-		name: "abc",
-		format: "PostGIS",
-		href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data"
-	}
+    {
+        type: "table",
+        name: "abc",
+        format: "PostGIS",
+        href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/data"
+    }
 
-	
+    
 Task target layer
 ^^^^^^^^^^^^^^^^^^^
 
-/imports/<importId>/tasks/<taskId>/layer	
-""""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/layer``
+""""""""""""""""""""""""""""""""""""""""""""
 
 The layer defines how the target layer will be created
 
@@ -709,56 +711,56 @@ The layer defines how the target layer will be created
 
 Requesting the task layer will result in the following::
  
-	Status: 200 OK
-	Content-Type: application/json
-	
-	{
-		layer: {
-		name: "tasmania_cities",
-		href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer",
-		title: "tasmania_cities",
-		originalName: "tasmania_cities",
-		nativeName: "tasmania_cities",
-		srs: "EPSG:4326",
-		bbox: {
-			minx: 147.2909004483,
-			miny: -42.85110181689001,
-			maxx: 147.2911004483,
-			maxy: -42.85090181689,
-			crs: "GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]"
-		},
-		attributes: [
-			{
-				name: "the_geom",
-				binding: "org.locationtech.jts.geom.MultiPoint"
-			},
-			{
-				name: "CITY_NAME",
-				binding: "java.lang.String"
-			},
-			{
-				name: "ADMIN_NAME",
-				binding: "java.lang.String"
-			},
-			{
-				name: "CNTRY_NAME",
-				binding: "java.lang.String"
-			},
-			{
-				name: "STATUS",
-				binding: "java.lang.String"
-			},
-			{
-				name: "POP_CLASS",
-				binding: "java.lang.String"
-			}
-			],
-			style: {
-				name: "cite_tasmania_cities",
-				href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/style"
-			}
-		}
-	}
+    Status: 200 OK
+    Content-Type: application/json
+    
+    {
+        layer: {
+        name: "tasmania_cities",
+        href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer",
+        title: "tasmania_cities",
+        originalName: "tasmania_cities",
+        nativeName: "tasmania_cities",
+        srs: "EPSG:4326",
+        bbox: {
+            minx: 147.2909004483,
+            miny: -42.85110181689001,
+            maxx: 147.2911004483,
+            maxy: -42.85090181689,
+            crs: "GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]"
+        },
+        attributes: [
+            {
+                name: "the_geom",
+                binding: "org.locationtech.jts.geom.MultiPoint"
+            },
+            {
+                name: "CITY_NAME",
+                binding: "java.lang.String"
+            },
+            {
+                name: "ADMIN_NAME",
+                binding: "java.lang.String"
+            },
+            {
+                name: "CNTRY_NAME",
+                binding: "java.lang.String"
+            },
+            {
+                name: "STATUS",
+                binding: "java.lang.String"
+            },
+            {
+                name: "POP_CLASS",
+                binding: "java.lang.String"
+            }
+            ],
+            style: {
+                name: "cite_tasmania_cities",
+                href: "http://localhost:8080/geoserver/rest/imports/0/tasks/0/layer/style"
+            }
+        }
+    }
 
 All the above attributes can be updated using a PUT request. Even if the above representation is similar to the REST config API, it should not
 be confused with it, as it does not support all the same properties, in particular the supported properties are all the ones listed above.
@@ -766,8 +768,8 @@ be confused with it, as it does not support all the same properties, in particul
 Task transformations
 ^^^^^^^^^^^^^^^^^^^^
 
-/imports/<importId>/tasks/<taskId>/transforms
-"""""""""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/transforms``
+"""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -793,26 +795,26 @@ Retrieving the transformation list
 
 A GET request for the list of transformations will result in the following response::
 
-	Status: 200 OK
-	Content-Type: application/json
-	
-	{
-	  "transforms": [
-	    {
-	      "type": "ReprojectTransform", 
-	      "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/0", 
-	      "source": null, 
-	      "target": "EPSG:4326"
-	    }, 
-	    {
-	      "type": "DateFormatTransform", 
-	      "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/1", 
-	      "field": "date", 
-	      "format": "yyyyMMdd"
-	    }
-	  ]
-	}
-	
+    Status: 200 OK
+    Content-Type: application/json
+    
+    {
+      "transforms": [
+        {
+          "type": "ReprojectTransform", 
+          "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/0", 
+          "source": null, 
+          "target": "EPSG:4326"
+        }, 
+        {
+          "type": "DateFormatTransform", 
+          "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/1", 
+          "field": "date", 
+          "format": "yyyyMMdd"
+        }
+      ]
+    }
+    
 Appending a new transformation
 """"""""""""""""""""""""""""""
 
@@ -821,21 +823,21 @@ transformation, plus any extra attribute required by the transformation itself (
 
 The following POST request creates an attribute type remapping::
 
-	Content-Type: application/json
-	
-	{
-	   "type": "AttributeRemapTransform",
-	   "field": "cat",
-	   "target": "java.lang.Integer"
-	}
-	
+    Content-Type: application/json
+    
+    {
+       "type": "AttributeRemapTransform",
+       "field": "cat",
+       "target": "java.lang.Integer"
+    }
+    
 The response will be::
 
     Status: 201 OK
     Location: http://localhost:8080/geoserver/rest/imports/0/tasks/1/transform/2
     
-/imports/<importId>/tasks/<taskId>/transforms/<transformId>
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+``/imports/<importId>/tasks/<taskId>/transforms/<transformId>``
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
    :header-rows: 1
@@ -866,38 +868,38 @@ Retrieve a single transformation
 
 Requesting a single transformation by identifier will result in the following response::
 
-	Status: 200 OK
-	Content-Type: application/json
-	
-	{
-	  "type": "ReprojectTransform", 
-	  "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/0", 
-	  "source": null, 
-	  "target": "EPSG:4326"
-	}
-	
+    Status: 200 OK
+    Content-Type: application/json
+    
+    {
+      "type": "ReprojectTransform", 
+      "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/0", 
+      "source": null, 
+      "target": "EPSG:4326"
+    }
+    
 Modify an existing transformation
 """""""""""""""""""""""""""""""""
 
 Assuming we have a reprojection transformation, and that we need to change the target SRS type, the following PUT request will do the job::
 
-	Content-Type: application/json
-	{
-	   "type": "ReprojectTransform",
-	   "target": "EPSG:3005"
-	}
-	
+    Content-Type: application/json
+    {
+       "type": "ReprojectTransform",
+       "target": "EPSG:3005"
+    }
+    
 The response will be::
 
     Status: 200 OK
-	Content-Type: application/json
-	
-	{
-	  "type": "ReprojectTransform", 
-	  "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transform/0", 
-	  "source": null, 
-	  "target": "EPSG:3005"
-	}
+    Content-Type: application/json
+    
+    {
+      "type": "ReprojectTransform", 
+      "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transform/0", 
+      "source": null, 
+      "target": "EPSG:3005"
+    }
 
 .. _transformations:
 

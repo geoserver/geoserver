@@ -1,0 +1,21 @@
+// $ANTLR 2.7.4: schema-value.g -> AntlrSchemaValueTokenTypes.txt$
+AntlrSchemaValue    // output token vocab name
+WHSP=4
+LPAR=5
+RPAR=6
+CHAR=7
+LDIGIT=8
+DIGIT=9
+NUMBER=10
+NUMBER2=11
+NUMERICOID=12
+HYPEN=13
+OTHER=14
+DESCR=15
+QUIRKS_DESCR=16
+QUOTE=17
+DOLLAR=18
+LCURLY=19
+RCURLY=20
+LEN=21
+DESCR_OR_QUIRKS_DESCR=22

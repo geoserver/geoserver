@@ -38,6 +38,7 @@ The SLD specification mandates the support of the following symbols:
 
 .. list-table::
    :widths: 20 80
+   :header-rows: 1
    
    * - **Name**
      - **Description**
@@ -63,71 +64,75 @@ The shape symbols set adds extra symbols that are not part of the basic set.
 
 2. The shape symbols are prefixed by ``shape://``
 
-   .. list-table::
-      :widths: 20 80
-      
-      * - **Name**
-        - **Description**
-      * - ``shape://vertline``
-        - A vertical line (suitable for hatch fills or to make railroad symbols)
-      * - ``shape://horline``
-        - A horizontal line (suitable for hatch fills)
-      * - ``shape://slash`` 
-        - A diagonal line leaning forwards like the "slash" keyboard symbol (suitable for diagonal hatches)
-      * - ``shape://backslash``
-        - Same as ``shape://slash``, but oriented in the opposite direction
-      * - ``shape://dot``
-        - A very small circle with space around
-      * - ``shape://plus``
-        - A + symbol, without space around (suitable for cross-hatch fills)
-      * - ``shape://times``
-        - A "X" symbol, without space around (suitable for cross-hatch fills)
-      * - ``shape://oarrow``
-        - An open arrow symbol (triangle without one side, suitable for placing arrows at the end of lines)
-      * - ``shape://carrow``
-        - A closed arrow symbol (closed triangle, suitable for placing arrows at the end of lines)
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+   
+   * - **Name**
+     - **Description**
+   * - ``shape://vertline``
+     - A vertical line (suitable for hatch fills or to make railroad symbols)
+   * - ``shape://horline``
+     - A horizontal line (suitable for hatch fills)
+   * - ``shape://slash`` 
+     - A diagonal line leaning forwards like the "slash" keyboard symbol (suitable for diagonal hatches)
+   * - ``shape://backslash``
+     - Same as ``shape://slash``, but oriented in the opposite direction
+   * - ``shape://dot``
+     - A very small circle with space around
+   * - ``shape://plus``
+     - A + symbol, without space around (suitable for cross-hatch fills)
+   * - ``shape://times``
+     - A "X" symbol, without space around (suitable for cross-hatch fills)
+   * - ``shape://oarrow``
+     - An open arrow symbol (triangle without one side, suitable for placing arrows at the end of lines)
+   * - ``shape://carrow``
+     - A closed arrow symbol (closed triangle, suitable for placing arrows at the end of lines)
 
 Weather Symbols
 ~~~~~~~~~~~~~~~
 
 The weather symbols are prefixed by the ``extshape://`` protocol in the SLD:
 
-1. To enable ensure that the WMS Settings :guilabel:``Mark Factory Precedence`` has ``MeteoMarkFactory`` selected.
+1. To enable ensure that the WMS Settings :guilabel:`Mark Factory Precedence` has ``MeteoMarkFactory`` selected.
 
 2. These symbols are:
 
    .. list-table::
-      :widths: 20 20 60
+      :widths: 20 80
+      :header-rows: 1
       
       * - **Name**
         - **Description**
-        - **Produces**
       * - ``extshape://triangle``
         - cold front
-        - |triangle|
+        
+          .. image:: images/triangle.png
+      
       * - ``extshape://emicircle``
         - warm front
-        - |emicircle|
+          
+          .. image:: images/emicircle.png
+          
       * - ``extshape://triangleemicircle``
         - stationary front
-        - |triangleemicircle|
-     
-3. You can use ``extshape://`` for a few additional built-in shapes:
+          
+          .. image:: images/triangleemicircle.png
 
+
+4. You can use ``extshape://`` for a few additional built-in shapes:
+   
    .. list-table::
       :widths: 20 80
+      :header-rows: 1
       
       * - ``extshape://narrow``
         - North Arrow
       * - ``extshape://sarrow``
         - South Arrow
 
-.. |triangle| image:: images/triangle.png
-.. |emicircle| image:: images/emicircle.png
-.. |triangleemicircle| image:: images/triangleemicircle.png
 
-
-More complex symbols like Wind Barbs can be created with the ``windbarbs://`` prefix. 
+More complex symbols like Wind Barbs can be created with the ``windbarbs://`` prefix.
 
 1. To enable ensure that the WMS Settings :guilabel:``Mark Factory Precedence`` has ``WindBarbsmFactory`` selected.
 
@@ -135,6 +140,7 @@ More complex symbols like Wind Barbs can be created with the ``windbarbs://`` pr
 
    .. list-table::
       :widths: 50 50
+      :header-rows: 1
       
       * - **Name**
         - **Description**
@@ -142,7 +148,8 @@ More complex symbols like Wind Barbs can be created with the ``windbarbs://`` pr
         - *15* wind intensity with *[kts]* unit of measure
       * - ``windbarbs://default(9)[m/s]?hemisphere=s``
         - *9* wind intensity with *[m/s]* unit of measure, in the south hemisphere
-   
+
+
 Custom WKT Shapes
 ~~~~~~~~~~~~~~~~~
 
@@ -151,7 +158,7 @@ Custom shapes can be defined using your own Geometry, to enable use WMS Settings
 Geometry is defined using the same well-known-text format used for CQL_FILTER.
 
 .. code-block:: xml
-
+   
    <LineSymbolizer>
      <Stroke>
        <GraphicStroke>

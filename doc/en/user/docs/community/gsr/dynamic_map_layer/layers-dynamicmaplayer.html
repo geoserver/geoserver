@@ -1,0 +1,77 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>MapImageLayer - create dynamic map layers - 4.5</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.5/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.5/"></script>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #info-div {
+            background-color: white;
+            border-radius: 8px;
+            padding: 8px;
+            opacity: 0.92;
+        }
+    </style>
+
+    <script>
+        require(["esri/config"], function (esriConfig) {
+            esriConfig.request.corsEnabledServers.push("localhost:8080");
+        });
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/MapImageLayer",
+            "esri/widgets/Legend",
+            "dojo/domReady!"
+        ], function (Map, MapView, MapImageLayer, Legend) {
+
+            var layer = new MapImageLayer({
+                url: "http://localhost:8080/geoserver/gsr/services/topp/MapServer/3",
+                title: "Topp"
+            });
+
+            /*****************************************************************
+             * Add the layer to a map
+             *****************************************************************/
+
+            var map = new Map({
+                layers: [layer]
+            });
+
+            var view = new MapView({
+                container: "viewDiv",
+                map: map,
+                extent: { // autocasts as new Extent()
+                    xmin: 143.83482400000003,
+                    ymin: -43.648056,
+                    xmax: 148.47914100000003,
+                    ymax: -39.573891,
+                    spatialReference: 4326
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+<div id="viewDiv"></div>
+<div id="info-div">
+</div>
+</body>
+
+</html>
+
+<!-- Esri®, ArcGIS® and ArcGIS Online®  are trademarks, registered trademarks, or service marks of Esri in the United States, the European Community, or certain other jurisdictions. Other companies and products mentioned may be trademarks of their respective owners.-->

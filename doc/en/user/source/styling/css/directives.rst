@@ -10,8 +10,6 @@ All directives are declared at the beginning of the CSS sheet and follow the sam
 
   @name value;
   
-UniqueRuleNames
-The ``uniqueRuleNames`` directive serves a crucial role when it comes to generating legend graphics for complex styles. In the context of our example, where multiple strokes are used to represent different aspects of a highway, setting ``uniqueRuleNames`` to `'true'` ensures that each SLD rule generated from the CSS will have a unique, sequential name. These names are essential for referencing specific rules in a ``GetLegendGraphic`` request, allowing for the creation of a detailed and informative legend. For instance, a client can request the legend graphic for the 'Highway' rule and 'Highway.overlay1' rule separately, and then compose these graphics to accurately reflect the composite symbol for highways on the map. This feature is particularly beneficial when dealing with styles that have multiple layers or symbolizers, as it provides a method to individually access and document the styling of each layer.
 
 For example:
 
@@ -31,43 +29,9 @@ For example:
     stroke: yellow; stroke-width: 10 
   }
 
-The Translated version to SLD will looks like:
-.. code-block:: scss
-      <sld:Rule>
-      <sld:Title>Highway</sld:Title>
-      <sld:Name>0</sld:Name>
-      <ogc:Filter>
-        <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>TYPE</ogc:PropertyName>
-          <ogc:Literal>highway</ogc:Literal>
-        </ogc:PropertyIsEqualTo>
-      </ogc:Filter>
-      <sld:MaxScaleDenominator>2000000.0</sld:MaxScaleDenominator>
-      <sld:LineSymbolizer>
-        <sld:Stroke>
-          <sld:CssParameter name="stroke">#008000</sld:CssParameter>
-          <sld:CssParameter name="stroke-width">4</sld:CssParameter>
-        </sld:Stroke>
-      </sld:LineSymbolizer>
-    </sld:Rule>
-    ...
-    <sld:Rule>
-      <sld:Title>Highway.overlay1</sld:Title>
-      <sld:Name>3</sld:Name>
-      <ogc:Filter>
-        <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>TYPE</ogc:PropertyName>
-          <ogc:Literal>highway</ogc:Literal>
-        </ogc:PropertyIsEqualTo>
-      </ogc:Filter>
-      <sld:MaxScaleDenominator>2000000.0</sld:MaxScaleDenominator>
-      <sld:LineSymbolizer>
-        <sld:Stroke>
-          <sld:CssParameter name="stroke">#FFD700</sld:CssParameter>
-          <sld:CssParameter name="stroke-width">2</sld:CssParameter>
-        </sld:Stroke>
-      </sld:LineSymbolizer>
-    </sld:Rule>
+uniqueRuleNames
+---------------
+The ``uniqueRuleNames`` directive serves a crucial role when it comes to generating legend graphics for complex styles. In the context of our example, where multiple strokes are used to represent different aspects of a highway, setting ``uniqueRuleNames`` to `'true'` ensures that each SLD rule generated from the CSS will have a unique, sequential name. These names are essential for referencing specific rules in a ``GetLegendGraphic`` request, allowing for the creation of a detailed and informative legend. For instance, a client can request the legend graphic for the 'Highway' rule and 'Highway.overlay1' rule separately, and then compose these graphics to accurately reflect the composite symbol for highways on the map. This feature is particularly beneficial when dealing with styles that have multiple layers or symbolizers, as it provides a method to individually access and document the styling of each layer.
 
 Supported directives
 --------------------
@@ -100,5 +64,4 @@ Supported directives
     - * ``uniqueRuleNames`` 
       * Boolean
       * If set to `'true'`, Instructs the translator to give each generated SLD rule a unique name, as a progressive number starting from zero
-        to be referenced in a ``GetLegendGraphic``-request.
       * No

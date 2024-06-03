@@ -81,7 +81,7 @@ Create a layer group
    
 #. Locate the :guilabel:`Coordiante Reference Systems` and press :guilabel:`Generate Bounds`.
    
-   Now that layers are listed we they can be used to determine the corodinate reference system and bounds of the layer group.
+   Now that layers are listed we they can be used to determine the coordinate reference system and bounds of the layer group.
    
    .. figure:: images/layers_crs.png 
       

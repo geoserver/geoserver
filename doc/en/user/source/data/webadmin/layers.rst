@@ -139,7 +139,7 @@ A coordinate reference system (CRS) defines how georeferenced spatial data relat
 In summary, use **Force Declared** as your primary option, **Reproject from native** only if your source data does not match any EPSG code, and **Keep Native**
 only if you really know what you're doing.
 
-For WMS Server and WFS-NG layers with multiple supported CRS in capability document, the Native CRS can be selected from clicking Find button next to Native SRS field
+For Cascaded WMS and WMTS servers and WFS-NG layers with multiple supported CRSs in the capabilities document, the Native CRS can be selected by clicking the Find button next to the Native SRS field.
 
 .. figure:: img/cascade_srs.png
 

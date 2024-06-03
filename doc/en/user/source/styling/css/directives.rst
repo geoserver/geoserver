@@ -31,7 +31,9 @@ For example:
 
 uniqueRuleNames
 ---------------
-The ``uniqueRuleNames`` directive serves a crucial role when it comes to generating legend graphics for complex styles. In the context of our example, where multiple strokes are used to represent different aspects of a highway, setting ``uniqueRuleNames`` to `'true'` ensures that each SLD rule generated from the CSS will have a unique, sequential name. These names are essential for referencing specific rules in a ``GetLegendGraphic`` request, allowing for the creation of a detailed and informative legend. For instance, a client can request the legend graphic for the 'Highway' rule and 'Highway.overlay1' rule separately, and then compose these graphics to accurately reflect the composite symbol for highways on the map. This feature is particularly beneficial when dealing with styles that have multiple layers or symbolizers, as it provides a method to individually access and document the styling of each layer.
+The uniqueRuleNames directive automatically assigns rule names to individual rules in the thematic styles. These can then be looked up via
+REQUEST=GetLegendGraphic&FORMAT=application/json
+and the rendered symbology for the individual rules can be fetched via getLegendGraphic-requests including the `rule` parameter,  just like is currently possible for theme styles with rule names written as SLD
 
 Supported directives
 --------------------

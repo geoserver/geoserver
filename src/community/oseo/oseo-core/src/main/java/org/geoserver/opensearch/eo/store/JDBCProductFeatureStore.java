@@ -108,6 +108,12 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
     }
 
     @Override
+    protected boolean needsJoins(Query query) {
+        return super.needsJoins(query)
+                || hasOutputProperty(query, OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, false);
+    }
+
+    @Override
     protected void mapPropertiesToComplex(
             ComplexFeatureBuilder builder, SimpleFeature fi, Map<String, Object> mapperState) {
         // JSONB Keys are Unsorted, so we sort them here

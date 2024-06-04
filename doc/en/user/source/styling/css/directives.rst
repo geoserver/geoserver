@@ -31,10 +31,9 @@ For example:
 
 uniqueRuleNames
 ---------------
-The uniqueRuleNames directive automatically assigns rule names to individual rules in the thematic styles." => "The uniqueRuleNames directive automatically assigns rule names to individual rules in thematic styles.
-
-and the rendered symbology for the individual rules can be fetched via getLegendGraphic-requests including the `rule` parameter,  just like is currently possible for theme styles with rule names written as SLD" => "and the rendered symbology for the individual rules can be fetched via getLegendGraphic-requests including the `rule` parameter,  just like is currently possible for theme styles written as SLD.
-
+The uniqueRuleNames directive automatically assigns rule names to individual rules in thematic styles. These can then be looked up via
+REQUEST=GetLegendGraphic&FORMAT=application/json
+and the rendered symbology for the individual rules can be fetched via getLegendGraphic-requests including the `rule` parameter,  just like is currently possible for theme styles with rule names written as SLD.
 
 Supported directives
 --------------------

@@ -65,5 +65,5 @@ Supported directives
       * No
     - * ``uniqueRuleNames`` 
       * Boolean
-      * If having a predictable numbering is not even necessary, then clarify what's the intended usage, and how is the client interacting with the server to make use of it
+      * If set to `'true'`, Instructs the translator to give each generated SLD rule a unique name, as a progressive number starting from zero
       * No

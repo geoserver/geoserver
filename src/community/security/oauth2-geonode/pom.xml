@@ -20,10 +20,6 @@
   <packaging>jar</packaging>
   <name>GeoServer OAuth2 Connect Security Module - GeoNode Token Service</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

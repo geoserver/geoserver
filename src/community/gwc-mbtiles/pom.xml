@@ -15,10 +15,6 @@
   <name>GeoWebCache MBTiles Cache</name>
   <description>GeoWebCache MBTiles cache plugin</description>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

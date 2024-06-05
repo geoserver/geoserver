@@ -13,10 +13,6 @@
   <name>Features Templating Assembly</name>
   <description>Features templating zip package builder</description>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>

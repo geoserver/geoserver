@@ -18,10 +18,6 @@
   <artifactId>gs-datadir-catalog-loader</artifactId>
   <name>Performance improved data-directory catalog loader</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

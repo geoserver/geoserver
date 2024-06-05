@@ -19,10 +19,6 @@
   <packaging>jar</packaging>
   <name>GeoServer OAuth2 Connect Security - OpenId Connect zip assembly</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
 
     <dependency>

@@ -11,10 +11,6 @@
   <artifactId>gs-s3-geotiff</artifactId>
   <name>S3 Geotiff Support</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>

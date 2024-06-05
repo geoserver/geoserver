@@ -14,10 +14,6 @@
   <packaging>jar</packaging>
   <name>OpenSearch for EO extension packaging</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>

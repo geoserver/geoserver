@@ -16,10 +16,6 @@
   <packaging>jar</packaging>
   <name>GeoServer mbtiles store Extension</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>

@@ -20,10 +20,6 @@
   <packaging>jar</packaging>
   <name>GeoServer Keycloak Security Plugin</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

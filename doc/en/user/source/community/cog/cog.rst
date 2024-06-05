@@ -21,7 +21,10 @@ The module is provided as four different packages, depending on the connection t
 * ``cog-azure`` for Azure Blob Storage connections
 
 To install the module, download the package you need, unpack the zip file contents into the GeoServer ``WEB-INF/lib`` directory and restart GeoServer.
-Mind, the dependencies of the various cloud providers might interfere with each other, so please never install toghether the AWS, Google and Azure modules.
+
+.. warning::
+  
+   The dependencies of the various cloud providers might interfere with each other, so please never install together the AWS, Google and Azure modules.
 
 COG GeoTIFF Configuration Panel
 -------------------------------

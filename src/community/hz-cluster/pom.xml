@@ -14,7 +14,7 @@
   <name>GeoServer Hazelcast Clustering Module</name>
 
   <properties>
-    <skipAssembly>false</skipAssembly>
+
     <hazelcast.web.version>4.0</hazelcast.web.version>
     <metrics.version>4.0.3</metrics.version>
   </properties>

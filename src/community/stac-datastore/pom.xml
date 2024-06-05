@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
   <name>STAC datastore</name>
   <properties>
-    <skipAssembly>false</skipAssembly>
+
     <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
     <copyright.year>${maven.build.timestamp}</copyright.year>
   </properties>

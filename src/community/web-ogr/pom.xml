@@ -11,9 +11,6 @@
   <packaging>jar</packaging>
   <name>OGR datastore panel</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>

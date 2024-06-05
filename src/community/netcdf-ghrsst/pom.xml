@@ -17,7 +17,7 @@
   <name>NetCDF GHRSST encoder</name>
 
   <properties>
-    <skipAssembly>false</skipAssembly>
+
     <netcdf.version>5.5.3</netcdf.version>
   </properties>
 

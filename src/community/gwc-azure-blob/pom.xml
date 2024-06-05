@@ -15,10 +15,6 @@
   <name>GeoWebCache Azure blob</name>
   <description>GeoWebCache Azure BLOB support plugin</description>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

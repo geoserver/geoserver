@@ -12,9 +12,6 @@
   <packaging>jar</packaging>
   <name>Web Service Authentication Provider</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>

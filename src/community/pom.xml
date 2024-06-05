@@ -30,7 +30,6 @@
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
         <executions>
           <execution>
             <id>directories</id>
@@ -619,6 +618,31 @@
       <id>assembly</id>
       <build>
         <plugins>
+          <!-- Check if an assembly file is available in the current module, will skip otherwise -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-assembly-file</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <exportAntProperties>true</exportAntProperties>
+                  <target>
+                    <condition property="skipAssembly" value="true">
+                      <not>
+                        <available file="src/assembly/assembly.xml"></available>
+                      </not>
+                    </condition>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Copy dependencies of the current module -->
           <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
@@ -633,6 +657,7 @@
               </execution>
             </executions>
           </plugin>
+          <!-- Run assembly based on collected dependencies-->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
@@ -705,9 +730,6 @@
           </plugin>
         </plugins>
       </build>
-      <properties>
-        <skipAssembly>true</skipAssembly>
-      </properties>
     </profile>
   </profiles>
 

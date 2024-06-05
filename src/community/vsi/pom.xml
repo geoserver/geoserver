@@ -11,10 +11,6 @@
   <artifactId>gs-vsi</artifactId>
   <name>VSI Virtual File System Support</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geotools</groupId>

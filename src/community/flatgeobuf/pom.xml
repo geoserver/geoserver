@@ -18,10 +18,6 @@
   <artifactId>gs-flatgeobuf</artifactId>
   <name>FlatGeobuf DataStore and WFS output format</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

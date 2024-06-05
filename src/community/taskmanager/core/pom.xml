@@ -22,10 +22,6 @@
         Setup of the target DB . Usage:
         mvn db:schema -Ptesttargetdb</description>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

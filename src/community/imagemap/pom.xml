@@ -19,10 +19,6 @@
   <packaging>jar</packaging>
   <name>ImageMap Output Format</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

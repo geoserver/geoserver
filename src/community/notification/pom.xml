@@ -14,9 +14,6 @@
   <name>GeoServer notification event system</name>
   <url>http://maven.apache.org</url>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

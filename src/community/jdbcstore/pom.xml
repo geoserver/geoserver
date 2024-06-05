@@ -12,9 +12,6 @@
   <name>GeoServer JDBC Configuration Resource Store</name>
   <description>Store resources (icons, fonts, freemarker tempaltes and configuration files) in database alongside JDBC Store.</description>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

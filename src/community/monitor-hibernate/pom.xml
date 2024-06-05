@@ -76,7 +76,7 @@
     </dependencies>
 
     <properties>
-  <skipAssembly>false</skipAssembly>
+  
         <test.exclude.pattern>**/HibernateMonitorDAOTest.*</test.exclude.pattern>
     </properties>
 

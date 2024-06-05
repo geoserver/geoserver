@@ -13,10 +13,6 @@
   <packaging>jar</packaging>
   <name>XLST based WFS output format</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

@@ -19,10 +19,6 @@
   <packaging>jar</packaging>
   <name>Smart Data Loader Module</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

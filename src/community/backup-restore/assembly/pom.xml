@@ -14,10 +14,6 @@
   <packaging>jar</packaging>
   <name>Assembly module for backup-restore</name>
 
-  <properties>
-    <skipAssembly>false</skipAssembly>
-  </properties>
-
   <dependencies>
 
     <dependency>

@@ -1755,6 +1755,11 @@
           <artifactId>maven-war-plugin</artifactId>
           <version>3.4.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>directory-maven-plugin</artifactId>
+          <version>1.0</version>
+        </plugin>
 
         <!-- third-party plugins -->
         <plugin>
@@ -2090,7 +2095,6 @@
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
         <executions>
           <execution>
             <id>directories</id>

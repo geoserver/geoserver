@@ -1,0 +1,27 @@
+<assembly>
+  <id>ogr-datastore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>gs-web-ogr*.jar</include>
+        <include>gt-ogr*.jar</include>
+        <include>gt-ogr*.jar</include>
+        <include>commons-pool-*.jar</include>
+        <include>gdal-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

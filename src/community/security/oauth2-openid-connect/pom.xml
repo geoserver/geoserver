@@ -23,6 +23,7 @@
   <modules>
     <module>oauth2-openid-connect-core</module>
     <module>oauth2-openid-connect-web</module>
+    <module>oauth2-openid-connect-assembly</module>
   </modules>
 
 </project>

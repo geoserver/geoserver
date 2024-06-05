@@ -20,14 +20,21 @@
   <modules>
     <module>ogcapi-core</module>
     <module>ogcapi-features</module>
+    <module>ogcapi-features-assembly</module>
     <module>ogcapi-maps</module>
+    <module>ogcapi-maps-assembly</module>
     <module>ogcapi-styles</module>
+    <module>ogcapi-styles-assembly</module>
     <module>ogcapi-tiles</module>
+    <module>ogcapi-tiles-assembly</module>
     <module>ogcapi-images</module>
+    <module>ogcapi-images-assembly</module>
     <module>ogcapi-changeset</module>
     <module>ogcapi-tiled-features</module>
+    <module>ogcapi-tiled-features-assembly</module>
     <module>dggs</module>
     <module>ogcapi-coverages</module>
+    <module>ogcapi-coverages-assembly</module>
     <module>web-ogcapi</module>
   </modules>
 

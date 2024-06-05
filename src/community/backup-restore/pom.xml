@@ -19,6 +19,7 @@
     <module>rest</module>
     <module>extension</module>
     <module>web</module>
+    <module>assembly</module>
   </modules>
 
   <dependencies>
@@ -67,32 +68,5 @@
     </dependency>
 
   </dependencies>
-
-  <build>
-    <testResources>
-      <testResource>
-        <directory>${basedir}/src/test/resources</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </testResource>
-    </testResources>
-    <plugins>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

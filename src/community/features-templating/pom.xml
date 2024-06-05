@@ -33,6 +33,7 @@
     <module>features-templating-ogcapi</module>
     <module>features-templating-web</module>
     <module>features-templating-rest</module>
+    <module>features-templating-assembly</module>
   </modules>
 
 </project>

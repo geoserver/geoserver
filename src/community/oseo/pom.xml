@@ -26,6 +26,7 @@
     <module>oseo-rest</module>
     <module>web-oseo</module>
     <module>oseo-integration-tests</module>
+    <module>oseo-assembly</module>
   </modules>
 
   <dependencies>
@@ -35,5 +36,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>

@@ -10,6 +10,7 @@
   <artifactId>gs-gwc-sqlite</artifactId>
   <packaging>jar</packaging>
   <name>GeoWebCache SQLite</name>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>

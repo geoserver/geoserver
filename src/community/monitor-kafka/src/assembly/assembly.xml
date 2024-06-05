@@ -1,0 +1,29 @@
+<assembly>
+  <id>monitor-kafka-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-monitor-kafka-*.jar</include>
+        <include>kafka-clients-*.jar</include>
+        <include>kafka-avro-serializer-*.jar</include>
+        <include>avro-*.jar</include>
+        <include>kafka-schema-serializer-*.jar</include>
+        <include>kafka-schema-registry-client-*.jar</include>
+        <include>snappy-java-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

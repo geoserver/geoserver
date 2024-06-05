@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.25-SNAPSHOT</version>
+  </parent>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-stac-datastore</artifactId>
+  <packaging>jar</packaging>
+  <name>STAC datastore</name>
+  <properties>
+
+    <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+    <copyright.year>${maven.build.timestamp}</copyright.year>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-stac-store</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+  </dependencies>
+</project>

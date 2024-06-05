@@ -13,6 +13,7 @@
   <packaging>jar</packaging>
   <name>GeoServer notification event system</name>
   <url>http://maven.apache.org</url>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -82,5 +83,4 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
   </dependencies>
-
 </project>

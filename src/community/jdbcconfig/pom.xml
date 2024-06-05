@@ -12,6 +12,7 @@
   <name>GeoServer JDBC Catalog</name>
   <description>Manage GeoServer Catalog configuration in a database.</description>
   <properties>
+
     <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
     <jdbcconfig.oracle.skip>true</jdbcconfig.oracle.skip>
   </properties>

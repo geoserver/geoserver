@@ -13,6 +13,7 @@
   <name>Monitor Kafka Extension</name>
 
   <properties>
+
     <confluent-version>7.5.0</confluent-version>
     <kafka-version>3.6.0</kafka-version>
   </properties>

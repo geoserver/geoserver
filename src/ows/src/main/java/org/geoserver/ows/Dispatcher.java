@@ -385,6 +385,12 @@ public class Dispatcher extends AbstractController {
                 request.getInput().reset();
             }
         }
+        initRequestContext(request);
+
+        return fireInitCallback(request);
+    }
+
+    public static void initRequestContext(Request request) {
         // parse the request path into two components. (1) the 'path' which
         // is the string after the last '/', and the 'context' which is the
         // string before the last '/'
@@ -414,8 +420,6 @@ public class Dispatcher extends AbstractController {
 
         request.setContext(context);
         request.setPath(path);
-
-        return fireInitCallback(request);
     }
 
     private boolean isForm(String contentType) {

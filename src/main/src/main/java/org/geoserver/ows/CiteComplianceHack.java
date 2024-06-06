@@ -62,6 +62,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
         // set request / response
         req.setHttpRequest(request);
         req.setHttpResponse(response);
+        Dispatcher.initRequestContext(req);
 
         // find the service
         try {
@@ -71,8 +72,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
                     Level.FINE, "Exception while looking for the 'Service' from the request", ex1);
             // load from the context
             try {
-                UriComponentsBuilder builder =
-                        UriComponentsBuilder.fromUriString(request.getServletPath());
+                UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(req.path);
                 if (builder != null
                         && builder.build() != null
                         && builder.build().getPath() != null) {

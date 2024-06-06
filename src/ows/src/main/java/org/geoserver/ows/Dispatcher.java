@@ -385,6 +385,30 @@ public class Dispatcher extends AbstractController {
                 request.getInput().reset();
             }
         }
+        initRequestContext(request);
+
+        return fireInitCallback(request);
+    }
+
+    /**
+     * Initializes the request context by parsing the request path into two components: the
+     * 'context' and the 'path'. The 'context' is the part of the URI before the last '/' and the
+     * 'path' is the part after the last '/'.
+     *
+     * <p>This method processes the given {@link Request} object to extract and set the context and
+     * path based on the HTTP request URI. Leading and trailing slashes are stripped from the
+     * request path before the context and path are determined.
+     *
+     * @param request the {@link Request} object whose context and path need to be initialized.
+     * @throws NullPointerException if the {@link Request} or its HTTP request is null.
+     *     <pre>
+     * Example:
+     * If the request URI is "/app/resource/item", then:
+     * - context: "app/resource"
+     * - path: "item"
+     * </pre>
+     */
+    public static void initRequestContext(Request request) {
         // parse the request path into two components. (1) the 'path' which
         // is the string after the last '/', and the 'context' which is the
         // string before the last '/'
@@ -414,8 +438,6 @@ public class Dispatcher extends AbstractController {
 
         request.setContext(context);
         request.setPath(path);
-
-        return fireInitCallback(request);
     }
 
     private boolean isForm(String contentType) {

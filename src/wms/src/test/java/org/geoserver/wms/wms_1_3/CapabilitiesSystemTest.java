@@ -334,6 +334,12 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
 
             dom = getAsDOM("wms?request=GetCapabilities&version=1.3.0");
             checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
+
+            dom = getAsDOM("wcs/wms?request=GetCapabilities&version=1.3.0");
+            checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
+
+            dom = getAsDOM("wcs/wms/?request=GetCapabilities&version=1.3.0");
+            checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
         } finally {
             wms.setCiteCompliant(false);
             gs.save(wms);

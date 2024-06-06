@@ -335,10 +335,12 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
             dom = getAsDOM("wms?request=GetCapabilities&version=1.3.0");
             checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
 
-            dom = getAsDOM("wcs/wms?request=GetCapabilities&version=1.3.0");
+            // The testSetupData adds a Workspace named "wcs". Going to reuse it for the tests.
+            final String testWorkspace = "wcs";
+            dom = getAsDOM(testWorkspace + "/wms?request=GetCapabilities&version=1.3.0");
             checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
 
-            dom = getAsDOM("wcs/wms/?request=GetCapabilities&version=1.3.0");
+            dom = getAsDOM(testWorkspace + "/wms/?request=GetCapabilities&version=1.3.0");
             checkLegacyException(dom, ServiceException.MISSING_PARAMETER_VALUE, "service");
         } finally {
             wms.setCiteCompliant(false);

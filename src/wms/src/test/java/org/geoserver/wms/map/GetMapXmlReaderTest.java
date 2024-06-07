@@ -147,7 +147,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             cfg.setXmlExternalEntitiesEnabled(true);
             getGeoServer().save(cfg);
 
-            request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {
             assertTrue(

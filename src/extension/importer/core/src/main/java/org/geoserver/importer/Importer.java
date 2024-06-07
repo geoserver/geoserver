@@ -503,7 +503,6 @@ public class Importer implements DisposableBean, ApplicationListener {
             // cannot attach it to a task
             context.setState(ImportContext.State.INIT_ERROR);
             context.setMessage(e.getMessage());
-            return;
         }
     }
 

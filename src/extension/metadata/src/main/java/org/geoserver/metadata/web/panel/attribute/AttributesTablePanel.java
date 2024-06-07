@@ -57,8 +57,7 @@ public class AttributesTablePanel extends Panel {
             GeoServerDataProvider<AttributeConfiguration> dataProvider,
             Map<String, List<Integer>> derivedAtts) {
 
-        return new GeoServerTablePanel<AttributeConfiguration>(
-                "attributesTablePanel", dataProvider) {
+        return new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override

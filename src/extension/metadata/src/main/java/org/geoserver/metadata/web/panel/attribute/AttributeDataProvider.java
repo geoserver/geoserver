@@ -30,7 +30,7 @@ public class AttributeDataProvider extends GeoServerDataProvider<AttributeConfig
     public static Property<AttributeConfiguration> NAME = new BeanProperty<>("name", "label");
 
     public static Property<AttributeConfiguration> VALUE =
-            new AbstractProperty<AttributeConfiguration>("value") {
+            new AbstractProperty<>("value") {
                 private static final long serialVersionUID = -1889227419206718295L;
 
                 @Override

@@ -14,6 +14,6 @@ public class NumberFieldPanel extends Panel {
 
     public NumberFieldPanel(String id, IModel<Integer> model) {
         super(id, model);
-        add(new NumberTextField<Integer>("textfield", model, Integer.class));
+        add(new NumberTextField<>("textfield", model, Integer.class));
     }
 }

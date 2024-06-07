@@ -19,7 +19,6 @@ import java.util.Set;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
-import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -64,7 +63,7 @@ public class TileLayerInfoUtilTest {
 
         GeoServerTileLayerInfo expected = TileLayerInfoUtil.create(defaults);
         expected.setId(group.getId());
-        expected.setName(GWC.tileLayerName(group));
+        expected.setName(tileLayerName(group));
 
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(group, defaults);
         assertNotNull(info);
@@ -104,7 +103,7 @@ public class TileLayerInfoUtilTest {
 
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setId(lg.getId());
-        info.setName(GWC.tileLayerName(lg));
+        info.setName(tileLayerName(lg));
         info.getMimeFormats().clear();
         info.getMimeFormats().addAll(defaults.getDefaultOtherCacheFormats());
 

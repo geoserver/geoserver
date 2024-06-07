@@ -417,7 +417,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     ResourceInfo ri = (ResourceInfo) prototype;
                     StoreInfo store = (StoreInfo) parent;
                     ri.setStore(store);
-                    ri.setNamespace(catalog.getNamespaceByPrefix((store).getWorkspace().getName()));
+                    ri.setNamespace(catalog.getNamespaceByPrefix(store.getWorkspace().getName()));
                 }
                 sw.start();
                 catalog.add((ResourceInfo) prototype);

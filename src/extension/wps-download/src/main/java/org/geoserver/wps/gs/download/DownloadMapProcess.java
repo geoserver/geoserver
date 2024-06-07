@@ -580,10 +580,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
         // going low level to apply all the properties we have verbatim
         template.keySet().stream()
-                .filter(
-                        k ->
-                                !"version".equalsIgnoreCase(k)
-                                        && !"srs".equalsIgnoreCase(k))
+                .filter(k -> !"version".equalsIgnoreCase(k) && !"srs".equalsIgnoreCase(k))
                 .forEach(key -> getMap.setProperty(key, (String) template.get(key)));
         getMap.setProperty("layers", layer.getName());
         getMap.setFormat(requestFormat);

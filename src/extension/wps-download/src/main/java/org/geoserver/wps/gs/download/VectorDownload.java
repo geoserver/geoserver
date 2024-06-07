@@ -237,7 +237,7 @@ class VectorDownload {
         // Search a proper PPIO
         ProcessParameterIO ppio_ =
                 DownloadUtilities.find(
-                        new Parameter<SimpleFeatureCollection>(
+                        new Parameter<>(
                                 "fakeParam", SimpleFeatureCollection.class),
                         context,
                         mimeType,

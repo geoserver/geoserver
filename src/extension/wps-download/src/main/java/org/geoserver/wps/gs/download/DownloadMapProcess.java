@@ -385,7 +385,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             Map<String, WebMapServer> serverCache)
             throws Exception {
         // build GetMap template parameters
-        CaseInsensitiveMap template = new CaseInsensitiveMap(new HashMap());
+        CaseInsensitiveMap<String, Object> template = new CaseInsensitiveMap<>(new HashMap<>());
         template.put("service", "WMS");
         template.put("request", "GetMap");
         template.put("transparent", "false");
@@ -582,9 +582,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         template.keySet().stream()
                 .filter(
                         k ->
-                                !"version".equalsIgnoreCase((String) k)
-                                        && !"srs".equalsIgnoreCase((String) k))
-                .forEach(key -> getMap.setProperty((String) key, (String) template.get(key)));
+                                !"version".equalsIgnoreCase(k)
+                                        && !"srs".equalsIgnoreCase(k))
+                .forEach(key -> getMap.setProperty(key, (String) template.get(key)));
         getMap.setProperty("layers", layer.getName());
         getMap.setFormat(requestFormat);
         getMap.setVersion(server.getCapabilities().getVersion());

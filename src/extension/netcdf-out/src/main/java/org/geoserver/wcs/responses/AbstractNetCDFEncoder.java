@@ -71,7 +71,6 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      * Attributes that are never copied to the main output variable from a NetCDF/GRIB source
      * because they require special handling.
      */
-    @SuppressWarnings("serial")
     protected static final Set<String> COPY_ATTRIBUTES_BLACKLIST =
             Set.of(
                     // coordinate variable names are usually changed
@@ -315,7 +314,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         }
     }
 
-    /** Parse encodingParams */
+    /** Parse encodingParams. */
     protected NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
         if (keys != null

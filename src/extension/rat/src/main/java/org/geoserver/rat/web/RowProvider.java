@@ -36,7 +36,7 @@ public class RowProvider extends GeoServerDataProvider<Row> {
     }
 
     private Property<Row> toProperty(FieldDefn f) {
-        return new AbstractProperty<Row>(f.getName()) {
+        return new AbstractProperty<>(f.getName()) {
             @Override
             public Object getPropertyValue(Row item) {
                 return item.getF().get(f.getIndex());

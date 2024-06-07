@@ -175,7 +175,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME),
                 Matchers.describedAs(
                         "Style %0 should be in workspace %1.",
-                        (not(nullValue())), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
+                        not(nullValue()), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
 
         Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, WORKSPACED_STYLE_NAME);
@@ -1171,7 +1171,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         try {
             tld.getTileLayer("");
         } catch (Exception gwce) {
-
+            // ignored
         }
 
         // 1) Check that cite:Lakes is present

@@ -173,7 +173,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
             Map<String, List<Integer>> derivedAtts) {
 
         tablePanel =
-                new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
+                new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
                     private static final long serialVersionUID = 4333335931795175790L;
 
                     private IModel<ComplexMetadataMap> disabledValue = null;

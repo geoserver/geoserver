@@ -65,7 +65,7 @@ public class DropDownPanel extends Panel {
                                 if (!Strings.isEmpty(model.getObject())) {
                                     currentList.add(model.getObject());
                                 }
-                                return new ArrayList<String>(currentList);
+                                return new ArrayList<>(currentList);
                             }
 
                             @Override
@@ -93,7 +93,7 @@ public class DropDownPanel extends Panel {
     }
 
     private IChoiceRenderer<String> createRenderer(String attributeKey) {
-        return new IChoiceRenderer<String>() {
+        return new IChoiceRenderer<>() {
             private static final long serialVersionUID = 1L;
 
             @Override

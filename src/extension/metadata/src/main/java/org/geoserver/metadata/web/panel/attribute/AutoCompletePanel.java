@@ -35,7 +35,7 @@ public class AutoCompletePanel extends Panel {
         super(id, model);
 
         AutoCompleteTextField<String> field =
-                new AutoCompleteTextField<String>("autoComplete", model) {
+                new AutoCompleteTextField<>("autoComplete", model) {
                     private static final long serialVersionUID = 7742400754591550452L;
 
                     @Override
@@ -74,7 +74,7 @@ public class AutoCompletePanel extends Panel {
 
         if (forceValues) {
             field.add(
-                    new IValidator<String>() {
+                    new IValidator<>() {
 
                         private static final long serialVersionUID = -7843517457763685578L;
 

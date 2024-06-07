@@ -70,7 +70,7 @@ public class ImportPage extends GeoServerSecuredPage {
     }
 
     void initComponents(final IModel<ImportContext> model) {
-        add(new Label("id", new PropertyModel(model, "id")));
+        add(new Label("id", new PropertyModel<>(model, "id")));
 
         ImportContextProvider provider =
                 new ImportContextProvider() {
@@ -141,7 +141,7 @@ public class ImportPage extends GeoServerSecuredPage {
         add(taskTable);
 
         final AjaxLink<Long> importLink =
-                new AjaxLink<Long>("import", new Model<>()) {
+                new AjaxLink<>("import", new Model<>()) {
                     @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
@@ -257,7 +257,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
         WebMarkupContainer selectPanel = new WebMarkupContainer("select");
         selectPanel.add(
-                new AjaxLink<ImportContext>("select-all", model) {
+                new AjaxLink<>("select-all", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         taskTable.selectAll();
@@ -266,7 +266,7 @@ public class ImportPage extends GeoServerSecuredPage {
                     }
                 });
         selectPanel.add(
-                new AjaxLink<ImportContext>("select-none", model) {
+                new AjaxLink<>("select-none", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         taskTable.clearSelection();
@@ -275,7 +275,7 @@ public class ImportPage extends GeoServerSecuredPage {
                     }
                 });
         selectPanel.add(
-                new AjaxLink<ImportContext>("select-ready", model) {
+                new AjaxLink<>("select-ready", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         doSelectReady(getModelObject(), taskTable, target);

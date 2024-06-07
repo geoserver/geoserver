@@ -113,11 +113,10 @@ public class MetaDataTest extends MDTestSupport {
         if (value instanceof Collection) {
             @SuppressWarnings("unchecked")
             Collection<Property> propertyList = (Collection<Property>) value;
-            Property[] properties =
-                    (Property[]) propertyList.toArray(new Property[propertyList.size()]);
+            Property[] properties = propertyList.toArray(new Property[propertyList.size()]);
             assertEquals(properties.length, values.length);
             for (int i = 0; i < properties.length; i++) {
-                Property property = (Property) properties[i];
+                Property property = properties[i];
                 assertEquals(values[i], property.getValue());
             }
         } else {

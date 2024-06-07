@@ -71,7 +71,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         TEST_NAMESPACES.put("xs", "http://www.w3.org/2001/XMLSchema");
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(TEST_NAMESPACES));
-    };
+    }
 
     public static String CSW_PREFIX = "csw";
 

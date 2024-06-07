@@ -188,7 +188,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 });
         form.add(
                 tabbedPanel =
-                        new TabbedPanel<AbstractTab>("tabs", tabs) {
+                        new TabbedPanel<>("tabs", tabs) {
                             private static final long serialVersionUID = 2194590643994737914L;
 
                             @Override
@@ -239,7 +239,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                         ruleFormData.layerDetails.cqlFilterWrite);
                                 layerDetails.setDefaultStyle(
                                         ruleFormData.layerDetails.defaultStyle);
-                                layerDetails.setType((ruleFormData.layerDetails.layerType));
+                                layerDetails.setType(ruleFormData.layerDetails.layerType);
                                 rules.save(ruleFormData.rule.getId(), layerDetails);
                             } else {
                                 rules.save(ruleFormData.rule.getId(), null);
@@ -252,7 +252,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         }
                     }
                 });
-        form.add(new BookmarkablePageLink<ShortRule>("cancel", GeofenceServerPage.class));
+        form.add(new BookmarkablePageLink<>("cancel", GeofenceServerPage.class));
     }
 
     private String getAllowedAreaAsString(MultiPolygon multiPolygon) {
@@ -566,7 +566,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             layerChoice.setNullValid(true);
             layerChoice.add(new LayerChoiceOnChange());
 
-            add(new TextField<String>("addressRange", ruleFormModel.bind("rule.addressRange")));
+            add(new TextField<>("addressRange", ruleFormModel.bind("rule.addressRange")));
 
             add(
                     grantTypeChoice =
@@ -833,7 +833,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             container.add(defaultStyle);
 
             Palette<String> allowedStyles =
-                    new Palette<String>(
+                    new Palette<>(
                             "allowedStyles",
                             ruleFormModel.bind("layerDetails.allowedStyles"),
                             new Model<>(getStyles()),
@@ -843,7 +843,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
                         private static final long serialVersionUID = 4843969600809421536L;
 
-                        /** Override otherwise the header is not i18n'ized */
+                        /**
+                         * Override otherwise the header is not i18n'ized
+                         */
                         @Override
                         public Component newSelectedHeader(final String componentId) {
                             return new Label(
@@ -851,7 +853,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     new ResourceModel("ExtraStylesPalette.selectedHeader"));
                         }
 
-                        /** Override otherwise the header is not i18n'ized */
+                        /**
+                         * Override otherwise the header is not i18n'ized
+                         */
                         @Override
                         public Component newAvailableHeader(final String componentId) {
                             return new Label(
@@ -913,7 +917,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             GeoServerTablePanel<LayerAttribute> layerAttsTable;
             container.add(
                     layerAttsTable =
-                            new GeoServerTablePanel<LayerAttribute>(
+                            new GeoServerTablePanel<>(
                                     "layerAttributes",
                                     new LayerAttributeModel(
                                             ruleFormModel.getObject().layerDetails.attributes),
@@ -1009,7 +1013,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         @Override
         public Object getDisplayValue(SpatialFilterType object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
         public String getIdValue(CatalogMode object, int index) {

@@ -190,7 +190,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         updateStatsValues(cacheRuleReader);
 
         for (String key : statsValues.keySet()) {
-            Label label = new Label(key, new MapModel<String>(statsValues, key));
+            Label label = new Label(key, new MapModel<>(statsValues, key));
             label.setOutputMarkupId(true);
             form.add(label);
             statsLabels.add(label);

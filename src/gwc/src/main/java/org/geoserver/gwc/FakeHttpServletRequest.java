@@ -39,6 +39,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     private final Cookie[] cookies;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private final Optional<HttpServletRequest> original;
 
     public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {

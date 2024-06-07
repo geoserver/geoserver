@@ -70,7 +70,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
                 new TextField<>("standardName", new PropertyModel<>(netcdfModel, "layerName"));
         // Add panel for UOM definition
         uom =
-                new AutoCompleteTextField<String>(
+                new AutoCompleteTextField<>(
                         "uom", new PropertyModel<>(netcdfModel, "layerUOM")) {
 
                     @Override

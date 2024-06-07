@@ -67,7 +67,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
-        shuffle = new CheckBox("shuffle", new PropertyModel(netcdfModel, "shuffle"));
+        shuffle = new CheckBox("shuffle", new PropertyModel<>(netcdfModel, "shuffle"));
         container.add(shuffle);
         copyAttributes =
                 new CheckBox("copyAttributes", new PropertyModel<>(netcdfModel, "copyAttributes"));
@@ -75,7 +75,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         copyGlobalAttributes =
                 new CheckBox(
                         "copyGlobalAttributes",
-                        new PropertyModel(netcdfModel, "copyGlobalAttributes"));
+                        new PropertyModel<>(netcdfModel, "copyGlobalAttributes"));
         container.add(copyGlobalAttributes);
         compressionLevel =
                 new TextField<>(
@@ -88,7 +88,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                         dataPackings);
         dataPacking.setOutputMarkupId(true);
         container.add(dataPacking);
-        compressionLevel.add(new RangeValidator(0, 9));
+        compressionLevel.add(new RangeValidator<>(0, 9));
         container.add(compressionLevel);
 
         ///////////////////////////////
@@ -97,24 +97,24 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
         {
             IModel<List<GlobalAttribute>> model =
-                    new PropertyModel(netcdfModel, "globalAttributes");
+                    new PropertyModel<>(netcdfModel, "globalAttributes");
             globalAttributes =
-                    new ListView<GlobalAttribute>("globalAttributes", model) {
+                    new ListView<>("globalAttributes", model) {
 
                         @Override
                         protected void populateItem(final ListItem<GlobalAttribute> item) {
                             Label keyField =
                                     new Label(
                                             "globalAttributeKey",
-                                            new PropertyModel<String>(item.getModel(), "key"));
+                                            new PropertyModel<>(item.getModel(), "key"));
                             item.add(keyField);
                             Label valueField =
                                     new Label(
                                             "globalAttributeValue",
-                                            new PropertyModel<String>(item.getModel(), "value"));
+                                            new PropertyModel<>(item.getModel(), "value"));
                             item.add(valueField);
                             Component removeLink =
-                                    new ImageAjaxLink("removeGlobalAttributeIcon", DELETE_ICON) {
+                                    new ImageAjaxLink<>("removeGlobalAttributeIcon", DELETE_ICON) {
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
@@ -174,7 +174,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         /////////////////////////////////
 
         IModel<List<VariableAttribute>> varAttributesModel =
-                new PropertyModel(netcdfModel, "variableAttributes");
+                new PropertyModel<>(netcdfModel, "variableAttributes");
         variableAttributes = new VariableAttributeListView(varAttributesModel);
         variableAttributes.setOutputMarkupId(true);
         container.add(variableAttributes);
@@ -194,7 +194,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         /////////////////////////////
 
         IModel<List<ExtraVariable>> extraVarModel =
-                new PropertyModel(netcdfModel, "extraVariables");
+                new PropertyModel<>(netcdfModel, "extraVariables");
         extraVariables = new ExtraVariableListView(extraVarModel);
         extraVariables.setOutputMarkupId(true);
         container.add(extraVariables);
@@ -275,7 +275,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
             String id, final IModel infoModel) {
         List<NetCDFExtensionPanelInfo> panels =
                 GeoServerApplication.get().getBeansOfType(NetCDFExtensionPanelInfo.class);
-        return new ListView<NetCDFExtensionPanelInfo>(id, panels) {
+        return new ListView<>(id, panels) {
 
             @Override
             protected void populateItem(ListItem<NetCDFExtensionPanelInfo> item) {

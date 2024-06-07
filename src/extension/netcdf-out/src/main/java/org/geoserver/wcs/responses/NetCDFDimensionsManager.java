@@ -234,7 +234,7 @@ public class NetCDFDimensionsManager {
             }
 
             @Override
-            public Set getValues() {
+            public Set<? extends Comparable> getValues() {
                 return values;
             }
 
@@ -389,7 +389,7 @@ public class NetCDFDimensionsManager {
                 throw new IllegalArgumentException("Unsupported time");
             }
             // Convert to seconds since START_TIME
-            return ((double) (time - NetCDFUtilities.START_TIME)) / 1000d;
+            return (time - NetCDFUtilities.START_TIME) / 1000d;
         }
     }
 }

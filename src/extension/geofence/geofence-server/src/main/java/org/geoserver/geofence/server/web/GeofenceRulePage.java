@@ -843,9 +843,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
                         private static final long serialVersionUID = 4843969600809421536L;
 
-                        /**
-                         * Override otherwise the header is not i18n'ized
-                         */
+                        /** Override otherwise the header is not i18n'ized */
                         @Override
                         public Component newSelectedHeader(final String componentId) {
                             return new Label(
@@ -853,9 +851,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     new ResourceModel("ExtraStylesPalette.selectedHeader"));
                         }
 
-                        /**
-                         * Override otherwise the header is not i18n'ized
-                         */
+                        /** Override otherwise the header is not i18n'ized */
                         @Override
                         public Component newAvailableHeader(final String componentId) {
                             return new Label(

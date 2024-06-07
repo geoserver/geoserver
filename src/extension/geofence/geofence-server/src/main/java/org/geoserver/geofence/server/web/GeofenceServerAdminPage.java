@@ -38,7 +38,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
     public GeofenceServerAdminPage() {
 
         add(
-                new AjaxLink<Object>("addNew") {
+                new AjaxLink<>("addNew") {
 
                     private static final long serialVersionUID = -4136656891019857299L;
 
@@ -51,7 +51,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
         add(
                 remove =
-                        new AjaxLink<Object>("removeSelected") {
+                        new AjaxLink<>("removeSelected") {
                             private static final long serialVersionUID = 2421854498051377608L;
 
                             @Override
@@ -65,7 +65,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
         add(
                 rulesPanel =
-                        new GeoServerTablePanel<ShortAdminRule>(
+                        new GeoServerTablePanel<>(
                                 "rulesPanel", rulesModel = new GeofenceAdminRulesModel(), true) {
 
                             private static final long serialVersionUID = -9041215145551707243L;
@@ -83,7 +83,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                remove.setEnabled(rulesPanel.getSelection().size() > 0);
+                                remove.setEnabled(!rulesPanel.getSelection().isEmpty());
                                 target.add(remove);
                             }
                         });
@@ -133,7 +133,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             this.setOutputMarkupId(true);
 
             upLink =
-                    new ImageAjaxLink<Object>(
+                    new ImageAjaxLink<>(
                             "up", new PackageResourceReference(getClass(), "img/arrow_up.png")) {
                         private static final long serialVersionUID = -8179503447106596760L;
 
@@ -161,7 +161,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             add(upLink);
 
             downLink =
-                    new ImageAjaxLink<Object>(
+                    new ImageAjaxLink<>(
                             "down",
                             new PackageResourceReference(getClass(), "img/arrow_down.png")) {
                         private static final long serialVersionUID = 4640187752303674221L;
@@ -191,7 +191,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             add(downLink);
 
             ImageAjaxLink<Object> editLink =
-                    new ImageAjaxLink<Object>(
+                    new ImageAjaxLink<>(
                             "edit", new PackageResourceReference(getClass(), "img/edit.png")) {
                         private static final long serialVersionUID = 4640187752303674221L;
 

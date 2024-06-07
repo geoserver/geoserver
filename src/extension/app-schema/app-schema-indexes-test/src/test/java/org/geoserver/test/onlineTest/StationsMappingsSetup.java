@@ -67,6 +67,7 @@ public class StationsMappingsSetup {
         InputStream in = getClass().getClassLoader().getResourceAsStream("test-data/" + fileName);
         Path target = Paths.get(testDirPath, fileName);
         Files.copy(in, target);
+        in.close();
     }
 
     public String loadFileAsString(String uri) {

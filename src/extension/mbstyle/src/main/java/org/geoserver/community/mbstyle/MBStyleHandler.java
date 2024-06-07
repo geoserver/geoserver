@@ -116,6 +116,7 @@ public class MBStyleHandler extends StyleHandler {
         }
 
         // in this case, just do a plain on the fly conversion
+        @SuppressWarnings("PMD.UnusedLocalVariable")
         try (Reader reader = toReader(input)) {
             return convertToSLD(toReader(input));
         } catch (ParseException e) {

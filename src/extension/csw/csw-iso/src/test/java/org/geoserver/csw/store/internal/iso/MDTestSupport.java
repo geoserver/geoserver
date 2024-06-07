@@ -50,7 +50,7 @@ public class MDTestSupport extends CSWInternalTestSupport {
         namespaces.put("gml", GML.NAMESPACE);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    };
+    }
 
     // Lazy Loading.
     private static Validator validator;

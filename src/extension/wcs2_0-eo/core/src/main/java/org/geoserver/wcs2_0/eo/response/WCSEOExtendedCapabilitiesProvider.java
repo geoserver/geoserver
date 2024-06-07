@@ -17,7 +17,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.eo.EOCoverageResourceCodec;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
@@ -56,7 +55,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
             return new String[0];
         }
         String schemaLocation =
-                ResponseUtils.buildURL(
+                buildURL(
                         schemaBaseURL,
                         "schemas/wcseo/1.0/wcsEOGetCapabilites.xsd",
                         null,

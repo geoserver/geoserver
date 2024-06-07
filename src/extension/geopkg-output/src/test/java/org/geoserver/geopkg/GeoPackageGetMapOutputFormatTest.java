@@ -158,7 +158,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         GetMapRequest request = super.createGetMapRequest(layerNames);
         request.setBbox(new Envelope(-180, 180, -90, 90));
         return request;
-    };
+    }
 
     WMSMapContent createMapContent(QName... layers) throws IOException {
         GetMapRequest mapRequest = createGetMapRequest(layers);

@@ -58,7 +58,7 @@ public class AuthenticationKeyFilterPanel
 
         add(new HelpLink("authKeyParametersHelp", this).setDialog(dialog));
 
-        add(new TextField<String>("authKeyParamName"));
+        add(new TextField<>("authKeyParamName"));
 
         add(new CheckBox("allowMapperKeysAutoSync"));
 
@@ -139,7 +139,7 @@ public class AuthenticationKeyFilterPanel
 
             removeAll();
             add(
-                    new ListView<String>(
+                    new ListView<>(
                             "parametersList", new Model<>(new ArrayList<>(parameters.keySet()))) {
                         @Override
                         protected void populateItem(ListItem<String> item) {
@@ -153,7 +153,7 @@ public class AuthenticationKeyFilterPanel
                                             "parameterName",
                                             new StringResourceModel(labelKey, this, null)));
                             item.add(
-                                    new TextField<String>(
+                                    new TextField<>(
                                             "parameterField",
                                             new MapModel<>(
                                                     parameters, item.getModel().getObject())));

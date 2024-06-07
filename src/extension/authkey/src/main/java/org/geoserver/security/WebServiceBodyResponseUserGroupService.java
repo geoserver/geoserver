@@ -71,7 +71,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         super.initializeFromConfig(config);
 
         WebServiceBodyResponseUserGroupServiceConfig webServiceBodyConfig =
-                ((WebServiceBodyResponseUserGroupServiceConfig) config);
+                (WebServiceBodyResponseUserGroupServiceConfig) config;
         passwordEncoderName = webServiceBodyConfig.getPasswordEncoderName();
         passwordValidatorName = webServiceBodyConfig.getPasswordPolicyName();
 
@@ -87,7 +87,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
             for (String role : webServiceBodyConfig.getAvailableGroups().split(",")) {
                 availableGroups.add(
                         new GeoServerUserGroup(
-                                (convertToUpperCase ? role.trim().toUpperCase() : role.trim())));
+                                convertToUpperCase ? role.trim().toUpperCase() : role.trim()));
             }
         }
 
@@ -220,7 +220,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
             }
         }
         return new GeoServerUserGroup(
-                (convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim()));
+                convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim());
     }
 
     @Override
@@ -238,7 +238,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     public GeoServerUserGroup createGroupObject(final String groupname, boolean isEnabled)
             throws IOException {
         String theGroupName =
-                (convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim());
+                convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim();
         if (!theGroupName.contains(groupPrefix)) {
             if (theGroupName.equals(GeoServerRole.ADMIN_ROLE.getAuthority())) {
                 theGroupName =

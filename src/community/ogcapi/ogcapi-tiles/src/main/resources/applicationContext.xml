@@ -25,5 +25,8 @@
     <constructor-arg index="0" value="Tiles"/>
     <constructor-arg index="1" value="1.0.0"/>
   </bean>
-  
+
+  <bean id="tilesServiceDescriptor" class="org.geoserver.ogcapi.v1.tiles.TilesServiceDescriptionProvider">
+  </bean>
+
 </beans>

@@ -25,5 +25,8 @@
     <constructor-arg index="0" value="Styles"/>
     <constructor-arg index="1" value="1.0.1"/>
   </bean>
+
+  <bean id="stylesServiceDescriptor" class="org.geoserver.ogcapi.v1.styles.StylesServiceDescriptionProvider">
+  </bean>
   
 </beans>

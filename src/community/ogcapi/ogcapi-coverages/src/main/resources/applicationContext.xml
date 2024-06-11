@@ -28,4 +28,8 @@
         <constructor-arg index="1" value="1.0.0"/>
     </bean>
 
+
+    <bean id="coveragesServiceDescriptor" class="org.geoserver.ogcapi.v1.coverages.CoveragesServiceDescriptionProvider">
+    </bean>
+
 </beans>

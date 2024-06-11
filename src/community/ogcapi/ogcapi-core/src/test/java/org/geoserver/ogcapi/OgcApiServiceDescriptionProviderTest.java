@@ -26,6 +26,27 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
         assertEquals(TestCaseService.class, provider.serviceClass);
     }
 
+    @Test
+    public void testURLMangler() {
+        var provider = new TestWMSOgcApiServiceDescriptionProviderTest(this.getGeoServer());
+        var link = "../ogc/features/v1";
+
+        var mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, null,null);
+        assertEquals(link,mangled); // no change
+
+
+        var wsInfo = getCatalog().getWorkspaceByName("cite");
+
+        mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, wsInfo,null);
+        assertEquals("../cite/ogc/features/v1",mangled);
+
+        var layerInfo = getCatalog().getLayerByName("DividedRoutes");
+
+        mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, wsInfo,layerInfo);
+        assertEquals("../cite/DividedRoutes/ogc/features/v1",mangled);
+
+    }
+
     public class TestCaseService {}
 
     public class TestWMSOgcApiServiceDescriptionProviderTest

@@ -6,8 +6,6 @@
 package org.geoserver.wps.ppio;
 
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +25,6 @@ import org.locationtech.jts.geom.Geometry;
  */
 public abstract class GeoJSONPPIO extends CDataPPIO {
 
-    private static JsonFactory JSON_FACTORY = new JsonFactory();;
     static final ObjectMapper MAPPER;
 
     static {
@@ -123,16 +120,12 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
 
         @Override
         public Object decode(InputStream input) throws Exception {
-            try (JsonParser parser = JSON_FACTORY.createParser(input)) {
-                return MAPPER.readValue(parser, Geometry.class);
-            }
+            return MAPPER.readValue(input, Geometry.class);
         }
 
         @Override
         public Object decode(String input) throws Exception {
-            try (JsonParser parser = JSON_FACTORY.createParser(input)) {
-                return MAPPER.readValue(parser, Geometry.class);
-            }
+            return MAPPER.readValue(input, Geometry.class);
         }
     }
 }

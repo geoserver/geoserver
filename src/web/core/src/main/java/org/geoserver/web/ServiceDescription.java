@@ -45,7 +45,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
 
     /**
      * if there are multiple ServiceDescriptions for a Category, then use this to determine the
-     * title of the category.  see getDescriptionPriority() *
+     * title of the category. see getDescriptionPriority() *
      */
     private double descriptionPriority = 100.0;
 

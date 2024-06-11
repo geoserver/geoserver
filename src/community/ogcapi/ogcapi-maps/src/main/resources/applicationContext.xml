@@ -23,4 +23,6 @@
         <constructor-arg index="1" value="1.0.1"/>
     </bean>
 
+    <bean id="mapsServiceDescriptor" class="org.geoserver.ogcapi.v1.maps.MapsServiceDescriptionProvider">
+    </bean>
 </beans>

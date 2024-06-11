@@ -20,7 +20,7 @@ public class StyleServiceXStreamLoader extends XStreamServiceLoader<StylesServic
     protected StylesServiceInfo createServiceFromScratch(GeoServer gs) {
         StylesServiceInfoImpl info = new StylesServiceInfoImpl();
         info.setName("styles");
-        info.setTitle("Styles server");
+        info.setTitle("GeoServer Styles Service (OGCAPI)");
         return info;
     }
 

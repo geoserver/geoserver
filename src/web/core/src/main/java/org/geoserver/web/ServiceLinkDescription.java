@@ -22,6 +22,12 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     /** Service type, example {@code WMS}, {@code WFS}, {@code Features}, ... */
     private final String serviceType;
 
+    /**
+     * For things like OGCAPI-Features, serviceType would be "WFS", however, this should be
+     * "Features" - the actual service type name. Can be null.
+     */
+    private final String specificServiceType;
+
     /** Protocol */
     private final String protocol;
 
@@ -49,12 +55,24 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
             String workspace,
             String layer,
             String protocol) {
+        this(serviceType, version, link, workspace, layer, protocol, null);
+    }
+
+    public ServiceLinkDescription(
+            String serviceType,
+            Version version,
+            String link,
+            String workspace,
+            String layer,
+            String protocol,
+            String specificServiceType) {
         this.serviceType = serviceType;
         this.version = version;
         this.link = link;
         this.workspace = workspace;
         this.layer = layer;
         this.protocol = protocol != null ? protocol : this.serviceType;
+        this.specificServiceType = specificServiceType;
     }
 
     /**
@@ -81,6 +99,10 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
      */
     public String getProtocol() {
         return protocol;
+    }
+
+    public String getSpecificServiceType() {
+        return specificServiceType;
     }
 
     /**

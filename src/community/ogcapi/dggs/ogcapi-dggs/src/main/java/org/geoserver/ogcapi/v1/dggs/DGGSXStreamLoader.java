@@ -52,6 +52,9 @@ public class DGGSXStreamLoader extends XStreamServiceLoader<DGGSInfo> {
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
         }
+        if (service.getTitle() == null) {
+            service.setTitle("GeoServer Discrete Global Grid Systems Service (OGCAPI)");
+        }
         return service;
     }
 }

@@ -20,7 +20,8 @@ public class ImagesServiceXStreamLoader extends XStreamServiceLoader<ImagesServi
     protected ImagesServiceInfo createServiceFromScratch(GeoServer gs) {
         ImagesServiceInfoImpl info = new ImagesServiceInfoImpl();
         info.setName("images");
-        info.setTitle("Image mosaicks discovery and management interface");
+        info.setTitle(
+                "GeoServer Image Mosaics Discovery and Management Interface Service (OGCAPI)");
         return info;
     }
 

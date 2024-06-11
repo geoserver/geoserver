@@ -108,7 +108,16 @@ public class ServicesPanel extends Panel {
 
         for (ServiceDescription service : services) {
             String serviceName = service.getServiceType();
-            serviceMap.put(serviceName, service);
+            if (serviceMap.containsKey(serviceName)) {
+                // use the "highest priority" service description
+                var otherServiceDescription = serviceMap.get(serviceName);
+                if (service.getDescriptionPriority()
+                        > otherServiceDescription.getDescriptionPriority()) {
+                    serviceMap.put(serviceName, service);
+                }
+            } else {
+                serviceMap.put(serviceName, service);
+            }
             service.getLinks().clear();
         }
         for (ServiceLinkDescription link : links) {

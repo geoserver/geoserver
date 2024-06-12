@@ -105,8 +105,9 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     }
 
     /**
-      * OGCAPI serviceType used for configuration, this may be different than serviceType, example {@code WFS}, used to group for heading and description information.
-      */
+     * OGCAPI serviceType used for configuration, this may be different than serviceType, example
+     * {@code WFS}, used to group for heading and description information.
+     */
     public String getSpecificServiceType() {
         return specificServiceType;
     }

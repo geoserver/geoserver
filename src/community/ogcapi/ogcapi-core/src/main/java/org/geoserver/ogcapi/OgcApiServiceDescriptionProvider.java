@@ -46,6 +46,13 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
     GeoServer geoserver;
     Catalog catalog;
 
+    /**
+     * OGCAPI Service Descriptor with additional information to group with associated Open Web Service heading.
+     * @param gs GeoServer configuration
+     * @param serviceType Service identifier, example {@code WFS}, used to group for heading and description
+     * @param serviceName OGCAPI Name
+     * @param specificServiceType OGCAPI specific service type, example {@code Features}.
+     */
     public OgcApiServiceDescriptionProvider(
             GeoServer gs, String serviceType, String serviceName, String specificServiceType) {
         this.geoserver = gs;

@@ -40,8 +40,8 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
      */
     String serviceName;
 
-    Class<ServiceInfo> infoClass;
-    Class serviceClass;
+    Class<SERVICEINFOTYPE> infoClass;
+    Class<SERVICETYPE> serviceClass;
 
     GeoServer geoserver;
     Catalog catalog;
@@ -53,14 +53,19 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
         this.serviceName = serviceName;
         this.serviceType = serviceType;
         this.specificServiceType = specificServiceType;
-        infoClass =
-                (Class<ServiceInfo>)
+        @SuppressWarnings("unchecked")
+        var infoClass =
+                (Class<SERVICEINFOTYPE>)
                         ((ParameterizedType) this.getClass().getGenericSuperclass())
                                 .getActualTypeArguments()[0];
-        serviceClass =
-                (Class)
+        this.infoClass = infoClass;
+
+        @SuppressWarnings("unchecked")
+        var serviceClass =
+                (Class<SERVICETYPE>)
                         ((ParameterizedType) this.getClass().getGenericSuperclass())
                                 .getActualTypeArguments()[1];
+        this.serviceClass = serviceClass;
     }
 
     /**
@@ -105,6 +110,7 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
      * @param layerInfo layer or layergroup context for info lookup
      * @return ServiceDescription
      */
+    @Override
     protected ServiceDescription description(
             String serviceType,
             ServiceInfo info,

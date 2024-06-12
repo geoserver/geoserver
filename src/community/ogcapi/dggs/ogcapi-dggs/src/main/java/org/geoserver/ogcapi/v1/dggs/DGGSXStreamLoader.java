@@ -53,7 +53,9 @@ public class DGGSXStreamLoader extends XStreamServiceLoader<DGGSInfo> {
             service.getVersions().add(new Version("1.0.0"));
         }
         if (service.getTitle() == null) {
-            service.setTitle("GeoServer Discrete Global Grid Systems Service (OGCAPI)");
+            service.setTitle("Discrete Global Grid Systems Service");
+            service.setAbstract(
+                    "OGCAPI-DGGS provides a spatial reference system that uses a hierarchical tessellation of cells to partition and address the globe.");
         }
         return service;
     }

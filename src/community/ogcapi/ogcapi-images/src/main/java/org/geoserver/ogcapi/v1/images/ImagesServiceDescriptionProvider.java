@@ -11,6 +11,6 @@ public class ImagesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<ImagesServiceInfo, ImagesService> {
 
     public ImagesServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WCS", "OGCAPI-Images", "Images");
+        super(gs, "Experimental", "Images", "Images");
     }
 }

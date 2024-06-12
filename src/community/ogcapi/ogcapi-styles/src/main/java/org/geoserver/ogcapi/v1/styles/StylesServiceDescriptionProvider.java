@@ -11,6 +11,6 @@ public class StylesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<StylesServiceInfo, StylesService> {
 
     public StylesServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WMS", "OGCAPI-Styles", "Styles");
+        super(gs, "Styles", "Styles", "Styles");
     }
 }

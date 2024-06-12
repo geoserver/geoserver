@@ -5,6 +5,9 @@
 package org.geoserver.web;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.geotools.util.Version;
 
@@ -159,8 +162,22 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
         return Objects.hash(workspace, layer, serviceType, version, link, protocol);
     }
 
+    private static List<String> OGC_SERVICE_ORDER =
+            Collections.unmodifiableList(Arrays.asList("WMS", "WMTS", "WFS", "WCS", "WPS", "CSW"));
+
+    private boolean isOGCWebService() {
+        return OGC_SERVICE_ORDER.contains(getProtocol());
+    }
+
     @Override
     public int compareTo(ServiceLinkDescription o) {
+        // put the W* (i.e. WFS) before others (i.e. OGCAPI-Features)
+        if (this.isOGCWebService() && !o.isOGCWebService()) {
+            return -1;
+        }
+        if (!this.isOGCWebService() && o.isOGCWebService()) {
+            return 1;
+        }
         int compareProtocol = this.protocol.compareTo(o.protocol);
         int compareVersion = -this.version.compareTo(o.getVersion());
         return compareProtocol != 0 ? compareProtocol : compareVersion;

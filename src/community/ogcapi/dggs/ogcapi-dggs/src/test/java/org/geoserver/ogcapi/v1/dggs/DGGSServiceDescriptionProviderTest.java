@@ -33,7 +33,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
         assertEquals(1, links.size());
         assertEquals("WMTS", links.get(0).getServiceType());
         assertEquals("DGGS", links.get(0).getSpecificServiceType());
-        assertEquals("OGCAPI-DGGS", links.get(0).getProtocol());
+        assertEquals("DGGS", links.get(0).getProtocol());
         assertEquals("../ogc/dggs/v1", links.get(0).getLink());
 
         var ws = getCatalog().getWorkspaceByName("cite");
@@ -42,7 +42,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
         assertEquals(1, links.size());
         assertEquals("WMTS", links.get(0).getServiceType());
         assertEquals("DGGS", links.get(0).getSpecificServiceType());
-        assertEquals("OGCAPI-DGGS", links.get(0).getProtocol());
+        assertEquals("DGGS", links.get(0).getProtocol());
         assertEquals("../cite/ogc/dggs/v1", links.get(0).getLink());
 
         var layer = getCatalog().getLayerByName("DividedRoutes");
@@ -51,7 +51,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
         assertEquals(1, links.size());
         assertEquals("WMTS", links.get(0).getServiceType());
         assertEquals("DGGS", links.get(0).getSpecificServiceType());
-        assertEquals("OGCAPI-DGGS", links.get(0).getProtocol());
+        assertEquals("DGGS", links.get(0).getProtocol());
         assertEquals("../cite/DividedRoutes/ogc/dggs/v1", links.get(0).getLink());
     }
 }

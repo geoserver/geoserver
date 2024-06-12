@@ -12,6 +12,6 @@ public class CoveragesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<WCSInfo, CoveragesService> {
 
     public CoveragesServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WCS", "OGCAPI-Coverages", "Coverages");
+        super(gs, "WCS", "Coverages", "Coverages");
     }
 }

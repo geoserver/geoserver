@@ -57,7 +57,18 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      * #compareTo(ServiceDescription)}.
      */
     private static List<String> OGC_SERVICE_ORDER =
-            Collections.unmodifiableList(Arrays.asList("WMS", "WMTS", "WFS", "WCS", "WPS"));
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            "CSW",
+                            "WMS",
+                            "WMTS",
+                            "WMS-C",
+                            "WFS",
+                            "WCS",
+                            "WPS",
+                            "Styles",
+                            "DGGS",
+                            "Experimental"));
 
     /** Service links. */
     Set<ServiceLinkDescription> links = new HashSet<>();

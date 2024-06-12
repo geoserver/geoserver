@@ -12,6 +12,6 @@ public class DGGSServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<DGGSInfo, DGGSService> {
 
     public DGGSServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WMTS", "OGCAPI-DGGS", "DGGS");
+        super(gs, "DGGS", "DGGS", "DGGS");
     }
 }

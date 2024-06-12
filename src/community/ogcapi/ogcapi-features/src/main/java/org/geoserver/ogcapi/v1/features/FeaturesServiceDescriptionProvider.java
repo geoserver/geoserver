@@ -12,6 +12,6 @@ public class FeaturesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<WFSInfo, FeatureService> {
 
     public FeaturesServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WFS", "OGCAPI-Features", "Features");
+        super(gs, "WFS", "Features", "Features");
     }
 }

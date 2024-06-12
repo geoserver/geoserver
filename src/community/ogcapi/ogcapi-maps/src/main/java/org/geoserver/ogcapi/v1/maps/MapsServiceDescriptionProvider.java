@@ -12,6 +12,6 @@ public class MapsServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<WMSInfo, MapsService> {
 
     public MapsServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WMS", "OGCAPI-Maps", "Maps");
+        super(gs, "WMS", "Maps", "Maps");
     }
 }

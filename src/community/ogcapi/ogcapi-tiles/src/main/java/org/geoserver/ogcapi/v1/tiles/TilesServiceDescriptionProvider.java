@@ -11,6 +11,6 @@ public class TilesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<TilesServiceInfo, TilesService> {
 
     public TilesServiceDescriptionProvider(GeoServer gs) {
-        super(gs, "WMTS", "OGCAPI-Tiles", "Tiles");
+        super(gs, "WMTS", "Tiles", "Tiles");
     }
 }

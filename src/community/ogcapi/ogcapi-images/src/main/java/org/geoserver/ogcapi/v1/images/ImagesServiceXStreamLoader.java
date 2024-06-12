@@ -22,7 +22,7 @@ public class ImagesServiceXStreamLoader extends XStreamServiceLoader<ImagesServi
         info.setName("images");
         if (info.getTitle() == null) {
             info.setTitle("Testbed Experiments");
-            info.setAbstract("The following modules are part of the OGCAPI Testbed experiments.");
+            info.setAbstract("The following services are part of the OGCAPI Testbed experiments.");
         }
         return info;
     }

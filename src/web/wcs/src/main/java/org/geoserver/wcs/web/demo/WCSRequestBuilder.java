@@ -190,6 +190,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
     @Override
     public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
         response.render(
                 JavaScriptContentHeaderItem.forScript(
                         DemoRequestsPage.demoRequestsJavascript, null));

@@ -113,6 +113,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     @Override
     public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
         response.render(JavaScriptContentHeaderItem.forScript(demoRequestsJavascript, null));
     }
 

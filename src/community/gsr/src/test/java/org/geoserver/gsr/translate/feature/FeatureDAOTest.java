@@ -81,7 +81,8 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         assertEquals(2, fti.getFeatureSource(null, null).getFeatures().size());
 
-        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator =
+                fti.getFeatureSource(null, null).getFeatures().features();
         // Lines.0
         iterator.next();
         // reported id should be compatible with actual id
@@ -122,7 +123,8 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         assertEquals(2, fti.getFeatureSource(null, null).getFeatures().size());
 
-        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator =
+                fti.getFeatureSource(null, null).getFeatures().features();
         // Lines.0
         iterator.next();
         // reported id should be compatible with actual id
@@ -171,7 +173,8 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         assertEquals(2, fti.getFeatureSource(null, null).getFeatures().size());
 
-        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator =
+                fti.getFeatureSource(null, null).getFeatures().features();
         // MLines.0
         iterator.next();
         // reported id should be compatible with actual id
@@ -220,7 +223,8 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator =
+                fti.getFeatureSource(null, null).getFeatures().features();
         // verify geometry matches
         Geometry nativeGeometry =
                 (Geometry) iterator.next().getDefaultGeometryProperty().getValue();
@@ -260,7 +264,8 @@ public class FeatureDAOTest extends GeoServerSystemTestSupport {
 
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
 
-        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator = fti.getFeatureSource(null, null).getFeatures().features();
+        FeatureIterator<? extends org.geotools.api.feature.Feature> iterator =
+                fti.getFeatureSource(null, null).getFeatures().features();
         // verify geometry matches
         Geometry nativeGeometry =
                 (Geometry) iterator.next().getDefaultGeometryProperty().getValue();

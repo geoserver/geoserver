@@ -5,7 +5,6 @@
 package org.geoserver.wps.remote;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -184,13 +183,15 @@ public class RemoteProcessTest extends WPSTestSupport {
                             Arrays.asList(serviceChannels)
                                     .contains(machine.getServiceName().getNamespaceURI()));
 
-                    assertEquals(machine.getNodeJID(), machine.getServiceName().getNamespaceURI()
-                            + "@"
-                            + configuration.get("xmpp_bus")
-                            + "."
-                            + xmppDomain
-                            + "/"
-                            + xmppUserName);
+                    assertEquals(
+                            machine.getNodeJID(),
+                            machine.getServiceName().getNamespaceURI()
+                                    + "@"
+                                    + configuration.get("xmpp_bus")
+                                    + "."
+                                    + xmppDomain
+                                    + "/"
+                                    + xmppUserName);
                 }
             }
         } catch (Exception e) {
@@ -355,8 +356,16 @@ public class RemoteProcessTest extends WPSTestSupport {
             fail(e.getLocalizedMessage());
         }
 
-        assertEquals("LoadAverage does not match!", 14.6, registeredProcessingMachines.get(0).getLoadAverage(), 0.0);
-        assertEquals("MemoryPerc does not match!", 89.3, registeredProcessingMachines.get(0).getMemPercUsed(), 0.0);
+        assertEquals(
+                "LoadAverage does not match!",
+                14.6,
+                registeredProcessingMachines.get(0).getLoadAverage(),
+                0.0);
+        assertEquals(
+                "MemoryPerc does not match!",
+                89.3,
+                registeredProcessingMachines.get(0).getMemPercUsed(),
+                0.0);
     }
 
     /** */

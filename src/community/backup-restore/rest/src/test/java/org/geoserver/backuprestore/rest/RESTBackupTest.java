@@ -207,12 +207,14 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
 
         JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
-        assertEquals("name IN ('topp','geosolutions-it')", execution
-                .getJSONObject("stepExecutions")
-                .getJSONArray("step")
-                .getJSONObject(0)
-                .getJSONObject("parameters")
-                .get("wsFilter"));
+        assertEquals(
+                "name IN ('topp','geosolutions-it')",
+                execution
+                        .getJSONObject("stepExecutions")
+                        .getJSONArray("step")
+                        .getJSONObject(0)
+                        .getJSONObject("parameters")
+                        .get("wsFilter"));
 
         assertTrue(
                 "STARTED".equals(execution.getString("status"))

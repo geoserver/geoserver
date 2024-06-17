@@ -368,9 +368,9 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
     /** Checks if the streams are equals, note that the {@link InputStream}s are also closed. */
     private void checkInputStreams(InputStream is, InputStream is2) throws IOException {
-        try {
+        try (is;
+                is2) {
             assertTrue(IOUtils.contentEquals(is, is2));
-        } finally {
             try {
                 is.close();
             } catch (IOException e) {

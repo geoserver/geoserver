@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -88,7 +89,7 @@ public class ResourceWriterTest extends BackupRestoreTestSupport {
 
         assertTrue(Resources.exists(trgTitleFtl));
         assertTrue(Resources.exists(trgHeaderFtl));
-        assertTrue(!Resources.exists(trgFakeFtl));
+        assertFalse(Resources.exists(trgFakeFtl));
     }
 
     @Test

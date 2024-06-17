@@ -71,7 +71,7 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
                         .append(MF_TEMPLATE_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeatureGeoJSON(features.getJSONObject(0));
         checkAdditionalInfo(result);

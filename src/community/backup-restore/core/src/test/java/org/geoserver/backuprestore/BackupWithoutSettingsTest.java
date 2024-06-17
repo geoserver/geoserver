@@ -1,5 +1,6 @@
 package org.geoserver.backuprestore;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +46,7 @@ public class BackupWithoutSettingsTest extends BackupRestoreTestSupport {
         Thread.sleep(100);
 
         assertNotNull(backupFacade.getBackupExecutions());
-        assertTrue(!backupFacade.getBackupExecutions().isEmpty());
+        assertFalse(backupFacade.getBackupExecutions().isEmpty());
         assertNotNull(backupExecution);
 
         int cnt = 0;

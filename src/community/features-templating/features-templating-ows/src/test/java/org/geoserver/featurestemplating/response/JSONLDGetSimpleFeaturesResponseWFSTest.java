@@ -40,7 +40,7 @@ public class JSONLDGetSimpleFeaturesResponseWFSTest extends JSONLDGetSimpleFeatu
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 0);
+        assertEquals(0, features.size());
     }
 
     @Test

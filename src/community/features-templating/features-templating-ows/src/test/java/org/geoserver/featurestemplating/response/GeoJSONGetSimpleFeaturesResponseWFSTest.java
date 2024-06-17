@@ -47,7 +47,7 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
                         .append("&cql_filter= features.name = 'Name: Goose Island' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(features.getJSONObject(0).getString("name"), "Name: Goose Island");
         checkAdditionalInfo(result);
     }
@@ -62,7 +62,7 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
                         .append("&cql_filter= NAME = 'Goose Island' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(features.getJSONObject(0).getString("name_cod"), "Goose Island");
         checkAdditionalInfo(result);
     }

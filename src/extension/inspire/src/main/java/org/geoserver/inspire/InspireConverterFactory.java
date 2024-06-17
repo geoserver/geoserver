@@ -96,7 +96,7 @@ public class InspireConverterFactory implements ConverterFactory {
                 return target.cast(identifiers);
             } else if (source instanceof UniqueResourceIdentifiers && String.class.equals(target)) {
                 UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) source;
-                if (ids.size() > 0) {
+                if (!ids.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     for (UniqueResourceIdentifier id : ids) {
                         String ns = id.getNamespace();

@@ -147,9 +147,9 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
                 "true");
         // select
         CheckBox selector =
-                ((CheckBox)
+                (CheckBox)
                         tester.getComponentFromLastRenderedPage(
-                                "storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
+                                "storesPanel:listContainer:items:1:selectItemContainer:selectItem");
         tester.getRequest().setParameter(selector.getInputName(), "true");
         tester.getRequest().setMethod("get");
         tester.executeAjaxEvent(selector, "click");

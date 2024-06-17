@@ -12,6 +12,7 @@ import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         final CheckBox createInspireExtendedCapabilities =
                 new CheckBox(
                         "createExtendedCapabilities",
-                        new MetadataMapModel(
+                        new MetadataMapModel<>(
                                 metadata, CREATE_EXTENDED_CAPABILITIES.key, Boolean.class));
         add(createInspireExtendedCapabilities);
 
@@ -99,12 +100,13 @@ public class InspireAdminPanel extends AdminPagePanel {
             model.getObject().getMetadata().put(LANGUAGE.key, "eng");
         }
 
-        configs.add(new LanguageDropDownChoice("language", new MapModel(metadata, LANGUAGE.key)));
+        configs.add(new LanguageDropDownChoice("language", new MapModel<>(metadata, LANGUAGE.key)));
         configs.add(
-                new LanguagesEditor("otherLanguages", new MapModel(metadata, OTHER_LANGUAGES.key)));
+                new LanguagesEditor(
+                        "otherLanguages", new MapModel<>(metadata, OTHER_LANGUAGES.key)));
 
-        TextField metadataUrlField =
-                new TextField("metadataURL", new MapModel(metadata, SERVICE_METADATA_URL.key));
+        TextField<URL> metadataUrlField =
+                new TextField<>("metadataURL", new MapModel<>(metadata, SERVICE_METADATA_URL.key));
         metadataUrlField.setRequired(true);
         FormComponentFeedbackBorder metadataURLBorder = new FormComponentFeedbackBorder("border");
         metadataURLBorder.add(metadataUrlField);
@@ -118,10 +120,10 @@ public class InspireAdminPanel extends AdminPagePanel {
                 "application/vnd.ogc.csw.GetRecordByIdResponse_xml", "CSW GetRecordById Response");
         mdUrlTypes.put("application/vnd.iso.19139+xml", "ISO 19139 ServiceMetadata record");
 
-        IModel<String> urlTypeModel = new MapModel(metadata, SERVICE_METADATA_TYPE.key);
+        IModel<String> urlTypeModel = new MapModel<>(metadata, SERVICE_METADATA_TYPE.key);
 
         IChoiceRenderer<String> urlTypeChoiceRenderer =
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -155,7 +157,7 @@ public class InspireAdminPanel extends AdminPagePanel {
         identifiersContainer.setVisible(isDownloadService);
         configs.add(identifiersContainer);
         IModel<UniqueResourceIdentifiers> sdiModel =
-                new MetadataMapModel(
+                new MetadataMapModel<>(
                         metadata,
                         SPATIAL_DATASET_IDENTIFIER_TYPE.key,
                         UniqueResourceIdentifiers.class);

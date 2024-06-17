@@ -37,7 +37,7 @@ jobs:
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
  
-    - uses: lcollins/pmd-github-action@v2
+    - uses: lcollins/pmd-github-action@v3.0.0
       if: always()
       with:
         path: '**/pmd.xml'

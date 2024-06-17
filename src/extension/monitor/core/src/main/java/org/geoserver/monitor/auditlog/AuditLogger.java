@@ -266,7 +266,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                 while (true) {
                     // grab as many items from the queue as possible
                     List<RequestData> rds = new ArrayList<>();
-                    if (queue.size() > 0) {
+                    if (!queue.isEmpty()) {
                         queue.drainTo(rds);
                     } else {
                         rds.add(queue.take());

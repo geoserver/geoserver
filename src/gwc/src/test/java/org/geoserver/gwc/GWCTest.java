@@ -1443,7 +1443,7 @@ public class GWCTest {
                         bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
         request.setBbox(reqBbox);
 
-        assertFalse(!tileLayer.getInfo().cachedStyles().isEmpty());
+        assertTrue(tileLayer.getInfo().cachedStyles().isEmpty());
 
         for (String style : tileLayer.getInfo().cachedStyles()) {
 

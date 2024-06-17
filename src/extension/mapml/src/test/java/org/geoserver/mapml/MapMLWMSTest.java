@@ -1867,7 +1867,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         if (layerName.equalsIgnoreCase("layerGroup")) {
             assertTrue("4".equalsIgnoreCase(zoom));
         } else {
-            assertTrue(!"0".equalsIgnoreCase(zoom));
+            assertFalse("0".equalsIgnoreCase(zoom));
         }
         return doc;
     }

@@ -194,7 +194,7 @@ public class GdalWpsTest extends WPSTestSupport {
         double x1 = -145.4, x2 = 145.6, y1 = -42.1, y2 = -41.8;
         while ((line = reader.readLine()) != null) {
             String[] cols = line.split(" ");
-            assertTrue(cols.length == 3);
+            assertEquals(3, cols.length);
 
             double x = round(Double.valueOf(cols[0]));
             double y = round(Double.valueOf(cols[1]));

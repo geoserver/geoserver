@@ -90,7 +90,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTest
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
     }
 

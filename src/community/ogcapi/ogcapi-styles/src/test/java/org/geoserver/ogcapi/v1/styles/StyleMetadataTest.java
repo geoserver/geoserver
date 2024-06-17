@@ -6,6 +6,8 @@ package org.geoserver.ogcapi.v1.styles;
 
 import static java.util.Map.entry;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.geoserver.data.test.MockData.BUILDINGS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -287,11 +289,8 @@ public class StyleMetadataTest extends StylesTestSupport {
                 json.read("stylesheets.size()", Integer.class), Matchers.greaterThanOrEqualTo(3));
 
         // sld 1.is not native, CSS is
-        assertEquals(
-                false,
-                (boolean) readSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
-        assertEquals(
-                true, (boolean) readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
+        assertFalse((boolean) readSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
+        assertTrue((boolean) readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
 
         // some checks on the CSS one
         assertEquals(

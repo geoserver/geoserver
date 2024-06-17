@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,7 +44,7 @@ public class GwcRestoreTest extends BackupRestoreTestSupport {
         Thread.sleep(100);
 
         assertNotNull(backupFacade.getRestoreExecutions());
-        assertTrue(!backupFacade.getRestoreExecutions().isEmpty());
+        assertFalse(backupFacade.getRestoreExecutions().isEmpty());
 
         assertNotNull(restoreExecution);
 

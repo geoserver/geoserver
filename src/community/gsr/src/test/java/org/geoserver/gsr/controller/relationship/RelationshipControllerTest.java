@@ -9,6 +9,7 @@
  */
 package org.geoserver.gsr.controller.relationship;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -167,7 +168,7 @@ public class RelationshipControllerTest extends ControllerTest {
         String strJson = String.valueOf(result);
         assertTrue(strJson + " is a JSON object", result instanceof JSONObject);
         RelationshipClass bean3 = gson.fromJson(strJson, RelationshipClass.class);
-        assertTrue(bean3.getOriginPrimaryKey().equals("id"));
+        assertEquals("id", bean3.getOriginPrimaryKey());
 
         q =
                 query(
@@ -178,7 +179,7 @@ public class RelationshipControllerTest extends ControllerTest {
         assertTrue(strJson3 + " is a JSON object", result3 instanceof JSONObject);
         RelationshipClass bean = gson.fromJson(strJson3, RelationshipClass.class);
 
-        assertTrue(bean.getOriginPrimaryKey().equals("id"));
+        assertEquals("id", bean.getOriginPrimaryKey());
 
         q = query("cgf", "/originTable/Lines");
         JSON result2 = getAsJSON(q);
@@ -186,7 +187,7 @@ public class RelationshipControllerTest extends ControllerTest {
         JSONArray jsonarray1 = (JSONArray) result2;
         RelationshipClass bean2 =
                 gson.fromJson(jsonarray1.get(0).toString(), RelationshipClass.class);
-        assertTrue(bean2.getOriginPrimaryKey().equals("id"));
+        assertEquals("id", bean2.getOriginPrimaryKey());
 
         q = query("cgf", "/destinationTable/Points");
         deleteAsServletResponse(q);
@@ -220,14 +221,14 @@ public class RelationshipControllerTest extends ControllerTest {
                         + "   \"destinationForeignKey\":\"r\""
                         + "}";
         MockHttpServletResponse response = deleteAsServletResponse(q, body, "application/json");
-        assertTrue(response.getContentAsString().equals("true"));
+        assertEquals("true", response.getContentAsString());
         RelationshipClass checkRelationshipClass = getRelationshipClass();
         assertNull(checkRelationshipClass);
 
         createTestRelationship();
         q = query("cgf", "/delete/1");
         MockHttpServletResponse response2 = getAsServletResponse(q);
-        assertTrue(response.getContentAsString().equals("true"));
+        assertEquals("true", response.getContentAsString());
         RelationshipClass checkRelationshipClass2 = getRelationshipClass();
         assertNull(checkRelationshipClass2);
     }
@@ -242,7 +243,7 @@ public class RelationshipControllerTest extends ControllerTest {
     public void updateRelationship() throws Exception {
         createTestRelationship();
         RelationshipClass checkRelationshipClass = getRelationshipClass();
-        assertTrue(checkRelationshipClass.getDestinationPrimaryKey().equals("r"));
+        assertEquals("r", checkRelationshipClass.getDestinationPrimaryKey());
 
         String q = query("cgf", "");
         String body =
@@ -264,6 +265,6 @@ public class RelationshipControllerTest extends ControllerTest {
         MockHttpServletResponse response = putAsServletResponse(q, body, "application/json");
         List<RelationshipClass> relationshipClassList =
                 relationshipDAO.getAllRelationshipClassesByWorkspace("cgf");
-        assertTrue(relationshipClassList.get(0).getDestinationPrimaryKey().equals("s"));
+        assertEquals("s", relationshipClassList.get(0).getDestinationPrimaryKey());
     }
 }

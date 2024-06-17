@@ -1,6 +1,7 @@
 package org.geoserver.smartdataloader.visitors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.sql.DatabaseMetaData;
@@ -49,7 +50,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
             Diff d = XMLUnit.compareXML(control, dmv.getDocument());
 
-            assertEquals(true, d.similar());
+            assertTrue(d.similar());
         }
     }
 
@@ -73,7 +74,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
             XMLUnit.setIgnoreComments(true);
 
             Diff d = XMLUnit.compareXML(control, dmv.getDocument());
-            assertEquals(true, d.similar());
+            assertTrue(d.similar());
         }
     }
 
@@ -99,7 +100,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
             Diff d = XMLUnit.compareXML(control, dmv.getDocument());
 
-            assertEquals(true, d.similar());
+            assertTrue(d.similar());
         }
     }
 
@@ -125,7 +126,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
 
             Diff d = XMLUnit.compareXML(control, dmv.getDocument());
 
-            assertEquals(true, d.similar());
+            assertTrue(d.similar());
         }
     }
 }

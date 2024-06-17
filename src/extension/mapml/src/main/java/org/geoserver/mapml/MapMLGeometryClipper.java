@@ -88,6 +88,7 @@ class MapMLGeometryClipper {
         return clippedGeom;
     }
 
+    @SuppressWarnings("PMD.UnnecessaryCast")
     private static Geometry collectMultiGeometry(Geometry clippedGeom, List<Geometry> geometries) {
         GeometryFactory fac = clippedGeom.getFactory();
         if (clippedGeom instanceof MultiPolygon) {

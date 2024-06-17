@@ -239,7 +239,7 @@ public class NetCDFDimensionsManager {
             }
 
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
             public void addValue(Object object) {
                 ((Set) values).add(object);
             }

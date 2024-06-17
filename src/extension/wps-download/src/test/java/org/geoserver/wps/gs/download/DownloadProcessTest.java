@@ -484,7 +484,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         roi,
                         false);
 
-        try (AutoCloseableResource resource =
+        try (AutoCloseableResource ignored =
                 new AutoCloseableResource(getResourceManager(), gpkg)) {
 
             // Simply check that the output is in the expected format.
@@ -1066,7 +1066,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         new NullProgressListener() // progressListener
                         );
 
-        try (AutoCloseableResource resource = new AutoCloseableResource(resourceManager, raster)) {
+        try (AutoCloseableResource ignored = new AutoCloseableResource(resourceManager, raster)) {
             // Simply check that the output is in the expected format.
             // No need to validate the data, being done on another test
             assertExpectedExtension(raster, "zip");
@@ -1870,7 +1870,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32631", true);
         MapProjection.SKIP_SANITY_CHECKS = true;
         try (AutoDisposableGeoTiffReader referenceReader = new AutoDisposableGeoTiffReader(file);
-                AutoDisposableGridCoverage2D referenceGc = referenceReader.read()) {
+                AutoDisposableGridCoverage2D ignored = referenceReader.read()) {
             // tests go out of the stricly sane area for one of the UTMs, could cause 0.006
             // meters of error and that makes the assertions fail..-
             String roiWkt =

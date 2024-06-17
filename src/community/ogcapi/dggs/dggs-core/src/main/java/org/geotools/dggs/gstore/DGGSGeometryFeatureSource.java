@@ -129,13 +129,13 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
     }
 
     @Override
-    protected boolean canSort() {
+    protected boolean canSort(Query q) {
         // at least for natural ordering, DDGS has a predictable iteration order
         return true;
     }
 
     @Override
-    protected boolean canFilter() {
+    protected boolean canFilter(Query q) {
         return true;
     }
 
@@ -293,7 +293,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
     }
 
     @Override
-    protected boolean canRetype() {
+    protected boolean canRetype(Query q) {
         return true;
     }
 

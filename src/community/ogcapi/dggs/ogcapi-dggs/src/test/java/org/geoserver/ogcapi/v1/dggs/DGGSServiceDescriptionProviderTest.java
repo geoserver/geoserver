@@ -20,7 +20,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
 
         var descriptions = provider.getServices(null, null);
         assertEquals(1, descriptions.size());
-        assertEquals("WMTS", descriptions.get(0).getServiceType());
+        assertEquals("DGGS", descriptions.get(0).getServiceType());
         assertTrue(descriptions.get(0).getDescriptionPriority() < 100);
     }
 
@@ -31,7 +31,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
 
         var links = provider.getServiceLinks(null, null);
         assertEquals(1, links.size());
-        assertEquals("WMTS", links.get(0).getServiceType());
+        assertEquals("DGGS", links.get(0).getServiceType());
         assertEquals("DGGS", links.get(0).getSpecificServiceType());
         assertEquals("DGGS", links.get(0).getProtocol());
         assertEquals("../ogc/dggs/v1", links.get(0).getLink());
@@ -40,7 +40,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
 
         links = provider.getServiceLinks(ws, null);
         assertEquals(1, links.size());
-        assertEquals("WMTS", links.get(0).getServiceType());
+        assertEquals("DGGS", links.get(0).getServiceType());
         assertEquals("DGGS", links.get(0).getSpecificServiceType());
         assertEquals("DGGS", links.get(0).getProtocol());
         assertEquals("../cite/ogc/dggs/v1", links.get(0).getLink());
@@ -49,7 +49,7 @@ public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSuppo
 
         links = provider.getServiceLinks(ws, layer);
         assertEquals(1, links.size());
-        assertEquals("WMTS", links.get(0).getServiceType());
+        assertEquals("DGGS", links.get(0).getServiceType());
         assertEquals("DGGS", links.get(0).getSpecificServiceType());
         assertEquals("DGGS", links.get(0).getProtocol());
         assertEquals("../cite/DividedRoutes/ogc/dggs/v1", links.get(0).getLink());

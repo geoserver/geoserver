@@ -16,7 +16,7 @@ jobs:
       matrix:
         jdk: [ 11, 17, 21 ]
         dist: [ 'temurin' ]
-        os: [ 'ubuntu-20.04' ]
+        os: [ 'ubuntu-22.04' ]
     runs-on: ${{ matrix.os }}
     
     steps:

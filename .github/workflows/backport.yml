@@ -14,7 +14,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Backport
     steps:
       - name: Backport Bot

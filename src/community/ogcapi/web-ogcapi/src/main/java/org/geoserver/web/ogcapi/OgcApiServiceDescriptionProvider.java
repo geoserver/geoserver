@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.ogcapi;
+package org.geoserver.web.ogcapi;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -199,5 +199,25 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
             customLink = customLink.replace("/ogc/", "/" + layerName + "/ogc/");
         }
         return customLink;
+    }
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public String getSpecificServiceType() {
+        return specificServiceType;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public Class<SERVICEINFOTYPE> getInfoClass() {
+        return infoClass;
+    }
+
+    public Class<SERVICETYPE> getServiceClass() {
+        return serviceClass;
     }
 }

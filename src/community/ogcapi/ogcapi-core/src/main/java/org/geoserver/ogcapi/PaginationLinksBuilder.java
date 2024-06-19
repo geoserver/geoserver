@@ -7,7 +7,6 @@ package org.geoserver.ogcapi;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 
@@ -59,6 +58,7 @@ public class PaginationLinksBuilder {
         return kvp;
     }
 
+    /** Returns a HREF to the next page */
     public String getNext() {
         Map<String, Object> kvp = getNextMap(true);
         if (kvp == null) return null;
@@ -66,11 +66,7 @@ public class PaginationLinksBuilder {
         return buildURL(kvp);
     }
 
-    /**
-     * Map of KVP for the previous link. Can be used in POST links generation.
-     *
-     * @return
-     */
+    /** Map of KVP for the next link. Can be used in POST links generation. */
     public Map<String, Object> getNextMap(boolean includeQueryMap) {
         // if nothing is returned or we returned less than a page, there is no next page
         if (returned == 0 || (startIndex + returned >= matched)) return null;
@@ -82,12 +78,11 @@ public class PaginationLinksBuilder {
         return kvp;
     }
 
+    /** Returns a HREF to the current page. */
     public String getSelf() {
-        HttpServletRequest request = APIRequestInfo.get().getRequest();
-        StringBuffer sb = request.getRequestURL();
-        String queryString = request.getQueryString();
-        if (queryString != null && !queryString.isEmpty()) sb.append("?").append(queryString);
-        return sb.toString();
+        Map<String, Object> kvp = new LinkedHashMap<>();
+        kvp.putAll(APIRequestInfo.get().getSimpleQueryMap());
+        return buildURL(kvp);
     }
 
     private String buildURL(Map<String, Object> kvp) {

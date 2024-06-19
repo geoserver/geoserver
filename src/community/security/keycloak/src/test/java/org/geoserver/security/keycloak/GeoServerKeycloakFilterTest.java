@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.keycloak;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -20,6 +22,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +64,7 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
 
     // locations for useful resources
     public static final String APP_URL = "http://localhost:8080/app";
+    public static final String APP_URL_WIREMOCk = "http://localhost:8080/auth";
     public static final String AUTH_URL = "https://cas.core.maui.mda.ca:8040/auth";
     public static final String OPENID_URL = AUTH_URL + "/realms/" + REALM;
 
@@ -97,15 +102,64 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private FilterChain chain;
+    private WireMockServer keycloackService;
 
     // do setup before each test
     @SuppressWarnings("PMD.CloseResource") // just a mock
     @Before
     public void before() throws IOException {
+        keycloackService = new WireMockServer(8080);
+        keycloackService.start();
+
+        String openidConfig =
+                "{\n"
+                        + "  \"issuer\": \""
+                        + OPENID_URL
+                        + "\",\n"
+                        + "  \"authorization_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/auth\",\n"
+                        + "  \"token_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/token\",\n"
+                        + "  \"token_introspection_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/token/introspect\",\n"
+                        + "  \"userinfo_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/userinfo\",\n"
+                        + "  \"end_session_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/logout\",\n"
+                        + "  \"jwks_uri\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/certs\",\n"
+                        + "  \"check_session_iframe\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/login-status-iframe.html\",\n"
+                        + "  \"registration_endpoint\": \""
+                        + OPENID_URL
+                        + "/clients-registrations/openid-connect\",\n"
+                        + "  \"introspection_endpoint\": \""
+                        + OPENID_URL
+                        + "/protocol/openid-connect/token/introspect\"\n"
+                        + "}";
+
+        keycloackService.stubFor(
+                WireMock.get(
+                                urlEqualTo(
+                                        String.format(
+                                                "/auth/realms/%s/.well-known/openid-configuration",
+                                                REALM)))
+                        .willReturn(
+                                aResponse()
+                                        .withHeader("Content-Type", "application/json")
+                                        .withBody(openidConfig)));
+
         AdapterConfig aConfig = new AdapterConfig();
         aConfig.setRealm(REALM);
         aConfig.setResource(CLIENT_ID);
-        aConfig.setAuthServerUrl(AUTH_URL);
+        aConfig.setAuthServerUrl(APP_URL_WIREMOCk);
         config = new GeoServerKeycloakFilterConfig();
         config.writeAdapterConfig(aConfig);
         config.setEnableRedirectEntryPoint(true);
@@ -131,6 +185,8 @@ public class GeoServerKeycloakFilterTest extends GeoServerSecurityTestSupport {
         request = null;
         response = null;
         chain = null;
+
+        keycloackService.stop();
     }
 
     // AuthOutcome.NOT_ATTEMPTED

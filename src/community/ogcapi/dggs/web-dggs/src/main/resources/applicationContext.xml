@@ -20,6 +20,6 @@
     <bean id="rHealPixUICleaner" class="org.geoserver.web.data.store.dggs.SharedInterpreterUICleaner"/>
 
 
-    <bean id="dggsServiceDescriptor" class="org.geoserver.ogcapi.v1.dggs.DGGSServiceDescriptionProvider">
+    <bean id="dggsServiceDescriptor" class="org.geoserver.web.data.store.dggs.DGGSServiceDescriptionProvider">
     </bean>
 </beans>

@@ -2,10 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.ogcapi.v1.dggs;
+package org.geoserver.web.data.store.dggs;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ogcapi.OgcApiServiceDescriptionProvider;
+import org.geoserver.ogcapi.v1.dggs.DGGSInfo;
+import org.geoserver.ogcapi.v1.dggs.DGGSService;
+import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
 /** Provide description of DGGS services for welcome page. */
 public class DGGSServiceDescriptionProvider

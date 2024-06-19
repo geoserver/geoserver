@@ -2,16 +2,16 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.ogcapi.v1.dggs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.ogcapi.v1.dggs.DGGSTestSupport;
+import org.geoserver.web.data.store.dggs.DGGSServiceDescriptionProvider;
 import org.junit.Test;
 
 /** Tests DGGSServiceDescriptionProvider and (indirectly) OgcApiServiceDescriptionProvider */
-public class DGGSServiceDescriptionProviderTest extends GeoServerSystemTestSupport {
+public class DGGSServiceDescriptionProviderTest extends DGGSTestSupport {
 
     /** basic test of the description* */
     @Test

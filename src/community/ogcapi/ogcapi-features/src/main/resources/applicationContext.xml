@@ -31,6 +31,5 @@
         <constructor-arg index="1" value="1.0.1"/>
     </bean>
 
-<!--    <bean id="featuresServiceDescriptor" class="org.geoserver.ogcapi.v1.features.FeaturesServiceDescriptionProvider">-->
-<!--    </bean>-->
+
 </beans>

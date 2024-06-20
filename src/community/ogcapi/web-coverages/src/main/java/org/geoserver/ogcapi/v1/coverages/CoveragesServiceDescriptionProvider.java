@@ -5,8 +5,8 @@
 package org.geoserver.ogcapi.v1.coverages;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ogcapi.OgcApiServiceDescriptionProvider;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
 public class CoveragesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<WCSInfo, CoveragesService> {

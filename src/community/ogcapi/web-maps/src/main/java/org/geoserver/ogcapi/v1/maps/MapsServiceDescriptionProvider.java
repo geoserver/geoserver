@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ogcapi.OgcApiServiceDescriptionProvider;
+import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 import org.geoserver.wms.WMSInfo;
 
 public class MapsServiceDescriptionProvider

@@ -13,9 +13,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.SuppressFBWarnings;
 
 /**
  * Disables defined services on layer by configuration.
@@ -24,7 +26,13 @@ import org.geoserver.platform.GeoServerExtensions;
  *
  * @author Fernando Mino, Geosolutions
  */
-public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
+public class DisabledServiceResourceFilter extends AbstractCatalogFilter
+        implements GeoServerLifecycleHandler {
+
+    /** Property set in context/environment/system for default disabled services. */
+    public static String PROPERTY = "org.geoserver.service.disabled";
+
+    protected static List<String> DEFAULT_SERVICE_TYPES;
 
     private boolean isFilterSubject() {
         return request() != null
@@ -55,12 +63,16 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
     }
 
     private static List<String> defaultDisabledServiceTypes() {
-        List<String> list = null;
-        String globalEnv = GeoServerExtensions.getProperty("org.geoserver.service.disabled");
-        if (isNotBlank(globalEnv)) {
-            list = Arrays.asList(globalEnv.split(","));
+        if (DEFAULT_SERVICE_TYPES == null) {
+            String globalEnv = GeoServerExtensions.getProperty(PROPERTY);
+            if (isNotBlank(globalEnv)) {
+                DEFAULT_SERVICE_TYPES = Arrays.asList(globalEnv.split(","));
+            } else {
+                DEFAULT_SERVICE_TYPES = Collections.emptyList();
+            }
         }
-        return list == null ? Collections.emptyList() : list;
+
+        return DEFAULT_SERVICE_TYPES;
     }
 
     /**
@@ -87,5 +99,23 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter {
             disabledServices = defaultDisabledServiceTypes();
         }
         return disabledServices;
+    }
+
+    @Override
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD") // Spring singleton anyways
+    public void onReset() {
+        DEFAULT_SERVICE_TYPES = null;
+    }
+
+    @Override
+    public void onDispose() {}
+
+    @Override
+    public void beforeReload() {}
+
+    @Override
+    @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD") // Spring singleton anyways
+    public void onReload() {
+        DEFAULT_SERVICE_TYPES = null;
     }
 }

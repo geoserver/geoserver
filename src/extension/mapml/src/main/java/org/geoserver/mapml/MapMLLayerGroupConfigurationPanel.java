@@ -45,16 +45,12 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, METADATA),
-                        MapMLConstants.LICENSE_TITLE);
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.LICENSE_TITLE);
         TextField<String> licenseTitle = new TextField<>("licenseTitle", licenseTitleModel);
         add(licenseTitle);
 
         MapModel<String> licenseLinkModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, METADATA),
-                        MapMLConstants.LICENSE_LINK);
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.LICENSE_LINK);
         TextField<String> licenseLink = new TextField<>("licenseLink", licenseLinkModel);
         add(licenseLink);
 

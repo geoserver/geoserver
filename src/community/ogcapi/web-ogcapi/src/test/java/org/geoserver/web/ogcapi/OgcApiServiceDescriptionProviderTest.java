@@ -7,7 +7,6 @@ package org.geoserver.web.ogcapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -66,8 +65,6 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-
-        Catalog catalog = getCatalog();
         testData.addService(TestCaseInfoImpl.class, null, this.getGeoServer());
     }
 

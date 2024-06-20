@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.v1.images;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ogcapi.OgcApiServiceDescriptionProvider;
+import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
 public class ImagesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<ImagesServiceInfo, ImagesService> {

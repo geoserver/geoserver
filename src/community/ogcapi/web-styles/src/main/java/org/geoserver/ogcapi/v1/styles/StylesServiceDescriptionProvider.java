@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.v1.styles;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.ogcapi.OgcApiServiceDescriptionProvider;
+import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
 public class StylesServiceDescriptionProvider
         extends OgcApiServiceDescriptionProvider<StylesServiceInfo, StylesService> {

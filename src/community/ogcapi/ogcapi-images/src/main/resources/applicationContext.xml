@@ -26,6 +26,4 @@
     <constructor-arg index="1" value="1.0.1"/>
   </bean>
 
-  <bean id="imagesServiceDescriptor" class="org.geoserver.ogcapi.v1.images.ImagesServiceDescriptionProvider">
-  </bean>
 </beans>

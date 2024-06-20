@@ -19,16 +19,16 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-dggs</artifactId>
+      <version>${gs.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
-      <version>${gs.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
+      <version>${gs.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
-      <version>${gs.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>

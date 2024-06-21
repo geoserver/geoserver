@@ -182,4 +182,7 @@
   <bean id="styleUrlChecker" class="org.geoserver.security.urlchecks.StyleURLChecker">
     <constructor-arg ref="dataDirectory"/>
   </bean>
+
+  <bean id="AuthenticationCacheImpl" class="org.geoserver.security.auth.AuthenticationCacheImpl" />
+
 </beans>

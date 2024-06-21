@@ -27,6 +27,7 @@
         <include>*clickhouse*.jar</include>
         <include>*httpmime*.jar</include>
         <include>*lz4*.jar</include>
+        <include>gs-web-core-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

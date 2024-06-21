@@ -19,6 +19,8 @@
         <include>swagger-models-*.jar</include>
         <include>snakeyaml-*.jar</include>
         <include>validation-api*.jar</include>
+        <include>gs-web-core-*.jar</include>
+        <include>gs-web-maps-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

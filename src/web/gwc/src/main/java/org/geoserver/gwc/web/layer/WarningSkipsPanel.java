@@ -27,7 +27,7 @@ public class WarningSkipsPanel extends Panel {
 
         final List<WarningType> allWarningSkips = Arrays.asList(WarningType.values());
         ListView<WarningType> warningSkips =
-                new ListView<WarningType>("warningSkips", allWarningSkips) {
+                new ListView<>("warningSkips", allWarningSkips) {
                     private static final long serialVersionUID = 1L;
 
                     @Override

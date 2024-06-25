@@ -37,7 +37,7 @@ public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDes
                             localizer.getString(
                                     "RESTServiceDescriptionProvider.workspace",
                                     null,
-                                    new Model<HashMap<String, String>>(params)));
+                                    new Model<>(params)));
         } else {
             title = Text.text(localizer.getString("RESTServiceDescriptionProvider.title", null));
         }

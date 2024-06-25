@@ -407,6 +407,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         // load MongoDB connection properties from fixture file
         Properties properties = loadFixtureProperties(fixtureFile);
         // check that we have access to a mongodb and instantiate the client
+        @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
         String hostAsString = properties.getProperty("mongo.host", "127.0.0.1");
         String portAsString = properties.getProperty("mongo.port", "27017");
         ServerAddress serverAddress =
@@ -502,6 +503,7 @@ public abstract class ComplexMongoDBSupport extends GeoServerSystemTestSupport {
         }
         // default MongoDB connection parameters
         Properties properties = new Properties();
+        @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
         properties.put("mongo.host", "127.0.0.1");
         properties.put("mongo.port", "27017");
         try (OutputStream output = new FileOutputStream(exampleFixtureFile)) {

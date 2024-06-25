@@ -39,7 +39,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
         List<Property<ProcessGroupInfo>> props = new ArrayList<>();
         props.add(new BeanProperty<>("enabled", "enabled"));
         props.add(
-                new AbstractProperty<ProcessGroupInfo>("prefix") {
+                new AbstractProperty<>("prefix") {
 
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
@@ -74,7 +74,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                     }
                 });
         props.add(
-                new AbstractProperty<ProcessGroupInfo>("title") {
+                new AbstractProperty<>("title") {
 
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
@@ -95,7 +95,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                     }
                 });
         props.add(
-                new AbstractProperty<ProcessGroupInfo>("summary") {
+                new AbstractProperty<>("summary") {
 
                     @Override
                     public Object getPropertyValue(final ProcessGroupInfo item) {
@@ -141,7 +141,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                     }
                 });
         props.add(
-                new AbstractProperty<ProcessGroupInfo>("roles") {
+                new AbstractProperty<>("roles") {
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
                         return item.getRoles();
@@ -149,7 +149,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
 
                     @Override
                     public IModel getModel(IModel itemModel) {
-                        return new PropertyModel(itemModel, "roles");
+                        return new PropertyModel<>(itemModel, "roles");
                     }
                 });
         props.add(new PropertyPlaceholder<>("edit"));

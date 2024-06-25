@@ -120,8 +120,9 @@ public class QueryControllerTimeTest extends ControllerTest {
         assertTrue(
                 jsonFeatureCollection + " should have an array in the features field",
                 json.get("features") instanceof JSONArray);
-        assertTrue(
+        assertEquals(
                 jsonFeatureCollection + " should have " + n + " features",
-                json.getJSONArray("features").size() == n);
+                json.getJSONArray("features").size(),
+                n);
     }
 }

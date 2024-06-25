@@ -50,9 +50,9 @@ public class UserPanel extends Panel {
                         new UserTablePanel("table", serviceName, provider, true) {
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(users.getSelection().size() > 0);
+                                removal.setEnabled(!users.getSelection().isEmpty());
                                 target.add(removal);
-                                removalWithRoles.setEnabled(users.getSelection().size() > 0);
+                                removalWithRoles.setEnabled(!users.getSelection().isEmpty());
                                 target.add(removalWithRoles);
                             }
                         });
@@ -85,14 +85,14 @@ public class UserPanel extends Panel {
                             .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
             h.add(
-                    new Label("message", new Model())
+                    new Label("message", new Model<>())
                             .add(new AttributeAppender("class", new Model<>("d-none"), " ")));
         }
 
         // the add button
         h.add(
                 add =
-                        new Link<NewUserPage>("addNew") {
+                        new Link<>("addNew") {
                             @Override
                             public void onClick() {
                                 setResponsePage(

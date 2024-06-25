@@ -304,7 +304,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         inputNotNull(source, destination);
         if (!source.isOpen() || !destination.isOpen())
             throw new IllegalStateException("Source and destination channels must be open.");
-        try (FileLock lock = destination.lock()) { // auto-close releases lock
+        try (FileLock ignored = destination.lock()) { // auto-close releases lock
             final long sourceSize = source.size();
             long pos = 0;
             while (pos < sourceSize) {
@@ -371,7 +371,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             throw new IllegalStateException("Source and destination channels must be open.");
 
         final java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(bufferSize);
-        try (FileLock lock = destination.lock()) { // auto-close releases lock
+        try (FileLock ignored = destination.lock()) { // auto-close releases lock
             // Move destination to position
             destination.position(initialWritePosition);
 
@@ -559,6 +559,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @param closeOutput quietly close {@link OutputStream}
      * @throws IOException in case something bad happens.
      */
+    @SuppressWarnings("PMD.UseTryWithResources")
     public static void copyStream(
             InputStream sourceStream,
             OutputStream destinationStream,
@@ -714,7 +715,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             throws IOException {
 
         final Enumeration<? extends ZipEntry> entries = archive.entries();
-        try {
+        try { // NOPMD - suppressed UseTryWithResources
             File destDir = outputDirectory.dir();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();

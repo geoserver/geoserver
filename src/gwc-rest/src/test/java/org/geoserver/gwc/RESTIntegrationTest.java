@@ -575,7 +575,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     filters,
                     contains(
                             allOf(
-                                    Matchers.hasProperty("key", is("STYLES")),
+                                    hasProperty("key", is("STYLES")),
                                     isA(
                                             StyleParameterFilter.class.asSubclass(
                                                     ParameterFilter.class)))));
@@ -603,7 +603,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     not(
                             contains(
                                     allOf(
-                                            Matchers.hasProperty("key", is("STYLES")),
+                                            hasProperty("key", is("STYLES")),
                                             isA(
                                                     StyleParameterFilter.class.asSubclass(
                                                             ParameterFilter.class))))));
@@ -712,7 +712,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         JSONArray jsonArr = json.getJSONArray("long-array-array");
         assertNotNull(jsonArr);
-        assertTrue(jsonArr.size() > 0);
+        assertFalse(jsonArr.isEmpty());
     }
 
     @Test

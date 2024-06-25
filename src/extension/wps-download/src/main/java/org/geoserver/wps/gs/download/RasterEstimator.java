@@ -169,7 +169,7 @@ class RasterEstimator {
         long targetArea;
         Integer[] targetSize = scaling.getTargetSize();
         if (targetSize[0] != null && targetSize[1] != null) {
-            targetArea = (long) targetSize[0] * targetSize[1];
+            targetArea = (long) targetSize[0] * targetSize[1]; // NOPMD for cast to long
         } else {
             targetArea = areaRead;
         }

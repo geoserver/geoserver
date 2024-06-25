@@ -17,13 +17,13 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -248,7 +248,7 @@ public class SLDHandler extends StyleHandler {
                         protected void configureContext(
                                 org.picocontainer.MutablePicoContainer container) {
                             container.registerComponentInstance(ResourceLocator.class, locator);
-                        };
+                        }
                     };
         } else {
             sld = new SLDConfiguration();
@@ -312,9 +312,7 @@ public class SLDHandler extends StyleHandler {
         try (Reader reader = toReader(input)) {
             final SLDValidator validator = new SLDValidator();
             validator.setEntityResolver(entityResolver);
-            return validator.validateSLD(new InputSource(reader)).stream()
-                    .map(e -> (Exception) e)
-                    .collect(Collectors.toList());
+            return new ArrayList<>(validator.validateSLD(new InputSource(reader)));
         }
     }
 

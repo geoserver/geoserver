@@ -43,6 +43,7 @@ public class MasterPasswordController extends RestBaseController {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
+    @SuppressWarnings("PMD.StringInstantiation")
     public NamedMap<String, String> masterPasswordGet() throws IOException {
 
         if (!getManager().checkAuthenticationForAdminRole()) {

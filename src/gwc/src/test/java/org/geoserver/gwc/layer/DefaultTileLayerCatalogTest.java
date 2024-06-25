@@ -209,7 +209,7 @@ public class DefaultTileLayerCatalogTest {
 
         writeFileLayerInfoImpl(file, "originalname");
 
-        await().atMost(60, TimeUnit.SECONDS).until(() -> hasBeenCreated.get());
+        await().atMost(60, TimeUnit.SECONDS).until(hasBeenCreated::get);
         GeoServerTileLayerInfo info = catalog.getLayerById("id1");
         assertEquals("originalname", info.getName());
         assertNotNull(catalog.getLayerByName("originalname"));
@@ -223,7 +223,7 @@ public class DefaultTileLayerCatalogTest {
                             return file.lastModified() > lastModified;
                         });
 
-        await().atMost(60, SECONDS).until(() -> hasBeenModified.get());
+        await().atMost(60, SECONDS).until(hasBeenModified::get);
 
         info = catalog.getLayerById("id1");
         assertEquals("newname", info.getName());
@@ -232,7 +232,7 @@ public class DefaultTileLayerCatalogTest {
 
         file.delete();
 
-        await().atMost(60, SECONDS).until(() -> hasBeenDeleted.get());
+        await().atMost(60, SECONDS).until(hasBeenDeleted::get);
 
         assertNull(catalog.getLayerById("id1"));
         assertNull(catalog.getLayerByName("newname"));

@@ -35,7 +35,7 @@ public class LayerAttributePanel extends StyleEditTabPanel {
         PropertyModel<String> layerNameModel =
                 new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
-                new SimpleAjaxLink<String>("changeLayer", layerNameModel) {
+                new SimpleAjaxLink<>("changeLayer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
                     @Override

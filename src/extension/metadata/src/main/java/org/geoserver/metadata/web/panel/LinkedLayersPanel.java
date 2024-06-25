@@ -20,7 +20,7 @@ public class LinkedLayersPanel extends Panel {
         super(id);
 
         add(
-                new GeoServerTablePanel<ResourceInfo>(
+                new GeoServerTablePanel<>(
                         "layersTable", new LinkedLayersDataProvider(metadataTemplateModel)) {
 
                     private static final long serialVersionUID = -6805672124565219769L;

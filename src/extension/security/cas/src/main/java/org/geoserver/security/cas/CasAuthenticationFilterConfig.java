@@ -30,7 +30,7 @@ public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilte
         public boolean equals(RoleSource other) {
             return other != null && other.toString().equals(toString());
         }
-    };
+    }
 
     /** if true, no single sign on possible */
     private boolean sendRenew;

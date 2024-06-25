@@ -47,7 +47,7 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
                 new PropertyModel<>(model, "layerGroupStyles");
         this.listModel = LiveCollectionModel.list(stylesModel);
         styleListView =
-                new ListView<LayerGroupStyle>("styleList", listModel) {
+                new ListView<>("styleList", listModel) {
                     @Override
                     protected void populateItem(ListItem<LayerGroupStyle> listItem) {
                         LayerGroupStyleModel lgStyle =
@@ -94,7 +94,7 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
 
     private DropDownChoice<LayerGroupStyle> availableStyle(List<LayerGroupStyle> styles) {
         ChoiceRenderer<LayerGroupStyle> render =
-                new ChoiceRenderer<LayerGroupStyle>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public Object getDisplayValue(LayerGroupStyle object) {
                         String displayVal;
@@ -133,7 +133,7 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
     }
 
     private AjaxLink<LayerGroupStyle> addNewLink() {
-        return new AjaxLink<LayerGroupStyle>("addNew") {
+        return new AjaxLink<>("addNew") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -149,7 +149,7 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
     }
 
     private AjaxLink<LayerGroupStyle> copyLink() {
-        return new AjaxLink<LayerGroupStyle>("copy", new Model<>()) {
+        return new AjaxLink<>("copy", new Model<>()) {
 
             @Override
             public void onClick(AjaxRequestTarget target) {

@@ -219,7 +219,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-bbox")
     public JAXBElement<List<String>> createBbox(List<String> value) {
-        return new JAXBElement<>(_Bbox_QNAME, ((Class) List.class), null, ((List<String>) value));
+        return new JAXBElement<>(_Bbox_QNAME, ((Class) List.class), null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link Point }{@code >}} */
@@ -312,10 +312,7 @@ public class ObjectFactory {
             scope = MultiPoint.class)
     public JAXBElement<List<String>> createMultiPointCoordinates(List<String> value) {
         return new JAXBElement<>(
-                _MultiPointCoordinates_QNAME,
-                ((Class) List.class),
-                MultiPoint.class,
-                ((List<String>) value));
+                _MultiPointCoordinates_QNAME, ((Class) List.class), MultiPoint.class, value);
     }
 
     /**
@@ -341,9 +338,6 @@ public class ObjectFactory {
             scope = MultiLineString.class)
     public JAXBElement<List<String>> createMultiLineStringCoordinates(List<String> value) {
         return new JAXBElement<>(
-                _MultiPointCoordinates_QNAME,
-                ((Class) List.class),
-                MultiLineString.class,
-                ((List<String>) value));
+                _MultiPointCoordinates_QNAME, ((Class) List.class), MultiLineString.class, value);
     }
 }

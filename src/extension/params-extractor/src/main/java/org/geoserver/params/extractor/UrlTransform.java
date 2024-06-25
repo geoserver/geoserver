@@ -98,7 +98,7 @@ public class UrlTransform {
     }
 
     public boolean haveChanged() {
-        return !(replacements.isEmpty());
+        return !replacements.isEmpty();
     }
 
     @Override

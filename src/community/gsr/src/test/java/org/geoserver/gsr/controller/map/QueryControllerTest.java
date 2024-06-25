@@ -11,6 +11,7 @@ package org.geoserver.gsr.controller.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSON;
@@ -356,9 +357,9 @@ public class QueryControllerTest extends ControllerTest {
         features = json.getJSONArray("features");
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = features.getJSONObject(i);
-            assertTrue(
+            assertFalse(
                     "Found geometry at index " + i + " in " + result,
-                    !feature.containsKey("geometry"));
+                    feature.containsKey("geometry"));
         }
     }
 
@@ -382,14 +383,15 @@ public class QueryControllerTest extends ControllerTest {
                 "spatialReference should be a JSON Object (" + json + ")",
                 json.getJSONObject("spatialReference").isArray()
                         || json.getJSONObject("spatialReference").isNullObject());
-        assertFalse(
+        assertNotNull(
                 "spatialReference.wkid should be a JSON Object ("
                         + json.getJSONObject("spatialReference")
                         + ")",
-                json.getJSONObject("spatialReference").get("wkid") == null);
-        assertTrue(
+                json.getJSONObject("spatialReference").get("wkid"));
+        assertEquals(
                 "Results not in requested spatial reference; json was " + result,
-                json.getJSONObject("spatialReference").get("wkid").equals(3857));
+                3857,
+                json.getJSONObject("spatialReference").get("wkid"));
 
         result =
                 getAsString(
@@ -415,9 +417,10 @@ public class QueryControllerTest extends ControllerTest {
                 "Request explicitly including geometries; returned " + result,
                 JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
         json = JSONObject.fromObject(result);
-        assertTrue(
+        assertEquals(
                 "Results not in requested spatial reference; json was " + result,
-                json.getJSONObject("spatialReference").get("wkid").equals(4326));
+                4326,
+                json.getJSONObject("spatialReference").get("wkid"));
     }
 
     @Test
@@ -436,7 +439,7 @@ public class QueryControllerTest extends ControllerTest {
         JSONArray features = json.getJSONArray("features");
         assertTrue(
                 "There should be no results for this intersects query. JSON was: " + result,
-                features.size() == 0);
+                features.isEmpty());
 
         result =
                 getAsString(
@@ -449,9 +452,10 @@ public class QueryControllerTest extends ControllerTest {
                 JsonSchemaTest.validateJSON(result, "/gsr/1.0/featureSet.json"));
         json = JSONObject.fromObject(result);
         features = json.getJSONArray("features");
-        assertTrue(
+        assertEquals(
                 "Should have results for envelope query at 0,0. JSON was: " + result,
-                features.size() == 1);
+                1,
+                features.size());
     }
 
     @Test

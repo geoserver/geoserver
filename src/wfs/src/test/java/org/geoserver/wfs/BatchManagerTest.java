@@ -391,8 +391,7 @@ public class BatchManagerTest {
 
     private MapEntry<TransactionElement, TransactionElementHandler> keyValue(
             TransactionElement pElement, TransactionElementHandler pElementHandler) {
-        return new MapEntry<TransactionElement, TransactionElementHandler>(
-                pElement, pElementHandler);
+        return new MapEntry<>(pElement, pElementHandler);
     }
 
     @SafeVarargs

@@ -72,10 +72,6 @@ class SVGWriter extends OutputStreamWriter {
 
     private double maxY;
 
-    private int coordsSkipCount;
-
-    private int coordsWriteCount;
-
     private SVGFeatureWriterHandler writerHandler = new SVGFeatureWriterHandler();
 
     private SVGFeatureWriter featureWriter = null;
@@ -247,7 +243,7 @@ class SVGWriter extends OutputStreamWriter {
              * REVISIT: get rid of all this attribute stuff, since if attributes are needed it fits
              * better to have SVG with gml attributes as another output format for WFS's getFeature.
              */
-            List atts = new ArrayList(0); // config.getAttributes(typeName);
+            List atts = new ArrayList<>(0); // config.getAttributes(typeName);
 
             if (atts.contains("#FID")) {
                 this.writerHandler = new FIDSVGHandler(this.writerHandler);
@@ -498,12 +494,9 @@ class SVGWriter extends OutputStreamWriter {
 
                 // let at least 3 points in case it is a polygon
                 if ((i > 3) && (prev.distance(curr) <= minCoordDistance)) {
-                    ++coordsSkipCount;
-
                     continue;
                 }
 
-                ++coordsWriteCount;
                 write((getX(curr.x) - getX(prev.x)));
                 write(' ');
                 write(getY(curr.y) - getY(prev.y));

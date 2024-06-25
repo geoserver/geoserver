@@ -598,9 +598,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         /** The custom range */
         private NumberRange<? extends Number> configuredRange;
 
-        /** The custom name */
-        private String name;
-
         /** The custom description */
         private InternationalString configuredDescription;
 

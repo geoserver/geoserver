@@ -82,7 +82,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
     /** Map from content type to ImageIO format name for {@link ImageIO#write} */
     static final Map<String, String> IMAGEIO_FORMATS =
-            new HashMap<String, String>() {
+            new HashMap<>() {
                 private static final long serialVersionUID = 1L;
 
                 {
@@ -133,11 +133,9 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         if (JSONType.isJsonMimeType(exceptions)) {
             // use Json format
             JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, false);
-            return;
         } else if (JSONType.useJsonp(exceptions)) {
             // use JsonP format
             JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, true);
-            return;
         } else if (isImageExceptionType(exceptions)) {
             // ok, it's image, then we have to build a text representing the
             // exception and lay it out in the image
@@ -157,7 +155,6 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                             exceptions,
                             bgcolor,
                             transparent);
-                    return;
                 } else {
                     // use default
                     handleXmlException(exception, request);

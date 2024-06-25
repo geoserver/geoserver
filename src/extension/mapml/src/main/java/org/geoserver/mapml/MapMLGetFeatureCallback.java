@@ -34,7 +34,7 @@ public class MapMLGetFeatureCallback extends AbstractDispatcherCallback {
             return response;
         }
 
-        MapMLGetFeatureOutputFormat mapmlResponse = ((MapMLGetFeatureOutputFormat) response);
+        MapMLGetFeatureOutputFormat mapmlResponse = (MapMLGetFeatureOutputFormat) response;
         mapmlResponse.setBase(ResponseUtils.baseURL(request.getHttpRequest()));
         mapmlResponse.setPath(request.getPath());
         mapmlResponse.setQuery(request.getRawKvp());

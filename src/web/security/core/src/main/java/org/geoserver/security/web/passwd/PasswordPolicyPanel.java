@@ -33,7 +33,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
         add(new CheckBox("digitRequired"));
         add(new CheckBox("uppercaseRequired"));
         add(new CheckBox("lowercaseRequired"));
-        add(new TextField<Integer>("minLength"));
+        add(new TextField<>("minLength"));
 
         boolean unlimited = pwPolicy.getMaxLength() == -1;
         add(
@@ -68,7 +68,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
 
         public MaxLengthPanel(String id) {
             super(id, new Model<>());
-            add(new TextField<Integer>("maxLength"));
+            add(new TextField<>("maxLength"));
             setOutputMarkupId(true);
         }
 

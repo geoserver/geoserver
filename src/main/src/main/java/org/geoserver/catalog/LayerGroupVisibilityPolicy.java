@@ -26,5 +26,5 @@ public interface LayerGroupVisibilityPolicy {
 
     /** Hide a LayerGroup if its Layers are all hidden */
     public static final LayerGroupVisibilityPolicy HIDE_IF_ALL_HIDDEN =
-            (group, filteredLayers) -> filteredLayers.isEmpty() && group.getLayers().size() > 0;
+            (group, filteredLayers) -> filteredLayers.isEmpty() && !group.getLayers().isEmpty();
 }

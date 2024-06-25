@@ -222,7 +222,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         /* init main form */
         styleForm =
-                new Form<StyleInfo>("styleForm", styleModel) {
+                new Form<>("styleForm", styleModel) {
                     @Override
                     protected void onSubmit() {
                         onStyleFormSubmit();
@@ -257,7 +257,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             @Override
                             public Panel getPanel(String id) {
                                 return new LayerAssociationPanel(id, AbstractStylePage.this);
-                            };
+                            }
                         });
 
         PanelCachingTab previewTab =
@@ -282,7 +282,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                 } catch (IOException e) {
                                     throw new WicketRuntimeException(e);
                                 }
-                            };
+                            }
                         });
         // If style is null, this is a new style.
         // If so, we want to disable certain tabs
@@ -442,7 +442,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                 });
         Link<StylePage> cancelLink =
-                new Link<StylePage>("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         doReturn(StylePage.class);

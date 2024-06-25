@@ -100,13 +100,13 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
                             || policy.level == AccessLevel.METADATA
                             || policy.level == AccessLevel.HIDDEN)
                     && policy.response != Response.CHALLENGE) {
-                return new SecuredFeatureSource((FeatureSource) object, policy);
+                return new SecuredFeatureSource<>((FeatureSource) object, policy);
             } else if (FeatureLocking.class.isAssignableFrom(clazz)) {
-                return new SecuredFeatureLocking((FeatureLocking) object, policy);
+                return new SecuredFeatureLocking<>((FeatureLocking) object, policy);
             } else if (FeatureStore.class.isAssignableFrom(clazz)) {
-                return new SecuredFeatureStore((FeatureStore) object, policy);
+                return new SecuredFeatureStore<>((FeatureStore) object, policy);
             } else if (FeatureSource.class.isAssignableFrom(clazz)) {
-                return new SecuredFeatureSource((FeatureSource) object, policy);
+                return new SecuredFeatureSource<>((FeatureSource) object, policy);
             }
         }
 
@@ -114,7 +114,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
         if (SimpleFeatureCollection.class.isAssignableFrom(clazz)) {
             return new SecuredSimpleFeatureCollection((SimpleFeatureCollection) object, policy);
         } else if (FeatureCollection.class.isAssignableFrom(clazz)) {
-            return new SecuredFeatureCollection((FeatureCollection) object, policy);
+            return new SecuredFeatureCollection<>((FeatureCollection) object, policy);
         } else if (SimpleFeatureIterator.class.isAssignableFrom(clazz)) {
             return new SecuredSimpleFeatureIterator((SimpleFeatureIterator) object);
         } else if (FeatureIterator.class.isAssignableFrom(clazz)) {

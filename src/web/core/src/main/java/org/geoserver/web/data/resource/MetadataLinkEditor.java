@@ -77,7 +77,7 @@ public class MetadataLinkEditor extends Panel {
         table.setOutputMarkupId(true);
         container.add(table);
         links =
-                new ListView<MetadataLinkInfo>("links", metadataLinksModel) {
+                new ListView<>("links", metadataLinksModel) {
 
                     private static final long serialVersionUID = -3241009112151911288L;
 
@@ -125,7 +125,7 @@ public class MetadataLinkEditor extends Panel {
 
                         // remove link
                         AjaxLink<MetadataLinkInfo> link =
-                                new AjaxLink<MetadataLinkInfo>("removeLink", item.getModel()) {
+                                new AjaxLink<>("removeLink", item.getModel()) {
 
                                     private static final long serialVersionUID =
                                             -6204300287066695521L;
@@ -169,7 +169,7 @@ public class MetadataLinkEditor extends Panel {
     }
 
     private void updateLinksVisibility() {
-        boolean anyLink = metadataLinksModel.getObject().size() > 0;
+        boolean anyLink = !metadataLinksModel.getObject().isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }

@@ -30,7 +30,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         ServiceAccessRuleProvider provider = new ServiceAccessRuleProvider();
         add(
                 rules =
-                        new GeoServerTablePanel<ServiceAccessRule>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -48,7 +48,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(rules.getSelection().size() > 0);
+                                removal.setEnabled(!rules.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });
@@ -61,9 +61,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(
-                new BookmarkablePageLink<NewServiceAccessRulePage>(
-                        "addNew", NewServiceAccessRulePage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewServiceAccessRulePage.class));
 
         // the removal button
         header.add(removal = new SelectionServiceRemovalLink("removeSelected", rules, dialog));
@@ -75,7 +73,7 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
 
     Component editRuleLink(
             String id, IModel<ServiceAccessRule> itemModel, Property<ServiceAccessRule> property) {
-        return new SimpleAjaxLink<ServiceAccessRule>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

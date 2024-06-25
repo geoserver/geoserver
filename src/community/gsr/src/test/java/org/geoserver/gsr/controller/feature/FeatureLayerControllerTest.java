@@ -156,7 +156,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
         assertEquals(0, resultObj.getInt("objectId"));
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
 
         // verify feature was updated
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -194,7 +194,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
-        assertEquals(false, resultObj.getBoolean("success"));
+        assertFalse(resultObj.getBoolean("success"));
         assertEquals(1019, resultObj.getJSONObject("error").getInt("code"));
 
         // malformed geometry
@@ -215,7 +215,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         json = (JSONObject) result;
 
         resultObj = json.getJSONArray("updateResults").getJSONObject(0);
-        assertEquals(false, resultObj.getBoolean("success"));
+        assertFalse(resultObj.getBoolean("success"));
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
 
         // missing attribute
@@ -239,7 +239,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         resultObj = json.getJSONArray("updateResults").getJSONObject(0);
         assertEquals(0, resultObj.getInt("objectId"));
-        assertEquals(false, resultObj.getBoolean("success"));
+        assertFalse(resultObj.getBoolean("success"));
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
     }
 
@@ -285,7 +285,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
 
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
         assertEquals(0, resultObj.getInt("objectId"));
 
         // verify feature was updated
@@ -343,7 +343,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
 
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
         assertEquals(0, resultObj.getInt("objectId"));
 
         // verify feature was updated
@@ -402,7 +402,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultObj = json.getJSONArray("updateResults").getJSONObject(0);
 
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
         assertEquals(0, resultObj.getInt("objectId"));
 
         // verify feature was updated
@@ -456,7 +456,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultObj = json.getJSONArray("addResults").getJSONObject(0);
         assertNotSame(0, resultObj.getInt("objectId"));
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
 
         // verify feature was added
         assertEquals(2, fti.getFeatureSource(null, null).getFeatures().size());
@@ -492,7 +492,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONObject resultObj = json.getJSONArray("addResults").getJSONObject(0);
-        assertEquals(false, resultObj.getBoolean("success"));
+        assertFalse(resultObj.getBoolean("success"));
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
 
         // missing attribute
@@ -515,7 +515,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         json = (JSONObject) result;
 
         resultObj = json.getJSONArray("addResults").getJSONObject(0);
-        assertEquals(false, resultObj.getBoolean("success"));
+        assertFalse(resultObj.getBoolean("success"));
         assertEquals(1000, resultObj.getJSONObject("error").getInt("code"));
 
         // duplicate objectid, should lead to a new feature with a new objectid
@@ -539,7 +539,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         json = (JSONObject) result;
 
         resultObj = json.getJSONArray("addResults").getJSONObject(0);
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
         assertNotSame(0, resultObj.get("objectId"));
     }
 
@@ -602,9 +602,9 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONArray addResults = json.getJSONArray("addResults");
-        assertEquals(true, addResults.getJSONObject(0).getBoolean("success"));
-        assertEquals(false, addResults.getJSONObject(1).getBoolean("success"));
-        assertEquals(true, addResults.getJSONObject(2).getBoolean("success"));
+        assertTrue(addResults.getJSONObject(0).getBoolean("success"));
+        assertFalse(addResults.getJSONObject(1).getBoolean("success"));
+        assertTrue(addResults.getJSONObject(2).getBoolean("success"));
 
         // verify 2 valid features were added
         assertEquals(3, fti.getFeatureSource(null, null).getFeatures().size());
@@ -694,7 +694,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONObject resultObj = json.getJSONArray("deleteResults").getJSONObject(0);
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
 
         // verify feature was delete
         assertEquals(0, fti.getFeatureSource(null, null).getFeatures().size());
@@ -730,7 +730,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONObject resultObj = json.getJSONArray("deleteResults").getJSONObject(0);
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
 
         // verify feature was delete
         assertEquals(0, fti.getFeatureSource(null, null).getFeatures().size());
@@ -757,7 +757,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONObject resultObj = json.getJSONArray("deleteResults").getJSONObject(0);
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
 
         // verify feature was delete
         assertEquals(0, fti.getFeatureSource(null, null).getFeatures().size());
@@ -814,7 +814,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject json = (JSONObject) result;
 
         JSONObject resultObj = json.getJSONArray("deleteResults").getJSONObject(0);
-        assertEquals(true, resultObj.getBoolean("success"));
+        assertTrue(resultObj.getBoolean("success"));
 
         // verify feature was deleted
         assertEquals(1, fti.getFeatureSource(null, null).getFeatures().size());
@@ -832,7 +832,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                 fti.getFeatureSource(null, null).getFeatures().features().next().getProperty("id"));
         // verify feature was added
         JSONObject resultObj2 = json.getJSONArray("addResults").getJSONObject(0);
-        assertEquals(true, resultObj2.getBoolean("success"));
+        assertTrue(resultObj2.getBoolean("success"));
         assertEquals(
                 "t0002",
                 fti.getFeatureSource(null, null)
@@ -843,7 +843,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         .getValue());
 
         JSONObject resultObj3 = json.getJSONArray("updateResults").getJSONObject(0);
-        assertEquals(true, resultObj3.getBoolean("success"));
+        assertTrue(resultObj3.getBoolean("success"));
 
         System.out.println(json);
     }
@@ -959,7 +959,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
         JSONObject resultLineLayer = (JSONObject) json.get(0);
         JSONObject resultLineDelete =
                 resultLineLayer.getJSONArray("deleteResults").getJSONObject(0);
-        assertEquals(true, resultLineDelete.getBoolean("success"));
+        assertTrue(resultLineDelete.getBoolean("success"));
 
         // verify feature was deleted
         assertEquals(1, ftiLines.getFeatureSource(null, null).getFeatures().size());
@@ -981,7 +981,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         .getProperty("id"));
         // verify feature was added
         JSONObject resultLineAdd = resultLineLayer.getJSONArray("addResults").getJSONObject(0);
-        assertEquals(true, resultLineAdd.getBoolean("success"));
+        assertTrue(resultLineAdd.getBoolean("success"));
         assertEquals(
                 "t0002",
                 ftiLines.getFeatureSource(null, null)
@@ -993,12 +993,12 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultLineUpdate =
                 resultLineLayer.getJSONArray("updateResults").getJSONObject(0);
-        assertEquals(true, resultLineUpdate.getBoolean("success"));
+        assertTrue(resultLineUpdate.getBoolean("success"));
 
         JSONObject resultPointLayer = (JSONObject) json.get(1);
         JSONObject resultPointDelete =
                 resultPointLayer.getJSONArray("deleteResults").getJSONObject(0);
-        assertEquals(true, resultPointDelete.getBoolean("success"));
+        assertTrue(resultPointDelete.getBoolean("success"));
 
         // verify feature was deleted
         assertEquals(1, ftiPoints.getFeatureSource(null, null).getFeatures().size());
@@ -1021,7 +1021,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
                         .getProperty("id"));
         // verify feature was added
         JSONObject resultPointAdd = resultPointLayer.getJSONArray("addResults").getJSONObject(0);
-        assertEquals(true, resultPointAdd.getBoolean("success"));
+        assertTrue(resultPointAdd.getBoolean("success"));
         assertEquals(
                 "t0002",
                 ftiPoints
@@ -1034,7 +1034,7 @@ public class FeatureLayerControllerTest extends ControllerTest {
 
         JSONObject resultPointUpdate =
                 resultPointLayer.getJSONArray("updateResults").getJSONObject(0);
-        assertEquals(true, resultPointUpdate.getBoolean("success"));
+        assertTrue(resultPointUpdate.getBoolean("success"));
 
         System.out.println(json);
     }

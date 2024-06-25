@@ -5,6 +5,7 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -151,7 +152,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         // serializeXML(dom);
 
         assertNotNull(resource);
-        assertTrue(((Element) resource).getAttribute("name").length() > 0);
+        assertFalse(((Element) resource).getAttribute("name").isEmpty());
     }
 
     protected static void serializeXML(Document domDoc) throws TransformerException {

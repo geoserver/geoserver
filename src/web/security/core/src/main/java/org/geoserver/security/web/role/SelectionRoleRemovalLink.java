@@ -108,7 +108,7 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
                             public void onClose(AjaxRequestTarget target) {
                                 // if the selection has been cleared out it's sign a deletion
                                 // occurred, so refresh the table
-                                if (roles.getSelection().size() == 0) {
+                                if (roles.getSelection().isEmpty()) {
                                     setEnabled(false);
                                     target.add(SelectionRoleRemovalLink.this);
                                     target.add(roles);

@@ -37,7 +37,7 @@ public class SqlViewParamsExtractor {
             Node viewParamsAttribute = node.getAttribute("viewParams");
             viewParams = (List) wfsSqlViewKvpParser.parse((String) viewParamsAttribute.getValue());
 
-            EList viewParamsList = new org.eclipse.emf.common.util.BasicEList();
+            EList viewParamsList = new org.eclipse.emf.common.util.BasicEList<>();
             viewParamsList.addAll(viewParams);
 
             viewParamsAttribute.setValue(viewParamsList);

@@ -78,7 +78,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         Thread.sleep(100);
 
         assertNotNull(backupFacade.getBackupExecutions());
-        assertTrue(!backupFacade.getBackupExecutions().isEmpty());
+        assertFalse(backupFacade.getBackupExecutions().isEmpty());
         assertNotNull(backupExecution);
 
         int cnt = 0;
@@ -141,7 +141,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         Thread.sleep(100);
 
         assertNotNull(backupFacade.getBackupExecutions());
-        assertTrue(!backupFacade.getBackupExecutions().isEmpty());
+        assertFalse(backupFacade.getBackupExecutions().isEmpty());
         assertEquals(backupFacade.getBackupRunningExecutions().size(), 1);
 
         BackupExecutionAdapter backupExecution = null;
@@ -212,7 +212,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         Thread.sleep(100);
 
         assertNotNull(backupFacade.getRestoreExecutions());
-        assertTrue(!backupFacade.getRestoreExecutions().isEmpty());
+        assertFalse(backupFacade.getRestoreExecutions().isEmpty());
 
         assertNotNull(restoreExecution);
 
@@ -341,7 +341,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         Thread.sleep(100);
 
         assertNotNull(backupFacade.getBackupExecutions());
-        assertTrue(!backupFacade.getBackupExecutions().isEmpty());
+        assertFalse(backupFacade.getBackupExecutions().isEmpty());
         assertNotNull(backupExecution);
 
         int cnt = 0;
@@ -451,7 +451,7 @@ public class BackupTest extends BackupRestoreTestSupport {
             Thread.sleep(100);
 
             assertNotNull(backupFacade.getRestoreExecutions());
-            assertTrue(!backupFacade.getRestoreExecutions().isEmpty());
+            assertFalse(backupFacade.getRestoreExecutions().isEmpty());
 
             assertNotNull(restoreExecution);
 
@@ -560,7 +560,7 @@ public class BackupTest extends BackupRestoreTestSupport {
             Thread.sleep(100);
 
             assertNotNull(backupFacade.getRestoreExecutions());
-            assertTrue(!backupFacade.getRestoreExecutions().isEmpty());
+            assertFalse(backupFacade.getRestoreExecutions().isEmpty());
 
             assertNotNull(restoreExecution);
 

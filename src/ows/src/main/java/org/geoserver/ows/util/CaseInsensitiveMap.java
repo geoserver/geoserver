@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import org.checkerframework.checker.units.qual.K;
 
 /**
  * Map decorator which makes String keys case-insensitive.

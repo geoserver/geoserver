@@ -1330,13 +1330,13 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         LoggingInfo currentLogging = getGeoServer().getLogging();
         assertEquals(currentLogging, logging);
         String content = null;
-        try (FileInputStream fis = new FileInputStream(logFile); ) {
+        try (FileInputStream fis = new FileInputStream(logFile)) {
             content = IOUtils.toString(fis, Charset.defaultCharset());
         }
 
         String newLevel = "QUIET_LOGGING.xml";
         content = content.replace("VERBOSE_LOGGING.xml", newLevel);
-        try (FileOutputStream fos = new FileOutputStream(logFile); ) {
+        try (FileOutputStream fos = new FileOutputStream(logFile)) {
             IOUtils.write(content, fos, Charset.defaultCharset());
         }
         getGeoServer().reload();

@@ -71,7 +71,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
 
     protected void addRoleProperties(GeoServerRole role, Connection con)
             throws SQLException, IOException {
-        if (role.getProperties().size() == 0) return; // nothing to do
+        if (role.getProperties().isEmpty()) return; // nothing to do
 
         PreparedStatement ps = getDMLStatement("roleprops.insert", con);
         try {

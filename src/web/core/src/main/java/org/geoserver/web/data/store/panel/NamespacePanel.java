@@ -37,7 +37,7 @@ public class NamespacePanel extends Panel {
         Label label = new Label("paramName", paramLabelModel.getObject() + requiredMark);
         add(label);
 
-        nsLabel = new Label("paramValue", new PropertyModel(selectedItemModel, "URI"));
+        nsLabel = new Label("paramValue", new PropertyModel<>(selectedItemModel, "URI"));
         nsLabel.setOutputMarkupId(true);
         add(nsLabel);
         /*

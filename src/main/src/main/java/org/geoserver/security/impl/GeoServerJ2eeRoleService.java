@@ -144,7 +144,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
         public List<String> getInSecRoleRoles() {
             return inSecRoleRoles;
         }
-    };
+    }
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 

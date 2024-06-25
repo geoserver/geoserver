@@ -105,8 +105,7 @@ public class MetadataCustomizer extends FeatureCustomizer {
         Collection<ComplexAttribute> onlineValues = (Collection<ComplexAttribute>) value;
 
         // Copy the collection due to the immutable return
-        Collection<ComplexAttribute> updatedOnlineResources =
-                new ArrayList<>((Collection<ComplexAttribute>) onlineValues);
+        Collection<ComplexAttribute> updatedOnlineResources = new ArrayList<>(onlineValues);
 
         // Invoke the DownloadLinkGenerator to generate links for the specified resource
         String link = null;

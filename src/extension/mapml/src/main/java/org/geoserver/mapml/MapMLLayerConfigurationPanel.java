@@ -33,7 +33,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
@@ -80,7 +79,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
         MapModel<String> licenseTitleModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.LICENSE_TITLE);
         TextField<String> licenseTitle =
                 new TextField<>(MapMLConstants.LICENSE_TITLE2, licenseTitleModel);
@@ -88,7 +87,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
         MapModel<String> licenseLinkModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.LICENSE_LINK);
         TextField<String> licenseLink = new TextField<>(MapMLConstants.LICENSE, licenseLinkModel);
         add(licenseLink);
@@ -96,7 +95,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         // add the checkbox to select tiled or not
         MapModel<Boolean> useTilesModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_USE_TILES);
         CheckBox useTiles = new CheckBox(MapMLConstants.USE_TILES, useTilesModel);
         useTiles.add(
@@ -113,11 +112,11 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         // add the checkbox to select features or not
         MapModel<Boolean> useFeaturesModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_USE_FEATURES);
         CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
         if (model.getObject() != null && model.getObject() instanceof PublishedInfo) {
-            if (((PublishedInfo) model.getObject()).getType() == PublishedType.RASTER) {
+            if (model.getObject().getType() == PublishedType.RASTER) {
                 useFeatures.setEnabled(false);
             }
         }
@@ -135,21 +134,21 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         // add the checkbox to enable sharding or not
         MapModel<Boolean> enableShardingModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_PREFIX + MapMLConstants.ENABLE_SHARDING);
         CheckBox enableSharding = new CheckBox(MapMLConstants.ENABLE_SHARDING, enableShardingModel);
         add(enableSharding);
 
         MapModel<String> shardListModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_PREFIX + MapMLConstants.SHARD_LIST);
         TextField<String> shardList = new TextField<>(MapMLConstants.SHARD_LIST, shardListModel);
         add(shardList);
 
         MapModel<String> shardServerPatternModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_PREFIX + MapMLConstants.SHARD_SERVER_PATTERN);
         TextField<String> shardServerPattern =
                 new TextField<>(MapMLConstants.SHARD_SERVER_PATTERN, shardServerPatternModel);
@@ -157,7 +156,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
         MapModel<String> dimensionModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_DIMENSION);
         DropDownChoice<String> dimension =
                 new DropDownChoice<>(
@@ -169,7 +168,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
         MapModel<String> mimeModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_MIME);
         boolean useTilesFromModel =
                 Boolean.TRUE.equals(
@@ -195,14 +194,14 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         featureCaptionAttributes =
                 new ListMultipleChoice<>(
                         MapMLConstants.FEATURE_CAPTION_ATTRIBUTES,
-                        new Model<ArrayList<String>>(),
+                        new Model<>(),
                         getAttributeNames(model.getObject()));
         featureCaptionAttributes.setOutputMarkupId(false);
         add(featureCaptionAttributes);
 
         MapModel<String> featureCaptionModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.FEATURE_CAPTION);
         TextArea<String> featureCaptionTemplate =
                 new TextArea<>(MapMLConstants.FEATURE_CAPTION_TEMPLATE, featureCaptionModel);

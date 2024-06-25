@@ -164,7 +164,7 @@ public class HazelcastStatusStore implements ProcessStatusStore {
                 if (pagingComparator != null) {
                     predicate = new PagingPredicateImpl(predicate, pagingComparator, maxFeatures);
                 } else {
-                    predicate = new PagingPredicateImpl(predicate, maxFeatures);
+                    predicate = new PagingPredicateImpl<>(predicate, maxFeatures);
                 }
             }
 

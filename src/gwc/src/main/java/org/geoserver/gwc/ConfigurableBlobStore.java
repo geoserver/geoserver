@@ -250,15 +250,16 @@ public class ConfigurableBlobStore implements BlobStore {
     }
 
     @Override
-    @SuppressWarnings("PMD.EmptyWhileStmt")
+    @SuppressWarnings("PMD.EmptyControlStatement")
     public synchronized void destroy() {
         if (configured.getAndSet(false)) {
             // Avoid to call the While cycle before having started an operation
             // with configured == true
             actualOperations.incrementAndGet();
             actualOperations.decrementAndGet();
-            // Wait until all the operations are finished
-            while (actualOperations.get() > 0) {}
+            while (actualOperations.get() > 0) {
+                // Wait until all the operations are finished
+            }
             // Destroy all
             defaultStore.destroy();
             memoryStore.destroy();
@@ -494,7 +495,7 @@ public class ConfigurableBlobStore implements BlobStore {
         configureBlobStore(gwcConfig, initialization);
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
+    @SuppressWarnings("PMD.EmptyControlStatement")
     private void configureBlobStore(GWCConfig gwcConfig, boolean initialization) {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Configuring BlobStore");

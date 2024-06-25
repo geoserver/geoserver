@@ -35,14 +35,14 @@ public class RequestData implements Serializable {
         FINISHED,
         CANCELLED,
         INTERRUPTED
-    };
+    }
 
     /** Enumeration describing the category of a request. */
     public static enum Category {
         OWS,
         REST,
         OTHER
-    };
+    }
 
     public long internalid = COUNTER.getAndIncrement();
 

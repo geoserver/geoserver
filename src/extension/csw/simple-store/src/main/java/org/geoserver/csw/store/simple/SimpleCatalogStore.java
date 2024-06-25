@@ -99,7 +99,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         }
 
         // reducing attributes
-        if (q.getProperties() != null && q.getProperties().size() > 0) {
+        if (q.getProperties() != null && !q.getProperties().isEmpty()) {
             records = new RetypingFeatureCollection<>(records, q.getProperties());
         }
 

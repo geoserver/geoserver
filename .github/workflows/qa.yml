@@ -33,6 +33,11 @@ jobs:
       run: |
         mvn -B -ntp -nsu -U -T4 -fae -Dspotless.action=check -Dpom.fmt.action=verify -DskipTests -Prelease,communityRelease -f src/community/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
+      if: always()
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}
-
+ 
+    - uses: lcollins/pmd-github-action@v3.0.0
+      if: always()
+      with:
+        path: '**/pmd.xml'

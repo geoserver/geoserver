@@ -64,7 +64,7 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
 
             return true;
         }
-    };
+    }
 
     static LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 
@@ -85,7 +85,7 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
         list = new ArrayList<>();
         list.add(new SecurityConfig("IS_AUTHENTICATED_ANONYMOUSLY"));
         requestMap.put(matcher, list);
-    };
+    }
 
     public GeoServerSecurityMetadataSource() {
         super(requestMap);

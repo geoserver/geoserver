@@ -88,7 +88,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                             public void onClose(AjaxRequestTarget target) {
                                 // if the selection has been cleared out it's sign a deletion
                                 // occurred, so refresh the table
-                                if (rules.getSelection().size() == 0) {
+                                if (rules.getSelection().isEmpty()) {
                                     setEnabled(false);
                                     target.add(SelectionDataRuleRemovalLink.this);
                                     target.add(rules);

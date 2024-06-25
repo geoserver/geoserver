@@ -145,7 +145,7 @@ public class FullyRetypingDataStoreTest {
         assertEquals(primitive, fs.getSchema());
         SimpleFeatureCollection fc = fs.getFeatures();
         assertEquals(primitive, fc.getSchema());
-        assertTrue(fc.size() > 0);
+        assertFalse(fc.isEmpty());
 
         // make sure the feature schema is good as well
         SimpleFeature sf = DataUtilities.first(fc);

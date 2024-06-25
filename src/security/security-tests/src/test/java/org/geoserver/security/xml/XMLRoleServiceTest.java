@@ -238,7 +238,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
                         notified++;
                     }
                 }
-            };
+            }
             CheckRoleLoaded listener = new CheckRoleLoaded();
             service2.registerRoleLoadedListener(listener);
 

@@ -99,7 +99,7 @@ public class StyleInfoImpl implements StyleInfo {
     @Override
     public void setFormat(String language) {
         this.format = language;
-    };
+    }
 
     @Override
     public Version getFormatVersion() {

@@ -20,7 +20,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
 
     static final Property<Task<ImportContext>> IMPORT =
-            new AbstractProperty<Task<ImportContext>>("import") {
+            new AbstractProperty<>("import") {
                 @Override
                 public Object getPropertyValue(Task<ImportContext> item) {
                     // have to check for null since the job might be out of the queue
@@ -29,7 +29,7 @@ public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
             };
 
     static final Property<Task<ImportContext>> STATUS =
-            new AbstractProperty<Task<ImportContext>>("status") {
+            new AbstractProperty<>("status") {
                 @Override
                 public Object getPropertyValue(Task<ImportContext> item) {
                     if (item == null) {
@@ -45,7 +45,7 @@ public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
     public JobQueueTable(String id) {
         super(
                 id,
-                new GeoServerDataProvider<Task<ImportContext>>() {
+                new GeoServerDataProvider<>() {
 
                     @Override
                     protected List<Property<Task<ImportContext>>> getProperties() {

@@ -43,7 +43,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     private static final Logger LOGGER = Logging.getLogger(UnconfiguredCachedLayersProvider.class);
 
     static final Property<TileLayer> TYPE =
-            new AbstractProperty<TileLayer>("type") {
+            new AbstractProperty<>("type") {
 
                 private static final long serialVersionUID = 3215255763580377079L;
 

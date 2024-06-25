@@ -108,12 +108,12 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
 
         public ComplexRulePanel(String panelId, IModel<RuleModel> model) {
             super(panelId, model);
-            add(new TextField<String>("match").setRequired(true));
-            add(new TextField<String>("activation"));
-            add(new TextField<String>("parameter").setRequired(true));
-            add(new TextField<String>("transform").setRequired(true));
+            add(new TextField<>("match").setRequired(true));
+            add(new TextField<>("activation"));
+            add(new TextField<>("parameter").setRequired(true));
+            add(new TextField<>("transform").setRequired(true));
             add(new NumberTextField<Integer>("remove").setMinimum(1));
-            add(new TextField<String>("combine"));
+            add(new TextField<>("combine"));
             add(new CheckBox("repeat"));
             add(new CheckBox("echo"));
         }

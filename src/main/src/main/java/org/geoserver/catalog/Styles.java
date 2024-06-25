@@ -158,7 +158,7 @@ public class Styles {
         List<String> handlerNames =
                 Lists.transform(
                         matches,
-                        new Function<StyleHandler, String>() {
+                        new Function<>() {
                             @Nullable
                             @Override
                             public String apply(@Nullable StyleHandler styleHandler) {

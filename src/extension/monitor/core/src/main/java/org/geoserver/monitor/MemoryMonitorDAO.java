@@ -168,7 +168,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
     public java.util.List<RequestData> getOwsRequests(
             String service, String operation, String version) {
         return null;
-    };
+    }
 
     @Override
     public void clear() {

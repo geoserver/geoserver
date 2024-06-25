@@ -97,7 +97,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
                         }
                     }
                 });
-        form.add(new BookmarkablePageLink<ShortAdminRule>("cancel", GeofenceServerPage.class));
+        form.add(new BookmarkablePageLink<>("cancel", GeofenceServerPage.class));
     }
 
     protected List<String> getWorkspaceNames() {

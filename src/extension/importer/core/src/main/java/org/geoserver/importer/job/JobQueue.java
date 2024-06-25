@@ -47,21 +47,21 @@ public class JobQueue {
                         return new Task<>((Job<T>) callable);
                     }
                     return super.newTaskFor(callable);
-                };
+                }
 
                 @Override
                 protected void beforeExecute(Thread t, Runnable r) {
                     if (t != null && r instanceof Task) {
                         ((Task) r).started();
                     }
-                };
+                }
 
                 @Override
                 protected void afterExecute(Runnable r, Throwable t) {
                     if (t != null && r instanceof Task) {
                         ((Task) r).setError(t);
                     }
-                };
+                }
             };
 
     /** job cleaner */

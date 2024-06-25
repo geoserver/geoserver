@@ -8,7 +8,6 @@ package org.geoserver.wfs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Set;
-import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.SOAPAwareResponse;
@@ -20,8 +19,8 @@ import org.geoserver.wfs.response.WFSResponse;
  * Base class for a response to a WFS DescribeFeatureType operation.
  *
  * <p>The result of a DescribeFeatureType operation is an array of {@link FeatureTypeInfo}.
- * Subclasses are responsible for serializing these instances. See {@link
- * #write(FeatureCollectionType, OutputStream, Operation)}.
+ * Subclasses are responsible for serializing these instances. See {@link #write(Object,
+ * OutputStream, Operation)}.
  *
  * <p>Subclasses also need declare the mime-type in which the format is encoded.
  *

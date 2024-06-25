@@ -20,6 +20,7 @@ import javax.swing.Icon;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -557,7 +558,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
 
         String iconUrl = props.href(baseURL, wsName, styleName);
-        int index = iconUrl.indexOf('?');
+        int index = StringUtils.indexOf(iconUrl, '?');
         if (index >= 0) {
             String base = iconUrl.substring(0, index + 1);
             String[] refs = iconUrl.substring(index + 1).split("&");

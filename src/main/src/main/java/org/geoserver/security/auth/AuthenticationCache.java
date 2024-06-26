@@ -27,7 +27,7 @@ public interface AuthenticationCache {
     /** Clears all cache entries for filterName */
     public void removeAll(String filterName);
 
-    /** Clears a specific chache entry */
+    /** Clears a specific cache entry */
     public void remove(String filterName, String cacheKey);
 
     /** */

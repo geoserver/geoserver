@@ -78,7 +78,7 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
         JwtHeadersWebAuthenticationDetails details =
                 (JwtHeadersWebAuthenticationDetails) existingAuth.getDetails();
-        return details.getJwtHeadersConfigId() == this.filterConfig.id;
+        return details.getJwtHeadersConfigId().equals(this.filterConfig.id);
     }
 
     /**
@@ -122,6 +122,9 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             httpServletRequest.getSession(false).invalidate();
+            // we re-create the session now because this request might be a redirect, and
+            // tomcat does NOT like session creation during a redirect!
+            httpServletRequest.getSession(true);
         }
 
         if (principleHasChanged(existingAuth, principalName)) {
@@ -131,6 +134,9 @@ public class GeoServerJwtHeadersFilter extends GeoServerPreAuthenticatedUserName
 
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             httpServletRequest.getSession(false).invalidate();
+            // we re-create the session now because this request might be a redirect, and
+            // tomcat does NOT like session creation during a redirect!
+            httpServletRequest.getSession(true);
         }
 
         if (request.getAttribute(UserName) == null) {

@@ -272,6 +272,27 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         assertNull(supportedLanguage);
     }
 
+    @Test
+    public void testUnSupportedLanguages() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ITALIAN, "italian title");
+        serviceInfo.setInternationalTitle(title);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+        getGeoServer().save(serviceInfo);
+        final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST + "&LANGUAGE=unsupported");
+
+        final String responseLanguage =
+                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage").item(0).getFirstChild().getNextSibling().getFirstChild().getNodeValue();
+        assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
+    }
+
     private boolean isLangNode(Node el) {
         return el != null && el.getLocalName() != null && el.getLocalName().equals("Language");
     }

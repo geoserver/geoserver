@@ -379,7 +379,7 @@ public class InternationalContentHelper {
                                 .map(l -> l.toLanguageTag())
                                 .collect(Collectors.joining(","));
                 for (Locale locale : requestedLocales) {
-                    if (supportedLocales.contains(locale)) return;
+                    if (locale.toString().isEmpty() || supportedLocales.contains(locale)) return;
                 }
                 throw new UnsupportedOperationException(
                         "Content has been requested in one of the following languages: "

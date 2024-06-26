@@ -10,6 +10,7 @@ import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
+import static org.geoserver.inspire.InspireSchema.DLS_NAMESPACE;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -56,6 +57,8 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
     @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
         ServicesUtils.registerNameSpaces(namespaces);
+        // IGN : We add another xmlns for inspire_dls
+        namespaces.declarePrefix("inspire_dls", DLS_NAMESPACE);
     }
 
     @Override

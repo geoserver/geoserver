@@ -122,7 +122,12 @@ public class WMTSExtendedCapabilitiesTest extends ServicesTestSupport {
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
 
         final String responseLanguage =
-                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage").item(0).getFirstChild().getNextSibling().getFirstChild().getNodeValue();
+                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                        .item(0)
+                        .getFirstChild()
+                        .getNextSibling()
+                        .getFirstChild()
+                        .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
     }
 }

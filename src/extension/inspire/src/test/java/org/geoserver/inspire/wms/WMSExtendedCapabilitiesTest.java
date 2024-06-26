@@ -289,7 +289,12 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST + "&LANGUAGE=unsupported");
 
         final String responseLanguage =
-                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage").item(0).getFirstChild().getNextSibling().getFirstChild().getNodeValue();
+                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                        .item(0)
+                        .getFirstChild()
+                        .getNextSibling()
+                        .getFirstChild()
+                        .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
     }
 

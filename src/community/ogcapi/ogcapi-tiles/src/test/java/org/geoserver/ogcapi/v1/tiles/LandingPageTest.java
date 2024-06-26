@@ -167,7 +167,7 @@ public class LandingPageTest extends TilesTestSupport {
                 Link.REL_DATA_URI,
                 Link.REL_DATA_URI);
         // check title
-        assertEquals("Tiles server", json.read("title"));
+        assertEquals("Tiles Service", json.read("title"));
         // check description
         assertEquals("", json.read("description"));
     }

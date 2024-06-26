@@ -20,7 +20,7 @@ public class TilesServiceXStreamLoader extends XStreamServiceLoader<TilesService
     protected TilesServiceInfo createServiceFromScratch(GeoServer gs) {
         TilesServiceInfoImpl info = new TilesServiceInfoImpl();
         info.setName("tiles");
-        info.setTitle("Tiles server");
+        info.setTitle("Tiles Service");
         return info;
     }
 

@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.styles;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.ogcapi.Link;
@@ -146,8 +147,8 @@ public class LandingPageTest extends StylesTestSupport {
                 "styles",
                 "styles");
         // check title
-        assertEquals("Styles server", json.read("title"));
+        assertEquals("Styles Service", json.read("title"));
         // check description
-        assertEquals("", json.read("description"));
+        assertTrue(((String) json.read("description")).contains("OGCAPI-Styles"));
     }
 }

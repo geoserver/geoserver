@@ -11,7 +11,9 @@
       <includes>	
         <include>gs-ogcapi-features-*.jar</include>
         <include>gs-ogcapi-core-*.jar</include>
+        <include>gs-web-core-*.jar</include>
         <include>gs-web-ogcapi-*.jar</include>
+        <include>gs-web-features-*.jar</include>
         <include>gt-cql2-*.jar</include>
         <include>swagger-core-*.jar</include>
         <include>jackson-dataformat-*.jar</include>

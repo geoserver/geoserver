@@ -42,7 +42,7 @@
     <dependency>
       <groupId>com.uber</groupId>
       <artifactId>h3</artifactId>
-      <version>3.6.4</version>
+      <version>3.7.2</version>
     </dependency>
     <dependency>
       <groupId>black.ninia</groupId>

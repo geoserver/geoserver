@@ -44,6 +44,12 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     private final boolean admin;
 
     /**
+     * if there are multiple ServiceDescriptions for a Category, then use this to determine the
+     * title of the category. see getDescriptionPriority() *
+     */
+    private double descriptionPriority = 100.0;
+
+    /**
      * User interface order to present common web services to highlight visual services such as WMS
      * and WMTS ahead of data access and processing.
      *
@@ -51,7 +57,18 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      * #compareTo(ServiceDescription)}.
      */
     private static List<String> OGC_SERVICE_ORDER =
-            Collections.unmodifiableList(Arrays.asList("WMS", "WMTS", "WFS", "WCS", "WPS"));
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            "CSW",
+                            "WMS",
+                            "WMTS",
+                            "WMS-C",
+                            "WFS",
+                            "WCS",
+                            "WPS",
+                            "Styles",
+                            "DGGS",
+                            "Experimental"));
 
     /** Service links. */
     Set<ServiceLinkDescription> links = new HashSet<>();
@@ -131,6 +148,27 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
         } else {
             this.description = Text.text("");
         }
+    }
+
+    /**
+     * If there are multiple ServiceDescriptions (i.e. WMS & OGCAPI-Features) for a Category, then
+     * we use the descriptionPriority to determine which title to use.
+     *
+     * <p>In general, the WMS/WCS (etc) services should be high priority. Others, like OGCAPI should
+     * be lower.
+     *
+     * <p>The lower priority description is only used when the higher priority description isn't
+     * available. For example, if OGCAPI-Features is turned on, but the main services (WFS) is
+     * turned off.
+     *
+     * <p>larger number = higher priority
+     */
+    public double getDescriptionPriority() {
+        return descriptionPriority;
+    }
+
+    public void setDescriptionPriority(double descriptionPriority) {
+        this.descriptionPriority = descriptionPriority;
     }
 
     /**

@@ -18,4 +18,8 @@
     </bean>
     
     <bean id="rHealPixUICleaner" class="org.geoserver.web.data.store.dggs.SharedInterpreterUICleaner"/>
+
+
+    <bean id="dggsServiceDescriptor" class="org.geoserver.web.data.store.dggs.DGGSServiceDescriptionProvider">
+    </bean>
 </beans>

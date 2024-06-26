@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.ogcapi.Link;
@@ -148,8 +149,8 @@ public class LandingPageTest extends ImagesTestSupport {
                 Link.REL_DATA_URI,
                 Link.REL_DATA_URI);
         // check title
-        assertEquals("Image mosaicks discovery and management interface", json.read("title"));
+        assertEquals("Testbed Experiments", json.read("title"));
         // check description
-        assertEquals("", json.read("description"));
+        assertTrue(((String) json.read("description")).contains("OGCAPI Testbed"));
     }
 }

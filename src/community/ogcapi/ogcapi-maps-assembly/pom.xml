@@ -27,5 +27,18 @@
       <artifactId>gs-web-ogcapi</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-maps</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+
   </dependencies>
 </project>

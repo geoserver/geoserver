@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.v1.dggs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.ogcapi.Link;
@@ -178,8 +179,8 @@ public class LandingPageTest extends OGCApiTestSupport {
                 Link.REL_DATA,
                 Link.REL_DATA);
         // check title
-        assertEquals("DGGS 1.0 server", json.read("title"));
+        assertEquals("Discrete Global Grid Systems Service", json.read("title"));
         // check description
-        assertEquals("", json.read("description"));
+        assertTrue(((String) json.read("description")).contains("OGCAPI-DGGS"));
     }
 }

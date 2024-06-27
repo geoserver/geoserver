@@ -5,6 +5,7 @@
  */
 package org.geoserver.inspire.wms;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.OTHER_LANGUAGES;
@@ -279,6 +280,8 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         clearInspireMetadata(metadata);
         GrowableInternationalString title = new GrowableInternationalString();
         title.add(Locale.ITALIAN, "italian title");
+        title.add(Locale.FRENCH, "french title");
+        serviceInfo.setDefaultLocale(Locale.FRENCH);
         serviceInfo.setInternationalTitle(title);
         metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
         metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
@@ -296,6 +299,15 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
                         .getFirstChild()
                         .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
+
+        // title checks for configured i18n title with unsupported language and with default
+
+        // Define the XPath expression
+        String xPathExpression =
+                "//*[local-name()='WMS_Capabilities']/*[local-name()='Service']/*[local-name()='Title']";
+
+        // Assert the value of the Title element
+        assertXpathEvaluatesTo("french title", xPathExpression, dom);
     }
 
     private boolean isLangNode(Node el) {

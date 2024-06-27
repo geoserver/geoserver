@@ -37,6 +37,8 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     boolean usePKCE = false;
     boolean enforceTokenValidation = true;
 
+    boolean injectIDTokenPayloadIntoUserInfo = false;
+
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {
         IdToken,
@@ -151,6 +153,14 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     public void setEnforceTokenValidation(boolean enforceTokenValidation) {
         this.enforceTokenValidation = enforceTokenValidation;
+    }
+
+    public boolean isInjectIDTokenPayloadIntoUserInfo() {
+        return injectIDTokenPayloadIntoUserInfo;
+    }
+
+    public void setInjectIDTokenPayloadIntoUserInfo(boolean injectIDTokenPayloadIntoUserInfo) {
+        this.injectIDTokenPayloadIntoUserInfo = injectIDTokenPayloadIntoUserInfo;
     }
 
     @Override

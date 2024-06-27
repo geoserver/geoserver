@@ -23,10 +23,10 @@
 		<constructor-arg index="1" value="GeoServer Security OpenId Connect Core" />
 	</bean>
 
-	<!-- OAuth2 Security Extension -->
+	<!-- this has the extended functionality that can (if configured) get user id from user-info endpoint or the id token-->
 	<bean id="openIdConnectTokenServices"
-		class="org.geoserver.security.oauth2.services.OpenIdConnectTokenServices">
-	</bean>
+			class="org.geoserver.security.oauth2.oauth2oidc.GeoServerTokenServices">
+    </bean>
 
 	<bean id="openIdConnectBearerTokenValidator" class="org.geoserver.security.oauth2.bearer.MultiTokenValidator">
 		<constructor-arg>

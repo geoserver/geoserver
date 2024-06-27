@@ -28,6 +28,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig.OpenIdRoleSource;
 import org.geoserver.security.oauth2.bearer.TokenValidator;
+import org.geoserver.security.oauth2.oauth2oidc.GeoServerAuthenticationProcessingFilter;
 import org.geoserver.security.oauth2.pkce.PKCERequestEnhancer;
 import org.geoserver.security.oauth2.services.OpenIdConnectTokenServices;
 import org.geotools.util.logging.Logging;
@@ -37,6 +38,7 @@ import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
@@ -56,6 +58,37 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     private final StringKeyGenerator secureKeyGenerator =
             new Base64StringKeyGenerator(Base64.getUrlEncoder().withoutPadding(), 96);
 
+    /**
+     * this is a bit bad - cf. below, GeoServerAuthenticationProcessingFilter, and
+     * GeoServerTokenServices.
+     *
+     * <p>If you want normal (username taken from the user-info (token check) endpoint), then set
+     * oidcConfig.injectIDTokenPayloadIntoUserInfo=false. This will give you the "normal" spring
+     * OAuth2ClientAuthenticationProcessingFilter.
+     *
+     * <p>If you want the id_token enhanced (username can be taken from either the claims in the ID
+     * token or from the user info), then set oidcConfig.injectIDTokenPayloadIntoUserInfo=true. This
+     * will give you the custom GeoServerAuthenticationProcessingFilter.
+     *
+     * @param config
+     * @param oauth2RestTemplate
+     * @param tokenServices
+     * @return
+     */
+    public OAuth2ClientAuthenticationProcessingFilter createFilter(
+            SecurityNamedServiceConfig config,
+            OAuth2RestOperations oauth2RestTemplate,
+            RemoteTokenServices tokenServices) {
+        var oidcConfig = (OpenIdConnectFilterConfig) config;
+        if (!oidcConfig.injectIDTokenPayloadIntoUserInfo) {
+            var filter = new OAuth2ClientAuthenticationProcessingFilter("/");
+            filter.setRestTemplate(oauth2RestTemplate);
+            filter.setTokenServices(tokenServices);
+            return filter;
+        }
+        return new GeoServerAuthenticationProcessingFilter("/", oauth2RestTemplate, tokenServices);
+    }
+
     public OpenIdConnectAuthenticationFilter(
             SecurityNamedServiceConfig config,
             RemoteTokenServices tokenServices,
@@ -63,6 +96,9 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             OAuth2RestOperations oauth2RestTemplate,
             TokenValidator bearerTokenValidator) {
         super(config, tokenServices, oauth2SecurityConfiguration, oauth2RestTemplate);
+
+        filter = createFilter(config, oauth2RestTemplate, tokenServices);
+
         // reconfigure the token services
         if (tokenServices instanceof OpenIdConnectTokenServices
                 && config instanceof OpenIdConnectFilterConfig) {

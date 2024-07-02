@@ -27,7 +27,7 @@
       or choose another format:
     </div>
     <div class="col-auto py-1">
-      <select class="form-select form-select-sm" onchange="window.open(this.options[this.selectedIndex].value);this.selectedIndex=0" >
+      <select class="form-select form-select-sm form-select-open-basic">
         <option value="none" selected>-- Please choose a format --</option>
         <#list collection.getLinksExcept("coverage", "image/geotiff") as link>
         <option value="${link.href}">${link.type}</option>

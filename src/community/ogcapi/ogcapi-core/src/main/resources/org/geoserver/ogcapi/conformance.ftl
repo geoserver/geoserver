@@ -1,4 +1,7 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>GeoServer "+model.apiName+" Conformance</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item active'>GeoServer ${model.apiName} Conformance</li>
+</#global>
 <#include "common-header.ftl">
   <h1 id="title">GeoServer ${model.apiName} Conformance</h1>
   <p class="my-4">

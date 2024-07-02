@@ -1,4 +1,6 @@
-<#global pagecrumbs="<li class='breadcrumb-item active'>Home</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item active'>Home</li>
+</#global>
 <#include "common-header.ftl">
 
   <h1>${service.title!"GeoServer Features 1.0 Service"}</h1>
@@ -27,7 +29,7 @@
       </div>
     </div>
     
-    ${htmlExtensions('landing')}
+    ${htmlExtensions('landing')?no_esc}
 
     <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">

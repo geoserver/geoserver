@@ -1,4 +1,8 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'><a href='"+serviceLink("collections")+"'>Collections</a></li><li class='breadcrumb-item active'>"+model.collectionId+"</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item'><a href='${serviceLink("collections")}'>Collections</a></li>
+  <li class='breadcrumb-item active'>${model.collectionId}</li>
+</#global>
 <#include "common-header.ftl">
 
   <div class="card my-4">

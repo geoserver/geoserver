@@ -42,7 +42,7 @@ public class InternationalContentHelper {
 
     private Set<Locale> requestedLocales = new LinkedHashSet<>();
 
-    // field that map the AcceptLanguages value *
+    // field that maps the AcceptLanguages value *
     protected boolean anyMatch = false;
 
     // supported locales are those used at least in one field of
@@ -98,7 +98,7 @@ public class InternationalContentHelper {
         if (preferredLanguages != null && preferredLanguages.length > 0) {
             for (String language : preferredLanguages) {
                 Locale locale = null;
-                if (language.equals("*")) {
+                if (language.equals("*") || language.isEmpty()) {
                     this.anyMatch = true;
                     locale = Locale.getDefault();
                 } else if (language.contains("-")) locale = Locale.forLanguageTag(language);
@@ -218,9 +218,9 @@ public class InternationalContentHelper {
      * Get a String value according to the requestedLocales from the InternationalString passed as
      * an argument.
      *
-     * @param internationalString the internationalString from which retrieve the localized value.
-     * @param nullable if false when a localized value is not found for the requested locale a
-     *     message (DID NOT FIND i18n CONTENT FOR THIS ELEMENT) will be returned. Otherwise null
+     * @param internationalString the internationalString from which retrieve the localized value?
+     * @param nullable if false, when a localized value is not found for the requested locale a
+     *     message (DID NOT FIND i18n CONTENT FOR THIS ELEMENT) will be returned. Otherwise, null
      *     will be returned.
      * @return the localized value of the internationalString.
      */
@@ -230,7 +230,7 @@ public class InternationalContentHelper {
             GrowableInternationalString growable =
                     (GrowableInternationalString) internationalString;
             result = getFirstMatchingInternationalValue(growable, requestedLocales);
-            // if client specified * try with the supported locales
+            // if a client specified * try with the supported locales
             if (result == null && anyMatch) {
                 result = growable.toString(GeoServerDefaultLocale.get());
             }
@@ -379,7 +379,7 @@ public class InternationalContentHelper {
                                 .map(l -> l.toLanguageTag())
                                 .collect(Collectors.joining(","));
                 for (Locale locale : requestedLocales) {
-                    if (supportedLocales.contains(locale)) return;
+                    if (locale.toString().isEmpty() || supportedLocales.contains(locale)) return;
                 }
                 throw new UnsupportedOperationException(
                         "Content has been requested in one of the following languages: "

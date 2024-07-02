@@ -254,7 +254,10 @@ public class RequestUtils {
     public static String[] getLanguageValue(Map<String, Object> rawKvp, String languageParamName) {
         String[] result = null;
         if (rawKvp != null && rawKvp.containsKey(languageParamName)) {
-            String acceptLanguages = rawKvp.get(languageParamName).toString();
+            String acceptLanguages =
+                    rawKvp.get(languageParamName) != null
+                            ? rawKvp.get(languageParamName).toString()
+                            : "";
             if (acceptLanguages != null) {
                 String[] langAr = acceptLanguages.split(" ");
                 if (langAr.length == 1) {

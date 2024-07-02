@@ -372,4 +372,38 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
     }
+
+    @Test
+    public void testUnSupportedLanguages() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WCSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+        metadata.put(
+                SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+        final Document dom = getAsDOM(WCS_2_0_0_GETCAPREQUEST + "&LANGUAGE=unsupported");
+
+        final Element suppLangs =
+                (Element)
+                        dom.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages").item(0);
+
+        NodeList nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
+        assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
+        nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
+        assertEquals("Number of Supported Languages", 2, nodeList.getLength());
+
+        final String responseLanguage =
+                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                        .item(0)
+                        .getFirstChild()
+                        .getFirstChild()
+                        .getNodeValue();
+        assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
+    }
 }

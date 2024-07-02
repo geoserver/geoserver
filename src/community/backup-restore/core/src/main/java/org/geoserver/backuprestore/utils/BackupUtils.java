@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
@@ -19,7 +21,6 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
-import org.codehaus.plexus.util.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
@@ -143,7 +144,7 @@ public class BackupUtils {
                         manager.resolveFile(sourceFolder.dir().getAbsolutePath()));
 
         try {
-            if ("zip".equalsIgnoreCase(FileUtils.getExtension(archiveFile.path()))) {
+            if ("zip".equalsIgnoreCase(FilenameUtils.getExtension(archiveFile.path()))) {
                 // apache VFS does not support ZIP as writable FileSystem
 
                 OutputStream fos = archiveFile.out();

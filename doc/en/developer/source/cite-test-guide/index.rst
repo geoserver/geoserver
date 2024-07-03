@@ -10,31 +10,29 @@ A step by step guide to the GeoServer Compliance Interoperability Test Engine (C
 ~~~~~~~~~~~~~
 
 
-Check out CITE suite tests
---------------------------
+Check out OGC CITE suite tests
+------------------------------
 
 .. note:: The CITE suite tests are available at `Open Geospatial Consortium`_.
 .. _Open Geospatial Consortium: https://github.com/opengeospatial
 
 Requirements:
--------------
 
-- `GeoServer instance <https://github.com/geosolutions-it/geoserver>`_.
+- `GeoServer instance <https://github.com/geoserver/geoserver>`_.
 
 - `Teamengine Web Application <https://github.com/geosolutions-it/teamengine-docker>`_, with a set of CITE suite tests.
 
-- make
+- ``make``
 
 
 CITE automation tests with docker
-=================================
+---------------------------------
 
 
 How to run the CITE Test suites with
 `docker <https://www.docker.com>`_.
 
 Requirements:
--------------
 
 - Running the tests requires a linux system with `docker <https://www.docker.com>`_, `docker-compose <https://docs.docker.com/compose/install>`_, and git installed on it.
 
@@ -42,133 +40,128 @@ Requirements:
 
    The CITE tools are available in the build/cite folder of the `GeoServer Git repository <https://github.com/geoserver/geoserver/tree/master/build/cite>`_:
 
-Steps:
-------
+Set-up the environment
+^^^^^^^^^^^^^^^^^^^^^^
 
-Set-up the environment.
-~~~~~~~~~~~~~~~~~~~~~~~
+#.  Clone the repository.
 
-   #.  Clone the repository.
+    .. code:: shell
 
-       .. code:: shell
+       git clone https://github.com/geoserver/geoserver.git
 
-          git clone https://github.com/geoserver/geoserver.git
+#.  Go to cite directory.
 
-   #.  Go to cite directory.
+    .. code:: shell
 
-       .. code:: shell
+       cd geoserver/build/cite
 
-          cd geoserver/build/cite
+#.  Inside you will find a structure, like below, with a list of directories which contains the name of the suites to run.
 
-   #.  Inside you will find a structure, like below, with a list of directories which contains the name of the suites to run.
+    .. code:: shell
 
-       .. code:: shell
+       cite
+       |-- forms
+       |-- geoserver
+       |-- run-test.sh
+       |-- wcs10
+       |-- wcs11
+       |-- wfs10
+       |-- wms11
+       |-- wms13
+       |-- wfs11
+       |-- interactive
+       |-- logs
+       |-- docker-compose.yml
+       |-- postgres
+       |-- README.md
+       `-- Makefile
 
-          cite
-          |-- forms
-          |-- geoserver
-          |-- run-test.sh
-          |-- wcs10
-          |-- wcs11
-          |-- wfs10
-          |-- wms11
-          |-- wms13
-          |-- wfs11
-          |-- interactive
-          |-- logs
-          |-- docker-compose.yml
-          |-- postgres
-          |-- README.md
-          `-- Makefile
+Running the suite tests
+^^^^^^^^^^^^^^^^^^^^^^^
 
-Running the suite tests.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There are 2 ways to run the suites. One is running with ``make`` that will
+automate all the commands, and the second one is running the test through WebUI:
 
-   There are 2 ways to run the suites. One is running with ``make`` that will
-   automate all the commands, and the second one is running the test through WebUI:
+1. Running it through ``Makefile``:
 
-   1. Running it through ``Makefile``:
+   -  run ``make`` in the console, it will give you the list of commands
+      to run.
 
-      -  run ``make`` in the console, it will give you the list of commands
-         to run.
+      .. code:: shell
 
-         .. code:: shell
+         make
 
-            make
+   -  the output will like this:
 
-      -  the output will like this:
+      .. code:: makefile
 
-         .. code:: makefile
+         clean: $(suite)         Will Clean the Environment of previous runs.
+         build: $(suite)         Will Build the GeoServer Docker Image for the Environment.
+         test: $(suite)      Will running the Suite test with teamengine.
+         webUI: $(suite)		 Will running the Suite test with teamengine.
 
-            clean: $(suite)         Will Clean the Environment of previous runs.
-            build: $(suite)         Will Build the GeoServer Docker Image for the Environment.
-            test: $(suite)      Will running the Suite test with teamengine.
-            webUI: $(suite)		 Will running the Suite test with teamengine.
+   - Choose which test to run, this is an example:
 
-      - Choose which test to run, this is an example:
+     .. warning::
 
-        .. warning::
+         The first Docker build may take a long time.
 
-            The first Docker build may take a long time.
+     .. code:: SHELL
 
-        .. code:: SHELL
+        suite=wcs10
 
-           suite=wcs10
+     .. note::
 
-        .. note::
+        Valid values for the suite parameter are:
+          * wcs10
+          * wcs11
+          * wfs10
+          * wfs11
+          * wms11
+          * wms13
 
-           Valid values for the suite parameter are:
-             * wcs10
-             * wcs11
-             * wfs10
-             * wfs11
-             * wms11
-             * wms13
+   - Choose which GeoServer war file to test by setting the ``war_url`` environment variable inside the ``Makefile``, ex:
 
-      - Choose which GeoServer war file to test by setting the ``war_url`` environment variable inside the ``Makefile``, ex:
+     .. code:: C
 
-        .. code:: C
+       war_url = "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
 
-          war_url = "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
+2. If you don't want to do it inside the ``Makefile`` you have the option of adding the variable in the command when you build the docker images.
 
-      .. note::
+   -  To clean the local environment.
 
-        if you don't want to do it inside the ``Makefile`` you have the option of adding the variable in the command when you build the docker images.
+      .. code:: shell
 
-      -  To clean the local environment.
+         make clean
 
-         .. code:: shell
+   -  To build the geoserver docker image locally.
 
-            make clean
+      .. code:: shell
 
-      -  To build the geoserver docker image locally.
+         make build suite=<suite-name>
 
-         .. code:: shell
+   - Alternative, with the ``war_url`` variable include:
 
-            make build suite=<suite-name>
+      .. code::
 
-      - Alternative, with the ``war_url`` variable include:
+        make build suite=<suite-name> war_url=<url-or-the-geoserver-war-file-desired>
 
-         .. code::
+   -  To run the suite test.
 
-           make build suite=<suite-name> war_url=<url-or-the-geoserver-war-file-desired>
+      .. code:: shell
 
-      -  To run the suite test.
+         make test suite=<suite-name>
 
-         .. code:: shell
-
-            make test suite=<suite-name>
-
-      -  To run the full automate workflow.
+   -  To run the full automate workflow.
 
 
-         .. code:: shell
+      .. code:: shell
 
-            make clean build test suite=<suite-name>
+         make clean build test suite=<suite-name>
 
 
 Run CITE Test Suites in local pc
-================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
 
@@ -199,17 +192,13 @@ Run CITE Test Suites in local pc
    .. image:: ./image/tewfs-1_0a.png
 
 
-
-
 Requirements:
--------------
 
 - GeoServer running.
 
 - PostgreSQL with PostGIS extension installed. (only for the WFS Tests Suites)
 
 - Teamengine Running in docker container.
-
 
 
 #. Clone the repository:
@@ -244,14 +233,13 @@ Requirements:
 
 
 Run WFS 1.0 tests
------------------
+^^^^^^^^^^^^^^^^^
 
 .. important::
 
    Running WFS 1.0 tests require PostgreSQL with PostGIS extension installed in the system.
 
 Requirements:
-~~~~~~~~~~~~~
 
 - `GeoServer running`
 - teamengine
@@ -320,14 +308,13 @@ Requirements:
       .. image:: ./image/tewfs-1_0.png
 
 Run WFS 1.1 tests
------------------
+^^^^^^^^^^^^^^^^^
 
 .. important::
 
    Running WFS 1.1 tests requires PostgreSQL with PostGIS extension installed in the system.
 
 Requirements:
-~~~~~~~~~~~~~
 - GeoServer
 - teamengine
 - Posgresql
@@ -404,7 +391,7 @@ Requirements:
    .. image:: ./image/tewfs-1_1b.png
 
 Run WMS 1.1 tests
------------------
+^^^^^^^^^^^^^^^^^
 
 #. Prepare the environment:
 
@@ -454,7 +441,7 @@ Run WMS 1.1 tests
    .. image:: ./image/tewms-1_1b.png
 
 Run WCS 1.0 tests
------------------
+^^^^^^^^^^^^^^^^^
 
 #. Prepare the environment:
 
@@ -513,7 +500,7 @@ Run WCS 1.0 tests
 
 
 Run WCS 1.1 tests
------------------
+^^^^^^^^^^^^^^^^^
 
 #. Prepare the environment:
 
@@ -548,7 +535,7 @@ Run WCS 1.1 tests
 
 
 Run WMS 1.3 tests
------------------
+^^^^^^^^^^^^^^^^^
 
 #. Prepare the environment:
 
@@ -589,7 +576,6 @@ Run WMS 1.3 tests
    Click ``OK``
 
    .. image:: ./image/tewms-1_3.png
-
 
 
 .. _commandline:

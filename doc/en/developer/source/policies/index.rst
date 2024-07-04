@@ -14,3 +14,4 @@ Policies and Procedures
    review
    community-modules
    service_providers
+   security

@@ -8,13 +8,13 @@ This page covers some of the lines of communication and tools available to enact
 Vulnerability reporting and discussion
 --------------------------------------
 
-Our security policy asks the community to take care in reporting and discussion of security vulnerabilities:
+Our security policy asks the community to take care in the reporting and discussion of security vulnerabilities:
 
  **Reporting a Vulnerability**
  
- If you encounter a security vulnerability in GeoServer please take care to report it in a responsible fashion:
+ If you encounter a security vulnerability in GeoServer, please take care to report it in a responsible fashion:
  
- 1. Keep exploit details out of public mailing lists and issue tracker.
+ 1. Keep exploit details out of public mailing lists and the Jira issue tracker.
  
  2. There are two options to report a security vulnerability:
  
@@ -30,7 +30,7 @@ Our security policy asks the community to take care in reporting and discussion 
  
       For more information see `GitHub documentation <https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability>`_.
  
- 3. There is no expected response time. Be prepared to work with geoserver-security email list volunteers on a solution.
+ 3. There is no expected response time. Please be prepared to work with geoserver-security email list volunteers on a solution.
  
  4. Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources.
 
@@ -41,11 +41,11 @@ Guidance on communication challenges
 
 * Issue tracker: If an issue is opened with a security vulnerability, send the link to SECURITY.md to the reporter and close the issue.
 
-* Public Email: If a geoserver-devel or geoserver-user email comes in reporting the vulnerability (or discussing a vulnerability) link to the the SECURITY.md file and invite parties to discussion on geoserver-security email list privately.
+* Public Email: If a geoserver-devel or geoserver-user email comes in reporting the vulnerability (or discussing a vulnerability), link to the SECURITY.md file and invite parties to a discussion on the geoserver-security email list privately.
   
 * Private Email: If you are contacted directly, share the SECURITY.md, and link to commercial support providers (which may include your employer of course).
 
-* Social media: Ask parties to respect coordinated vulnerability disclosure policy.
+* Social media: Ask parties to respect the coordinated vulnerability disclosure policy.
 
   Recognize that such communication is outside our control and do not further engage. 
   
@@ -73,7 +73,7 @@ Participation in the geoserver-security, like commit access, is volunteer based 
 
 * To volunteer, email geoserver-security@lists.osgeo.org stating your interest.
 
-* If you are unable to participate send an email to step down.
+* If you are unable to participate, send an email to step down.
 
   We understand that short term commitments can get in the way of sustainability initiatives – you are welcome to rejoin at any time.
   
@@ -81,11 +81,11 @@ Participation in the geoserver-security, like commit access, is volunteer based 
 
 When contacted by an external party on geoserver-security email list:
 
-1. Engage with reporter as normal to determine if the issue is reproducible, and access vulnerability.
+1. Engage with the reporter as normal to determine if the issue is reproducible, and assess vulnerability.
 
    * For known issues we can add the reporter to an existing CVE, and indicate the assessment for their review.
 
-   * For new issues we can work with reporter, and create a CVE (as below), and assess the vulnerability with the reporters input.
+   * For new issues we can work with the reporter, and create a CVE (as below), and assess the vulnerability with the reporter's input.
 
 2. The same approach is used for "triage" reports made directly to the security advisory list.
 
@@ -124,13 +124,13 @@ Working with vulnerability reports
    * A vulnerability flagged from a dependency scan does not automatically indicate that an exploit is available in GeoServer.
    * For popular concerns (like spring-framework upgrade) add each reporter to same advisory.
    
-   Be cautious that a security researcher may only be tasked with reporting the issue, and be unavailable
+   Be aware that a security researcher may only be tasked with reporting the issue, and might be unavailable
    once you have created a CVE.
 
 2. Preparing report:
 
    * Package: Always report `org.geoserver.web:gs-web-app` as `geoserver.war` as a useful way to document that the `geoserver.war` includes other jars
-   * Affected versions: It is difficult to communicate version ranges, due to limitations in CVE advistory processing, requiring multiple lines.
+   * Affected versions: It is difficult to communicate version ranges, due to limitations in CVE advisory processing, requiring multiple lines.
    
    .. figure:: img/cve-version-range.png
       
@@ -138,13 +138,13 @@ Working with vulnerability reports
 
 3. Work on providing a fix, mitigation instructions, or best-practice clarification for documentation.
    
-   * The use of github private repository associated with an advisory should be used with caution.
+   * The use of GitHub private repository associated with an advisory should be used with caution.
    
      If making extensive code changes keep in mind that automations, including QA automations, are not available to be run as part of the pull-request review process.
      
      This may be appropriate when updating documentation / best practice information.
      
-     They key advantage is several pull-requests can be managed at once, and merged at the same time as disclosure (see below).
+     The key advantage is several pull-requests can be managed at once, and merged at the same time as disclosure (see below).
    
    * If you wish to work on a public pull-request (to take advantage of workflow automations) take care that test-cases, commit messages, and documentation updates do not immediately reveal the vulnerability.
    
@@ -160,11 +160,11 @@ Working with vulnerability reports
          
          CVE-2023-41339 Not Yet Published
       
-3. Assign a placeholder Jira with ``Vulnerability`` category.
+3. Assign a placeholder Jira issue with ``Vulnerability`` category.
    
-   * Mentioning the CVE is fine, even if it is not yet public it shows up in the database as reserved.
+   * Mentioning the CVE is fine, even if it is not yet public, it will still show up in the database as reserved.
    
-   .. note:: Example:    Example: The jira issue GEOS-11121 ticket is created for CVE-2023-41339.
+   .. note:: Example: The Jira issue GEOS-11121 ticket is created for CVE-2023-41339.
    
       .. figure:: img/cve-issue.png
       
@@ -182,11 +182,11 @@ Working with vulnerability reports
 
 5. Disclosure:
    
-   * Wait until the the vulnerability has been addressed, for BOTH the stable and maintenance versions, before publishing.
+   * Wait until the vulnerability has been addressed, for BOTH the stable and maintenance versions, before publishing.
    
-   * Update prior release announcements, and placeholder JIRA, with the complete title of the vulnerability.
+   * Update prior release announcements, and placeholder Jira issue, with the complete title of the vulnerability.
   
-      .. note:: Example: Security considerations section showing a mix of disclosed, and not yet disclosed, vulnerabilities.
+      .. note:: Example: Security considerations section showing a mix of disclosed and not yet disclosed (no hyperlink) vulnerabilities.
      
          .. figure:: img/cve-disclosure.png
         
@@ -194,14 +194,14 @@ Working with vulnerability reports
    
    * Publish the security advisory to make the vulnerability public
    
-   * If you feel a statement is necessary you may write an appropriate blog post.
+   * If you feel a statement is necessary, you may write an appropriate blog post.
      
         .. note:: Example: Statement on covering `Jiffle and GeoTools RCE vulnerabilities <https://geoserver.org/vulnerability/2022/04/11/geoserver-2-jiffle-jndi-rce.html>`__.
 
 Publicly reported issue
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-When a national agency or similar has already reported a vulnerability publicly it can be found in the github security advisory database:
+When a national agency or similar has already reported a vulnerability publicly, it can be found in the GitHub security advisory database:
 
 1. Locate the issue on https://github.com/advisories?query=geoserver
 

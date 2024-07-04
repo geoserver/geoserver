@@ -8,11 +8,11 @@ This page covers some of the lines of communication and tools available to enact
 Vulnerability reporting and discussion
 --------------------------------------
 
-Our security policy asks community to take care in reporting and discussion of security vulnerabilities:
+Our security policy asks the community to take care in reporting and discussion of security vulnerabilities:
 
  **Reporting a Vulnerability**
  
- If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
+ If you encounter a security vulnerability in GeoServer please take care to report it in a responsible fashion:
  
  1. Keep exploit details out of public mailing lists and issue tracker.
  
@@ -56,7 +56,7 @@ Guidance on communication challenges
   
   You may also go through the steps of "disputing" a CVE, this involves contacting the original numbering authority (each of which have their own procedures).
   
-  Keepin in mind that security researcher may have obligation to report to their national numbering authority.
+  Keep in mind that security researchers may have obligations to report to their national numbering authority.
 
   Ask that they withhold details and work within our SECURITY.md policy (key phrase "coordinated vulnerability disclosure").
   
@@ -71,13 +71,13 @@ geoserver-security list participation
 
 Participation in the geoserver-security, like commit access, is volunteer based and reflects trust.
 
-* To volunteer email geoserver-security@lists.osgeo.org stating your interest.
+* To volunteer, email geoserver-security@lists.osgeo.org stating your interest.
 
-* If you are unable to participate send and email to step down.
+* If you are unable to participate send an email to step down.
 
-  We understand that short term committments can get in the way of sustainability initiatives – you are welcome to rejoin at any time.
+  We understand that short term commitments can get in the way of sustainability initiatives – you are welcome to rejoin at any time.
   
-  We will also retire inactive members as needed
+  We will also retire inactive members as needed.
 
 When contacted by an external party on geoserver-security email list:
 
@@ -118,13 +118,13 @@ Working with vulnerability reports
 
 1. When working with a "triage" or "draft" vulnerability:
 
-   * Invite reported to participate, they are part of the team addressing the issue,
-   * Give credit to the reporter any anyone else involved using the allocated fields
+   * Invite reporter to participate, they are part of the team addressing the issue,
+   * Give credit to the reporter and anyone else involved using the allocated fields
    * Do not immediately request a CVE, and be sure to confirm the vulnerability (for example with a proof of concept) first.
    * A vulnerability flagged from a dependency scan does not automatically indicate that an exploit is available in GeoServer.
    * For popular concerns (like spring-framework upgrade) add each reporter to same advisory.
    
-   Be cautious that a security research may only be tasked with reporting the issue, and be unavailable
+   Be cautious that a security researcher may only be tasked with reporting the issue, and be unavailable
    once you have created a CVE.
 
 2. Preparing report:
@@ -138,7 +138,7 @@ Working with vulnerability reports
 
 3. Work on providing a fix, mitigation instructions, or best-practice clarification for documentation.
    
-   * The use of github private repository associated with a advistory should be used with caution.
+   * The use of github private repository associated with an advisory should be used with caution.
    
      If making extensive code changes keep in mind that automations, including QA automations, are not available to be run as part of the pull-request review process.
      
@@ -148,7 +148,7 @@ Working with vulnerability reports
    
    * If you wish to work on a public pull-request (to take advantage of workflow automations) take care that test-cases, commit messages, and documentation updates do not immediately reveal the vulnerability.
    
-   * Although not ideal it is possible to resolve some security issues by documenting a best-practice in the production consideration of the user guide.
+   * Although not ideal, it is possible to resolve some security issues by documenting a best-practice in the production consideration of the user guide.
 
 4. Request a CVE from GitHub.
 

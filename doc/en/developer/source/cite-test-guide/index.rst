@@ -91,14 +91,14 @@ automate all the commands, and the second one is running the test through WebUI:
 
          make
 
-   -  the output will like this:
+   -  the output will look like this:
 
       .. code:: makefile
 
-         clean: $(suite)         Will Clean the Environment of previous runs.
-         build: $(suite)         Will Build the GeoServer Docker Image for the Environment.
-         test: $(suite)      Will running the Suite test with teamengine.
-         webUI: $(suite)		 Will running the Suite test with teamengine.
+        clean: $(suite)		 This will clean the Environment of previous runs.
+        build: $(suite)		 This will build the GeoServer Docker Image for the Environment.
+        test: $(suite)		 This will run the Suite test with teamengine.
+        webUI: $(suite)		 This will run the Suite test with teamengine.
 
    - Choose which test to run, this is an example:
 

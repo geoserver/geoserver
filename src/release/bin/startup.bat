@@ -135,7 +135,7 @@ goto setMarlinRenderer
     echo Marlin renderer jar not found
     goto run
   )
-  set MARLIN_ENABLER=-Xbootclasspath/a:"%MARLIN_JAR%" -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
+  set MARLIN_ENABLER=--patch-module java.desktop="%MARLIN_JAR%"
   set JAVA_OPTS=%JAVA_OPTS% %MARLIN_ENABLER%
 goto run
 

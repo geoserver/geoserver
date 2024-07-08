@@ -134,7 +134,7 @@
     <log4j.version>2.17.2</log4j.version>
     <joda-time.version>2.8.1</joda-time.version>
     <git.commit.useNative>false</git.commit.useNative>
-    <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
+    <git.commit.runOnlyOnce>false</git.commit.runOnlyOnce>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <jackson1.version>1.9.13</jackson1.version>
     <jackson2.version>2.17.1</jackson2.version>

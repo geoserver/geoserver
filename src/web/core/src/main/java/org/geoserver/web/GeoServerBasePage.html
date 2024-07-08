@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title wicket:id="pageTitle">GeoServer</title>
-    <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
+    <link rel="shortcut icon" href="/favicon.ico"/>
 	<wicket:link>
       <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection" />
       </wicket:link>
@@ -29,32 +29,9 @@
     </wicket:link>
 	</wicket:head>
 <body>
-  <div id="header">
-    <div class="wrap">
-      <h2><a wicket:id="home" class="pngfix" href="#"></a></h2>
-      <div class="button-group selfclear">
-	      <span wicket:id="loginforms">
-	      	<form class="d-inline-block" wicket:id="loginform" method="post" action="../j_spring_security_check">
-	      		<span wicket:id="login.include"></span>
-	      		<button class="positive icon" type="submit">
-	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-	      		</button>
-		        <script type="text/javascript">
-		            $('input, textarea').placeholder();
-		        </script>	      		
-	      	</form>
-	      </span>
-	      
-	      <span wicket:id="loggedinasform" class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="loggedInUsername">User von Testenheimer</span>.</span>
-            <form class="d-inline-block" wicket:id="logoutform" method="post" action="j_spring_security_logout">
-                <button class="positive icon" type="submit">
-                    <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-                </button>
-            </form>
-        <span id="localeSwitcher"><wicket:link><img src="img/icons/globe.png"/></wicket:link> <select  wicket:id="localeSwitcher"></select></span>
-      </div>
-    </div><!-- /.wrap -->
-  </div><!-- /#header -->
+  <div id="go_head">
+    <iframe wicket:id="georchestraIframe" scrolling="no" frameborder="0"></iframe>
+  </div>
   <div id="main">
     <div class="wrap selfclear">
     <div id="sidebar">
@@ -87,7 +64,7 @@
         <p wicket:id="gbpDescription" id="header-description"></p>
         <div wicket:id="headerPanel" class="header-panel"></div>
       </div>
-        
+
       <div class="page-pane selfclear" id="page-pane">
         <wicket:child></wicket:child>
       </div>

@@ -139,7 +139,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                         .concurrencyLevel(10) //
                         .expireAfterAccess(10, TimeUnit.MINUTES) //
                         .initialCapacity(10) //
-                        .maximumSize(100) //
+                        .maximumSize(400) //
                         .build(new TileLayerLoader(tileLayerCatalog));
 
         tileLayerCatalog.addListener(

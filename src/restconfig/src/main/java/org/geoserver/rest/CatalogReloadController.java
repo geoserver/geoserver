@@ -25,7 +25,12 @@ public class CatalogReloadController extends AbstractGeoServerController {
             value = "/reload",
             method = {RequestMethod.POST, RequestMethod.PUT})
     public void reload() throws Exception {
-        geoServer.reload();
+        System.setProperty("geoserver.updatesequence.ignore", "true");
+        try {
+            geoServer.reload();
+        } finally {
+            System.setProperty("geoserver.updatesequence.ignore", "false");
+        }
     }
 
     @RequestMapping(

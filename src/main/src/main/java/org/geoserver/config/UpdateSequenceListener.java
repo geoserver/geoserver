@@ -28,7 +28,7 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
 
     synchronized void incrementSequence() {
         // prevent infinite loop on configuration update
-        if (updating) return;
+        if (updating || Boolean.getBoolean("geoserver.updatesequence.ignore")) return;
 
         try {
             updating = true;

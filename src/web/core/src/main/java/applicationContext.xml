@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
@@ -14,7 +14,7 @@
   <!-- Core web app setup -->
   <bean id="webApplication" class="org.geoserver.web.GeoServerApplication">
   </bean>
-  
+
   <bean id="wicket"
     class="org.springframework.web.servlet.mvc.ServletWrappingController"
     lazy-init="true" depends-on="webApplication">
@@ -26,7 +26,7 @@
     </property>
     <property name="initParameters">
       <props>
-        <!-- either development on deployment, make sure you set it to deployment 
+        <!-- either development on deployment, make sure you set it to deployment
           before releasing! -->
         <prop key="configuration">development</prop>
       </props>
@@ -60,15 +60,15 @@
   </bean>
 
   <!-- authorizers -->
-  <bean id="authenticatedAuthorizer" 
+  <bean id="authenticatedAuthorizer"
      class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
      <property name="staticField" value="org.geoserver.web.ComponentAuthorizer.AUTHENTICATED"/>
   </bean>
-  <bean id="workspaceAdminAuthorizer" 
+  <bean id="workspaceAdminAuthorizer"
      class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
      <property name="staticField" value="org.geoserver.web.ComponentAuthorizer.WORKSPACE_ADMIN"/>
   </bean>
-  
+
   <!-- Menu categories -->
   <bean id="aboutStatusCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.about" />
@@ -286,7 +286,7 @@
     <property name="titleKey" value="publish.layer.config.http" />
     <property name="componentClass" value="org.geoserver.web.publish.LayerHTTPLayerConfig" />
   </bean>
-  
+
   <bean id="rootLayerConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="http" />
     <property name="titleKey" value="publish.layer.config.rootLayer" />
@@ -303,7 +303,7 @@
   <!-- Data store panels. Used to set up custom icons for the different vector 
     or raster store types -->
   <bean id="defaultDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <!-- panel info used for a default vector store icon. This is mandatory 
+    <!-- panel info used for a default vector store icon. This is mandatory
       as per StoreExtensionPoints requirements -->
     <property name="id" value="defaultVector" />
     <property name="factoryClass" value="" />
@@ -314,7 +314,7 @@
   </bean>
 
   <bean id="defaultCoverageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <!-- panel info used for a default raster store icon. This is mandatory 
+    <!-- panel info used for a default raster store icon. This is mandatory
       as per StoreExtensionPoints requirements -->
     <property name="id" value="defaultRaster" />
     <property name="factoryClass" value="" />
@@ -359,7 +359,7 @@
     <property name="componentClass"
       value="org.geoserver.web.data.store.raster.WorldImageEditPanel" />
   </bean>
-  
+
   <bean id="geopkgStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="geopackageRaster" />
     <property name="factoryClass" value="org.geotools.geopkg.mosaic.GeoPackageFormat" />
@@ -415,15 +415,15 @@
   <bean id="ServiceInfoCapabilitiesProvider" class="org.geoserver.web.ServiceInfoCapabilitiesProvider">
   </bean>
 
-  <!-- since the following ones are not part of the standard build at least 
-    their respective profiles are enabled, I'm commenting them out, or the bean 
-    creation fails due to the factoryClass not not being around. Yet, it would 
-    be useful to find a way of being able to define them even if the geotools 
+  <!-- since the following ones are not part of the standard build at least
+    their respective profiles are enabled, I'm commenting them out, or the bean
+    creation fails due to the factoryClass not not being around. Yet, it would
+    be useful to find a way of being able to define them even if the geotools
     plug in is not on the classpath -->
-  <!-- <bean id="oracleDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo"> 
-    <property name="id" value="oracle"/> <property name="factoryClass" value="org.geotools.data.oracle.OracleNGDataStoreFactory"/> 
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
-    <property name="icon" value="img/icons/geosilk/database_oracle.png"/> </bean> 
+  <!-- <bean id="oracleDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="oracle"/> <property name="factoryClass" value="org.geotools.data.oracle.OracleNGDataStoreFactory"/>
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+    <property name="icon" value="img/icons/geosilk/database_oracle.png"/> </bean>
    -->
 
   <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.publish.LayerEditTabPanelInfo">
@@ -446,9 +446,9 @@
   <bean id="wicketConfigurationLocker" class="org.geoserver.web.WicketConfigurationLockCallback">
     <constructor-arg index="0" ref="configurationLock" />
   </bean>
-  
+
   <bean id="wicketEnvVariableInjector" class="org.geoserver.web.WicketEnvironmentVariableCallback"/>
-  
+
   <bean id="adminRequestCallback" class="org.geoserver.web.AdminRequestWicketCallback"/>
 
 	<!-- login button -->
@@ -469,5 +469,27 @@
 		<property name="titleKey" value="publish.layer.config"/>
 		<property name="componentClass" value="org.geoserver.web.publish.ServiceLayerConfigurationPanel"/>
 	</bean>
- 
+
+    <!-- geOrchestra specific - wiring to the georchestra datadir -->
+
+  <bean id="georchestraDatadirProps" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+    <property name="ignoreResourceNotFound" value="true" />
+    <property name="locations">
+      <list>
+        <value>file:${georchestra.datadir}/default.properties</value>
+        <value>file:${georchestra.datadir}/geoserver/geoserver.properties</value>
+      </list>
+    </property>
+    <property name="placeholderPrefix" value="${georchestra." />
+    <property name="order" value="2" />
+  </bean>
+
+  <bean id="georchestraHeaderHeight" class="java.lang.String" factory-method="valueOf">
+    <constructor-arg value="${georchestra.headerHeight:90}" />
+  </bean>
+  <bean id="georchestraHeaderUrl" class="java.lang.String" factory-method="valueOf">
+    <constructor-arg value="${georchestra.headerUrl:/header/}" />
+  </bean>
+  
 </beans>

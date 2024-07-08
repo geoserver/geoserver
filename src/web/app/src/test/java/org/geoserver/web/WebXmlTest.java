@@ -35,4 +35,6 @@ public class WebXmlTest {
         Validator validator = schema.newValidator();
         validator.validate(new StreamSource(new File("src/main/webapp/WEB-INF/web.xml")));
     }
+    
+    public void testDummyWebXml() {}
 }

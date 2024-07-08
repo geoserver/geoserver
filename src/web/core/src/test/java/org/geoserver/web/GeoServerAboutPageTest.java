@@ -11,11 +11,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.TagTester;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
 
     @Test
+    @Ignore("No login form in about page of geOrchestra's geoserver")
     public void testLoginFormAction() throws Exception {
         logout();
         tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");

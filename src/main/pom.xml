@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
@@ -15,6 +15,7 @@
 
   <groupId>org.geoserver</groupId>
   <artifactId>gs-main</artifactId>
+  <version>2.22.2-georchestra</version>
   <packaging>jar</packaging>
   <name>Main Module</name>
 

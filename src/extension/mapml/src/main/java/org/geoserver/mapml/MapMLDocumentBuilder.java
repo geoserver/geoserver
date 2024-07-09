@@ -12,6 +12,7 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.mapml.MapMLHTMLOutput.PREVIEW_TCRS_MAP;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -45,7 +46,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.tcrs.Bounds;
-import org.geoserver.mapml.tcrs.Point;
 import org.geoserver.mapml.tcrs.TiledCRS;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
@@ -92,11 +92,8 @@ import org.locationtech.jts.geom.Envelope;
 /** Builds a MapML document from a WMSMapContent object */
 public class MapMLDocumentBuilder {
     private static final Logger LOGGER = Logging.getLogger(MapMLDocumentBuilder.class);
-    private static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE =
-            new Bounds(new Point(0, 0), new Point(768, 1024));
 
     private static final Pattern ALL_COMMAS = Pattern.compile("^,+$");
-    public static final HashMap<String, TiledCRS> PREVIEW_TCRS_MAP = new HashMap<>();
 
     /**
      * The key for the metadata entry that controls whether a multi-layer request is rendered as a
@@ -152,13 +149,6 @@ public class MapMLDocumentBuilder {
     private Mapml mapml;
 
     private Boolean isMultiExtent = MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
-
-    static {
-        PREVIEW_TCRS_MAP.put("OSMTILE", new TiledCRS("OSMTILE"));
-        PREVIEW_TCRS_MAP.put("CBMTILE", new TiledCRS("CBMTILE"));
-        PREVIEW_TCRS_MAP.put("APSTILE", new TiledCRS("APSTILE"));
-        PREVIEW_TCRS_MAP.put("WGS84", new TiledCRS("WGS84"));
-    }
 
     /**
      * Constructor
@@ -1657,12 +1647,10 @@ public class MapMLDocumentBuilder {
         String layer = "";
         String styleName = "";
         String cqlFilter = "";
-        int zoom = 0;
         Double latitude = 0.0;
         Double longitude = 0.0;
         ReferencedEnvelope projectedBbox = this.projectedBox;
         ReferencedEnvelope geographicBox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
-        TiledCRS tcrs = PREVIEW_TCRS_MAP.get(projType.value());
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
             layer += mapMLLayerMetadata.getLayerName() + ",";
             styleName += mapMLLayerMetadata.getStyleName() + ",";
@@ -1708,77 +1696,26 @@ public class MapMLDocumentBuilder {
         if (ALL_COMMAS.matcher(cqlFilter).matches()) {
             cqlFilter = "";
         }
-        final Bounds pb =
-                new Bounds(
-                        new Point(projectedBbox.getMinX(), projectedBbox.getMinY()),
-                        new Point(projectedBbox.getMaxX(), projectedBbox.getMaxY()));
-        // allowing for the data to be displayed at 1024x768 pixels, figure out
-        // the zoom level at which the projected bounds fits into 1024x768
-        // in both dimensions
-        zoom = tcrs.fitProjectedBoundsToDisplay(pb, DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
-        String base = ResponseUtils.baseURL(request);
-        String viewerPath =
-                ResponseUtils.buildURL(
-                        base,
-                        "/mapml/viewer/widget/mapml-viewer.js",
-                        null,
-                        URLMangler.URLType.RESOURCE);
-        StringBuilder sb = new StringBuilder();
-        sb.append("<!DOCTYPE html>\n")
-                .append("<html>\n")
-                .append("<head>\n")
-                .append("<title>")
-                .append(escapeHtml4(layerLabel))
-                .append("</title>\n")
-                .append("<meta charset='utf-8'>\n")
-                .append("<script type=\"module\"  src=\"")
-                .append(viewerPath)
-                .append("\"></script>\n")
-                .append("<style>\n")
-                .append("html, body { height: 100%; }\n")
-                .append("* { margin: 0; padding: 0; }\n")
-                .append(
-                        "mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; border: none; vertical-align: middle }\n")
-                .append("mapml-viewer:not(:defined) > * { display: none; } n")
-                .append("layer- { display: none; }\n")
-                .append("</style>\n")
-                .append("<noscript>\n")
-                .append("<style>\n")
-                .append("mapml-viewer:not(:defined) > :not(layer-) { display: initial; }\n")
-                .append("</style>\n")
-                .append("</noscript>\n")
-                .append("</head>\n")
-                .append("<body>\n")
-                .append("<mapml-viewer projection=\"")
-                .append(projType.value())
-                .append("\" ")
-                .append("zoom=\"")
-                .append(zoom)
-                .append("\" lat=\"")
-                .append(latitude)
-                .append("\" ")
-                .append("lon=\"")
-                .append(longitude)
-                .append("\" controls controlslist=\"geolocation\">\n")
-                .append("<layer- label=\"")
-                .append(escapeHtml4(layerLabel))
-                .append("\" ")
-                .append("src=\"")
-                .append(
-                        buildGetMap(
-                                layer,
-                                projectedBbox,
-                                width,
-                                height,
-                                escapeHtml4(proj),
-                                styleName,
-                                format,
-                                cqlFilter))
-                .append("\" checked></layer->\n")
-                .append("</mapml-viewer>\n")
-                .append("</body>\n")
-                .append("</html>");
-        return sb.toString();
+        MapMLHTMLOutput htmlOutput =
+                new MapMLHTMLOutput.HTMLOutputBuilder()
+                        .setSourceUrL(
+                                buildGetMap(
+                                        layer,
+                                        projectedBbox,
+                                        width,
+                                        height,
+                                        escapeHtml4(proj),
+                                        styleName,
+                                        format,
+                                        cqlFilter))
+                        .setProjType(projType)
+                        .setLatitude(latitude)
+                        .setLongitude(longitude)
+                        .setRequest(request)
+                        .setProjectedBbox(projectedBbox)
+                        .setLayerLabel(layerLabel)
+                        .build();
+        return htmlOutput.toHTML();
     }
 
     /** Builds the GetMap backlink to get MapML */

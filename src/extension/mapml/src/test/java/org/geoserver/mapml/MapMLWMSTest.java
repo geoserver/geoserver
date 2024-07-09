@@ -186,8 +186,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         LayerGroupInfo lgi = catalog.getLayerGroupByName(NATURE_GROUP);
         lgi.setInternationalTitle(title);
         CoordinateReferenceSystem webMerc =
-                MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS();
-        Bounds webMercBounds = MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getBounds();
+                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS();
+        Bounds webMercBounds = MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getBounds();
         double x1 = webMercBounds.getMin().x;
         double x2 = webMercBounds.getMax().x;
         double y1 = webMercBounds.getMin().y;
@@ -259,7 +259,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
         assertSame(
-                MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
+                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
         m = testLayersAndGroupsMapML(lgi, null);
         title = m.getHead().getTitle();
@@ -271,7 +271,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
         assertSame(
-                MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
+                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
         m = testLayersAndGroupsMapML(lgi, Locale.CANADA_FRENCH);
         title = m.getHead().getTitle();

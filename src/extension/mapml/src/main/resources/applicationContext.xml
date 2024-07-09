@@ -30,6 +30,9 @@
     <bean id="mapMLGetFeatureOutputFormat" class="org.geoserver.mapml.MapMLGetFeatureOutputFormat">
         <constructor-arg ref="geoServer"/>
     </bean>
+    <bean id="mapMLHTMLGetFeatureOutputFormat" class="org.geoserver.mapml.MapMLHTMLGetFeatureOutputFormat">
+        <constructor-arg ref="geoServer"/>
+    </bean>
     <bean id="mapMLEncoder" class="org.geoserver.mapml.MapMLEncoder"/>
 
     <bean id="mapMLHTMLResponse" class="org.geoserver.mapml.MapMLHTMLResponse"/>

@@ -7,6 +7,8 @@ package org.geoserver.mapml;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.mapml.tcrs.Bounds;
+import org.geoserver.mapml.tcrs.Point;
 import org.springframework.http.MediaType;
 
 /**
@@ -30,6 +32,9 @@ public final class MapMLConstants {
 
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
+
+    /** format name needed to have a parseable format in WFS 1.0.0 capabilities */
+    public static final String HTML_FORMAT_NAME = "MAPML-HTML";
 
     /** MapML format option enabling features */
     public static final String MAPML_FEATURE_FO = "mapmlfeatures";
@@ -113,6 +118,8 @@ public final class MapMLConstants {
     public static final String REL_LICENSE = "license";
 
     public static final List<String> ZOOM_RELS = Arrays.asList(REL_ZOOMIN, REL_ZOOMOUT);
+    public static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE =
+            new Bounds(new Point(0, 0), new Point(768, 1024));
 
     public static int PAGESIZE = 100;
 }

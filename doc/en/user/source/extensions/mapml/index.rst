@@ -331,3 +331,13 @@ MapML visualization is supported by the Web-Map-Custom-Element project. The MapM
     </html>
     
 In the above example, the place-holders ``topp:states``, ``localhost:8080``, ``osmtile``, and ``population`` would need to be replaced with the appropriate values, and/or the ``style`` parameter could be removed entirely from the URL if not needed.  You may also like to "View Source" on the preview page to see what the markup looks like for any layer.  This code can be copied and pasted without harm, and you should try it and see what works and what the limitations are.  For further information about MapML, and the Maps for HTML Community Group, please visit http://maps4html.org.
+
+In addition the MapML viewer is also available as output of a WFS GetFeature request. Select the ``text/html; subtype=mapml`` from the dropdown as shown below:
+
+.. figure:: images/mapml_wfs_format_dropdown.png
+
+  
+
+.. warning:: Note that the MapML WFS output will automatically set a default max feature limit. Removing that limit can lead to browser issues.
+
+

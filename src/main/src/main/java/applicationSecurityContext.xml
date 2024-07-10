@@ -183,6 +183,6 @@
     <constructor-arg ref="dataDirectory"/>
   </bean>
 
-  <bean id="AuthenticationCacheImpl" class="org.geoserver.security.auth.AuthenticationCacheImpl" />
+  <bean id="AuthenticationCacheImpl" class="org.geoserver.security.auth.AuthenticationCacheImpl" primary="true"/>
 
 </beans>

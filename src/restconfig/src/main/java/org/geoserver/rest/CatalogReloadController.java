@@ -6,12 +6,12 @@ package org.geoserver.rest;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.geoserver.security.GeoServerSecurityManager;
 
 /** Catalog reload controller */
 @RestController
@@ -35,6 +35,8 @@ public class CatalogReloadController extends AbstractGeoServerController {
             method = {RequestMethod.POST, RequestMethod.PUT})
     public void reset() {
         geoServer.reset();
-        GeoServerExtensions.bean(GeoServerSecurityManager.class).getAuthenticationCache().removeAll();
+        GeoServerExtensions.bean(GeoServerSecurityManager.class)
+                .getAuthenticationCache()
+                .removeAll();
     }
 }

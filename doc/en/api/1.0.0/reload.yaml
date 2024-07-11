@@ -25,8 +25,8 @@ paths:
       operationId: putReset
       tags:
        - "Reload"
-      summary: Reset all store, raster, and schema caches. 
-      description: Resets all store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+      summary: Reset all authentication, store, raster, and schema caches. 
+      description: Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
       responses:
         200:
           description: OK
@@ -34,8 +34,8 @@ paths:
       operationId: postReset
       tags:
        - "Reload"
-      summary: Reset all store, raster, and schema caches. 
-      description: Resets all store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+      summary: Reset all authentication, store, raster, and schema caches. 
+      description: Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
       responses:
         200:
           description: OK

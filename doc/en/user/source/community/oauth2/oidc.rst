@@ -17,20 +17,18 @@ and the GUI will auto-fill itself based on the document contents:
 .. figure:: images/discovery.png
    :align: center
 
-The UI allow to set also the ``Post Logout Redirect URI`` which will be used to populate the  ``post_logout_redirect_uri`` request param, when doing the global logout from the GeoServer UI. The OpenId provider will use the URI to redirect to the desired app page.
+The UI allows to set also the ``Post Logout Redirect URI`` which will be used to populate the  ``post_logout_redirect_uri`` request param, when doing the global logout from the GeoServer UI. The OpenId provider will use the URI to redirect to the desired app page.
 
-In addition, the OpenID connect authentication is able to extract the user roles from
-either the ID token or the Access Token:
+In addition, the OpenID connect authentication is able to extract the user roles from either the ID token or the Access Token:
 
 .. figure:: images/openidconnect-roles.png
    :align: center
 
-The chosen attribute must be present in either the Access Token or in the Id token, 
-and be either a string or an array of strings.
+The chosen attribute must be present in either the Access Token or in the Id token, and be either a string or an array of strings.
 
-From UI it is also possible to set the ``Response Mode`` value. The field can be kept empty but it is needed when the OpenId server used as Identity Provider doesn't send by default the authorization code as a query string (that is mandatory in order to allow GeoServer and OpenId integration to work properly).
+From the UI it is also possible to set the ``Response Mode`` value. The field can be kept empty, but it is needed when the OpenId server is used, as the Identity Provider doesn't send the authorization code by default as a query string (that is mandatory in order to allow GeoServer and OpenId integration to work properly).
 
-Finally the admin can allow the sending of the ``client_secret`` during an access_token request trough the ``Send Client Secret in Token Request``. Some OpenId implementation requires it for the Authorization Code flow when the client app is a confidential client and can safely store the client_secret.
+Finally, the admin can allow the sending of the ``client_secret`` during an access_token request through the ``Send Client Secret in Token Request``. Some OpenId implementations requires it for the Authorization Code flow when the client app is a confidential client and can safely store the client_secret.
 
 
 Logging OAuth2 Activity
@@ -38,13 +36,13 @@ Logging OAuth2 Activity
 
 The plugin includes an ``OIDC_LOGGING`` profile which is installed on startup. This logging profile quiets most GeoServer logging activity, while enabling trace logging for OAuth2 functionality.
 
-The module also includes an additional connection setting to include the token details as additinoal log messages. This is intended to assist in troubleshooting durring development and initial setup.
+The module also includes an additional connection setting to include the token details as additional log messages. This is intended to assist in troubleshooting during development and initial setup.
 
 .. figure:: images/log-sensitive-information.png
    
    Log sensitive information
 
-This setting can obviously used to access sensitive information and you are advised clear logs after use.
+This setting can obviously be used to access sensitive information, and you are advised to clear logs after use.
 
 To setup for troubleshooting OIDC activity:
 
@@ -52,7 +50,7 @@ To setup for troubleshooting OIDC activity:
 #. Select the logging profile ``OIDC_LOGGING``
 #. Navigate :menuselection:`Security --> Authentication`
 #. Setup your OAuth2 OpenID Connect configuration with :guilabel:`Log Sensitive Information (do not use in production)` checked
-#. With these settings each individual steps of the OAuth2 authentication is shown. The logging senstive information setting logs access token and id token (the content of these token may be decoded using https://jwt.io ).
+#. With these settings each individual step of the OAuth2 authentication is shown. The logging sensitive information setting logs access token and id token (the contents of these tokens may be decoded using https://jwt.io).
 
    .. code-block:: text
 
@@ -80,7 +78,7 @@ The setup process is as follows:
 
 #. Setup your OAuth2 OpenID Connect configuration as normal
 #. On the OpenID Connect configuration screen (bottom), makes sure "Allow Attached Bearer Tokens" is checked
-#. You can not use ID Tokens as a Role Source for the attached Bearer Tokens (see below)
+#. You cannot use ID Tokens as a Role Source for the attached Bearer Tokens (see below)
 
 To Use:
 
@@ -92,8 +90,8 @@ To Use:
 The Access Token (JWT) is validated;
 
 #. The Access Token is used to get the "userinfo" endpoint.  The underlying IDP will verify the token (i.e. signature and expiry)
-#. The Audience of the Token is checked that it contains the GeoServer configured Client Id.  This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. `AudienceAccessTokenValidator.java`).
-#. The Subject of the `userinfo` and Access Token are verified to be about the same person.  The OpenID specification recommends checking this (cf. `SubjectTokenValidator.java`).
+#. The Audience of the Token is checked that it contains the GeoServer configured Client Id. This make sure an Access Token for another application is not being inappropriately reused in GeoServer (cf. `AudienceAccessTokenValidator.java`).
+#. The Subject of the `userinfo` and Access Token are verified to be about the same person. The OpenID specification recommends checking this (cf. `SubjectTokenValidator.java`).
 
 
 For KeyCloak, consider using the "userinfo endpoint" role source and configure Keycloak to put groups in the "userinfo."
@@ -108,11 +106,11 @@ To configure Azure AD for "memberOf" ("GroupMember.Read.All" permission) access;
 #. press "Microsoft Graph" 
 #. press "Delegated permission" 
 #. Scroll down to "GroupMember" 
-#. Choose "GroupMemeber.Read.All" 
+#. Choose "GroupMember.Read.All" 
 #. Press "Add permission" 
 #. On the API Permission screen, press the "Grant admin consent for ..." text
 
-This has been tested with KeyCloak (with groups in the `userinfo` endpoint response), and with MS Azure AD (with the groups from the GraphAPI).  This should work with other IDPs - however, make sure that the Subject and Audience token verification works with their tokens.
+This has been tested with KeyCloak (with groups in the `userinfo` endpoint response), and with MS Azure AD (with the groups from the GraphAPI). This should work with other IDPs - however, make sure that the Subject and Audience token verification works with their tokens.
   
 If you do not need Bearer Token functionality, it is recommended to turn this off.
 
@@ -123,14 +121,14 @@ The OpenID Connect plugin allows the use of Proof Key of Code Exchange (PKCE).
 
 .. figure:: images/pkce.png
    
-   Proof Key of Code Echange
+   Proof Key of Code Exchange
 
 The setup process is as follows:
 
 #. Setup your OAuth2 OpenID Connect configuration as normal
 #. On the OpenID Connect configuration screen (bottom), makes sure "Use PKCE" is checked
 
-To prevent client side refequest forgery:
+To prevent client side request forgery:
 
 * **Step 1**: GeoServer will include a ``code_challenge`` during initial authorization code request
 * **Step 2**: GeoServer will include a ``code_verifer`` during the access token request.
@@ -322,5 +320,3 @@ In order to do this you can follow the next steps:
 
        # verify we've got it.
        keytool -list -v -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS} -alias ${HOST}
-
-

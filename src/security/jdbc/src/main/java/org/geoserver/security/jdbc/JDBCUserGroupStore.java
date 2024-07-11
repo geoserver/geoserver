@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.logging.Logger;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.GeoServerUser;
@@ -34,6 +35,9 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     protected Connection connection;
     protected JDBCUserGroupService jdbcService;
 
+    static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+
     /**
      * The identical connection is used until {@link #store()} or {@link #load()} is called. Within
      * a transaction it is not possible to use different connections.
@@ -51,7 +55,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         // do nothing
     }
 
-    /** To be called at the the end of a transaction, frees the current {@link Connection} */
+    /** To be called at the end of a transaction, frees the current {@link Connection} */
     protected void releaseConnection() throws SQLException {
         if (connection != null) {
             connection.close();
@@ -102,7 +106,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     /** Helper method for inserting user properties */
     protected void addUserProperties(GeoServerUser user, Connection con)
             throws SQLException, IOException {
-        if (user.getProperties().size() == 0) return; // nothing to do
+        if (user.getProperties().isEmpty()) return; // nothing to do
 
         PreparedStatement ps = getDMLStatement("userprops.insert", con);
         try {
@@ -112,6 +116,12 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
                 ps.setString(2, key.toString());
                 ps.setObject(3, propertyVal);
                 ps.execute();
+            }
+        } catch (SQLException ex) {
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
             }
         } finally {
             closeFinally(null, ps, null);
@@ -167,7 +177,11 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             addUserProperties(user, con);
 
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
+            }
         } finally {
             closeFinally(con, ps, null);
         }
@@ -254,7 +268,11 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             ps.setString(2, convertToString(group.isEnabled()));
             ps.execute();
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
+            }
         } finally {
             closeFinally(con, ps, null);
         }
@@ -345,7 +363,11 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             ps.setString(2, user.getUsername());
             ps.execute();
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
+            }
         } finally {
             closeFinally(con, ps, null);
         }

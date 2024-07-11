@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.logging.Logger;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.impl.GeoServerRole;
@@ -25,6 +26,9 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
 
     protected boolean modified;
     protected Connection connection;
+
+    static Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     /**
      * The identical connection is used until {@link #store()} or {@link #load()} is called. Within
@@ -43,7 +47,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
         // do nothing
     }
 
-    /** To be called at the the end of a transaction, frees the current {@link Connection} */
+    /** To be called at the end of a transaction, frees the current {@link Connection} */
     protected void releaseConnection() throws SQLException {
         if (connection != null) {
             connection.close();
@@ -71,7 +75,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
 
     protected void addRoleProperties(GeoServerRole role, Connection con)
             throws SQLException, IOException {
-        if (role.getProperties().size() == 0) return; // nothing to do
+        if (role.getProperties().isEmpty()) return; // nothing to do
 
         PreparedStatement ps = getDMLStatement("roleprops.insert", con);
         try {
@@ -81,6 +85,12 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
                 ps.setString(2, key.toString());
                 ps.setObject(3, propertyVal);
                 ps.execute();
+            }
+        } catch (SQLException ex) {
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
             }
         } finally {
             closeFinally(null, ps, null);
@@ -105,7 +115,11 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
             addRoleProperties(role, con);
 
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
+            }
         } finally {
             closeFinally(con, ps, null);
         }
@@ -219,7 +233,11 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
             ps.setString(2, username);
             ps.execute();
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
+            }
         } finally {
             closeFinally(con, ps, null);
         }
@@ -263,7 +281,11 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
             ps.setString(2, groupname);
             ps.execute();
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
+                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
+            } else {
+                throw new IOException(ex);
+            }
         } finally {
             closeFinally(con, ps, null);
         }
@@ -308,9 +330,8 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
     public void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException {
 
         RoleHierarchyHelper helper = new RoleHierarchyHelper(getParentMappings());
-        if (helper.isValidParent(
-                        role.getAuthority(), parentRole == null ? null : parentRole.getAuthority())
-                == false)
+        if (!helper.isValidParent(
+                role.getAuthority(), parentRole == null ? null : parentRole.getAuthority()))
             throw new IOException(
                     parentRole.getAuthority()
                             + " is not a valid parent for "

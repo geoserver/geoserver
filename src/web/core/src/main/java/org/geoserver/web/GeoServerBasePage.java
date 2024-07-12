@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -45,7 +44,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
-import org.georchestra.GeorchestraHeaderIframe;
+import org.georchestra.GeorchestraHeaderWebComponent;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
@@ -107,7 +106,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     protected void commonBaseInit() {
-        add(new GeorchestraHeaderIframe("georchestraIframe"));
+        add(new GeorchestraHeaderWebComponent("georchestraWebComponent"));
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs =
@@ -506,6 +505,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         JavaScriptHeaderItem.forReference(
                                 new JavaScriptResourceReference(
                                         JQueryResourceReference.class, VERSION_3))));
+        response.render(
+                JavaScriptHeaderItem.forUrl(
+                        getGeoServerApplication().getBean("georchestraHeaderScript").toString()));
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

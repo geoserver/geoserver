@@ -491,5 +491,16 @@
   <bean id="georchestraHeaderUrl" class="java.lang.String" factory-method="valueOf">
     <constructor-arg value="${georchestra.headerUrl:/header/}" />
   </bean>
-  
+  <bean id="georchestraHeaderScript" class="java.lang.String" factory-method="valueOf">
+    <constructor-arg value="${georchestra.headerScript:https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js}" />
+  </bean>
+  <bean id="georchestraLegacyHeader" class="java.lang.String" factory-method="valueOf">
+    <constructor-arg value="${georchestra.useLegacyHeader:false}" />
+  </bean>
+  <bean id="georchestraLogoUrl" class="java.lang.String" factory-method="valueOf">
+    <constructor-arg value="${georchestra.logoUrl:https://www.georchestra.org/public/georchestra-logo.svg}" />
+  </bean>
+  <bean id="georchestraStylesheet" class="java.lang.String" factory-method="valueOf">
+    <constructor-arg value="${georchestra.georchestraStylesheet:}" />
+  </bean>
 </beans>

@@ -73,4 +73,49 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>mongodb-fixture-missing</id>
+      <activation>
+        <file>
+          <missing>${user.home}/.geoserver/mongodb.properties</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-test-sources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <echo>The file${user.home}/.geoserver/mongodb.properties not provided, skipping tests.</echo>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
+    </profile>
+    <profile>
+      <id>mongodb-fixture</id>
+      <activation>
+        <file>
+          <exists>${user.home}/.geoserver/mongodb.properties</exists>
+        </file>
+      </activation>
+      <properties>
+        <maven.test.skip>false</maven.test.skip>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>

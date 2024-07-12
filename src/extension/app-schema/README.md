@@ -14,9 +14,17 @@ This extension is composed of a number of modules:
 
 * app-schema-core
 
-And a series of online test modules added using profile `app-schema-online-test`:
+Integration tests that work offline:
 
-* app-schema-geopkg-test
+* app-schema-test: integration test definition
+* sample-data-acess-test: uses an offline geotools example to test functionality 
+
+And a series of online integration test modules added using profile `app-schema-online-test`:
+
+* app-schema-mongodb-test: requires test fixture in `~/.geoserver/mongodb.properties`
+* app-schema-oracle-test: requires test fixture in `~/.geoserver/oracle.properties`
+* app-schema-postgis-test: requires test fixture in `~/.geoserver/postgis.properties`
+* app-schema-solr-test: requires test fixture in `~/.geoserver/solr.properties`
 
 Reference:
 

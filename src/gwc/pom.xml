@@ -17,7 +17,7 @@
   <artifactId>gs-gwc</artifactId>
   <packaging>jar</packaging>
   <name>GeoWebCache (GWC) Module</name>
-  <version>2.22.2-georchestra</version>
+  <version>2.25.2-georchestra</version>
 
   <dependencies>
     <dependency>

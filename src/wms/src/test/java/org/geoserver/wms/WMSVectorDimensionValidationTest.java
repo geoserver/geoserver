@@ -1,14 +1,23 @@
 package org.geoserver.wms;
 
-import static java.time.format.DateTimeFormatter.*;
-import static java.util.Collections.*;
-import static org.geoserver.data.test.MockData.*;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
+import static org.geoserver.data.test.MockData.SF_PREFIX;
+import static org.geoserver.data.test.MockData.SF_URI;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.xml.namespace.QName;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;

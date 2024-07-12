@@ -118,11 +118,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
                 ps.execute();
             }
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
-                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
-            } else {
-                throw new IOException(ex);
-            }
+            checkForDuplKeyViolation(ex);
         } finally {
             closeFinally(null, ps, null);
         }
@@ -177,11 +173,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             addUserProperties(user, con);
 
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
-                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
-            } else {
-                throw new IOException(ex);
-            }
+            checkForDuplKeyViolation(ex);
         } finally {
             closeFinally(con, ps, null);
         }
@@ -268,11 +260,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             ps.setString(2, convertToString(group.isEnabled()));
             ps.execute();
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
-                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
-            } else {
-                throw new IOException(ex);
-            }
+            checkForDuplKeyViolation(ex);
         } finally {
             closeFinally(con, ps, null);
         }
@@ -363,11 +351,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
             ps.setString(2, user.getUsername());
             ps.execute();
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("duplicate key value violates unique constraint")) {
-                LOGGER.fine("Ignoring duplicate key value violates unique constraint " + ex);
-            } else {
-                throw new IOException(ex);
-            }
+            checkForDuplKeyViolation(ex);
         } finally {
             closeFinally(con, ps, null);
         }
@@ -442,5 +426,22 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
             throws IOException {
         return jdbcService.createUserObject(username, password, isEnabled);
+    }
+
+    private static void checkForDuplKeyViolation(SQLException ex) throws IOException {
+        if (ex.getMessage().contains("duplicate key value violates unique constraint") // PostgreSQL
+                || ex.getMessage().contains("Violation of UNIQUE KEY constraint") // MS SQL Server
+                || ex.getMessage().contains("Duplicate entry") // MySQL
+                || ex.getMessage().contains("unique constraint") // Oracle
+                || ex.getMessage().contains("UNIQUE constraint failed") // SQLite
+                || ex.getMessage().contains("Unique index or primary key violation") // H2
+                || ex.getMessage()
+                        .contains(
+                                "not valid because the primary key, unique constraint or unique index identified") // DB2
+        ) {
+            LOGGER.fine("Ignoring duplicate key violation of unique constraint " + ex);
+        } else {
+            throw new IOException(ex);
+        }
     }
 }

@@ -84,6 +84,9 @@ if [ -z "${MARLIN_JAR:-}" ]; then
     fi
 fi
 
+JAVA_OPTS="${JAVA_OPTS:+"$JAVA_OPTS"} --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.desktop/sun.java2d.pipe=ALL-UNNAMED"
+
+
 echo "GEOSERVER DATA DIR is ${GEOSERVER_DATA_DIR}"
 #added headless to true by default, if this messes anyone up let the list
 #know and we can change it back, but it seems like it won't hurt -ch

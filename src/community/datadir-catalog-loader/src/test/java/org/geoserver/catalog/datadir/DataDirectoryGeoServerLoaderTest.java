@@ -18,6 +18,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.datadir.config.DataDirectoryLoaderConfiguration.DataDirLoaderEnabledCondition;
 import org.geoserver.catalog.faker.CatalogFaker;
@@ -145,7 +146,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     }
 
     @Test
-    public void loadCatalog_decrypts_passwords() {
+    public void loadCatalog_decrypts_datastoreinfo_passwords() {
         final Catalog catalog = super.getCatalog();
         DataStoreInfo infoWithPassword = createPostgisStore();
         infoWithPassword.setEnabled(false);
@@ -178,6 +179,46 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertNotNull(depersistedWithDataDirLoader);
         assertEquals(
                 plainPwd, depersistedWithDataDirLoader.getConnectionParameters().get(pwdParam));
+    }
+
+    @Test
+    public void loadCatalog_decrypts_httpstoreinfo_passwords() {
+        final Catalog catalog = super.getCatalog();
+
+        final String plainPassword = "passW0rd";
+
+        WMSStoreInfo wmsstore = catalog.getFactory().createWebMapServer();
+        wmsstore.setName("wmsstore");
+        wmsstore.setCapabilitiesURL("http://localhost/wms?request=GetCapabilities");
+        wmsstore.setUsername("user");
+        wmsstore.setPassword(plainPassword);
+        catalog.add(wmsstore);
+
+        WMSStoreInfo store = catalog.getStore(wmsstore.getId(), WMSStoreInfo.class);
+
+        { // preflight: verify the store info pwd was stored in encrypted form
+            XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+            persister.setEncryptPasswordFields(false);
+            XStream xStream = persister.getXStream();
+            Resource resource = super.getDataDirectory().config(store);
+            WMSStoreInfo depresisted = (WMSStoreInfo) xStream.fromXML(resource.file());
+            Serializable encodedPwd = depresisted.getPassword();
+            assertNotNull(encodedPwd);
+            assertNotEquals(plainPassword, encodedPwd);
+        }
+        GeoServerResourceLoader resourceLoader = super.getResourceLoader();
+        GeoServerSecurityManager secManager = getSecurityManager();
+        DataDirectoryGeoServerLoader loader =
+                new DataDirectoryGeoServerLoader(resourceLoader, secManager);
+
+        CatalogImpl newCatalog = new CatalogImpl();
+
+        loader.postProcessBeforeInitialization(newCatalog, "catalog");
+
+        WMSStoreInfo depersistedWithDataDirLoader =
+                newCatalog.getStore(store.getId(), WMSStoreInfo.class);
+        assertNotNull(depersistedWithDataDirLoader);
+        assertEquals(plainPassword, depersistedWithDataDirLoader.getPassword());
     }
 
     /** @return */

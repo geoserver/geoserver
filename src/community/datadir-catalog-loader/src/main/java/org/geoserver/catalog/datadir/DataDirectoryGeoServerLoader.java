@@ -7,7 +7,6 @@ package org.geoserver.catalog.datadir;
 import static org.geoserver.catalog.impl.ModificationProxy.unwrap;
 
 import com.google.common.base.Stopwatch;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.HTTPStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -112,7 +112,7 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
         newlyLoadedCatalog.resolve();
         logStop(startedStopWatch.stop(), newlyLoadedCatalog);
 
-        decryptDataStorePasswords(newlyLoadedCatalog);
+        decryptStorePasswords(newlyLoadedCatalog);
 
         transferContents(newlyLoadedCatalog, targetCatalog, xp);
 
@@ -220,19 +220,23 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
                 .findFirst();
     }
 
-    private void decryptDataStorePasswords(CatalogImpl catalog) {
+    private void decryptStorePasswords(CatalogImpl catalog) {
         ConfigurationPasswordEncryptionHelper helper;
         helper = securityManager.getConfigPasswordEncryptionHelper();
 
-        catalog.getDataStores().stream()
-                .filter(this::shouldTryDecrypt)
+        catalog.getStores(HTTPStoreInfo.class).stream()
+                .filter(store -> store.getPassword() != null)
+                .map(ModificationProxy::unwrap)
                 .forEach(
                         store -> {
-                            helper.decode(store);
-                            ModificationProxy h =
-                                    (ModificationProxy) Proxy.getInvocationHandler(store);
-                            h.commit();
+                            String decoded = helper.decode(store.getPassword());
+                            store.setPassword(decoded);
                         });
+
+        catalog.getDataStores().stream()
+                .filter(this::shouldTryDecrypt)
+                .map(ModificationProxy::unwrap)
+                .forEach(helper::decode);
     }
 
     /**

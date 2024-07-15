@@ -5,9 +5,10 @@
  */
 package org.geoserver.wms;
 
-import static java.time.format.DateTimeFormatter.*;
-import static java.util.Collections.*;
-import static org.geotools.factory.CommonFactoryFinder.*;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.geotools.factory.CommonFactoryFinder.getFilterFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -82,15 +83,19 @@ public class WMSTest extends WMSTestSupport {
 
     /**
      * set up a feature dimension, but additionally allow to set a default value setting
+     *
      * @param featureTypeName the feature type name
      * @param dimensionName the dimension name
      * @param start the start attribute name
      * @param end the end attribute name
      * @param defaultValue the default value setting
      */
-    protected void setupStartEndTimeDimension(String featureTypeName,
-                                              String dimensionName, String start, String end,
-                                              DimensionDefaultValueSetting defaultValue) {
+    protected void setupStartEndTimeDimension(
+            String featureTypeName,
+            String dimensionName,
+            String start,
+            String end,
+            DimensionDefaultValueSetting defaultValue) {
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -195,8 +200,7 @@ public class WMSTest extends WMSTestSupport {
         List<Object> times = time == null ? null : Arrays.asList(time);
         List<Object> elevations = elevation == null ? null : Arrays.asList(elevation);
 
-        DimensionFilterBuilder builder =
-                new DimensionFilterBuilder(getFilterFactory());
+        DimensionFilterBuilder builder = new DimensionFilterBuilder(getFilterFactory());
         wms.getTimeFilter(times, timeWithStartEnd, builder);
         wms.getElevationFilter(elevations, timeWithStartEnd, builder);
         Filter filter = builder.getFilter();
@@ -216,13 +220,16 @@ public class WMSTest extends WMSTestSupport {
                 Arrays.asList(expectedIds).containsAll(results));
     }
 
-    private static String CUSTOM_DIMENSION_NAME = WMS.DIM_+"reference_time";
+    private static String CUSTOM_DIMENSION_NAME = WMS.DIM_ + "reference_time";
 
     @Test
-    public void custom_dimension_filter_should_return_all_for_featureInfo_without_custom_dimensions() throws IOException {
+    public void
+            custom_dimension_filter_should_return_all_for_featureInfo_without_custom_dimensions()
+                    throws IOException {
 
         // clear away the custom dimension
-        FeatureTypeInfo featureTypeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo featureTypeInfo =
+                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         featureTypeInfo.getMetadata().remove(CUSTOM_DIMENSION_NAME);
         getCatalog().save(featureTypeInfo);
 
@@ -269,31 +276,36 @@ public class WMSTest extends WMSTestSupport {
     }
 
     @Test
-    public void custom_dimension_filter_should_return_minimum_default_without_default_settings_and_no_request() throws Exception {
-        doCustomDimensionFilter(new HashMap<>(), null, List.of(0,2));
+    public void
+            custom_dimension_filter_should_return_minimum_default_without_default_settings_and_no_request()
+                    throws Exception {
+        doCustomDimensionFilter(new HashMap<>(), null, List.of(0, 2));
     }
 
     @Test
-    public void custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimension_missing_from_request()
-            throws IOException {
+    public void
+            custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimension_missing_from_request()
+                    throws IOException {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
 
         // minimum
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MINIMUM);
-        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0,2));
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 2));
 
         // maximum
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MAXIMUM);
-        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0,1,2));
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 1, 2));
 
         // nearest
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.NEAREST);
         defaultValueSetting.setReferenceValue("2012-02-14Z");
-        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0,1,2));
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 1, 2));
     }
 
     @Test
-    public void custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimensionValue_missing_from_request() throws IOException {
+    public void
+            custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimensionValue_missing_from_request()
+                    throws IOException {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.FIXED);
         defaultValueSetting.setReferenceValue("2012-02-14Z");
@@ -304,26 +316,35 @@ public class WMSTest extends WMSTestSupport {
     }
 
     /**
-     * executes the custom dimension filter and asserts for the presence of the expected features ids.
+     * executes the custom dimension filter and asserts for the presence of the expected features
+     * ids.
+     *
      * @param rawKvp the request represented by the raw KVP
      * @param defaultValueSetting the default value strategy (can be null)
      * @param expectedFeatureIds the expected feature ids (can be emptyList())
      * @throws IOException in case the feature source crashes
      */
-    public void doCustomDimensionFilter(Map<String, String> rawKvp, DimensionDefaultValueSetting defaultValueSetting, List<Integer> expectedFeatureIds) throws IOException {
+    public void doCustomDimensionFilter(
+            Map<String, String> rawKvp,
+            DimensionDefaultValueSetting defaultValueSetting,
+            List<Integer> expectedFeatureIds)
+            throws IOException {
 
-        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
-        FeatureSource<?,?> fs = typeInfo.getFeatureSource(null, null);
+        FeatureTypeInfo typeInfo =
+                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureSource<?, ?> fs = typeInfo.getFeatureSource(null, null);
 
         // set up a custom dimension
         setupStartEndTimeDimension(
                 TIME_WITH_START_END.getLocalPart(),
-                CUSTOM_DIMENSION_NAME, "startTime", "endTime",
+                CUSTOM_DIMENSION_NAME,
+                "startTime",
+                "endTime",
                 defaultValueSetting);
 
         DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
         Filter filter = wms.getCustomDimensionFilter(rawKvp, typeInfo, filterBuilder);
-        FeatureCollection<?,?> features = fs.getFeatures(filter);
+        FeatureCollection<?, ?> features = fs.getFeatures(filter);
 
         Set<Integer> results = new HashSet<>();
         try (FeatureIterator<?> it = features.features()) {
@@ -332,13 +353,16 @@ public class WMSTest extends WMSTestSupport {
             }
         }
         assertEquals(
-                "We are expecting " + expectedFeatureIds.size()+ " features but got " + results.size(),
-                expectedFeatureIds.size(), results.size());
+                "We are expecting "
+                        + expectedFeatureIds.size()
+                        + " features but got "
+                        + results.size(),
+                expectedFeatureIds.size(),
+                results.size());
         assertTrue(
                 "We are expecting feature ids " + expectedFeatureIds + " but got " + results,
                 results.containsAll(expectedFeatureIds));
     }
-
 
     @Test
     public void testWMSLifecycleHandlerGraphicCacheReset() throws Exception {

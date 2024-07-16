@@ -980,9 +980,10 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Test
-    public void testShardingMapMLLayer() throws Exception {
-
-        // set up mapml layer to useTiles
+    public void testLegacyShardingConfig() throws Exception {
+        // Although sharding support has been removed, test that everything is working fine
+        // and no configured sharding is being used even if it was configured (simulating
+        // an old layer configured in the past with sharding enabled)
         Catalog catalog = getCatalog();
         ResourceInfo layerMeta =
                 catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
@@ -1010,20 +1011,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
         String url = xpath.evaluate("//html:map-link[@rel='image']/@tref", doc);
-        assertTrue(url.startsWith("http://{s}.example.com"));
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist[@id='servers'])", doc);
+        assertFalse(url.startsWith("http://{s}.example.com"));
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist[@id='servers'])", doc);
         assertXpathEvaluatesTo(
-                "1",
+                "0",
                 "count(//html:map-input[@list='servers'][@type='hidden'][@shard='true'][@name='s'])",
                 doc);
-        assertXpathEvaluatesTo("3", "count(//html:map-datalist/map-option)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist/map-option[@value='server1'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist/map-option[@value='server2'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist/map-option[@value='server3'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option[@value='server1'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option[@value='server2'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option[@value='server3'])", doc);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = xpath.evaluate("//html:map-link[@rel='query']/@tref", doc);
-        assertTrue(url.startsWith("http://{s}.example.com"));
+        assertFalse(url.startsWith("http://{s}.example.com"));
     }
 
     @Test

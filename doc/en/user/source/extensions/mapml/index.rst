@@ -209,31 +209,7 @@ in order to enable WMTS requests.
 
 .. figure:: images/mapml_tile_caching_panel_ui.png
 
-Sharding Config
-^^^^^^^^^^^^^^^^
-
-The Sharding Config options are intended to allow for parallel access to tiles via different server names. The actual server names must be configured in the DNS to refer to either the same server or different servers with the same GeSserver layer configuration. In the example above, the mapML client would alternate between the servers a.geoserver.org, b.geoserver.org, and c.geoserver.org to access the map images. The values in the example above would result in the following MapML:  
-
-.. code-block:: html
-
-    <input name="s" type="hidden" shard="true" list="servers" min="0.0" max="0.0"/>
-    <datalist id="servers">
-        <option value="a"/>
-        <option value="b"/>
-        <option value="c"/>
-    </datalist>
-    <link tref="http://{s}.geoserver.org:8080/geoserver/test/wms?version=1.3.0&amp;service=WMS&amp;request=GetMap&amp;crs=EPSG:3857&amp;layers=cntry00&amp;styles=&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=image/png&amp;transparent=false&amp;width={w}&amp;height={h}" rel="image"/>
-
-
-**Enable Sharding**
-  If Enable Sharding is checked, and values are provided for the Shard List and Shard Server Pattern fields, then a hidden shard list input will be included in the MapML. 
-  
-**Shard List**
-  If Enable Sharding is checked, the Shard List should be populated with a comma-separated list of shard names which will be used to populate the shard data list element.
-  
-**Shard Server Pattern**
-  The Shard Server Pattern should be a valid DNS name including the special placeholder string {s} which will be replace with the Shard Names from the Shard List in requests to the server. This pattern should not include any slashes, the protocol string (http://) or the port number (:80), as these are all determined automatically from the URL used to access the MapML resource.  
-
+Starting with version 2.26.x of GeoServer, Sharding support and related configuration has been removed.
 
 Dimension Config
 ^^^^^^^^^^^^^^^^

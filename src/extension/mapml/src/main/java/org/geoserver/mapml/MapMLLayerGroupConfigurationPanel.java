@@ -74,26 +74,6 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
                 });
         add(useTiles);
 
-        // add the checkbox to enable sharding or not
-        MapModel<Boolean> enableShardingModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA), "mapml.enableSharding");
-        CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
-        add(enableSharding);
-
-        MapModel<String> shardListModel =
-                new MapModel<>(new PropertyModel<MetadataMap>(model, METADATA), "mapml.shardList");
-        TextField<String> shardList = new TextField<>("shardList", shardListModel);
-        add(shardList);
-
-        MapModel<String> shardServerPatternModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA),
-                        "mapml.shardServerPattern");
-        TextField<String> shardServerPattern =
-                new TextField<>("shardServerPattern", shardServerPatternModel);
-        add(shardServerPattern);
-
         MapModel<String> mimeModel =
                 new MapModel<>(
                         new PropertyModel<MetadataMap>(model, METADATA), MapMLConstants.MAPML_MIME);

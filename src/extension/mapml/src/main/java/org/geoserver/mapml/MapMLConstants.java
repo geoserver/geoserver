@@ -78,12 +78,6 @@ public final class MapMLConstants {
     /** MAPML_DIMENSION */
     public static final String MAPML_MIME = MAPML_PREFIX + MIME;
 
-    /** SHARD_LIST */
-    public static final String SHARD_LIST = "shardList";
-
-    /** ENABLE_SHARDING */
-    public static final String ENABLE_SHARDING = "enableSharding";
-
     /** USE_TILES */
     public static final String USE_TILES = "useTiles";
 
@@ -95,9 +89,6 @@ public final class MapMLConstants {
 
     /** USE_FEATURES */
     public static final String USE_FEATURES = "useFeatures";
-
-    /** SHARD_SERVER_PATTERN */
-    public static final String SHARD_SERVER_PATTERN = "shardServerPattern";
 
     /** LICENSE_TITLE */
     public static final String LICENSE_TITLE = "mapml.licenseTitle";

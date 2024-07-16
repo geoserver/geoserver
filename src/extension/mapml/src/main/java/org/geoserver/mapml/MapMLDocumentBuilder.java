@@ -50,7 +50,6 @@ import org.geoserver.mapml.tcrs.TiledCRS;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
-import org.geoserver.mapml.xml.Datalist;
 import org.geoserver.mapml.xml.Extent;
 import org.geoserver.mapml.xml.HeadContent;
 import org.geoserver.mapml.xml.Input;
@@ -134,8 +133,6 @@ public class MapMLDocumentBuilder {
     private String imageFormat = DEFAULT_MIME_TYPE;
     private String baseUrl;
     private String baseUrlPattern;
-    private Boolean enableSharding;
-    private String[] shardArray;
     private ProjType projType;
     private MetadataMap layerMeta;
     private int height;
@@ -331,23 +328,6 @@ public class MapMLDocumentBuilder {
             imageFormat = (String) format.orElse(mapMLLayerMetadata.getDefaultMimeType());
             baseUrl = ResponseUtils.baseURL(request);
             baseUrlPattern = baseUrl;
-            // handle shard config
-            enableSharding = layerMeta.get("mapml.enableSharding", Boolean.class);
-            String shardListString = layerMeta.get("mapml.shardList", String.class);
-            shardArray = new String[0];
-            if (shardListString != null) {
-                shardArray = shardListString.split("[,\\s]+");
-            }
-            String shardServerPattern = layerMeta.get("mapml.shardServerPattern", String.class);
-            if (shardArray.length < 1
-                    || shardServerPattern == null
-                    || shardServerPattern.isEmpty()) {
-                enableSharding = Boolean.FALSE;
-            }
-            // if we have a valid shard config
-            if (Boolean.TRUE.equals(enableSharding)) {
-                baseUrlPattern = shardBaseURL(request, shardServerPattern);
-            }
         }
     }
 
@@ -685,22 +665,6 @@ public class MapMLDocumentBuilder {
         }
     }
 
-    /**
-     * @param req the request
-     * @param shardServerPattern the shard server pattern
-     * @return the shard base URL
-     */
-    private String shardBaseURL(HttpServletRequest req, String shardServerPattern) {
-        StringBuffer sb = new StringBuffer(req.getScheme());
-        sb.append("://")
-                .append(shardServerPattern)
-                .append(":")
-                .append(req.getServerPort())
-                .append(req.getContextPath())
-                .append("/");
-        return sb.toString();
-    }
-
     /** Create and return MapML document */
     private void prepareDocument() {
         // build the mapML doc
@@ -997,26 +961,6 @@ public class MapMLDocumentBuilder {
                             : String.valueOf(mxz);
             extentZoomInput.setMax(maxZoom);
             extentList.add(extentZoomInput);
-
-            Input input;
-            // shard list
-            if (Boolean.TRUE.equals(enableSharding)) {
-                input = new Input();
-                input.setName("s");
-                input.setType(InputType.HIDDEN);
-                input.setShard("true");
-                input.setList("servers");
-                extentList.add(input);
-                Datalist datalist = new Datalist();
-                datalist.setId("servers");
-                List<Option> options = datalist.getOptions();
-                for (String sa : shardArray) {
-                    Option o = new Option();
-                    o.setValue(sa);
-                    options.add(o);
-                }
-                extentList.add(datalist);
-            }
 
             String dimension = layerMeta.get("mapml.dimension", String.class);
             prepareExtentForLayer(mapMLLayerMetadata, dimension);

@@ -80,9 +80,6 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
-        tester.assertModelValue("form:panel:enableSharding", null);
-        tester.assertModelValue("form:panel:shardList", null);
-        tester.assertModelValue("form:panel:shardServerPattern", null);
         tester.assertModelValue("form:panel:dimension", null);
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:featureCaptionTemplate", null);
@@ -91,10 +88,6 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         ft.setValue("panel:licenseLink", "https://example.org/mapml");
         ft.setValue("panel:useTiles", true);
         ft.setValue("panel:useFeatures", true);
-        ft.setValue("panel:enableSharding", true);
-        ft.setValue("panel:enableSharding", true);
-        ft.setValue("panel:shardList", "a,b,c");
-        ft.setValue("panel:shardServerPattern", "{s}");
         // no dimension set up yet should not be able to select one...
         try {
             ft.select("panel:dimension", 0);
@@ -112,9 +105,6 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml");
         tester.assertModelValue("form:panel:useTiles", true);
         tester.assertModelValue("form:panel:useFeatures", true);
-        tester.assertModelValue("form:panel:enableSharding", true);
-        tester.assertModelValue("form:panel:shardList", "a,b,c");
-        tester.assertModelValue("form:panel:shardServerPattern", "{s}");
         //        tester.assertModelValue("form:panel:featurecaptionattributes", "[NAME]");
         tester.assertModelValue("form:panel:featureCaptionTemplate", "This is a ${test}");
     }
@@ -142,9 +132,6 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
-        tester.assertModelValue("form:panel:enableSharding", null);
-        tester.assertModelValue("form:panel:shardList", null);
-        tester.assertModelValue("form:panel:shardServerPattern", null);
         tester.assertModelValue("form:panel:dimension", null);
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:featureCaptionTemplate", null);
@@ -152,9 +139,6 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         ft.setValue("panel:licenseTitle", "A Fake Title");
         ft.setValue("panel:licenseLink", "https://example.org/mapml");
         ft.setValue("panel:useTiles", true);
-        ft.setValue("panel:enableSharding", true);
-        ft.setValue("panel:shardList", "a,b,c");
-        ft.setValue("panel:shardServerPattern", "{s}");
         ft.setValue("panel:featureCaptionTemplate", "This is a ${test}");
 
         // no dimension set up yet should not be able to select one...
@@ -172,9 +156,6 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseTitle", "A Fake Title");
         tester.assertModelValue("form:panel:licenseLink", "https://example.org/mapml");
         tester.assertModelValue("form:panel:useTiles", true);
-        tester.assertModelValue("form:panel:enableSharding", true);
-        tester.assertModelValue("form:panel:shardList", "a,b,c");
-        tester.assertModelValue("form:panel:shardServerPattern", "{s}");
         //      tester.assertModelValue("form:panel:featurecaptionattributes", "[BLUE_BAND]");
         tester.assertModelValue("form:panel:featureCaptionTemplate", "This is the ${BLUE_BAND}");
     }

@@ -6,6 +6,7 @@
 package org.geoserver.wms;
 
 import static java.time.format.DateTimeFormatter.*;
+import static java.util.Collections.*;
 import static org.geotools.factory.CommonFactoryFinder.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,7 +20,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +47,6 @@ import org.geotools.renderer.style.ImageGraphicFactory;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
@@ -62,7 +62,7 @@ public class WMSTest extends WMSTestSupport {
         super.onSetUp(testData);
         testData.addVectorLayer(
                 TIME_WITH_START_END,
-                Collections.emptyMap(),
+                emptyMap(),
                 "TimeElevationWithStartEnd.properties",
                 getClass(),
                 getCatalog());
@@ -216,135 +216,110 @@ public class WMSTest extends WMSTestSupport {
                 Arrays.asList(expectedIds).containsAll(results));
     }
 
-    @Test @Ignore
+    private static String CUSTOM_DIMENSION_NAME = WMS.DIM_+"reference_time";
+
+    @Test
+    public void custom_dimension_filter_should_return_all_for_featureInfo_without_custom_dimensions() throws IOException {
+
+        // clear away the custom dimension
+        FeatureTypeInfo featureTypeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        featureTypeInfo.getMetadata().remove(CUSTOM_DIMENSION_NAME);
+        getCatalog().save(featureTypeInfo);
+
+        // without request
+        DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
+        assertEquals(
+                "Custom dimension filter should return 'Filter.INCLUDE' when no custom dimensions are defined.",
+                Filter.INCLUDE,
+                wms.getCustomDimensionFilter(new HashMap<>(), featureTypeInfo, filterBuilder));
+
+        // with request
+        Map<String, String> rawKvp = new HashMap<>();
+        rawKvp.put(
+                CUSTOM_DIMENSION_NAME.toUpperCase(),
+                ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
+
+        assertEquals(
+                "Custom dimension filter should return 'Filter.INCLUDE' when no custom dimensions are defined.",
+                Filter.INCLUDE,
+                wms.getCustomDimensionFilter(rawKvp, featureTypeInfo, filterBuilder));
+    }
+
+    @Test
     public void custom_dimension_filter_should_return_features_matching_request() throws Exception {
 
-        String customDimension = WMS.DIM_ + "reference_time";
-        String customDimensionValue= ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z"));
-        List<Integer> expectedFeatureIds = List.of(1, 2); // the two features that match the reference time
+        Map<String, String> rawKvp = new HashMap<>();
+        // matching
+        rawKvp.put(
+                CUSTOM_DIMENSION_NAME.toUpperCase(),
+                ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
+        doCustomDimensionFilter(rawKvp, null, List.of(1, 2));
 
-        // get feature type and feature source
-        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
-        FeatureSource<?,?> featureSource = typeInfo.getFeatureSource(null, null);
+        // too early
+        rawKvp.put(
+                CUSTOM_DIMENSION_NAME.toUpperCase(),
+                ISO_INSTANT.format(Instant.parse("2012-02-10T09:05:00Z")));
+        doCustomDimensionFilter(rawKvp, null, emptyList());
 
-        // set up a custom dimension in the catalog 
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), customDimension, "startTime", "endTime");
-
-        // now set up a get-map request with the defined reference_time
-        GetMapRequest mapRequest = createGetMapRequest(TIME_WITH_START_END);
-        Map<String, String> rawKvp = mapRequest.getRawKvp();
-        rawKvp.put(customDimension.toUpperCase(), customDimensionValue);
-        
-        // construct a filter. Note, the filter shall not crash.
-        DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
-        Filter filter = wms.getCustomDimensionFilter(rawKvp, typeInfo, filterBuilder);
-        
-        // get us the features that match the filter 
-        FeatureCollection<?,?> features = featureSource.getFeatures(filter);
-
-        Set<Integer> results = new HashSet<>();
-        try (FeatureIterator<?> it = features.features()) {
-            while (it.hasNext()) {
-                results.add((Integer) it.next().getProperty("id").getValue());
-            }
-        }
-
-        assertEquals(
-                "We are expecting " + expectedFeatureIds.size()+ " features but got " + results.size(),
-                expectedFeatureIds.size(), results.size());
-        assertTrue(
-                "We are expecting feature ids " + expectedFeatureIds + " but got " + results,
-                results.containsAll(expectedFeatureIds));
+        // too late
+        rawKvp.put(
+                CUSTOM_DIMENSION_NAME.toUpperCase(),
+                ISO_INSTANT.format(Instant.parse("2012-02-20T09:05:00Z")));
+        doCustomDimensionFilter(rawKvp, null, emptyList());
     }
 
-    @Test @Ignore
-    public void custom_dimension_filter_should_return_all_for_featureInfo_without_custom_dimensions() {
-
-        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
-
-        // set up a custom dimension in the catalog
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
-
-        // now set up a get-map request with the defined reference_time
-        GetMapRequest mapRequest = createGetMapRequest(TIME_WITH_START_END);
-        Map<String, String> rawKvp = mapRequest.getRawKvp();
-
-        // construct a filter. Note, the filter shall not crash.
-        DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
-        Filter filter = wms.getCustomDimensionFilter(rawKvp, typeInfo, filterBuilder);
-
-        // include all
-        assertEquals(Filter.INCLUDE, filter);
+    @Test
+    public void custom_dimension_filter_should_return_minimum_default_without_default_settings_and_no_request() throws Exception {
+        doCustomDimensionFilter(new HashMap<>(), null, List.of(0,2));
     }
 
-    @Test @Ignore
-    public void custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimension_missing_from_request() throws IOException {
-
-        String customDimension = WMS.DIM_ + "reference_time";
-        List<Integer> expectedFeatureIds = List.of(0, 2);
-
-        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
-        FeatureSource<?,?> fs = typeInfo.getFeatureSource(null, null);
-
-        // Use explicit default value DimensionInfo setup:
+    @Test
+    public void custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimension_missing_from_request()
+            throws IOException {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+
+        // minimum
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MINIMUM);
-        // set up a custom dimension
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(),
-                customDimension, "startTime", "endTime",
-                defaultValueSetting);
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0,2));
 
-        // create a request with no reference_time dimension set
-        GetMapRequest mapRequest = createGetMapRequest(TIME_WITH_START_END);
-        Map<String, String> rawKvp = mapRequest.getRawKvp();
+        // maximum
+        defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MAXIMUM);
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0,1,2));
 
-        DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
-        Filter filter = wms.getCustomDimensionFilter(rawKvp, typeInfo, filterBuilder);
-        FeatureCollection<?,?> features = fs.getFeatures(filter);
-
-        Set<Integer> results = new HashSet<>();
-        try (FeatureIterator<?> it = features.features()) {
-            while (it.hasNext()) {
-                results.add((Integer) it.next().getProperty("id").getValue());
-            }
-        }
-
-        assertEquals(
-                "We are expecting " + expectedFeatureIds.size()+ " features but got " + results.size(),
-                expectedFeatureIds.size(), results.size());
-        assertTrue(
-                "We are expecting feature ids " + expectedFeatureIds + " but got " + results,
-                results.containsAll(expectedFeatureIds));
+        // nearest
+        defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.NEAREST);
+        defaultValueSetting.setReferenceValue("2012-02-14Z");
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0,1,2));
     }
 
-    @Test @Ignore
+    @Test
     public void custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimensionValue_missing_from_request() throws IOException {
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("2012-02-14Z");
 
-        // get us a full scope WMS  (esp. with default value strategies)
-        WMS wms = getWMS();
+        Map<String, String> rawKvp = new HashMap<>();
+        rawKvp.put(CUSTOM_DIMENSION_NAME.toUpperCase(), null);
+        doCustomDimensionFilter(rawKvp, defaultValueSetting, List.of(2));
+    }
 
-        String customDimension = WMS.DIM_ + "reference_time";
-        List<Integer> expectedFeatureIds = List.of(0, 2);
+    /**
+     * executes the custom dimension filter and asserts for the presence of the expected features ids.
+     * @param rawKvp the request represented by the raw KVP
+     * @param defaultValueSetting the default value strategy (can be null)
+     * @param expectedFeatureIds the expected feature ids (can be emptyList())
+     * @throws IOException in case the feature source crashes
+     */
+    public void doCustomDimensionFilter(Map<String, String> rawKvp, DimensionDefaultValueSetting defaultValueSetting, List<Integer> expectedFeatureIds) throws IOException {
 
         FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         FeatureSource<?,?> fs = typeInfo.getFeatureSource(null, null);
 
-        // Use explicit default value DimensionInfo setup:
-        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
-        defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MINIMUM);
         // set up a custom dimension
         setupStartEndTimeDimension(
                 TIME_WITH_START_END.getLocalPart(),
-                customDimension, "startTime", "endTime",
+                CUSTOM_DIMENSION_NAME, "startTime", "endTime",
                 defaultValueSetting);
-
-        // create a request with no reference_time dimension set
-        GetMapRequest mapRequest = createGetMapRequest(TIME_WITH_START_END);
-        Map<String, String> rawKvp = mapRequest.getRawKvp();
-        rawKvp.put(customDimension.toUpperCase(), null);
 
         DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
         Filter filter = wms.getCustomDimensionFilter(rawKvp, typeInfo, filterBuilder);
@@ -356,7 +331,6 @@ public class WMSTest extends WMSTestSupport {
                 results.add((Integer) it.next().getProperty("id").getValue());
             }
         }
-
         assertEquals(
                 "We are expecting " + expectedFeatureIds.size()+ " features but got " + results.size(),
                 expectedFeatureIds.size(), results.size());
@@ -364,6 +338,7 @@ public class WMSTest extends WMSTestSupport {
                 "We are expecting feature ids " + expectedFeatureIds + " but got " + results,
                 results.containsAll(expectedFeatureIds));
     }
+
 
     @Test
     public void testWMSLifecycleHandlerGraphicCacheReset() throws Exception {

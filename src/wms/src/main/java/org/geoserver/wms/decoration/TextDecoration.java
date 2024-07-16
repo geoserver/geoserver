@@ -10,7 +10,7 @@ import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
 import static org.geoserver.wms.decoration.MapDecorationLayout.getOption;
 
 import freemarker.ext.beans.BeansWrapper;
-import freemarker.ext.beans.StringModel;
+import freemarker.ext.beans.GenericObjectModel;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
@@ -197,7 +197,7 @@ public class TextDecoration implements MapDecoration {
                             }
                         }
                         if (value != null) {
-                            return new StringModel(value, bw);
+                            return new GenericObjectModel(value, bw);
                         } else {
                             return null;
                         }

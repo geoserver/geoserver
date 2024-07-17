@@ -46,4 +46,6 @@ public interface AuthenticationCache {
 
     /** timeToIdleSeconds and timeToLiveSeconds are derived from the cache global settings */
     public void put(String filterName, String cacheKey, Authentication auth);
+
+    void onReset();
 }

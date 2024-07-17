@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
@@ -26,7 +27,8 @@ import org.springframework.security.core.Authentication;
  *
  * @author Mauro Bartolomeoli (mauro.bartolomeoli at geo-solutions.it)
  */
-public class GuavaAuthenticationCacheImpl implements AuthenticationCache, DisposableBean {
+public class GuavaAuthenticationCacheImpl
+        implements AuthenticationCache, GeoServerLifecycleHandler, DisposableBean {
 
     /** Default eviction interval (double of the idle time). */
     public static final int DEFAULT_CLEANUP_TIME = DEFAULT_IDLE_TIME * 2;
@@ -242,4 +244,18 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache, Dispos
     public void destroy() {
         scheduler.shutdown();
     }
+
+    @Override
+    public void onReset() {
+        removeAll();
+    }
+
+    @Override
+    public void onDispose() {}
+
+    @Override
+    public void beforeReload() {}
+
+    @Override
+    public void onReload() {}
 }

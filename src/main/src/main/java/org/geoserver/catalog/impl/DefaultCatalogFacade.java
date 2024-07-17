@@ -1035,7 +1035,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         if (dao instanceof DefaultCatalogFacade) {
             // do an optimized sync
             DefaultCatalogFacade other = (DefaultCatalogFacade) dao;
-
+            Catalog catalog = other.getCatalog();
             other.stores = stores.setCatalog(catalog);
             other.defaultStores = defaultStores;
             other.resources = resources.setCatalog(catalog);

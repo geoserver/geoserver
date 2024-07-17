@@ -186,7 +186,6 @@
         <module>proxy-base-ext</module>
         <module>xslt</module>
         <module>imagemap</module>
-        <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
         <module>graticule</module>
@@ -588,12 +587,6 @@
       <id>imagemap</id>
       <modules>
         <module>imagemap</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>datadir-catalog-loader</id>
-      <modules>
-        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
     <profile>

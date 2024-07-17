@@ -2150,7 +2150,7 @@ public class CatalogImpl implements Catalog {
     }
 
     public void sync(CatalogImpl other) {
-        other.facade.syncTo(facade);
+        other.rawFacade.syncTo(rawFacade);
         other.dispatcher.syncTo(dispatcher);
 
         if (resourcePool != other.resourcePool) {

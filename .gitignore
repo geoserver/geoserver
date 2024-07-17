@@ -3,6 +3,7 @@ target
 .settings
 .classpath
 .project
+.factorypath
 .metadata
 .DS_Store
 *.class

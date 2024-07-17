@@ -95,7 +95,7 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
         Date dimensionValue = Date.from(Instant.parse("2012-02-11T10:15:30.00Z"));
         // create a map request
         GetMapRequest request = mapRequest(singletonList(dimensionValue), emptyList(), emptyMap());
-        // disable validation
+        // enable validation
         setValidationEnabled(true);
         // run validation and assert
         assertValidationSuccess(
@@ -140,7 +140,7 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
         Date dimensionValue = Date.from(Instant.parse("2012-02-10T10:15:30.00Z"));
         // create a map request
         GetMapRequest request = mapRequest(singletonList(dimensionValue), emptyList(), emptyMap());
-        // disable validation
+        // enable validation
         setValidationEnabled(true);
         // run validation and assert
         assertValidationSuccess(

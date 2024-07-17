@@ -182,4 +182,5 @@
   <bean id="styleUrlChecker" class="org.geoserver.security.urlchecks.StyleURLChecker">
     <constructor-arg ref="dataDirectory"/>
   </bean>
+
 </beans>

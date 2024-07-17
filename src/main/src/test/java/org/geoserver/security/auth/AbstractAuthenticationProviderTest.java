@@ -71,12 +71,6 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                AbstractAuthenticationProviderTest.class
-                        .getResource(
-                                AbstractAuthenticationProviderTest.class.getSimpleName()
-                                        + "-context.xml")
-                        .toString());
     }
 
     protected TestingAuthenticationCache getCache() {

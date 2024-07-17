@@ -118,4 +118,9 @@ public class TestingAuthenticationCache implements AuthenticationCache {
             throw new RuntimeException(ex);
         }
     }
+
+    @Override
+    public void onReset() {
+        removeAll();
+    }
 }

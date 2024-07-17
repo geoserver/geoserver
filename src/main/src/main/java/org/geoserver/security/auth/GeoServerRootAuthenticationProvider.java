@@ -51,8 +51,8 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
                 (UsernamePasswordAuthenticationToken) authentication;
 
         // check if name is root
-        if (GeoServerUser.ROOT_USERNAME.equals(SecurityUtils.getUsername(token.getPrincipal()))
-                == false) return null;
+        if (!GeoServerUser.ROOT_USERNAME.equals(SecurityUtils.getUsername(token.getPrincipal())))
+            return null;
 
         // check password
         if (token.getCredentials() != null) {

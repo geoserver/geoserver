@@ -27,7 +27,7 @@ public interface AuthenticationCache {
     /** Clears all cache entries for filterName */
     public void removeAll(String filterName);
 
-    /** Clears a specific chache entry */
+    /** Clears a specific cache entry */
     public void remove(String filterName, String cacheKey);
 
     /** */
@@ -46,4 +46,6 @@ public interface AuthenticationCache {
 
     /** timeToIdleSeconds and timeToLiveSeconds are derived from the cache global settings */
     public void put(String filterName, String cacheKey, Authentication auth);
+
+    void onReset();
 }

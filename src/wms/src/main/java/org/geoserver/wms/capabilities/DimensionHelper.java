@@ -59,6 +59,104 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public abstract class DimensionHelper {
 
+    public static class ElevationDimensionRasterHelper {
+
+        private final DimensionInfo elevationInfo;
+        private final ReaderDimensionsAccessor accessor;
+
+        public ElevationDimensionRasterHelper(
+                DimensionInfo elevationInfo, ReaderDimensionsAccessor accessor) {
+            this.elevationInfo = elevationInfo;
+            this.accessor = accessor;
+        }
+
+        public TreeSet<Object> getDomain() throws IOException {
+            TreeSet<Object> elevations = null;
+            try {
+                if (elevationInfo.getPresentation() != DimensionPresentation.LIST) {
+                    String startValue = elevationInfo.getStartValue();
+                    String endValue = elevationInfo.getEndValue();
+                    if (!StringUtils.isEmpty(startValue) && !StringUtils.isEmpty(endValue)) {
+                        elevations = new TreeSet<>();
+                        elevations.add(Double.parseDouble(startValue));
+                        elevations.add(Double.parseDouble(endValue));
+                    } else {
+                        Double minValue = accessor.getMinElevation();
+                        if (minValue != null) {
+                            elevations = new TreeSet<>();
+                            elevations.add(minValue);
+                            elevations.add(accessor.getMaxElevation());
+                        }
+                    }
+                }
+                if (elevations == null) {
+                    throw new Exception(
+                            "The \"List\" presentation of the elevation dimension has been selected");
+                }
+            } catch (Exception ex) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Dimension has not been extracted. The reason: ", ex);
+                }
+                elevations = accessor.getElevationDomain();
+            }
+            return elevations;
+        }
+
+        public String getRepresentation(TreeSet<Object> elevations) {
+            return getNumberRepresentation(elevationInfo, elevations);
+        }
+    }
+
+    public static class TemporalDimensionRasterHelper {
+
+        private final DimensionInfo timeInfo;
+        private final ReaderDimensionsAccessor accessor;
+
+        public TemporalDimensionRasterHelper(
+                DimensionInfo timeInfo, ReaderDimensionsAccessor accessor) {
+            this.timeInfo = timeInfo;
+            this.accessor = accessor;
+        }
+
+        public TreeSet<Object> getDomain() throws IOException {
+            TreeSet<Object> temporalDomain = null;
+
+            try {
+                if (timeInfo.getPresentation() != DimensionPresentation.LIST) {
+                    String startValue = timeInfo.getStartValue();
+                    String endValue = timeInfo.getEndValue();
+                    if (startValue != null && endValue != null) {
+                        temporalDomain = new TreeSet<>();
+                        temporalDomain.add(parseTimeRangeValue(startValue));
+                        temporalDomain.add(parseTimeRangeValue(endValue));
+                    } else {
+                        Date minValue = accessor.getMinTime();
+                        if (minValue != null) {
+                            temporalDomain = new TreeSet<>();
+                            temporalDomain.add(minValue);
+                            temporalDomain.add(accessor.getMaxTime());
+                        }
+                    }
+                }
+                if (temporalDomain == null) {
+                    throw new Exception(
+                            "The \"List\" presentation of the temporal dimension has been selected");
+                }
+            } catch (Exception ex) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Dimension has not been extracted. The reason: ", ex);
+                }
+                temporalDomain = accessor.getTimeDomain();
+            }
+            return temporalDomain;
+        }
+
+        /** Builds the proper presentation given the current */
+        public String getRepresentation(TreeSet<? extends Object> values) {
+            return getTemporalDomainRepresentation(timeInfo, values);
+        }
+    }
+
     static final Logger LOGGER = Logging.getLogger(DimensionHelper.class);
     public static final String NEAREST_VALUE = "nearestValue";
     public static final String NAME = "name";
@@ -180,7 +278,7 @@ public abstract class DimensionHelper {
         }
     }
 
-    Optional<Class<?>> getDataType(Set<Object> values) {
+    public static Optional<Class<?>> getDataType(Set<Object> values) {
         return values.stream().filter(x -> x != null).findFirst().map(Object::getClass);
     }
 
@@ -339,35 +437,11 @@ public abstract class DimensionHelper {
     private void handleElevationDimensionRaster(
             CoverageInfo cvInfo, DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions)
             throws IOException {
-        TreeSet<Object> elevations = null;
-        try {
-            if (elevInfo.getPresentation() != DimensionPresentation.LIST) {
-                String startValue = elevInfo.getStartValue();
-                String endValue = elevInfo.getEndValue();
-                if (!StringUtils.isEmpty(startValue) && !StringUtils.isEmpty(endValue)) {
-                    elevations = new TreeSet<>();
-                    elevations.add(Double.parseDouble(startValue));
-                    elevations.add(Double.parseDouble(endValue));
-                } else {
-                    Double minValue = dimensions.getMinElevation();
-                    if (minValue != null) {
-                        elevations = new TreeSet<>();
-                        elevations.add(minValue);
-                        elevations.add(dimensions.getMaxElevation());
-                    }
-                }
-            }
-            if (elevations == null) {
-                throw new Exception(
-                        "The \"List\" presentation of the elevation dimension has been selected");
-            }
-        } catch (Exception ex) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Dimension has not been extracted. The reason: ", ex);
-            }
-            elevations = dimensions.getElevationDomain();
-        }
-        String elevationMetadata = getNumberRepresentation(elevInfo, elevations);
+        ElevationDimensionRasterHelper elevationDimensionRH =
+                new ElevationDimensionRasterHelper(elevInfo, dimensions);
+        TreeSet<Object> elevations = elevationDimensionRH.getDomain();
+        String elevationMetadata = elevationDimensionRH.getRepresentation(elevations);
+
         String defaultValue = getDefaultValueRepresentation(cvInfo, ResourceInfo.ELEVATION, "0");
         writeElevationDimension(
                 elevations,
@@ -393,34 +467,9 @@ public abstract class DimensionHelper {
     private void handleTimeDimensionRaster(
             CoverageInfo cvInfo, DimensionInfo timeInfo, ReaderDimensionsAccessor dimension)
             throws IOException {
-        TreeSet<Object> temporalDomain = null;
-        try {
-            if (timeInfo.getPresentation() != DimensionPresentation.LIST) {
-                String startValue = timeInfo.getStartValue();
-                String endValue = timeInfo.getEndValue();
-                if (startValue != null && endValue != null) {
-                    temporalDomain = new TreeSet<>();
-                    temporalDomain.add(parseTimeRangeValue(startValue));
-                    temporalDomain.add(parseTimeRangeValue(endValue));
-                } else {
-                    Date minValue = dimension.getMinTime();
-                    if (minValue != null) {
-                        temporalDomain = new TreeSet<>();
-                        temporalDomain.add(minValue);
-                        temporalDomain.add(dimension.getMaxTime());
-                    }
-                }
-            }
-            if (temporalDomain == null) {
-                throw new Exception(
-                        "The \"List\" presentation of the temporal dimension has been selected");
-            }
-        } catch (Exception ex) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Dimension has not been extracted. The reason: ", ex);
-            }
-            temporalDomain = dimension.getTimeDomain();
-        }
+        TemporalDimensionRasterHelper temporalDimensionRH =
+                new TemporalDimensionRasterHelper(timeInfo, dimension);
+        TreeSet<Object> temporalDomain = temporalDimensionRH.getDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
         String defaultValue =
                 getDefaultValueRepresentation(
@@ -485,7 +534,7 @@ public abstract class DimensionHelper {
     }
 
     @SuppressWarnings("PMD.UnnecessaryWrapperObjectCreation")
-    protected String getNumberRepresentation(
+    protected static String getNumberRepresentation(
             DimensionInfo dimension, TreeSet<? extends Object> values) {
         String elevationMetadata = null;
 
@@ -567,21 +616,20 @@ public abstract class DimensionHelper {
         return elevationMetadata;
     }
 
-    private boolean isDecimal(Class<?> typeBinding) {
+    private static boolean isDecimal(Class<?> typeBinding) {
         return Float.class.isAssignableFrom(typeBinding)
                 || Double.class.isAssignableFrom(typeBinding)
                 || BigDecimal.class.isAssignableFrom(typeBinding);
     }
 
-    /** Builds the proper presentation given the current */
-    String getTemporalDomainRepresentation(
-            DimensionInfo dimension, TreeSet<? extends Object> values) {
+    static String getTemporalDomainRepresentation(
+            DimensionInfo timeInfo, TreeSet<? extends Object> values) {
         String timeMetadata = null;
 
         final StringBuilder buff = new StringBuilder();
         final ISO8601Formatter df = new ISO8601Formatter();
 
-        if (DimensionPresentation.LIST == dimension.getPresentation()) {
+        if (DimensionPresentation.LIST == timeInfo.getPresentation()) {
             for (Object date : values) {
                 buff.append(df.format(date));
                 buff.append(",");
@@ -591,21 +639,21 @@ public abstract class DimensionHelper {
                             .replaceAll("\\[", "")
                             .replaceAll("\\]", "")
                             .replaceAll(" ", "");
-        } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
+        } else if (DimensionPresentation.CONTINUOUS_INTERVAL == timeInfo.getPresentation()) {
             DateRange interval = getMinMaxTimeInterval(values);
             buff.append(df.format(interval.getMinValue()));
             buff.append("/");
             buff.append(df.format(interval.getMaxValue()));
             buff.append("/PT1S");
             timeMetadata = buff.toString();
-        } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
+        } else if (DimensionPresentation.DISCRETE_INTERVAL == timeInfo.getPresentation()) {
             DateRange interval = getMinMaxTimeInterval(values);
             buff.append(df.format(interval.getMinValue()));
             buff.append("/");
             buff.append(df.format(interval.getMaxValue()));
             buff.append("/");
 
-            final BigDecimal resolution = dimension.getResolution();
+            final BigDecimal resolution = timeInfo.getResolution();
             if (resolution != null) {
                 // resolution has been provided
                 buff.append(new DefaultPeriodDuration(resolution.longValue()).toString());
@@ -633,7 +681,7 @@ public abstract class DimensionHelper {
     }
 
     /** Builds a single time range from the domain, be it made of Date or TimeRange objects */
-    private DateRange getMinMaxTimeInterval(TreeSet<? extends Object> values) {
+    private static DateRange getMinMaxTimeInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
         Object maxValue = values.last();
         Date min, max;
@@ -652,7 +700,8 @@ public abstract class DimensionHelper {
 
     /** Builds a single Z range from the domain, be it made of Number or NumberRange objects */
     @SuppressWarnings("unchecked")
-    private NumberRange<? extends Number> getMinMaxZInterval(TreeSet<? extends Object> values) {
+    private static NumberRange<? extends Number> getMinMaxZInterval(
+            TreeSet<? extends Object> values) {
         Object minValue = values.first();
         Object maxValue = values.last();
         Number min, max;
@@ -670,7 +719,7 @@ public abstract class DimensionHelper {
     }
 
     /** Returns true if all the values in the set are Date instances */
-    private boolean allDates(TreeSet<? extends Object> values) {
+    private static boolean allDates(TreeSet<? extends Object> values) {
         for (Object value : values) {
             if (!(value instanceof Date)) {
                 return false;
@@ -681,7 +730,7 @@ public abstract class DimensionHelper {
     }
 
     /** Returns true if all the values in the set are Number instances */
-    private boolean allNumbers(TreeSet<? extends Object> values) {
+    private static boolean allNumbers(TreeSet<? extends Object> values) {
         for (Object value : values) {
             if (!(value instanceof Number)) {
                 return false;

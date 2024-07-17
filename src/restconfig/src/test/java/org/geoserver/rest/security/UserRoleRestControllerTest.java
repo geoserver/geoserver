@@ -6,9 +6,11 @@ package org.geoserver.rest.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import org.geoserver.rest.RestException;
 import org.geoserver.rest.security.xml.JaxbGroupList;
 import org.geoserver.rest.security.xml.JaxbRoleList;
 import org.geoserver.rest.security.xml.JaxbUser;
@@ -17,6 +19,7 @@ import org.geoserver.security.validation.PasswordPolicyException;
 import org.geoserver.test.GeoServerTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 
 public class UserRoleRestControllerTest extends GeoServerTestSupport {
 
@@ -253,5 +256,28 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
         assertEquals(1, roles.getRoles().size());
         assertTrue(roles.getRoles().contains("vozen"));
         assertFalse(roles.getRoles().contains("kwiestenbiebel"));
+    }
+
+    @Test
+    public void testDoubleUserGroupAssociation() throws PasswordPolicyException, IOException {
+
+        JaxbUser user = new JaxbUser();
+        user.setUserName("pipo");
+        user.setPassword("secret");
+        user.setEnabled(true);
+
+        usersController.insertUser(USER_SERVICE, user);
+        usersController.insertGroup(USER_SERVICE, "clowns");
+        usersController.associateUserToGroup(USER_SERVICE, "pipo", "clowns");
+
+        RestException exception =
+                assertThrows(
+                        RestException.class,
+                        () -> {
+                            usersController.associateUserToGroup(USER_SERVICE, "pipo", "clowns");
+                        });
+
+        assertEquals("Username already associated with this groupname", exception.getMessage());
+        assertEquals(HttpStatus.OK, exception.getStatus());
     }
 }

@@ -148,4 +148,9 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
     public void put(String filterName, String cacheKey, Authentication auth) {
         put(filterName, cacheKey, auth, timeToIdleSeconds, timeToLiveSeconds);
     }
+
+    @Override
+    public void onReset() {
+        removeAll();
+    }
 }

@@ -1857,13 +1857,13 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * wraps the given filter in a query for dimension requests.
+     * Wraps the given filter in a query for dimension requests.
      *
      * @param filter the filter
      * @param dimensionInfo the dimension info
      * @param typeName the feature type name
      * @return a query that wraps the filter and restricts the query to the dimension attribute and
-     *     max features = 1.
+     *     sets max features = 1.
      */
     private static Query getDimensionQuery(
             Filter filter, DimensionInfo dimensionInfo, String typeName) {

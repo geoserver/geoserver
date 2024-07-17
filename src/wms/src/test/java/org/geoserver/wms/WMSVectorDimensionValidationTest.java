@@ -10,6 +10,12 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.geoserver.data.test.MockData.SF_PREFIX;
 import static org.geoserver.data.test.MockData.SF_URI;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -25,27 +31,34 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.data.Query;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.locationtech.jts.geom.Envelope;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
- * this suite performs tests on the WMS request validation feature added for <a
+ * This suite performs tests on the WMS request validation feature added for <a
  * href="https://osgeo-org.atlassian.net/browse/GEOS-9757">GEOS-9757 - Return a service exception
  * when client provided WMS dimensions are not a match</a>.
  *
  * @author skalesse
  * @since 2024-07-11
  */
+@RunWith(MockitoJUnitRunner.class)
 public class WMSVectorDimensionValidationTest extends WMSTestSupport {
 
     private static final QName TIME_WITH_START_END =
             new QName(SF_URI, "TimeWithStartEnd", SF_PREFIX);
     private static final QName ELEVATION_WITH_START_END =
             new QName(SF_URI, "ElevationWithStartEnd", SF_PREFIX);
-    private static final QName CUSTOMS_DIM_WITH_START_END =
+    private static final QName CUSTOM_DIM_WITH_START_END =
             new QName(SF_URI, "CustomDimensionWithStartEnd", SF_PREFIX);
 
     private WMS wms;
@@ -66,17 +79,17 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
                 ELEVATION_WITH_START_END, emptyMap(), testDataFileName, getClass(), getCatalog());
 
         testData.addVectorLayer(
-                CUSTOMS_DIM_WITH_START_END, emptyMap(), testDataFileName, getClass(), getCatalog());
+                CUSTOM_DIM_WITH_START_END, emptyMap(), testDataFileName, getClass(), getCatalog());
     }
 
     /**
-     * for a 'time' dimension, if a matching value is provided in the request the validation should
+     * For a 'time' dimension, if a matching value is provided in the request the validation should
      * succeed
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void matching_time_dimension_should_validate() throws IOException {
+    public void matchingTimeDimensionShouldValidate() throws IOException {
         // the dimension and its value
         String dimension = "time";
         Date dimensionValue = Date.from(Instant.parse("2012-02-11T10:15:30.00Z"));
@@ -95,13 +108,33 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for a 'time' dimension, if a mismatching value is provided in the request the validation
+     * For a 'time' dimension, the generated query should have 'maxFeature' set to 1 and the query
+     * properties should have one entry - 'startTime'
+     *
+     * @throws IOException an unexpected IO exception is thrown
+     */
+    @Test
+    public void timeQueryShouldHaveOneAttributeAndLimitMaxFeaturesToOne() throws IOException {
+        // the dimension and its value
+        String dimension = "time";
+        Date dimensionValue = Date.from(Instant.parse("2012-02-11T10:15:30.00Z"));
+        // create a map request
+        GetMapRequest request = mapRequest(singletonList(dimensionValue), emptyList(), emptyMap());
+        // set up a time dimension
+        setupStartEndDimension(
+                getCatalog(), TIME_WITH_START_END, dimension, "startTime", "endTime");
+        // run validation and assert the content of the query
+        assertQueryContent(TIME_WITH_START_END, request, "startTime");
+    }
+
+    /**
+     * For a 'time' dimension, if a mismatching value is provided in the request the validation
      * should fail.
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void mismatching_time_dimension_should_not_validate() throws IOException {
+    public void mismatchingTimeDimensionShouldNotValidate() throws IOException {
         // the dimension and its value
         String dimension = "time";
         Date dimensionValue = Date.from(Instant.parse("2012-02-10T10:15:30.00Z"));
@@ -120,14 +153,13 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for a 'time' dimension, if a mismatching value is provided in the request the validation
+     * For a 'time' dimension, if a mismatching value is provided in the request the validation
      * should succeed, in case validation is disabled in the settings.
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void mismatching_time_dimension_should_validate_if_validation_disabled()
-            throws IOException {
+    public void mismatchingTimeDimensionShouldValidateIfValidationDisabled() throws IOException {
         // the dimension and its value
         String dimension = "time";
         Date dimensionValue = Date.from(Instant.parse("2012-02-10T10:15:30.00Z"));
@@ -146,19 +178,19 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for an 'elevation' dimension, if a matching value is provided in the request the validation
+     * For an 'elevation' dimension, if a matching value is provided in the request the validation
      * should succeed
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void matching_elevation_dimension_should_validate() throws IOException {
+    public void matchingElevationDimensionShouldValidate() throws IOException {
         // the dimension and its value
         String dimension = "elevation";
         double dimensionValue = 2; // matching elevation
         // create a map request
         GetMapRequest request = mapRequest(emptyList(), singletonList(dimensionValue), emptyMap());
-        // disable validation
+        // enable validation
         setValidationEnabled(true);
         // run validation and assert
         assertValidationSuccess(
@@ -175,19 +207,43 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for an 'elevation' dimension, if a mismatching value is provided in the request the
+     * For an 'elevation' dimension, the generated query should have 'maxFeature' set to 1 and the
+     * query properties should have one entry - 'startElevation'
+     *
+     * @throws IOException an unexpected IO exception is thrown
+     */
+    @Test
+    public void elevationQueryShouldHaveOneAttributeAndLimitMaxFeaturesToOne() throws IOException {
+        // the dimension and its value
+        String dimension = "elevation";
+        double dimensionValue = 2; // matching elevation
+        // create a map request
+        GetMapRequest request = mapRequest(emptyList(), singletonList(dimensionValue), emptyMap());
+        // set up an elevation dimension
+        setupStartEndDimension(
+                getCatalog(),
+                ELEVATION_WITH_START_END,
+                dimension,
+                "startElevation",
+                "endElevation");
+        // run validation and assert the content of the query
+        assertQueryContent(ELEVATION_WITH_START_END, request, "startElevation");
+    }
+
+    /**
+     * For an 'elevation' dimension, if a mismatching value is provided in the request the
      * validation should fail.
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void mismatching_elevation_dimension_should_not_validate() throws IOException {
+    public void mismatchingElevationDimensionShouldNotValidate() throws IOException {
         // the dimension and its value
         String dimension = "elevation";
         double dimensionValue = 5; // mismatching elevation
         // create a map request
         GetMapRequest request = mapRequest(emptyList(), singletonList(dimensionValue), emptyMap());
-        // disable validation
+        // enable validation
         setValidationEnabled(true);
         // run validation and assert
         assertValidationSuccess(
@@ -204,13 +260,13 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for an 'elevation' dimension, if a mismatching value is provided in the request the
+     * For an 'elevation' dimension, if a mismatching value is provided in the request the
      * validation should succeed, in case validation is disabled in the settings.
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void mismatching_elevation_dimension_should_validate_if_validation_is_disabled()
+    public void mismatchingElevationDimensionShouldValidateIfValidationIsDisabled()
             throws IOException {
         // the dimension and its value
         String dimension = "elevation";
@@ -234,13 +290,13 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for a custom dimension, if a matching value is provided in the request the validation should
+     * For a custom dimension, if a matching value is provided in the request the validation should
      * succeed
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void matching_custom_time_dimension_should_validate() throws IOException {
+    public void matchingCustomTimeDimensionShouldValidate() throws IOException {
         // the dimension and its value
         String dimension = WMS.DIM_ + "reference_time";
         Instant dimensionValue = Instant.parse("2012-02-11T10:15:30.00Z");
@@ -248,16 +304,12 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
         Map<String, String> customDimensions = new HashMap<>();
         customDimensions.put(dimension.toUpperCase(), ISO_INSTANT.format(dimensionValue));
         GetMapRequest request = mapRequest(emptyList(), emptyList(), customDimensions);
-        // disable validation
+        // enable validation
         setValidationEnabled(true);
         // run validation and assert
         assertValidationSuccess(
                 setupStartEndDimension(
-                        getCatalog(),
-                        CUSTOMS_DIM_WITH_START_END,
-                        dimension,
-                        "startTime",
-                        "endTime"),
+                        getCatalog(), CUSTOM_DIM_WITH_START_END, dimension, "startTime", "endTime"),
                 request,
                 dimension,
                 dimensionValue,
@@ -265,13 +317,13 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for a custom dimension, if a mismatching value is provided in the request the validation
+     * For a custom dimension, if a mismatching value is provided in the request the validation
      * should fail.
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void mismatching_custom_time_dimension_should_not_validate() throws IOException {
+    public void mismatchingCustomTimeDimensionShouldNotValidate() throws IOException {
         // the dimension and its value
         String dimension = WMS.DIM_ + "reference_time";
         Instant dimensionValue = Instant.parse("2012-02-10T10:15:30.00Z");
@@ -279,16 +331,12 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
         Map<String, String> customDimensions = new HashMap<>();
         customDimensions.put(dimension.toUpperCase(), ISO_INSTANT.format(dimensionValue));
         GetMapRequest request = mapRequest(emptyList(), emptyList(), customDimensions);
-        // disable validation
+        // enable validation
         setValidationEnabled(true);
         // run validation and assert
         assertValidationSuccess(
                 setupStartEndDimension(
-                        getCatalog(),
-                        CUSTOMS_DIM_WITH_START_END,
-                        dimension,
-                        "startTime",
-                        "endTime"),
+                        getCatalog(), CUSTOM_DIM_WITH_START_END, dimension, "startTime", "endTime"),
                 request,
                 dimension,
                 dimensionValue,
@@ -296,13 +344,13 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * for a custom dimension, if a mismatching value is provided in the request the validation
+     * For a custom dimension, if a mismatching value is provided in the request the validation
      * should succeed, in case validation is disabled in the settings.
      *
      * @throws IOException an unexpected IO exception is thrown
      */
     @Test
-    public void mismatching_custom_time_dimension_should_validate_if_disabled() throws IOException {
+    public void mismatchingCustomTimeDimensionShouldValidateIfDisabled() throws IOException {
         // the dimension and its value
         String dimension = WMS.DIM_ + "reference_time";
         Instant dimensionValue = Instant.parse("2012-02-10T10:15:30.00Z");
@@ -315,11 +363,7 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
         // run validation and assert
         assertValidationSuccess(
                 setupStartEndDimension(
-                        getCatalog(),
-                        CUSTOMS_DIM_WITH_START_END,
-                        dimension,
-                        "startTime",
-                        "endTime"),
+                        getCatalog(), CUSTOM_DIM_WITH_START_END, dimension, "startTime", "endTime"),
                 request,
                 dimension,
                 dimensionValue,
@@ -327,12 +371,36 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * enable / disable validation if dimension values.
+     * For a custom dimension, the generated query should have 'maxFeature' set to 1 and the query
+     * properties should have one defined entry.
+     *
+     * @throws IOException an unexpected IO exception is thrown
+     */
+    @Test
+    public void customDimensionQueryShouldHaveOneAttributeAndLimitMaxFeaturesToOne()
+            throws IOException {
+        // the dimension and its value
+        String dimension = WMS.DIM_ + "reference_time";
+        Instant dimensionValue = Instant.parse("2012-02-11T10:15:30.00Z");
+        // create a map request
+        Map<String, String> customDimensions = new HashMap<>();
+        customDimensions.put(dimension.toUpperCase(), ISO_INSTANT.format(dimensionValue));
+        GetMapRequest request = mapRequest(emptyList(), emptyList(), customDimensions);
+        // set up a custom dimension
+        setupStartEndDimension(
+                getCatalog(), CUSTOM_DIM_WITH_START_END, dimension, "startTime", "endTime");
+        // run validation and assert the content of the query
+        assertQueryContent(CUSTOM_DIM_WITH_START_END, request, "startTime");
+    }
+
+    /**
+     * Enable / disable validation exceptions.
      *
      * <p>Note, that GeoServer's default is {@code true}. See {@link
      * WMSInfoImpl#EXCEPTION_ON_INVALID_DIMENSION_DEFAULT}
      *
      * @param enabled {@code true} if validation should be enabled, {@code false} otherwise.
+     * @see WMSInfoImpl#setExceptionOnInvalidDimension(Boolean)
      */
     private void setValidationEnabled(boolean enabled) {
         WMSInfo wmsServiceInfo = wms.getServiceInfo();
@@ -341,7 +409,7 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * asserts the validation success given the input request
+     * Asserts the validation success given the input request
      *
      * @param featureTypeInfo the feature type matching the request
      * @param request the {@link GetMapRequest} that is to be validated
@@ -380,8 +448,61 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
         }
     }
 
+    @Captor ArgumentCaptor<Query> queryArgumentCaptor;
+
     /**
-     * create a dimension using the given dimension and attributes start/end
+     * Assert the content of the Query that is passed to the feature source during validation. The
+     * query should have the 'maxFeature' attribute set to 1 and the query's properties should have
+     * exactly one attribute - the attribute used to obtain the dimension value.
+     *
+     * @param featureTypeName the feature type name
+     * @param request the map request
+     * @param queryAttribute the expected query attribute
+     * @throws IOException should the feature source throw an exception (should not happen as we aer
+     *     mocking the source)
+     */
+    private void assertQueryContent(
+            QName featureTypeName, GetMapRequest request, String queryAttribute)
+            throws IOException {
+
+        // enable validation
+        setValidationEnabled(true);
+
+        // spy the feature type
+        FeatureTypeInfo featureTypeInfoSpy =
+                spy((getCatalog().getFeatureTypeByName(featureTypeName.getLocalPart())));
+
+        // mock the feature source
+        FeatureSource<?, ?> featureSource = mock(FeatureSource.class);
+        doReturn(featureSource).when(featureTypeInfoSpy).getFeatureSource(any(), any());
+
+        // call validation, but catch the service exception, 'cos as we mocked the
+        // feature source, hence we won't likely be able to return the expected result
+        try {
+            wms.validateVectorDimensions(
+                    request.getTime(), request.getElevation(), featureTypeInfoSpy, request);
+        } catch (ServiceException e) {
+            // this one is expected, 'cos we mocked the feature source
+        }
+
+        // verify that getFeatures(Query) was called and collect the argument - the query
+        verify(featureSource).getFeatures(queryArgumentCaptor.capture());
+        Query query = queryArgumentCaptor.getValue();
+        // assert the query content
+        assertEquals(
+                "The query should have the maxFeature attribute set to 1",
+                1,
+                query.getMaxFeatures());
+        assertEquals(
+                "The query properties should have one entry only", 1, query.getProperties().size());
+        assertEquals(
+                "The query property should be for attribute: " + queryAttribute,
+                queryAttribute,
+                query.getProperties().get(0).getPropertyName());
+    }
+
+    /**
+     * Create a dimension using the given dimension and attributes start/end
      *
      * @param catalog the catalog
      * @param featureTypeName the type name
@@ -404,7 +525,7 @@ public class WMSVectorDimensionValidationTest extends WMSTestSupport {
     }
 
     /**
-     * creates a simple map request for the given times, elevations and custom dimensions.
+     * Creates a simple map request for the given times, elevations and custom dimensions.
      *
      * <p>Note, that layers, styles etc. are not set here. Add those after this call if required.
      *

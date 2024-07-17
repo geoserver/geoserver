@@ -220,12 +220,14 @@ public class WMSTest extends WMSTestSupport {
                 Arrays.asList(expectedIds).containsAll(results));
     }
 
-    private static String CUSTOM_DIMENSION_NAME = WMS.DIM_ + "reference_time";
+    private static final String CUSTOM_DIMENSION_NAME = WMS.DIM_ + "reference_time";
 
+    /**
+     * In case no custom dimension is defined at all, the dimension filter should return {@link
+     * Filter#INCLUDE} and a filter operation should then of course return all features.
+     */
     @Test
-    public void
-            custom_dimension_filter_should_return_all_for_featureInfo_without_custom_dimensions()
-                    throws IOException {
+    public void customDimensionFilterWithoutCustomDimensions() throws IOException {
 
         // clear away the custom dimension
         FeatureTypeInfo featureTypeInfo =
@@ -250,84 +252,99 @@ public class WMSTest extends WMSTestSupport {
                 "Custom dimension filter should return 'Filter.INCLUDE' when no custom dimensions are defined.",
                 Filter.INCLUDE,
                 wms.getCustomDimensionFilter(rawKvp, featureTypeInfo, filterBuilder));
+
+        // finally check that a filter request returns all features
+        doCustomDimensionFilter(rawKvp, null, List.of(0, 1, 2), false);
     }
 
+    /**
+     * For certain types of requests, the custom dimension filter should return the expected set of
+     * features.
+     */
     @Test
-    public void custom_dimension_filter_should_return_features_matching_request() throws Exception {
+    public void customDimensionFilterFeaturesMatchingRequest() throws Exception {
 
         Map<String, String> rawKvp = new HashMap<>();
         // matching
         rawKvp.put(
                 CUSTOM_DIMENSION_NAME.toUpperCase(),
                 ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
-        doCustomDimensionFilter(rawKvp, null, List.of(1, 2));
+        doCustomDimensionFilter(rawKvp, null, List.of(1, 2), true);
 
         // too early
         rawKvp.put(
                 CUSTOM_DIMENSION_NAME.toUpperCase(),
                 ISO_INSTANT.format(Instant.parse("2012-02-10T09:05:00Z")));
-        doCustomDimensionFilter(rawKvp, null, emptyList());
+        doCustomDimensionFilter(rawKvp, null, emptyList(), true);
 
         // too late
         rawKvp.put(
                 CUSTOM_DIMENSION_NAME.toUpperCase(),
                 ISO_INSTANT.format(Instant.parse("2012-02-20T09:05:00Z")));
-        doCustomDimensionFilter(rawKvp, null, emptyList());
+        doCustomDimensionFilter(rawKvp, null, emptyList(), true);
     }
 
+    /**
+     * In case no default value lookup setting is defined, the dimension filter should fall back to
+     * Minimum strategy.
+     */
     @Test
-    public void
-            custom_dimension_filter_should_return_minimum_default_without_default_settings_and_no_request()
-                    throws Exception {
-        doCustomDimensionFilter(new HashMap<>(), null, List.of(0, 2));
+    public void customDimensionFilterMinimumDefaultStrategy() throws Exception {
+        doCustomDimensionFilter(new HashMap<>(), null, List.of(0, 2), true);
     }
 
+    /**
+     * For several defined default value lookup settings, the custom dimension filter should return
+     * the corresponding set of expected features in case a dimension is missing in the request.
+     */
     @Test
-    public void
-            custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimension_missing_from_request()
-                    throws IOException {
+    public void customDimensionFilterDefaultStrategyWhenDimensionMissing() throws IOException {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
 
         // minimum
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MINIMUM);
-        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 2));
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 2), true);
 
         // maximum
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MAXIMUM);
-        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 1, 2));
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 1, 2), true);
 
         // nearest
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.NEAREST);
         defaultValueSetting.setReferenceValue("2012-02-14Z");
-        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 1, 2));
+        doCustomDimensionFilter(new HashMap<>(), defaultValueSetting, List.of(0, 1, 2), true);
     }
 
+    /**
+     * In case the dimension is passed in the request but without a dimension value, then the
+     * default value settings should kick in and return the corresponding set of expected features.
+     */
     @Test
-    public void
-            custom_dimension_filter_should_return_matching_features_using_default_strategy_when_dimensionValue_missing_from_request()
-                    throws IOException {
+    public void customDimensionFilterDefaultStrategyWhenDimensionValueMissing() throws IOException {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.FIXED);
         defaultValueSetting.setReferenceValue("2012-02-14Z");
 
         Map<String, String> rawKvp = new HashMap<>();
         rawKvp.put(CUSTOM_DIMENSION_NAME.toUpperCase(), null);
-        doCustomDimensionFilter(rawKvp, defaultValueSetting, List.of(2));
+        doCustomDimensionFilter(rawKvp, defaultValueSetting, List.of(2), true);
     }
 
     /**
-     * executes the custom dimension filter and asserts for the presence of the expected features
+     * Executes the custom dimension filter and asserts for the presence of the expected features
      * ids.
      *
      * @param rawKvp the request represented by the raw KVP
      * @param defaultValueSetting the default value strategy (can be null)
      * @param expectedFeatureIds the expected feature ids (can be emptyList())
+     * @param setupDimension {@code true}, if the custom dimension should be created
      * @throws IOException in case the feature source crashes
      */
     public void doCustomDimensionFilter(
             Map<String, String> rawKvp,
             DimensionDefaultValueSetting defaultValueSetting,
-            List<Integer> expectedFeatureIds)
+            List<Integer> expectedFeatureIds,
+            boolean setupDimension)
             throws IOException {
 
         FeatureTypeInfo typeInfo =
@@ -335,12 +352,14 @@ public class WMSTest extends WMSTestSupport {
         FeatureSource<?, ?> fs = typeInfo.getFeatureSource(null, null);
 
         // set up a custom dimension
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(),
-                CUSTOM_DIMENSION_NAME,
-                "startTime",
-                "endTime",
-                defaultValueSetting);
+        if (setupDimension) {
+            setupStartEndTimeDimension(
+                    TIME_WITH_START_END.getLocalPart(),
+                    CUSTOM_DIMENSION_NAME,
+                    "startTime",
+                    "endTime",
+                    defaultValueSetting);
+        }
 
         DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(getFilterFactory(null));
         Filter filter = wms.getCustomDimensionFilter(rawKvp, typeInfo, filterBuilder);

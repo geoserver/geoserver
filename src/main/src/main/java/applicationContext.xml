@@ -357,4 +357,8 @@
   <bean id="xmlViewParamsFormatParser" class="org.geoserver.ows.kvp.XMLViewParamsFormatParser">
   </bean>
 
+  <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
+    <constructor-arg value="1000"/>
+  </bean>
+
 </beans>

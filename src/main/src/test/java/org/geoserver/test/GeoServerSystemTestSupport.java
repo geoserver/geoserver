@@ -113,6 +113,7 @@ import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.auth.TestingAuthenticationCache;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
@@ -342,6 +343,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
 
+            getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);
         }
     }

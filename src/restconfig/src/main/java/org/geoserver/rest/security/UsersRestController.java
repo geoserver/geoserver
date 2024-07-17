@@ -5,8 +5,10 @@
 package org.geoserver.rest.security;
 
 import java.io.IOException;
+import java.util.SortedSet;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.RestException;
 import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.security.xml.JaxbGroupList;
 import org.geoserver.rest.security.xml.JaxbUser;
@@ -236,6 +238,17 @@ public class UsersRestController implements SequentialExecutionController {
             @PathVariable("group") String groupName)
             throws IOException {
         GeoServerUserGroupStore store = getStore(serviceName);
+        GeoServerUserGroupService service = getService(serviceName);
+        SortedSet<GeoServerUserGroup> groupsForUser =
+                service.getGroupsForUser(
+                        getUser(service, userName)); // There should be fewer groups than users
+        for (GeoServerUserGroup group : groupsForUser) {
+            if (groupName.equals(group.getGroupname())) {
+                throw new RestException(
+                        "Username already associated with this groupname",
+                        HttpStatus.OK); // In the future 409 Conflict?
+            }
+        }
         try {
             store.associateUserToGroup(getUser(store, userName), getGroup(store, groupName));
         } finally {

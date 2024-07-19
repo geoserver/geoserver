@@ -30,6 +30,14 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+REST API URL Checks (GeoServer 2.26 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+URLChecks are now available for REST API upload.
+
+Use the existing :ref:`security_urlchecks` page to add any locations or directories for use.
+
+
 GRIB Layers (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 GeoServer 2.26 upgraded underlying Unidata NetCDF libraries, from 4.x to 5.x, which includes internal changes to how GRIB files are intepreted (mapping tables and GRIB parameters interpretation changes). 

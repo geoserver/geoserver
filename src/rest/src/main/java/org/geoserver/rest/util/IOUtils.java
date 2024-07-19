@@ -38,6 +38,8 @@ import java.util.zip.ZipFile;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.platform.resource.Resource;
+import org.geotools.data.ows.URLCheckerException;
+import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.URLs;
 
 /**
@@ -522,13 +524,31 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
     public static File URLToFile(URL fileURL) {
         inputNotNull(fileURL);
         try {
-
+            URLCheckers.confirm(fileURL);
             return URLs.urlToFile(fileURL);
-
         } catch (Throwable t) {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, t.getLocalizedMessage(), t);
         }
         return null;
+    }
+
+    /**
+     * Upload URL contents to resource location.
+     *
+     * @param fileURL URL contents to upload into file
+     * @param newFile New file location
+     * @throws IOException Any I/O errors that occur.
+     * @throws URLCheckerException if the URL is not allowed for use.
+     */
+    public static void upload(URL fileURL, Resource newFile)
+            throws IOException, URLCheckerException {
+        // Check URL location first
+        URLCheckers.confirm(fileURL);
+        // Now do the real upload
+        try (InputStream inputStream = fileURL.openStream();
+                OutputStream outStream = newFile.out()) {
+            copyStream(inputStream, outStream, true, true);
+        }
     }
 
     /**

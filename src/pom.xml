@@ -706,6 +706,11 @@
         <version>${hibernate-generic-dao-version}</version>
       </dependency>
       <dependency>
+        <groupId>net.sf.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>1.8</version>
+      </dependency>
+      <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>${mysql.jdbc.version}</version>

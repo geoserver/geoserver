@@ -203,7 +203,7 @@ public class WMSStoreController extends AbstractCatalogController {
         }
         clear(cs);
 
-        LOGGER.info("DELETE wms store " + workspaceName + ":s" + workspaceName);
+        LOGGER.info("DELETE wms store " + workspaceName + "," + storeName);
     }
 
     void clear(WMSStoreInfo info) {

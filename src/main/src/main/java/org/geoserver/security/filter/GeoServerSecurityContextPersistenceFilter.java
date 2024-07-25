@@ -7,6 +7,7 @@
 package org.geoserver.security.filter;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -67,8 +68,9 @@ public class GeoServerSecurityContextPersistenceFilter extends GeoServerComposit
                         }
                         request.setAttribute(FILTER_APPLIED, Boolean.TRUE);
                         try {
-                            SecurityContext securityContext = repo.loadContext(request).get();
-                            SecurityContextHolder.setContext(securityContext);
+                            Supplier<SecurityContext> securityContext =
+                                    repo.loadDeferredContext(request);
+                            SecurityContextHolder.setDeferredContext(securityContext);
                             chain.doFilter(request, response);
                         } finally {
                             SecurityContext contextAfterChainExecution =

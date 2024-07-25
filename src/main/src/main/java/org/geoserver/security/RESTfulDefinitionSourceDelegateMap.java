@@ -15,18 +15,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 /** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
-public class RESTfulPathBasedFilterInvocationDefinitionMap
-        implements FilterInvocationSecurityMetadataSource {
+public class RESTfulDefinitionSourceDelegateMap {
 
-    private static Logger log =
-            Logging.getLogger(RESTfulPathBasedFilterInvocationDefinitionMap.class);
+    private static Logger log = Logging.getLogger(RESTfulDefinitionSourceDelegateMap.class);
 
     // ~ Instance fields
     // ================================================================================================
@@ -34,13 +30,6 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
     private Collection<EntryHolder> requestMap = new ArrayList<>();
     private PathMatcher pathMatcher = new AntPathMatcher();
     private boolean convertUrlToLowercaseBeforeComparison = false;
-
-    // ~ Methods
-    // ========================================================================================================
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return FilterInvocation.class.isAssignableFrom(clazz);
-    }
 
     public void addSecureUrl(
             String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
@@ -57,12 +46,6 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         }
     }
 
-    public void addSecureUrl(String antPath, Collection<ConfigAttribute> attrs) {
-        throw new IllegalArgumentException(
-                "addSecureUrl(String, Collection<ConfigAttribute> ) is INVALID for RESTfulDefinitionSource");
-    }
-
-    @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         Set<ConfigAttribute> set = new HashSet<>();
 
@@ -74,10 +57,6 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         // return set.iterator();
     }
 
-    public int getMapSize() {
-        return this.requestMap.size();
-    }
-
     public boolean isConvertUrlToLowercaseBeforeComparison() {
         return convertUrlToLowercaseBeforeComparison;
     }
@@ -85,24 +64,6 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
     public void setConvertUrlToLowercaseBeforeComparison(
             boolean convertUrlToLowercaseBeforeComparison) {
         this.convertUrlToLowercaseBeforeComparison = convertUrlToLowercaseBeforeComparison;
-    }
-
-    @Override
-    public Collection<ConfigAttribute> getAttributes(Object object)
-            throws IllegalArgumentException {
-        if ((object == null) || !this.supports(object.getClass())) {
-            throw new IllegalArgumentException("Object must be a FilterInvocation");
-        }
-
-        String url = ((FilterInvocation) object).getRequestUrl();
-        String method = ((FilterInvocation) object).getHttpRequest().getMethod();
-
-        return this.lookupAttributes(url, method);
-    }
-
-    public Collection<ConfigAttribute> lookupAttributes(String url) {
-        throw new IllegalArgumentException(
-                "lookupAttributes(String url) is INVALID for RESTfulDefinitionSource");
     }
 
     public Collection<ConfigAttribute> lookupAttributes(String url, String httpMethod) {
@@ -127,9 +88,9 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             }
         }
 
-        Iterator iter = requestMap.iterator();
+        Iterator<EntryHolder> iter = requestMap.iterator();
         while (iter.hasNext()) {
-            EntryHolder entryHolder = (EntryHolder) iter.next();
+            EntryHolder entryHolder = iter.next();
 
             String antPath = entryHolder.getAntPath();
             String[] methodList = entryHolder.getHttpMethodList();

@@ -96,9 +96,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
     private static final List<String> AA_SETTINGS = Arrays.asList(AA_NONE, AA_TEXT, AA_FULL);
 
-    private static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
-    private static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION =
-            "advancedProjectionHandling";
+    public static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
+    public static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION = "advancedProjectionHandling";
     private static final String ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION =
             "advancedProjectionHandlingDensification";
     private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
@@ -638,7 +637,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return new StreamingRenderer();
     }
 
-    private boolean getFormatOptionAsBoolean(
+    public static boolean getFormatOptionAsBoolean(
             final GetMapRequest request, final String formatOptionKey) {
         if (request.getFormatOptions().get(formatOptionKey) != null) {
             String formatOptionValue = (String) request.getFormatOptions().get(formatOptionKey);

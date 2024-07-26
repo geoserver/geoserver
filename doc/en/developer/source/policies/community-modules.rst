@@ -411,8 +411,8 @@ The following outlines the steps to demote a module to community status:
 
 #. **Call for a maintainer**
 
-   Before demoting the module first try to find a new maintainer for it. Send
-   an email to both the developer and user list advertising the module is in 
+   Before demoting the module first try to find a new maintainer for it. Both send
+   an email to the developer list and create a post on the Discourse user group advertising the module is in 
    danger of getting pushed back to community status. Wait a few days to see 
    if anyone steps up to take on maintainership.
 
@@ -439,9 +439,9 @@ appreciated.
 
    The more time you can give to the project in lieu of your departure the 
    better. Send an email to the developers list as soon as you know you will 
-   be dropping off
+   be dropping off.
 
 #. **Find a new maintainer**
 
    While often not possible, any attempt to find a new maintainer for the 
-   module is greatly appreciated.
+   module is greatly appreciated - maybe someone who has contributed to the module before.

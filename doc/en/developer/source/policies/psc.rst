@@ -106,7 +106,7 @@ A GSIP proposal is NOT needed for:
 * an improvement that can go in a community module; or
 * a bug fix that doesn't rework anything substantially
 
-For minor decisions where feedback might be desired, consult the development list, or raise it in a video meeting (anyone not attending can follow up on the meeting minutes email).  The GeoServer Project recognizes that it is run those doing the work, and wish to avoid high overhead for 'getting things done'.
+For minor decisions where feedback might be desired, consult the developer mailing list, or raise it in a video meeting (anyone not attending can follow up on the meeting minutes email).  The GeoServer Project recognizes that it is run those doing the work, and wish to avoid high overhead for 'getting things done'.
 
 For these *snap decisions* that are not official GSIP proposals, everyone 'available' (those in the video meeting or who respond to an email within 4 days) are given the power to vote and decide an issue.  The same voting procedure (+1,+0,-0,-1) is used, but any decision that receives a -1 from any party present (even a  new user), should go to a GSIP.
 
@@ -125,7 +125,7 @@ Day to day project management. Duties include:
 
 **Mailing List Participation**
 
-PSC members are expected to be active on both user and developer email lists, subject to open-source mailing list etiquette of course.
+PSC members are expected to be active on both the Discourse user group and the developer mailing list, subject to open-source mailing list etiquette of course.
 
 *It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of email on the mailing lists.*
 

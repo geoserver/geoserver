@@ -24,8 +24,8 @@ To recognizing experienced providers and core contributors consistently we have 
 Core contributors: take responsibility for the project, meeting all three core responsibilities:
 
 * ``core`` demonstrating an ongoing responsibility: security email list, releases, supported extension
-* ``committer`` active development: geoserver-devel, review of pull-requests, assigned jira tickets, development activities such bug-stomps and sprint participation
-* ``support`` sustained community support: geoserver-user, review of jira, gis.stackexchange.com, something!
+* ``committer`` active development: geoserver-devel, review of pull-requests, assigned Jira tickets, development activities such bug-stomps and sprint participation
+* ``support`` sustained community support: Discourse user group, review of Jira issues, gis.stackexchange.com, something!
 
 Experienced providers: work on GeoServer when hired by customers but are not always active, demonstrating experience with a selection of the following checklist labels:
 

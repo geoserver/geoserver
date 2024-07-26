@@ -82,7 +82,7 @@ Q. Who can comment on a GSIP?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A: Anyone and everyone can comment on a GSIP including regular users, and it is
-encouraged. Comments an take place on the email lists, or as comments on the
+encouraged. Comments can take place on the developer mailing list, the Discourse user group, or as comments on the
 wiki page for the GSIP itself. Feedback from the user community is definitely
 desired so that the developers do not just making decisions in a vacuum. If you
 speak up your voice will be heard.

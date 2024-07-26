@@ -40,10 +40,11 @@ for more details.
 GeoServer uses [JIRA](https://osgeo-org.atlassian.net/projects/GEOS), hosted by 
 [Atlassian](https://www.atlassian.com/), for issue tracking.
 
-## Mailing Lists
+<a id="mailing-lists"></a> <!-- to retain the existing anchor tag -->
+## Community support
 
-The [mailing list page](https://geoserver.org/comm/) on the GeoServer web site provides
-access to the various mailing list, as well as some indication of the [code of conduct](https://geoserver.org/comm/userlist-guidelines.html) when posting to the lists
+The [Community support page](https://geoserver.org/comm/) on the GeoServer web site provides
+access to the various channels of communication, as well as some indication of the [code of conduct](https://geoserver.org/comm/userlist-guidelines.html) when posting to the groups.
 
 ## Contributing
 

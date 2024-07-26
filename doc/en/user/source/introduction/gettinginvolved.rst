@@ -23,43 +23,34 @@ Our official documentation is contained as part of our `official code repository
 
 To learn more about contributing to the GeoServer codebase, we highly recommend joining the GeoServer developers mailing list (see details below). For typos and other small changes, please see our :docguide:`Documentation Guide <quickfix.html>` for how to make quick fixes.
 
-Mailing lists
--------------
+Discourse and Mailing lists
+---------------------------
 
-GeoServer maintains two email lists:
+* The GeoServer Users mailing list has migrated to Discourse in Aug 2024.  See the `usage instructions <https://geoserver.org/comm/#discourse>`_
+* For now, the `GeoServer Developers <http://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_ mailing list remains hosted on SourceForge.
 
-* `GeoServer Users <http://lists.sourceforge.net/lists/listinfo/geoserver-users>`_
-* `GeoServer Developers <http://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_
-
-The Users list is mainly for those who have questions relating to the use of GeoServer, and the Developers list is for more code-specific and roadmap-based discussions. If you see a question asked on these lists that you know the answer to, please respond!
+The Users group is mainly for those who have questions relating to the use of GeoServer, and the Developers list is for more code-specific and roadmap-based discussions. If you see a question asked on these lists that you know the answer to, please respond!
 
 These lists are publicly available and are a great resource for those who are new to GeoServer, who need a question answered, or who are interested in contributing code. 
-
-IRC
----
-
-Users can join the IRC channel, `#geoserver <irc://irc.freenode.net/geoserver>`_, on the `Freenode <http://freenode.net>`_ network, in order to collaborate in real time. GeoServer developers occasionally will be in this channel as well.
 
 Bug tracking
 ------------
 
-If you have a problem when working with GeoServer, then please let us know through the mailing lists. GeoServer uses `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ , a bug tracking website, to manage issue reports. In order to submit an issue, you'll need to `create an account first <https://osgeo-org.atlassian.net/admin/users/sign-up>`_.
+If you have a problem when working with GeoServer, then please let us know through the mailing lists. GeoServer uses `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`_ , a bug tracking website, to manage issue reports. In order to submit an issue, you'll need to `create an account first <https://osgeo-org.atlassian.net/admin/users/sign-up>`_.
 
-Everyone is encouraged to submit patches and, if possible, fix issues as well. We welcome patches through JIRA, or pull requests to GitHub.
+Everyone is encouraged to submit patches and, if possible, fix issues as well. We welcome patches through Jira, or pull requests to GitHub.
 
 Responsible Disclosure
 
 .. warning::
 
-   If you encounter a security vulnerability in GeoServer please take care to report the issue in a responsible fashion:
+   If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
 
-   * Keep exploit details out of issue report (send to developer/PSC privately – just like you would do for sensitive sample data)
-   * Mark the issue as a vulnerability.
+   * Keep exploit details out of mailing list and issue tracker (send details to geoserver-security@lists.osgeo.org)
    * Be prepared to work with Project Steering Committee (PSC) members on a solution
+   * Keep in mind PSC members are volunteers and an extensive fix may require fundraising / resources
 
-   Keep in mind PSC members are volunteers and an extensive fix may require fundraising / resources
-
-If you are not in position to communicate in public please consider commercial support, contacting a PSC member, or reaching us via the Open Source Geospatial Foundation at info@osgeo.org.
+If you are not in position to communicate in public, please consider commercial support, contacting a PSC member, or reaching us via the Open Source Geospatial Foundation at info@osgeo.org.
 
 Translation
 -----------
@@ -69,7 +60,7 @@ We would like GeoServer available in as many languages as possible. The two area
 Suggest improvements
 --------------------
 
-If you have suggestions as to how we can make GeoServer better, we would love to hear them. You can contact us through the mailing lists or submit a feature request through JIRA.
+If you have suggestions as to how we can make GeoServer better, we would love to hear them. You can contact us through the mailing lists or submit a feature request through Jira.
 
 Spread the word
 ---------------

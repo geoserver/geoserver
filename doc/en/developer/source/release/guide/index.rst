@@ -16,7 +16,7 @@ corresponding GeoTools and GeoWebCache releases. Therefore, before you start you
 coordinate a release with these projects, either performing the release yourself or
 asking a volunteer to perform the release.
 
-* `GeoTools Release Guide <http://docs.geotools.org/latest/developer/procedures/release.html>`_
+* `GeoTools Release Guide <https://docs.geotools.org/latest/developer/procedures/release.html>`_
 * `GeoWebCache Release repo README.md <https://github.com/GeoWebCache/gwc-release>`_
 
 Notify developer list
@@ -29,9 +29,9 @@ Prerequisites
 
 The following are necessary to perform a GeoServer release:
 
-#. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
-#. Build access to `Jenkins <http://build.geoserver.org/jenkins/>`_
-#. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
+#. Commit access to the GeoServer `Git repository <https://github.com/geoserver/geoserver>`_
+#. Build access to `Jenkins <https://build.geoserver.org/jenkins/>`_
+#. Edit access to the GeoServer `Blog <https://blog.geoserver.org>`_
 #. Administration rights to GeoServer `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
 
@@ -135,7 +135,7 @@ When creating the first release candidate of a series, there are some extra step
 * Add the new version to the documentation index (``doc/en/index.html``) just after line 105, e.g.::
 
     <tr>
-      <td><strong><a href="http://geoserver.org/release/2.12.x/">2.12.x</a></strong></td>
+      <td><strong><a href="https://geoserver.org/release/2.12.x/">2.12.x</a></strong></td>
       <td><a href="2.12.x/en/user/">User Manual</a></td>
       <td><a href="2.12.x/en/developer/">Developer Manual</a></td>
     </tr>
@@ -230,9 +230,9 @@ Run the `geoserver-release-publish <https://build.geoserver.org/view/geoserver/j
 
 This job will rsync all the artifacts located at::
 
-     http://build.geoserver.org/geoserver/release/<RELEASE>
+     https://build.geoserver.org/geoserver/release/<RELEASE>
 
-to the SourceForge FRS server. Navigate to `SourceForge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be a SourceForge admin user) on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms. This does not apply to maintenance or support releases.
+to the SourceForge FRS server. Navigate to `SourceForge <https://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be a SourceForge admin user) on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms. This does not apply to maintenance or support releases.
 
 Release notes
 -------------
@@ -298,7 +298,7 @@ Publish JIRA markdown release notes to GitHub tag:
 Create the download page
 ------------------------
 
-The `GeoServer website <http://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a release announcement.
+The `GeoServer website <https://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a release announcement.
 
 The announcement page header fields include the information required to generate a download page for the release. 
 
@@ -310,7 +310,7 @@ Mailing lists
 
 .. note:: This announcement should be made for all releases, including release candidates.
 
-Send an email to both the developers list and users list announcing the
+Send both an email to the Developers list and post an announcement on the Discourse Users group announcing the
 release. The message should be relatively short. You can base it on the blog post.
 The following is an example::
 
@@ -320,7 +320,7 @@ The following is an example::
   
    The release is available for download from:
 
-   http://geoserver.org/release/2.5.1/
+   https://geoserver.org/release/2.5.1/
 
    GeoServer 2.5.1 is the next stable release of GeoServer and is recommended for production deployment.
 

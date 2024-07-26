@@ -6,8 +6,8 @@ info:
   description: An URL External Access Check is the check performed on user provided URLs that GeoServer will use to access remote resources.
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

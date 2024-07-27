@@ -8,7 +8,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -74,13 +74,13 @@ public class IOUtilsTest {
             };
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setupURLCheckers() throws Exception {
         URLCheckers.register(opengisChecker);
         URLCheckers.register(tmpChecker);
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void teardownURLCheckers() throws Exception {
         URLCheckers.deregister(opengisChecker);
         URLCheckers.deregister(tmpChecker);
     }
@@ -119,7 +119,7 @@ public class IOUtilsTest {
         URL uploadURL =
                 new URL("https://schemas.opengis.net/movingfeatures/1.0/examples/vehicles.xml");
         IOUtils.upload(uploadURL, newFile);
-        assertTrue("uploaded", newFile.getType() == Resource.Type.RESOURCE);
+        assertSame("uploaded", newFile.getType(), Resource.Type.RESOURCE);
 
         URL osgeoURL = new URL("https://geoserver.org/img/osgeo-logo.png");
         Resource logoFile = new GeoServerResourceLoader(destDir).get("osgeo-logo.png");
@@ -128,6 +128,6 @@ public class IOUtilsTest {
             fail("geoserver.org blocked");
         } catch (Exception failed) {
         }
-        assertTrue("blocked", logoFile.getType() == Resource.Type.UNDEFINED);
+        assertSame("blocked", logoFile.getType(), Resource.Type.UNDEFINED);
     }
 }

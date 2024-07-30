@@ -411,10 +411,10 @@ The following outlines the steps to demote a module to community status:
 
 #. **Call for a maintainer**
 
-   Before demoting the module first try to find a new maintainer for it. Both send
-   an email to the developer list and create a post on the Discourse user group advertising the module is in 
-   danger of getting pushed back to community status. Wait a few days to see 
-   if anyone steps up to take on maintainership.
+   Before demoting the module first try to find a new maintainer for it. Both notify
+   GeoServer Devel mailing list and GeoServer User forum that module is in 
+   danger of reverting to community status. Wait a few days to see 
+   if anyone steps up to take on maintainership or provide funding.
 
 #. **Move the module and update the build**
 

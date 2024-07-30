@@ -125,9 +125,9 @@ Day to day project management. Duties include:
 
 **Mailing List Participation**
 
-PSC members are expected to be active on both the Discourse user group and the developer mailing list, subject to open-source mailing list etiquette of course.
+PSC members are expected to be active on both the GeoServer User forum and the GeoServer Devel mailing list, subject to open-source mailing list etiquette of course.
 
-*It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of email on the mailing lists.*
+*It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of communication.*
 
 .. note::
    

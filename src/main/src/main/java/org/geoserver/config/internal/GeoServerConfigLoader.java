@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.internal;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,12 +19,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Info;
-import org.geoserver.catalog.datadir.internal.DataDirectoryWalker.WorkspaceDirectory;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
-import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.internal.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
@@ -32,6 +32,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
+/** @since 2.26 */
 class GeoServerConfigLoader {
 
     private static final Logger LOGGER =
@@ -40,42 +41,38 @@ class GeoServerConfigLoader {
     private final AtomicLong readFileCount = new AtomicLong();
 
     private final DataDirectoryWalker fileWalk;
-    private final XStreamLoader xstreamLoader;
     private final ExecutorService executor;
-    private final GeoServerImpl geoServer;
+    private final GeoServer geoServer;
 
     private FileSystemResourceStore resourceStore;
     private List<XStreamServiceLoader<ServiceInfo>> serviceLoaders;
 
     public GeoServerConfigLoader(
+            GeoServer target,
             DataDirectoryWalker fileWalk,
-            XStreamLoader xstreamLoader,
             ExecutorService executor,
-            GeoServerImpl gs,
             FileSystemResourceStore resourceStore,
             List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
 
         requireNonNull(fileWalk);
-        requireNonNull(xstreamLoader);
         requireNonNull(executor);
-        requireNonNull(gs);
+        requireNonNull(target);
         requireNonNull(resourceStore);
         requireNonNull(serviceLoaders);
 
         this.fileWalk = fileWalk;
-        this.geoServer = gs;
+        this.geoServer = target;
         this.resourceStore = resourceStore;
-        this.xstreamLoader = xstreamLoader;
         this.executor = executor;
         this.serviceLoaders = serviceLoaders;
     }
 
-    public GeoServerImpl loadGeoServer() throws Exception {
-        Future<GeoServerImpl> task = executor.submit(this::readGeoServer);
+    public GeoServer loadGeoServer() throws Exception {
+        Future<GeoServer> task = executor.submit(this::readGeoServer);
         try {
             return task.get();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw e;
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof Exception) throw (Exception) cause;
@@ -84,7 +81,7 @@ class GeoServerConfigLoader {
         }
     }
 
-    private GeoServerImpl readGeoServer() {
+    private GeoServer readGeoServer() {
         readFileCount.set(0);
 
         Optional<GeoServerInfo> global = fileWalk.gsGlobal().flatMap(this::depersist);
@@ -117,7 +114,7 @@ class GeoServerConfigLoader {
     private void loadRootServices() {
         Resource baseDirectory = resourceStore.get("");
         for (XStreamServiceLoader<ServiceInfo> loader : serviceLoaders) {
-            loadService(loader, baseDirectory).ifPresent(this::save);
+            loadService(loader, baseDirectory).ifPresent(this::add);
         }
     }
 
@@ -136,7 +133,7 @@ class GeoServerConfigLoader {
                 .map(Optional::get)
                 .peek(s -> warnIfWorkspaceIsNull(s, wsName))
                 .filter(service -> null != service.getWorkspace())
-                .map(this::save)
+                .map(this::add)
                 .count();
     }
 
@@ -154,7 +151,7 @@ class GeoServerConfigLoader {
         try {
             s = serviceLoader.load(geoServer, directory);
             this.readFileCount.incrementAndGet();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             if (Resources.exists(directory)) {
                 severe(
                         "Failed to load the service configuration in directory: {0} with loader for {1}",
@@ -196,21 +193,21 @@ class GeoServerConfigLoader {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .map(SettingsInfo.class::cast)
-                        .map(this::save)
+                        .map(this::add)
                         .filter(Optional::isPresent)
                         .count();
         config("Loaded {0} workspace-specific settings.", count);
     }
 
-    private Optional<SettingsInfo> save(SettingsInfo settings) {
-        return save(settings, geoServer::add);
+    private Optional<SettingsInfo> add(SettingsInfo settings) {
+        return add(settings, geoServer::add);
     }
 
-    private Optional<ServiceInfo> save(ServiceInfo service) {
-        return save(service, geoServer::add);
+    private Optional<ServiceInfo> add(ServiceInfo service) {
+        return add(service, geoServer::add);
     }
 
-    private <I extends Info> Optional<I> save(I info, Consumer<I> saver) {
+    private <I extends Info> Optional<I> add(I info, Consumer<I> saver) {
         try {
             saver.accept(info);
             return Optional.of(info);
@@ -231,7 +228,7 @@ class GeoServerConfigLoader {
 
     private <C extends Info> Optional<C> depersist(Path file) {
         Catalog catalog = geoServer.getCatalog();
-        Optional<C> info = xstreamLoader.depersist(file, catalog);
+        Optional<C> info = XStreamLoader.depersist(file, catalog);
         if (info.isPresent()) readFileCount.incrementAndGet();
         return info;
     }

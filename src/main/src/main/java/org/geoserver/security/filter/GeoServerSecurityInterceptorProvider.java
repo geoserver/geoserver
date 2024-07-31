@@ -29,7 +29,7 @@ public class GeoServerSecurityInterceptorProvider extends AbstractFilterProvider
     }
 
     @Override
-    public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
+    public GeoServerSecurityInterceptorFilter createFilter(SecurityNamedServiceConfig config) {
         return new GeoServerSecurityInterceptorFilter();
     }
 }

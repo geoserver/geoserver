@@ -31,6 +31,7 @@ import org.geoserver.AtomLink;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -45,6 +46,8 @@ import org.geoserver.rest.converters.XStreamJSONMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.converters.XStreamXMLMessageConverter;
 import org.geoserver.rest.util.RESTUtils;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,13 +88,19 @@ public class ResourceController extends RestBaseController {
     @Autowired
     public ResourceController(@Qualifier("resourceStore") ResourceStoreFactory factory)
             throws Exception {
-        super();
-        this.resources = factory.getObject();
+        this(factory.getObject());
     }
 
     public ResourceController(ResourceStore store) {
         super();
-        this.resources = store;
+        this.resources = secureResourceStore(store);
+    }
+
+    private ResourceStore secureResourceStore(ResourceStore store) {
+        SecureCatalogImpl secureCatalog = GeoServerExtensions.bean(SecureCatalogImpl.class);
+        ResourceAccessManager am =
+                null == secureCatalog ? null : secureCatalog.getResourceAccessManager();
+        return null == am ? store : new SecureResourceStore(store);
     }
 
     /** Workaround to support format parameter when extension is in path */
@@ -232,7 +241,7 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     * Actual get implementation handles a distrubing number of cases.
+     * Actual get implementation handles a disturbing number of cases.
      *
      * <p>All the inner Resource classes are data transfer object for representing resource
      * metadata, this method also can return direct access to resource contents.

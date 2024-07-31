@@ -7,7 +7,7 @@ GeoServer exists because of the efforts of people like you.
 
 There are many ways that you can help out with the GeoServer project. GeoServer fully embraces an open source development model that does not see a split between user and developer, producer and consumer, but instead sees everyone as a valuable contributor.
 
-.. seealso:: GeoServer opperates with full transparency with `public policies and procedures <https://docs.geoserver.org/latest/en/developer/policies/index.html>`__.
+GeoServer opperates with full transparency with public `policies and procedures <https://docs.geoserver.org/latest/en/developer/policies/index.html>`__. We look forward to working with you.
 
 Development
 -----------
@@ -16,9 +16,7 @@ Helping to develop GeoServer is the obvious way to help out. Developers usually 
 
 You can find the project on `github.com/geoserver <https://www.github.com/geoserver/>`_. Anyone can submit pull requests, following our `contributing policy <https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md>`__, which will be evaluated by the team.
 
-.. seealso::
-
-   To learn more about contributing to the GeoServer codebase, we recommend reading the `Developers Guide <https://docs.geoserver.org/latest/en/developer/>`__ and joining GeoServer Developers (see below).
+To learn more about contributing to the GeoServer codebase, we recommend reading the `Developers Guide <https://docs.geoserver.org/latest/en/developer/>`__ and joining GeoServer Developers (see below).
 
 .. note:: 
    
@@ -51,7 +49,7 @@ This is an open communication channels are publicly available and are a great re
 
 .. note::
    
-   The forum includes the compelte `geoserver-users <https://sourceforge.net/p/geoserver/mailman/geoserver-users/>`__ Source Forge as a searchable archive going back to 2004.
+   The forum includes the complete `geoserver-users <https://sourceforge.net/p/geoserver/mailman/geoserver-users/>`__ Source Forge as a searchable archive going back to 2004.
 
 GeoServer Developer
 -------------------

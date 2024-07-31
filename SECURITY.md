@@ -20,7 +20,7 @@ You can volunteer on the developer list to make additional releases, or engage w
 
 If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
 
-1. Keep exploit details out of public forums, mailing lists and issue trackers.
+1. Keep exploit details out of public forums, mailing lists, and issue tracker.
 
 2. There are two options to report a security vulnerability:
 

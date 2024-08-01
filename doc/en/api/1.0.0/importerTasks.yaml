@@ -6,8 +6,8 @@ info:
   description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The tasks endpoint controls individual tasks within an import job. The importer extension is an optional install and may not be available on all deployments of GeoServer
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

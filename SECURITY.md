@@ -20,7 +20,7 @@ You can volunteer on the developer list to make additional releases, or engage w
 
 If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
 
-1. Keep exploit details out of public mailing lists and issue tracker.
+1. Keep exploit details out of public forums, mailing lists, and issue tracker.
 
 2. There are two options to report a security vulnerability:
 
@@ -33,7 +33,7 @@ If you encounter a security vulnerability in GeoServer please take care to repor
   
    * To report via GitHub:
 
-     Navigate to [security](https://github.com/geoserver/geoserver/security) page, use link for *Private vulnerability reporting*.
+     Navigate to [security](https://github.com/geoserver/geoserver/security) page, use link for [Private vulnerability reporting](https://github.com/geoserver/geoserver/security/advisories/new).
 
      For more information see [GitHub documentation](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability).
 

@@ -6,8 +6,8 @@ info:
   description: A style describes how a resource is symbolized or rendered by the Web Map Service.
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

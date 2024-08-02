@@ -149,6 +149,8 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.urlchecks.AbstractURLCheck;
+import org.geoserver.security.urlchecks.RegexURLCheck;
 import org.geotools.api.coverage.grid.GridGeometry;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -356,6 +358,8 @@ public class XStreamPersister {
         xs.aliasField("abstract", ResourceInfoImpl.class, "_abstract");
         xs.alias("AuthorityURL", AuthorityURLInfo.class);
         xs.alias("Identifier", LayerIdentifierInfo.class);
+        xs.alias("urlCheck", AbstractURLCheck.class);
+        xs.alias("regexUrlCheck", RegexURLCheck.class);
 
         // GeoServerInfo
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");

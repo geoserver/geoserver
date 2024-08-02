@@ -12,7 +12,7 @@ Each GeoServer release is supported with bug fixes for a year, with releases mad
 
 This approach provides ample time for upgrading ensuring you are always working with a supported GeoServer release.
 
-If your organisation is making use of a GeoServer version that is no longer in use by the community all is not lost.
+If your organization is making use of a GeoServer version that is no longer in use by the community all is not lost.
 You can volunteer on the developer list to make additional releases, or engage with one of our
 [Commercial Support](http://geoserver.org/support/) providers.
 
@@ -20,7 +20,7 @@ You can volunteer on the developer list to make additional releases, or engage w
 
 If you encounter a security vulnerability in GeoServer please take care to report in a responsible fashion:
 
-1. Keep exploit details out of public mailing lists and issue tracker.
+1. Keep exploit details out of public forums, mailing lists, and issue tracker.
 
 2. There are two options to report a security vulnerability:
 
@@ -33,7 +33,7 @@ If you encounter a security vulnerability in GeoServer please take care to repor
   
    * To report via GitHub:
 
-     Navigate to [security](https://github.com/geoserver/geoserver/security) page, use link for *Private vulnerability reporting*.
+     Navigate to [security](https://github.com/geoserver/geoserver/security) page, use link for [Private vulnerability reporting](https://github.com/geoserver/geoserver/security/advisories/new).
 
      For more information see [GitHub documentation](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability).
 
@@ -53,6 +53,6 @@ Disclosure policy:
 4. A fix is included for the "stable" and "maintenance" downloads ([released as scheduled](https://github.com/geoserver/geoserver/wiki/Release-Schedule), or issued via emergency update)
 6. The CVE vulnerability is published with mitigation and patch instructions
 
-This represents a balance between transparency and particpation that does not overwhelm particpants. 
+This represents a balance between transparency and participation that does not overwhelm participants. 
 Those seeking greater visibility are encouraged to volunteer with the geoserver-security list;
 or work with one of the [commercial support providers](https://geoserver.org/support/) who participate on behalf of their customers.

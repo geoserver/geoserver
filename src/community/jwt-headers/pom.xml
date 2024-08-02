@@ -23,6 +23,7 @@
     <module>jwt-headers-util</module>
     <module>gs-jwt-headers</module>
   </modules>
+
   <dependencies>
 
     <!--
@@ -50,5 +51,4 @@
     </profile>
 
   </profiles>
-
 </project>

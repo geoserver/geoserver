@@ -6,6 +6,7 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.rest.catalog.StyleController.SLD_TEMP_PREFIX;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1258,7 +1259,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPostToWorkspaceSLDPackage() throws Exception {
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        int initialSize = tempDir.listFiles().length;
+        int initialSize = tempDir.listFiles(f -> f.getName().startsWith(SLD_TEMP_PREFIX)).length;
 
         Catalog cat = getCatalog();
         assertNull(cat.getStyleByName("gs", "foo"));
@@ -1289,7 +1290,8 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
         assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
         assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
-        assertEquals(initialSize, tempDir.listFiles().length);
+        int finalSize = tempDir.listFiles(f -> f.getName().startsWith(SLD_TEMP_PREFIX)).length;
+        assertEquals(initialSize, finalSize);
     }
 
     @Test

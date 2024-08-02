@@ -55,7 +55,7 @@ public class WcsXmlReader extends XmlRequestReader {
         } catch (Exception e) {
             throw new WcsException(
                     "Parsing failed, the xml request is most probably not compliant to the wcs 2.0.1 schema",
-                    e);
+                    cleanException(e));
         }
 
         return parsed;

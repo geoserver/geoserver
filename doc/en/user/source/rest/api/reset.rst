@@ -3,7 +3,7 @@
 Resource reset 
 ==============
 
-Resets all store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
+Resets all authentication, store, raster, and schema caches. This operation is used to force GeoServer to drop all caches and store connections and reconnect to each of them the next time they are needed by a request. This is useful in case the stores themselves cache some information about the data structures they manage that may have changed in the meantime.
 
 ``/reset``
 ----------
@@ -22,12 +22,12 @@ Resets all store, raster, and schema caches. This operation is used to force Geo
      - 
      - 
    * - POST
-     - Reset all store, raster, and schema caches
+     - Reset all authentication, store, raster, and schema caches
      - 200
      - 
      - 
    * - PUT
-     - Reset all store, raster, and schema caches
+     - Reset all authentication, store, raster, and schema caches
      - 200
      - 
      - 

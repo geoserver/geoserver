@@ -1,0 +1,29 @@
+<assembly>
+    <id>gs-jwt-headers</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+          <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+        <fileSet>
+            <directory>target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>jwt-headers-util*</include>
+                <include>nimbus-jose-jwt-9.37.3*</include>
+                <include>json-path*</include>
+                <include>guava*</include>
+                <include>json-smart*.jar</include>
+                <include>accessors-smart-*.jar</include>
+                <include>asm-*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

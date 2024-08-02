@@ -36,6 +36,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
+import org.geotools.data.ows.URLCheckerException;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
@@ -132,7 +133,7 @@ public class RESTUtils {
     }
 
     /**
-     * Reads a url from the body of a request, reads the contents of the url and writes it to a
+     * Reads an url from the body of a request, reads the contents of the url and writes it to a
      * file.
      *
      * @param fileName The name of the file to write.
@@ -140,17 +141,17 @@ public class RESTUtils {
      * @param request The request.
      * @return The file object representing the newly written file.
      * @throws IOException Any I/O errors that occur.
-     *     <p>TODO: move this to IOUtils
+     * @throws URLCheckerException if the URL is not allowed for use.
      */
     public static org.geoserver.platform.resource.Resource handleURLUpload(
             String fileName,
             String workSpace,
             org.geoserver.platform.resource.Resource directory,
             HttpServletRequest request)
-            throws IOException {
+            throws IOException, URLCheckerException {
         // Initial remapping of the input file
         StringBuilder itemPath = new StringBuilder(fileName);
-        // Mediatype associated to the input file
+        // Media type associated to the input file
         MediaType mediaType =
                 request.getContentType() != null
                         ? MediaType.valueOf(request.getContentType())
@@ -175,22 +176,15 @@ public class RESTUtils {
         final String stringURL = IOUtils.getStringFromStream(inStream);
         final URL fileURL = new URL(stringURL);
 
-        ////
-        //
         // Now do the real upload
-        //
-        ////
-        try (InputStream inputStream = fileURL.openStream();
-                OutputStream outStream = newFile.out()) {
-            IOUtils.copyStream(inputStream, outStream, true, true);
-        }
+        IOUtils.upload(fileURL, newFile);
 
         return newFile;
     }
 
     /** Handles an upload using the EXTERNAL method. */
     public static org.geoserver.platform.resource.Resource handleEXTERNALUpload(
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request) throws IOException, URLCheckerException {
         // get the URL for this file to upload
         final String stringURL;
         File inputFile;

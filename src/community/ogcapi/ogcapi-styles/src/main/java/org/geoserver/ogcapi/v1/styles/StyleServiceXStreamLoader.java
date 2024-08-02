@@ -20,7 +20,11 @@ public class StyleServiceXStreamLoader extends XStreamServiceLoader<StylesServic
     protected StylesServiceInfo createServiceFromScratch(GeoServer gs) {
         StylesServiceInfoImpl info = new StylesServiceInfoImpl();
         info.setName("styles");
-        info.setTitle("Styles server");
+        if (info.getTitle() == null) {
+            info.setTitle("Styles Service");
+            info.setAbstract(
+                    "OGCAPI-Styles is a Web API that enables map servers, clients as well as visual style editors, to manage and fetch styles that consist of symbolizing instructions that can be applied by a rendering engine on features and/or coverages.");
+        }
         return info;
     }
 

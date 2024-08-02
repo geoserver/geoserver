@@ -7,8 +7,12 @@ package org.geoserver.mapml;
 import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 
+import freemarker.template.TemplateNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,12 +23,14 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
+import org.geoserver.mapml.template.MapMLMapTemplate;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.HeadContent;
@@ -37,6 +43,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -56,6 +63,16 @@ public class MapMLFeatureUtil {
     public static final String STYLE_CLASS_PREFIX = ".";
     public static final String STYLE_CLASS_DELIMITER = " ";
     public static final String BBOX_DISPLAY_NONE = ".bbox {display:none}";
+    private static final MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
+    private static final MapMLEncoder encoder;
+
+    static {
+        try {
+            encoder = new MapMLEncoder();
+        } catch (JAXBException e) {
+            throw new ServiceException(e);
+        }
+    }
 
     /**
      * Convert a feature collection to a MapML document
@@ -91,6 +108,24 @@ public class MapMLFeatureUtil {
             throw new ServiceException("MapML OutputFormat does not support Complex Features.");
         }
         SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
+        boolean hasTemplate = false;
+        boolean hasHeadTemplate = false;
+        try {
+            if (!mapMLMapTemplate.isTemplateEmpty(
+                    fc.getSchema(), MAPML_FEATURE_HEAD_FTL, FeatureTemplate.class, "0\n")) {
+                hasHeadTemplate = true;
+            }
+        } catch (TemplateNotFoundException e) {
+            LOGGER.log(Level.FINEST, MAPML_FEATURE_HEAD_FTL + " Template not found", e);
+        }
+        try {
+            if (!mapMLMapTemplate.isTemplateEmpty(
+                    fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
+                hasTemplate = true;
+            }
+        } catch (TemplateNotFoundException e) {
+            LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
+        }
 
         ResourceInfo resourceInfo = layerInfo.getResource();
         MetadataMap layerMeta = resourceInfo.getMetadata();
@@ -132,7 +167,12 @@ public class MapMLFeatureUtil {
         if (!skipHeadStyles) {
             String style = getCSSStylesFull(styles);
             head.setStyle(style);
+            if (hasHeadTemplate) {
+                getInterpolatedStylesFromTemplate(fc)
+                        .ifPresent(interpolated -> appendTemplateCSSStyle(head, interpolated));
+            }
         }
+
         String fCaptionTemplate = layerMeta.get("mapml.featureCaption", String.class);
         mapml.setHead(head);
 
@@ -151,23 +191,80 @@ public class MapMLFeatureUtil {
         try (SimpleFeatureIterator iterator = fc.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
+                Optional<Mapml> interpolatedOptional = Optional.empty();
+                if (hasTemplate) {
+                    interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+                }
                 // convert feature to xml
                 if (styles != null) {
                     List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
                     Optional<Feature> f =
                             featureBuilder.buildFeature(
-                                    feature, fCaptionTemplate, applicableStyles);
+                                    feature,
+                                    fCaptionTemplate,
+                                    applicableStyles,
+                                    interpolatedOptional);
                     // feature will be skipped if geometry incompatible with style symbolizer
                     f.ifPresent(features::add);
                 } else {
                     // WFS GETFEATURE request with no styles
                     Optional<Feature> f =
-                            featureBuilder.buildFeature(feature, fCaptionTemplate, null);
+                            featureBuilder.buildFeature(
+                                    feature, fCaptionTemplate, null, interpolatedOptional);
                     f.ifPresent(features::add);
                 }
             }
         }
         return mapml;
+    }
+
+    private static Optional<Mapml> getInterpolatedFromTemplate(
+            SimpleFeatureCollection fc, SimpleFeature feature) {
+        String templateOutput = "Error parsing template output";
+        try {
+            templateOutput = mapMLMapTemplate.features(fc.getSchema(), feature);
+            Mapml out = encoder.decode(new StringReader(templateOutput));
+            return Optional.of(out);
+        } catch (Exception e) {
+            LOGGER.info(
+                    "Error unmarshalling template output for MapML features "
+                            + "Output from template: "
+                            + templateOutput
+                            + " Error: "
+                            + e.getLocalizedMessage());
+            throw new ServiceException(e, templateOutput);
+        }
+    }
+
+    /**
+     * Append the CSS style from the template to the feature
+     *
+     * @param head the head content
+     * @param interpolated the interpolated object from the template
+     */
+    private static void appendTemplateCSSStyle(HeadContent head, Mapml interpolated) {
+        if (head != null) {
+            if (interpolated.getHead() != null && interpolated.getHead().getStyle() != null) {
+                String interpolatedCSSStyle = interpolated.getHead().getStyle();
+                if (head.getStyle() == null) {
+                    head.setStyle(interpolatedCSSStyle);
+                } else {
+                    head.setStyle(head.getStyle() + " " + interpolatedCSSStyle);
+                }
+            }
+        }
+    }
+
+    private static Optional<Mapml> getInterpolatedStylesFromTemplate(SimpleFeatureCollection fc)
+            throws IOException {
+        String templateOutput = mapMLMapTemplate.featureHead(fc.getSchema());
+        StringReader reader = new StringReader(templateOutput);
+        try {
+            return Optional.of(encoder.decode(reader));
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error unmarshalling template output: " + templateOutput, e);
+            throw new ServiceException(e, templateOutput);
+        }
     }
 
     /**

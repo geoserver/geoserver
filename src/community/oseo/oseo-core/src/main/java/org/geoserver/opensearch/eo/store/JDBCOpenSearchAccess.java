@@ -4,6 +4,8 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+
 import com.google.common.base.Objects;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -85,6 +87,8 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * A data store building OpenSearch for EO records based on a wrapped data store providing all
@@ -98,6 +102,9 @@ import org.locationtech.jts.geom.Polygon;
 public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.OpenSearchAccess {
 
     static final Logger LOGGER = Logging.getLogger(JDBCOpenSearchAccess.class);
+
+    /* key to store typenames for the duration of the current request */
+    private static final String TYPENAMES = JDBCOpenSearchAccess.class.getSimpleName() + ":names";
 
     protected static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
@@ -413,6 +420,23 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     @Override
     public List<Name> getNames() throws IOException {
+        // The list of names can be requested multiple times, and involves queries due to
+        // layers configured in the OSEO database. Thus the list of names is cached in the
+        // request scope.
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            Object maybeNames = attributes.getAttribute(TYPENAMES, SCOPE_REQUEST);
+            if (maybeNames != null && maybeNames instanceof List) {
+                return (List<Name>) maybeNames;
+            }
+            List<Name> names = getNamesInternal();
+            attributes.setAttribute(TYPENAMES, names, SCOPE_REQUEST);
+            return names;
+        }
+        return getNamesInternal();
+    }
+
+    private ArrayList<Name> getNamesInternal() throws IOException {
         LinkedHashSet<Name> names = new LinkedHashSet<>();
         // add the well known ones
         names.add(collectionFeatureType.getName());

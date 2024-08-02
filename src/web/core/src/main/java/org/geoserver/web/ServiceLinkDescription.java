@@ -5,6 +5,9 @@
 package org.geoserver.web;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.geotools.util.Version;
 
@@ -21,6 +24,12 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
 
     /** Service type, example {@code WMS}, {@code WFS}, {@code Features}, ... */
     private final String serviceType;
+
+    /**
+     * For things like OGCAPI-Features, serviceType would be "WFS", however, this should be
+     * "Features" - the actual service type name. Can be null.
+     */
+    private final String specificServiceType;
 
     /** Protocol */
     private final String protocol;
@@ -49,12 +58,24 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
             String workspace,
             String layer,
             String protocol) {
+        this(serviceType, version, link, workspace, layer, protocol, null);
+    }
+
+    public ServiceLinkDescription(
+            String serviceType,
+            Version version,
+            String link,
+            String workspace,
+            String layer,
+            String protocol,
+            String specificServiceType) {
         this.serviceType = serviceType;
         this.version = version;
         this.link = link;
         this.workspace = workspace;
         this.layer = layer;
         this.protocol = protocol != null ? protocol : this.serviceType;
+        this.specificServiceType = specificServiceType;
     }
 
     /**
@@ -81,6 +102,14 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
      */
     public String getProtocol() {
         return protocol;
+    }
+
+    /**
+     * OGCAPI serviceType used for configuration, this may be different than serviceType, example
+     * {@code WFS}, used to group for heading and description information.
+     */
+    public String getSpecificServiceType() {
+        return specificServiceType;
     }
 
     /**
@@ -137,8 +166,22 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
         return Objects.hash(workspace, layer, serviceType, version, link, protocol);
     }
 
+    private static List<String> OGC_SERVICE_ORDER =
+            Collections.unmodifiableList(Arrays.asList("WMS", "WMTS", "WFS", "WCS", "WPS", "CSW"));
+
+    private boolean isOGCWebService() {
+        return OGC_SERVICE_ORDER.contains(getProtocol());
+    }
+
     @Override
     public int compareTo(ServiceLinkDescription o) {
+        // put the W* (i.e. WFS) before others (i.e. OGCAPI-Features)
+        if (this.isOGCWebService() && !o.isOGCWebService()) {
+            return -1;
+        }
+        if (!this.isOGCWebService() && o.isOGCWebService()) {
+            return 1;
+        }
         int compareProtocol = this.protocol.compareTo(o.protocol);
         int compareVersion = -this.version.compareTo(o.getVersion());
         return compareProtocol != 0 ? compareProtocol : compareVersion;

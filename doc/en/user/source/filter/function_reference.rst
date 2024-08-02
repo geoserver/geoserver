@@ -10,7 +10,7 @@ browsing to http://localhost:8080/geoserver/wfs?request=GetCapabilities
 and searching for ``ogc:Function_Names`` (WFS 1.0.0), ``ogc:FunctionNames`` (WFS 1.1.0), or ``fes:Functions`` (WFS 2.0.0) in the returned XML.  
 If a function is described in the Capabilities document but is not in this reference, 
 then it might mean that the function cannot be used for filtering, 
-or that it is new and has not been documented.  Ask for details on the user mailing list.
+or that it is new and has not been documented.  Ask for details on the Discourse user group.
 
 Unless otherwise specified, none of the filter functions in this reference are understood natively by the data stores, and thus expressions using them will be evaluated in-memory.
 

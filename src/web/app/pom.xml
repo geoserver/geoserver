@@ -1625,6 +1625,38 @@
           <artifactId>gs-web-ogcapi</artifactId>
           <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-coverages</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-features</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-images</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-maps</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-styles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-tiles</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+
       </dependencies>
     </profile>
     <profile>

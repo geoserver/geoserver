@@ -5,10 +5,12 @@
  */
 package org.geoserver.sld;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import org.geoserver.catalog.Styles;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.ProcessStandaloneSLDVisitor;
@@ -33,16 +35,19 @@ public class SLDXmlRequestReader extends XmlRequestReader {
         if (request == null) {
             throw new IllegalArgumentException("request must be not null");
         }
+        try {
+            GetMapRequest getMap = (GetMapRequest) request;
+            StyledLayerDescriptor sld =
+                    Styles.handler(getMap.getStyleFormat())
+                            .parse(reader, getMap.styleVersion(), null, null);
 
-        GetMapRequest getMap = (GetMapRequest) request;
-        StyledLayerDescriptor sld =
-                Styles.handler(getMap.getStyleFormat())
-                        .parse(reader, getMap.styleVersion(), null, null);
+            // process the sld
+            sld.accept(new ProcessStandaloneSLDVisitor(wms, getMap));
+            // GetMapKvpRequestReader.processStandaloneSld(wms, getMap, sld);
 
-        // process the sld
-        sld.accept(new ProcessStandaloneSLDVisitor(wms, getMap));
-        // GetMapKvpRequestReader.processStandaloneSld(wms, getMap, sld);
-
-        return getMap;
+            return getMap;
+        } catch (IOException e) {
+            throw new ServiceException(cleanException(e));
+        }
     }
 }

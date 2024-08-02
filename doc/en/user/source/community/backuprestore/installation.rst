@@ -24,8 +24,7 @@ To download and install the required extensions by hand:
 
 #. Restart the Application Server.
    
-#. Login to the Web Administration application. Select **Data** from the naviagion menu. Click :guilabel:`Backup and Restore` and ensure the page is rendered correctly and without errors.
+#. Login to the Web Administration application. Select **Data** from the navigation menu. Click :guilabel:`Backup and Restore` and ensure the page is rendered correctly and without errors.
 
 
 Backup and Restore plugin can be used both via user interface and via HTTP REST interface. For more details please see the next sections.
-

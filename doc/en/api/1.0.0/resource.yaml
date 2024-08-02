@@ -6,8 +6,8 @@ info:
   description: A resource is any item in the data directory that does not represent configuration. Typical resources include styles and icons.
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

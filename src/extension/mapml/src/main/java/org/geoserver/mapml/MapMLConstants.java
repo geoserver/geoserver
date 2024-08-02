@@ -7,6 +7,8 @@ package org.geoserver.mapml;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.mapml.tcrs.Bounds;
+import org.geoserver.mapml.tcrs.Point;
 import org.springframework.http.MediaType;
 
 /**
@@ -30,6 +32,9 @@ public final class MapMLConstants {
 
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
+
+    /** format name needed to have a parseable format in WFS 1.0.0 capabilities */
+    public static final String HTML_FORMAT_NAME = "MAPML-HTML";
 
     /** MapML format option enabling features */
     public static final String MAPML_FEATURE_FO = "mapmlfeatures";
@@ -69,14 +74,14 @@ public final class MapMLConstants {
     /** DIMENSION */
     public static final String DIMENSION = "dimension";
 
+    /** DEFAULT MIME TYPE */
+    public static final String MIME = "mime";
+
     /** MAPML_DIMENSION */
     public static final String MAPML_DIMENSION = MAPML_PREFIX + DIMENSION;
 
-    /** SHARD_LIST */
-    public static final String SHARD_LIST = "shardList";
-
-    /** ENABLE_SHARDING */
-    public static final String ENABLE_SHARDING = "enableSharding";
+    /** MAPML_DIMENSION */
+    public static final String MAPML_MIME = MAPML_PREFIX + MIME;
 
     /** USE_TILES */
     public static final String USE_TILES = "useTiles";
@@ -90,14 +95,11 @@ public final class MapMLConstants {
     /** USE_FEATURES */
     public static final String USE_FEATURES = "useFeatures";
 
-    /** SHARD_SERVER_PATTERN */
-    public static final String SHARD_SERVER_PATTERN = "shardServerPattern";
-
     /** LICENSE_TITLE */
-    public static final String LICENSE_TITLE = "license.title";
+    public static final String LICENSE_TITLE = "mapml.licenseTitle";
 
     /** LICENSE_LINK */
-    public static final String LICENSE_LINK = "license.link";
+    public static final String LICENSE_LINK = "mapml.licenseLink";
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -107,6 +109,8 @@ public final class MapMLConstants {
     public static final String REL_LICENSE = "license";
 
     public static final List<String> ZOOM_RELS = Arrays.asList(REL_ZOOMIN, REL_ZOOMOUT);
+    public static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE =
+            new Bounds(new Point(0, 0), new Point(768, 1024));
 
     public static int PAGESIZE = 100;
 }

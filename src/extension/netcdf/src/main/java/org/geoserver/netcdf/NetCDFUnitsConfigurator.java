@@ -40,7 +40,7 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
             LinkedHashMap<String, String> aliases =
                     getMapResource(NETCDF_UNIT_ALIASES, NetCDFUnitFormat.NETCDF_UNIT_ALIASES);
             if (aliases != null) {
-                NetCDFUnitFormat.setAliases(aliases);
+                NetCDFUnitFormat.getInstance().setAliases(aliases);
             }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Failed to load NetCDF unit aliases", e);
@@ -51,7 +51,7 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
                     getMapResource(
                             NETCDF_UNIT_REPLACEMENTS, NetCDFUnitFormat.NETCDF_UNIT_REPLACEMENTS);
             if (replacements != null) {
-                NetCDFUnitFormat.setReplacements(replacements);
+                NetCDFUnitFormat.getInstance().setReplacements(replacements);
             }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Failed to load NetCDF unit replacements", e);

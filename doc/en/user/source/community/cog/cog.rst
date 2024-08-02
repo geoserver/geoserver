@@ -13,7 +13,18 @@ As a community module, the package needs to be downloaded from the `nightly buil
 picking the community folder of the corresponding GeoServer series (e.g. if working on the GeoServer main development branch nightly
 builds, pick the zip file form ``main/community-latest``).
 
-To install the module, unpack the zip file contents into the GeoServer ``WEB-INF/lib`` directory and restart GeoServer.
+The module is provided as four different packages, depending on the connection type:
+
+* ``cog-http`` for HTTP connections without a particular cloud target
+* ``cog-aws`` for AWS S3 connections
+* ``cog-google`` for Google Cloud Storage connections
+* ``cog-azure`` for Azure Blob Storage connections
+
+To install the module, download the package you need, unpack the zip file contents into the GeoServer ``WEB-INF/lib`` directory and restart GeoServer.
+
+.. warning::
+  
+   The dependencies of the various cloud providers might interfere with each other, so please never install together the AWS, Google and Azure modules.
 
 COG GeoTIFF Configuration Panel
 -------------------------------

@@ -150,7 +150,8 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                                     featureBuilder.buildFeature(
                                             feature,
                                             captionTemplates.get(fc.getSchema().getName()),
-                                            null);
+                                            null,
+                                            Optional.empty());
                             // might be interesting to be able to put features
                             // from different layers into a layer-specific div
                             f.ifPresent(features::add);

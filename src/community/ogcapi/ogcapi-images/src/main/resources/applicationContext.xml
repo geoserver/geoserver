@@ -25,5 +25,5 @@
     <constructor-arg index="0" value="Images"/>
     <constructor-arg index="1" value="1.0.1"/>
   </bean>
-  
+
 </beans>

@@ -6,8 +6,8 @@ info:
   description: A WMS store is a store whose source is another WMS. Also known as "Cascading WMS" or "Exernal WMS".
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

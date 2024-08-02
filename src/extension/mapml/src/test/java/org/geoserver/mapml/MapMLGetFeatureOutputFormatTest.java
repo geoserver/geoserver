@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -85,6 +86,58 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         assertXpathExists(
                 "//wfs:WFS_Capabilities/wfs:Capability/wfs:Request/wfs:GetFeature/wfs:ResultFormat/wfs:MAPML",
                 doc);
+        assertXpathExists(
+                "//wfs:WFS_Capabilities/wfs:Capability/wfs:Request/wfs:GetFeature/wfs:ResultFormat/wfs:MAPML-HTML",
+                doc);
+
+        doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
+
+        assertXpathExists(
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/"
+                        + "ows:Operation[@name='GetFeature']"
+                        + "/ows:Parameter[@name='outputFormat']"
+                        + "/ows:Value[text()='text/html; subtype=mapml']",
+                doc);
+
+        assertXpathExists(
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/"
+                        + "ows:Operation[@name='GetFeature']"
+                        + "/ows:Parameter[@name='outputFormat']"
+                        + "/ows:Value[text()='MAPML']",
+                doc);
+    }
+
+    @Test
+    public void testCapabilitiesWFS200() throws Exception {
+
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("ogc", "http://www.opengis.net/ogc");
+        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("gs", "http://geoserver.org");
+        namespaces.put("soap12", "http://www.w3.org/2003/05/soap-envelope");
+        namespaces.put("wfs", "http://www.opengis.net/wfs/2.0");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("fes", "http://www.opengis.net/fes/2.0");
+        namespaces.put("gml", "http://www.opengis.net/gml/3.2");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+
+        Document doc = getAsDOM("ows?service=WFS&request=GetCapabilities&acceptversions=2.0.0");
+        assertXpathExists(
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/"
+                        + "ows:Operation[@name='GetFeature']"
+                        + "/ows:Parameter[@name='outputFormat']"
+                        + "/ows:AllowedValues/ows:Value[text()='text/html; subtype=mapml']",
+                doc);
+        assertXpathExists(
+                "//wfs:WFS_Capabilities/ows:OperationsMetadata/"
+                        + "ows:Operation[@name='GetFeature']"
+                        + "/ows:Parameter[@name='outputFormat']"
+                        + "/ows:AllowedValues/ows:Value[text()='MAPML']",
+                doc);
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(getNamespaces()));
     }
 
     @Test

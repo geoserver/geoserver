@@ -5,21 +5,22 @@ MapML templates are written in `Freemarker <http://www.freemarker.org/>`_ , a Ja
 
 MapML supports the following template types:
 
-+------------------------+----------------------------------------------------------------------------------+
-| Template File Name     | Purpose                                                                          |
-+========================+==================================================================================+
-| mapml-preview-head.ftl | Used to insert stylesheet links or elements into the mapml html preview viewer.  |
-+------------------------+----------------------------------------------------------------------------------+
-| mapml-head.ftl         | Used to insert mapml-link elements into the mapml map-head section.              |
-+------------------------+----------------------------------------------------------------------------------+
-| mapml-feature-head.ftl | Used to insert map-style elements into a mapml feature document.                 |
-+------------------------+----------------------------------------------------------------------------------+
-| mapml-feature.ftl      | Used to wrap features with map-a tags that assign style classes to coordinates.  |
-+------------------------+----------------------------------------------------------------------------------+
++----------------------------+--------------------------------------------------------------------------------------+
+| Template File Name         | Purpose                                                                              |
++============================+======================================================================================+
+| ``mapml-preview-head.ftl`` | Used to insert stylesheet links or elements into the MapML HTML preview viewer.      |
++----------------------------+--------------------------------------------------------------------------------------+
+| ``mapml-head.ftl``         | Used to insert ``mapml-link`` elements into the MapML map-head section.              |
++----------------------------+--------------------------------------------------------------------------------------+
+| ``mapml-feature-head.ftl`` | Used to insert ``map-style`` elements into a MapML feature document.                 |
++----------------------------+--------------------------------------------------------------------------------------+
+| ``mapml-feature.ftl``      | Used to rewrite MapML features, with ability to change attributes, styles,           | 
+|                            | geometries, and add links                                                            |
++----------------------------+--------------------------------------------------------------------------------------+
 
 GetMap MapML HTML Preview/Layer Preview Head Stylesheet Templating
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The preview is returned when the format includes subtype=mapml. The preview is an HTML document that includes a head section with a link to the stylesheet. The default preview viewer is a simple viewer that includes a link to the default stylesheet. 
+The preview is returned when the format includes ``subtype=mapml``. The preview is an HTML document that includes a ``head`` section with a link to the stylesheet. The default preview viewer is a simple viewer that includes a link to the default stylesheet. 
 A template can be created to insert links to whole stylesheet or actual stylesheet elements.  
 We can do this by creating a file called ``mapml-preview-head.ftl`` in the GeoServer data directory in the directory for the layer that we wish to append links to.  For example we could create this file under ``workspaces/topp/states_shapefile/states``.  To add stylesheet links and stylesheet elements, we enter the following text inside this new file:
 

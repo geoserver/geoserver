@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
@@ -110,6 +111,10 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                 });
         add(useTiles);
 
+        // Remote client requests
+        WebMarkupContainer remoteClientRequestContainer = setupRemoteClientRequestContainer(model);
+        add(remoteClientRequestContainer);
+
         // add the checkbox to select features or not
         MapModel<Boolean> useFeaturesModel =
                 new MapModel<>(
@@ -184,6 +189,21 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         TextArea<String> featureCaptionTemplate =
                 new TextArea<>(MapMLConstants.FEATURE_CAPTION_TEMPLATE, featureCaptionModel);
         add(featureCaptionTemplate);
+    }
+
+    private WebMarkupContainer setupRemoteClientRequestContainer(IModel<LayerInfo> model) {
+        WebMarkupContainer remoteClientRequestContainer =
+                new WebMarkupContainer("RemoteClientRequestsConfiguration");
+        LayerInfo layerInfo = model.getObject();
+        MapModel<Boolean> useRemoteModel =
+                new MapModel<>(
+                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        MapMLConstants.MAPML_USE_REMOTE);
+        CheckBox useRemote = new CheckBox(MapMLConstants.USE_REMOTE, useRemoteModel);
+        remoteClientRequestContainer.setOutputMarkupId(true);
+        remoteClientRequestContainer.setVisible(MapMLDocumentBuilder.isWMSOrWMTSStore(layerInfo));
+        remoteClientRequestContainer.add(useRemote);
+        return remoteClientRequestContainer;
     }
 
     /**

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -37,12 +37,12 @@ import javax.xml.bind.annotation.XmlType;
         propOrder = {"coordinates"})
 public class MultiPoint {
 
-    @XmlList
-    @XmlElement(
-            required = true,
+    @XmlMixed
+    @XmlElementRef(
             name = "map-coordinates",
+            type = Coordinates.class,
             namespace = "http://www.w3.org/1999/xhtml")
-    protected List<String> coordinates;
+    protected List<Coordinates> coordinates;
 
     /**
      * Gets the value of the map-coordinates property. Exception Description: The property or field
@@ -63,7 +63,7 @@ public class MultiPoint {
      *
      * @return list of coordinates strings
      */
-    public List<String> getCoordinates() {
+    public List<Coordinates> getCoordinates() {
         if (coordinates == null) {
             coordinates = new ArrayList<>();
         }

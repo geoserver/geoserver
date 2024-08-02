@@ -8,6 +8,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -40,10 +43,12 @@ import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -1573,6 +1578,96 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String layerSrc = layer.attr("src");
         assertThat(layerSrc, startsWith("http://localhost:8080/geoserver/cite/wms?"));
         assertThat(layerSrc, containsString("LAYERS=Lakes"));
+    }
+
+    @Test
+    public void testXMLHeadTemplate() throws Exception {
+        File template = null;
+        try {
+            String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_XML_HEAD_FTL);
+            FileUtils.write(
+                    template,
+                    "<map-style>.polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}</map-style>\n"
+                            + "<map-link href=\"${serviceLink(\"${base}\",\"${path}\",\"${kvp}\")}\" rel=\"${rel}\" title=\"templateinsertedstyle\"/>",
+                    "UTF-8");
+
+            MockRequestResponse requestResponse =
+                    getMockRequestResponse(
+                            MockData.ROAD_SEGMENTS.getPrefix()
+                                    + ":"
+                                    + MockData.ROAD_SEGMENTS.getLocalPart(),
+                            null,
+                            null,
+                            "EPSG:3857",
+                            null);
+            Mapml mapml = parseMapML(requestResponse);
+            List<Link> styleLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.STYLE);
+            Link templateStyleLink = styleLinks.get(0);
+            assertEquals("templateinsertedstyle", templateStyleLink.getTitle());
+            assertEquals(
+                    "http://localhost:8080/geoserver/wms?SRS=EPSG%3A3857&REQUEST=GetMap&FORMAT=text%2Fmapml&FORMAT_OPTIONS=%7BMAPML-WMS-FORMAT%3Dimage%2Fpng%7D&BBOX=SRSEnvelope%5B0.0%20%3A%20111319.49079327357%2C%20-7.081154551613622E-10%20%3A%20111325.14286638486%5D&VERSION=1.3.0&WIDTH=150&SERVICE=WMS&HEIGHT=150&LAYERS=cite%3ARoadSegments",
+                    templateStyleLink.getHref());
+            String templateStyle = mapml.getHead().getStyle();
+            assertEquals(
+                    ".bbox {display:none} .RoadSegments-r1-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; stroke:#C0A000; stroke-linecap:butt} .RoadSegments-r2-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; stroke:#000000; stroke-linecap:butt} .RoadSegments-r3-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; stroke:#E04000; stroke-linecap:butt} .polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}",
+                    templateStyle);
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testPreviewHeadTemplate() throws Exception {
+        File template = null;
+        try {
+            String layerId = getLayerId(MockData.LAKES);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_PREVIEW_HEAD_FTL);
+            FileUtils.write(template, "<link rel=\"stylesheet\" href=\"mystyle.css\">", "UTF-8");
+            FileUtils.write(
+                    template,
+                    "<style>\n"
+                            + " body {\n"
+                            + "  background-color: linen;\n"
+                            + " }\n"
+                            + "</style>",
+                    "UTF-8",
+                    true);
+
+            String path =
+                    "cite/wms?LAYERS=Lakes"
+                            + "&STYLES=&FORMAT="
+                            + MapMLConstants.MAPML_HTML_MIME_TYPE
+                            + "&SERVICE=WMS&VERSION=1.3.0"
+                            + "&REQUEST=GetMap"
+                            + "&SRS=epsg:3857"
+                            + "&BBOX=-13885038,2870337,-7455049,6338174"
+                            + "&WIDTH=150"
+                            + "&HEIGHT=150"
+                            + "&format_options="
+                            + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                            + ":image/png";
+            Document doc = getAsJSoup(path);
+            Element link = doc.select("link").first();
+            String linkRel = link.attr("rel");
+            String linkSrc = link.attr("href");
+            assertThat(linkRel, containsString("stylesheet"));
+            assertThat(linkSrc, containsString("mystyle.css"));
+            Element style = doc.select("style").get(2);
+            assertEquals("body {\n" + "  background-color: linen;\n" + " }", style.html());
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
     }
 
     @Test

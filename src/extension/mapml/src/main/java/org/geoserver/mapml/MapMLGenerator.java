@@ -7,17 +7,21 @@ package org.geoserver.mapml;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
+import java.util.stream.IntStream;
 import org.apache.commons.text.StringEscapeUtils;
+import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Coordinates;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.GeometryContent;
+import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ObjectFactory;
 import org.geoserver.mapml.xml.PropertyContent;
 import org.geoserver.mapml.xml.Span;
@@ -74,7 +78,10 @@ public class MapMLGenerator {
      * @throws IOException - IOException
      */
     public Optional<Feature> buildFeature(
-            SimpleFeature sf, String featureCaptionTemplate, List<MapMLStyle> mapMLStyles)
+            SimpleFeature sf,
+            String featureCaptionTemplate,
+            List<MapMLStyle> mapMLStyles,
+            Optional<Mapml> templateOptional)
             throws IOException {
         if (mapMLStyles != null && mapMLStyles.isEmpty()) {
             // no applicable styles, probably because of scale
@@ -82,6 +89,8 @@ public class MapMLGenerator {
         }
         Feature f = new Feature();
         f.setId(sf.getID());
+        Optional<Map<String, String>> replacmentAttsOptional =
+                getTemplateAttributes(templateOptional);
         if (featureCaptionTemplate != null && !featureCaptionTemplate.isEmpty()) {
             AttributeValueResolver attributeResolver = new AttributeValueResolver(sf);
             String caption =
@@ -95,7 +104,7 @@ public class MapMLGenerator {
         if (!skipAttributes) {
             PropertyContent pc = new PropertyContent();
             f.setProperties(pc);
-            pc.setAnyElement(collectAttributes(sf));
+            pc.setAnyElement(collectAttributes(sf, replacmentAttsOptional));
         }
 
         // if clipping is enabled, clip the geometry and return null if the clip removed it entirely
@@ -143,12 +152,137 @@ public class MapMLGenerator {
         }
         if (g == null || g.isEmpty()) return Optional.empty();
 
-        f.setGeometry(buildGeometry(g));
+        // if there is an template geometry and the original geometry is not tagged, use it instead
+        // of the original geometry
+        GeometryContent geometryContent = null;
+        if (templateOptional.isPresent() && g.getUserData() == null) {
+            geometryContent = templateOptional.get().getBody().getFeatures().get(0).getGeometry();
+            // format the geometry coming from the template using the formatter
+            Object geometry = geometryContent.getGeometryContent().getValue();
+            formatGeometry(geometry);
+        } else {
+            geometryContent = buildGeometry(g);
+        }
+
+        f.setGeometry(geometryContent);
         return Optional.of(f);
     }
 
+    /**
+     * Formats the geometry using the formatter including the number of decimals
+     *
+     * @param geometry the geometry
+     */
+    private void formatGeometry(Object geometry) {
+        if (geometry instanceof org.geoserver.mapml.xml.Point) {
+            org.geoserver.mapml.xml.Point point = (org.geoserver.mapml.xml.Point) geometry;
+            formatCoordinates(point.getCoordinates());
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPoint) {
+            org.geoserver.mapml.xml.MultiPoint multiPoint =
+                    (org.geoserver.mapml.xml.MultiPoint) geometry;
+            formatCoordinates(multiPoint.getCoordinates());
+        } else if (geometry instanceof org.geoserver.mapml.xml.LineString) {
+            org.geoserver.mapml.xml.LineString lineString =
+                    (org.geoserver.mapml.xml.LineString) geometry;
+            formatCoordinates(lineString.getCoordinates());
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiLineString) {
+            org.geoserver.mapml.xml.MultiLineString multiLineString =
+                    (org.geoserver.mapml.xml.MultiLineString) geometry;
+            formatCoordinates(multiLineString.getTwoOrMoreCoordinatePairs());
+        } else if (geometry instanceof org.geoserver.mapml.xml.Polygon) {
+            org.geoserver.mapml.xml.Polygon polygon = (org.geoserver.mapml.xml.Polygon) geometry;
+            formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
+        } else if (geometry instanceof org.geoserver.mapml.xml.MultiPolygon) {
+            org.geoserver.mapml.xml.MultiPolygon multiPolygon =
+                    (org.geoserver.mapml.xml.MultiPolygon) geometry;
+            for (org.geoserver.mapml.xml.Polygon polygon : multiPolygon.getPolygon()) {
+                formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
+            }
+
+        } else if (geometry instanceof org.geoserver.mapml.xml.GeometryCollection) {
+            org.geoserver.mapml.xml.GeometryCollection geometryCollection =
+                    (org.geoserver.mapml.xml.GeometryCollection) geometry;
+            for (Object geom : geometryCollection.getPointOrLineStringOrPolygon()) {
+                formatGeometry(geom);
+            }
+        } else if (geometry instanceof org.geoserver.mapml.xml.A) {
+            org.geoserver.mapml.xml.A a = (org.geoserver.mapml.xml.A) geometry;
+            formatGeometry(a.getGeometryContent().getValue());
+        }
+    }
+
+    /**
+     * Formats the coordinates using the formatter including the number of decimals
+     *
+     * @param coordinates the coordinates
+     */
+    private void formatCoordinates(List<Coordinates> coordinates) {
+        for (Coordinates coords : coordinates) {
+            List<Object> coordList = coords.getCoordinates();
+            for (Object coord : coordList) {
+                if (coord instanceof Span) {
+                    Span span = (Span) coord;
+                    List<String> spanCoords = span.getCoordinates();
+                    for (int i = 0; i < spanCoords.size(); i++) {
+                        String[] xyArray = formatCoordStrings(spanCoords.get(i));
+                        spanCoords.set(i, String.join(" ", xyArray));
+                    }
+                } else {
+                    String xy = coord.toString();
+                    String[] xyArray = formatCoordStrings(xy);
+                    coord = String.join(" ", xyArray);
+                }
+            }
+        }
+    }
+
+    /**
+     * Formats the coordinates using the formatter including the number of decimals
+     *
+     * @param xy the coordinates
+     * @return the formatted coordinates
+     */
+    private String[] formatCoordStrings(String xy) {
+        String[] xyArray =
+                Arrays.asList(xy.split("\\s+")).stream()
+                        .filter(s -> !s.trim().isEmpty())
+                        .toArray(String[]::new);
+        for (int i = 0; i < xyArray.length; i++) {
+            xyArray[i] = formatter.format(Double.parseDouble(xyArray[i]));
+        }
+        return xyArray;
+    }
+
+    private static Optional<Map<String, String>> getTemplateAttributes(
+            Optional<Mapml> templateOptional) {
+
+        return templateOptional
+                .map(Mapml::getBody)
+                .map(BodyContent::getFeatures)
+                .filter(features -> features != null && !features.isEmpty())
+                .map(features -> features.get(0))
+                .map(Feature::getProperties)
+                .map(PropertyContent::getOtherAttributes)
+                .filter(
+                        attributes ->
+                                attributes != null
+                                        && !attributes.isEmpty()
+                                        && attributes.values().size() % 2 == 0)
+                .map(
+                        attributes -> {
+                            List<String> values = new ArrayList<>(attributes.values());
+                            return IntStream.range(0, values.size() / 2)
+                                    .boxed()
+                                    .collect(
+                                            Collectors.toMap(
+                                                    i -> values.get(i * 2),
+                                                    i -> values.get(i * 2 + 1)));
+                        });
+    }
+
     /** Collects the attributes representation as a HTML table */
-    private String collectAttributes(SimpleFeature sf) {
+    private String collectAttributes(
+            SimpleFeature sf, Optional<Map<String, String>> replacmentAttsOptional) {
         StringBuilder sb =
                 new StringBuilder(
                         "<table xmlns=\"http://www.w3.org/1999/xhtml\"><thead><tr>"
@@ -156,20 +290,35 @@ public class MapMLGenerator {
                                 + "<th role=\"columnheader\" scope=\"col\">Property value</th>"
                                 + "</tr></thead><tbody>");
 
-        for (AttributeDescriptor attr : sf.getFeatureType().getAttributeDescriptors()) {
-            if (!(attr.getType() instanceof GeometryType)) {
-                String escapedName = StringEscapeUtils.escapeXml10(attr.getLocalName());
-                String value =
-                        sf.getAttribute(attr.getName()) != null
-                                ? sf.getAttribute(attr.getName()).toString()
-                                : "";
+        if (replacmentAttsOptional.isEmpty()) {
+            for (AttributeDescriptor attr : sf.getFeatureType().getAttributeDescriptors()) {
+                if (!(attr.getType() instanceof GeometryType)) {
+                    String escapedName = StringEscapeUtils.escapeXml10(attr.getLocalName());
+                    String value =
+                            sf.getAttribute(attr.getName()) != null
+                                    ? sf.getAttribute(attr.getName()).toString()
+                                    : "";
+                    sb.append("<tr><th scope=\"row\">")
+                            .append(escapedName)
+                            .append("</th>")
+                            .append("<td itemprop=\"")
+                            .append(escapedName)
+                            .append("\">")
+                            .append(StringEscapeUtils.escapeXml10(value))
+                            .append("</td></tr>");
+                }
+            }
+        } else {
+            for (Map.Entry<String, String> entry : replacmentAttsOptional.get().entrySet()) {
+                String escapedName = StringEscapeUtils.escapeXml10(entry.getKey());
+                String value = StringEscapeUtils.escapeXml10(entry.getValue());
                 sb.append("<tr><th scope=\"row\">")
                         .append(escapedName)
                         .append("</th>")
                         .append("<td itemprop=\"")
                         .append(escapedName)
                         .append("\">")
-                        .append(StringEscapeUtils.escapeXml10(value))
+                        .append(value)
                         .append("</td></tr>");
             }
         }
@@ -395,13 +544,11 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.MultiLineString buildMultiLineString(MultiLineString ml) {
         org.geoserver.mapml.xml.MultiLineString multiLine =
                 new org.geoserver.mapml.xml.MultiLineString();
-        List<JAXBElement<List<String>>> coordLists = multiLine.getTwoOrMoreCoordinatePairs();
+        List<Coordinates> coordLists = multiLine.getTwoOrMoreCoordinatePairs();
         for (int i = 0; i < ml.getNumGeometries(); i++) {
-            coordLists.add(
-                    factory.createMultiLineStringCoordinates(
-                            buildCoordinates(
-                                    ((LineString) (ml.getGeometryN(i))).getCoordinateSequence(),
-                                    null)));
+            LineString ls = (LineString) ml.getGeometryN(i);
+            String coordList = buildCoordinates(ls.getCoordinateSequence());
+            coordLists.add(new Coordinates(coordList));
         }
         return multiLine;
     }
@@ -412,7 +559,7 @@ public class MapMLGenerator {
      */
     private org.geoserver.mapml.xml.LineString buildLineString(LineString l) {
         org.geoserver.mapml.xml.LineString lineString = new org.geoserver.mapml.xml.LineString();
-        List<String> lsCoords = lineString.getCoordinates();
+        List<Coordinates> lsCoords = lineString.getCoordinates();
         buildCoordinates(l.getCoordinateSequence(), lsCoords);
         return lineString;
     }
@@ -423,7 +570,7 @@ public class MapMLGenerator {
      */
     private org.geoserver.mapml.xml.MultiPoint buildMultiPoint(MultiPoint mp) {
         org.geoserver.mapml.xml.MultiPoint multiPoint = new org.geoserver.mapml.xml.MultiPoint();
-        List<String> mpCoords = multiPoint.getCoordinates();
+        List<Coordinates> mpCoords = multiPoint.getCoordinates();
         buildCoordinates(new CoordinateArraySequence(mp.getCoordinates()), mpCoords);
         return multiPoint;
     }
@@ -435,7 +582,11 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.Point buildPoint(Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
         point.getCoordinates()
-                .add(this.formatter.format(p.getX()) + SPACE + this.formatter.format(p.getY()));
+                .add(
+                        new Coordinates(
+                                this.formatter.format(p.getX())
+                                        + SPACE
+                                        + this.formatter.format(p.getY())));
         return point;
     }
 
@@ -496,7 +647,7 @@ public class MapMLGenerator {
         } else {
             return new Span(
                     "bbox",
-                    buildCoordinates(
+                    buildSpanCoordinates(
                             new CoordinateArraySequence(
                                     cs.getCoordinates().toArray(n -> new Coordinate[n])),
                             null));
@@ -508,7 +659,7 @@ public class MapMLGenerator {
      * @param coordList a list of coordinate strings to add to
      * @return
      */
-    private List<String> buildCoordinates(CoordinateSequence cs, List<String> coordList) {
+    private List<String> buildSpanCoordinates(CoordinateSequence cs, List<String> coordList) {
         if (coordList == null) {
             coordList = new ArrayList<>(cs.size());
         }
@@ -516,6 +667,25 @@ public class MapMLGenerator {
             coordList.add(
                     this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
         }
+        return coordList;
+    }
+
+    /**
+     * @param cs a JTS CoordinateSequence
+     * @param coordList a list of coordinate strings to add to
+     * @return
+     */
+    private List<Coordinates> buildCoordinates(CoordinateSequence cs, List<Coordinates> coordList) {
+        if (coordList == null) {
+            coordList = new ArrayList<>(cs.size());
+        }
+        StringJoiner joiner = new StringJoiner(" ");
+        for (int i = 0; i < cs.size(); i++) {
+            joiner.add(
+                    this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
+        }
+        Coordinates coords = new Coordinates(joiner.toString());
+        coordList.add(coords);
         return coordList;
     }
 

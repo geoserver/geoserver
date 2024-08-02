@@ -91,4 +91,5 @@
         <property name="componentClass" value="org.geoserver.mapml.web.MapMLAdminPanel"/>
         <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
     </bean>
+    <bean id="charArrayWriterPool" class="org.geoserver.mapml.template.CharArrayWriterPool"/>
 </beans>

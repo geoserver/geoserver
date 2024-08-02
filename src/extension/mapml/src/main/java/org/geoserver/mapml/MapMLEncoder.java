@@ -72,6 +72,8 @@ public class MapMLEncoder {
     public Mapml decode(Reader reader) {
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
+            unmarshaller.setEventHandler(
+                    new javax.xml.bind.helpers.DefaultValidationEventHandler());
             return (Mapml) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new ServiceException(e);

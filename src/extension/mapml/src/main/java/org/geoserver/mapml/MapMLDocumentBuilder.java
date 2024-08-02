@@ -13,11 +13,17 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLHTMLOutput.PREVIEW_TCRS_MAP;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
 
+import freemarker.template.TemplateMethodModelEx;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +54,7 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.tcrs.TiledCRS;
+import org.geoserver.mapml.template.MapMLMapTemplate;
 import org.geoserver.mapml.xml.AxisType;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
@@ -66,14 +74,18 @@ import org.geoserver.mapml.xml.RelType;
 import org.geoserver.mapml.xml.Select;
 import org.geoserver.mapml.xml.UnitType;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.capabilities.CapabilityUtil;
+import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
@@ -137,6 +149,17 @@ public class MapMLDocumentBuilder {
     private ReferencedEnvelope projectedBox;
     private String bbox;
 
+    private static final String MAP_STYLE_OPEN_TAG = "<map-style>";
+    private static final String MAP_STYLE_CLOSE_TAG = "</map-style>";
+    private static final Pattern MAP_STYLE_REGEX =
+            Pattern.compile(MAP_STYLE_OPEN_TAG + "(.+?)" + MAP_STYLE_CLOSE_TAG, Pattern.DOTALL);
+    private static final Pattern MAP_LINK_REGEX =
+            Pattern.compile("<map-link (.+?)/>", Pattern.DOTALL);
+
+    private static final Pattern MAP_LINK_HREF_REGEX = Pattern.compile("href=\"(.+?)\"");
+
+    private static final Pattern MAP_LINK_TITLE_REGEX = Pattern.compile("title=\"(.+?)\"");
+
     private List<Object> extentList;
 
     private Input zoomInput;
@@ -146,6 +169,14 @@ public class MapMLDocumentBuilder {
     private Mapml mapml;
 
     private Boolean isMultiExtent = MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
+    private MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
+
+    static {
+        PREVIEW_TCRS_MAP.put("OSMTILE", new TiledCRS("OSMTILE"));
+        PREVIEW_TCRS_MAP.put("CBMTILE", new TiledCRS("CBMTILE"));
+        PREVIEW_TCRS_MAP.put("APSTILE", new TiledCRS("APSTILE"));
+        PREVIEW_TCRS_MAP.put("WGS84", new TiledCRS("WGS84"));
+    }
 
     /**
      * Constructor
@@ -828,8 +859,76 @@ public class MapMLDocumentBuilder {
             }
         }
         String styles = buildStyles();
+        // get the styles and links from the head template
+        List<String> stylesAndLinks = getHeaderTemplates(MAPML_XML_HEAD_FTL, getFeatureTypes());
+        styles = appendStylesFromHeadTemplate(styles, stylesAndLinks);
         if (styles != null) head.setStyle(styles);
+        links.addAll(getLinksFromHeadTemplate(stylesAndLinks));
         return head;
+    }
+
+    /**
+     * Get Links generated from the head template
+     *
+     * @param stylesAndLinks Styles and links from the head template
+     * @return List of Link objects
+     */
+    private List<Link> getLinksFromHeadTemplate(List<String> stylesAndLinks) {
+        List<Link> outLinks = new ArrayList<>();
+        List<String> extractedLinks = extractLinks(stylesAndLinks);
+        for (String extractedLink : extractedLinks) {
+            Link link = new Link();
+            Matcher matcherTitle = MAP_LINK_TITLE_REGEX.matcher(extractedLink);
+            if (matcherTitle.find()) {
+                link.setTitle(matcherTitle.group(1));
+            }
+            Matcher matcherHref = MAP_LINK_HREF_REGEX.matcher(extractedLink);
+            if (matcherHref.find()) {
+                link.setRel(RelType.STYLE);
+                link.setHref(matcherHref.group(1));
+                // only add if mandatory href attribute is found
+                outLinks.add(link);
+            }
+        }
+        return outLinks;
+    }
+
+    private String appendStylesFromHeadTemplate(String styles, List<String> stylesAndLinks) {
+
+        List<String> extractedStyles = extractStyles(stylesAndLinks);
+        for (String extractedStyle : extractedStyles) {
+            if (styles == null) {
+                styles = extractedStyle;
+            } else {
+                styles = styles + " " + extractedStyle;
+            }
+        }
+        return styles;
+    }
+
+    private List<String> extractLinks(List<String> stylesAndLinks) {
+        List<String> extractedStyles = new ArrayList<>();
+        for (String stylesAndLink : stylesAndLinks) {
+            Matcher matcher = MAP_LINK_REGEX.matcher(stylesAndLink);
+            while (matcher.find()) {
+                extractedStyles.add(matcher.group());
+            }
+        }
+        return extractedStyles;
+    }
+
+    private List<String> extractStyles(List<String> stylesAndLinks) {
+        List<String> extractedStyles = new ArrayList<>();
+        for (String stylesAndLink : stylesAndLinks) {
+            Matcher matcher = MAP_STYLE_REGEX.matcher(stylesAndLink);
+            while (matcher.find()) {
+                extractedStyles.add(
+                        matcher.group()
+                                .replaceAll(MAP_STYLE_OPEN_TAG, "")
+                                .replace(MAP_STYLE_CLOSE_TAG, ""));
+            }
+        }
+        return extractedStyles;
     }
 
     /** Builds the CSS styles for all the layers involved in this GetMap */
@@ -1595,6 +1694,7 @@ public class MapMLDocumentBuilder {
         Double longitude = 0.0;
         ReferencedEnvelope projectedBbox = this.projectedBox;
         ReferencedEnvelope geographicBox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
+        List<String> headerContent = getPreviewTemplates(MAPML_PREVIEW_HEAD_FTL, getFeatureTypes());
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
             layer += mapMLLayerMetadata.getLayerName() + ",";
             styleName += mapMLLayerMetadata.getStyleName() + ",";
@@ -1658,8 +1758,97 @@ public class MapMLDocumentBuilder {
                         .setRequest(request)
                         .setProjectedBbox(projectedBbox)
                         .setLayerLabel(layerLabel)
+                        .setTemplateHeader(String.join("\n", headerContent))
                         .build();
         return htmlOutput.toHTML();
+    }
+
+    /**
+     * Get FeatureTypes based on requested layers
+     *
+     * @return list of SimpleFeatureType
+     */
+    private List<SimpleFeatureType> getFeatureTypes() {
+        List<SimpleFeatureType> featureTypes = new ArrayList<>();
+        try {
+            for (MapLayerInfo mapLayerInfo : mapContent.getRequest().getLayers()) {
+                if (mapLayerInfo.getType() == MapLayerInfo.TYPE_VECTOR
+                        && mapLayerInfo.getFeature() != null
+                        && mapLayerInfo.getFeature().getFeatureType() != null
+                        && mapLayerInfo.getFeature().getFeatureType()
+                                instanceof SimpleFeatureType) {
+                    featureTypes.add(
+                            (SimpleFeatureType) mapLayerInfo.getFeature().getFeatureType());
+                } else if (mapLayerInfo.getType() == MapLayerInfo.TYPE_RASTER) {
+                    LOGGER.fine(
+                            "Templating not supported for raster layers: "
+                                    + mapLayerInfo.getName());
+                }
+            }
+        } catch (IOException | ClassCastException e) {
+            LOGGER.fine("Error getting feature types: " + e.getMessage());
+        }
+        return featureTypes;
+    }
+
+    /**
+     * Get Preview Header Content from templates
+     *
+     * @param templateName template name
+     * @param featureTypes list of feature types
+     * @return list of head content
+     */
+    private List<String> getPreviewTemplates(
+            String templateName, List<SimpleFeatureType> featureTypes) {
+        List<String> templates = new ArrayList<>();
+        for (SimpleFeatureType featureType : featureTypes) {
+            try {
+                if (!mapMLMapTemplate.isTemplateEmpty(
+                        featureType, templateName, FeatureTemplate.class, "0\n")) {
+                    templates.add(mapMLMapTemplate.preview(featureType));
+                }
+
+            } catch (IOException e) {
+                LOGGER.fine(
+                        "Template not found: "
+                                + templateName
+                                + " for schema: "
+                                + featureType.getTypeName());
+            }
+        }
+        return templates;
+    }
+
+    /**
+     * Get the MapML head content from templates
+     *
+     * @param templateName template name
+     * @param featureTypes list of feature types
+     * @return list of head content
+     */
+    private List<String> getHeaderTemplates(
+            String templateName, List<SimpleFeatureType> featureTypes) {
+        List<String> templates = new ArrayList<>();
+
+        for (SimpleFeatureType featureType : featureTypes) {
+            try {
+                Map<String, Object> model =
+                        getMapRequestElementsToModel(
+                                layersCommaDelimited, bbox, format, width, height);
+                if (!mapMLMapTemplate.isTemplateEmpty(
+                        featureType, templateName, FeatureTemplate.class, "0\n")) {
+                    templates.add(mapMLMapTemplate.head(model, featureType));
+                }
+
+            } catch (IOException e) {
+                LOGGER.fine(
+                        "Template not found: "
+                                + templateName
+                                + " for schema: "
+                                + featureType.getTypeName());
+            }
+        }
+        return templates;
     }
 
     /** Builds the GetMap backlink to get MapML */
@@ -1726,6 +1915,99 @@ public class MapMLDocumentBuilder {
                 return li.getName().trim().isEmpty() ? def : li.getName().trim();
             }
         }
+    }
+
+    /**
+     * Converts URL query string to a map of key value pairs
+     *
+     * @param query URL query string
+     * @return Map of key value pairs
+     */
+    private Map<String, String> getParametersFromQuery(String query) {
+        return Arrays.stream(query.split("&"))
+                .map(this::splitQueryParameter)
+                .filter(e -> e.getValue() != null)
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (v1, v2) -> v2));
+    }
+
+    private AbstractMap.SimpleImmutableEntry<String, String> splitQueryParameter(String parameter) {
+        final int idx = parameter.indexOf("=");
+        final String key = idx > 0 ? parameter.substring(0, idx) : parameter;
+
+        try {
+            String value = null;
+            if (idx > 0 && parameter.length() > idx + 1) {
+                final String encodedValue = parameter.substring(idx + 1);
+                value = URLDecoder.decode(encodedValue, "UTF-8");
+            }
+            return new AbstractMap.SimpleImmutableEntry<>(key, value);
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 not supported??
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Builds a link from the arguments passed into the template
+     *
+     * @param arguments List of arguments, the first argument is the base URL, the second is the
+     *     path, and the third is the query string
+     * @return URL string
+     */
+    private String serviceLink(List arguments) {
+        Request request = Dispatcher.REQUEST.get();
+        String baseURL =
+                arguments.get(0) != null
+                        ? arguments.get(0).toString()
+                        : ResponseUtils.baseURL(request.getHttpRequest());
+        Map<String, String> kvp =
+                arguments.get(2) != null
+                        ? getParametersFromQuery(arguments.get(2).toString())
+                        : request.getKvp().entrySet().stream()
+                                .collect(
+                                        Collectors.toMap(
+                                                Map.Entry::getKey, e -> e.getValue().toString()));
+
+        return ResponseUtils.buildURL(baseURL, request.getPath(), kvp, URLMangler.URLType.SERVICE);
+    }
+
+    /**
+     * Convert GetMapRequest elements to a map model for the template
+     *
+     * @param layersCommaDelimited Comma delimited list of layer names
+     * @param bbox
+     * @param format
+     * @param width
+     * @param height
+     * @return
+     */
+    private Map<String, Object> getMapRequestElementsToModel(
+            String layersCommaDelimited,
+            String bbox,
+            Optional<Object> format,
+            int width,
+            int height) {
+        HashMap<String, Object> model = new HashMap<>();
+        Request request = Dispatcher.REQUEST.get();
+        String baseURL = ResponseUtils.baseURL(request.getHttpRequest());
+        String kvp =
+                request.getKvp().entrySet().stream()
+                        .map(
+                                p ->
+                                        URLEncoder.encode(p.getKey(), StandardCharsets.UTF_8)
+                                                + "="
+                                                + URLEncoder.encode(
+                                                        p.getValue().toString(),
+                                                        StandardCharsets.UTF_8))
+                        .reduce((p1, p2) -> p1 + "&" + p2)
+                        .orElse("");
+        String path = request.getPath();
+        model.put("base", baseURL);
+        model.put("path", path);
+        model.put("kvp", kvp);
+        model.put("rel", "style");
+        model.put("serviceLink", (TemplateMethodModelEx) arguments -> serviceLink(arguments));
+        return model;
     }
 
     /** Raw KVP layer info */

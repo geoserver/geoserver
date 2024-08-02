@@ -1764,7 +1764,7 @@ public class MapMLDocumentBuilder {
     }
 
     /**
-     * Get FeatureTYpes based on requested layers
+     * Get FeatureTypes based on requested layers
      *
      * @return list of SimpleFeatureType
      */

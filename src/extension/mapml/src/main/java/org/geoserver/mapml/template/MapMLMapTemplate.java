@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -58,13 +58,7 @@ public class MapMLMapTemplate {
     public static final String MAPML_FEATURE_FTL = "mapml-feature.ftl";
 
     /** Template cache used to avoid paying the cost of template lookup for each GetMap call */
-    Map<MapMLMapTemplate.TemplateKey, Template> templateCache = new HashMap<>();
-
-    /**
-     * Cached writer used for plain conversion from Feature to String. Improves performance
-     * significantly compared to an OutputStreamWriter over a ByteOutputStream.
-     */
-    CharArrayWriter caw = new CharArrayWriter();
+    Map<MapMLMapTemplate.TemplateKey, Template> templateCache = new ConcurrentHashMap<>();
 
     /**
      * Generates the preview content for the given feature type.
@@ -87,7 +81,7 @@ public class MapMLMapTemplate {
      * @throws IOException in case of an error
      */
     public String preview(SimpleFeatureType featureType) throws IOException {
-        caw.reset();
+        CharArrayWriter caw = CharArrayWriterPool.getWriter();
         preview(Collections.emptyMap(), featureType, caw);
 
         return caw.toString();
@@ -95,7 +89,8 @@ public class MapMLMapTemplate {
 
     public String features(SimpleFeatureType featureType, SimpleFeature feature)
             throws IOException {
-        caw.reset();
+        CharArrayWriter caw = CharArrayWriterPool.getWriter();
+
         features(featureType, feature, caw);
         return caw.toString();
     }
@@ -119,7 +114,7 @@ public class MapMLMapTemplate {
     }
 
     public String featureHead(SimpleFeatureType featureType) throws IOException {
-        caw.reset();
+        CharArrayWriter caw = CharArrayWriterPool.getWriter();
         featureHead(featureType, caw);
         return caw.toString();
     }
@@ -138,7 +133,7 @@ public class MapMLMapTemplate {
      */
     public String head(Map<String, Object> model, SimpleFeatureType featureType)
             throws IOException {
-        caw.reset();
+        CharArrayWriter caw = CharArrayWriterPool.getWriter();
         head(model, featureType, caw);
 
         return caw.toString();

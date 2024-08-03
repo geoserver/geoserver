@@ -79,14 +79,16 @@ cd "${GEOSERVER_HOME}" || exit 1
 if [ -z "${MARLIN_JAR:-}" ]; then
     MARLIN_JAR=$(find "$(pwd)/webapps" -name "marlin*.jar" | head -1)
     if [ "${MARLIN_JAR:-}" != "" ]; then
-        MARLIN_ENABLER="-Xbootclasspath/a:${MARLIN_JAR}"
-        RENDERER="-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
-        export MARLIN_JAR MARLIN_ENABLER RENDERER
+        MARLIN_ENABLER="--patch-module java.desktop=${MARLIN_JAR}"
+        export MARLIN_ENABLER
     fi
 fi
+
+JAVA_OPTS="${JAVA_OPTS:+"$JAVA_OPTS"} --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.desktop/sun.java2d.pipe=ALL-UNNAMED"
+
 
 echo "GEOSERVER DATA DIR is ${GEOSERVER_DATA_DIR}"
 #added headless to true by default, if this messes anyone up let the list
 #know and we can change it back, but it seems like it won't hurt -ch
 IFS=$(printf '\n\t ')
-exec "${_RUNJAVA}" ${JAVA_OPTS:--DNoJavaOpts} "${MARLIN_ENABLER:--DMarlinDisabled}" "${RENDERER:--DDefaultrenderer}" "-Djetty.base=${GEOSERVER_HOME}" "-DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar "${GEOSERVER_HOME}/start.jar"
+exec "${_RUNJAVA}" ${JAVA_OPTS:--DNoJavaOpts} ${MARLIN_ENABLER:--DMarlinDisabled} "-Djetty.base=${GEOSERVER_HOME}" "-DGEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar "${GEOSERVER_HOME}/start.jar"

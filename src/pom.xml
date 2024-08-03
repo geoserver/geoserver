@@ -103,8 +103,8 @@
     <wicket.version>9.15.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.14</httpclient.version>
-    <imageio-ext.version>1.4.10</imageio-ext.version>
-    <jaiext.version>1.1.25</jaiext.version>
+    <imageio-ext.version>1.4.12</imageio-ext.version>
+    <jaiext.version>1.1.26</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -124,7 +124,7 @@
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
     <gf.version>3.7-SNAPSHOT</gf.version>
-    <mf.version>2.3.0</mf.version>
+    <mf.version>2.3.1</mf.version>
     <jasypt.version>1.9.2</jasypt.version>
     <hibernate-version>3.6.9.Final</hibernate-version>
     <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
@@ -137,8 +137,8 @@
     <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <jackson1.version>1.9.13</jackson1.version>
-    <jackson2.version>2.15.2</jackson2.version>
-    <jackson2.databind.version>2.15.2</jackson2.databind.version>
+    <jackson2.version>2.17.2</jackson2.version>
+    <jackson2.databind.version>${jackson2.version}</jackson2.databind.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <marlin.version>0.9.3</marlin.version>
     <postgresql.jdbc.version>42.7.3</postgresql.jdbc.version>
@@ -723,7 +723,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.13.1</version>
+        <version>4.13.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -851,7 +851,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.17.0</version>
+        <version>1.17.1</version>
       </dependency>
       <dependency>
         <groupId>commons-httpclient</groupId>
@@ -861,7 +861,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.14.0</version>
+        <version>3.15.0</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -990,6 +990,12 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-jcl</artifactId>
         <version>${log4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.measure</groupId>
+        <artifactId>unit-api</artifactId>
+        <version>2.2</version>
       </dependency>
 
       <!-- springframework -->
@@ -1211,7 +1217,7 @@
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
-        <version>2.3.31</version>
+        <version>2.3.33</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
@@ -1337,7 +1343,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.2.0-jre</version>
+        <version>33.2.1-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -1754,6 +1760,11 @@
           <artifactId>maven-war-plugin</artifactId>
           <version>3.4.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>directory-maven-plugin</artifactId>
+          <version>1.0</version>
+        </plugin>
 
         <!-- third-party plugins -->
         <plugin>
@@ -2089,7 +2100,6 @@
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
-        <version>0.3.1</version>
         <executions>
           <execution>
             <id>directories</id>

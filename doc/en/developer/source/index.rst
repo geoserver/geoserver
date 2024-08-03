@@ -15,9 +15,7 @@ Welcome to the GeoServer Developer Manual.  The manual is for those who want to 
    eclipse-guide/index
    qa-guide/index
    programming-guide/index
-   release-schedule/index
-   release-guide/index
-   release-testing-checklist/index
+   release/index
    cite-test-guide/index
    translation
    policies/index

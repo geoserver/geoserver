@@ -139,8 +139,6 @@ layouts:
                 backgroundColor: #A0A0A0
               cell: !text
                 align: center
-                maxWidth: 15
-                maxHeight: 15
                 text: TEXT
         - !text
           font: Helvetica

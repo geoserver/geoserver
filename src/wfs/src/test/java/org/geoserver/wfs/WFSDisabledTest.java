@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.security.DisabledServiceResourceFilter;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
@@ -21,6 +23,11 @@ import org.w3c.dom.Document;
 public class WFSDisabledTest extends WFSTestSupport {
 
     @Rule public final EnvironmentVariables enviromentVariables = new EnvironmentVariables();
+
+    @Before
+    public void resetConfiguration() {
+        getGeoServer().reset();
+    }
 
     @Test
     public void testDisabledServiceResponse() throws Exception {
@@ -66,7 +73,7 @@ public class WFSDisabledTest extends WFSTestSupport {
     @Test
     public void testLayerEnvDisabledServiceResponse() throws Exception {
         enableWFS();
-        enviromentVariables.set("org.geoserver.service.disabled", "WFS,WPS");
+        enviromentVariables.set(DisabledServiceResourceFilter.PROPERTY, "WFS,WPS");
         String layerName = "cite:RoadSegments";
         Document doc =
                 getAsDOM(
@@ -82,7 +89,7 @@ public class WFSDisabledTest extends WFSTestSupport {
 
     @After
     public void clearEnviromentVariables() {
-        enviromentVariables.clear("org.geoserver.service.disabled");
+        enviromentVariables.clear(DisabledServiceResourceFilter.PROPERTY);
     }
 
     /** Tests WFS service enabled on layer-resource */

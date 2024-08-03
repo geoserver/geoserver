@@ -50,7 +50,7 @@ public class WpsXmlReader extends XmlRequestReader {
         try {
             parsed = parser.parse(reader);
         } catch (Exception e) {
-            throw new WPSException("Could not parse XML request.", e);
+            throw new WPSException("Could not parse XML request.", cleanException(e));
         }
 
         if (!parser.getValidationErrors().isEmpty()) {

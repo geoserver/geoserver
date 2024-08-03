@@ -4,7 +4,10 @@
  */
 package org.geoserver.wms.map;
 
+import static org.geoserver.wms.map.RenderedImageMapOutputFormat.ADV_PROJECTION_HANDLING_FORMAT_OPTION;
+import static org.geoserver.wms.map.RenderedImageMapOutputFormat.MAP_WRAPPING_FORMAT_OPTION;
 import static org.geoserver.wms.map.RenderedImageMapOutputFormat.getConfiguredLayerInterpolation;
+import static org.geoserver.wms.map.RenderedImageMapOutputFormat.getFormatOptionAsBoolean;
 import static org.geoserver.wms.map.RenderedImageMapOutputFormat.toInterpolationObject;
 import static org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels;
 
@@ -243,7 +246,11 @@ class DirectRasterRenderer {
         try {
             final Color readerBgColor = transparent ? null : bgColor;
             CoordinateReferenceSystem mapCRS = mapEnvelope.getCoordinateReferenceSystem();
-            if (transformation == null && wms.isAdvancedProjectionHandlingEnabled()) {
+            boolean advancedProjectionHandling =
+                    wms.isAdvancedProjectionHandlingEnabled()
+                            && getFormatOptionAsBoolean(
+                                    mapContent.getRequest(), ADV_PROJECTION_HANDLING_FORMAT_OPTION);
+            if (transformation == null && advancedProjectionHandling) {
                 image = readWithProjectionHandling(interpolationHints, readerBgColor, mapCRS);
             } else {
                 //
@@ -623,12 +630,21 @@ class DirectRasterRenderer {
             CoordinateReferenceSystem coverageCRS,
             GridGeometry2D readGG)
             throws IOException, SchemaException, TransformException, FactoryException {
+
+        boolean advancedProjectionHandling =
+                wms.isAdvancedProjectionHandlingEnabled()
+                        && getFormatOptionAsBoolean(
+                                mapContent.getRequest(), ADV_PROJECTION_HANDLING_FORMAT_OPTION);
+        boolean continuousMapWrapping =
+                wms.isContinuousMapWrappingEnabled()
+                        && getFormatOptionAsBoolean(
+                                mapContent.getRequest(), MAP_WRAPPING_FORMAT_OPTION);
         RenderingTransformationHelper helper =
                 new GCRRenderingTransformationHelper(
                         mapContent,
                         interpolation,
-                        wms.isAdvancedProjectionHandlingEnabled(),
-                        wms.isContinuousMapWrappingEnabled());
+                        advancedProjectionHandling,
+                        continuousMapWrapping);
         Object result =
                 helper.applyRenderingTransformation(
                         transformation,
@@ -716,7 +732,11 @@ class DirectRasterRenderer {
                 new GridCoverageRenderer(
                         mapCRS, mapEnvelope, mapRasterArea, worldToScreen, interpolationHints);
         gcr.setAdvancedProjectionHandlingEnabled(true);
-        gcr.setWrapEnabled(wms.isContinuousMapWrappingEnabled());
+        boolean continuousMapWrappingEnabled =
+                wms.isContinuousMapWrappingEnabled()
+                        && getFormatOptionAsBoolean(
+                                mapContent.getRequest(), MAP_WRAPPING_FORMAT_OPTION);
+        gcr.setWrapEnabled(continuousMapWrappingEnabled);
         // use null background here, background color is handled afterwards
         RenderedImage image =
                 gcr.renderImage(

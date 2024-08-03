@@ -102,6 +102,7 @@ import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.map.FeatureLayer;
@@ -685,10 +686,85 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         ImageAssert.assertEquals(
-                new File("src/test/resources/org/geoserver/wms/map/direct-raster-expected.tif"),
+                new File("src/test/resources/org/geoserver/wms/map/direct-raster-expected.png"),
                 imageMap.getImage(),
                 0);
         imageMap.dispose();
+    }
+
+    @Test
+    public void testDirectRasterRenderRespectingFormatOptions() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci =
+                catalog.getCoverageByName(
+                        SystemTestData.WORLD.getPrefix(), SystemTestData.WORLD.getLocalPart());
+
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+
+        // Request an area going over the dateline
+        ReferencedEnvelope bbox =
+                new ReferencedEnvelope(new Envelope(115.0, 315.0, -60.0, 60.0), crs);
+
+        GetMapRequest request = new GetMapRequest();
+        request.setBbox(bbox);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+
+        testWithFormatOptions(ci, request, bbox, false);
+        testWithFormatOptions(ci, request, bbox, true);
+    }
+
+    private void testWithFormatOptions(
+            CoverageInfo ci,
+            GetMapRequest request,
+            ReferencedEnvelope bbox,
+            boolean formatOptionsEnabled)
+            throws IOException {
+        request.getFormatOptions().put("mapWrapping", Boolean.toString(formatOptionsEnabled));
+        request.getFormatOptions()
+                .put("advancedProjectionHandling", Boolean.toString(formatOptionsEnabled));
+
+        final WMSMapContent map = new WMSMapContent(request);
+        final float width = 400;
+        map.setMapWidth((int) width);
+        map.setMapHeight(240);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.getViewport().setBounds(bbox);
+
+        StyleBuilder builder = new StyleBuilder();
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        reader.getCoordinateReferenceSystem();
+        Layer l =
+                new CachedGridReaderLayer(
+                        reader, builder.createStyle(builder.createRasterSymbolizer()));
+        map.addLayer(l);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedImage image = imageMap.getImage();
+        float xOffset = 150;
+        ImageWorker worker =
+                new ImageWorker(image)
+                        .crop(xOffset, 0, width - xOffset, 240)
+                        .translate(-xOffset, 0, null);
+
+        if (formatOptionsEnabled) {
+            // We have enabled continuous map wrapping.
+            // So cropping over the dateline we will see again
+            // North and South America
+            ImageAssert.assertEquals(
+                    new File(
+                            "src/test/resources/org/geoserver/wms/map/direct-raster-format-options-expected.png"),
+                    worker.getRenderedImage(),
+                    10);
+        } else {
+            // We have disabled the continuous map wrapping format option.
+            // So cropping over the dateline we will only see RED background color
+            // filling the image
+            // Assert that we get everything red
+            assertArrayEquals(new double[] {255, 0, 0}, worker.getMinimums(), 1E-6);
+            assertArrayEquals(new double[] {255, 0, 0}, worker.getMaximums(), 1E-6);
+        }
     }
 
     @Test
@@ -1497,7 +1573,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         ImageAssert.assertEquals(
-                new File("src/test/resources/org/geoserver/wms/map/direct-raster-expected.tif"),
+                new File("src/test/resources/org/geoserver/wms/map/direct-raster-expected.png"),
                 imageMap.getImage(),
                 0);
         imageMap.dispose();

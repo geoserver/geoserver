@@ -15,8 +15,16 @@
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-cog</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>COG support module</name>
+
+  <modules>
+    <module>cog-core</module>
+    <module>cog-http</module>
+    <module>cog-azure</module>
+    <module>cog-s3</module>
+    <module>cog-google</module>
+  </modules>
 
   <dependencies>
     <dependency>
@@ -31,26 +39,6 @@
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-reader</artifactId>
-      <version>${imageio-ext.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
-      <artifactId>imageio-ext-cog-rangereader-s3</artifactId>
-      <version>${imageio-ext.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
-      <artifactId>imageio-ext-cog-rangereader-gs</artifactId>
-      <version>${imageio-ext.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
-      <artifactId>imageio-ext-cog-rangereader-azure</artifactId>
-      <version>${imageio-ext.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
-      <artifactId>imageio-ext-cog-rangereader-http</artifactId>
       <version>${imageio-ext.version}</version>
     </dependency>
     <dependency>

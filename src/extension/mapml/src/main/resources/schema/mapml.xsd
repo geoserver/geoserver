@@ -182,7 +182,6 @@
       <xs:attribute name="type" use="required" type="inputType"/>
       <xs:attribute name="value"/>
       <xs:attribute name="rel" type="inputRelType"/>
-      <xs:attribute name="shard"/>
       <xs:attribute name="list"/>
       <xs:attribute name="position" type="positionType"/>
       <xs:attribute name="axis" type="axisType"/>

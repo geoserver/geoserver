@@ -315,7 +315,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
     private void createEmptyZipWarning(File tempDir) throws IOException {
         try (PrintWriter pw = new PrintWriter(new File(tempDir, "README.TXT"))) {
             pw.print(
-                    "The query result is empty, and the geometric type of the features is unknwon:"
+                    "The query result is empty, and the geometric type of the features is unknown:"
                             + "an empty point shapefile has been created to fill the zip file");
         }
     }

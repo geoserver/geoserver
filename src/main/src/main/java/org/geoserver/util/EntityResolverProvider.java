@@ -73,7 +73,7 @@ public class EntityResolverProvider {
      * preventing local file access. This implementation allows access to XSD files included in the
      * geoserver application.
      *
-     * @return EntityResolver, or null if
+     * @return EntityResolver, or {@code null} if unrestricted
      */
     public EntityResolver getEntityResolver() {
         if (geoServer != null) {
@@ -102,11 +102,10 @@ public class EntityResolverProvider {
      * "ENTITY_RESOLUTION_ALLOWLIST".
      *
      * <ul>
-     *   <li><code>"*"</code>: Allow all http(s) schema locations
-     *   <li><code>"" or undefined: Restrict to schemas provided by w3c, ogc and inspire</code>
-     *   <li><code>
-     *       "location1,location2": Restrict to the provided locations, and those list by w4c, ogc and inspire
-     *       </code>
+     *   <li>{@code "*"}: Allow all http(s) schema locations
+     *   <li>{@code ""} or undefined: Restrict to schemas provided by w3c, ogc and inspire</code>
+     *   <li>{@code "location1,location2"}: Restrict to the provided locations, and those list by
+     *       w4c, ogc and inspire
      * </ul>
      *
      * <p>The built-in list appended by {@link AllowListEntityResolver} is equivalent to: <code>
@@ -130,17 +129,16 @@ public class EntityResolverProvider {
      * @return set of allowed http(s) entity expansion external locations.
      */
     static Set<String> entityResolutionAllowlist(String allowed) {
-        final String[] DEFAULT_LIST =
-                String.join(
-                                "|",
-                                AllowListEntityResolver.W3C,
-                                AllowListEntityResolver.OGC,
-                                AllowListEntityResolver.INSPIRE)
-                        .split("\\|");
+        final String[] DEFAULT_LIST = {
+            AllowListEntityResolver.W3C,
+            AllowListEntityResolver.OGC1,
+            AllowListEntityResolver.OGC2,
+            AllowListEntityResolver.INSPIRE
+        };
 
         if (allowed == null || allowed.trim().isEmpty()) {
             return new HashSet<>(Arrays.asList(DEFAULT_LIST));
-        } else if (allowed.contains(AllowListEntityResolver.UNRESTRICTED)) {
+        } else if (allowed.equals(AllowListEntityResolver.UNRESTRICTED)) {
             return null;
         } else {
             Set<String> allowedList = new HashSet<>(Arrays.asList(DEFAULT_LIST));

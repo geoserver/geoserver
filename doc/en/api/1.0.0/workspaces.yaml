@@ -6,8 +6,8 @@ info:
   description: A workspace is a grouping of data stores. Similar to a namespace, it is used to group data that is related in some way.
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

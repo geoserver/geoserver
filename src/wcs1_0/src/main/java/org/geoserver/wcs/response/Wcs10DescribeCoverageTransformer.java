@@ -36,6 +36,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.api.coverage.grid.GridEnvelope;
@@ -190,6 +191,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     handleCoverageOffering(coverage);
                     commit();
                 } catch (Exception e) {
+                    // abort processing if the user closed the connection
+                    ClientStreamAbortedException.rethrowUncheked(e);
                     if (skipMisconfiguredThisTime) {
                         reset();
                     } else {

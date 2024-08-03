@@ -50,7 +50,7 @@ The process of getting community commit access is as follows:
 
 #. **Notify the developer list**
 
-   After a developer has signed up on Github they must notify the developer
+   After a developer has signed up on GitHub they must notify the developer
    list. A project despot will then add them to the group of GeoServer
    committers and grant write access to the canonical repository.
 

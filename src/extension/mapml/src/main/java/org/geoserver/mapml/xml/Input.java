@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="type" use="required" type="{}inputType" /&gt;
  *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *       &lt;attribute name="rel" type="{}inputRelType" /&gt;
- *       &lt;attribute name="shard" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *       &lt;attribute name="list" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
  *       &lt;attribute name="position" type="{}positionType" /&gt;
  *       &lt;attribute name="axis" type="{}axisType" /&gt;
@@ -60,10 +59,6 @@ public class Input {
 
     @XmlAttribute(name = "rel")
     protected InputRelType rel;
-
-    @XmlAttribute(name = "shard")
-    @XmlSchemaType(name = "anySimpleType")
-    protected String shard;
 
     @XmlAttribute(name = "list")
     @XmlSchemaType(name = "anySimpleType")
@@ -161,24 +156,6 @@ public class Input {
      */
     public void setRel(InputRelType value) {
         this.rel = value;
-    }
-
-    /**
-     * Gets the value of the shard property.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getShard() {
-        return shard;
-    }
-
-    /**
-     * Sets the value of the shard property.
-     *
-     * @param value allowed object is {@link String }
-     */
-    public void setShard(String value) {
-        this.shard = value;
     }
 
     /**

@@ -6,8 +6,8 @@ info:
   description: Manage templates used to configure output (for example GetFeatureInfo reponse). Templates can be registered for the entire server or workspace. You can also configure a template for use with a store, featureType or coverage.
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 basePath: /geoserver/rest
 

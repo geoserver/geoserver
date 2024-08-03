@@ -28,84 +28,20 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.2.0</version>
-        <configuration>
-          <descriptors>
-            <descriptor>release/ext-jdbcconfig.xml</descriptor>
-            <descriptor>release/ext-dds.xml</descriptor>
-            <descriptor>release/ext-colormap.xml</descriptor>
-            <descriptor>release/ext-mbtiles.xml</descriptor>
-            <descriptor>release/ext-mbtiles-store.xml</descriptor>
-            <descriptor>release/ext-geopkg.xml</descriptor>
-            <descriptor>release/ext-pgraster.xml</descriptor>
-            <!-- TODO WICKET8 - Fix this module and re-enable -->
-            <!-- <descriptor>release/ext-dyndimension.xml</descriptor> -->
-            <descriptor>release/ext-flatgeobuf.xml</descriptor>
-            <descriptor>release/ext-spatialjson.xml</descriptor>
-            <descriptor>release/ext-webp.xml</descriptor>
-            <descriptor>release/ext-gpx.xml</descriptor>
-            <descriptor>release/ext-jms-cluster.xml</descriptor>
-            <descriptor>release/ext-hz-cluster.xml</descriptor>
-            <descriptor>release/ext-activeMQ.xml</descriptor>
-            <descriptor>release/ext-solr.xml</descriptor>
-            <descriptor>release/ext-elasticsearch.xml</descriptor>
-            <descriptor>release/ext-gwc-distributed.xml</descriptor>
-            <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
-            <descriptor>release/ext-gdal-wcs.xml</descriptor>
-            <descriptor>release/ext-gdal-wps.xml</descriptor>
-            <descriptor>release/ext-wps-remote.xml</descriptor>
-            <descriptor>release/ext-jdbcstore.xml</descriptor>
-            <descriptor>release/ext-ncwms.xml</descriptor>
-            <descriptor>release/ext-gwc-sqlite.xml</descriptor>
-            <descriptor>release/ext-oauth2-google.xml</descriptor>
-            <descriptor>release/ext-oauth2-github.xml</descriptor>
-            <descriptor>release/ext-oauth2-geonode.xml</descriptor>
-            <descriptor>release/ext-oauth2-openid-connect.xml</descriptor>
-            <descriptor>release/ext-keycloak.xml</descriptor>
-            <descriptor>release/ext-backup-restore.xml</descriptor>
-            <descriptor>release/ext-notification.xml</descriptor>
-            <descriptor>release/ext-jdbc-metrics.xml</descriptor>
-            <descriptor>release/ext-opensearch-eo.xml</descriptor>
-            <descriptor>release/ext-taskmanager-core.xml</descriptor>
-            <descriptor>release/ext-taskmanager-s3.xml</descriptor>
-            <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
-            <descriptor>release/ext-cog.xml</descriptor>
-            <descriptor>release/ext-s3-geotiff.xml</descriptor>
-            <descriptor>release/ext-ogr-datastore.xml</descriptor>
-            <descriptor>release/ext-jwt-headers.xml</descriptor>
-            <descriptor>release/ext-ogcapi-coverages.xml</descriptor>
-            <descriptor>release/ext-ogcapi-dggs.xml</descriptor>
-            <descriptor>release/ext-ogcapi-features.xml</descriptor>
-            <descriptor>release/ext-ogcapi-images.xml</descriptor>
-            <descriptor>release/ext-ogcapi-maps.xml</descriptor>
-            <descriptor>release/ext-ogcapi-styles.xml</descriptor>
-            <descriptor>release/ext-ogcapi-tiled-features.xml</descriptor>
-            <descriptor>release/ext-ogcapi-tiles.xml</descriptor>
-            <descriptor>release/ext-importer-jdbc.xml</descriptor>
-            <descriptor>release/ext-features-autopopulate.xml</descriptor>
-            <descriptor>release/ext-features-templating.xml</descriptor>
-            <descriptor>release/ext-gsr.xml</descriptor>
-            <descriptor>release/ext-smart-data-loader.xml</descriptor>
-            <descriptor>release/ext-cov-json.xml</descriptor>
-            <descriptor>release/ext-mongodb-schemaless.xml</descriptor>
-            <descriptor>release/ext-web-service-auth.xml</descriptor>
-            <descriptor>release/ext-gwc-mbtiles.xml</descriptor>
-            <descriptor>release/ext-vsi.xml</descriptor>
-            <descriptor>release/ext-libdeflate.xml</descriptor>
-            <descriptor>release/ext-stac-datastore.xml</descriptor>
-            <descriptor>release/ext-vector-mosaic-datastore.xml</descriptor>
-            <descriptor>release/ext-proxy-base-ext.xml</descriptor>
-            <descriptor>release/ext-imagemap.xml</descriptor>
-            <descriptor>release/ext-xslt.xml</descriptor>
-            <descriptor>release/ext-datadir-catalog-loader.xml</descriptor>
-            <descriptor>release/ext-wps-longitudinal-profile.xml</descriptor>
-            <descriptor>release/ext-monitor-kafka.xml</descriptor>
-            <descriptor>release/ext-graticule.xml</descriptor>
-            <descriptor>release/ext-wfs-freemarker.xml</descriptor>
-          </descriptors>
-          <finalName>geoserver-${project.version}</finalName>
-        </configuration>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>directories</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>highest-basedir</goal>
+            </goals>
+            <configuration>
+              <property>geoserverBaseDir</property>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
@@ -201,10 +137,11 @@
         <module>jdbcconfig</module>
         <module>colormap</module>
         <module>mbtiles</module>
+        <module>mbtiles-store</module>
         <module>geopkg</module>
         <module>pgraster</module>
         <!-- TODO WICKET8 - Fix this module and re-enable -->
-        <!-- <module>dyndimension</module> -->
+        <!--<module>dyndimension</module>-->
         <module>flatgeobuf</module>
         <module>spatialjson</module>
         <module>webp</module>
@@ -214,7 +151,6 @@
         <module>solr</module>
         <module>elasticsearch</module>
         <module>wps-remote</module>
-        <module>release</module>
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
@@ -256,6 +192,7 @@
         <module>monitor-kafka</module>
         <module>graticule</module>
         <module>wfs-freemarker</module>
+        <module>stac-datastore</module>
       </modules>
     </profile>
     <profile>
@@ -296,6 +233,12 @@
       </modules>
     </profile>
     <profile>
+      <id>mbtiles-store</id>
+      <modules>
+        <module>mbtiles-store</module>
+      </modules>
+    </profile>
+    <profile>
       <id>dyndimension</id>
       <activation>
         <property>
@@ -331,20 +274,6 @@
           <name>rest-ext</name>
         </property>
       </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.2.0</version>
-            <configuration>
-              <descriptors>
-                <!-- If you are re-enabling this, remember to re-add the documentation -->
-                <descriptor>release/ext-rest-ext.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
       <modules>
         <module>rest-ext</module>
       </modules>
@@ -364,20 +293,6 @@
 
     <profile>
       <id>rest-upload</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.2.0</version>
-            <configuration>
-              <descriptors>
-                <!-- If you are re-enabling this, remember to re-add the documentation -->
-                <descriptor>release/ext-rest-upload.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
       <modules>
         <module>rest-upload</module>
       </modules>
@@ -436,12 +351,6 @@
       <id>gwc-azure-blob</id>
       <modules>
         <module>gwc-azure-blob</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>community-release-module</id>
-      <modules>
-        <module>release</module>
       </modules>
     </profile>
     <profile>
@@ -570,36 +479,12 @@
     </profile>
     <profile>
       <id>monitor-hibernate</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <descriptors>
-                <descriptor>release/ext-monitor-hibernate.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
       <modules>
         <module>monitor-hibernate</module>
       </modules>
     </profile>
     <profile>
       <id>monitor-kafka</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <descriptors>
-                <descriptor>release/ext-monitor-kafka.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
       <modules>
         <module>monitor-kafka</module>
       </modules>
@@ -720,18 +605,6 @@
     </profile>
     <profile>
       <id>graticule</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <descriptors>
-                <descriptor>release/ext-graticule.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
       <modules>
         <module>graticule</module>
       </modules>
@@ -742,5 +615,123 @@
         <module>wfs-freemarker</module>
       </modules>
     </profile>
+    <profile>
+      <id>assembly</id>
+      <build>
+        <plugins>
+          <!-- Check if an assembly file is available in the current module, will skip otherwise -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-assembly-file</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <exportAntProperties>true</exportAntProperties>
+                  <target>
+                    <condition property="skipAssembly" value="true">
+                      <not>
+                        <available file="src/assembly/assembly.xml"></available>
+                      </not>
+                    </condition>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Copy dependencies of the current module -->
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipAssembly}</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Run assembly based on collected dependencies-->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <descriptors>
+                <descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <outputDirectory>${geoserverBaseDir}/community/target/release</outputDirectory>
+              <skipAssembly>${skipAssembly}</skipAssembly>
+              <finalName>geoserver-${project.version}</finalName>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-resources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/html-template</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>../release/src/markdown/html</directory>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+            <inherited>false</inherited>
+          </plugin>
+          <plugin>
+            <groupId>com.ruleoftech</groupId>
+            <artifactId>markdown-page-generator-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>licenses</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <inputDirectory>${project.basedir}/../../licenses</inputDirectory>
+                  <outputDirectory>${project.build.directory}/html/licenses</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+            <inherited>false</inherited>
+            <configuration>
+              <recursiveInput>false</recursiveInput>
+              <transformRelativeMarkdownLinks>true</transformRelativeMarkdownLinks>
+              <headerHtmlFile>${project.build.directory}/html-template/header.html</headerHtmlFile>
+              <footerHtmlFile>${project.build.directory}/html-template/footer.html</footerHtmlFile>
+              <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS,FORCELISTITEMPARA</pegdownExtensions>
+              <defaultTitle>true</defaultTitle>
+              <inputFileExtensions>md,txt</inputFileExtensions>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
+
 </project>

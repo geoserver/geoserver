@@ -6,20 +6,28 @@
 package org.geoserver.wps.web;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
+import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 import org.geoserver.web.wicket.GSModalWindow;
 
@@ -45,6 +53,8 @@ public class WPSRequestBuilder extends GeoServerBasePage {
     GSModalWindow responseWindow;
     WPSRequestBuilderPanel builder;
 
+    TextField<String> xml;
+
     public WPSRequestBuilder(PageParameters parameters) {
         this(parameters.get(PARAM_NAME).toOptionalString());
     }
@@ -57,6 +67,13 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         // the form
         Form form = new Form("form");
         add(form);
+
+        var model = new Model<>(new WPSRequestModel());
+        form.setDefaultModel(model);
+
+        xml = new TextField<>("xml", new PropertyModel<>(model, "xml"));
+        xml.setOutputMarkupId(true);
+        form.add(xml);
 
         // the actual request builder component
         ExecuteRequest execRequest = new ExecuteRequest();
@@ -99,13 +116,48 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                         });
 
         form.add(
+                new AjaxSubmitLink("setXml") {
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        try {
+                            var xmlText = getRequestXML();
+                            xml.setModelObject(xmlText);
+                            target.add(xml);
+                        } catch (Exception e) {
+                            error(e.getMessage());
+                            addFeedbackPanels(target);
+                        }
+                        target.appendJavaScript("executeWPS()");
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target) {
+                        addFeedbackPanels(target);
+                    }
+                });
+
+        form.add(
                 new AjaxSubmitLink("execute") {
 
                     @SuppressWarnings("unchecked")
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
-                        responseWindow.setDefaultModel(new Model(getRequestXML()));
-                        responseWindow.show(target);
+                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+
+                        String url =
+                                ResponseUtils.buildURL(
+                                        ResponseUtils.baseURL(http),
+                                        "ows",
+                                        Collections.singletonMap("strict", "true"),
+                                        URLType.SERVICE);
+                        var xml = getRequestXML();
+
+                        PageParameters parameters = new PageParameters();
+                        parameters.add("url", url);
+                        parameters.add("xml", xml);
+
+                        getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
                     }
 
                     @Override
@@ -150,5 +202,25 @@ public class WPSRequestBuilder extends GeoServerBasePage {
             error(e);
         }
         return out.toString();
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(
+                JavaScriptContentHeaderItem.forScript(
+                        DemoRequestsPage.demoRequestsJavascript, null));
+    }
+
+    public class WPSRequestModel implements Serializable {
+        public String xml;
+
+        public String getXml() {
+            return xml;
+        }
+
+        public void setXml(String xml) {
+            this.xml = xml;
+        }
     }
 }

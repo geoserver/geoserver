@@ -17,7 +17,7 @@ allows to generate styles based on the table contents:
 * The :guilabel:`Classification` dropdown allows to select a column to use for classification.
 * The :guilabel:`Style name` controls the name of the style to be generated. It's automatically filled
   with a naming convention of ``<layer>_b<band>_<classification>``, but can be customized.
-* The :guilabel:`Create style` button generates the style based on the chosen classification, eventually using colors if available in the table, otherwise generating random colors. The geneated style will also be included among the "alternate styles" of the layer.
+* The :guilabel:`Create style` button generates the style based on the chosen classification, eventually using colors if available in the table, otherwise generating random colors. The generated style will also be included among the "alternate styles" of the layer.
 
 The generated style will match all the values in the raster attribute table, and ensure the chosen classification column is used for both styling, legend generation, and ``GetFeatureInfo`` output.
 
@@ -60,6 +60,6 @@ REST API
 --------
 
 A REST API is available, to fetch the full PAM dataset attached to a raster, and to create
-styles out of RAT classfication fields:
+styles out of RAT classification fields:
 
 * :api:`/rat <rat.yaml>`

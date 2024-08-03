@@ -66,6 +66,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.data.InternationalContentHelper;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -1021,6 +1022,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         handleLayer(layer, isRoot);
                         commit();
                     } catch (Exception e) {
+                        // abort processing if the user closed the connection
+                        ClientStreamAbortedException.rethrowUncheked(e);
                         if (skipping) {
                             reset();
                             LOGGER.log(

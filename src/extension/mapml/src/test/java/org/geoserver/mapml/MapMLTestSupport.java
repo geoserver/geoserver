@@ -183,7 +183,9 @@ public class MapMLTestSupport extends WMSTestSupport {
             String formatOptions =
                     isFeature()
                             ? MapMLConstants.MAPML_FEATURE_FO + ":true"
-                            : MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
+                            : getFormat() != null
+                                    ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png"
+                                    : "";
             if (getKvp() != null) {
                 path = "wms";
                 httpRequest = createRequest(path, getKvp());

@@ -116,7 +116,7 @@ public final class ServicesUtils {
                 value = getIfSupported(reqLang, languages);
             }
         }
-        if (value == null) value = defaultLanguage;
+        if (value == null || value.isEmpty()) value = defaultLanguage;
         return value;
     }
 

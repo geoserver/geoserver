@@ -16,6 +16,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 /**
  * Authorizer that allows access if the user has admin rights to any workspace.
  *
+ * <p>Note this component is to the web-ui what {@code
+ * org.geoserver.security.filter.WorkspaceAdminRestAuthorizer} is to the REST API.
+ *
  * @author Justin Deoliveira, OpenGeo
  * @see ResourceAccessManager#isWorkspaceAdmin(Authentication, Catalog)
  */

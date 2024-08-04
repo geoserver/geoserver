@@ -23,6 +23,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * Security interceptor filter
  *
  * @author mcr
+ * @see GeoServerAccessDecisionVoter
  */
 public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter {
     @Override
@@ -39,6 +40,9 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         RoleVoter roleVoter = new RoleVoter();
         roleVoter.setRolePrefix("");
         voters.add(roleVoter);
+        // add extension voters before AuthenticatedVoter so it doesn't short-circuit the
+        // AffirmativeBased access decision manager
+        voters.addAll(findAccessDecisionVoterExtensions());
         voters.add(new AuthenticatedVoter());
         AffirmativeBased accessDecisionManager = new AffirmativeBased(voters);
         accessDecisionManager.setAllowIfAllAbstainDecisions(
@@ -55,5 +59,9 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
             throw new RuntimeException(e);
         }
         getNestedFilters().add(filter);
+    }
+
+    private List<GeoServerAccessDecisionVoter> findAccessDecisionVoterExtensions() {
+        return GeoServerExtensions.extensions(GeoServerAccessDecisionVoter.class);
     }
 }

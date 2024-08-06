@@ -705,15 +705,12 @@ public class ResourcePool {
         connectionParameters =
                 ResourcePool.getParams(connectionParameters, catalog.getResourceLoader());
 
-        // obtain the factory
+        // obtain the factory, either using the "type", or if not found, using the parameters
         DataAccessFactory factory = null;
         try {
             factory = getDataStoreFactory(info);
         } catch (IOException e) {
-            throw new IOException(
-                    "Failed to find the datastore factory for "
-                            + info.getName()
-                            + ", did you forget to install the store extension jar?");
+            // ignoring since the error message is the same as for the null factory, see line below
         }
         if (factory == null) {
             throw new IOException(
@@ -725,9 +722,8 @@ public class ResourcePool {
 
         // ensure that the namespace parameter is set for the datastore
         if (!connectionParameters.containsKey("namespace") && params != null) {
-            // if we grabbed the factory, check that the factory actually supports
-            // a namespace parameter, if we could not get the factory, assume that
-            // it does
+            // if we grabbed the factory, check that the factory actually supports a namespace
+            // parameter, if we could not get the factory, assume that it does
             boolean supportsNamespace = false;
 
             for (Param p : params) {
@@ -749,8 +745,7 @@ public class ResourcePool {
             }
         }
 
-        // see if the store has a repository param, if so, pass the one wrapping
-        // the store
+        // see if the store has a repository param, if so, pass the one wrapping the store
         if (params != null) {
             for (Param p : params) {
                 if (Repository.class.equals(p.getType())) {
@@ -772,7 +767,19 @@ public class ResourcePool {
             }
         }
 
-        dataStore = DataStoreUtils.getDataAccess(connectionParameters);
+        // use the factory obtained through the lookup first
+        try {
+            dataStore = DataStoreUtils.getDataAccess(factory, connectionParameters);
+        } catch (IOException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    String.format(
+                            "Failed to create the store using the configured factory (%s), will try a generic lookup now.",
+                            factory.getClass()),
+                    e);
+            dataStore = DataStoreUtils.getDataAccess(connectionParameters);
+        }
+
         if (dataStore == null) {
             /*
              * Preserve DataStore retyping behaviour by calling

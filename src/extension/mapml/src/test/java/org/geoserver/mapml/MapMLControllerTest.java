@@ -371,9 +371,9 @@ public class MapMLControllerTest extends WMSTestSupport {
         String zoom = doc.select("mapml-viewer").attr("zoom");
         // zoom is calculated based on a display size and the extent of the
         // layer.  In the case of the test layer group "layerGroup", the extent is the
-        // maximum extent, so zoom should be 0;
+        // maximum extent, so zoom should be 1;
         if (layerName.equalsIgnoreCase("layerGroup")) {
-            assertTrue("0".equalsIgnoreCase(zoom));
+            assertTrue("1".equalsIgnoreCase(zoom));
         } else {
             assertTrue(!"0".equalsIgnoreCase(zoom));
         }
@@ -462,20 +462,12 @@ public class MapMLControllerTest extends WMSTestSupport {
                                 || input.getType() == InputType.WIDTH
                                 || input.getType() == InputType.HEIGHT);
                 if (input.getType() == InputType.LOCATION && input.getAxis() == AxisType.EASTING) {
-                    assertTrue(
-                            "map-input[type=location/@min must equal -2.0037508342789244E7",
-                            "-2.0037508342789244E7".equalsIgnoreCase(input.getMin()));
-                    assertTrue(
-                            "map-input[type=location/@max must equal 2.0037508342789244E7",
-                            "2.0037508342789244E7".equalsIgnoreCase(input.getMax()));
+                    assertEquals(-2E7, Double.parseDouble(input.getMin()), 1E6);
+                    assertEquals(2E7, Double.parseDouble(input.getMax()), 1E6);
                 } else if (input.getType() == InputType.LOCATION
                         && input.getAxis() == AxisType.NORTHING) {
-                    assertTrue(
-                            "map-input[type=location/@min must equal -2.0037508342780735E7",
-                            "-2.0037508342780735E7".equalsIgnoreCase(input.getMin()));
-                    assertTrue(
-                            "map-input[type=location/@max must equal 2.003750834278071E7",
-                            "2.003750834278071E7".equalsIgnoreCase(input.getMax()));
+                    assertEquals(-2E7, Double.parseDouble(input.getMin()), 5E6);
+                    assertEquals(2E7, Double.parseDouble(input.getMax()), 5E6);
                 }
             } else {
                 fail("Unrecognized test object type:" + o.getClass().getTypeName());

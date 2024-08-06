@@ -22,7 +22,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-mongodb</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -50,12 +49,10 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

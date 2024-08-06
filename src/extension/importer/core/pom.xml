@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-kml</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -52,13 +51,11 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-wkt</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-iau-wkt</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

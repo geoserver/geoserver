@@ -39,7 +39,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -62,7 +61,6 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-h2</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

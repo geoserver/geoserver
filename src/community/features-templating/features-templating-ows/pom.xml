@@ -71,7 +71,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -91,33 +90,28 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

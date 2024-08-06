@@ -33,17 +33,14 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-complex</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geojson-core</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.jsonld-java</groupId>
@@ -53,17 +50,14 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-http</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-referencing</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -88,33 +82,28 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-postgis</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

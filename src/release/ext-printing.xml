@@ -15,7 +15,6 @@
         <include>gs-printing-*.jar</include>
         <include>print-lib-*.jar</include>
         <include>xercesImpl-*.jar</include>
-        <include>xml-apis-xerces-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

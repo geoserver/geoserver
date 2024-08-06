@@ -39,7 +39,6 @@
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-kml</artifactId>
-      <version>${gt.version}</version>
     </dependency>
   </dependencies>
   <build>

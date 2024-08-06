@@ -39,7 +39,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data-access</artifactId>
-      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 

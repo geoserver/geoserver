@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-brewer</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>

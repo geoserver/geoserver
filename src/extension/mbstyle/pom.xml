@@ -22,7 +22,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-mbstyle</artifactId>
-      <version>${gt.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

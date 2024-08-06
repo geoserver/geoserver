@@ -30,12 +30,10 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-render</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <!-- Tracking dependency numbers here, they will likely move to GeoTools in the future, 
         nothing else is using them -->
@@ -52,13 +50,11 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-shapefile</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

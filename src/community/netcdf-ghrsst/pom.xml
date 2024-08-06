@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-netcdf</artifactId>
-      <version>${gt.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>slf4j-api</artifactId>

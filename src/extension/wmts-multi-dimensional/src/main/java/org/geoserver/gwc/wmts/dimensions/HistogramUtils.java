@@ -65,6 +65,7 @@ final class HistogramUtils {
      * strings. Ranges are also supported, the min value will be used to discover the domain values
      * type.
      */
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     static Tuple<String, List<Integer>> buildHistogram(
             List<Comparable> domainValues, String resolution, boolean isRange) {
         if (domainValues.isEmpty()) {

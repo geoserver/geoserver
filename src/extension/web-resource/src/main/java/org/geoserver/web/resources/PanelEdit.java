@@ -31,7 +31,7 @@ public class PanelEdit extends Panel {
         }
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(
-                new TextField<String>("resource", new Model<>(resource.toString())) {
+                new TextField<>("resource", new Model<>(resource.toString())) {
                     private static final long serialVersionUID = 1019950718780805835L;
 
                     @Override

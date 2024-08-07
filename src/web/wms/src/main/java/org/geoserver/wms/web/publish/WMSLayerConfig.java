@@ -96,9 +96,9 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         // build a palette with no reordering allowed, since order doesn't affect anything
         LiveCollectionModel<StyleInfo, Set<StyleInfo>> stylesModel =
-                LiveCollectionModel.set(new PropertyModel<Set<StyleInfo>>(layerModel, "styles"));
+                LiveCollectionModel.set(new PropertyModel<>(layerModel, "styles"));
         Palette<StyleInfo> extraStyles =
-                new Palette<StyleInfo>(
+                new Palette<>(
                         "extraStyles", stylesModel, styles, new StyleNameRenderer(), 10, false) {
                     private static final long serialVersionUID = -3494299396410932090L;
 
@@ -226,8 +226,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         styleContainer.add(remotStyles);
 
         LiveCollectionModel<String, Set<String>> stylesModel =
-                LiveCollectionModel.set(
-                        new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteStyles"));
+                LiveCollectionModel.set(new PropertyModel<>(wmsLayerInfo, "selectedRemoteStyles"));
         Palette<String> extraRemoteStyles =
                 new Palette<>(
                         "extraRemoteStyles",
@@ -251,8 +250,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         // add format pallete
 
         LiveCollectionModel<String, Set<String>> remoteFormatsModel =
-                LiveCollectionModel.set(
-                        new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteFormats"));
+                LiveCollectionModel.set(new PropertyModel<>(wmsLayerInfo, "selectedRemoteFormats"));
 
         Palette<String> remoteFormatsPalette =
                 new Palette<>(

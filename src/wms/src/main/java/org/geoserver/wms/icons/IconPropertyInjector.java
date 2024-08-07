@@ -187,7 +187,6 @@ public final class IconPropertyInjector {
         final Expression opacity;
         final Expression lineJoin;
         final Expression lineCap;
-        final float[] dashArray;
         final Expression dashOffset;
         final Graphic graphicFill;
         final Graphic graphicStroke;

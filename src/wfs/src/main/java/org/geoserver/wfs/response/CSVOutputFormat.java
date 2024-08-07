@@ -252,6 +252,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         return separator;
     }
 
+    @SuppressWarnings("PMD.UnnecessaryCast")
     private AttrFormatter[] getFormatters(FeatureType schema) {
         if (schema instanceof SimpleFeatureType) {
             // prepare the formatter for numbers
@@ -274,7 +275,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 } else if (java.util.Date.class.isAssignableFrom(binding)) {
                     formatters[i] =
                             Optional.ofNullable(gs.getService(WFSInfo.class))
-                                    .map(service -> service.getCsvDateFormat())
+                                    .map(WFSInfo::getCsvDateFormat)
                                     .map(format -> (AttrFormatter) new CustomDateFormatter(format))
                                     .orElse(juDateFormatter);
                 } else {

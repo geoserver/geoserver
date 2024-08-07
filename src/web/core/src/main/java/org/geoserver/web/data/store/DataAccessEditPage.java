@@ -58,7 +58,6 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         } catch (IllegalArgumentException e) {
             error(e.getMessage());
             doReturn(StorePage.class);
-            return;
         }
     }
 

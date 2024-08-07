@@ -54,7 +54,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
         dropDown.setNullValid(true);
         add(dropDown);
 
-        TextField<String> inputUUID = new TextField<>("textfield", new Model<String>(""));
+        TextField<String> inputUUID = new TextField<>("textfield", new Model<>(""));
         add(inputUUID);
 
         add(createImportAction(dropDown, inputUUID, dialog));
@@ -141,7 +141,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
                 optionsGeonetwork.add(geonetwork.getName());
             }
         }
-        return new DropDownChoice<>("geonetworkName", new Model<String>(""), optionsGeonetwork);
+        return new DropDownChoice<>("geonetworkName", new Model<>(""), optionsGeonetwork);
     }
 
     public FeedbackPanel getFeedbackPanel() {

@@ -117,7 +117,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
                 String user = usernamePanel.getFormComponent().getInput();
                 password.getFormComponent().processInput();
                 String pwd = password.getFormComponent().getInput();
-                if (user != null && user.length() > 0 && pwd != null && pwd.length() > 0) {
+                if (user != null && !user.isEmpty() && pwd != null && !pwd.isEmpty()) {
                     client.setUser(user);
                     client.setPassword(pwd);
                 }

@@ -21,8 +21,8 @@ public class XMLRoleServicePanel extends RoleServicePanel<XMLRoleServiceConfig> 
     public XMLRoleServicePanel(String id, IModel<XMLRoleServiceConfig> model) {
         super(id, model);
 
-        add(new TextField("fileName").setEnabled(isNew()));
+        add(new TextField<>("fileName").setEnabled(isNew()));
         add(new CheckBox("validating"));
-        add(new TextField("checkInterval"));
+        add(new TextField<>("checkInterval"));
     }
 }

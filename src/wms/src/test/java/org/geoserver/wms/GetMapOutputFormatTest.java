@@ -7,7 +7,6 @@ package org.geoserver.wms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Set;
@@ -50,7 +49,7 @@ public class GetMapOutputFormatTest extends WMSTestSupport {
         for (GetMapOutputFormat producer : producers) {
             assertNotNull(producer.getMimeType());
             assertNotNull(producer.getOutputFormatNames());
-            assertTrue(producer.getOutputFormatNames().size() > 0);
+            assertFalse(producer.getOutputFormatNames().isEmpty());
         }
     }
 }

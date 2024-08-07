@@ -578,7 +578,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
             for (String style : styleNames) {
                 Map<String, String> parameters;
-                if (style.length() == 0 || style.equals(defaultStyle)) {
+                if (style.isEmpty() || style.equals(defaultStyle)) {
                     log.finer(
                             "'"
                                     + style
@@ -1300,7 +1300,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                         quota.add(used);
                     } catch (InterruptedException e) {
                         log.fine(e.getMessage());
-                        return;
                     }
                 };
         monitor.getQuotaStore().accept(visitor);
@@ -2191,9 +2190,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (source instanceof ResourceInfo) {
             name = ((ResourceInfo) source).prefixedName();
         } else if (source instanceof LayerInfo) {
-            name = tileLayerName(((LayerInfo) source));
+            name = tileLayerName((LayerInfo) source);
         } else if (source instanceof LayerGroupInfo) {
-            name = tileLayerName(((LayerGroupInfo) source));
+            name = tileLayerName((LayerGroupInfo) source);
         } else {
             return null;
         }
@@ -2671,7 +2670,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         map.put("Last-Modified", lastModified);
 
         final Date ifModifiedSince;
-        if (ifModSinceHeader != null && ifModSinceHeader.length() > 0) {
+        if (ifModSinceHeader != null && !ifModSinceHeader.isEmpty()) {
             ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
             if (ifModifiedSince != null) {
                 // the HTTP header has second precision
@@ -2736,7 +2735,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             int c2 = 0xFF & hash[i + 1];
             int c3 = 0xFF & hash[i + 2];
             int c4 = 0xFF & hash[i + 3];
-            int integer = ((c1 << 24) + (c2 << 16) + (c3 << 8) + (c4 << 0));
+            int integer = (c1 << 24) + (c2 << 16) + (c3 << 8) + (c4 << 0);
             sb.append(Integer.toHexString(integer));
         }
         return sb.toString();

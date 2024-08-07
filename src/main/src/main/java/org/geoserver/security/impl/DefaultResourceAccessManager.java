@@ -381,7 +381,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
             // actually set the rule, but don't complain for the default root contents
             if (node.getAuthorizedRoles(accessMode) != null
-                    && node.getAuthorizedRoles(accessMode).size() > 0
+                    && !node.getAuthorizedRoles(accessMode).isEmpty()
                     && node != root) {
                 LOGGER.warning(
                         "Rule "

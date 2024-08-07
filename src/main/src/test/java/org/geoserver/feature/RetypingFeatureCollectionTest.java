@@ -44,7 +44,7 @@ public class RetypingFeatureCollectionTest {
                     public void accepts(FeatureVisitor visitor, ProgressListener progress)
                             throws java.io.IOException {
                         lastVisitor = visitor;
-                    };
+                    }
                 };
     }
 

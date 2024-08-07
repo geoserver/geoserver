@@ -1067,7 +1067,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     continue;
                 }
                 final String path = layer.getPath();
-                if (path != null && path.length() > 0 && !"/".equals(path)) {
+                if (path != null && !path.isEmpty() && !"/".equals(path)) {
                     nestedLayers.add(layer);
                     continue;
                 }

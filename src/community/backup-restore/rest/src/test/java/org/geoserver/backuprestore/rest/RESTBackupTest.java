@@ -73,7 +73,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
             cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertEquals("COMPLETED", execution.getString("status"));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
             cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertEquals("COMPLETED", execution.getString("status"));
     }
 
     @Test
@@ -171,7 +171,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
             cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertEquals("COMPLETED", execution.getString("status"));
 
         ZipFile backupZip = new ZipFile(new File(archiveFilePath));
         ZipEntry entry = backupZip.getEntry("store.dat.1");
@@ -207,14 +207,14 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
 
         JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
-        assertTrue(
+        assertEquals(
+                "name IN ('topp','geosolutions-it')",
                 execution
                         .getJSONObject("stepExecutions")
                         .getJSONArray("step")
                         .getJSONObject(0)
                         .getJSONObject("parameters")
-                        .get("wsFilter")
-                        .equals("name IN ('topp','geosolutions-it')"));
+                        .get("wsFilter"));
 
         assertTrue(
                 "STARTED".equals(execution.getString("status"))
@@ -230,7 +230,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
             cnt++;
         }
 
-        assertTrue("COMPLETED".equals(execution.getString("status")));
+        assertEquals("COMPLETED", execution.getString("status"));
     }
 
     JSONObject postNewBackup(String body) throws Exception {

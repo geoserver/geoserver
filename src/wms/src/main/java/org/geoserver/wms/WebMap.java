@@ -131,7 +131,7 @@ public abstract class WebMap {
                 && request.getRawKvp() != null
                 && request.getRawKvp().get("LAYERS") != null) {
             String layers = ((String) request.getRawKvp().get("LAYERS")).trim();
-            if (layers.length() > 0) {
+            if (!layers.isEmpty()) {
                 filename = layers.replace(",", "_");
             }
         }

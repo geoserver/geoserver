@@ -38,7 +38,7 @@ class InputParameterValues implements Serializable {
         RASTER_LAYER,
         REFERENCE,
         SUBPROCESS;
-    };
+    }
 
     Name processName;
 

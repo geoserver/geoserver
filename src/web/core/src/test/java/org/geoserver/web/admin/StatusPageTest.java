@@ -170,7 +170,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
                                 "tabs:panel:listViewContainer:modules");
         int index = 0;
         int found = -1;
-        for (ModuleStatus item : (List<ModuleStatus>) modules.getList()) {
+        for (ModuleStatus item : modules.getList()) {
             if (item.getModule().equals("jvm")) {
                 assertEquals(System.getProperty("java.version"), item.getVersion().get());
                 found = index;

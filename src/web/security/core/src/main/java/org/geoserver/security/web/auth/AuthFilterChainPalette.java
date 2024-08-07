@@ -40,7 +40,7 @@ public class AuthFilterChainPalette extends Palette<String> {
                 id,
                 model,
                 choicesModel,
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public String getIdValue(String object, int index) {
                         return (String) getDisplayValue(object);

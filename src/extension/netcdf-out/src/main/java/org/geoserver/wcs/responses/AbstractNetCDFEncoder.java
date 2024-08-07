@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +70,6 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      * Attributes that are never copied to the main output variable from a NetCDF/GRIB source
      * because they require special handling.
      */
-    @SuppressWarnings("serial")
     protected static final Set<String> COPY_ATTRIBUTES_BLACKLIST =
             Set.of(
                     // coordinate variable names are usually changed
@@ -86,7 +84,6 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      * Global Attributes that are never copied from a NetCDF/GRIB source because they require
      * special handling.
      */
-    @SuppressWarnings("serial")
     protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST = Set.of("_NCProperties");
 
     /** Bean related to the {@link NetCDFCFParser} */
@@ -315,7 +312,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         }
     }
 
-    /** Parse encodingParams */
+    /** Parse encodingParams. */
+    @SuppressWarnings("PMD.MissingOverride")
     protected NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
         if (keys != null
@@ -692,9 +690,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 // TODO: Improve this search. Make it more smart/performant
                 @SuppressWarnings("unchecked")
                 final Set<Object> values = (Set<Object>) manager.getDimensionValues().getValues();
-                final Iterator<Object> it = values.iterator();
-                while (it.hasNext()) {
-                    Object value = it.next();
+                for (Object value : values) {
                     if (value.equals(val)) {
                         indexing[i++] = dimElement;
                         dimElement = 0;
@@ -728,9 +724,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     protected void copyAttributes(
             Variable sourceVar, Variable.Builder varb, DataPacking dataPacking) {
         AttributeContainerMutable attributesContainer = varb.getAttributeContainer();
-        Iterator<Attribute> attributesIterator = sourceVar.attributes().iterator();
-        while (attributesIterator.hasNext()) {
-            Attribute att = attributesIterator.next();
+        for (Attribute att : sourceVar.attributes()) {
             // do not allow overwrite or attributes in blacklist
             if (attributesContainer.findAttribute(att.getFullName()) == null
                     && !isBlacklistedAttribute(att, dataPacking)) {
@@ -773,9 +767,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                                     extra.getOutput(),
                                     sourceVar.getDataType(),
                                     extra.getDimensions());
-                    Iterator<Attribute> attributesIterator = sourceVar.attributes().iterator();
-                    while (attributesIterator.hasNext()) {
-                        Attribute att = attributesIterator.next();
+                    for (Attribute att : sourceVar.attributes()) {
                         outputVarb.addAttribute(att);
                     }
                 }

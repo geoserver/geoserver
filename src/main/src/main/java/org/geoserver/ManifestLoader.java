@@ -330,7 +330,7 @@ public class ManifestLoader {
          */
         public enum AboutModelType {
             VERSIONS,
-            RESOURCES;
+            RESOURCES
         }
 
         public AboutModel() {

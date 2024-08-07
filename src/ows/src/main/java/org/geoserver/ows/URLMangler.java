@@ -16,7 +16,7 @@ public interface URLMangler {
         RESOURCE,
         /** The link points to a dynamic service provided by Geoserver (WFS, WMS, WCS, etc.) */
         SERVICE
-    };
+    }
 
     /**
      * Callback that can change the contents of the baseURL, the path or the KVP map

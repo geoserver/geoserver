@@ -49,7 +49,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
     public ImportData createImportSource() throws IOException {
         File file = new File(this.file);
         return FileData.createFromFile(file);
-    };
+    }
 
     protected void initFileChooser(GeoServerFileChooser fileChooser) {
         // chooser.setFilter(new Model(new ExtensionFile"(".shp")));

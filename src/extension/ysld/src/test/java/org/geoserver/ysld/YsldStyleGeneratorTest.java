@@ -116,7 +116,7 @@ public class YsldStyleGeneratorTest {
                     @Override
                     protected void randomizeRamp() {
                         // do not randomize for this test
-                    };
+                    }
                 };
         gen.setWorkspace(ws);
 

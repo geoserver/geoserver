@@ -28,8 +28,8 @@ public class CapabilitiesKvpReaderTest {
     @Before
     public void setUp() {
         this.reader = new CapabilitiesKvpReader(new WMS(null));
-        this.kvp = new HashMap();
-        this.rawKvp = new HashMap();
+        this.kvp = new HashMap<>();
+        this.rawKvp = new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")

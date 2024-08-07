@@ -102,7 +102,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
 
         if (groupSearchBase == null) {
             logger.info("groupSearchBase is null. No group search will be performed.");
-        } else if (groupSearchBase.length() == 0) {
+        } else if (groupSearchBase.isEmpty()) {
             logger.info(
                     "groupSearchBase is empty. Searches will be performed from the context source base");
         }
@@ -216,7 +216,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                             authTemplate.search(
                                     getGroupSearchBase(),
                                     formattedFilter,
-                                    new AbstractContextMapper<Pair<String, String>>() {
+                                    new AbstractContextMapper<>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(
                                                 DirContextOperations ctx) {
@@ -287,7 +287,7 @@ public class BindingLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator
                             authTemplate.search(
                                     getGroupSearchBase(),
                                     formattedFilter,
-                                    new AbstractContextMapper<Pair<String, String>>() {
+                                    new AbstractContextMapper<>() {
                                         @Override
                                         protected Pair<String, String> doMapFromContext(
                                                 DirContextOperations ctx) {

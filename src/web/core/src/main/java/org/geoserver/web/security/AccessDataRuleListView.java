@@ -33,7 +33,7 @@ public class AccessDataRuleListView extends ListView<DataAccessRuleInfo> {
     @Override
     protected void populateItem(ListItem<DataAccessRuleInfo> item) {
         DataAccessRuleInfo ruleModel = item.getModelObject();
-        item.add(new Label("roleName", new PropertyModel<String>(ruleModel, "roleName")));
+        item.add(new Label("roleName", new PropertyModel<>(ruleModel, "roleName")));
         CheckBox readCheckBox = new CheckBox("read", new PropertyModel<>(ruleModel, "read"));
         readCheckBox.setOutputMarkupId(true);
         item.add(readCheckBox);

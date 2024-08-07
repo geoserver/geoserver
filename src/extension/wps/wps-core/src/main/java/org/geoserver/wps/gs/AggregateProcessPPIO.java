@@ -31,7 +31,7 @@ public class AggregateProcessPPIO extends XStreamPPIO {
                     @Override
                     protected MapperWrapper wrapMapper(MapperWrapper next) {
                         return new UppercaseTagMapper(next);
-                    };
+                    }
                 };
         xstream.allowTypes(new Class[] {AggregateProcess.Results.class});
         xstream.omitField(AggregateProcess.Results.class, "aggregateAttribute");

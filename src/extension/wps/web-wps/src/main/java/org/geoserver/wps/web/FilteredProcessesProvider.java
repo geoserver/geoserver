@@ -157,7 +157,7 @@ public class FilteredProcessesProvider
         props.add(new BeanProperty<>("name", "name"));
         props.add(new BeanProperty<>("description", "description"));
         props.add(
-                new AbstractProperty<FilteredProcess>("roles") {
+                new AbstractProperty<>("roles") {
                     @Override
                     public Object getPropertyValue(FilteredProcess item) {
                         return item.getRoles();
@@ -165,7 +165,7 @@ public class FilteredProcessesProvider
 
                     @Override
                     public IModel getModel(IModel itemModel) {
-                        return new PropertyModel(itemModel, "roles");
+                        return new PropertyModel<>(itemModel, "roles");
                     }
                 });
         props.add(new PropertyPlaceholder<>("edit"));

@@ -47,7 +47,7 @@ public class SpatialFilterChecker extends DefaultFilterVisitor {
 
     private void verifyGeometryProperty(Expression expression) {
         if (expression instanceof PropertyName) {
-            PropertyName pn = ((PropertyName) expression);
+            PropertyName pn = (PropertyName) expression;
 
             if (!(pn.evaluate(schema) instanceof GeometryDescriptor)) {
                 throw new ServiceException(

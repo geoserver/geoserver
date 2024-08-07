@@ -116,7 +116,7 @@ public class RetypingDataStoreTest {
         assertEquals(RENAMED, fs.getSchema().getName().getLocalPart());
         SimpleFeatureCollection fc = fs.getFeatures();
         assertEquals(RENAMED, fc.getSchema().getName().getLocalPart());
-        assertTrue(fc.size() > 0);
+        assertFalse(fc.isEmpty());
 
         // make sure the feature schema is good as well
         SimpleFeature sf = DataUtilities.first(fc);

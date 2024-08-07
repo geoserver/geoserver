@@ -46,7 +46,7 @@ public class CoverageUtils {
         final List<GeneralParameterValue> parameters = new ArrayList<>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
-        if ((params != null) && (params.values().size() > 0)) {
+        if ((params != null) && (!params.values().isEmpty())) {
             List list = params.values();
             final Iterator it = list.iterator();
             while (it.hasNext()) {
@@ -94,7 +94,7 @@ public class CoverageUtils {
         final List<ParameterValue<?>> parameters = new ArrayList<>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
-        if ((params != null) && (params.values().size() > 0)) {
+        if ((params != null) && (!params.values().isEmpty())) {
             final List<GeneralParameterValue> elements = params.values();
             for (GeneralParameterValue elem : elements) {
                 final ParameterValue<?> val = (ParameterValue<?>) elem;
@@ -146,7 +146,7 @@ public class CoverageUtils {
         final Map<String, Serializable> parameters = new HashMap<>();
         final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
-        if ((params != null) && (params.values().size() > 0)) {
+        if ((params != null) && (!params.values().isEmpty())) {
             final List list = params.values();
             final Iterator it = list.iterator();
             while (it.hasNext()) {
@@ -203,9 +203,9 @@ public class CoverageUtils {
         try {
             if (key.equalsIgnoreCase("crs")) {
                 if ((getParamValue(paramValues, index) != null)
-                        && (getParamValue(paramValues, index).length() > 0)) {
+                        && (!getParamValue(paramValues, index).isEmpty())) {
                     if ((paramValues.get(index) != null)
-                            && (((String) paramValues.get(index)).length() > 0)) {
+                            && (!((String) paramValues.get(index)).isEmpty())) {
                         value = CRS.parseWKT((String) paramValues.get(index));
                     }
                 } else {
@@ -214,7 +214,7 @@ public class CoverageUtils {
                 }
             } else if (key.equalsIgnoreCase("envelope")) {
                 if ((getParamValue(paramValues, index) != null)
-                        && (getParamValue(paramValues, index).length() > 0)) {
+                        && (!getParamValue(paramValues, index).isEmpty())) {
                     String tmp = getParamValue(paramValues, index);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {
@@ -268,14 +268,14 @@ public class CoverageUtils {
 
         try {
             if (key.equalsIgnoreCase("crs")) {
-                if ((params.get(key) != null) && (((String) params.get(key)).length() > 0)) {
+                if ((params.get(key) != null) && (!((String) params.get(key)).isEmpty())) {
                     value = CRS.parseWKT((String) params.get(key));
                 } else {
                     LOGGER.info("Unable to find a crs for the coverage param, using EPSG:4326");
                     value = CRS.decode("EPSG:4326");
                 }
             } else if (key.equalsIgnoreCase("envelope")) {
-                if ((params.get(key) != null) && (((String) params.get(key)).length() > 0)) {
+                if ((params.get(key) != null) && (!((String) params.get(key)).isEmpty())) {
                     String tmp = (String) params.get(key);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {
@@ -301,7 +301,7 @@ public class CoverageUtils {
                     AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString())) {
                 if ((params.get(key) != null)
                         && params.get(key) instanceof String
-                        && (((String) params.get(key)).length() > 0)) {
+                        && (!((String) params.get(key)).isEmpty())) {
                     String tmp = (String) params.get(key);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {

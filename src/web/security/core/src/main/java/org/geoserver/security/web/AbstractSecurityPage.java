@@ -47,7 +47,7 @@ public abstract class AbstractSecurityPage extends GeoServerSecuredPage {
     }
 
     public Link<Page> getCancelLink() {
-        return new Link<Page>("cancel") {
+        return new Link<>("cancel") {
             private static final long serialVersionUID = 1L;
 
             @Override

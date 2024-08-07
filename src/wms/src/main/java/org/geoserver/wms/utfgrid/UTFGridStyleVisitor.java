@@ -140,7 +140,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         copy.symbolizers().clear();
         copy.symbolizers().addAll(symbolizers);
         pages.push(copy);
-    };
+    }
 
     /** Returns the function return type, or {@link Object} if it could not be determined */
     Class<?> getFunctionReturnType(Function f) {

@@ -103,7 +103,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
         // TODO, Justin, is this ok ?
         if (PreAuthenticatedUserNameRoleSource.Header.equals(getRoleSource())) {
             String converterName = authConfig.getRoleConverterName();
-            if (converterName == null || converterName.length() == 0)
+            if (converterName == null || converterName.isEmpty())
                 setConverter(GeoServerExtensions.bean(GeoServerRoleConverter.class));
             else setConverter((GeoServerRoleConverter) GeoServerExtensions.bean(converterName));
         }
@@ -116,7 +116,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
             return (String) request.getAttribute(UserName);
 
         String principal = getPreAuthenticatedPrincipalName(request);
-        if (principal != null && principal.trim().length() == 0) principal = null;
+        if (principal != null && principal.trim().isEmpty()) principal = null;
         try {
             if (principal != null
                     && PreAuthenticatedUserNameRoleSource.UserGroupService.equals(
@@ -176,7 +176,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
     protected Collection<GeoServerRole> getRolesFromRoleService(
             HttpServletRequest request, String principal) throws IOException {
         boolean useActiveService =
-                getRoleServiceName() == null || getRoleServiceName().trim().length() == 0;
+                getRoleServiceName() == null || getRoleServiceName().trim().isEmpty();
 
         GeoServerRoleService service =
                 useActiveService
@@ -223,7 +223,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter
         Collection<GeoServerRole> roles = new ArrayList<>();
 
         String rolesString = request.getHeader(getRolesHeaderAttribute());
-        if (rolesString == null || rolesString.trim().length() == 0) {
+        if (rolesString == null || rolesString.trim().isEmpty()) {
             LOGGER.log(Level.WARNING, "No roles in header attribute: " + getRolesHeaderAttribute());
             return roles;
         }

@@ -65,7 +65,7 @@ public class DefaultGeoServerLoaderTest {
         protected HelloServiceInfo createServiceFromScratch(GeoServer gs) {
             return new HelloServiceInfoImpl();
         }
-    };
+    }
 
     @Before
     public void setUp() {

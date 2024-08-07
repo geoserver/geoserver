@@ -60,7 +60,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
                             @Override
                             public Component buildComponent(String id) {
                                 return current = new JDBCConnectionPanel<>(id, new Model<>(config));
-                            };
+                            }
                         },
                         new CompoundPropertyModel<>(config)));
     }

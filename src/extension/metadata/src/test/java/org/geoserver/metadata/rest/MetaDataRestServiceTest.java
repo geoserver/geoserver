@@ -24,7 +24,6 @@ import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
 import org.geoserver.metadata.data.service.impl.MetadataConstants;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,37 +64,34 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
                 (Map<String, Serializable>)
                         rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         // simple single
-        Assert.assertEquals(
-                "1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("identifier-single"));
+        assertEquals("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("identifier-single"));
         // simple list
         Serializable actualList = metadataMap.get("refsystem-as-list");
-        Assert.assertTrue(actualList instanceof List);
-        Assert.assertEquals(4, ((List<?>) actualList).size());
-        Assert.assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualList).get(0));
-        Assert.assertEquals("TAW", ((List<?>) actualList).get(1));
-        Assert.assertEquals(
-                "http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualList).get(2));
+        assertTrue(actualList instanceof List);
+        assertEquals(4, ((List<?>) actualList).size());
+        assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualList).get(0));
+        assertEquals("TAW", ((List<?>) actualList).get(1));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualList).get(2));
 
         // complex single
-        Assert.assertEquals("EPSG", metadataMap.get("referencesystem-object/code-space"));
-        Assert.assertEquals(
-                "Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
+        assertEquals("EPSG", metadataMap.get("referencesystem-object/code-space"));
+        assertEquals("Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
 
         // complex list
         Serializable actualObjectCodeSpaceList =
                 metadataMap.get("referencesystem-object-list/code-space");
-        Assert.assertTrue(actualObjectCodeSpaceList instanceof List);
-        Assert.assertEquals(6, ((List<?>) actualObjectCodeSpaceList).size());
-        Assert.assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(0));
-        Assert.assertEquals("NGI", ((List<?>) actualObjectCodeSpaceList).get(1));
-        Assert.assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(2));
+        assertTrue(actualObjectCodeSpaceList instanceof List);
+        assertEquals(6, ((List<?>) actualObjectCodeSpaceList).size());
+        assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(0));
+        assertEquals("NGI", ((List<?>) actualObjectCodeSpaceList).get(1));
+        assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(2));
 
         Serializable actualObjectCodeList = metadataMap.get("referencesystem-object-list/code");
-        Assert.assertTrue(actualObjectCodeList instanceof List);
-        Assert.assertEquals(6, ((List<?>) actualObjectCodeList).size());
-        Assert.assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualObjectCodeList).get(0));
-        Assert.assertEquals("TAW", ((List<?>) actualObjectCodeList).get(1));
-        Assert.assertEquals(
+        assertTrue(actualObjectCodeList instanceof List);
+        assertEquals(6, ((List<?>) actualObjectCodeList).size());
+        assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualObjectCodeList).get(0));
+        assertEquals("TAW", ((List<?>) actualObjectCodeList).get(1));
+        assertEquals(
                 "http://www.opengis.net/def/crs/EPSG/0/3043",
                 ((List<?>) actualObjectCodeList).get(2));
 
@@ -136,31 +132,26 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
                         (Map<String, Serializable>)
                                 rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
 
-        Assert.assertEquals(3, map.size("referencesystem-object-list"));
+        assertEquals(3, map.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = map.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = map.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
         // Should be updated list of nested objects
-        Assert.assertEquals(1, map.size("feature-catalog/feature-attribute"));
+        assertEquals(1, map.size("feature-catalog/feature-attribute"));
         ComplexMetadataMap submapTemplate = map.subMap("feature-catalog/feature-attribute", 0);
-        Assert.assertEquals(
-                "template-identifier", submapTemplate.get(String.class, "name").getValue());
-        Assert.assertEquals("Geometry", submapTemplate.get(String.class, "type").getValue());
-        Assert.assertEquals(2, submapTemplate.size("domain"));
+        assertEquals("template-identifier", submapTemplate.get(String.class, "name").getValue());
+        assertEquals("Geometry", submapTemplate.get(String.class, "type").getValue());
+        assertEquals(2, submapTemplate.size("domain"));
         ComplexMetadataMap submapdomain01 = submapTemplate.subMap("domain", 0);
         ComplexMetadataMap submapdomain02 = submapTemplate.subMap("domain", 1);
-        Assert.assertEquals(
-                "template-domain-code01", submapdomain01.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("template-domain-code01", submapdomain01.get(String.class, "code").getValue());
+        assertEquals(
                 "template-domain-code01", submapdomain01.get(String.class, "value").getValue());
-        Assert.assertEquals(
-                "template-domain-code02", submapdomain02.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("template-domain-code02", submapdomain02.get(String.class, "code").getValue());
+        assertEquals(
                 "template-domain-code02", submapdomain02.get(String.class, "value").getValue());
 
         // verify linked

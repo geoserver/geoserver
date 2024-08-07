@@ -134,9 +134,7 @@ public class DigestAuthUtils {
             throw new IllegalArgumentException("This method does not support a qop: '" + qop + "'");
         }
 
-        String digestMd5 = new String(md5Hex(digest));
-
-        return digestMd5;
+        return md5Hex(digest);
     }
 
     /**
@@ -223,6 +221,6 @@ public class DigestAuthUtils {
             throw new IllegalStateException("No MD5 algorithm available!");
         }
 
-        return new String(Hex.encode(digest.digest(data.getBytes())));
+        return String.valueOf(Hex.encode(digest.digest(data.getBytes())));
     }
 }

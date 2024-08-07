@@ -18,7 +18,7 @@ public class LocalesDropdown extends Select2DropDownChoice<Locale> {
     public LocalesDropdown(String id, IModel<Locale> model) {
         super(id, model, getLocales());
         ChoiceRenderer<Locale> locales =
-                new ChoiceRenderer<Locale>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public Object getDisplayValue(Locale object) {
                         String languageTag = object.toLanguageTag();
@@ -38,7 +38,7 @@ public class LocalesDropdown extends Select2DropDownChoice<Locale> {
         return Stream.of(Locale.getAvailableLocales())
                 .filter(l -> l != null)
                 .sorted(
-                        new Comparator<Locale>() {
+                        new Comparator<>() {
                             @Override
                             public int compare(Locale o1, Locale o2) {
                                 return o1.toLanguageTag().compareTo(o2.toLanguageTag());

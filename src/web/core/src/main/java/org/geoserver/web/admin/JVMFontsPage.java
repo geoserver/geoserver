@@ -33,7 +33,7 @@ public class JVMFontsPage extends ServerAdminPage {
     @SuppressWarnings("serial")
     private void updateModel() {
         table =
-                new GeoServerTablePanel<PreviewFont>("table", provider) {
+                new GeoServerTablePanel<>("table", provider) {
                     @Override
                     protected Component getComponentForProperty(
                             String id,

@@ -6,7 +6,7 @@
 package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
@@ -36,6 +36,6 @@ public class WFSXmlTest extends WFSTestSupport {
         parser.setValidating(true);
         parser.parse(getClass().getResourceAsStream("GetFeature-invalid.xml"));
 
-        assertTrue(parser.getValidationErrors().size() > 0);
+        assertFalse(parser.getValidationErrors().isEmpty());
     }
 }

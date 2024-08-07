@@ -58,7 +58,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
         if (roots.isEmpty()) removed.setVisible(false);
         else {
             rulesRemoved.add(
-                    new ListView<String>("rules", names(roots)) {
+                    new ListView<>("rules", names(roots)) {
                         @Override
                         protected void populateItem(ListItem<String> item) {
                             item.add(new Label("name", item.getModelObject()));
@@ -74,7 +74,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
         if (problems.isEmpty()) problematic.setVisible(false);
         else {
             rulesNotRemoved.add(
-                    new ListView<String>("problems", problems(problems)) {
+                    new ListView<>("problems", problems(problems)) {
                         @Override
                         protected void populateItem(ListItem<String> item) {
                             item.add(new Label("name", item.getModelObject()));

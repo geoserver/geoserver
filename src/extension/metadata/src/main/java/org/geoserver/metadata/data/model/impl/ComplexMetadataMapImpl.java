@@ -61,7 +61,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             Class<T> clazz, String path, int... index) {
         String strPath = String.join(PATH_SEPARATOR, concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
-        return new ComplexMetadataAttributeImpl<T>(
+        return new ComplexMetadataAttributeImpl<>(
                 getDelegate(), strPath, getOrCreateIndex(strPath, fullIndex), clazz);
     }
 

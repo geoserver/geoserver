@@ -62,7 +62,7 @@ public class NewDataPage extends GeoServerSecuredPage {
             super.error(new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject());
         }
 
-        final Form storeForm = new Form("storeForm");
+        final Form storeForm = new Form<>("storeForm");
         add(storeForm);
 
         final ArrayList<String> sortedDsNames = new ArrayList<>(getAvailableDataStores().keySet());
@@ -70,7 +70,7 @@ public class NewDataPage extends GeoServerSecuredPage {
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
         final ListView<String> dataStoreLinks =
-                new ListView<String>("vectorResources", sortedDsNames) {
+                new ListView<>("vectorResources", sortedDsNames) {
                     @Override
                     protected void populateItem(ListItem item) {
                         final String dataStoreFactoryName = item.getDefaultModelObjectAsString();
@@ -101,7 +101,7 @@ public class NewDataPage extends GeoServerSecuredPage {
         Collections.sort(sortedCoverageNames);
 
         final ListView<String> coverageLinks =
-                new ListView<String>("rasterResources", sortedCoverageNames) {
+                new ListView<>("rasterResources", sortedCoverageNames) {
                     @Override
                     protected void populateItem(ListItem item) {
                         final String coverageFactoryName = item.getDefaultModelObjectAsString();
@@ -130,7 +130,7 @@ public class NewDataPage extends GeoServerSecuredPage {
         final List<OtherStoreDescription> otherStores = getOtherStores();
 
         final ListView<OtherStoreDescription> otherStoresLinks =
-                new ListView<OtherStoreDescription>("otherStores", otherStores) {
+                new ListView<>("otherStores", otherStores) {
                     @Override
                     protected void populateItem(ListItem item) {
                         final OtherStoreDescription store =

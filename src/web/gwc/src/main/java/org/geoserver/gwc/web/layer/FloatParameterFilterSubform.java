@@ -31,7 +31,7 @@ public class FloatParameterFilterSubform
     private static final long serialVersionUID = -1715100884515717529L;
 
     private static final IConverter<Float> FLOAT =
-            new IConverter<Float>() {
+            new IConverter<>() {
 
                 private static final long serialVersionUID = 5393727015187736272L;
 
@@ -57,7 +57,7 @@ public class FloatParameterFilterSubform
             };
 
     private static final IConverter<List<Float>> CONVERT =
-            new IConverter<List<Float>>() {
+            new IConverter<>() {
 
                 private static final long serialVersionUID = 6972092160668131862L;
 
@@ -99,7 +99,7 @@ public class FloatParameterFilterSubform
         add(defaultValue);
 
         final TextArea<List<Float>> values =
-                new TextArea<List<Float>>("values", new PropertyModel<>(model, "values")) {
+                new TextArea<>("values", new PropertyModel<>(model, "values")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;
 

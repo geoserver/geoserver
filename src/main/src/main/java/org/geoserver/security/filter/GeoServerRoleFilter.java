@@ -42,7 +42,7 @@ public class GeoServerRoleFilter extends GeoServerSecurityFilter {
         headerAttribute = roleConfig.getHttpResponseHeaderAttrForIncludedRoles();
         // TODO, Justin, is this ok ?
         String converterName = roleConfig.getRoleConverterName();
-        if (converterName == null || converterName.length() == 0)
+        if (converterName == null || converterName.isEmpty())
             converter = GeoServerExtensions.bean(GeoServerRoleConverter.class);
         else converter = (GeoServerRoleConverter) GeoServerExtensions.bean(converterName);
     }

@@ -44,7 +44,7 @@ public abstract class ProcessParameterIO {
         DECODING,
         /** Both encoding and decoding supported */
         BOTH
-    };
+    }
 
     /** list of default ppios supported out of the box */
     static List<ProcessParameterIO> defaults;

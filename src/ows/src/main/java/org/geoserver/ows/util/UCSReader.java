@@ -202,7 +202,7 @@ public class UCSReader extends Reader {
         if (0 != fCharCount) {
             fCharCount--;
 
-            return ((int) fCharBuf[fCharCount]) & 0xFFFF;
+            return (fCharBuf[fCharCount]) & 0xFFFF;
         }
 
         int b0 = fInputStream.read() & 0xff; // 1st byte

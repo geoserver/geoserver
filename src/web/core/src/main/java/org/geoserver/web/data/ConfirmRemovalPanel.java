@@ -125,8 +125,8 @@ public class ConfirmRemovalPanel extends Panel {
         // modified objects root (we show it if any modified object is on the list)
         WebMarkupContainer modified = new WebMarkupContainer("modifiedObjects");
         modified.setVisible(
-                visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET).size()
-                        > 0);
+                !visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET)
+                        .isEmpty());
         add(modified);
 
         // layers modified
@@ -171,7 +171,7 @@ public class ConfirmRemovalPanel extends Panel {
     ListView<CatalogInfo> notRemovedList(final Map<CatalogInfo, StringResourceModel> notRemoved) {
         List<CatalogInfo> items = new ArrayList<>(notRemoved.keySet());
         ListView<CatalogInfo> lv =
-                new ListView<CatalogInfo>("notRemovedList", items) {
+                new ListView<>("notRemovedList", items) {
 
                     @Override
                     protected void populateItem(ListItem<CatalogInfo> item) {

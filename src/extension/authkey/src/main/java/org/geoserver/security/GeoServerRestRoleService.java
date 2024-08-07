@@ -207,7 +207,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                     if (roleObj instanceof String) {
                                         populateRoles((String) roleObj, roles);
                                     } else if (roleObj instanceof JSONArray) {
-                                        for (Object role : ((JSONArray) roleObj)) {
+                                        for (Object role : (JSONArray) roleObj) {
                                             populateRoles((String) role, roles);
                                         }
                                     }
@@ -515,7 +515,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
             // If the key wasn't in the "easy to compute" group, we need to
             // do things the hard way.
             Callable<String> authorization =
-                    new Callable<String>() {
+                    new Callable<>() {
 
                         @Override
                         public String call() throws Exception {

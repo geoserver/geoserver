@@ -139,7 +139,7 @@ public class GeoServerEnvironment {
     }
 
     private FileWatcher<Properties> loadGeoServerEnvProps(Resource propertyFile) {
-        return new FileWatcher<Properties>(propertyFile) {
+        return new FileWatcher<>(propertyFile) {
 
             @Override
             protected Properties parseFileContents(InputStream in) throws IOException {

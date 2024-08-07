@@ -126,7 +126,8 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         assertNull("Cache should be empty at test start", tileObject.getBlob());
 
         SeedRequest sr = createSeedRequest(PUB_LAKES);
-        GWCTask[] tasks = executeSeedRequest(sr);
+        @SuppressWarnings("PMD.UnusedLocalVariable")
+        GWCTask[] unUsedTasks = executeSeedRequest(sr);
 
         // verify the tasks have been queued
         assertTrue(
@@ -159,7 +160,8 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         assertNull("Cache should be empty at test start", tileObject.getBlob());
 
         SeedRequest sr = createSeedRequest(SEC_BUILDINGS);
-        GWCTask[] tasks = executeSeedRequest(sr);
+        @SuppressWarnings("PMD.UnusedLocalVariable")
+        GWCTask[] unUsedTasks = executeSeedRequest(sr);
 
         // verify the tasks have been queued
         assertTrue(
@@ -194,7 +196,8 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         assertNull("Cache should be empty at test start", tileObject.getBlob());
 
         SeedRequest sr = createSeedRequest(SEC_BUILDINGS);
-        GWCTask[] tasks = executeSeedRequest(sr);
+        @SuppressWarnings("PMD.UnusedLocalVariable")
+        GWCTask[] unUsedTasks = executeSeedRequest(sr);
 
         // verify the tasks have been queued
         assertTrue(

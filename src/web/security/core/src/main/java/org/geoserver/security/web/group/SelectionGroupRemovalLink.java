@@ -144,7 +144,7 @@ public class SelectionGroupRemovalLink extends AjaxLink<Object> {
                             public void onClose(AjaxRequestTarget target) {
                                 // if the selection has been cleared out it's sign a deletion
                                 // occurred, so refresh the table
-                                if (groups.getSelection().size() == 0) {
+                                if (groups.getSelection().isEmpty()) {
                                     setEnabled(false);
                                     target.add(SelectionGroupRemovalLink.this);
                                     target.add(groups);

@@ -72,7 +72,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
 
             return true;
         }
-    };
+    }
 
     static final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 
@@ -95,7 +95,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
         map.put(matcher, list);
 
         requestMap = Collections.unmodifiableMap(map);
-    };
+    }
 
     private Logger logger = Logging.getLogger(GeoServerSecurityMetadataSource.class);
 

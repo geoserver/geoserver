@@ -166,7 +166,7 @@ public class XMLRoleService extends AbstractRoleService {
                 Node roleNode = roleNodes.item(i);
                 String roleName = xmlXPath.getRoleNameExpression().evaluate(roleNode);
                 String parentName = xmlXPath.getParentExpression().evaluate(roleNode);
-                if (parentName != null && parentName.length() > 0) {
+                if (parentName != null && !parentName.isEmpty()) {
                     helper.role_parentMap.put(
                             helper.roleMap.get(roleName), helper.roleMap.get(parentName));
                 }

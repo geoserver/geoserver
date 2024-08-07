@@ -45,7 +45,6 @@ import org.locationtech.jts.geom.Geometry;
  *
  * @author aaime
  */
-@SuppressWarnings("serial")
 public class NewFeatureTypePage extends GeoServerSecuredPage {
 
     public static final String DATASTORE = "storeName";
@@ -86,8 +85,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
 
         attributesProvider = new AttributesProvider();
         attributeTable =
-                new GeoServerTablePanel<AttributeDescription>(
-                        "attributes", attributesProvider, true) {
+                new GeoServerTablePanel<>("attributes", attributesProvider, true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -144,8 +142,8 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
         return new SubmitLink("save") {
             @Override
             public void onSubmit() {
-                DataStore ds = null;
-                DataStoreInfo dsInfo = null;
+                DataStore ds;
+                DataStoreInfo dsInfo;
                 try {
                     // basic checks
                     dsInfo = getCatalog().getDataStore(storeId);
@@ -161,7 +159,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                     throw new RuntimeException(e);
                 }
 
-                if (attributesProvider.getAttributes().size() == 0) {
+                if (attributesProvider.getAttributes().isEmpty()) {
                     error(new ParamResourceModel("noAttributes", this).getString());
                     return;
                 }
@@ -217,7 +215,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
     }
 
     private Link<Void> cancelLink() {
-        return new Link<Void>("cancel") {
+        return new Link<>("cancel") {
 
             @Override
             public void onClick() {
@@ -236,7 +234,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                         setResponsePage(new AttributeEditPage(attribute, NewFeatureTypePage.this));
                     }
                 };
-        link.add(new Label("name", new PropertyModel<String>(itemModel, "name")));
+        link.add(new Label("name", new PropertyModel<>(itemModel, "name")));
         return link;
     }
 
@@ -274,7 +272,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
             upDown.add(new PlaceholderLink("up"));
         } else {
             ImageAjaxLink<Void> upLink =
-                    new ImageAjaxLink<Void>(
+                    new ImageAjaxLink<>(
                             "up",
                             new PackageResourceReference(
                                     getClass(), "../../img/icons/silk/arrow_up.png")) {
@@ -291,7 +289,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
             upDown.add(new PlaceholderLink("down"));
         } else {
             ImageAjaxLink<Void> downLink =
-                    new ImageAjaxLink<Void>(
+                    new ImageAjaxLink<>(
                             "down",
                             new PackageResourceReference(
                                     getClass(), "../../img/icons/silk/arrow_down.png")) {

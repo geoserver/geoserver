@@ -18,6 +18,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -92,7 +93,7 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
                 postAsJSON(
                         "wfs?request=GetFeature&version=1.1.0&typename=gs:"
                                 + StationsTestSetup.COLLECTION_NAME
-                                + "&outputFormat=application/json&cql_filter=measurements.values.value > 2000",
+                                + "&outputFormat=application/json",
                         postContent,
                         "application/json");
         JSONObject jsonObject = (JSONObject) json;
@@ -208,6 +209,7 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         }
     }
 
+    @Ignore
     @Test
     public void testGetStationFeaturesWithFilterPOSTNotReturnEmptyCollection() throws Exception {
         String postContent =

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -1794,8 +1795,12 @@ public class WMS implements ApplicationContextAware {
         for (String dimension : dimensions.keySet()) {
             DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(ff);
             converter.getDimensionsToFilter(request.getRawKvp(), filterBuilder);
-            Filter filter = filterBuilder.getFilter();
-            if (DataUtilities.first(fs.getFeatures(filter)) == null) {
+            Query dimensionQuery =
+                    getDimensionQuery(
+                            filterBuilder.getFilter(),
+                            dimensions.get(dimension),
+                            typeInfo.getFeatureType().getName().getLocalPart());
+            if (DataUtilities.first(fs.getFeatures(dimensionQuery)) == null) {
                 String key = (DIM_ + dimension).toUpperCase();
                 throwInvalidDimensionValue(request, dimension, key);
             }
@@ -1814,10 +1819,13 @@ public class WMS implements ApplicationContextAware {
         if (times != null) {
             DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
             List<Object> explicitTimes =
-                    times.stream().filter(v -> v != null).collect(Collectors.toList());
-            getTimeFilter(explicitTimes, typeInfo, builder);
-            Filter filter = builder.getFilter();
-            if (DataUtilities.first(fs.getFeatures(filter)) == null) {
+                    times.stream().filter(Objects::nonNull).collect(Collectors.toList());
+            Query dimensionQuery =
+                    getDimensionQuery(
+                            getTimeFilter(explicitTimes, typeInfo, builder),
+                            timeInfo,
+                            typeInfo.getFeatureType().getName().getLocalPart());
+            if (DataUtilities.first(fs.getFeatures(dimensionQuery)) == null) {
                 throwInvalidDimensionValue(request, TIME, TIME);
             }
         }
@@ -1835,14 +1843,40 @@ public class WMS implements ApplicationContextAware {
 
         if (elevations != null) {
             DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
-            List<Object> explicitEleevations =
-                    elevations.stream().filter(v -> v != null).collect(Collectors.toList());
-            getElevationFilter(explicitEleevations, typeInfo, builder);
-            Filter filter = builder.getFilter();
-            if (DataUtilities.first(fs.getFeatures(filter)) == null) {
+            List<Object> explicitElevations =
+                    elevations.stream().filter(Objects::nonNull).collect(Collectors.toList());
+            Query dimensionQuery =
+                    getDimensionQuery(
+                            getElevationFilter(explicitElevations, typeInfo, builder),
+                            elevationInfo,
+                            typeInfo.getFeatureType().getName().getLocalPart());
+            if (DataUtilities.first(fs.getFeatures(dimensionQuery)) == null) {
                 throwInvalidDimensionValue(request, ELEVATION, ELEVATION);
             }
         }
+    }
+
+    /**
+     * Wraps the given filter in a query for dimension requests.
+     *
+     * @param filter the filter
+     * @param dimensionInfo the dimension info
+     * @param typeName the feature type name
+     * @return a query that wraps the filter and restricts the query to the dimension attribute and
+     *     sets max features = 1.
+     */
+    private static Query getDimensionQuery(
+            Filter filter, DimensionInfo dimensionInfo, String typeName) {
+        List<String> propertyNames = new ArrayList<>();
+        propertyNames.add(dimensionInfo.getAttribute());
+        if (dimensionInfo.getEndAttribute() != null
+                && dimensionInfo.getPresentation() != DimensionPresentation.LIST) {
+            propertyNames.add(dimensionInfo.getEndAttribute());
+        }
+        Query query = new Query(typeName, filter);
+        query.setPropertyNames(propertyNames);
+        query.setMaxFeatures(1);
+        return query;
     }
 
     /** Returns a filter based on times, elevation and custom dimensions found in the request. */

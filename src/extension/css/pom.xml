@@ -28,7 +28,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-css</artifactId>
-      <version>${gt.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

@@ -93,7 +93,10 @@
     <constructor-arg value="/tmp/gwc_blobstore" />
   </bean -->
   
-  <bean id="gwcStorageBroker" class="org.geowebcache.storage.DefaultStorageBroker" destroy-method="destroy">
+  <!-- Make sure the environments are synchronized before creating the storage broker, as that triggers loading the blob stores.
+       At the time of writing, those are the only bits that can be parameterized.
+   -->
+  <bean id="gwcStorageBroker" class="org.geowebcache.storage.DefaultStorageBroker" destroy-method="destroy" depends-on="gwcSynchEnv">
     <constructor-arg ref="gwcConfigBlobStore" />
     <constructor-arg>
       <bean class="org.geowebcache.storage.TransientCache">

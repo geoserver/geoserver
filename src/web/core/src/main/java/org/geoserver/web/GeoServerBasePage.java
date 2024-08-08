@@ -25,6 +25,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -532,6 +533,10 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 JavaScriptHeaderItem.forReference(
                         new PackageResourceReference(
                                 GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+
+        // due to Content-security-policy, JS must be rendered by Wicket.  This inits the textboxes
+        // for placeholders.
+        response.render(OnDomReadyHeaderItem.forScript("$('input, textarea').placeholder();"));
 
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);

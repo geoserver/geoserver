@@ -140,7 +140,8 @@
         <module>mbtiles-store</module>
         <module>geopkg</module>
         <module>pgraster</module>
-        <module>dyndimension</module>
+        <!-- TODO WICKET8 - Fix this module and re-enable -->
+        <!--<module>dyndimension</module>-->
         <module>flatgeobuf</module>
         <module>spatialjson</module>
         <module>webp</module>

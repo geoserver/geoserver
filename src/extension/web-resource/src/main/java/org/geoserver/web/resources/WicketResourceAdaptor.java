@@ -8,9 +8,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.time.Instant;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.time.Time;
 import org.geoserver.platform.resource.Resource;
 
 /**
@@ -53,8 +53,8 @@ public class WicketResourceAdaptor extends AbstractResourceStream {
     }
 
     @Override
-    public Time lastModifiedTime() {
-        return Time.millis(resource.lastmodified());
+    public Instant lastModifiedTime() {
+        return Instant.ofEpochMilli(resource.lastmodified());
     }
 
     @Override

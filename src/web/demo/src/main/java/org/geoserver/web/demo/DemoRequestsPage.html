@@ -9,7 +9,7 @@
 
 
   <form wicket:id="demoRequestsForm">
-  <table style="height:100%;width:100%;">
+  <table class="h-100pct w-100pct">
     <tbody>
       <tr>
         <td class="label"><wicket:message key="request">Request:</wicket:message></td>
@@ -29,13 +29,13 @@
       </tr>
       <tr>
         <td class="label"><wicket:message key="url">URL:</wicket:message></td>
-        <td class="datum"><input wicket:id="url" type="text" class="text" style="width: 100%;" name="url" value=""/></td>
+        <td class="datum"><input wicket:id="url" type="text" class="text w-100pct" name="url" value=""/></td>
       </tr>
       <tr>
           <td><wicket:message key="prettyXml">Pretty XML:</wicket:message></td>
           <td><input type="checkbox" id="prettyXML" wicket:id="prettyXML"  name="prettyXML" checked></td>
       </tr>
-      <tr style="height:100%">
+      <tr>
         <td class="label"><wicket:message key="body">Body:</wicket:message></td>
         <td class="datum">
           <div class="field textarea" wicket:id="body" id="body"> </div>
@@ -43,26 +43,26 @@
       </tr>
       <tr>
         <td class="label"><wicket:message key="userName">User Name:</wicket:message></td>
-        <td class="datum"><input type="text" size="30" name="username" wicket:id="username" class="text" style="width: 120px;"/> 
+        <td class="datum"><input id="inputUsername" type="text" size="30" name="username" wicket:id="username" class="text"/>
           <wicket:message key="password">Password:</wicket:message> 
-          <input type="password" size="30" name="password" wicket:id="password" class="text" style="width: 120px;"/>
+          <input type="password" size="30" name="password" wicket:id="password" class="text w-120px"/>
         </td>
       </tr>
       <tr>
-        <td class="label" style="width:1%"></td>
-        <td class="datum" style="width:99%">
-            <div style="display:flex; flex-direction: row">
+        <td   class="label tdNoWidth"></td>
+        <td class="datum w-99pct">
+            <div id="divNewWindow">
                 <div class="button-group selfclear">
-                    <a  onclick="document.getElementById('openNewWindow').checked = false; submitRequest()"  ><wicket:message key="submit">Submit</wicket:message></a>
+                    <a id="linkSubmit"    ><wicket:message key="submit">Submit</wicket:message></a>
                 </div>
 
                 <div class="button-group selfclear">
-                    <a  onclick="document.getElementById('openNewWindow').checked = true;submitRequest()"  ><wicket:message key="openNewWindow">openNewWindow</wicket:message></a>
+                    <a id="linkSubmitNewWin"  ><wicket:message key="openNewWindow">openNewWindow</wicket:message></a>
                 </div>
             </div>
         </td>
       </tr>
-    <tr style="display:none">
+    <tr id="trNewWindow">
         <td><wicket:message key="openNewWindow">openNewWindow:</wicket:message></td>
         <td><input type="checkbox" id="openNewWindow" wicket:id="openNewWindow"  name="openNewWindow"></td>
     </tr>
@@ -74,13 +74,13 @@
     <legend>
     <span><wicket:message key="headers">openNewWindow:</wicket:message></span>
     </legend>
-    <div  id="responseHeadersDiv" style="min-height: 15px;margin-bottom:7px">
+    <div  id="responseHeadersDiv">
     </div>
     <legend>
     <span><wicket:message key="result">result:</wicket:message></span>
     </legend>
 
-    <div  id="responseDiv" style="min-height: 15px">
+    <div  id="responseDiv">
     </div>
 
 

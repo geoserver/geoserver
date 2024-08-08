@@ -280,9 +280,9 @@ public class SecurityFilterChainsPanel extends Panel {
                         @Override
                         protected void onComponentTag(ComponentTag tag) {
                             if (getChains().indexOf(theChain) == 0) {
-                                tag.put("style", "visibility:hidden");
+                                tag.put("class", "visibility-hidden");
                             } else {
-                                tag.put("style", "visibility:visible");
+                                tag.put("class", "visibility-visible");
                             }
                         }
                     };
@@ -317,9 +317,9 @@ public class SecurityFilterChainsPanel extends Panel {
                         @Override
                         protected void onComponentTag(ComponentTag tag) {
                             if (getChains().indexOf(theChain) == getChains().size() - 1) {
-                                tag.put("style", "visibility:hidden");
+                                tag.put("class", "visibility-hidden");
                             } else {
-                                tag.put("style", "visibility:visible");
+                                tag.put("class", "visibility-visible");
                             }
                         }
                     };

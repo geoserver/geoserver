@@ -12,12 +12,12 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
+// TODO WICKET8 - Verify this page works OK
 public class LanguagesEditor extends FormComponentPanel<String> {
     ListMultipleChoice<String> languages;
     DropDownChoice<String> langChoice;
@@ -56,7 +56,7 @@ public class LanguagesEditor extends FormComponentPanel<String> {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         String value = langChoice.getInput();
                         langChoice.setModelObject(null);
                         langChoice.modelChanged();
@@ -82,7 +82,7 @@ public class LanguagesEditor extends FormComponentPanel<String> {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         Collection<String> selection = languages.getModelObject();
                         List<String> languagesList = new ArrayList<>(languages.getChoices());
                         for (String selected : selection) {

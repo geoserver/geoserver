@@ -18,7 +18,6 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
@@ -39,6 +38,7 @@ import org.geoserver.taskmanager.web.model.BatchesModel;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -46,6 +46,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class BatchesPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -88,7 +89,7 @@ public class BatchesPanel extends Panel {
 
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialHeight(100);
-        ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
+        ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(
                 new AjaxLink<Object>("addNew") {
@@ -324,8 +325,7 @@ public class BatchesPanel extends Panel {
 
                                                             @Override
                                                             protected void onSubmit(
-                                                                    AjaxRequestTarget target,
-                                                                    Form<?> form) {
+                                                                    AjaxRequestTarget target) {
                                                                 Batch batch =
                                                                         TaskManagerBeans.get()
                                                                                 .getDao()
@@ -418,8 +418,7 @@ public class BatchesPanel extends Panel {
                                                                     @Override
                                                                     protected void onSubmit(
                                                                             AjaxRequestTarget
-                                                                                    target,
-                                                                            Form<?> form) {
+                                                                                    target) {
                                                                         TaskManagerBeans.get()
                                                                                 .getBjService()
                                                                                 .scheduleNow(

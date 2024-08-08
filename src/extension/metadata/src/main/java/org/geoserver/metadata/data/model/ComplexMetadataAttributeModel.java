@@ -25,7 +25,4 @@ public class ComplexMetadataAttributeModel<T extends Serializable> implements IM
     public void setObject(T object) {
         att.setValue(object);
     }
-
-    @Override
-    public void detach() {}
 }

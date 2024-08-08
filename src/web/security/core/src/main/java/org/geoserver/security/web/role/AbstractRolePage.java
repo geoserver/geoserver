@@ -152,9 +152,6 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
 
         @Override
         public void setObject(List<String> object) {}
-
-        @Override
-        public void detach() {}
     }
 
     /** Implements the actual save action */

@@ -63,9 +63,6 @@ public class RoleChoice extends DropDownChoice<String> {
         }
 
         @Override
-        public void detach() {}
-
-        @Override
         public void setObject(List<String> object) {
             throw new UnsupportedOperationException();
         }

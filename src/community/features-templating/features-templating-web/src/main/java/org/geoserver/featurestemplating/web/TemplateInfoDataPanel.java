@@ -41,6 +41,7 @@ import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public abstract class TemplateInfoDataPanel extends Panel {
 
     static final Logger LOGGER = Logging.getLogger(TemplateInfoDataPanel.class);
@@ -172,7 +173,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
             private static final long serialVersionUID = 658341311654601761L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 FileUpload upload = fileUploadField.getFileUpload();
                 if (upload == null) {
                     warn("No file selected.");

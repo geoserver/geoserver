@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.PropertyModel;
 
 /**
@@ -80,14 +79,7 @@ class AdvancedDbParamPanel extends Panel {
                 };
         advanced.add(
                 new AttributeModifier(
-                        "class",
-                        new AbstractReadOnlyModel() {
-
-                            @Override
-                            public Object getObject() {
-                                return advancedPanel.isVisible() ? "expanded" : "collapsed";
-                            }
-                        }));
+                        "class", () -> advancedPanel.isVisible() ? "expanded" : "collapsed"));
         advanced.setOutputMarkupId(true);
         return advanced;
     }

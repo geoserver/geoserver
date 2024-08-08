@@ -153,7 +153,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
 
                                     @Override
                                     public void validate(IValidatable<String> validatable) {
-                                        if (findParent(Form.class).findSubmittingButton() != null) {
+                                        if (findParent(Form.class).findSubmitter() != null) {
                                             Matcher matcher =
                                                     TIME_PATTERN.matcher(validatable.getValue());
 
@@ -178,7 +178,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
 
                                     @Override
                                     public void validate(IValidatable<String> validatable) {
-                                        if (findParent(Form.class).findSubmittingButton() != null) {
+                                        if (findParent(Form.class).findSubmitter() != null) {
                                             try {
                                                 CronExpression.validateExpression(
                                                         validatable.getValue());
@@ -211,7 +211,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
     @SuppressWarnings("unchecked")
     @Override
     public void updateModel() {
-        if (findParent(Form.class).findSubmittingButton() != null
+        if (findParent(Form.class).findSubmitter() != null
                 && typeModel.getObject() != Type.CUSTOM
                 && timeModel.getObject() != null) {
             if (typeModel.getObject() == Type.NEVER) {

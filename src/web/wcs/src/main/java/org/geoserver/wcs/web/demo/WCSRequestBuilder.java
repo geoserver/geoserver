@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,6 +31,7 @@ import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geotools.xml.transform.TransformerBase;
 
 /**
@@ -42,7 +43,7 @@ import org.geotools.xml.transform.TransformerBase;
 @SuppressWarnings("serial")
 public class WCSRequestBuilder extends GeoServerBasePage {
 
-    ModalWindow responseWindow;
+    GSModalWindow responseWindow;
 
     WCSRequestBuilderPanel builder;
 
@@ -65,20 +66,20 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         form.add(builder);
 
         // the xml popup window
-        final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
+        final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
         xmlWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
 
         // the output response window
-        responseWindow = new ModalWindow("responseWindow");
+        responseWindow = new GSModalWindow("responseWindow");
         add(responseWindow);
         // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () -> {
                             DemoRequest request = new DemoRequest(null);
                             HttpServletRequest http = GeoServerApplication.get().servletRequest();
@@ -97,7 +98,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                 new AjaxSubmitLink("execute") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         HttpServletRequest http = GeoServerApplication.get().servletRequest();
 
                         String url =
@@ -116,8 +117,8 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         target.add(builder.getFeedbackPanel());
                     }
                 });
@@ -126,7 +127,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                 new AjaxSubmitLink("executeXML") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             getRequestXML();
                             xmlWindow.show(target);
@@ -137,7 +138,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 });
@@ -146,7 +147,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                 new AjaxSubmitLink("setXml") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             var xmlText = getRequestXML();
                             xml.setModelObject(xmlText);
@@ -159,7 +160,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 });
@@ -194,6 +195,8 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         response.render(
                 JavaScriptContentHeaderItem.forScript(
                         DemoRequestsPage.demoRequestsJavascript, null));
+
+        response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wcsRequestBuilderCSS"));
     }
 
     public class WCSRequestModel implements Serializable {

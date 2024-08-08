@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
@@ -27,6 +26,7 @@ import org.geoserver.catalog.KeywordInfo;
  * Form component to edit a List<String> that makes up the keywords field of various catalog
  * objects.
  */
+// TODO WICKET8 - Verify this page works OK
 public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
     private static final long serialVersionUID = 1L;
@@ -107,7 +107,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         String value = newKeyword.getInput();
                         String lang = langChoice.getInput();
                         String vocab = vocabTextField.getInput();
@@ -148,7 +148,7 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         Collection<KeywordInfo> selection = choices.getModelObject();
                         @SuppressWarnings("unchecked")
                         List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();

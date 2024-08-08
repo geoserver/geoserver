@@ -234,7 +234,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         if (form == null) {
             return false;
         }
-        return form.findSubmittingButton() == form.get("save");
+        return form.findSubmitter().getInputName().equals("save");
     }
 
     void updateCalculatedRoles(AjaxRequestTarget target) {

@@ -29,6 +29,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
+// TODO WICKET8 - Verify this page works OK
 public class BatchRunsPage extends GeoServerSecuredPage {
     private static final long serialVersionUID = -5111795911981486778L;
 
@@ -130,8 +131,7 @@ public class BatchRunsPage extends GeoServerSecuredPage {
                                             -9184383036056499856L;
 
                                     @Override
-                                    protected void onSubmit(
-                                            AjaxRequestTarget target, Form<?> form) {
+                                    protected void onSubmit(AjaxRequestTarget target) {
                                         TaskManagerBeans.get()
                                                 .getBjService()
                                                 .interrupt(runModel.getObject());

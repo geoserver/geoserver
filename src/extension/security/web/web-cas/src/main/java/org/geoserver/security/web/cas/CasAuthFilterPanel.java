@@ -18,7 +18,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -42,6 +41,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author mcr
  */
+// TODO WICKET8 - Verify this page works OK
 public class CasAuthFilterPanel
         extends PreAuthenticatedUserNameFilterPanel<CasAuthenticationFilterConfig> {
 
@@ -67,7 +67,7 @@ public class CasAuthFilterPanel
         add(
                 new AjaxSubmitLink("casServerTest") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             testURL("casServerUrlPrefix", GeoServerCasConstants.LOGOUT_URI);
                             info(
@@ -88,7 +88,7 @@ public class CasAuthFilterPanel
         add(
                 new AjaxSubmitLink("proxyCallbackTest") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             testURL("proxyCallbackUrlPrefix", null);
                             info(
@@ -113,7 +113,7 @@ public class CasAuthFilterPanel
         add(
                 new AjaxSubmitLink("urlInCasLogoutPageTest") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             testURL("urlInCasLogoutPage", null);
                             info(

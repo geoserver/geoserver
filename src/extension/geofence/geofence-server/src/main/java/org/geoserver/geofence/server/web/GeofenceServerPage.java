@@ -154,9 +154,9 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                         @Override
                         protected void onComponentTag(ComponentTag tag) {
                             if (rulesModel.canUp(rule)) {
-                                tag.put("style", "visibility:visible");
+                                tag.put("class", "visibility-visible");
                             } else {
-                                tag.put("style", "visibility:hidden");
+                                tag.put("class", "visibility-hidden");
                             }
                         }
                     };
@@ -183,9 +183,9 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
                         @Override
                         protected void onComponentTag(ComponentTag tag) {
                             if (rulesModel.canDown(rule)) {
-                                tag.put("style", "visibility:visible");
+                                tag.put("class", "visibility-visible");
                             } else {
-                                tag.put("style", "visibility:hidden");
+                                tag.put("class", "visibility-hidden");
                             }
                         }
                     };

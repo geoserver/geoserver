@@ -11,6 +11,8 @@ import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -49,6 +51,15 @@ public class LogPage extends GeoServerSecuredPage {
     int lines = 1000;
 
     File logFile;
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(
+                OnDomReadyHeaderItem.forScript(
+                        "var textArea = document.getElementById('logs');"
+                                + "textArea.scrollTop = textArea.scrollHeight;"));
+    }
 
     @SuppressWarnings("serial")
     public LogPage(PageParameters params) {

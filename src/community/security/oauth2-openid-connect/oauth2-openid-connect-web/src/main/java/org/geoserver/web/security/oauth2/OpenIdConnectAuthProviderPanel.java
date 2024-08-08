@@ -50,6 +50,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
+// TODO WICKET8 - Verify this page works OK
 public class OpenIdConnectAuthProviderPanel
         extends GeoServerOAuth2AuthProviderPanel<OpenIdConnectFilterConfig> {
 
@@ -201,12 +202,12 @@ public class OpenIdConnectAuthProviderPanel
                     new AjaxButton("discover") {
 
                         @Override
-                        protected void onError(AjaxRequestTarget target, Form<?> form) {
-                            onSubmit(target, form);
+                        protected void onError(AjaxRequestTarget target) {
+                            onSubmit(target);
                         }
 
                         @Override
-                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        protected void onSubmit(AjaxRequestTarget target) {
                             url.processInput();
                             discover(url.getInput(), target);
                         }

@@ -571,9 +571,6 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.select(
                 "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
-        form.setValue(
-                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
@@ -598,24 +595,14 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.select(
                 "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
+
+        // set the titles
+        form.setValue(
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
         form.setValue(
                 "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
-        tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
-        form.select(
-                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
-                20);
-        form.setValue(
-                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
-                "another international title");
-        tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
-                "click");
-
-        // set mandatory fields
-        form = tester.newFormTester("publishedinfo");
+                "an international abstract");
 
         form.setValue("tabs:panel:name", "international-layer-group");
         form.setValue("tabs:panel:bounds:minX", "-180");
@@ -623,6 +610,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:maxX", "180");
         form.setValue("tabs:panel:bounds:maxY", "90");
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+        form.select("tabs:panel:mode", 0);
         form.submit("save");
         tester.assertNoErrorMessage();
     }

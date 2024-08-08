@@ -55,6 +55,7 @@ import org.geoserver.web.security.LayerAccessDataRulePanel;
  *
  * @author Niels Charlier
  */
+// TODO WICKET8 - Verify this page works OK
 public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         extends GeoServerSecuredPage {
 
@@ -302,7 +303,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         return new GeoserverAjaxSubmitLink("apply", this) {
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 doSave(false);
             }
         };

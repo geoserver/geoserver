@@ -8,14 +8,13 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -24,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidator;
 import org.geoserver.web.data.store.panel.FileModel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -34,7 +34,7 @@ import org.geotools.util.logging.Logging;
 public class FileInput extends Panel {
     private static final Logger LOGGER = Logging.getLogger(FileInput.class);
     protected TextField<String> textField;
-    protected ModalWindow dialog;
+    protected GSModalWindow dialog;
     protected IModel<? extends FileFilter> fileFilter;
 
     /**
@@ -52,7 +52,7 @@ public class FileInput extends Panel {
         super(id, paramValue);
 
         // add the dialog for the file chooser
-        add(dialog = new ModalWindow("dialog"));
+        add(dialog = new GSModalWindow("dialog"));
 
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);
@@ -113,7 +113,7 @@ public class FileInput extends Panel {
                     }
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         File file = null;
                         textField.processInput();
                         String input = textField.getConvertedInput();
@@ -128,14 +128,15 @@ public class FileInput extends Panel {
 
                                     @Override
                                     protected void fileClicked(
-                                            File file, AjaxRequestTarget target) {
+                                            File file, Optional<AjaxRequestTarget> target) {
                                         // clear the raw input of the field won't show the new model
                                         // value
                                         textField.clearInput();
                                         textField.setModelObject(file.getAbsolutePath());
-
-                                        target.add(textField);
-                                        dialog.close(target);
+                                        if (target.isPresent()) {
+                                            target.get().add(textField);
+                                            dialog.close(target.get());
+                                        }
                                     };
                                 };
                         chooser.setFileTableHeight(null);

@@ -53,6 +53,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.springframework.context.ApplicationContext;
 
+// TODO WICKET8 - Verify this page works OK
 public class GlobalSettingsPage extends ServerAdminPage {
 
     private static final long serialVersionUID = 4716657682337915996L;
@@ -237,18 +238,18 @@ public class GlobalSettingsPage extends ServerAdminPage {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.add(form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(getForm());
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     onSave(false);
                 } catch (IllegalArgumentException e) {
-                    form.error(e.getMessage());
-                    target.add(form);
+                    getForm().error(e.getMessage());
+                    target.add(getForm());
                 }
             }
         };

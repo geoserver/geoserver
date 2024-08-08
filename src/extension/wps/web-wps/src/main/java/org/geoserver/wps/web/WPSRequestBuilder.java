@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
@@ -210,6 +210,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         response.render(
                 JavaScriptContentHeaderItem.forScript(
                         DemoRequestsPage.demoRequestsJavascript, null));
+        response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wpsRequestBuilderCSS"));
     }
 
     public class WPSRequestModel implements Serializable {

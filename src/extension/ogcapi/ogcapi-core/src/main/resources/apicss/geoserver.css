@@ -78,4 +78,7 @@ header a {
 .bg-process-inputs {
   background-color: #d3f9d8;
   color: #0f5132;
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
 }

@@ -21,7 +21,6 @@ import org.geoserver.schemalessfeatures.data.SchemalessFeatureSource;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
 import org.geoserver.schemalessfeatures.mongodb.filter.MongoTypeFinder;
 import org.geoserver.schemalessfeatures.mongodb.filter.SchemalessFilterToMongo;
-import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
 import org.geotools.api.data.FeatureReader;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.QueryCapabilities;
@@ -188,8 +187,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
         SimpleReprojectingVisitor reprojectingFilterVisitor = new SimpleReprojectingVisitor();
         f = (Filter) f.accept(reprojectingFilterVisitor, null);
 
-        SchemalessFilterToMongo v =
-                new SchemalessFilterToMongo((DynamicFeatureType) getSchema(), collection);
+        SchemalessFilterToMongo v = new SchemalessFilterToMongo(getSchema(), collection);
 
         return (DBObject) f.accept(v, null);
     }

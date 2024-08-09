@@ -7,7 +7,7 @@ package org.geoserver.schemalessfeatures.mongodb.filter;
 import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
-import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.mongodb.AbstractFilterToMongo;
@@ -17,12 +17,9 @@ public class SchemalessFilterToMongo extends AbstractFilterToMongo {
 
     private MongoTypeFinder typeFinder;
 
-    private DynamicFeatureType featureType;
-
-    public SchemalessFilterToMongo(
-            DynamicFeatureType featureType, MongoCollection<DBObject> collection) {
+    public SchemalessFilterToMongo(FeatureType featureType, MongoCollection<DBObject> collection) {
         super();
-        this.featureType = featureType;
+        setFeatureType(featureType);
         this.typeFinder = new MongoTypeFinder(featureType.getName(), collection);
     }
 

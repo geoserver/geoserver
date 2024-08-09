@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-ogcapi</artifactId>
+    <version>2.26-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-web-3d-geovolumes</artifactId>
+  <packaging>jar</packaging>
+  <name>OGC API 3D GeoVolumes web module</name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-web-ogcapi</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-ogcapi-3d-geovolumes</artifactId>
+      <version>${gs.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

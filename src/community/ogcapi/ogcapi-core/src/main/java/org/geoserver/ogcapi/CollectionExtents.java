@@ -17,12 +17,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 
 /** Extent details (including spatial and temporal). */
 @JsonPropertyOrder({"spatial", "temporal"})
 public class CollectionExtents {
 
+    public static final String WGS84H = "http://www.opengis.net/def/crs/OGC/0/CRS84h";
+    public static final String WGS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
     List<ReferencedEnvelope> spatial;
     DateRange temporal;
 
@@ -31,20 +35,57 @@ public class CollectionExtents {
 
         public List<double[]> getBbox() {
             if (spatial != null) {
-                return spatial.stream()
-                        .map(
-                                re ->
-                                        new double[] {
-                                            re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()
-                                        })
-                        .collect(Collectors.toList());
+                return spatial.stream().map(re -> getDoubles(re)).collect(Collectors.toList());
             } else {
                 return null;
             }
         }
 
+        private double[] getDoubles(ReferencedEnvelope re) {
+            if (re instanceof ReferencedEnvelope3D) {
+                ReferencedEnvelope3D re3d = (ReferencedEnvelope3D) re;
+                return new double[] {
+                    re.getMinX(),
+                    re.getMinY(),
+                    re3d.getMinZ(),
+                    re.getMaxX(),
+                    re.getMaxY(),
+                    re3d.getMaxZ()
+                };
+            }
+            return new double[] {re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()};
+        }
+
+        public void setBbox(List<double[]> bbox) {
+            if (bbox != null) {
+                spatial =
+                        bbox.stream()
+                                .map(b -> toReferencedEnvelope(b))
+                                .collect(Collectors.toList());
+            } else {
+                spatial = null;
+            }
+        }
+
+        private ReferencedEnvelope toReferencedEnvelope(double[] b) {
+            // handle the 3D case first
+            if (b.length == 6)
+                return new ReferencedEnvelope3D(
+                        b[0], b[3], b[1], b[4], b[2], b[5], DefaultGeographicCRS.WGS84_3D);
+            if (b.length != 4)
+                throw new IllegalArgumentException("bbox array can contain either 4 or 6 values");
+            return new ReferencedEnvelope(b[0], b[2], b[1], b[3], DefaultGeographicCRS.WGS84);
+        }
+
         public String getCrs() {
-            return "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+            if (spatial != null
+                    && spatial.stream().anyMatch(re -> re instanceof ReferencedEnvelope3D))
+                return WGS84H;
+            return WGS84;
+        }
+
+        public void setCrs(String crs) {
+            // ignore for the moment, no other type of bbox is allowed for collection extents
         }
     }
 
@@ -80,6 +121,9 @@ public class CollectionExtents {
             return "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian";
         }
     }
+
+    /** For Jackson parsing */
+    protected CollectionExtents() {}
 
     public CollectionExtents(List<ReferencedEnvelope> spatial, DateRange temporal) {
         this.spatial = spatial;
@@ -124,6 +168,11 @@ public class CollectionExtents {
         } else {
             return null;
         }
+    }
+
+    // Made available for Jackson to use for parsing
+    protected void setSpatialExtents(SpatialExtents spatialExtents) {
+        // The creation of the object has the side effect of updating CollectionExtents.spatial
     }
 
     @JsonProperty("temporal")

@@ -15,6 +15,7 @@ This plugin includes implementation of a set of OGC API service implementations
    coverages/index
    styles/index
    tiled-features/index
+   3dgeovolumes/index
    testbed
 
 .. warning::

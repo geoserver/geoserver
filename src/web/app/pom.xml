@@ -1612,6 +1612,11 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-3d-geovolumes</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-ogcapi</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1646,7 +1651,11 @@
           <artifactId>gs-web-tiles</artifactId>
           <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-3d-geovolumes</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>

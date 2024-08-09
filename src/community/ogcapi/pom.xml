@@ -35,14 +35,17 @@
     <module>dggs</module>
     <module>ogcapi-coverages</module>
     <module>ogcapi-coverages-assembly</module>
-    <module>web-ogcapi</module>
+    <module>ogcapi-3d-geovolumes</module>
+    <module>ogcapi-3d-geovolumes-assembly</module>
 
+    <module>web-ogcapi</module>
     <module>web-coverages</module>
     <module>web-features</module>
     <module>web-images</module>
     <module>web-maps</module>
     <module>web-styles</module>
     <module>web-tiles</module>
+    <module>web-3d-geovolumes</module>
 
   </modules>
 

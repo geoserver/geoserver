@@ -22,12 +22,29 @@ public class AbstractCollectionDocument<T> extends AbstractDocument {
     protected T subject;
     protected List<StyleDocument> styles = new ArrayList<>();
 
+    /** Builds an abstract collection without a subject */
+    public AbstractCollectionDocument() {}
+
     /**
      * Builds an abstract collection around the provided subject. Call with null if the collection
      * happens to have none.
      */
     public AbstractCollectionDocument(T subject) {
         this.subject = subject;
+    }
+
+    /**
+     * Copy constructor
+     *
+     * @param other
+     */
+    protected AbstractCollectionDocument(AbstractCollectionDocument<T> other) {
+        super(other);
+        this.title = other.title;
+        this.description = other.description;
+        this.extent = other.extent;
+        this.subject = other.subject;
+        this.styles.addAll(other.styles);
     }
 
     /**

@@ -76,6 +76,19 @@ public class Link {
         this.title = title;
     }
 
+    /** Copy constructor */
+    public Link(Link other) {
+        this.href = other.href;
+        this.rel = other.rel;
+        this.type = other.type;
+        this.title = other.title;
+        this.classification = other.classification;
+        this.templated = other.templated;
+        this.merge = other.merge;
+        this.body = other.body;
+        this.method = other.method;
+    }
+
     @JacksonXmlProperty(namespace = ATOM_NS, isAttribute = true)
     public String getHref() {
         return href;

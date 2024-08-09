@@ -15,6 +15,7 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLHTMLOutput.PREVIEW_TCRS_MAP;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
+import static org.geoserver.wms.capabilities.DimensionHelper.getDataType;
 
 import freemarker.template.TemplateMethodModelEx;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -33,12 +35,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -49,6 +56,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -84,12 +92,14 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.capabilities.CapabilityUtil;
+import org.geoserver.wms.capabilities.DimensionHelper;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.api.style.Style;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -97,6 +107,7 @@ import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.grid.GridSubset;
 import org.locationtech.jts.geom.Envelope;
 
@@ -170,13 +181,6 @@ public class MapMLDocumentBuilder {
 
     private Boolean isMultiExtent = MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
     private MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
-
-    static {
-        PREVIEW_TCRS_MAP.put("OSMTILE", new TiledCRS("OSMTILE"));
-        PREVIEW_TCRS_MAP.put("CBMTILE", new TiledCRS("CBMTILE"));
-        PREVIEW_TCRS_MAP.put("APSTILE", new TiledCRS("APSTILE"));
-        PREVIEW_TCRS_MAP.put("WGS84", new TiledCRS("WGS84"));
-    }
 
     /**
      * Constructor
@@ -1009,10 +1013,6 @@ public class MapMLDocumentBuilder {
         List<Extent> extents = new ArrayList<>();
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
             Extent extent = new Extent();
-            if (isMultiExtent) {
-                extent.setHidden(null); // not needed for multi-extent
-                extent.setLabel(mapMLLayerMetadata.layerTitle);
-            }
             extent.setUnits(projType);
             extentList = extent.getInputOrDatalistOrLink();
 
@@ -1054,10 +1054,25 @@ public class MapMLDocumentBuilder {
             String dimension = layerMeta.get("mapml.dimension", String.class);
             prepareExtentForLayer(mapMLLayerMetadata, dimension);
             generateTemplatedLinks(mapMLLayerMetadata);
+            if (isMultiExtent || isSingleLayerWithDimensionOptions(mapMLLayerMetadataList)) {
+                extent.setHidden(null); // not needed for multi-extent
+                extent.setLabel(mapMLLayerMetadata.layerTitle);
+            }
             extents.add(extent);
         }
 
         return extents;
+    }
+
+    private boolean isSingleLayerWithDimensionOptions(
+            List<MapMLLayerMetadata> mapMLLayerMetadataList) {
+        if (mapMLLayerMetadataList.size() == 1) {
+            MapMLLayerMetadata metadata = mapMLLayerMetadataList.get(0);
+            return metadata.isTimeEnabled()
+                    || metadata.isElevationEnabled()
+                    || StringUtils.isNotBlank(metadata.getCustomDimension());
+        }
+        return false;
     }
 
     /**
@@ -1074,47 +1089,134 @@ public class MapMLDocumentBuilder {
         }
         LayerInfo layerInfo = mapMLLayerMetadata.getLayerInfo();
         ResourceInfo resourceInfo = layerInfo.getResource();
+        if (resourceInfo instanceof FeatureTypeInfo) {
+            prepareFeatureExtent((FeatureTypeInfo) resourceInfo, mapMLLayerMetadata, dimension);
+        } else if (resourceInfo instanceof CoverageInfo) {
+            prepareCoverageExtent((CoverageInfo) resourceInfo, mapMLLayerMetadata, dimension);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void prepareFeatureExtent(
+            FeatureTypeInfo typeInfo, MapMLLayerMetadata layerMetadata, String dimension)
+            throws IOException {
+        MetadataMap metadataMap = typeInfo.getMetadata();
+        DimensionOptions options;
         if ("Time".equalsIgnoreCase(dimension)) {
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
-                DimensionInfo timeInfo =
-                        typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-                if (timeInfo.isEnabled()) {
-                    mapMLLayerMetadata.setTimeEnabled(true);
-                    Set<Date> dates = wms.getFeatureTypeTimes(typeInfo);
-                    Select select = new Select();
-                    select.setId("time");
-                    select.setName("time");
-                    extentList.add(select);
-                    List<Option> options = select.getOptions();
-                    for (Date date : dates) {
-                        Option o = new Option();
-                        o.setContent(new SimpleDateFormat(DATE_FORMAT).format(date));
-                        options.add(o);
-                    }
-                }
+            options = initOptions(layerMetadata, metadataMap, ResourceInfo.TIME);
+            if (options.isAvailable()) {
+                options.addDates(wms.getFeatureTypeTimes(typeInfo));
             }
         } else if ("Elevation".equalsIgnoreCase(dimension)) {
-            if (resourceInfo instanceof FeatureTypeInfo) {
-                FeatureTypeInfo typeInfo = (FeatureTypeInfo) resourceInfo;
-                DimensionInfo elevInfo =
-                        typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
-                if (elevInfo.isEnabled()) {
-                    mapMLLayerMetadata.setElevationEnabled(true);
-                    Set<Double> elevs = wms.getFeatureTypeElevations(typeInfo);
-                    Select select = new Select();
-                    select.setId("elevation");
-                    select.setName("elevation");
-                    extentList.add(select);
-                    List<Option> options = select.getOptions();
-                    for (Double elev : elevs) {
-                        Option o = new Option();
-                        o.setContent(elev.toString());
-                        options.add(o);
+            options = initOptions(layerMetadata, metadataMap, ResourceInfo.ELEVATION);
+            if (options.isAvailable()) {
+                options.addDoubles(wms.getFeatureTypeElevations(typeInfo));
+            }
+        } else {
+            options = initOptions(layerMetadata, metadataMap, dimension);
+            if (options.isAvailable()) {
+                DimensionInfo info = options.getInfo();
+                final TreeSet<Object> values = wms.getDimensionValues(typeInfo, info);
+                final Optional<Class<?>> dataTypeOpt = getDataType(values);
+                if (dataTypeOpt.isPresent()) {
+                    final Class<?> type = dataTypeOpt.get();
+                    if (Date.class.isAssignableFrom(type)) {
+                        options.addDates((Collection<Date>) (Collection<?>) values);
+                    } else if (Number.class.isAssignableFrom(type)) {
+                        options.addNumbers((Collection<Number>) (Collection<?>) values);
+                    } else {
+                        final List<String> valuesList =
+                                values.stream()
+                                        .filter(x -> x != null)
+                                        .map(x -> x.toString())
+                                        .collect(Collectors.toList());
+                        options.addStrings(valuesList);
                     }
                 }
             }
         }
+    }
+
+    private void prepareCoverageExtent(
+            CoverageInfo cvInfo, MapMLLayerMetadata layerMetadata, String dimension)
+            throws IOException {
+        MetadataMap metadataMap = cvInfo.getMetadata();
+        DimensionOptions options;
+        DimensionInfo dimInfo;
+        ReaderDimensionsAccessor accessor;
+        if ("Time".equalsIgnoreCase(dimension)) {
+            options = initOptions(layerMetadata, metadataMap, ResourceInfo.TIME);
+            if (options.isAvailable()) {
+                dimInfo = options.getInfo();
+                accessor = getAccessor(cvInfo);
+                DimensionHelper.TemporalDimensionRasterHelper helper =
+                        new DimensionHelper.TemporalDimensionRasterHelper(dimInfo, accessor);
+
+                TreeSet<Object> domain = helper.getDomain();
+                String values = helper.getRepresentation(domain);
+                Collection<String> dates = Arrays.asList(values.split(","));
+                options.addStrings(dates);
+            }
+
+        } else if ("elevation".equalsIgnoreCase(dimension)) {
+            options = initOptions(layerMetadata, metadataMap, ResourceInfo.ELEVATION);
+            if (options.isAvailable()) {
+                dimInfo = options.getInfo();
+                accessor = getAccessor(cvInfo);
+
+                DimensionHelper.ElevationDimensionRasterHelper helper =
+                        new DimensionHelper.ElevationDimensionRasterHelper(dimInfo, accessor);
+
+                TreeSet<Object> domain = helper.getDomain();
+                String values = helper.getRepresentation(domain);
+                Collection<String> elevations = Arrays.asList(values.split(","));
+                options.addStrings(elevations);
+            }
+        }
+        /*
+        TODO:
+        custom dimensions setting is not trivial due to the custom_dimension_ prefix.
+        We need to properly manage it and make sure the options are properly propagated
+        */
+    }
+
+    private ReaderDimensionsAccessor getAccessor(CoverageInfo cvInfo) throws IOException {
+        GridCoverage2DReader reader = null;
+        Catalog catalog = cvInfo.getCatalog();
+        if (catalog == null)
+            throw new ServiceException(
+                    "Unable to acquire catalog resource for coverage: " + cvInfo.getName());
+
+        CoverageStoreInfo csinfo = cvInfo.getStore();
+        if (csinfo == null)
+            throw new ServiceException(
+                    "Unable to acquire coverage store resource for coverage: " + cvInfo.getName());
+
+        try {
+            reader = (GridCoverage2DReader) cvInfo.getGridCoverageReader(null, null);
+        } catch (Throwable t) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Unable to acquire a reader for this coverage with format: "
+                            + csinfo.getFormat().getName(),
+                    t);
+        }
+        if (reader == null) {
+            throw new ServiceException(
+                    "Unable to acquire a reader for this coverage with format: "
+                            + csinfo.getFormat().getName());
+        }
+        ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
+        return accessor;
+    }
+
+    private DimensionOptions initOptions(
+            MapMLLayerMetadata mapMLLayerMetadata, MetadataMap metadata, String dimName) {
+        DimensionOptions options = new DimensionOptions(mapMLLayerMetadata, metadata, dimName);
+        if (options.isAvailable()) {
+            extentList.add(options.getSelect());
+        }
+        return options;
     }
 
     /**
@@ -1222,13 +1324,10 @@ public class MapMLDocumentBuilder {
         } else {
             params.put("format", imageFormat);
         }
-        if (mapMLLayerMetadata.isTimeEnabled()) {
-            params.put("time", "{time}");
-        }
-        if (mapMLLayerMetadata.isElevationEnabled()) {
-            params.put("elevation", "{elevation}");
-        }
-        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
+        setTimeParam(mapMLLayerMetadata, params, gstl);
+        setElevationParam(mapMLLayerMetadata, params, gstl);
+        setCustomDimensionParam(mapMLLayerMetadata, params, gstl);
+        setCqlFilterParam(mapMLLayerMetadata, params);
         String urlTemplate = "";
         try {
             urlTemplate =
@@ -1345,13 +1444,10 @@ public class MapMLDocumentBuilder {
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("language", this.request.getLocale().getLanguage());
         params.put("styles", mapMLLayerMetadata.getStyleName());
-        if (mapMLLayerMetadata.isTimeEnabled()) {
-            params.put("time", "{time}");
-        }
-        if (mapMLLayerMetadata.isElevationEnabled()) {
-            params.put("elevation", "{elevation}");
-        }
-        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
+        setTimeParam(mapMLLayerMetadata, params, null);
+        setElevationParam(mapMLLayerMetadata, params, null);
+        setCustomDimensionParam(mapMLLayerMetadata, params, null);
+        setCqlFilterParam(mapMLLayerMetadata, params);
         params.put("bbox", "{txmin},{tymin},{txmax},{tymax}");
         if (mapMLLayerMetadata.isUseFeatures()) {
             params.put("format", MAPML_MIME_TYPE);
@@ -1493,13 +1589,10 @@ public class MapMLDocumentBuilder {
         params.put("crs", projType.getCRSCode());
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("styles", mapMLLayerMetadata.getStyleName());
-        if (cqlFilter.isPresent()) params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
-        if (mapMLLayerMetadata.isTimeEnabled()) {
-            params.put("time", "{time}");
-        }
-        if (mapMLLayerMetadata.isElevationEnabled()) {
-            params.put("elevation", "{elevation}");
-        }
+        setCqlFilterParam(mapMLLayerMetadata, params);
+        setTimeParam(mapMLLayerMetadata, params, null);
+        setElevationParam(mapMLLayerMetadata, params, null);
+        setCustomDimensionParam(mapMLLayerMetadata, params, null);
         params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
         if (mapMLLayerMetadata.isUseFeatures()) {
             params.put("format", MAPML_MIME_TYPE);
@@ -1647,12 +1740,10 @@ public class MapMLDocumentBuilder {
         if (mapMLLayerMetadata.getCqlFilter() != null) {
             params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         }
-        if (mapMLLayerMetadata.isTimeEnabled()) {
-            params.put("time", "{time}");
-        }
-        if (mapMLLayerMetadata.isElevationEnabled()) {
-            params.put("elevation", "{elevation}");
-        }
+        setTimeParam(mapMLLayerMetadata, params, null);
+        setElevationParam(mapMLLayerMetadata, params, null);
+        setCustomDimensionParam(mapMLLayerMetadata, params, null);
+
         if (mapMLLayerMetadata.isUseTiles()) {
             params.put("bbox", "{txmin},{tymin},{txmax},{tymax}");
             params.put("width", "256");
@@ -1677,6 +1768,59 @@ public class MapMLDocumentBuilder {
         }
         queryLink.setTref(urlTemplate);
         extentList.add(queryLink);
+    }
+
+    private void setCqlFilterParam(
+            MapMLLayerMetadata mapMLLayerMetadata, HashMap<String, String> params) {
+        if (cqlFilter.isPresent()) {
+            params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
+        }
+    }
+
+    private void setElevationParam(
+            MapMLLayerMetadata mapMLLayerMetadata,
+            HashMap<String, String> params,
+            GeoServerTileLayer tileLayer) {
+        if (mapMLLayerMetadata.isElevationEnabled()
+                && checkTileLayerParam(tileLayer, "elevation")) {
+            params.put("elevation", "{elevation}");
+        }
+    }
+
+    private void setTimeParam(
+            MapMLLayerMetadata mapMLLayerMetadata,
+            HashMap<String, String> params,
+            GeoServerTileLayer tileLayer) {
+        if (mapMLLayerMetadata.isTimeEnabled() && checkTileLayerParam(tileLayer, "time")) {
+            params.put("time", "{time}");
+        }
+    }
+
+    private void setCustomDimensionParam(
+            MapMLLayerMetadata mapMLLayerMetadata,
+            HashMap<String, String> params,
+            GeoServerTileLayer tileLayer) {
+        String customDimension = mapMLLayerMetadata.getCustomDimension();
+        if (StringUtils.isNotBlank(customDimension)
+                && checkTileLayerParam(tileLayer, customDimension)) {
+            params.put(customDimension, "{" + customDimension + "}");
+        }
+    }
+
+    private boolean checkTileLayerParam(GeoServerTileLayer tileLayer, String name) {
+        // If no GeoServerTileLayer has been provided, we don't need to check it and
+        // we can set the param.
+        if (tileLayer == null) return true;
+        // If a GeoServerTileLayer has been provided, we need to check if it contains
+        // a filter to deal with that specific dimension and only in that case we add
+        // the param.
+        List<ParameterFilter> paramFilters = tileLayer.getParameterFilters();
+        for (ParameterFilter param : paramFilters) {
+            if (name.equalsIgnoreCase(param.getKey())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -2088,6 +2232,81 @@ public class MapMLDocumentBuilder {
         }
     }
 
+    static class DimensionOptions {
+
+        DimensionInfo info;
+        List<Option> options;
+        Select select;
+        boolean available;
+
+        public DimensionOptions(
+                MapMLLayerMetadata mapMLLayerMetadata, MetadataMap metadata, String name) {
+            info = metadata.get(name, DimensionInfo.class);
+            if (info != null && info.isEnabled()) {
+                if ("elevation".equalsIgnoreCase(name)) {
+                    mapMLLayerMetadata.setElevationEnabled(true);
+                } else if ("time".equalsIgnoreCase(name)) {
+                    mapMLLayerMetadata.setTimeEnabled(true);
+                } else {
+                    mapMLLayerMetadata.setCustomDimension(name);
+                }
+                available = true;
+                select = new Select();
+                select.setId(name);
+                select.setName(name);
+                options = select.getOptions();
+            }
+        }
+
+        public DimensionInfo getInfo() {
+            return info;
+        }
+
+        public List<Option> getOptions() {
+            return options;
+        }
+
+        public Select getSelect() {
+            return select;
+        }
+
+        public boolean isAvailable() {
+            return available;
+        }
+
+        public void addStrings(Collection<String> values) {
+            for (String value : values) {
+                Option o = new Option();
+                o.setContent(value);
+                options.add(o);
+            }
+        }
+
+        public void addDates(Collection<Date> dates) {
+            for (Date date : dates) {
+                Option o = new Option();
+                o.setContent(new SimpleDateFormat(DATE_FORMAT).format(date));
+                options.add(o);
+            }
+        }
+
+        public void addDoubles(Collection<Double> values) {
+            for (Double value : values) {
+                Option o = new Option();
+                o.setContent(value.toString());
+                options.add(o);
+            }
+        }
+
+        public void addNumbers(Collection<Number> values) {
+            for (Number value : values) {
+                Option o = new Option();
+                o.setContent(value.toString());
+                options.add(o);
+            }
+        }
+    }
+
     /** MapML layer metadata */
     static class MapMLLayerMetadata {
         private String cqlFilter;
@@ -2110,6 +2329,7 @@ public class MapMLDocumentBuilder {
 
         private boolean timeEnabled;
         private boolean elevationEnabled;
+        private String customDimension;
 
         private ReferencedEnvelope bbbox;
 
@@ -2239,6 +2459,24 @@ public class MapMLDocumentBuilder {
          */
         public void setTimeEnabled(boolean timeEnabled) {
             this.timeEnabled = timeEnabled;
+        }
+
+        /**
+         * get the layer's enabled custom dimension (if any)
+         *
+         * @return customDimension
+         */
+        public String getCustomDimension() {
+            return customDimension;
+        }
+
+        /**
+         * set the enabled customDimension
+         *
+         * @param customDimension
+         */
+        public void setCustomDimension(String customDimension) {
+            this.customDimension = customDimension;
         }
 
         /**

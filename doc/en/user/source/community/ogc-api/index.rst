@@ -26,6 +26,7 @@ Community modules:
    processes/index
    styles/index
    tiled-features/index
+   3dgeovolumes/index
    testbed
 
 .. warning::

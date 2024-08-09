@@ -11,8 +11,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.feature.type.AttributeDescriptor;
+import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.util.InternationalString;
-import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.GrowableInternationalString;
 
@@ -142,18 +142,23 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     @Override
     public String getSource() {
         if (source == null && name != null) {
-            try {
-                // is it usable as is?
-                ECQL.toExpression(name);
-                // even if parseable, dots should be escaped
-                if (name.contains(".")) return "\"" + name + "\"";
-                return name;
-            } catch (CQLException e) {
-                // quoting to avoid reserved keyword issues
-                return "\"" + name + "\"";
-            }
+            return needsQuoting(name) ? ("\"" + name + "\"") : name;
         }
         return source;
+    }
+
+    private static boolean needsQuoting(String name) {
+        if (name.contains(".")) {
+            return true;
+        }
+        try {
+            if (!(ECQL.toExpression(name) instanceof PropertyName)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
     }
 
     @Override

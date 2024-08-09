@@ -1,4 +1,7 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>Filter capabilities</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item active'>Filter capabilities</li>
+</#global>
 <#include "common-header.ftl">
        <h2>Functions</h2>
        <#list model.functions as f>

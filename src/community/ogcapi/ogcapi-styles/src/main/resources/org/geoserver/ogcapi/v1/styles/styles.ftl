@@ -1,4 +1,7 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>GeoServer Styles</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item active'>GeoServer Styles</li>
+</#global>
 <#include "common-header.ftl">
   <h1>GeoServer Styles</h1>
   <p class="my-4">

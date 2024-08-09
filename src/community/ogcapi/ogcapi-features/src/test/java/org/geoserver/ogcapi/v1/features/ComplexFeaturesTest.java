@@ -4,6 +4,9 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import org.geoserver.test.AbstractAppSchemaMockData;
@@ -28,5 +31,20 @@ public class ComplexFeaturesTest extends AbstractAppSchemaTestSupport {
         // nested features are present
         assertEquals(4, doc.select("li>span:containsOwn(GeologicUnitType)").size());
         assertEquals(6, doc.select("li>span:containsOwn(CompositionPartType)").size());
+    }
+
+    @Test
+    public void testHTMLMappedFeatureRemovedInlineJS() throws Exception {
+        String html =
+                getAsString("ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html");
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/common.js\"></script>"));
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/features.js\"></script>"));
+        assertThat(html, not(containsString("<script>")));
     }
 }

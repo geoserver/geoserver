@@ -1,5 +1,9 @@
 <#global pagetitle=model.id>
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item'><a href='"+serviceLink("tileMatrixSets")+"'>Tile Matrix Sets</a></li><li class='breadcrumb-item active'>"+pagetitle+"</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item'><a href='${serviceLink("tileMatrixSets")}'>Tile Matrix Sets</a></li>
+  <li class='breadcrumb-item active'>${pagetitle}</li>
+</#global>
 <#include "common-header.ftl">
 
   <h2>${model.id}</h2>

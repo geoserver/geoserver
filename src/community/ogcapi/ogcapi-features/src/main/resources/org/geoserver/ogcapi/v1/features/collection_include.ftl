@@ -23,8 +23,7 @@
       <#if collection.mapPreviewURL??>
       <li>The layer can also be explored in this <a href="${collection.mapPreviewURL}">map preview</a></li>
       </#if>
-      <#-- TODO when upgrading Freemaker add ?no_esc to avoid html escaping -->
-      ${htmlExtensions(collection)}
+      ${htmlExtensions(collection)?no_esc}
   </ul>
 </div>
 <div class="card-footer">
@@ -34,7 +33,7 @@
       or choose another format:
     </div>
     <div class="col-auto py-1">
-      <select class="form-select form-select-sm" onchange="window.open(this.options[this.selectedIndex].value + '&limit=${service.maxNumberOfFeaturesForPreview}');this.selectedIndex=0" >
+      <select class="form-select form-select-sm form-select-open-limit">
         <option value="none" selected>-- Please choose a format --</option>
         <#list collection.getLinksExcept("items", "text/html") as link>
         <option value="${link.href}">${link.type}</option>

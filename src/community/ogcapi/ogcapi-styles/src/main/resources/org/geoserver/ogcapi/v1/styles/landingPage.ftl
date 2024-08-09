@@ -1,5 +1,7 @@
 <#global pagetitle="GeoServer Styles 1.0 Service">
-<#global pagecrumbs="<li class='breadcrumb-item active'>Home</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item active'>Home</li>
+</#global>
 <#include "common-header.ftl">
 
   <h1>${pagetitle}</h1>

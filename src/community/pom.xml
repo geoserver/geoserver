@@ -192,6 +192,7 @@
         <module>graticule</module>
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
+        <module>acl</module>
       </modules>
     </profile>
     <profile>
@@ -570,6 +571,12 @@
       <id>vector-mosaic</id>
       <modules>
         <module>vector-mosaic</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>acl</id>
+      <modules>
+        <module>acl</module>
       </modules>
     </profile>
     <profile>

@@ -2,6 +2,7 @@ build-full.bat
 target
 .settings
 .classpath
+.factorypath
 .project
 .metadata
 .DS_Store

@@ -41,6 +41,7 @@
         <constructor-arg ref="wms"/>
     </bean>
     <mvc:resources mapping="/mapml/viewer/**" location="classpath:/viewer/"/>
+    <mvc:resources mapping="/mapml/js/**" location="classpath:/org/geoserver/mapml/"/>
     <bean class="org.geoserver.mapml.MapMLMessageConverter" id="mapmlMessageConverter"/>
     <util:map id="prefixMap" value-type="java.lang.String" key-type="java.lang.String" map-class="java.util.HashMap">
         <entry key="http://www.w3.org/1999/xhtml" value=""/>

@@ -16,7 +16,30 @@ Configuration can be done using the Geoserver administrator GUI. The MapML confi
 
 .. figure:: images/mapml_config_ui.png
 
+*Attributes to <feature caption> mapping* section allows to define a template so that feature caption can include attribute values.
+Double clicking on one entry of the List of Attributes, will append an *${attribute}* placeholder at the end of the Feature Caption Template String text area.
+
+For example, for the State layer, you can define a template showing the State Name and the number of persons,
+by following these steps:
+
+  #. Write "State Name:" on the text area
+  #. Double click on the *STATE_NAME* attribute from the list of attributes, which will result in appending the *${STATE_NAME}* placeholder to the previous text.
+  #. Continue writing ", Persons:" on the text area
+  #. Double click on the *PERSONS* attribute from the list of attributes, which will result in appending the *${PERSONS}* placeholder to the previous text.
+
+See the following gif showing the result.
+
+.. figure:: images/mapml_feature_caption.gif
+
+After having saved the configuration, the WFS output will looks like this, where on mouseover, you can see the feature caption being setup on top of the defined template:
+
+.. figure:: images/mapml_feature_captions_wfs.png
+
+
+
+
 There is also a MapML-specific global WMS setting in the *MapML Extension* section of the ``WMS`` Services Settings Page.  This setting is used to control the handling of multi-layer requests.  
+
 
 .. figure:: images/mapml_config_wms.png
 

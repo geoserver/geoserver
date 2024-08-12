@@ -240,10 +240,17 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
 
         if (attCollection != null) {
             for (AttributeConfiguration config : attCollection.getAttributes()) {
+                int size;
                 if (config.getFieldType() != FieldTypeEnum.COMPLEX) {
-                    map.get(Serializable.class, config.getKey()).init();
+                    if (config.getOccurrence() == OccurrenceEnum.REPEAT
+                            && (size = map.size(config.getKey())) > 0) {
+                        for (int i = 0; i < size; i++) {
+                            map.get(Serializable.class, config.getKey(), i).init();
+                        }
+                    } else {
+                        map.get(Serializable.class, config.getKey()).init();
+                    }
                 } else {
-                    int size;
                     if (config.getOccurrence() == OccurrenceEnum.REPEAT
                             && (size = map.size(config.getKey())) > 0) {
                         for (int i = 0; i < size; i++) {

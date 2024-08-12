@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.easymock.IArgumentMatcher;
 import org.easymock.IExpectationSetters;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -40,7 +42,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
-import org.hamcrest.integration.EasyMock2Adapter;
+import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,7 +59,23 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     Info info(String id) {
-        EasyMock2Adapter.adapt(hasProperty("id", is(id)));
+        return mockHamcrestMatcher(hasProperty("id", is(id)));
+    }
+
+    private static <T> T mockHamcrestMatcher(Matcher<Object> matcher) {
+        EasyMock.reportMatcher(
+                new IArgumentMatcher() {
+
+                    @Override
+                    public boolean matches(Object argument) {
+                        return matcher.matches(argument);
+                    }
+
+                    @Override
+                    public void appendTo(StringBuffer buffer) {
+                        matcher.describeTo(new StringDescription(buffer));
+                    }
+                });
         return null;
     }
 
@@ -277,13 +296,11 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     CatalogEvent catEvent(final CatalogInfo info) {
-        EasyMock2Adapter.adapt(hasProperty("source", is(info)));
-        return null;
+        return mockHamcrestMatcher(hasProperty("source", is(info)));
     }
 
     CatalogEvent catEvent(final String id) {
-        EasyMock2Adapter.adapt(hasProperty("source", hasProperty("id", is(id))));
-        return null;
+        return mockHamcrestMatcher(hasProperty("source", hasProperty("id", is(id))));
     }
     /**
      * Matches a Catalog Event that has a source with the given ID, and a Store property, the value
@@ -293,13 +310,12 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
      * @param storeId id of the source's store
      */
     CatalogEvent catResEvent(final String id, final String storeId) {
-        EasyMock2Adapter.adapt(
+        return mockHamcrestMatcher(
                 hasProperty(
                         "source",
                         allOf(
                                 hasProperty("id", is(id)),
                                 hasProperty("store", hasProperty("id", is(storeId))))));
-        return null;
     }
 
     protected IExpectationSetters<Object> expectCatalogFire(

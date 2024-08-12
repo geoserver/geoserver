@@ -45,7 +45,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Test
     public void testList() throws IOException {
         List<MetadataTemplate> actual = templateService.list();
-        Assert.assertEquals(6, actual.size());
+        Assert.assertEquals(7, actual.size());
         Assert.assertEquals("simple fields", actual.get(0).getName());
         Assert.assertNotNull(actual.get(0).getMetadata());
     }

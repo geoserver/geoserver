@@ -6,11 +6,14 @@ package org.geoserver.metadata.data.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
@@ -502,6 +505,55 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
                 "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
         // list of nested objects
         Assert.assertEquals(2, parent.size("feature-catalog"));
+        ComplexMetadataMap submapNested01 = parent.subMap("feature-catalog/feature-attribute", 0);
+        Assert.assertEquals(
+                "First object catalog object", submapNested01.get(String.class, "name").getValue());
+        Assert.assertEquals("String", submapNested01.get(String.class, "type").getValue());
+        Assert.assertEquals(1, submapNested01.size("domain"));
+        ComplexMetadataMap submapdomain = submapNested01.subMap("domain", 0);
+        Assert.assertEquals(
+                "a domain for first catalog object",
+                submapdomain.get(String.class, "code").getValue());
+        Assert.assertEquals("15", submapdomain.get(String.class, "value").getValue());
+    }
+
+    @Test
+    public void testFixRepeat() throws IOException {
+        Map<String, Serializable> parentRaw = templateService.findByName("norepeat").getMetadata();
+        ComplexMetadataMap parent = new ComplexMetadataMapImpl(parentRaw);
+
+        assertFixRepeat(parent);
+
+        service.init(parent);
+
+        assertFixRepeat(parent);
+
+        assertTrue(parentRaw.get("refsystem-as-list") instanceof List);
+        assertTrue(parentRaw.get("referencesystem-object-list/code-space") instanceof List);
+        assertTrue(parentRaw.get("feature-catalog/feature-attribute/definition") instanceof List);
+        assertTrue(parentRaw.get("feature-catalog/feature-attribute/type") instanceof List);
+        assertTrue(parentRaw.get("feature-catalog/feature-attribute/name") instanceof List);
+        assertTrue(
+                ((List<?>) parentRaw.get("feature-catalog/feature-attribute/domain/code")).get(0)
+                        instanceof List);
+        assertTrue(
+                ((List<?>) parentRaw.get("feature-catalog/feature-attribute/domain/value")).get(0)
+                        instanceof List);
+    }
+
+    public void assertFixRepeat(ComplexMetadataMap parent) {
+        // list simple fields
+        Assert.assertEquals(1, parent.size("refsystem-as-list"));
+        Assert.assertEquals(
+                "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
+        // list of objects
+        Assert.assertEquals(1, parent.size("referencesystem-object-list"));
+        ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
+        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        Assert.assertEquals(
+                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        // list of nested objects
+        Assert.assertEquals(1, parent.size("feature-catalog"));
         ComplexMetadataMap submapNested01 = parent.subMap("feature-catalog/feature-attribute", 0);
         Assert.assertEquals(
                 "First object catalog object", submapNested01.get(String.class, "name").getValue());

@@ -26,12 +26,10 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleType;
-import org.geoserver.catalog.Styles;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.api.style.ResourceLocator;
-import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.css.CssParser;
 import org.geotools.styling.css.CssTranslator;
@@ -152,8 +150,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     private StyledLayerDescriptor convertToSLD(Reader cssReader) throws IOException {
         Stylesheet styleSheet = CssParser.parse(IOUtils.toString(cssReader));
-        Style style = (Style) new CssTranslator().translate(styleSheet);
-        StyledLayerDescriptor sld = Styles.sld(style);
+        StyledLayerDescriptor sld = new CssTranslator().translateMultilayer(styleSheet);
         return sld;
     }
 

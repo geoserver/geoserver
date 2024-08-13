@@ -149,7 +149,7 @@ class CustomDimensionFilterConverter {
 
     private Object getDefaultCustomDimension(String name, Class<?> binding) {
         // check the time metadata
-        final DimensionInfo dimensionInfo = customDimensions.get(name);
+        final DimensionInfo dimensionInfo = customDimensions.get(unrollDimPrefix(name));
         if (dimensionInfo == null || !dimensionInfo.isEnabled()) {
             throw new ServiceException(
                     "Layer "

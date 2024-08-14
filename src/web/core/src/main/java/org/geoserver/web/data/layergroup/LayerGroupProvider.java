@@ -61,15 +61,6 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     static List<Property<LayerGroupInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE, ENABLED);
 
-    /** revisit: this seems to be dead code, there're no uses of this interface in the code base */
-    protected LayerGroupProviderFilter groupFilter = null;
-
-    public LayerGroupProvider() {}
-
-    public LayerGroupProvider(LayerGroupProviderFilter groupFilter) {
-        this.groupFilter = groupFilter;
-    }
-
     @Override
     public long size() {
         return count(getFilter());
@@ -78,6 +69,10 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     @Override
     public int fullSize() {
         return count(Predicates.acceptAll());
+    }
+
+    private int count(Filter filter) {
+        return getCatalog().count(LayerGroupInfo.class, filter);
     }
 
     @Override
@@ -90,8 +85,8 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     }
 
     /**
-     * @throws UnsupportedOperationException, this method shouldn't be called at all due to the
-     *     overloading of {@link #size()}, {@link #fullSize()}, and {@link #iterator(long, long)}
+     * This method shouldn't be called at all due to the overloading of {@link #size()}, {@link
+     * #fullSize()}, and {@link #iterator(long, long)}
      */
     @Override
     protected List<LayerGroupInfo> getItems() {
@@ -140,14 +135,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
                 catalog.list(LayerGroupInfo.class, filter, first, count, sortOrder);
 
         Stream<LayerGroupInfo> stream = Streams.stream(items);
-
-        // revisit: looks like dead code, LayerGroupProviderFilter is not used anywhere?
-        if (groupFilter != null) {
-            stream = stream.filter(groupFilter::accept);
-        }
-
-        stream = stream.onClose(items::close);
-        return stream;
+        return stream.onClose(items::close);
     }
 
     private SortBy getSortOrder() {
@@ -165,15 +153,5 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
             throw new IllegalStateException("Unknown sort property " + property);
         }
         return sortOrder;
-    }
-
-    private int count(Filter filter) {
-        if (null == groupFilter) {
-            return getCatalog().count(LayerGroupInfo.class, filter);
-        }
-        // query() takes care of groupFilter if present
-        try (Stream<LayerGroupInfo> items = query(filter, null, null, null)) {
-            return (int) items.count();
-        }
     }
 }

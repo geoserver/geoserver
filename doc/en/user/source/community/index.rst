@@ -35,6 +35,7 @@ officially part of the GeoServer releases. They are however built along with the
    gdal/index
    geomesa/index
    geopkg/index
+   acl/index
    geostyler/index
    graticules/index
    gsr/index

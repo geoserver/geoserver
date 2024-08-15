@@ -317,12 +317,6 @@
       </modules>
     </profile>
     <profile>
-      <id>geomesa</id>
-      <modules>
-        <module>geomesa</module>
-      </modules>
-    </profile>
-    <profile>
       <id>gwc-distributed</id>
       <activation>
         <property>

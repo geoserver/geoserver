@@ -8,7 +8,7 @@
     <!-- Meaning of the different values :
          
          PARTIAL-BUFFER2
-         - Partially buffers the first xKb to disk. Once that has buffered, the the 
+         - Partially buffers the first xKb to disk. Once that has buffered, the 
            result is streamed to the user. This will allow for most errors to be caught
            early. 
            

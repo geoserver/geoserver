@@ -914,7 +914,7 @@ public class AttributeType extends AbstractSchemaObject implements Cloneable
 
 
     /**
-     * Gets the the superior AttributeType of this AttributeType.
+     * Gets the superior AttributeType of this AttributeType.
      * 
      * @return the superior AttributeType for this AttributeType
      */

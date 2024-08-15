@@ -611,8 +611,8 @@ public interface Catalog extends CatalogInfo {
      * <ul>
      *   <li>If a resource in the default namespace is found matching the specified name, it is
      *       returned.
-     *   <li>If a single resource among all non-default namespaces is found matching the the
-     *       specified name, it is returned.
+     *   <li>If a single resource among all non-default namespaces is found matching the specified
+     *       name, it is returned.
      * </ul>
      *
      * Care should be taken when using this method, use of {@link #getResourceByName(String, String,
@@ -794,7 +794,7 @@ public interface Catalog extends CatalogInfo {
      * <ul>
      *   <li>If a feature type in the default namespace is found matching the specified name, it is
      *       returned.
-     *   <li>If a single feature type among all non-default namespaces is found matching the the
+     *   <li>If a single feature type among all non-default namespaces is found matching the
      *       specified name, it is returned.
      * </ul>
      *
@@ -932,8 +932,8 @@ public interface Catalog extends CatalogInfo {
      * <ul>
      *   <li>If a coverage in the default namespace is found matching the specified name, it is
      *       returned.
-     *   <li>If a single coverage among all non-default namespaces is found matching the the
-     *       specified name, it is returned.
+     *   <li>If a single coverage among all non-default namespaces is found matching the specified
+     *       name, it is returned.
      * </ul>
      *
      * Care should be taken when using this method, use of {@link #getCoverageByName(String,

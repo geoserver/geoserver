@@ -1029,7 +1029,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
      * @param mainTypeFilter The filter to locate the main object
      * @param value The value to be mapped and replaced
      * @param tableName The secondary table name
-     * @param secondaryTableFilterSupplier A supplier going from the the main filter to the
+     * @param secondaryTableFilterSupplier A supplier going from the main filter to the
      *     secondary table one
      * @param featureBuilder Transforms the complex feature value in a feature collection for the
      *     secondary table, it will be inserted in place of the old values

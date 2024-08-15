@@ -269,7 +269,7 @@ public abstract class AbstractValue<T> implements Value<T>
 
 
     /**
-     * Gets a reference to the the normalized (canonical) representation 
+     * Gets a reference to the normalized (canonical) representation 
      * for the wrapped value.
      *
      * @return gets a reference to the normalized value

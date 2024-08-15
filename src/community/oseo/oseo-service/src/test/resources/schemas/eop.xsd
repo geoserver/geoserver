@@ -715,7 +715,7 @@ Example of values could be "NRT", "NOMINAL", "NTC" or "STC"</documentation>
 	</complexType>
 	<element name="DownlinkInformation" type="eop:DownlinkInformationType" substitutionGroup="gml:AbstractObject">
 		<annotation>
-			<documentation>Information about the the downlinking (to earth) of the data.</documentation>
+			<documentation>Information about the downlinking (to earth) of the data.</documentation>
 		</annotation>
 	</element>
 	<complexType name="DownlinkInformationType">

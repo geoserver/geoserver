@@ -1,8 +1,8 @@
-/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
 
- * Copyright 2015-2023 Canada Centre for Mapping and Earth Observation, 
+ * Copyright 2015-2024 Canada Centre for Mapping and Earth Observation, 
  * Strategic Policy and Innovation Sector, Natural Resources Canada.
  * 
  * By obtaining and/or copying this work, you (the licensee) agree that you have 
@@ -40,7 +40,7 @@
  * Title to copyright in this work will at all times remain with copyright holders.
  */
 
-Copyright 2015-2023 Canada Centre for Mapping and Earth Observation, 
+Copyright 2015-2024 Canada Centre for Mapping and Earth Observation, 
 Strategic Policy and Innovation Sector, Natural Resources Canada.
 
 License
@@ -83,7 +83,7 @@ Dependency license
 
 BSD 2-Clause License
 
-Copyright (c) 2010-2023, Volodymyr Agafonkin
+Copyright (c) 2010-2024, Volodymyr Agafonkin
 Copyright (c) 2010-2011, CloudMade
 All rights reserved.
 

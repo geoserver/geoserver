@@ -59,7 +59,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
     }
 
     @Override
-    protected String getAvaliableHeaderPropertyKey() {
+    protected String getAvailableHeaderPropertyKey() {
         return "RuleRolesFormComponent.availableHeader";
     }
 

@@ -31,7 +31,7 @@ import org.geotools.map.Layer;
  */
 public final class AtomUtils {
 
-    /** A number formatting object to format the the timezone offset info in RFC3339 output. */
+    /** A number formatting object to format the timezone offset info in RFC3339 output. */
     private static NumberFormat doubleDigit = new DecimalFormat("00");
 
     /** A FeatureTemplate used for formatting feature info. @TODO: Are these things threadsafe? */

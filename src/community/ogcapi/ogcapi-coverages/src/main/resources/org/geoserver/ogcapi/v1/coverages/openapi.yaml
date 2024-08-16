@@ -135,7 +135,7 @@ paths:
       tags:
         - Capabilities
       summary: Collection Information is the set of metadata which describes a single
-        collection, or in the the case of API-Coverages, a single Coverage.
+        collection, or in the case of API-Coverages, a single Coverage.
       operationId: describeCollection
       parameters:
         - $ref: '#/components/parameters/collectionId'

@@ -5,7 +5,7 @@ $Id: Context.js,v 1.76 2005/03/06 04:14:50 madair1 Exp $
 
 /**
  * Stores a Web Map Context (WMC) document as defined by the Open GIS Consortium
- * http://opengis.org and extensions the the WMC.  
+ * http://opengis.org and extensions the WMC.  
  *
  * Listeners supported by this model:
  * "refresh" called when window parameters (width/height, bbox) are changed

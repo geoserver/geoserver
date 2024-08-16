@@ -156,7 +156,7 @@ public abstract class AbstractAclController<
         return result;
     }
 
-    /** Calculate the the intersection of the keys */
+    /** Calculate the intersection of the keys */
     protected Set<Object> intersection(Map map) {
 
         Set<Object> result = new HashSet<>();

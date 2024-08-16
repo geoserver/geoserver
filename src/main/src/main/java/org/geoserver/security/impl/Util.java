@@ -147,8 +147,8 @@ public class Util {
     }
 
     /**
-     * Determines if the the input stream is xml if it is, use create properties loaded from xml
-     * format, otherwise create properties from default format.
+     * Determines if the input stream is xml if it is, use create properties loaded from xml format,
+     * otherwise create properties from default format.
      */
     public static Properties loadUniversal(InputStream in) throws IOException {
         final String xmlDeclarationStart = "<?xml";

@@ -141,7 +141,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
      *   <li>Otherwise a file name is inferred from the requested feature type(s) name.
      * </ul>
      *
-     * @return the the file name for the zipped shapefile(s)
+     * @return the file name for the zipped shapefile(s)
      */
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {

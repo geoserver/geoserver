@@ -3757,7 +3757,7 @@ public class StringTools
      * converts the string representation of an UUID to bytes
      *  
      * @param string the string representation of an UUID
-     * @return the bytes, null if the the syntax is not valid
+     * @return the bytes, null if the syntax is not valid
      */
     public static byte[] uuidToBytes( String string )
     {

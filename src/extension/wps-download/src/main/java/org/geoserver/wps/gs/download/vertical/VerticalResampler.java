@@ -196,7 +196,7 @@ public class VerticalResampler {
         if (!gridEnvelope.intersects(dataEnvelope)) {
             if (LOGGER.isLoggable(Level.INFO)) {
                 LOGGER.info(
-                        "The computed GridCoverage doesn't intersect the the valid area of the available grid.\""
+                        "The computed GridCoverage doesn't intersect the valid area of the available grid.\""
                                 + " Data Envelope: "
                                 + dataEnvelope
                                 + " Vertical Grid File Envelope: "

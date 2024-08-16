@@ -133,7 +133,7 @@ public interface Value<T> extends Cloneable, Externalizable, Comparable<Value<T>
     
     
     /**
-     * Gets a reference to the the normalized (canonical) representation 
+     * Gets a reference to the normalized (canonical) representation 
      * for the wrapped value.
      *
      * @return gets a reference to the normalized value
@@ -142,7 +142,7 @@ public interface Value<T> extends Cloneable, Externalizable, Comparable<Value<T>
 
     
     /**
-     * Gets a copy of the the normalized (canonical) representation 
+     * Gets a copy of the normalized (canonical) representation 
      * for the wrapped value.
      *
      * @return gets a copy of the normalized value

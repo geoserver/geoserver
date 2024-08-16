@@ -49,7 +49,7 @@ set up the ACL API client target URL and credentials.
 ### System Properties
 
 If you choose to use Java System properties, add the following ones to the GeoServer JVM parameters,
-the the appropriate values:
+the appropriate values:
 
 ```
 -Dgeoserver.acl.client.basePath=https://example.com/acl/api

@@ -65,7 +65,7 @@ public class BaseSubtreeSpecification implements SubtreeSpecification
     /**
      * Creates a simple subtree whose administrative point is necessarily the
      * base and all subordinates underneath (excluding those that are part of
-     * inner areas) are part of the the subtree.
+     * inner areas) are part of the subtree.
      */
     @SuppressWarnings("unchecked")
     public BaseSubtreeSpecification()
@@ -103,7 +103,7 @@ public class BaseSubtreeSpecification implements SubtreeSpecification
     /**
      * Creates a simple subtree whose administrative point above the base and
      * all subordinates underneath the base (excluding those that are part of
-     * inner areas) are part of the the subtree.
+     * inner areas) are part of the subtree.
      *
      * @param base
      *            the base of the subtree relative to the administrative point

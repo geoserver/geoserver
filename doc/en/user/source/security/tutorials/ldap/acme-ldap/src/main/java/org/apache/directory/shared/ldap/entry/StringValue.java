@@ -178,7 +178,7 @@ public class StringValue extends AbstractValue<String>
     
     
     /**
-     * Gets a copy of the the normalized (canonical) representation 
+     * Gets a copy of the normalized (canonical) representation 
      * for the wrapped value.
      *
      * @return gets a copy of the normalized value

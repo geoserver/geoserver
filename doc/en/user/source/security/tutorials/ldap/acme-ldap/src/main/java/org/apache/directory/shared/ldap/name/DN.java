@@ -177,7 +177,7 @@ public class DN implements Cloneable, Serializable, Comparable<DN>, Iterable<RDN
     /**
      * Creates a new instance of DN, using varargs to declare the RDNs. Each
      * String is either a full RDN, or a couple of AttributeType DI and a value.
-     * If the String contains a '=' symbol, the the constructor will assume that
+     * If the String contains a '=' symbol, the constructor will assume that
      * the String arg contains afull RDN, otherwise, it will consider that the 
      * following arg is the value.
      * An example of usage would be :

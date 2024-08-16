@@ -159,6 +159,6 @@ positive response, and those patches require little modifications, the
 developer will be nominated for core commit access.
 
 There is no magic number of patches that make the criteria, it is based mostly
-on the nature of the patches, how in depth the they are, etc... Basically it
+on the nature of the patches, how in depth they are, etc... Basically it
 boils down to the developer being able to show that they understand the code base
 well enough to not seriously break anything.

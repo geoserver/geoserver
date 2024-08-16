@@ -46,7 +46,7 @@ public class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
                 || queries.get(0).getTypeNames().size() != 1) {
             LOGGER.log(
                     Level.INFO,
-                    "Cannot build prev/next links, the the target typename is not known (or multiple type names available)");
+                    "Cannot build prev/next links, the target typename is not known (or multiple type names available)");
             return;
         }
         QName typeName = queries.get(0).getTypeNames().get(0);
@@ -56,8 +56,7 @@ public class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
         if (typeInfo == null) {
             LOGGER.log(
                     Level.INFO,
-                    "Cannot build prev/next links, the the target typename was not found: "
-                            + typeName);
+                    "Cannot build prev/next links, the target typename was not found: " + typeName);
             return;
         }
         String collectionName = typeInfo.prefixedName();

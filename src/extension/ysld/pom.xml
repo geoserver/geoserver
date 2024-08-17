@@ -26,11 +26,6 @@
       <version>${gs.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-gwc</artifactId>
-      <version>${gs.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
     </dependency>
@@ -64,6 +59,12 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-gwc</artifactId>
+      <version>${gs.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

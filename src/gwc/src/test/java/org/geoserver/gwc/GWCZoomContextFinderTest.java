@@ -4,26 +4,26 @@
  * application directory.
  */
 
-package org.geoserver.ysld;
+package org.geoserver.gwc;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.geotools.ysld.TestUtils.rangeContains;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-import org.geotools.ysld.parse.ScaleRange;
-import org.geotools.ysld.parse.ZoomContext;
-import org.geotools.ysld.parse.ZoomContextFinder;
+import org.geotools.styling.zoom.ScaleRange;
+import org.geotools.styling.zoom.TestUtils;
+import org.geotools.styling.zoom.ZoomContext;
+import org.geotools.styling.zoom.ZoomContextFinder;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -161,9 +161,9 @@ public class GWCZoomContextFinderTest {
 
         ScaleRange range = zContext.getRange(2, 2);
 
-        assertThat(range, rangeContains(200_000_000d));
-        assertThat(range, not(rangeContains(500_000_000d)));
-        assertThat(range, not(rangeContains(100_000_000d)));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(200_000_000d));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(500_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(100_000_000d)));
 
         verify(broker, set, grid1, grid2, grid3);
     }
@@ -187,11 +187,11 @@ public class GWCZoomContextFinderTest {
 
         ScaleRange range = zContext.getRange(0, 1);
 
-        assertThat(range, rangeContains(1 / EPSILON));
-        assertThat(range, rangeContains(500_000_000d));
-        assertThat(range, rangeContains(200_000_000d));
-        assertThat(range, not(rangeContains(100_000_000d)));
-        assertThat(range, not(rangeContains(EPSILON)));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(1 / EPSILON));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(500_000_000d));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(200_000_000d));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(100_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(EPSILON)));
 
         verify(broker, set, grid0, grid1, grid2);
     }
@@ -215,11 +215,11 @@ public class GWCZoomContextFinderTest {
 
         ScaleRange range = zContext.getRange(3, 4);
 
-        assertThat(range, not(rangeContains(1 / EPSILON)));
-        assertThat(range, not(rangeContains(500_000_000d)));
-        assertThat(range, rangeContains(200_000_000d));
-        assertThat(range, rangeContains(100_000_000d));
-        assertThat(range, rangeContains(EPSILON));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(1 / EPSILON)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(500_000_000d)));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(200_000_000d));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(100_000_000d));
+        MatcherAssert.assertThat(range, TestUtils.rangeContains(EPSILON));
 
         verify(broker, set, grid2, grid3, grid4);
     }
@@ -243,11 +243,11 @@ public class GWCZoomContextFinderTest {
 
         ScaleRange range = zContext.getRange(6, 7);
 
-        assertThat(range, not(rangeContains(1 / EPSILON)));
-        assertThat(range, not(rangeContains(500_000_000d)));
-        assertThat(range, not(rangeContains(200_000_000d)));
-        assertThat(range, not(rangeContains(100_000_000d)));
-        assertThat(range, not(rangeContains(EPSILON)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(1 / EPSILON)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(500_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(200_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(100_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(EPSILON)));
 
         verify(broker, set, grid2, grid3, grid4);
     }
@@ -271,11 +271,11 @@ public class GWCZoomContextFinderTest {
 
         ScaleRange range = zContext.getRange(-2, -1);
 
-        assertThat(range, not(rangeContains(1 / EPSILON)));
-        assertThat(range, not(rangeContains(500_000_000d)));
-        assertThat(range, not(rangeContains(200_000_000d)));
-        assertThat(range, not(rangeContains(100_000_000d)));
-        assertThat(range, not(rangeContains(EPSILON)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(1 / EPSILON)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(500_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(200_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(100_000_000d)));
+        MatcherAssert.assertThat(range, Matchers.not(TestUtils.rangeContains(EPSILON)));
 
         verify(broker, set, grid2, grid3, grid4);
     }

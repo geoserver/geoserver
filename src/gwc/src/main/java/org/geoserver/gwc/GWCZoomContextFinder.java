@@ -4,13 +4,13 @@
  * application directory.
  */
 
-package org.geoserver.ysld;
+package org.geoserver.gwc;
 
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.geotools.ysld.parse.MedialZoomContext;
-import org.geotools.ysld.parse.ZoomContext;
-import org.geotools.ysld.parse.ZoomContextFinder;
+import org.geotools.styling.zoom.MedialZoomContext;
+import org.geotools.styling.zoom.ZoomContext;
+import org.geotools.styling.zoom.ZoomContextFinder;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 

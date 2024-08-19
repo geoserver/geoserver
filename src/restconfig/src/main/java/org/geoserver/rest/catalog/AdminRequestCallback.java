@@ -18,7 +18,9 @@ import org.springframework.stereotype.Component;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-@Component
+// note, setting a component name explicitly, otherwise this component is not registered when
+// running the web-app's Start class, and I can't find out why
+@Component("geoserverRestAdminRequestCallback")
 public class AdminRequestCallback extends DispatcherCallbackAdapter {
 
     @Override

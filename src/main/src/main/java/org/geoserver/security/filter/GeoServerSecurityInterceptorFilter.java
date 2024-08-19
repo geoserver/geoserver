@@ -12,11 +12,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-
 import javax.servlet.http.HttpServletRequest;
-
+import org.geoserver.security.WorkspaceAdminAuthorizer;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.impl.WorkspaceAdminRestAccessRule;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -26,6 +27,7 @@ import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.util.UrlUtils;
 
 /**
  * Security interceptor filter
@@ -79,8 +81,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         private AuthorizationDecision vote(
-                Authentication authentication,
-                Collection<ConfigAttribute> attributes) {
+                Authentication authentication, Collection<ConfigAttribute> attributes) {
             AuthorizationDecision result = ACCESS_ABSTAIN;
             for (ConfigAttribute attribute : attributes) {
                 if (this.supports(attribute)) {
@@ -116,6 +117,38 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
     }
 
+    private static final class WorkspaceAdminAuthorizationManager
+            implements AuthorizationManager<HttpServletRequest> {
+
+        private SecurityMetadataSource metadata;
+
+        public WorkspaceAdminAuthorizationManager(SecurityMetadataSource metadata) {
+            this.metadata = metadata;
+        }
+
+        @Override
+        public AuthorizationDecision check(
+                Supplier<Authentication> authentication, HttpServletRequest request) {
+
+            final Authentication auth = authentication.get();
+            WorkspaceAdminAuthorizer authorizer = WorkspaceAdminAuthorizer.get();
+            if (!authorizer.isFullyAuthenticated(auth)) {
+                return ACCESS_DENIED;
+            }
+
+            final String uri = UrlUtils.buildRequestUrl(request);
+            final HttpMethod method = HttpMethod.valueOf(request.getMethod());
+            Collection<ConfigAttribute> attributes = metadata.getAttributes(request);
+            boolean match =
+                    attributes.stream()
+                            .filter(WorkspaceAdminRestAccessRule.class::isInstance)
+                            .map(WorkspaceAdminRestAccessRule.class::cast)
+                            .anyMatch(rule -> rule.matches(uri, method));
+
+            return match && authorizer.isWorkspaceAdmin(auth) ? ACCESS_GRANTED : ACCESS_ABSTAIN;
+        }
+    }
+
     /**
      * {@link AuthorizationManager} implementation considers the role requirements of the respective
      * request, in contrast to Spring's AuthorityAuthorizationManager which is setup for certain
@@ -135,8 +168,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         private AuthorizationDecision vote(
-                Authentication authentication,
-                Collection<ConfigAttribute> attributes) {
+                Authentication authentication, Collection<ConfigAttribute> attributes) {
             if (authentication == null) {
                 return ACCESS_DENIED;
             }
@@ -228,9 +260,11 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         SecurityMetadataSource source = (SecurityMetadataSource) bean(sourceName);
 
         AuthenticatedAuthorizationManager aam = new AuthenticatedAuthorizationManager(source);
+        WorkspaceAdminAuthorizationManager waam = new WorkspaceAdminAuthorizationManager(source);
         RoleAuthorizationManager ram = new RoleAuthorizationManager(source);
         AffirmativeAuthorizationManager am =
-                new AffirmativeAuthorizationManager(List.of(aam, ram), allowIfAllAbstainDecisions);
+                new AffirmativeAuthorizationManager(
+                        List.of(aam, waam, ram), allowIfAllAbstainDecisions);
         AuthorizationFilter filter = new AuthorizationFilter(am);
 
         getNestedFilters().add(filter);

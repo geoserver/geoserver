@@ -24,7 +24,10 @@ import org.springframework.security.web.access.intercept.FilterInvocationSecurit
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.StringUtils;
 
-/** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
+/**
+ * @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531
+ * @see WorkspaceAdminRestfulDefinitionSource
+ */
 public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadataSource {
 
     private static Logger log = Logging.getLogger(RESTfulDefinitionSource.class);

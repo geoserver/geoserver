@@ -3,7 +3,7 @@
 Multiple layers in the same CSS
 ===============================
 
-As most of the examples in this documentation attest, most of the styling is done on a single layer.
+As most of the examples in this documentation show, styling is typically done on a single layer.
 When the style is associated to a layer, the first UserStyle found in the style sheet is used.
 
 However, it's also possible to create a style with multiple layers, and then use the "style group"

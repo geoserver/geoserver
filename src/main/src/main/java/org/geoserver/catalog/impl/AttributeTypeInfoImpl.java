@@ -135,6 +135,11 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     }
 
     @Override
+    public String getRawSource() {
+        return source;
+    }
+
+    @Override
     public String getSource() {
         if (source == null && name != null) {
             try {

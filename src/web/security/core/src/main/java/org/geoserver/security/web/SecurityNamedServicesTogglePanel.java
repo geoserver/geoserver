@@ -56,7 +56,6 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                             + "   padding-bottom: 0.5em; \n"
                             + "   padding-right:1em;\n"
                             + " }";
-            css = "";
             response.render(
                     CssHeaderItem.forCSS(
                             css, "org-geoserver-security-web-data-DataSecurityPage-1"));

@@ -130,7 +130,6 @@ public class DataSecurityPage extends AbstractSecurityPage {
                         + "          clear:right;\n"
                         + "          margin-bottom: 0.5em;\n"
                         + "       }";
-        css = "";
         response.render(
                 CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
     }

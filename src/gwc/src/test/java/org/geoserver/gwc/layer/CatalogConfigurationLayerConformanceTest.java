@@ -10,12 +10,15 @@ import static org.hamcrest.Matchers.hasProperty;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.easymock.EasyMock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.GWCSynchEnv;
 import org.geoserver.gwc.config.GWCConfig;
@@ -69,6 +72,9 @@ public class CatalogConfigurationLayerConformanceTest extends LayerConfiguration
                             EasyMock.expect(info.getMetadata()).andStubReturn(mMap);
                             EasyMock.expect(info.prefixedName()).andStubReturn(id);
                             EasyMock.expect(info.getId()).andStubReturn(id);
+                            EasyMock.expect(info.getRootLayerStyle())
+                                    .andStubReturn(new StyleInfoImpl(new CatalogImpl()));
+                            EasyMock.expect(info.getStyles()).andStubReturn(List.of());
                             EasyMock.replay(info);
                             return info;
                         });

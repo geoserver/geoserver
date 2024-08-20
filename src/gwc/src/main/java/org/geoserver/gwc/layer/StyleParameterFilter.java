@@ -13,6 +13,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -20,8 +21,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterException;
@@ -190,20 +194,25 @@ public class StyleParameterFilter extends ParameterFilter {
     }
 
     /** Set/update the availableStyles and defaultStyle based on the given GeoServer layer. */
-    public void setLayer(LayerInfo layer) {
-        Set<String> newStyles = new TreeSet<>();
+    public void setLayer(PublishedInfo layer) {
+        checkArgument(layer instanceof LayerInfo || layer instanceof LayerGroupInfo);
 
-        for (StyleInfo style : layer.getStyles()) {
-            newStyles.add(style.prefixedName());
-        }
-
-        availableStyles = newStyles;
-
-        if (layer.getDefaultStyle() != null) {
-            defaultStyle = layer.getDefaultStyle().prefixedName();
+        StyleInfo defStyle;
+        Collection<StyleInfo> styles;
+        if (layer instanceof LayerInfo) {
+            defStyle = ((LayerInfo) layer).getDefaultStyle();
+            styles = ((LayerInfo) layer).getStyles();
         } else {
-            defaultStyle = null;
+            defStyle = ((LayerGroupInfo) layer).getRootLayerStyle();
+            styles = ((LayerGroupInfo) layer).getStyles();
         }
+
+        this.defaultStyle = defStyle == null ? null : defStyle.prefixedName();
+        this.availableStyles =
+                styles.stream()
+                        .filter(Objects::nonNull)
+                        .map(StyleInfo::prefixedName)
+                        .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /**

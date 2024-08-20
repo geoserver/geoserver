@@ -89,6 +89,12 @@ public interface AttributeTypeInfo extends Serializable {
     boolean equalsIngnoreFeatureType(Object obj);
 
     /**
+     * Returns the actual value of source, eventually null if not set yet (unlike #getsSource(),
+     * which returns the attribute name, if the source field is null)
+     */
+    String getRawSource();
+
+    /**
      * Source expression (a valid CQL expression). If not set, it will default to the attribute name
      * (no renaming)
      */

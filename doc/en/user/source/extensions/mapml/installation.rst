@@ -290,7 +290,7 @@ You can add layers to the map as you like, by dragging the URL bar value generat
 
 If all goes well, you should see the layers stacked on the map and in the layer control.
 
-MapML visualization is supported by the Web-Map-Custom-Element project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about the Web-Map-Custom-Element at the project `website <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <layer-> elements: 
+MapML visualization is supported by the MapML.js project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about MapML.js at the project `website <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <layer-> elements: 
 
 .. code-block:: html
 

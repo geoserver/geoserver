@@ -30,6 +30,16 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+ImageMosaic Sample Image Deserialization (GeoServer 2.26 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For improved security, GeoServer now validates class names when deserializing sample image files for ImageMosaic
+data stores. If the default whitelist of classes that GeoServer will deserialize is preventing the usage of valid
+sample image files, the ``org.geotools.gce.imagemosaic.sampleimage.whitelist`` Java system property can be set to
+allow additional classes whose fully-qualified class names match the provided regular expression. For example,
+``-Dorg.geotools.gce.imagemosaic.sampleimage.whitelist=^some\.package\.MyCustomColorModel$``.
+
+
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

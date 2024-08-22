@@ -24,6 +24,7 @@ import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,9 +83,9 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
 
         String cacheKey = authenticateFromCache(this, (HttpServletRequest) request);
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response, cacheKey);
-
             Authentication postAuthentication =
                     SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey != null) {

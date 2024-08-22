@@ -14,6 +14,7 @@ import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,7 +74,8 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
 
         Authentication authFromCache = null;
         String cacheKey = null;
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             cacheKey = filter.getCacheKey(request);
             if (cacheKey != null) {
                 authFromCache =

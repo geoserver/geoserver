@@ -3,7 +3,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     
     <bean id="ysldHandler" class="org.geoserver.ysld.YsldHandler">
-       <constructor-arg ref="gwcZoomContextFinder"/>
+       <constructor-arg ref="extensions"/>
        <constructor-arg ref="ysldUomMapper"/>
     </bean>
 

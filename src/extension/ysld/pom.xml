@@ -18,7 +18,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-ysld</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -38,7 +37,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-ysld</artifactId>
-      <version>${gt.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

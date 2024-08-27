@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -24,7 +25,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.CatalogIconFactory;
-import org.geoserver.web.wicket.GSModalWindow;
+import org.geoserver.web.wicket.GSModalDialog;
 
 public class ModuleStatusPanel extends Panel {
 
@@ -32,7 +33,7 @@ public class ModuleStatusPanel extends Panel {
 
     final CatalogIconFactory icons = CatalogIconFactory.get();
 
-    GSModalWindow popup;
+    GSModalDialog popup;
 
     AjaxLink msgLink;
 
@@ -47,7 +48,7 @@ public class ModuleStatusPanel extends Panel {
         wmc.setOutputMarkupId(true);
         this.add(wmc);
 
-        popup = new GSModalWindow("popup");
+        popup = new GSModalDialog("popup", "Module Status");
         add(popup);
 
         // get the list of ModuleStatuses
@@ -80,12 +81,10 @@ public class ModuleStatusPanel extends Panel {
                                 new AjaxLink("msg") {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        popup.setInitialHeight(325);
-                                        popup.setInitialWidth(525);
+
                                         popup.setContent(
-                                                new MessagePanel(popup.getContentId(), item));
-                                        popup.setTitle("Module Info");
-                                        popup.show(target);
+                                                new MessagePanel(ModalDialog.CONTENT_ID, item));
+                                        popup.open(target);
                                     }
                                 };
                         msgLink.setEnabled(true);

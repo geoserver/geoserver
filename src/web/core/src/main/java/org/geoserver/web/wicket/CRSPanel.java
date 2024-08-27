@@ -54,7 +54,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model<>("readonly"));
 
     /** pop-up window for WKT and SRS list */
-    protected GSModalWindow popupWindow;
+    protected GSModalDialog popupWindow;
 
     /** srs/epsg code text field */
     protected TextField<String> srsTextField;
@@ -154,7 +154,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      */
     void initComponents() {
 
-        popupWindow = new GSModalWindow("popup");
+        popupWindow = new GSModalDialog("popup");
         add(popupWindow);
 
         srsTextField = new TextField<>("srs", new Model<>());
@@ -171,11 +171,11 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                         CoordinateReferenceSystem crs = getConvertedInput();
                         if (crs != null) {
                             setModelObject(crs);
-                            wktLabel.setDefaultModelObject(crs.getName().toString());
-                            wktLink.setEnabled(true);
+                            wktLabel.setDefaultModelObject(crs.getName().toString() + "...");
+                            // wktLink.setEnabled(true);
                         } else {
                             wktLabel.setDefaultModelObject(null);
-                            wktLink.setEnabled(false);
+                            // wktLink.setEnabled(false);
                         }
                         target.add(wktLink);
 
@@ -190,25 +190,30 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         popupWindow.setContent(srsListPanel());
-                        popupWindow.setTitle(new ParamResourceModel("selectSRS", CRSPanel.this));
-                        popupWindow.show(target);
+                        var title =
+                                (new ParamResourceModel("selectSRS", CRSPanel.this)).getObject();
+                        popupWindow.setTitle(title);
+                        popupWindow.open(target);
                     }
                 };
         add(findLink);
 
         wktLink =
                 new GeoServerAjaxFormLink("wkt") {
+
                     @Override
                     public void onClick(AjaxRequestTarget target, Form<?> form) {
-                        popupWindow.setInitialHeight(375);
-                        popupWindow.setInitialWidth(525);
                         popupWindow.setContent(new WKTPanel(popupWindow.getContentId(), getCRS()));
                         CoordinateReferenceSystem crs = CRSPanel.this.getModelObject();
-                        if (crs != null) popupWindow.setTitle(crs.getName().toString());
-                        popupWindow.show(target);
+                        if (crs != null) {
+                            popupWindow.setTitle(crs.getName().toString());
+                        } else {
+                            popupWindow.setTitle("SRS");
+                        }
+                        popupWindow.open(target);
                     }
                 };
-        wktLink.setEnabled(getModelObject() != null);
+        // wktLink.setEnabled(getModelObject() != null);
         add(wktLink);
 
         wktLabel = new Label("wktLabel", new Model<String>());
@@ -221,10 +226,11 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         CoordinateReferenceSystem crs = getModelObject();
         if (crs != null) {
             srsTextField.setModelObject(toSRS(crs));
-            wktLabel.setDefaultModelObject(crs.getName().toString());
+            wktLabel.setDefaultModelObject(crs.getName().toString() + "...");
+            // wktLabel.setEnabled(true);
         } else {
             wktLabel.setDefaultModelObject(null);
-            wktLink.setEnabled(false);
+            //  wktLink.setEnabled(false);
         }
 
         super.onBeforeRender();
@@ -358,11 +364,11 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                         CoordinateReferenceSystem crs = fromSRS(srs);
                         CRSPanel.this.setModelObject(crs);
                         if (crs != null) {
-                            wktLabel.setDefaultModelObject(crs.getName().toString());
-                            wktLink.setEnabled(true);
+                            wktLabel.setDefaultModelObject(crs.getName().toString() + "...");
+                            //  wktLink.setEnabled(true);
                         } else {
                             wktLabel.setDefaultModelObject(null);
-                            wktLink.setEnabled(false);
+                            //  wktLink.setEnabled(false);
                         }
                         target.add(wktLink);
 

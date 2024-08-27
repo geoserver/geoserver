@@ -8,10 +8,8 @@ package org.geoserver.wcs.web.demo;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -28,16 +26,11 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs.web.demo.GetCoverageRequest.Version;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.demo.DemoRequest;
-import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
-import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
@@ -72,8 +65,6 @@ public class WCSRequestBuilderPanel extends Panel {
     GetCoverageRequest getCoverage;
 
     String description;
-
-    GSModalWindow responseWindow;
 
     private Component feedback;
 
@@ -212,27 +203,6 @@ public class WCSRequestBuilderPanel extends Panel {
 
         // the target grid to world (for WCS 1.1 ones)
         buildAffinePanel();
-
-        // the describe response window
-        responseWindow = new GSModalWindow("responseWindow");
-        add(responseWindow);
-
-        responseWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> {
-                            DemoRequest request = new DemoRequest(null);
-                            HttpServletRequest http =
-                                    GeoServerApplication.get().servletRequest(getRequest());
-                            String url =
-                                    ResponseUtils.buildURL(
-                                            ResponseUtils.baseURL(http),
-                                            "ows",
-                                            Collections.singletonMap("strict", "true"),
-                                            URLType.SERVICE);
-                            request.setRequestUrl(url);
-                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                            return new DemoRequestResponse(new Model<>(request));
-                        });
 
         // the describe coverage link
         describeLink =

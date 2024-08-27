@@ -1800,3 +1800,92 @@ image-chooser-img {
 .hidden {
     display: none;
 }
+
+.gsmodaldialog-header {
+  display: flex;
+  flex-direction: row;
+  height: 15px;
+  border-bottom: rgb(0, 118, 161) 1px solid;
+  padding-left:2px;
+  padding-top:2px;
+  padding-bottom:2px;
+}
+
+.gsmodaldialog-header-grow {
+  flex-grow: 100;
+}
+
+.gsmodaldialog-content-container {
+  padding:2px;
+
+  flex-grow: 100;
+  display: flex;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+
+.gsmodaldialog-content-container2 {
+  padding: 3px;
+  display:flex;
+}
+
+.gsmodaldialog-content-container3 {
+
+}
+
+
+
+.gsmodaldialog-header-close {
+  padding-right:3px;
+  width: 13px;
+  fill: darkgrey;
+  /*padding-top: 2px;*/
+}
+
+.gsmodaldialog-header-close:hover {
+  fill: red;
+}
+
+.gsmodaldialog-header-title {
+  padding-left: 3px;
+  color: rgb(0, 118, 161);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+#gsmodaldialog-header-drag {
+  cursor: grab;
+}
+
+.gsmodaldialog-resizer {
+  width: 10px;
+  height: 10px;
+  background: white;
+  position:absolute;
+  right: 0;
+  bottom: 0;
+  cursor: se-resize;
+}
+
+#GSModalDialogID {
+  display: flex;
+  flex-direction: column;
+  max-height: 80%;
+  max-width: 80%;
+}
+
+#gsmodaldialog-content {
+  white-space: nowrap;
+  overflow: visible;
+
+}
+
+
+.gsmodaldialog-resizer img {
+  width:10px;
+}
+
+.blue {
+  color: #0076a1;
+}

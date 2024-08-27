@@ -148,19 +148,26 @@ An example ``mapml-feature.ftl`` file to modify a point layer would look like::
           <#list attributes as gattribute>
             <#if gattribute.isGeometry>
               <map-geometry>
-                <#if attributes.NAME.value == "museam"><map-a href="#DESIRED,-74.01046109936,40.70758762626"></#if>
+                <!-- by default (if unspecified), map-a type attribute <map-a type="text/mapml"...> -->
+                <!-- is taken to mean that the link is to this or another MapML map layer, based on the -->
+                <!-- value of the <map-a target="_self" ...> "_self" is the default if unspecified -->
+                <!-- so, to link to another location in the current map, use href="#zoom,longitude,latitude -->
+                <!-- shown below. For further information on how to create links of different behaviours, -->
+                <!-- please refer to https://maps4html.org/web-map-doc/docs/other-elements/map-a/#target -->
+                <#if attributes.NAME.value == "museam"><map-a href="#16,-74.01046109936,40.70758762626"></#if>
                 <map-point>
                   <map-coordinates>
                     <#list gattribute.rawValue.coordinates as coord>${coord.x} ${coord.y}</#list>
                   </map-coordinates>
                 </map-point>
+                <!-- DO NOT FORGET to close your tags, else look for errors in your log files -->
                 <#if attributes.NAME.value == "museam"></map-a></#if>
               </map-geometry>
              </#if>
            </#list>
           </map-feature>
-        </map-body>
-        </mapml->
+      </map-body>
+    </mapml->
 
 This would result in a MapML feature output body that would resemble this fragment::
     
@@ -178,7 +185,7 @@ This would result in a MapML feature output body that would resemble this fragme
       <map-body>
         <map-feature id="poi.1" class="poi-r1-s1 poi-r1-s2">
           <map-geometry>
-            <map-a href="#DESIRED,-74.01046109936,40.70758762626">
+            <map-a href="#16,-74.01046109936,40.70758762626">
               <map-point>
                 <map-coordinates>-74.01046109936 40.70758762626</map-coordinates>
               </map-point>
@@ -215,7 +222,7 @@ For linestring features the template would look like::
           <#list attributes as attribute>
             <#if attribute.isGeometry>
               <map-geometry>
-                <#if attributes.NAME.value == "Washington Sq W"><map-a href="#DESIRED,-73.999559,40.73158"></#if>
+                <#if attributes.NAME.value == "Washington Sq W"><map-a href="#16,-73.999559,40.73158"></#if>
                   <map-linestring>
                     <map-coordinates>
                       <#list attribute.rawValue.coordinates as coord> ${coord.x} ${coord.y}</#list>
@@ -237,7 +244,7 @@ For polygon features the template would look like::
           <#list attributes as attribute>
             <#if attribute.isGeometry>
               <map-geometry>
-                <map-a href="#DESIRED,-1,0">
+                <map-a href="#16,-1,0">
                   <map-polygon>
                     <#assign shell = attribute.rawValue.getExteriorRing()>
                     <map-coordinates>
@@ -264,7 +271,7 @@ For multipoint features the template would look like::
           <#list attributes as gattribute>
             <#if gattribute.isGeometry>
               <map-geometry>
-                <map-a href="#DESIRED,-74.01046109936,40.70758762626">
+                <map-a href="#16,-74.01046109936,40.70758762626">
                 <map-multipoint>
                   <#list 0 ..< gattribute.rawValue.getNumGeometries() as index>
                     <#assign point = gattribute.rawValue.getGeometryN(index)>
@@ -290,7 +297,7 @@ For multiline features the template would like::
         <#list attributes as attribute>
           <#if attribute.isGeometry>
             <map-geometry>
-              <map-a href="#DESIRED,-0.0042,-0.0006">
+              <map-a href="#16,-0.0042,-0.0006">
               <map-multilinestring>
                 <#list 0 ..< attribute.rawValue.getNumGeometries() as index>
                   <#assign line = attribute.rawValue.getGeometryN(index)>
@@ -316,7 +323,7 @@ For multipolygon features the template would like::
             <#list attributes as attribute>
               <#if attribute.isGeometry>
                 <map-geometry>
-                  <map-a href="#DESIRED,-0.0042,-0.0006">
+                  <map-a href="#16,-0.0042,-0.0006">
                   <map-multipolygon>
                 <#list 0 ..< attribute.rawValue.getNumGeometries() as index>
                   <#assign polygon = attribute.rawValue.getGeometryN(index)>
@@ -368,7 +375,7 @@ Templates can also be used to create MapML GeometryCollections that consist of m
         <#list attributes as attribute>
           <#if attribute.isGeometry>
             <map-geometry>
-              <map-a href="#DESIRED,-1,0">
+              <map-a href="#16,-1,0">
               <map-geometrycollection>
                 <map-linestring>
                   <map-coordinates><#list attribute.rawValue.coordinates as coord> ${coord.x} ${coord.y}</#list></map-coordinates>
@@ -401,7 +408,7 @@ This would result in a MapML feature output body that would resemble::
       <map-body>
         <map-feature id="poi.4" class="poi-r1-s1 poi-r1-s2">
           <map-geometry>
-            <map-a href="#DESIRED,-1,0">
+            <map-a href="#16,-1,0">
               <map-geometrycollection>
                 <map-linestring>
                   <map-coordinates> -74.00857344353 40.71194564907</map-coordinates>

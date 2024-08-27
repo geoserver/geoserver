@@ -111,7 +111,7 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      * <p>A user "harry" has assigned the role employee and has a user property "empNr" with the
      * value 4711
      *
-     * <p>Now, this method should create a {@link Properties} object containing the the property
+     * <p>Now, this method should create a {@link Properties} object containing the property
      * "employeeNumber" with the value 4711.
      *
      * <p>A GIS example could be a BBOX for specific user to restrict his access to the wms service

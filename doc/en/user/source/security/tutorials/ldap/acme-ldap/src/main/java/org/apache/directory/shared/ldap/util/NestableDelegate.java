@@ -287,7 +287,7 @@ public class NestableDelegate implements Serializable
 
 
     /**
-     * Prints the stack trace of this exception the the standar error stream.
+     * Prints the stack trace of this exception the standar error stream.
      */
     public void printStackTrace()
     {

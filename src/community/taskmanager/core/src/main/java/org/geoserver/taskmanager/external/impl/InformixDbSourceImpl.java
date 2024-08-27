@@ -15,7 +15,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
  * The informix datasource that only takes the connection url and driver class as input in addition
- * the the user name and password.
+ * the user name and password.
  *
  * @author Timothy De Bock
  */

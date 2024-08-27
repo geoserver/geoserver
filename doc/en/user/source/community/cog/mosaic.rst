@@ -41,7 +41,7 @@ timeregex.properties:
 
 The previous indexer refers to a time dimension and the related time column in the index's schema that will get populated by extracting the time value from the filename (the 8 digits, representing YEAR, MONTH, DAY) using the regex specified in the timeregex.properties file. An example of sample file for this collection as stored on the S3 bucket is 2018.01.01.tif so the time regex will reflect that. Note the 3 groups of digits and the 'format' of the date. 
 
-. literalinclude:: src/modisvi/timeregex.properties
+.. literalinclude:: src/modisvi/timeregex.properties
 
 datastore.properties:
 """""""""""""""""""""

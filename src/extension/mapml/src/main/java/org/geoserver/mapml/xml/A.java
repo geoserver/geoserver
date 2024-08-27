@@ -15,6 +15,21 @@ public class A {
     @XmlAttribute(name = "href")
     protected String href;
 
+    @XmlAttribute(name = "type")
+    protected String type;
+
+    @XmlAttribute(name = "target")
+    protected String target;
+
+    @XmlAttribute(name = "inplace")
+    protected String inplace;
+
+    @XmlAttribute(name = "title")
+    protected String title;
+
+    @XmlAttribute(name = "aria-label")
+    protected String ariaLabel;
+
     @XmlElementRef(
             name = "GeometryContent",
             type = JAXBElement.class,

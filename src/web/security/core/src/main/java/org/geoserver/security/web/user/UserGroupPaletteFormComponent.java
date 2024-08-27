@@ -101,7 +101,7 @@ public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServe
     }
 
     @Override
-    protected String getAvaliableHeaderPropertyKey() {
+    protected String getAvailableHeaderPropertyKey() {
         return "UserGroupPaletteFormComponent.availableHeader";
     }
 }

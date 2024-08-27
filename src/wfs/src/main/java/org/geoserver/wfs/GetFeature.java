@@ -276,7 +276,7 @@ public class GetFeature {
         //
         // And allways remember to release locks if we are failing:
         // - if we fail to aquire all the locks we will need to fail and
-        //   itterate through the the FeatureSources to release the locks
+        //   itterate through the FeatureSources to release the locks
         //
         BigInteger bi = request.getMaxFeatures();
         if (bi == null) {

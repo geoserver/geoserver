@@ -540,7 +540,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         Domains domains = getDomains(conveyor);
         FeaturesTransformer transformer = new FeaturesTransformer(wms);
         transformer.transform(domains, conveyor.getResponse().getOutputStream());
-        // right now we only support gml in the the future we may need to support other formats
+        // right now we only support gml in the future we may need to support other formats
         conveyor.getResponse().setContentType("text/xml; subtype=gml/3.1.1");
     }
 

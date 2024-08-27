@@ -15,12 +15,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.impl.RESTAccessRuleDAO;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.StringUtils;
 
 /** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
@@ -31,7 +32,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
     private static final String[] validMethodNames = {"GET", "PUT", "DELETE", "POST"};
 
     /** Underlying SecurityMetedataSource object */
-    private RESTfulPathBasedFilterInvocationDefinitionMap delegate = null;
+    private RESTfulDefinitionSourceDelegateMap delegate = null;
     /** rest access rules dao */
     private RESTAccessRuleDAO dao;
 
@@ -41,11 +42,12 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
             throws IllegalArgumentException {
 
         if ((object == null) || !this.supports(object.getClass())) {
-            throw new IllegalArgumentException("Object must be a FilterInvocation");
+            throw new IllegalArgumentException("Object must be a HTTPServletRequest");
         }
 
-        String url = ((FilterInvocation) object).getRequestUrl();
-        String method = ((FilterInvocation) object).getHttpRequest().getMethod();
+        HttpServletRequest request = (HttpServletRequest) object;
+        String url = UrlUtils.buildRequestUrl(request);
+        String method = request.getMethod();
 
         return delegate().lookupAttributes(cleanURL(url), method);
     }
@@ -67,7 +69,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return FilterInvocation.class.isAssignableFrom(clazz);
+        return HttpServletRequest.class.isAssignableFrom(clazz);
     }
 
     public RESTfulDefinitionSource(RESTAccessRuleDAO dao) {
@@ -81,10 +83,10 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
         delegate = null;
     }
 
-    RESTfulPathBasedFilterInvocationDefinitionMap delegate() {
+    RESTfulDefinitionSourceDelegateMap delegate() {
         if (delegate == null || dao.isModified()) {
             synchronized (this) {
-                delegate = new RESTfulPathBasedFilterInvocationDefinitionMap();
+                delegate = new RESTfulDefinitionSourceDelegateMap();
                 for (String rule : dao.getRules()) {
                     processPathList(rule);
                 }

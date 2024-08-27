@@ -62,7 +62,7 @@ public class GetCapabilities {
         // make sure service is set, cite conformance thing
         // JD - We wrap this in a cite conformance check because cite stricly
         // tests that every request includes the 'service=WFS' key value pair.
-        // However often the the context of the request is good enough to
+        // However often the context of the request is good enough to
         // determine what the service is, like in 'geoserver/wfs?request=GetCapabilities'
         if (wfs.isCiteCompliant()) {
             if (!request.isSetService()) {

@@ -103,7 +103,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     }
 
     @Override
-    protected String getAvaliableHeaderPropertyKey() {
+    protected String getAvailableHeaderPropertyKey() {
         // TODO Auto-generated method stub
         return "RolePaletteFormComponent.availableHeader";
     }

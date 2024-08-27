@@ -468,7 +468,7 @@ public final class StyleQueryUtil {
      * destCRS.
      *
      * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
-     *     transform if the the two crs are equal
+     *     transform if the two crs are equal
      * @throws FactoryException If no transform is available to the destCRS
      */
     public static MathTransform buildTransform(

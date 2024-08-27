@@ -45,7 +45,7 @@ import org.apache.directory.shared.asn1.codec.EncoderException;
  */
 public class Cancel extends AbstractAsn1Object
 {
-    /** The Id of the the message to cancel */
+    /** The Id of the message to cancel */
     private int cancelId;
     
     /** Length of the sequence */

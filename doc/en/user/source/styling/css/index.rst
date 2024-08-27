@@ -21,6 +21,7 @@ CSS is not a part of GeoServer by default, but is available as an extension.
    cascading
    nested
    transformation
+   multilayer
    styledmarks
    cookbook/index
    examples/index

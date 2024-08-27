@@ -35,26 +35,7 @@
 
     <script src="${resourceLink('swagger-ui/swagger-ui-bundle.js')}"> </script>
     <script src="${resourceLink('swagger-ui/swagger-ui-standalone-preset.js')}"> </script>
-    <script>
-    window.onload = function() {
-
-      // Build a system
-      const ui = SwaggerUIBundle({
-        url: "${model.getApiLocation()}",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset
-        ],
-        plugins: [
-          SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout"
-      })
-
-      window.ui = ui
-    }
-  </script>
+    <script src="${resourceLink('webresources/ogcapi/api.js')}"></script>
+    <input type="hidden" id="apiLocation" value="${model.getApiLocation()}"/>
   </body>
 </html>

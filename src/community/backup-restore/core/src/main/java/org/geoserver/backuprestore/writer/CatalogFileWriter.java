@@ -375,7 +375,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
                     outputBufferedWriter.close();
                 }
             } catch (IOException ioe) {
-                throw new ItemStreamException("Unable to close the the ItemWriter", ioe);
+                throw new ItemStreamException("Unable to close the ItemWriter", ioe);
             } finally {
                 if (!transactional) {
                     closeStream();
@@ -389,14 +389,14 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
                     fileChannel.close();
                 }
             } catch (IOException ioe) {
-                throw new ItemStreamException("Unable to close the the ItemWriter", ioe);
+                throw new ItemStreamException("Unable to close the ItemWriter", ioe);
             } finally {
                 try {
                     if (os != null) {
                         os.close();
                     }
                 } catch (IOException ioe) {
-                    throw new ItemStreamException("Unable to close the the ItemWriter", ioe);
+                    throw new ItemStreamException("Unable to close the ItemWriter", ioe);
                 }
             }
         }

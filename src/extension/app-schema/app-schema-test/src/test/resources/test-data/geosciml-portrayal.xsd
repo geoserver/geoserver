@@ -17,8 +17,8 @@
 	Also change upper to older and lower to younger in age element names and descriptions to avoid inherent ambiguity about what is older and what is younger. 
 	Add gmlsf level 0 declartion in annotation element. Question: does having xsd:any element with unbounded cardinality violate level 0 proscription that max cardinality is 1?   Stephen Richard, AZGS/USGIN -->
 	<!-- 2012-11-23: Manually added BoreholeView to xsd for v2.0 final release.  Ollie Raymond, Geoscience Australia -->
-	<!-- 2013-07-08: version 2.0.1 - Manually corrected BoreholeView/specification_uri documentation note to read "URI referring the the GeoSciML Borehole feature...",
-		not "URI referring the the GeoSciML GeologicUnit feature..."  Ollie Raymond. oliver.raymond@ga.gov.au -->
+	<!-- 2013-07-08: version 2.0.1 - Manually corrected BoreholeView/specification_uri documentation note to read "URI referring the GeoSciML Borehole feature...",
+		not "URI referring the GeoSciML GeologicUnit feature..."  Ollie Raymond. oliver.raymond@ga.gov.au -->
 	
 <!-- ===================================================================================== -->
 	
@@ -63,7 +63,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="name" type="string" minOccurs="0">
 						<annotation>
-							<documentation>Display name for the the Contact.</documentation>
+							<documentation>Display name for the Contact.</documentation>
 						</annotation>
 					</element>
 					<element name="description" type="string" minOccurs="0">
@@ -98,7 +98,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="specification_uri" type="string">
 						<annotation>
-							<documentation>URI referring the the GeoSciML Contact feature that describes the instance in detail. Mandatory propery - if not value is provided then a URI referring to a conctrolled concept explaining why the value is nil must be provided.</documentation>
+							<documentation>URI referring the GeoSciML Contact feature that describes the instance in detail. Mandatory propery - if not value is provided then a URI referring to a conctrolled concept explaining why the value is nil must be provided.</documentation>
 						</annotation>
 					</element>
 					<element name="metadata_uri" type="string">
@@ -145,7 +145,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="name" type="string" minOccurs="0">
 						<annotation>
-							<documentation>Display name for the the ShearDisplacementStructure.</documentation>
+							<documentation>Display name for the ShearDisplacementStructure.</documentation>
 						</annotation>
 					</element>
 					<element name="description" type="string" minOccurs="0">
@@ -225,7 +225,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="specification_uri" type="string">
 						<annotation>
-							<documentation>URI referring the the GeoSciML ShearDisplacementStructure feature that describes the instance in detail. Mandatory propery - if not value is provided then a URI referring to a conctrolled concept explaining why the value is nil must be provided.</documentation>
+							<documentation>URI referring the GeoSciML ShearDisplacementStructure feature that describes the instance in detail. Mandatory propery - if not value is provided then a URI referring to a conctrolled concept explaining why the value is nil must be provided.</documentation>
 						</annotation>
 					</element>
 					<element name="metadata_uri" type="string">
@@ -272,7 +272,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="name" type="string" minOccurs="0">
 						<annotation>
-							<documentation>Display name for the the GeologicalUnit.</documentation>
+							<documentation>Display name for the GeologicalUnit.</documentation>
 						</annotation>
 					</element>
 					<element name="description" type="string" minOccurs="0">
@@ -342,7 +342,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="specification_uri" type="string">
 						<annotation>
-							<documentation>URI referring the the GeoSciML GeologicUnit feature that describes the instance in detail. Mandatory propery - if not value is provided then a URI referring to a conctrolled concept explaining why the value is nil must be provided.</documentation>
+							<documentation>URI referring the GeoSciML GeologicUnit feature that describes the instance in detail. Mandatory propery - if not value is provided then a URI referring to a conctrolled concept explaining why the value is nil must be provided.</documentation>
 						</annotation>
 					</element>
 					<element name="metadata_uri" type="string">
@@ -389,7 +389,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="name" type="string" minOccurs="0">
 						<annotation>
-							<documentation>Display name for the the borehole.</documentation>
+							<documentation>Display name for the borehole.</documentation>
 						</annotation>
 					</element>	
 					<element name="description" type="string" minOccurs="0">
@@ -474,7 +474,7 @@ It is separate to, but harmonized with, GeoSciML and conforms to the level 0 of 
 					</element>
 					<element name="specification_uri" type="string">
 						<annotation>
-							<documentation>URI referring the the GeoSciML Borehole feature that describes the instance in detail. Mandatory property - if not value is provided then a URI referring to a controlled concept explaining why the value is nil must be provided.</documentation>
+							<documentation>URI referring the GeoSciML Borehole feature that describes the instance in detail. Mandatory property - if not value is provided then a URI referring to a controlled concept explaining why the value is nil must be provided.</documentation>
 						</annotation>
 					</element>
 					<element name="parentBorehole_uri" type="string" minOccurs="0">

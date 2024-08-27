@@ -14,13 +14,14 @@
       <link rel="stylesheet" href="${resourceLink("apicss/bootstrap.min.css")}" type="text/css" media="all" />
       <link rel="stylesheet" href="${resourceLink("apicss/geoserver.css")}" type="text/css" media="all" />
       <link rel="stylesheet" href="${resourceLink("apicss/treeview.css")}" type="text/css" media="all" />
+      <script src="${resourceLink('webresources/ogcapi/common.js')}"></script>
   </head>
 <body>
   <header id="header">
     <a href="${serviceLink("")}"></a>
     <#if model??>
        <div id="fetch"><span style="margin: 0.5em">Fetch this resource as:</span>
-          <select class="form-select form-select-sm" onchange="window.open(this.options[this.selectedIndex].value);this.selectedIndex=0" >
+          <select class="form-select form-select-sm form-select-open-basic">
             <option value="none" selected>-- Please choose a format --</option>
             <#list model.getLinksFor("alternate") as link>
             <option value="${link.href}">${link.type}</option>

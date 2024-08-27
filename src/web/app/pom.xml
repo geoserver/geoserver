@@ -1130,16 +1130,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>geomesa</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-web-geomesa</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>vectortiles</id>
       <dependencies>
         <dependency>
@@ -1784,7 +1774,27 @@
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-cog</artifactId>
+          <artifactId>gs-cog-core</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cog-azure</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cog-google</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cog-http</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-cog-s3</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>
@@ -1920,6 +1930,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-wfs-freemarker</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>acl</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-acl</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>

@@ -237,7 +237,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the security directory. An empty path will retrieve the directory
+     * Retrieve a resource in the security directory. An empty path will retrieve the directory
      * itself.
      *
      * @return A {@link Resource}
@@ -249,8 +249,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the workspaces directory. An empty path will retrieve the
-     * directory itself.
+     * Retrieve a resource in the workspaces directory. An empty path will retrieve the directory
+     * itself.
      *
      * @return A {@link Resource}
      */
@@ -272,8 +272,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the workspace configuration directory. An empty path will retrieve
-     * the directory itself. A null workspace will retrieve the resouce in the global configuration
+     * Retrieve a resource in the workspace configuration directory. An empty path will retrieve the
+     * directory itself. A null workspace will retrieve the resouce in the global configuration
      * directory.
      *
      * @param ws The workspace
@@ -303,7 +303,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the configuration directory of the workspace associated with a
+     * Retrieve a resource in the configuration directory of the workspace associated with a
      * namespace. An empty path will retrieve the directory itself. A null namespace will retrieve
      * the resouce in the global configuration directory.
      *
@@ -334,8 +334,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the configuration directory of a Store. An empty path will
-     * retrieve the directory itself.
+     * Retrieve a resource in the configuration directory of a Store. An empty path will retrieve
+     * the directory itself.
      *
      * @param store The store
      * @return A {@link Resource}
@@ -445,8 +445,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the configuration directory of a Resource. An empty path will
-     * retrieve the directory itself.
+     * Retrieve a resource in the configuration directory of a Resource. An empty path will retrieve
+     * the directory itself.
      *
      * @param ri The store
      * @return A {@link Resource}
@@ -506,8 +506,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the configuration directory of a Layer. An empty path will
-     * retrieve the directory itself.
+     * Retrieve a resource in the configuration directory of a Layer. An empty path will retrieve
+     * the directory itself.
      *
      * @param l The layer
      * @return A {@link Resource}
@@ -544,8 +544,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the layer groups directory. An empty path will retrieve the
-     * directory itself.
+     * Retrieve a resource in the layer groups directory. An empty path will retrieve the directory
+     * itself.
      *
      * @return A {@link Resource}
      */
@@ -556,9 +556,9 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the layer groups directory of a workspace. An empty path will
-     * retrieve the directory itself. A null workspace will return the resource in the global layer
-     * groups directory
+     * Retrieve a resource in the layer groups directory of a workspace. An empty path will retrieve
+     * the directory itself. A null workspace will return the resource in the global layer groups
+     * directory
      *
      * @return A {@link Resource}
      */
@@ -569,7 +569,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the configuration directory of a LayerGroup. An empty path will
+     * Retrieve a resource in the configuration directory of a LayerGroup. An empty path will
      * retrieve the directory itself. This directory is shared by all Layer Groups in a Workspace.
      *
      * @param lgi The store
@@ -595,7 +595,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the styles directory. An empty path will retrieve the directory
+     * Retrieve a resource in the styles directory. An empty path will retrieve the directory
      * itself.
      *
      * @return A {@link Resource}
@@ -607,9 +607,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the styles directory of a workspace. An empty path will retrieve
-     * the directory itself. A null workspace will return the resource in the global styles
-     * directory
+     * Retrieve a resource in the styles directory of a workspace. An empty path will retrieve the
+     * directory itself. A null workspace will return the resource in the global styles directory
      *
      * @return A {@link Resource}
      */
@@ -620,8 +619,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the the configuration directory of a Resource. An empty path will
-     * retrieve the directory itself.
+     * Retrieve a resource in the configuration directory of a Resource. An empty path will retrieve
+     * the directory itself.
      *
      * @param si The store
      * @return A {@link Resource}

@@ -1,0 +1,91 @@
+# this is an example docker compose file to run geoserver with the geoserver-acl plugin alongside
+# a geoserver-acl service container.
+# make sure to have run `mvn clean install -DskipTests -Passembly,acl`
+# from the geoserver src/community directory first to have the plugin
+# installed at src/community/target/release/geoserver-<version>-acl-plugin.zip
+volumes:
+  #volume for the acldb service
+  acl_postgis_data:
+   
+services:
+
+  acl:
+    image: geoservercloud/geoserver-acl:2.3-SNAPSHOT
+    environment:
+      # Basic Auth configuration
+      # password for the admin and geoserver users, usually obtained from a secret in a production deployment
+      # These are the two default users defined, `admin` to access the API directly (e.g. curl), and `geoserver` for the plugin
+      # For a complete list of configuration properties see https://github.com/geoserver/geoserver-acl/blob/main/src/artifacts/api/src/main/resources/values.yml
+      - ACL_USERS_ADMIN_PASSWORD=ch4ng3m3
+      - ACL_USERS_GEOSERVER_PASSWORD=ch4ng3m3
+      # set up datbase configuration
+      - PG_HOST=acldb
+      - PG_PORT=5432
+      - PG_DB=acl
+      - PG_SCHEMA=acl
+      - PG_USER=acl
+      - PG_PASSWORD=acls3cr3t
+      # or uncomment to run againt an ephemeral in-memory H2 datbase instead of PostGIS
+      #- SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+      acldb:
+        condition: service_healthy
+        required: true    
+    ports:
+      - 8180:8080 # to access the Swagger UI at http://localhost:8180/acl/ or the OpenApi3 API at http://localhost:8180/acl/api
+      - 8181:8081 # to access the actuator API at http://localhost:8181/actuator
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.25.3
+    ports:
+      - 8080:8080
+    volumes:
+      # bind-mount the zipfile to skip download. At the time of writing, there are no published community modules
+      # for 2.26.x at https://build.geoserver.org/geoserver/2.26.x/community-latest/
+      - $PWD/../target/release/geoserver-2.26-SNAPSHOT-acl-plugin.zip:/opt/additional_libs/geoserver-2.26-SNAPSHOT-acl-plugin.zip
+    environment:
+      - GEOSERVER_VERSION=2.26-SNAPSHOT
+      - INSTALL_EXTENSIONS=true
+      - COMMUNITY_EXTENSIONS=acl
+      - EXTRA_JAVA_OPTS=-XX:MaxRAMPercentage=80 -XshowSettings:system
+      # GeoServer ACL config properties as env variables
+      - GEOSERVER_ACL_ENABLED=true
+      - GEOSERVER_ACL_CLIENT_BASEPATH=http://acl:8080/acl/api
+      - GEOSERVER_ACL_CLIENT_USERNAME=geoserver
+      - GEOSERVER_ACL_CLIENT_PASSWORD=ch4ng3m3 #same as ACL_USERS_GEOSERVER_PASSWORD in the acl service definition
+      # or rather install the acl plugin by standard means
+    depends_on:
+      acl:
+        condition: service_healthy
+        required: true    
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+
+  # PostGIS container to hold the acl service datbase
+  acldb:
+    image: postgis/postgis:15-3.3
+    environment:
+      - POSTGRES_DB=acl
+      - POSTGRES_USER=acl
+      - POSTGRES_PASSWORD=acls3cr3t
+    volumes:
+      - acl_postgis_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acl"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+

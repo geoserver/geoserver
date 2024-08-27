@@ -95,7 +95,7 @@ public class OwsUtils {
     /**
      * Returns a setter method for a property of java bean.
      *
-     * <p>The <tt>type</tt> parameter may be <code>null</code> to indicate the the setter for the
+     * <p>The <tt>type</tt> parameter may be <code>null</code> to indicate the setter for the
      * property should be returned regardless of the type. If not null it will be used to filter the
      * returned method.
      *

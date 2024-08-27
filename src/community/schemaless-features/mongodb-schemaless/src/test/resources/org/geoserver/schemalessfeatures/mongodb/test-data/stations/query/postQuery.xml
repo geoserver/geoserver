@@ -10,20 +10,20 @@
             <ogc:And>
                 <ogc:PropertyIsLessThan>
                     <ogc:PropertyName>
-                        measurements/values/value
+                        numericValue
                     </ogc:PropertyName>
                     <ogc:Literal>
-                        25
+                        52
                     </ogc:Literal>
                 </ogc:PropertyIsLessThan>
-                <ogc:PropertyIsEqualTo>
+                <ogc:PropertyIsGreaterThanOrEqualTo>
                     <ogc:PropertyName>
-                        measurements/name
+                        numericValue
                     </ogc:PropertyName>
                     <ogc:Literal>
-                        wind
+                        50
                     </ogc:Literal>
-                </ogc:PropertyIsEqualTo>
+                </ogc:PropertyIsGreaterThanOrEqualTo>
             </ogc:And>
 
         </ogc:Filter>

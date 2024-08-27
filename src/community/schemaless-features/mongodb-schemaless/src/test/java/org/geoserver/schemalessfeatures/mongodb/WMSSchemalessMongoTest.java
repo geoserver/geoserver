@@ -226,7 +226,7 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
                                 "wms?SERVICE=WMS&VERSION=1.1.1"
                                         + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=gs:"
                                         + StationsTestSetup.COLLECTION_NAME
-                                        + "&STYLES&LAYERS=gs:"
+                                        + "&STYLES=point&LAYERS=gs:"
                                         + StationsTestSetup.COLLECTION_NAME
                                         + "&INFO_FORMAT=application/json"
                                         + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"

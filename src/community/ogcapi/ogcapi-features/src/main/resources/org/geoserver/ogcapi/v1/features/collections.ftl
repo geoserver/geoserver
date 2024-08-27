@@ -1,4 +1,7 @@
-<#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>Collections</li>">
+<#global pagecrumbs>
+  <li class='breadcrumb-item'><a href='${serviceLink("")}'>Home</a></li>
+  <li class='breadcrumb-item active'>Collections</li>
+</#global>
 <#include "common-header.ftl">
 
   <h1>GeoServer Feature Collections</h1>
@@ -18,5 +21,8 @@
     </div>
     </#list>
   </div>
+
+  <script src="${resourceLink('webresources/ogcapi/features.js')}"></script>
+  <input type="hidden" id="maxNumberOfFeaturesForPreview" value="${service.maxNumberOfFeaturesForPreview}"/>
 
 <#include "common-footer.ftl">

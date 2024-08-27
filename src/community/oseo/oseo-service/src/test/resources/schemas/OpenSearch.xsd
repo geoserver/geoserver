@@ -224,7 +224,7 @@
               <xs:attribute name="type" use="optional">
                 <xs:annotation>
                   <xs:documentation>
-                    Contains the the MIME type of this image.
+                    Contains the MIME type of this image.
                     Restrictions: The value
                     must be a valid MIME type.
                   </xs:documentation>

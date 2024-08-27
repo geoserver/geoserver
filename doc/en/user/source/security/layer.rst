@@ -56,8 +56,8 @@ For WMS, layers will be also secured by considering their containing layer group
 * Rules with other types of groups (*Named tree*, *Container tree*, *Earth Observation tree*) also affect contained layers and nested layer groups. 
   If the group is not accessible, the layers and groups contained in that group will not be accessible either..
   The only exception is when another layer group which is accessible contains the same layer or nested group, in that case the layers they will show up under the allowed groups.
-* Workspace rules gets precedence over global layer group ones when it comes to allow access to layers.
-* Layer rules get precedence over all layer group rules when it comes to allow access to layers.
+* Workspace rules gets precedence over global layer group ones when it comes to allowing access to layers.
+* Layer rules get precedence over all layer group rules when it comes to allowing access to layers.
   
 The following tables summarizes the layer group behavior depending on whether they are used in a public or secured environment:
 
@@ -95,7 +95,7 @@ The syntax is::
    * - ``challenge``
      - Allows free access to metadata, but any attempt at accessing actual data is met by a HTTP 401 code (which forces most clients to show an authentication dialog). The capabilities documents contain the full list of layers. DescribeFeatureType and DescribeCoverage operations work successfully. This mode works fine with clients such as uDig or Google Earth.
    * - ``mixed``
-     - Hides the layers the user cannot read from the capabilities documents, but triggers authentication for any other attempt to access the data or the metadata. This option is useful if you don't want the world to see the existence of some of your data, but you still want selected people to who have data access links to get the data after authentication.
+     - Hides the layers the user cannot read from the capabilities documents, but triggers authentication for any other attempt to access the data or the metadata. This option is useful if you don't want the world to see the existence of some of your data, but you still want selected people who have data access links to get the data after authentication.
 
 .. _access_mode:
 
@@ -284,7 +284,7 @@ The following examples are invalid because the workspace, layer, and permission 
 Security by layer group in WMS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To clarify, lets assume the following starting situation, in which all layers and groups are visible::
+To clarify, let's assume the following starting situation, in which all layers and groups are visible::
 
     root
     +- namedTreeGroupA

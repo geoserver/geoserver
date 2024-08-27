@@ -47,7 +47,7 @@ For the Mac OS X install, set the ``GEOSERVER_DATA_DIR`` environment variable to
 Web archive
 -----------
 
-When running a GeoServer WAR inside a servlet container, the data directory can be specified in a number of ways. The recommended method is to set a **servlet context parameter**. An alternative is to set a **Java system property**.
+When running a GeoServer WAR inside a servlet container, the data directory can be specified in a number of ways. One alternative is to set a **servlet context parameter**, another alternative is to set a **Java system property**.
 
 Context parameter
 ^^^^^^^^^^^^^^^^^

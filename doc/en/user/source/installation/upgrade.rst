@@ -33,12 +33,13 @@ Notes on upgrading specific versions
 ImageMosaic Sample Image Deserialization (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-GeoServer now validates class names when deserializing sample image files for ImageMosaic
-data stores.
+GeoServer now validates class names when deserializing sample image files for ImageMosaic data stores.
 
 The sample image file is restricted to the built-in image formats and color models.
 This restriction may be relaxed using the Java System property ``org.geotools.gce.imagemosaic.sampleimage.allowlist``
 documented by the GeoTools library :geotools:`Mosaic plugin </library/coverage/mosaic.html>`.
+
+This change affects those updating to 2.26.0, 2.25.4 and 2.24.6.
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

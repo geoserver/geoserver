@@ -16,4 +16,5 @@ GeoServer supports "vector tile" output in addition to the more standard image t
    :maxdepth: 1
 
    install.rst
+   options.rst
    tutorial.rst

@@ -119,6 +119,11 @@ public class DGGSService {
         return gs.getService(DGGSInfo.class);
     }
 
+    public DGGSInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     @GetMapping(name = "getLandingPage")
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")

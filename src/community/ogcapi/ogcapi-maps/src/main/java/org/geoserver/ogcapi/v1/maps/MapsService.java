@@ -86,6 +86,11 @@ public class MapsService {
         return geoServer.getService(WMSInfo.class);
     }
 
+    public WMSInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     private Catalog getCatalog() {
         return geoServer.getCatalog();
     }

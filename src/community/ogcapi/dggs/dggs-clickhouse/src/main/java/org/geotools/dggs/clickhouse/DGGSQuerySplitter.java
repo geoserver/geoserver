@@ -14,10 +14,10 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geootols.dggs.clickhouse;
+package org.geotools.dggs.clickhouse;
 
-import static org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore.GEOMETRY;
-import static org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore.ZONE_ID;
+import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.GEOMETRY;
+import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.ZONE_ID;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -14,7 +14,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geootols.dggs.clickhouse;
+package org.geotools.dggs.clickhouse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,17 +24,24 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
 
 public class ClickHouseJDBCDataStoreFactory extends JDBCDataStoreFactory {
+    public static final String DATABASE_ID = "clickhouse";
+    public static final String DRIVER_CLASSNAME = "com.clickhouse.jdbc.ClickHouseDriver";
+    /**
+     * Use the Java 11 built-in HTTP client (the default would be Commons HTTPClient, which would
+     * cause version conflicts
+     */
+    public static final String FORCE_HTTP_CLIENT = "http_connection_provider=HTTP_CLIENT";
 
     // TODO: expose parameters with sensible defaults for port, user, password
 
     @Override
     protected String getDatabaseID() {
-        return "clickhouse";
+        return DATABASE_ID;
     }
 
     @Override
     protected String getDriverClassName() {
-        return "ru.yandex.clickhouse.ClickHouseDriver";
+        return DRIVER_CLASSNAME;
     }
 
     @Override
@@ -58,5 +65,10 @@ public class ClickHouseJDBCDataStoreFactory extends JDBCDataStoreFactory {
         ds.addConnectionProperty("max_query_size", "1000000");
         ds.addConnectionProperty("socket_timeout", "300000");
         return ds;
+    }
+
+    @Override
+    protected String getJDBCUrl(Map<String, ?> params) throws IOException {
+        return super.getJDBCUrl(params) + "?" + FORCE_HTTP_CLIENT;
     }
 }

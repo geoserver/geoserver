@@ -14,24 +14,19 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geootols.dggs.clickhouse;
+package org.geotools.dggs.clickhouse;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import org.geotools.data.jdbc.FilterToSQL;
+import java.util.Map;
+import org.geotools.jdbc.JDBCJNDIDataStoreFactory;
 
-public class ClickHouseFilterToSQL extends FilterToSQL {
+public class ClickHouseJDBCJNDIDataStoreFactory extends JDBCJNDIDataStoreFactory {
+
+    public ClickHouseJDBCJNDIDataStoreFactory() {
+        super(new ClickHouseJDBCDataStoreFactory());
+    }
 
     @Override
-    protected void writeLiteral(Object literal) throws IOException {
-        if (literal instanceof Date) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-            String isoDate = sdf.format(((Date) literal));
-
-            out.write("parseDateTimeBestEffort('" + isoDate + "')");
-        } else {
-            super.writeLiteral(literal);
-        }
+    protected void setupParameters(Map<String, Object> parameters) {
+        super.setupParameters(parameters);
     }
 }

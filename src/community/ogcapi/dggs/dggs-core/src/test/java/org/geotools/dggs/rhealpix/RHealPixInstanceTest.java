@@ -34,6 +34,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import jep.JepException;
 import jep.SharedInterpreter;
 import org.geotools.dggs.DGGSFactory;
@@ -256,7 +257,11 @@ public class RHealPixInstanceTest {
             interpreter.set("resolution", Integer.valueOf(r));
             @SuppressWarnings("unchecked")
             Set<String> expected =
-                    new HashSet<>(interpreter.getValue("list(c.subcells(resolution))", List.class));
+                    (Set<String>)
+                            interpreter.getValue("list(c.subcells(resolution))", List.class)
+                                    .stream()
+                                    .map(Object::toString)
+                                    .collect(Collectors.toSet());
             assertEquals(expected, actual);
         }
     }

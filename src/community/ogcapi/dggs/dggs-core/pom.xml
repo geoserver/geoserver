@@ -47,7 +47,7 @@
     <dependency>
       <groupId>black.ninia</groupId>
       <artifactId>jep</artifactId>
-      <version>3.9.0</version>
+      <version>4.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

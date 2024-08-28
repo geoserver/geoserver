@@ -175,6 +175,11 @@ public class STACService {
         return geoServer.getService(OSEOInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public OSEOInfo getServiceInfo() {
+        return getService();
+    }
+
     private Catalog getCatalog() {
         return geoServer.getCatalog();
     }

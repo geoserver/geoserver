@@ -116,6 +116,12 @@ public class CoveragesService {
         return geoServer.getService(WCSInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public WCSInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return geoServer.getService(WCSInfo.class);
+    }
+
     private Catalog getCatalog() {
         return geoServer.getCatalog();
     }

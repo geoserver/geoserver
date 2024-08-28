@@ -9,13 +9,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
+import org.geoserver.wcs.WCSInfo;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LandingPageTest extends CoveragesTestSupport {
 
@@ -155,5 +158,21 @@ public class LandingPageTest extends CoveragesTestSupport {
         assertEquals("Coverages 1.0 server", json.read("title"));
         // check description
         assertEquals("", json.read("description"));
+    }
+
+    @Test
+    public void testDisabledService() throws Exception {
+        GeoServer gs = getGeoServer();
+        WCSInfo service = gs.getService(WCSInfo.class);
+        service.setEnabled(false);
+        gs.save(service);
+        try {
+            MockHttpServletResponse httpServletResponse =
+                    getAsMockHttpServletResponse("ogc/coverages/v1", 404);
+            assertEquals("Service Coverages is disabled", httpServletResponse.getErrorMessage());
+        } finally {
+            service.setEnabled(true);
+            gs.save(service);
+        }
     }
 }

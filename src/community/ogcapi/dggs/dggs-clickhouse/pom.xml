@@ -17,6 +17,7 @@
   <artifactId>gs-dggs-clickhouse</artifactId>
 
   <properties>
+    <errorProneFlags>-Xep:BanJNDI:WARN</errorProneFlags>
     <!-- has GeoTools headers, meant to go eventually down in GeoTools -->
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
@@ -33,9 +34,14 @@
       <version>${gt.version}</version>
     </dependency>
     <dependency>
-      <groupId>ru.yandex.clickhouse</groupId>
+      <groupId>com.clickhouse</groupId>
       <artifactId>clickhouse-jdbc</artifactId>
-      <version>0.2.4</version>
+      <version>0.6.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.8.0</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -54,6 +60,11 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
       <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

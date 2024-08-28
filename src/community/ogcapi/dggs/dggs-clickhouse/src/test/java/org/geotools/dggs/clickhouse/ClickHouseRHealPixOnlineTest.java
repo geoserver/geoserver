@@ -23,7 +23,6 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -57,9 +56,7 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
     }
 
     @Override
-    protected void connect() throws Exception {
-        super.connect();
-
+    protected void setupTestData(ClickHouseDGGSDataStore dataStore) throws Exception {
         try (Connection cx =
                         ((JDBCDataStore) dataStore.getDelegate())
                                 .getConnection(Transaction.AUTO_COMMIT);

@@ -76,9 +76,17 @@
         <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
     </bean>
 
-    <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
-	<constructor-arg ref="geofenceConfigurationManager" />
-        <property name="realRuleReaderService" ref="${ruleReaderBackend}"/>
+    <bean id="geofenceCachedRuleLoaders" class="org.geoserver.geofence.cache.CachedRuleLoaders">
+        <constructor-arg ref="${ruleReaderBackend}"/>
+    </bean>
+
+    <bean id="geofenceCacheManager" class="org.geoserver.geofence.cache.CacheManager">
+        <constructor-arg index="0" ref="geofenceConfigurationManager"/>
+        <constructor-arg index="1" ref="geofenceCachedRuleLoaders"/>
+    </bean>
+
+    <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader">
+	<constructor-arg ref="geofenceCacheManager" />
     </bean>
 
     <bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
@@ -90,7 +98,7 @@
     </bean>
 
     <bean id="geofenceConfigurationController" class="org.geoserver.geofence.config.GeoFenceConfigurationController">
-        <property name="cachedRuleReader" ref="cachedRuleReader"/>
+        <property name="cacheManager" ref="geofenceCacheManager"/>
         <property name="configurationManager" ref="geofenceConfigurationManager"/>
     </bean>
 

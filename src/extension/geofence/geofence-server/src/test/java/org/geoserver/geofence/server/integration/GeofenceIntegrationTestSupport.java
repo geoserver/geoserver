@@ -8,7 +8,7 @@ package org.geoserver.geofence.server.integration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.core.model.AdminRule;
 import org.geoserver.geofence.core.model.GSInstance;
 import org.geoserver.geofence.core.model.IPAddressRange;
@@ -52,8 +52,8 @@ public class GeofenceIntegrationTestSupport extends ExternalResource {
     public @Override void after() {
         deleteRules();
         // this is odd, RuleService.delete() should invalidate
-        CachedRuleReader cacheRuleReader = GeoServerExtensions.bean(CachedRuleReader.class);
-        cacheRuleReader.invalidateAll();
+        CacheManager cacheManager = GeoServerExtensions.bean(CacheManager.class);
+        cacheManager.invalidateAll();
     }
 
     public long addAdminRule(

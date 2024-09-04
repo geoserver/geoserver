@@ -13,6 +13,8 @@ import com.google.common.base.Ticker;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.geofence.cache.CacheConfiguration;
+import org.geoserver.geofence.cache.CacheManager;
+import org.geoserver.geofence.cache.CachedRuleLoaders;
 import org.geoserver.geofence.cache.CachedRuleReader;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
@@ -32,6 +34,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     private CustomTicker ticker;
 
+    private CachedRuleLoaders cachedRuleLoaders;
+    private CacheManager cacheManager;
     private CachedRuleReader cachedRuleReader;
 
     private GeoFencePropertyPlaceholderConfigurer configurer;
@@ -64,15 +68,17 @@ public class CacheReaderTest extends GeofenceBaseTest {
         assertNotNull(configManager);
         configManager.setCacheConfiguration(config);
 
-        cachedRuleReader = new CachedRuleReader(configManager);
-        cachedRuleReader.setRealRuleReaderService(realReader);
+        cachedRuleLoaders = new CachedRuleLoaders(realReader);
 
-        cachedRuleReader.getCacheInitParams().setSize(100);
-        cachedRuleReader.getCacheInitParams().setRefreshMilliSec(500);
-        cachedRuleReader.getCacheInitParams().setExpireMilliSec(1000);
-        cachedRuleReader.getCacheInitParams().setCustomTicker(ticker);
+        cacheManager = new CacheManager(configManager, cachedRuleLoaders);
+        cacheManager.getCacheInitParams().setSize(100);
+        cacheManager.getCacheInitParams().setRefreshMilliSec(500);
+        cacheManager.getCacheInitParams().setExpireMilliSec(1000);
+        cacheManager.getCacheInitParams().setCustomTicker(ticker);
 
-        cachedRuleReader.init();
+        cachedRuleReader = new CachedRuleReader(cacheManager);
+
+        cacheManager.init();
     }
 
     static class CustomTicker extends Ticker {
@@ -93,10 +99,10 @@ public class CacheReaderTest extends GeofenceBaseTest {
     public void testSize() {
         Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(0, cachedRuleReader.getStats().hitCount());
-        assertEquals(0, cachedRuleReader.getStats().missCount());
-        assertEquals(0, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(0, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(0, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(0, cacheManager.getRuleCache().stats().evictionCount());
 
         RuleFilter filter1 = new RuleFilter();
         filter1.setUser("test_1");
@@ -115,19 +121,19 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // first loading, obviously a miss
         AccessInfo ai1_1 = cachedRuleReader.getAccessInfo(filter1);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(++missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(++missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
 
         // second loading with the same rule, should be a hit
         ticker.setMillisec(1);
         AccessInfo ai1_2 = cachedRuleReader.getAccessInfo(filter1);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(++hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
 
         assertEquals(ai1_1, ai1_2);
 
@@ -135,48 +141,48 @@ public class CacheReaderTest extends GeofenceBaseTest {
         ticker.setMillisec(2);
         cachedRuleReader.getAccessInfo(filter2);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(++missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(++missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
 
         // yet another different filter. we expect a miss, and an eviction
         ticker.setMillisec(3);
         cachedRuleReader.getAccessInfo(filter3);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(++missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(++missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
 
         // filter1 is the oldest one:
         ticker.setMillisec(4);
         cachedRuleReader.getAccessInfo(filter2);
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(++hitExp, cacheManager.getRuleCache().stats().hitCount());
 
         ticker.setMillisec(5);
         cachedRuleReader.getAccessInfo(filter3);
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(++hitExp, cacheManager.getRuleCache().stats().hitCount());
 
         // reload filter1, ==> filter 2 should be evicted
         ticker.setMillisec(6);
         cachedRuleReader.getAccessInfo(filter1);
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(++hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
     }
 
     @Test
     public void testExpire() throws InterruptedException {
         Assume.assumeTrue(IS_GEOFENCE_AVAILABLE);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(0, cachedRuleReader.getStats().hitCount());
-        assertEquals(0, cachedRuleReader.getStats().missCount());
-        assertEquals(0, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(0, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(0, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(0, cacheManager.getRuleCache().stats().evictionCount());
 
         RuleFilter filter1 = new RuleFilter();
         filter1.setUser("test_1");
@@ -192,20 +198,20 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // first loading
         AccessInfo ai1_1 = cachedRuleReader.getAccessInfo(filter1);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(++missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(++missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
 
         // second loading with the same rule, should be a hit
         ticker.setMillisec(1);
         AccessInfo ai1_2 = cachedRuleReader.getAccessInfo(filter1);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
-        assertEquals(1, cachedRuleReader.getStats().loadSuccessCount());
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(++hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
+        assertEquals(1, cacheManager.getRuleCache().stats().loadSuccessCount());
 
         assertEquals(ai1_1, ai1_2);
 
@@ -215,36 +221,38 @@ public class CacheReaderTest extends GeofenceBaseTest {
         // System.out.println("---> We expect a reload() now....");
         cachedRuleReader.getAccessInfo(filter1);
 
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(++hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
-        // assertEquals(2, cachedRuleReader.getStats().loadSuccessCount()); // dunno if load is made
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(++hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
+        // assertEquals(2, cacheManager.getRuleCache().stats().loadSuccessCount()); // dunno if load
+        // is made
         // asynch or not
 
         // reloading should have been triggered
         ticker.setMillisec(700);
         // System.out.println("sleeping...");
         Thread.sleep(500);
-        // System.out.println(cachedRuleReader.getStats());
-        assertEquals(hitExp, cachedRuleReader.getStats().hitCount());
-        assertEquals(missExp, cachedRuleReader.getStats().missCount());
-        assertEquals(evictExp, cachedRuleReader.getStats().evictionCount());
-        // assertEquals(2, cachedRuleReader.getStats().loadSuccessCount()); // uhm, this does not
+        // System.out.println(cacheManager.getRuleCache().stats());
+        assertEquals(hitExp, cacheManager.getRuleCache().stats().hitCount());
+        assertEquals(missExp, cacheManager.getRuleCache().stats().missCount());
+        assertEquals(evictExp, cacheManager.getRuleCache().stats().evictionCount());
+        // assertEquals(2, cacheManager.getRuleCache().stats().loadSuccessCount()); // uhm, this
+        // does not
         // work
-        if (2 != cachedRuleReader.getStats().loadSuccessCount())
+        if (2 != cacheManager.getRuleCache().stats().loadSuccessCount())
             LOGGER.log(
                     Level.SEVERE,
                     "*** Bad successCount check, expected 2, found {0}",
-                    cachedRuleReader.getStats().loadSuccessCount());
+                    cacheManager.getRuleCache().stats().loadSuccessCount());
 
         ticker.setMillisec(800);
         cachedRuleReader.getAccessInfo(filter1);
-        // System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cacheManager.getRuleCache().stats());
 
         ticker.setMillisec(2000);
         cachedRuleReader.getAccessInfo(filter1);
-        // System.out.println(cachedRuleReader.getStats());
+        // System.out.println(cacheManager.getRuleCache().stats());
     }
 
     // public void testSave() throws IOException, URISyntaxException {

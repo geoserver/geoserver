@@ -5,10 +5,11 @@
 package org.geoserver.geofence.rest;
 
 import com.google.common.cache.CacheStats;
+import com.google.common.cache.LoadingCache;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geotools.util.logging.Logging;
@@ -32,7 +33,7 @@ public class CacheController extends AbstractCatalogController {
 
     static final Logger LOGGER = Logging.getLogger(CacheController.class);
 
-    @Autowired private CachedRuleReader cachedRuleReader;
+    @Autowired private CacheManager cacheManager;
 
     public CacheController(Catalog catalog) {
         super(catalog);
@@ -42,15 +43,15 @@ public class CacheController extends AbstractCatalogController {
             path = "/info",
             produces = {MediaType.TEXT_PLAIN_VALUE})
     public String getCacheInfo() {
-        CacheStats stats = cachedRuleReader.getStats();
-
+        LoadingCache cache = cacheManager.getRuleCache();
+        CacheStats stats = cache.stats();
         StringBuilder sb =
                 new StringBuilder()
                         .append("RuleStats[")
                         .append(" size:")
-                        .append(cachedRuleReader.getCacheSize())
+                        .append(cache.size())
                         .append("/")
-                        .append(cachedRuleReader.getCacheInitParams().getSize())
+                        .append(cacheManager.getCacheInitParams().getSize())
                         .append(" hitCount:")
                         .append(stats.hitCount())
                         .append(" missCount:")
@@ -65,12 +66,13 @@ public class CacheController extends AbstractCatalogController {
                         .append(stats.evictionCount())
                         .append("] \n");
 
-        stats = cachedRuleReader.getAdminAuthStats();
+        cache = cacheManager.getAuthCache();
+        stats = cache.stats();
         sb.append("AdminAuthStats[")
                 .append(" size:")
-                .append(cachedRuleReader.getCacheSize())
+                .append(cache.size())
                 .append("/")
-                .append(cachedRuleReader.getCacheInitParams().getSize())
+                .append(cacheManager.getCacheInitParams().getSize())
                 .append(" hitCount:")
                 .append(stats.hitCount())
                 .append(" missCount:")
@@ -85,12 +87,13 @@ public class CacheController extends AbstractCatalogController {
                 .append(stats.evictionCount())
                 .append("] \n");
 
-        stats = cachedRuleReader.getUserStats();
+        cache = cacheManager.getUserCache();
+        stats = cache.stats();
         sb.append("UserStats[")
                 .append(" size:")
-                .append(cachedRuleReader.getUserCacheSize())
+                .append(cache.size())
                 .append("/")
-                .append(cachedRuleReader.getCacheInitParams().getSize())
+                .append(cacheManager.getCacheInitParams().getSize())
                 .append(" hitCount:")
                 .append(stats.hitCount())
                 .append(" missCount:")
@@ -112,7 +115,7 @@ public class CacheController extends AbstractCatalogController {
     @RequestMapping(path = "/invalidate")
     public String invalidateCache() {
         LOGGER.log(Level.WARNING, "INVALIDATING CACHE");
-        cachedRuleReader.invalidateAll();
+        cacheManager.invalidateAll();
         return "OK";
     }
 }

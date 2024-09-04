@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleAdminService;
@@ -130,7 +130,7 @@ public class GeofenceWPSTest extends WPSTestSupport {
                 MockData.BUILDINGS.getPrefix(),
                 MockData.BUILDINGS.getLocalPart(),
                 2);
-        GeoServerExtensions.bean(CachedRuleReader.class).invalidateAll();
+        GeoServerExtensions.bean(CacheManager.class).invalidateAll();
 
         dom = runBuildingsRequest();
         //        dumpAllRules();
@@ -160,7 +160,7 @@ public class GeofenceWPSTest extends WPSTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix(),
                 MockData.BASIC_POLYGONS.getLocalPart(),
                 10);
-        GeoServerExtensions.bean(CachedRuleReader.class).invalidateAll();
+        GeoServerExtensions.bean(CacheManager.class).invalidateAll();
 
         dom = runChainedRequest();
         assertEquals("1", xp.evaluate("count(//wps:ProcessFailed)", dom));
@@ -176,7 +176,7 @@ public class GeofenceWPSTest extends WPSTestSupport {
                 MockData.BASIC_POLYGONS.getPrefix(),
                 MockData.BASIC_POLYGONS.getLocalPart(),
                 20);
-        GeoServerExtensions.bean(CachedRuleReader.class).invalidateAll();
+        GeoServerExtensions.bean(CacheManager.class).invalidateAll();
 
         dom = runChainedRequest();
 

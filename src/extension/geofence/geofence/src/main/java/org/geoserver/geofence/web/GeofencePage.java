@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.web;
 
+import com.google.common.cache.LoadingCache;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,7 +24,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.geofence.cache.CacheConfiguration;
-import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.cache.CacheManager;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationController;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
@@ -185,9 +186,8 @@ public class GeofencePage extends GeoServerSecuredPage {
                 new TextField<>("cacheExpire", new PropertyModel<>(cacheModel, "expireMilliSec"))
                         .setRequired(true));
 
-        CachedRuleReader cacheRuleReader = GeoServerExtensions.bean(CachedRuleReader.class);
-
-        updateStatsValues(cacheRuleReader);
+        CacheManager cacheManager = GeoServerExtensions.bean(CacheManager.class);
+        updateStatsValues(cacheManager);
 
         for (String key : statsValues.keySet()) {
             Label label = new Label(key, new MapModel<String>(statsValues, key));
@@ -203,15 +203,14 @@ public class GeofencePage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        CachedRuleReader cacheRuleReader =
-                                GeoServerExtensions.bean(CachedRuleReader.class);
-                        cacheRuleReader.invalidateAll();
+                        CacheManager cacheManager = GeoServerExtensions.bean(CacheManager.class);
+                        cacheManager.invalidateAll();
                         info(
                                 new StringResourceModel(
                                                 GeofencePage.class.getSimpleName()
                                                         + ".cacheInvalidated")
                                         .getObject());
-                        updateStatsValues(cacheRuleReader);
+                        updateStatsValues(cacheManager);
                         for (Label label : statsLabels) {
                             target.add(label);
                         }
@@ -269,35 +268,34 @@ public class GeofencePage extends GeoServerSecuredPage {
 
     private static final String KEY_USER_EVICTION = "user.evict";
 
-    private void updateStatsValues(CachedRuleReader cacheRuleReader) {
+    private void updateStatsValues(CacheManager cacheManager) {
 
-        statsValues.put(KEY_RULE_SIZE, "" + cacheRuleReader.getCacheSize());
-        statsValues.put(KEY_RULE_HIT, "" + cacheRuleReader.getStats().hitCount());
-        statsValues.put(KEY_RULE_MISS, "" + cacheRuleReader.getStats().missCount());
-        statsValues.put(KEY_RULE_LOADOK, "" + cacheRuleReader.getStats().loadSuccessCount());
-        statsValues.put(KEY_RULE_LOADKO, "" + cacheRuleReader.getStats().loadExceptionCount());
-        statsValues.put(KEY_RULE_LOADTIME, "" + cacheRuleReader.getStats().totalLoadTime());
-        statsValues.put(KEY_RULE_EVICTION, "" + cacheRuleReader.getStats().evictionCount());
+        LoadingCache cache = cacheManager.getRuleCache();
+        statsValues.put(KEY_RULE_SIZE, "" + cache.size());
+        statsValues.put(KEY_RULE_HIT, "" + cache.stats().hitCount());
+        statsValues.put(KEY_RULE_MISS, "" + cache.stats().missCount());
+        statsValues.put(KEY_RULE_LOADOK, "" + cache.stats().loadSuccessCount());
+        statsValues.put(KEY_RULE_LOADKO, "" + cache.stats().loadExceptionCount());
+        statsValues.put(KEY_RULE_LOADTIME, "" + cache.stats().totalLoadTime());
+        statsValues.put(KEY_RULE_EVICTION, "" + cache.stats().evictionCount());
 
-        statsValues.put(KEY_ADMIN_SIZE, "" + cacheRuleReader.getAdminAuthCacheSize());
-        statsValues.put(KEY_ADMIN_HIT, "" + cacheRuleReader.getAdminAuthStats().hitCount());
-        statsValues.put(KEY_ADMIN_MISS, "" + cacheRuleReader.getAdminAuthStats().missCount());
-        statsValues.put(
-                KEY_ADMIN_LOADOK, "" + cacheRuleReader.getAdminAuthStats().loadSuccessCount());
-        statsValues.put(
-                KEY_ADMIN_LOADKO, "" + cacheRuleReader.getAdminAuthStats().loadExceptionCount());
-        statsValues.put(
-                KEY_ADMIN_LOADTIME, "" + cacheRuleReader.getAdminAuthStats().totalLoadTime());
-        statsValues.put(
-                KEY_ADMIN_EVICTION, "" + cacheRuleReader.getAdminAuthStats().evictionCount());
+        cache = cacheManager.getAuthCache();
+        statsValues.put(KEY_ADMIN_SIZE, "" + cache.size());
+        statsValues.put(KEY_ADMIN_HIT, "" + cache.stats().hitCount());
+        statsValues.put(KEY_ADMIN_MISS, "" + cache.stats().missCount());
+        statsValues.put(KEY_ADMIN_LOADOK, "" + cache.stats().loadSuccessCount());
+        statsValues.put(KEY_ADMIN_LOADKO, "" + cache.stats().loadExceptionCount());
+        statsValues.put(KEY_ADMIN_LOADTIME, "" + cache.stats().totalLoadTime());
+        statsValues.put(KEY_ADMIN_EVICTION, "" + cache.stats().evictionCount());
 
-        statsValues.put(KEY_USER_SIZE, "" + cacheRuleReader.getUserCacheSize());
-        statsValues.put(KEY_USER_HIT, "" + cacheRuleReader.getUserStats().hitCount());
-        statsValues.put(KEY_USER_MISS, "" + cacheRuleReader.getUserStats().missCount());
-        statsValues.put(KEY_USER_LOADOK, "" + cacheRuleReader.getUserStats().loadSuccessCount());
-        statsValues.put(KEY_USER_LOADKO, "" + cacheRuleReader.getUserStats().loadExceptionCount());
-        statsValues.put(KEY_USER_LOADTIME, "" + cacheRuleReader.getUserStats().totalLoadTime());
-        statsValues.put(KEY_USER_EVICTION, "" + cacheRuleReader.getUserStats().evictionCount());
+        cache = cacheManager.getUserCache();
+        statsValues.put(KEY_USER_SIZE, "" + cache.size());
+        statsValues.put(KEY_USER_HIT, "" + cache.stats().hitCount());
+        statsValues.put(KEY_USER_MISS, "" + cache.stats().missCount());
+        statsValues.put(KEY_USER_LOADOK, "" + cache.stats().loadSuccessCount());
+        statsValues.put(KEY_USER_LOADKO, "" + cache.stats().loadExceptionCount());
+        statsValues.put(KEY_USER_LOADTIME, "" + cache.stats().totalLoadTime());
+        statsValues.put(KEY_USER_EVICTION, "" + cache.stats().evictionCount());
     }
 
     /** Creates a new wicket model from the configuration object. */

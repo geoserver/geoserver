@@ -6,21 +6,21 @@ package org.geoserver.geofence.config;
 
 import java.io.IOException;
 import org.geoserver.geofence.cache.CacheConfiguration;
-import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.cache.CacheManager;
 
-/** @author ETj (etj at geo-solutions.it) */
+/** @author Emanuele Tajariol (etj at geo-solutions.it) */
 public class GeoFenceConfigurationController {
 
     private GeoFenceConfigurationManager configurationManager;
 
-    private CachedRuleReader cachedRuleReader;
+    private CacheManager cacheManager;
 
     public void setConfigurationManager(GeoFenceConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
 
-    public void setCachedRuleReader(CachedRuleReader cachedRuleReader) {
-        this.cachedRuleReader = cachedRuleReader;
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -38,7 +38,7 @@ public class GeoFenceConfigurationController {
 
         // set config and recreates the cache
         configurationManager.setCacheConfiguration(cacheConfig);
-        cachedRuleReader.init();
+        cacheManager.init();
 
         // write the config to disk
         configurationManager.storeConfiguration();

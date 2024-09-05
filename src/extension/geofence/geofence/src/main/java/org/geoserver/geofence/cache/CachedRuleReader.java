@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.cache.CachedRuleLoaders.NamePw;
+import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.AuthUser;
@@ -25,9 +25,15 @@ public class CachedRuleReader implements RuleReaderService {
 
     static final Logger LOGGER = Logging.getLogger(CachedRuleReader.class);
 
-    private final CacheManager cacheManager;
+    private CacheManager cacheManager;
+
+    public CachedRuleReader() {}
 
     public CachedRuleReader(CacheManager cacheManager) {
+        setCacheManager(cacheManager);
+    }
+
+    public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 

@@ -10,8 +10,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.geofence.cache.CachedRuleLoaders.NamePw;
+import javax.annotation.PostConstruct;
+import org.geoserver.geofence.cache.RuleCacheLoaderFactory.NamePw;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
+import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.AuthUser;
 import org.geoserver.geofence.services.dto.RuleFilter;
@@ -31,26 +34,50 @@ public class CacheManager {
 
     static final Logger LOGGER = Logging.getLogger(CacheManager.class);
 
-    private CachedRuleLoaders cachedRuleLoaders;
+    private RuleCacheLoaderFactory ruleServiceLoaderFactory;
+    private ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory;
 
     private LoadingCache<RuleFilter, AccessInfo> ruleCache;
     private LoadingCache<NamePw, AuthUser> userCache;
     private LoadingCache<RuleFilter, AccessInfo> authCache;
+    private LoadingCache<
+                    ContainerAccessCacheLoaderFactory.ResolveParams,
+                    ContainerLimitResolver.ProcessingResult>
+            contCache;
 
     private final GeoFenceConfigurationManager configurationManager;
 
     /** Latest configuration used */
     private CacheConfiguration cacheConfiguration = new CacheConfiguration();
 
+    /**
+     * This is a do-it-all constructor, that also calls the init() method. Useful whien testing. You
+     * may want to use the simpler constructor + setters in a running environment, in order to avoid
+     * circular bean dependencies.
+     */
     public CacheManager(
             GeoFenceConfigurationManager configurationManager,
-            CachedRuleLoaders cachedRuleLoaders) {
+            RuleCacheLoaderFactory cachedRuleLoaders,
+            ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory) {
+
+        this(configurationManager);
+        setRuleServiceLoaderFactory(ruleServiceLoaderFactory);
+        setContainerAccessCacheLoaderFactory(containerAccessCacheLoaderFactory);
+        init();
+    }
+
+    public CacheManager(GeoFenceConfigurationManager configurationManager) {
 
         this.configurationManager = configurationManager;
-        this.cachedRuleLoaders = cachedRuleLoaders;
+    }
 
-        // pull config when initializing
-        init();
+    public final void setRuleServiceLoaderFactory(RuleCacheLoaderFactory ruleServiceLoaderFactory) {
+        this.ruleServiceLoaderFactory = ruleServiceLoaderFactory;
+    }
+
+    public final void setContainerAccessCacheLoaderFactory(
+            ContainerAccessCacheLoaderFactory containerAccessCacheLoaderFactory) {
+        this.containerAccessCacheLoaderFactory = containerAccessCacheLoaderFactory;
     }
 
     /**
@@ -59,13 +86,17 @@ public class CacheManager {
      * <p>Please use {@link #getCacheInitParams() } to set the cache parameters before <code>init()
      * </code>ting the cache
      */
+    @PostConstruct
     public final void init() {
 
         cacheConfiguration = configurationManager.getCacheConfiguration();
 
-        ruleCache = getCacheBuilder().build(cachedRuleLoaders.new RuleLoader());
-        userCache = getCacheBuilder().build(cachedRuleLoaders.new UserLoader());
-        authCache = getCacheBuilder().build(cachedRuleLoaders.new AuthLoader());
+        ruleCache = getCacheBuilder().build(ruleServiceLoaderFactory.createRuleLoader());
+        userCache = getCacheBuilder().build(ruleServiceLoaderFactory.createUserLoader());
+        authCache = getCacheBuilder().build(ruleServiceLoaderFactory.createAuthLoader());
+        contCache =
+                getCacheBuilder()
+                        .build(containerAccessCacheLoaderFactory.createProcessingResultLoader());
     }
 
     protected CacheBuilder<Object, Object> getCacheBuilder() {
@@ -98,6 +129,7 @@ public class CacheManager {
         ruleCache.invalidateAll();
         userCache.invalidateAll();
         authCache.invalidateAll();
+        contCache.invalidateAll();
     }
 
     private AtomicLong dumpCnt = new AtomicLong(0);
@@ -109,6 +141,7 @@ public class CacheManager {
                 LOGGER.info("Rules  :" + ruleCache.stats());
                 LOGGER.info("Users  :" + userCache.stats());
                 LOGGER.info("Auth   :" + authCache.stats());
+                LOGGER.info("Cont   :" + contCache.stats());
                 LOGGER.fine("params :" + cacheConfiguration);
             }
     }
@@ -120,18 +153,32 @@ public class CacheManager {
     }
 
     public LoadingCache<RuleFilter, AccessInfo> getRuleCache() {
+        if (ruleCache == null)
+            throw new IllegalStateException("CacheManager is not properly inizialized");
         logStats();
         return ruleCache;
     }
 
     public LoadingCache<NamePw, AuthUser> getUserCache() {
+        if (userCache == null)
+            throw new IllegalStateException("CacheManager is not properly inizialized");
         logStats();
         return userCache;
     }
 
     public LoadingCache<RuleFilter, AccessInfo> getAuthCache() {
+        if (authCache == null)
+            throw new IllegalStateException("CacheManager is not properly inizialized");
         logStats();
         return authCache;
+    }
+
+    public LoadingCache<
+                    ContainerAccessCacheLoaderFactory.ResolveParams,
+                    ContainerLimitResolver.ProcessingResult>
+            getContainerCache() {
+        logStats();
+        return contCache;
     }
 
     @Override
@@ -144,6 +191,8 @@ public class CacheManager {
                 + userCache.stats()
                 + " Auth:"
                 + authCache.stats()
+                + " Cont:"
+                + contCache.stats()
                 + " "
                 + cacheConfiguration
                 + "]";

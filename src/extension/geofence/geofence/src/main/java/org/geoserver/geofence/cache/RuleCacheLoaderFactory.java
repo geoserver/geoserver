@@ -16,21 +16,35 @@ import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geotools.util.logging.Logging;
 
 /**
- * CacheLoaders for calls to RuleReadService
+ * Creates the CacheLoaders for calls to RuleReadService
  *
  * @author Emanuele Tajariol (etj at geo-solutions.it)
  */
-public class CachedRuleLoaders {
+public class RuleCacheLoaderFactory {
 
-    static final Logger LOGGER = Logging.getLogger(CachedRuleLoaders.class);
+    static final Logger LOGGER = Logging.getLogger(RuleCacheLoaderFactory.class);
 
     private RuleReaderService realRuleReaderService;
 
-    public CachedRuleLoaders(RuleReaderService realRuleReaderService) {
+    public RuleCacheLoaderFactory(RuleReaderService realRuleReaderService) {
         this.realRuleReaderService = realRuleReaderService;
     }
 
+    public RuleLoader createRuleLoader() {
+        return new RuleLoader();
+    }
+
+    public AuthLoader createAuthLoader() {
+        return new AuthLoader();
+    }
+
+    public UserLoader createUserLoader() {
+        return new UserLoader();
+    }
+
     class RuleLoader extends CacheLoader<RuleFilter, AccessInfo> {
+
+        private RuleLoader() {}
 
         @Override
         public AccessInfo load(RuleFilter filter) throws Exception {
@@ -66,6 +80,8 @@ public class CachedRuleLoaders {
 
     class AuthLoader extends CacheLoader<RuleFilter, AccessInfo> {
 
+        private AuthLoader() {}
+
         @Override
         public AccessInfo load(RuleFilter filter) throws Exception {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading {0}", filter);
@@ -89,6 +105,8 @@ public class CachedRuleLoaders {
     }
 
     class UserLoader extends CacheLoader<NamePw, AuthUser> {
+
+        private UserLoader() {}
 
         @Override
         public AuthUser load(NamePw user) throws NoAuthException {

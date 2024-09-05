@@ -27,7 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(
         path = {
             RestBaseController.ROOT_PATH + "/geofence/ruleCache",
-            RestBaseController.ROOT_PATH + "/ruleCache"
+            RestBaseController.ROOT_PATH + "/ruleCache",
+            RestBaseController.ROOT_PATH + "/geofence/cache",
         }) // legacy entrypoint
 public class CacheController extends AbstractCatalogController {
 
@@ -43,72 +44,37 @@ public class CacheController extends AbstractCatalogController {
             path = "/info",
             produces = {MediaType.TEXT_PLAIN_VALUE})
     public String getCacheInfo() {
-        LoadingCache cache = cacheManager.getRuleCache();
-        CacheStats stats = cache.stats();
-        StringBuilder sb =
-                new StringBuilder()
-                        .append("RuleStats[")
-                        .append(" size:")
-                        .append(cache.size())
-                        .append("/")
-                        .append(cacheManager.getCacheInitParams().getSize())
-                        .append(" hitCount:")
-                        .append(stats.hitCount())
-                        .append(" missCount:")
-                        .append(stats.missCount())
-                        .append(" loadSuccessCount:")
-                        .append(stats.loadSuccessCount())
-                        .append(" loadExceptionCount:")
-                        .append(stats.loadExceptionCount())
-                        .append(" totalLoadTime:")
-                        .append(stats.totalLoadTime())
-                        .append(" evictionCount:")
-                        .append(stats.evictionCount())
-                        .append("] \n");
 
-        cache = cacheManager.getAuthCache();
-        stats = cache.stats();
-        sb.append("AdminAuthStats[")
-                .append(" size:")
-                .append(cache.size())
-                .append("/")
-                .append(cacheManager.getCacheInitParams().getSize())
-                .append(" hitCount:")
-                .append(stats.hitCount())
-                .append(" missCount:")
-                .append(stats.missCount())
-                .append(" loadSuccessCount:")
-                .append(stats.loadSuccessCount())
-                .append(" loadExceptionCount:")
-                .append(stats.loadExceptionCount())
-                .append(" totalLoadTime:")
-                .append(stats.totalLoadTime())
-                .append(" evictionCount:")
-                .append(stats.evictionCount())
-                .append("] \n");
+        StringBuilder sb = new StringBuilder();
 
-        cache = cacheManager.getUserCache();
-        stats = cache.stats();
-        sb.append("UserStats[")
-                .append(" size:")
-                .append(cache.size())
-                .append("/")
-                .append(cacheManager.getCacheInitParams().getSize())
-                .append(" hitCount:")
-                .append(stats.hitCount())
-                .append(" missCount:")
-                .append(stats.missCount())
-                .append(" loadSuccessCount:")
-                .append(stats.loadSuccessCount())
-                .append(" loadExceptionCount:")
-                .append(stats.loadExceptionCount())
-                .append(" totalLoadTime:")
-                .append(stats.totalLoadTime())
-                .append(" evictionCount:")
-                .append(stats.evictionCount())
-                .append("] \n");
+        appendStats(sb, "RuleStats", cacheManager.getRuleCache());
+        appendStats(sb, "AdminAuthStats", cacheManager.getAuthCache());
+        appendStats(sb, "UserStats", cacheManager.getUserCache());
+        appendStats(sb, "ContStats", cacheManager.getContainerCache());
 
         return sb.toString();
+    }
+
+    private void appendStats(StringBuilder sb, String label, LoadingCache cache) {
+        CacheStats stats = cache.stats();
+        sb.append(label)
+                .append("[ size:")
+                .append(cache.size())
+                .append("/")
+                .append(cacheManager.getCacheInitParams().getSize())
+                .append(" hitCount:")
+                .append(stats.hitCount())
+                .append(" missCount:")
+                .append(stats.missCount())
+                .append(" loadSuccessCount:")
+                .append(stats.loadSuccessCount())
+                .append(" loadExceptionCount:")
+                .append(stats.loadExceptionCount())
+                .append(" totalLoadTime:")
+                .append(stats.totalLoadTime())
+                .append(" evictionCount:")
+                .append(stats.evictionCount())
+                .append("] \n");
     }
 
     @PutMapping(produces = {MediaType.TEXT_PLAIN_VALUE})

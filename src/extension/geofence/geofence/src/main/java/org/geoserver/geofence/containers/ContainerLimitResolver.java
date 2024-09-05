@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geofence;
+package org.geoserver.geofence.containers;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.geofence.RuleFilterBuilder;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.services.RuleReaderService;
@@ -36,7 +37,7 @@ import org.springframework.security.core.GrantedAuthority;
  * if we restrict access when rule are found for the same role, and we enlarge when rules are
  * defined for different roles.
  */
-class ContainerLimitResolver {
+public class ContainerLimitResolver {
 
     private RuleReaderService ruleService;
 
@@ -457,26 +458,27 @@ class ContainerLimitResolver {
     }
 
     /** Data class meant to return a result for the whole limit resolution. */
-    static class ProcessingResult {
+    public static class ProcessingResult {
         private Geometry intersectArea;
         private Geometry clipArea;
         private CatalogModeDTO catalogModeDTO;
 
-        ProcessingResult(Geometry intersectArea, Geometry clipArea, CatalogModeDTO catalogModeDTO) {
+        public ProcessingResult(
+                Geometry intersectArea, Geometry clipArea, CatalogModeDTO catalogModeDTO) {
             this.intersectArea = intersectArea;
             this.clipArea = clipArea;
             this.catalogModeDTO = catalogModeDTO;
         }
 
-        Geometry getIntersectArea() {
+        public Geometry getIntersectArea() {
             return intersectArea;
         }
 
-        Geometry getClipArea() {
+        public Geometry getClipArea() {
             return clipArea;
         }
 
-        CatalogModeDTO getCatalogModeDTO() {
+        public CatalogModeDTO getCatalogModeDTO() {
             return catalogModeDTO;
         }
 

@@ -14,10 +14,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.geofence.cache.CacheConfiguration;
 import org.geoserver.geofence.cache.CacheManager;
-import org.geoserver.geofence.cache.CachedRuleLoaders;
 import org.geoserver.geofence.cache.CachedRuleReader;
+import org.geoserver.geofence.cache.RuleCacheLoaderFactory;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer;
+import org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory;
+import org.geoserver.geofence.containers.DefaultContainerAccessResolver;
 import org.geoserver.geofence.services.RuleReaderService;
 import org.geoserver.geofence.services.dto.AccessInfo;
 import org.geoserver.geofence.services.dto.RuleFilter;
@@ -34,7 +36,6 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     private CustomTicker ticker;
 
-    private CachedRuleLoaders cachedRuleLoaders;
     private CacheManager cacheManager;
     private CachedRuleReader cachedRuleReader;
 
@@ -68,9 +69,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         assertNotNull(configManager);
         configManager.setCacheConfiguration(config);
 
-        cachedRuleLoaders = new CachedRuleLoaders(realReader);
-
-        cacheManager = new CacheManager(configManager, cachedRuleLoaders);
+        cacheManager = new CacheManager(configManager);
         cacheManager.getCacheInitParams().setSize(100);
         cacheManager.getCacheInitParams().setRefreshMilliSec(500);
         cacheManager.getCacheInitParams().setExpireMilliSec(1000);
@@ -78,6 +77,10 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
         cachedRuleReader = new CachedRuleReader(cacheManager);
 
+        cacheManager.setRuleServiceLoaderFactory(new RuleCacheLoaderFactory(realReader));
+        cacheManager.setContainerAccessCacheLoaderFactory(
+                new ContainerAccessCacheLoaderFactory(
+                        new DefaultContainerAccessResolver(cachedRuleReader)));
         cacheManager.init();
     }
 

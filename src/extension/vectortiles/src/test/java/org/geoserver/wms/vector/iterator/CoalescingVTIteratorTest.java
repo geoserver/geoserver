@@ -33,12 +33,16 @@ public class CoalescingVTIteratorTest {
     public static final int INT1000 = 1000;
     public static final int INT2000 = 2000;
     public static final int INT3000 = 3000;
-    static SimpleFeatureType POINT_TYPE;
+    static final SimpleFeatureType POINT_TYPE;
+    static final SimpleFeatureType LINE_TYPE;
 
     static {
         try {
             POINT_TYPE =
                     DataUtilities.createType("points", "sp:String,ip:Integer,geom:Point:srid=4326");
+            LINE_TYPE =
+                    DataUtilities.createType(
+                            "lines", "sp:String,ip:Integer,geom:LineString:srid=4326");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -159,6 +163,31 @@ public class CoalescingVTIteratorTest {
             VTFeature f = vti.next();
             assertEquals(ID_POINT_1, f.getFeatureId());
             assertEquals("MULTIPOINT ((1 1), (2 2), (3 3))", f.getGeometry().toText());
+            assertEquals(Map.of("sp", STRING_PROP_1_1, "ip", INT1000), f.getProperties());
+            // no more
+            assertFalse(vti.hasNext());
+            assertThrows(NoSuchElementException.class, vti::next);
+        }
+    }
+
+    @Test
+    public void testMergeLines() throws Exception {
+        MemoryDataStore ds = new MemoryDataStore();
+        ds.addFeature(
+                feature(LINE_TYPE, "line1", STRING_PROP_1_1, INT1000, "LINESTRING(0 0, 1 1)"));
+        ds.addFeature(
+                feature(LINE_TYPE, "line2", STRING_PROP_1_1, INT1000, "LINESTRING(1 1, 2 2)"));
+        ds.addFeature(
+                feature(LINE_TYPE, "line3", STRING_PROP_1_1, INT1000, "LINESTRING(3 3, 4 4)"));
+
+        try (SimpleFeatureIterator fi =
+                        ds.getFeatureSource(LINE_TYPE.getTypeName()).getFeatures().features();
+                CoalescingVTIterator vti = new CoalescingVTIterator(new SimpleVTIterator(fi))) {
+            // all features merged into one
+            assertTrue(vti.hasNext());
+            VTFeature f = vti.next();
+            assertEquals("line1", f.getFeatureId());
+            assertEquals("MULTILINESTRING ((0 0, 1 1, 2 2), (3 3, 4 4))", f.getGeometry().toText());
             assertEquals(Map.of("sp", STRING_PROP_1_1, "ip", INT1000), f.getProperties());
             // no more
             assertFalse(vti.hasNext());

@@ -4,8 +4,13 @@
  */
 package org.geoserver.wms.vector.iterator;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.geotools.geometry.jts.GeometryCollector;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 
 /**
  * A {@link VTIterator} that merges the geometries of two or more subsequent {@link VTFeature} that
@@ -42,7 +47,17 @@ public class CoalescingVTIterator implements VTIterator {
 
         // did merge happen?
         if (collector != null) {
-            curr.setGeometry(collector.collect());
+            GeometryCollection geometry = collector.collect();
+            if (geometry instanceof MultiLineString && geometry.getNumGeometries() > 1) {
+                LineMerger merger = new LineMerger();
+                merger.add(geometry);
+                @SuppressWarnings("unchecked")
+                List<LineString> merged = (List<LineString>) merger.getMergedLineStrings();
+                geometry =
+                        geometry.getFactory()
+                                .createMultiLineString(merged.toArray(n -> new LineString[n]));
+            }
+            curr.setGeometry(geometry);
         }
     }
 

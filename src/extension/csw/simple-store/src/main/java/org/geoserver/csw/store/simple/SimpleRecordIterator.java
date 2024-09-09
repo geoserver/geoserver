@@ -15,6 +15,7 @@ import net.opengis.cat.csw20.RecordType;
 import net.opengis.cat.csw20.SimpleLiteral;
 import net.opengis.ows10.BoundingBoxType;
 import org.geoserver.csw.records.CSWRecordBuilder;
+import org.geoserver.csw.util.PropertyPath;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.api.feature.Feature;
@@ -97,7 +98,8 @@ class SimpleRecordIterator implements Iterator<Feature> {
             String scheme = sl.getScheme() == null ? null : sl.getScheme().toString();
             String name = sl.getName();
             if (value != null && sl.getName() != null) {
-                builder.addElementWithScheme(name, scheme, value.toString());
+                builder.addElementWithScheme(
+                        PropertyPath.fromDotPath(name), scheme, value.toString());
                 if ("identifier".equals(name)) {
                     id = value.toString();
                 }

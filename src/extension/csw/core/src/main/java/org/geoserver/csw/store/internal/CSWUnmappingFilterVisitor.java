@@ -5,8 +5,10 @@
  */
 package org.geoserver.csw.store.internal;
 
+import java.util.Collection;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.internal.CatalogStoreMapping.CatalogStoreMappingElement;
+import org.geoserver.csw.util.PropertyPath;
 import org.geoserver.csw.util.QNameResolver;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.Id;
@@ -14,6 +16,7 @@ import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.complex.util.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.function.FilterFunction_list;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
@@ -31,6 +34,8 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
     protected QNameResolver resolver = new QNameResolver();
 
     protected RecordDescriptor rd;
+
+    protected boolean needsPostFilter = false;
 
     /**
      * Create CSW Unmapping Filter Visitor
@@ -51,6 +56,9 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
                         rd.getFeatureDescriptor(),
                         expression.getPropertyName(),
                         rd.getNamespaceSupport());
+        if (steps.containsPredicate()) { // predicate not supported by unmapped filter
+            needsPostFilter = true;
+        }
 
         if (steps.size() == 1
                 && steps.get(0).getName().getLocalPart().equalsIgnoreCase("AnyText")) {
@@ -74,17 +82,36 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
             return result;
         }
 
-        String path = CatalogStoreMapping.toDotPath(steps);
+        PropertyPath path = PropertyPath.fromXPath(steps);
 
-        if (path.equalsIgnoreCase(rd.getBoundingBoxPropertyName())) {
+        if (path.toDothPath().equalsIgnoreCase(rd.getBoundingBoxPropertyName())) {
             return ff.property("boundingBox");
         }
 
-        CatalogStoreMappingElement element = mapping.getElement(path);
-        if (element == null) {
-            throw new IllegalArgumentException("Unknown field in mapping: " + expression);
+        Collection<CatalogStoreMappingElement> elements = mapping.elements(path);
+        if (elements.isEmpty()) {
+            // try with pattern without indexes
+            elements = mapping.elements(path.removeIndexes());
+            if (elements.isEmpty()) {
+                throw new IllegalArgumentException("Unknown field in mapping: " + expression);
+            }
+            needsPostFilter = true;
+        } else {
+            for (CatalogStoreMappingElement element : elements) {
+                for (int i : element.splitIndex) {
+                    if (path.getIndex(i) != null) {
+                        needsPostFilter = true;
+                    }
+                }
+            }
         }
-        return element.getContent();
+        if (elements.size() == 1) {
+            return elements.stream().findFirst().get().getContent();
+        } else {
+            FilterFunction_list list = new FilterFunction_list();
+            list.setParameters(elements.stream().map(el -> el.getContent()).toList());
+            return list;
+        }
     }
 
     @Override
@@ -94,5 +121,9 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
                         mapping.getIdentifierElement().getContent(),
                         getFactory(extraData).literal(filter.getIDs()),
                         true);
+    }
+
+    public boolean needsPostFilter() {
+        return needsPostFilter;
     }
 }

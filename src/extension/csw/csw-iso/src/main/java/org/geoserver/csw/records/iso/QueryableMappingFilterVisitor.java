@@ -785,7 +785,8 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
             }
         }
 
-        return Collections.singletonList(expression);
+        return Collections.singletonList(
+                ff.property(expression.getPropertyName(), MetaDataDescriptor.NAMESPACES));
     }
 
     @Override

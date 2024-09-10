@@ -69,7 +69,8 @@ public class SimplifyProcessTest extends WPSTestSupport {
         SimpleFeature sf = (SimpleFeature) fc.features().next();
         Geometry simplified = ((Geometry) sf.getDefaultGeometry());
         assertTrue(new Envelope(-92, -87, 37, 43).contains(simplified.getEnvelopeInternal()));
-        // should have been simplified to a 4 side polygon
-        assertEquals(5, simplified.getCoordinates().length);
+
+        // Expected to simplified to a 3 side polygon (4 coordinates)
+        assertEquals(4, simplified.getNumPoints());
     }
 }

@@ -91,7 +91,7 @@
     <gs.version>2.26-SNAPSHOT</gs.version>
     <gt.version>32-SNAPSHOT</gt.version>
     <gwc.version>1.26-SNAPSHOT</gwc.version>
-    <jts.version>1.19.0</jts.version>
+    <jts.version>1.20.0</jts.version>
     <spring.version>5.3.39</spring.version>
     <spring.security.version>5.8.14</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>

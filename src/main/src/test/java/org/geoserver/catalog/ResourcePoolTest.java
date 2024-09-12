@@ -130,8 +130,10 @@ import org.geotools.util.factory.FactoryRegistry;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.locationtech.jts.geom.Point;
@@ -154,6 +156,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     private static final String HUMANS = "humans";
 
     private static final String BAD_CONN_DATASTORE = "bad_conn_data_store";
+    public static final DataStoreFactorySpi TEST_DIRECTORY_STORE_FACTORY_SPI =
+            new TestDirectoryStoreFactorySpi();
 
     static {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
@@ -165,6 +169,17 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
     private static final String EXTERNAL_ENTITIES = "externalEntities";
+
+    @BeforeClass
+    public static void registerTestDirectoryStore() {
+        // a "catch-all" datastore that will use any File without requiring a filetype/dbtype
+        DataStoreFinder.registerFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+    }
+
+    @AfterClass
+    public static void deregisterTestDirectoryStore() {
+        DataStoreFinder.deregisterFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

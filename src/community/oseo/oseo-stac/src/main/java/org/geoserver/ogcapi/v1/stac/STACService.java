@@ -497,6 +497,7 @@ public class STACService {
                 .startIndex(sq.getStartIndexAsInt())
                 .requestedLimit(sq.getLimitAsInt())
                 .bbox(sq.getBbox())
+                .sortby(sq.getSortBy())
                 .datetime(sq.getDatetime())
                 .filter(sq.getFilter())
                 .filterLanguage(sq.getFilterLang())

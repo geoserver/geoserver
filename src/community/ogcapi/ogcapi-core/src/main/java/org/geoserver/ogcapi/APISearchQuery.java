@@ -30,7 +30,7 @@ public class APISearchQuery {
     private List<String> ids;
 
     @JsonProperty("sortby")
-    private SortBy[] sortBy;
+    protected SortBy[] sortBy;
 
     private String filter;
 
@@ -152,7 +152,7 @@ public class APISearchQuery {
         this.filterCRS = filterCRS;
     }
 
-    private List<String> arrayNodeToStringList(ArrayNode node) {
+    protected List<String> arrayNodeToStringList(ArrayNode node) {
         final List<String> values = new ArrayList<>(node.size());
         node.forEach(
                 childNode -> {

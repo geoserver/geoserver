@@ -88,6 +88,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
                     + "<workspace>" //
                     + "<name>gsml</name>" //
                     + "</workspace>" //
+                    + "<type>Application Schema DataAccess</type>" //
                     + "<connectionParameters>" //
                     + "<entry key='dbtype'>app-schema</entry>" //
                     + "<entry key='url'>file:workspaces/gsml/MappedFeature/MappedFeature.xml</entry>" //

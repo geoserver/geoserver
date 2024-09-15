@@ -147,7 +147,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
         // Check update content of the table)
         assertEquals(
-                4,
+                5,
                 ((MarkupContainer)
                                 tester.getComponentFromLastRenderedPage(
                                         "templatesPanel:listContainer:items"))
@@ -155,7 +155,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
         tester.clickLink("save");
 
-        assertEquals(4, templateService.list().size());
+        assertEquals(5, templateService.list().size());
     }
 
     @SuppressWarnings("unchecked")
@@ -179,7 +179,7 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
         // Check content of the table is the same
         assertEquals(
-                6,
+                7,
                 ((MarkupContainer)
                                 tester.getComponentFromLastRenderedPage(
                                         "templatesPanel:listContainer:items"))
@@ -202,23 +202,26 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
         // Check update content of the table
         tester.assertLabel(
-                "templatesPanel:listContainer:items:7:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:8:itemProperties:1:component:link:label",
                 "simple fields");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:8:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:9:itemProperties:1:component:link:label",
                 "template-list-simple");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:9:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:10:itemProperties:1:component:link:label",
                 "template-nested-object");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:10:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:11:itemProperties:1:component:link:label",
                 "template-object list");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:11:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:12:itemProperties:1:component:link:label",
                 "object-field");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:12:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:13:itemProperties:1:component:link:label",
                 "allData");
+        tester.assertLabel(
+                "templatesPanel:listContainer:items:14:itemProperties:1:component:link:label",
+                "norepeat");
 
         tester.clickLink("save");
 
@@ -231,23 +234,26 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
 
         // Check update content of the table
         tester.assertLabel(
-                "templatesPanel:listContainer:items:7:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:8:itemProperties:1:component:link:label",
                 "simple fields");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:8:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:9:itemProperties:1:component:link:label",
                 "template-nested-object");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:9:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:10:itemProperties:1:component:link:label",
                 "template-list-simple");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:10:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:11:itemProperties:1:component:link:label",
                 "template-object list");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:11:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:12:itemProperties:1:component:link:label",
                 "object-field");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:12:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:13:itemProperties:1:component:link:label",
                 "allData");
+        tester.assertLabel(
+                "templatesPanel:listContainer:items:14:itemProperties:1:component:link:label",
+                "norepeat");
 
         tester.clickLink("cancel");
 
@@ -274,35 +280,41 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.assertLabel(
                 "templatesPanel:listContainer:items:6:itemProperties:1:component:link:label",
                 "allData");
+        tester.assertLabel(
+                "templatesPanel:listContainer:items:7:itemProperties:1:component:link:label",
+                "norepeat");
     }
 
     @Test
     public void testDecreasePriority() throws Exception {
-        // object-field
+        // template-nested-object
         tester.clickLink(
                 "templatesPanel:listContainer:items:4:itemProperties:0:component:down:link");
         tester.clickLink(
-                "templatesPanel:listContainer:items:11:itemProperties:0:component:down:link");
+                "templatesPanel:listContainer:items:12:itemProperties:0:component:down:link");
         // print(tester.getLastRenderedPage(), true, true);
         // Check update content of the table
         tester.assertLabel(
-                "templatesPanel:listContainer:items:13:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:15:itemProperties:1:component:link:label",
                 "simple fields");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:14:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:16:itemProperties:1:component:link:label",
                 "template-list-simple");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:15:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:17:itemProperties:1:component:link:label",
                 "template-object list");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:16:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:18:itemProperties:1:component:link:label",
                 "object-field");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:17:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:19:itemProperties:1:component:link:label",
                 "allData");
         tester.assertLabel(
-                "templatesPanel:listContainer:items:18:itemProperties:1:component:link:label",
+                "templatesPanel:listContainer:items:20:itemProperties:1:component:link:label",
                 "template-nested-object");
+        tester.assertLabel(
+                "templatesPanel:listContainer:items:21:itemProperties:1:component:link:label",
+                "norepeat");
     }
 
     @SuppressWarnings("unchecked")

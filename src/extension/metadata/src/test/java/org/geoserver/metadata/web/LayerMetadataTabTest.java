@@ -293,7 +293,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 (DropDownChoice<?>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        Assert.assertEquals(5, selectTemplate.getChoices().size());
+        Assert.assertEquals(6, selectTemplate.getChoices().size());
         MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         Assert.assertEquals("template-list-simple", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
@@ -343,7 +343,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 (DropDownChoice<?>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        Assert.assertEquals(4, selectTemplate.getChoices().size());
+        Assert.assertEquals(5, selectTemplate.getChoices().size());
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         Assert.assertEquals("template-object list", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);

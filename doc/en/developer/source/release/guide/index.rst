@@ -137,15 +137,15 @@ When creating the first release candidate of a series, there are some extra step
       git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
       git push geoserver main
       
-* Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
+* Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page&status=all>`_ for issues on the main development branch; for example, if the main development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.13-RC`` for the first release of the next ``2.13.x`` series.
 
-* Update the main, nightly and live-docs jobs on build.geoserver.org:
+* Update the geoserver jobs on build.geoserver.org:
   
   * disable the maintenance jobs, and remove them from the geoserver view
-  * create new jobs, copying from the existing stable jobs, and edit the branch.
-  * modify the last line of the live-docs builds, changing ``stable`` to ``maintain`` for the previous stable branch. The new job you created should publish to ``stable``, and the main development branch will continue to publish to ``latest``.
+  * create new jobs, duplicating from the three existing stable jobs (geoserver-2.11.x, geoserver-2.11.x-docs and geoserver-2.11.x-nightly), and edit the branch specifier to the new branch (e.g. `2.11.x` -> `2.12.x`).
+  * delete the trigger on the previous `geoserver-2.11.x-nightly` job to not trigger the `geoserver-release-docker` job
 
-* Update the cite tests on build.geoserver.org:
+* ~~Update the cite tests on build.geoserver.org~~:
 
   * disable the maintenance jobs, and remove them from the geoserver view
   * create new jobs, copying from the existing main development branch jobs, editing the branch in the build command.

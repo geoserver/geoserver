@@ -155,8 +155,6 @@ When creating the first release candidate of a series, there are some extra step
 * Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.12.x`` (for example):
    
   * ``README.md``
-  * ``doc/en/developer/source/conf.py``
-  * ``doc/en/user/source/conf.py``
 
 Build the Release
 -----------------

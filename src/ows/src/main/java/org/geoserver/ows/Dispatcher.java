@@ -714,8 +714,10 @@ public class Dispatcher extends AbstractController {
                 boolean kvpParsed = false;
                 boolean xmlParsed = false;
 
-                if (req.getKvp() != null && req.getKvp().size() > 0) {
-                    // use the kvp reader mechanism
+                if (req.getKvp() != null
+                        && req.getKvp().size() > 0
+                        && (!(req.getKvp().size() == 1 && req.getKvp().containsKey("service")))) {
+                    // use the kvp reader mechanism, but not if the only kvp is the service
                     try {
                         requestBean = parseRequestKVP(parameterType, req);
                         kvpParsed = true;
@@ -1530,6 +1532,19 @@ public class Dispatcher extends AbstractController {
     }
 
     Map<String, Object> parseKVP(Request req, Map<String, Object> kvp) {
+        // if the service is not explicitly set, some parsers will not be found
+        if (!kvp.containsKey("service") && !kvp.containsKey("SERVICE") && !citeCompliant) {
+            String service = null;
+            try {
+                service = getServiceFromRequest(req);
+                if (!"OWS".equalsIgnoreCase(service)) { // OWS is too generic for the parser lookup
+                    kvp.put("service", service);
+                }
+                logger.log(Level.FINER, "service kvp parameter not found, setting to " + service);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Unable to determine service from kvp or context");
+            }
+        }
         List<Throwable> errors = KvpUtils.parse(kvp);
         if (!errors.isEmpty()) {
             req.setError(errors.get(0));
@@ -1543,7 +1558,7 @@ public class Dispatcher extends AbstractController {
         if (kvpReader != null) {
             Object requestBean = kvpReader.createRequest();
 
-            if (requestBean != null) {
+            if (requestBean != null && request.getKvp() != null && request.getRawKvp() != null) {
                 requestBean = kvpReader.read(requestBean, request.getKvp(), request.getRawKvp());
             }
 
@@ -1595,11 +1610,33 @@ public class Dispatcher extends AbstractController {
         Map<String, String> map = new HashMap<>();
         if (request.getPath() != null) {
             map.put("service", request.getPath());
+        } else if (request.getHttpRequest() != null
+                && request.getHttpRequest().getServletPath() != null) {
+            // Path not found so try to fall back on HTTPRequest Servlet Path
+            String service =
+                    extractServiceFromHttpRequest(request.getHttpRequest().getRequestURI());
+            if (!service.trim().isEmpty()) {
+                map.put("service", service.trim().toUpperCase());
+            }
         }
 
         return map;
     }
 
+    private static String extractServiceFromHttpRequest(String servletPath) {
+        int startIndex = servletPath.lastIndexOf("/") + 1;
+        int endIndex = servletPath.indexOf("?");
+
+        if (startIndex == 0) {
+            return ""; // No forward slash found
+        }
+
+        if (endIndex == -1) {
+            return servletPath.substring(startIndex); // No question mark found
+        }
+
+        return servletPath.substring(startIndex, endIndex);
+    }
     /**
      * To be called once determined the incoming request is an HTTP POST request
      * with a request body, and the request's {@link Request#getInput() input

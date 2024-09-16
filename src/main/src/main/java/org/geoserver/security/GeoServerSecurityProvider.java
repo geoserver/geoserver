@@ -87,7 +87,7 @@ public abstract class GeoServerSecurityProvider {
                     GeoServerSecurityManager manager =
                             GeoServerExtensions.bean(GeoServerSecurityManager.class);
                     return manager.getConfigPasswordEncryptionHelper().encode(source);
-                };
+                }
 
                 @Override
                 public Object fromString(String str) {

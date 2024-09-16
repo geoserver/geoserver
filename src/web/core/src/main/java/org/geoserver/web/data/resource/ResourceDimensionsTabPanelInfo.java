@@ -57,7 +57,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
 
         // time
         IModel<DimensionInfo> time =
-                new MetadataMapModel(metadata, ResourceInfo.TIME, DimensionInfo.class);
+                new MetadataMapModel<>(metadata, ResourceInfo.TIME, DimensionInfo.class);
         if (time.getObject() == null) {
             time.setObject(new DimensionInfoImpl());
         }
@@ -65,7 +65,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
 
         // elevation
         IModel<DimensionInfo> elevation =
-                new MetadataMapModel(metadata, ResourceInfo.ELEVATION, DimensionInfo.class);
+                new MetadataMapModel<>(metadata, ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevation.getObject() == null) {
             elevation.setObject(new DimensionInfoImpl());
         }

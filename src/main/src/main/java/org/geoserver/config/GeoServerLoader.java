@@ -1064,7 +1064,7 @@ public abstract class GeoServerLoader {
                 SingleResourceContents r = it.next();
                 try {
                     LayerGroupInfo lg = depersist(xp, r.contents, LayerGroupInfo.class);
-                    if (lg.getLayers() == null || lg.getLayers().size() == 0) {
+                    if (lg.getLayers() == null || lg.getLayers().isEmpty()) {
                         LOGGER.warning(
                                 "Skipping empty layer group '" + lg.getName() + "', it is invalid");
                         continue;

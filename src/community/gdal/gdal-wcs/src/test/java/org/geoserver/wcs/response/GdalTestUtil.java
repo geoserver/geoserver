@@ -107,7 +107,7 @@ public class GdalTestUtil {
         String line = null;
         while ((line = reader.readLine()) != null && count < maxCount) {
             String[] cols = line.trim().split(" ");
-            assertTrue(cols.length == 3);
+            assertEquals(3, cols.length);
             assertEquals(
                     TEST_XYZ_DATA[count][0], (double) Double.valueOf(cols[0]), EQUALS_TOLERANCE);
             assertEquals(

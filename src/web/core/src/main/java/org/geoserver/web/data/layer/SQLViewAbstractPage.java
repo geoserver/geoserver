@@ -72,7 +72,6 @@ import org.locationtech.jts.geom.Polygon;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings("serial")
 public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
     public static final String DATASTORE = "storeName";
@@ -192,7 +191,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                     protected void onClick(AjaxRequestTarget target, Form<?> form) {
                         sqlEditor.processInput();
                         parameters.processInputs();
-                        if (sql != null && !"".equals(sql.trim())) {
+                        if (sql != null && !sql.trim().isEmpty()) {
                             paramProvider.refreshFromSql(sql);
                             parameters.setPageable(false);
                             target.add(parameters);
@@ -221,7 +220,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
         // the parameters table
         parameters =
-                new GeoServerTablePanel<Parameter>("parameters", paramProvider, true) {
+                new GeoServerTablePanel<>("parameters", paramProvider, true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -260,7 +259,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
         // the editable attribute table
         attributes =
-                new GeoServerTablePanel<SQLViewAttribute>("attributes", attProvider) {
+                new GeoServerTablePanel<>("attributes", attProvider) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -337,8 +336,8 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                 sqlEditor.processInput();
                 parameters.processInputs();
                 guessCheckbox.processInput();
-                if (sql != null && !"".equals(sql.trim())) {
-                    SimpleFeatureType newSchema = null;
+                if (sql != null && !sql.trim().isEmpty()) {
+                    SimpleFeatureType newSchema;
                     try {
                         newSchema = testViewDefinition(guessGeometrySrid);
 

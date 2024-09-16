@@ -19,7 +19,6 @@ import org.geoserver.metadata.web.resource.WicketResourceResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,13 +63,13 @@ public class ExternalResourceLoaderTest extends AbstractWicketMetadataTest {
         String actual =
                 loader.loadStringResource(
                         tester.getLastRenderedPage(), "metadata.generated.form.identifier-single");
-        Assert.assertEquals("identifier single field", actual);
+        assertEquals("identifier single field", actual);
 
         Session.get().setLocale(new Locale("nl"));
         actual =
                 loader.loadStringResource(
                         tester.getLastRenderedPage(), "metadata.generated.form.identifier-single");
-        Assert.assertEquals("identifier single field", actual);
+        assertEquals("identifier single field", actual);
     }
 
     @Test
@@ -83,7 +82,7 @@ public class ExternalResourceLoaderTest extends AbstractWicketMetadataTest {
         String actual =
                 loader.loadStringResource(
                         tester.getLastRenderedPage(), "metadata.generated.form.number-field");
-        Assert.assertEquals("Getal veld", actual);
+        assertEquals("Getal veld", actual);
     }
 
     @Test

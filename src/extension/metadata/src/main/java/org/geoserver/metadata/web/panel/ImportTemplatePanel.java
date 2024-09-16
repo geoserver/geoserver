@@ -187,14 +187,13 @@ public abstract class ImportTemplatePanel extends Panel {
 
     private GeoServerTablePanel<MetadataTemplate> createTemplateTable(AjaxSubmitLink remove) {
 
-        return new GeoServerTablePanel<MetadataTemplate>(
-                "templatesPanel", linkedTemplatesDataProvider, true) {
+        return new GeoServerTablePanel<>("templatesPanel", linkedTemplatesDataProvider, true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
 
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                remove.setEnabled(templatesPanel.getSelection().size() > 0);
+                remove.setEnabled(!templatesPanel.getSelection().isEmpty());
                 target.add(remove);
             }
 

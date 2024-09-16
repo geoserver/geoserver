@@ -66,7 +66,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
     public static final Property<PreviewLayer> TYPE = new BeanProperty<>("type", "type");
 
     public static final AbstractProperty<PreviewLayer> NAME =
-            new AbstractProperty<PreviewLayer>("name") {
+            new AbstractProperty<>("name") {
                 @Override
                 public Object getPropertyValue(PreviewLayer item) {
                     if (item.layerInfo != null) {

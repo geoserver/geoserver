@@ -118,8 +118,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
         container.add(table);
 
         identifiers =
-                new ListView<LayerIdentifierInfo>(
-                        "identifiers", new ArrayList<>(getModelObject())) {
+                new ListView<>("identifiers", new ArrayList<>(getModelObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -161,7 +160,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
                         // remove link
                         AjaxLink<Integer> link =
-                                new AjaxLink<Integer>("removeLink", new Model<>(item.getIndex())) {
+                                new AjaxLink<>("removeLink", new Model<>(item.getIndex())) {
 
                                     private static final long serialVersionUID = 1L;
 

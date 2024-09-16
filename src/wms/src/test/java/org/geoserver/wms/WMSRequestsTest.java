@@ -153,7 +153,7 @@ public class WMSRequestsTest extends WMSTestSupport {
     @SuppressWarnings("unchecked")
     private GetMapRequest initGetMapRequest(QName... names) {
         GetMapRequest request = createGetMapRequest(names);
-        request.setRawKvp(new KvpMap(request.getRawKvp()));
+        request.setRawKvp(new KvpMap<>(request.getRawKvp()));
         String layers =
                 request.getLayers().stream()
                         .map(MapLayerInfo::getName)

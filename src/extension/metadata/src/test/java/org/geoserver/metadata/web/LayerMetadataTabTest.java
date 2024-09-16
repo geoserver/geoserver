@@ -293,9 +293,9 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 (DropDownChoice<?>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        Assert.assertEquals(6, selectTemplate.getChoices().size());
+        assertEquals(6, selectTemplate.getChoices().size());
         MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
-        Assert.assertEquals("template-list-simple", template.getName());
+        assertEquals("template-list-simple", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
@@ -343,9 +343,9 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 (DropDownChoice<?>)
                         tester.getComponentFromLastRenderedPage(
                                 "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        Assert.assertEquals(5, selectTemplate.getChoices().size());
+        assertEquals(5, selectTemplate.getChoices().size());
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
-        Assert.assertEquals("template-object list", template.getName());
+        assertEquals("template-object list", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
@@ -560,7 +560,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
 
         // assert no data to display
-        Assert.assertNotNull(
+        assertNotNull(
                 tester.getComponentFromLastRenderedPage(
                         "publishedinfo:tabs:panel:importTemplatePanel:noData"));
         Assert.assertNull(
@@ -681,10 +681,10 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:link");
         // print(tester.getLastRenderedPage(), true, true);
 
-        Assert.assertEquals(2, tester.getMessages(FeedbackMessage.ERROR).size());
-        Assert.assertEquals(
+        assertEquals(2, tester.getMessages(FeedbackMessage.ERROR).size());
+        assertEquals(
                 "Select a geonetwork", tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
-        Assert.assertEquals(
+        assertEquals(
                 "A metadata UUID is required",
                 tester.getMessages(FeedbackMessage.ERROR).get(1).toString());
         tester.assertLabel(

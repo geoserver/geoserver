@@ -46,7 +46,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     @Before
     public void setXpathEngine() throws Exception {
         xpath = XMLUnit.newXpathEngine();
-    };
+    }
 
     /**
      * Ensures there is at most one feature at the specified location, and returns its feature id

@@ -68,7 +68,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
 
         add(
                 tablePanel =
-                        new SecurityNamedServiceTablePanel<T>("table", dataProvider) {
+                        new SecurityNamedServiceTablePanel<>("table", dataProvider) {
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
                                 if (isAdmin) {
@@ -197,7 +197,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         Component createEditLink(String id, final IModel<T> model, Property<T> property) {
             @SuppressWarnings("unchecked")
             IModel<Object> cast = (IModel<Object>) property.getModel(model);
-            return new SimpleAjaxLink<Object>(id, cast) {
+            return new SimpleAjaxLink<>(id, cast) {
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
@@ -216,7 +216,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         tablePanel.clearSelection();
         removeLink.setEnabled(false);
         super.onBeforeRender();
-    };
+    }
 
     private class RemoveLink extends AjaxLink {
         public RemoveLink() {

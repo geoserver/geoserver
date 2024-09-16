@@ -234,7 +234,7 @@ class CRSAreaOfValidityMapBuilder {
 
         renderer.setJava2DHints(hints);
 
-        Map renderingHints = new HashMap();
+        Map renderingHints = new HashMap<>();
         renderingHints.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         renderingHints.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, Boolean.TRUE);
         renderingHints.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, Boolean.TRUE);

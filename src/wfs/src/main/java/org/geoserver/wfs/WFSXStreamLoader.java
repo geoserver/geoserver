@@ -50,7 +50,7 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
 
         // Feature Output Type Checking
         wfs.setGetFeatureOutputTypeCheckingEnabled(false);
-        wfs.setGetFeatureOutputTypes(new HashSet<String>());
+        wfs.setGetFeatureOutputTypes(new HashSet<>());
 
         // gml2
         addGml(wfs, WFSInfo.Version.V_10, GMLInfo.SrsNameStyle.XML, true);
@@ -82,7 +82,7 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
 
         // set the defaults for Output Type Checking if not set
         if (service.getGetFeatureOutputTypes() == null) {
-            service.setGetFeatureOutputTypes(new HashSet<String>());
+            service.setGetFeatureOutputTypes(new HashSet<>());
         }
 
         // set the defaults for GMLInfo if they are not set

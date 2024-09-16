@@ -38,7 +38,7 @@ public class Util {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
     /** Convert from string to boolean, use defaultValue in case of null or empty string */
     public static boolean convertToBoolean(String booleanString, boolean defaultValue) {
-        if (booleanString == null || booleanString.trim().length() == 0) return defaultValue;
+        if (booleanString == null || booleanString.trim().isEmpty()) return defaultValue;
         return Boolean.valueOf(booleanString.trim());
     }
 

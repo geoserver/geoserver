@@ -48,7 +48,7 @@ public class RoleHierarchyHelper {
 
     /** recursive method to fill the ancestor list */
     protected void fillAncestors(String roleName, List<String> ancestors) {
-        if (roleName == null || roleName.length() == 0) return; // end recursion
+        if (roleName == null || roleName.isEmpty()) return; // end recursion
         ancestors.add(roleName);
         String parentName = parentMappings.get(roleName);
         if (ancestors.contains(parentName)) {
@@ -142,7 +142,7 @@ public class RoleHierarchyHelper {
 
     /** returns true if parentName is a valid parent for roleName (avoiding cycles) */
     public boolean isValidParent(String roleName, String parentName) {
-        if (parentName == null || parentName.length() == 0) return true;
+        if (parentName == null || parentName.isEmpty()) return true;
         if (roleName.equals(parentName)) return false;
         if (getDescendants(roleName).contains(parentName)) return false;
         return true;

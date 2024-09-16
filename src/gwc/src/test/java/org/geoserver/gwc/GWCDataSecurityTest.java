@@ -226,7 +226,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     }
 
     Matcher<MockHttpServletResponse> hasBody(Matcher<String> matcher) {
-        return new org.hamcrest.BaseMatcher<MockHttpServletResponse>() {
+        return new org.hamcrest.BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {
@@ -258,7 +258,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
 
     Matcher<MockHttpServletResponse> addBodyOnFail(
             Matcher<? extends MockHttpServletResponse> matcher) {
-        return new org.hamcrest.BaseMatcher<MockHttpServletResponse>() {
+        return new org.hamcrest.BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {

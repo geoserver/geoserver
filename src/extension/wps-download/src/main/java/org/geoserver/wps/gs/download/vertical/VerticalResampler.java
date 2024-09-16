@@ -65,7 +65,7 @@ public class VerticalResampler {
     private static final SoftValueHashMap<String, VerticalGridTransform>
             CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM = new SoftValueHashMap<>();
 
-    private static DefaultMathTransformFactory MT_FACTORY = new DefaultMathTransformFactory();
+    private static final DefaultMathTransformFactory MT_FACTORY = new DefaultMathTransformFactory();
 
     static {
         // Let's load the user_projections/epsg_operations.properties and extract the vertical grid
@@ -92,7 +92,7 @@ public class VerticalResampler {
                                 + e.getLocalizedMessage());
             }
             Set<Map.Entry<Object, Object>> entriesSet = definitions.entrySet();
-            for (Map.Entry entry : entriesSet) {
+            for (Map.Entry<Object, Object> entry : entriesSet) {
                 // Scan the mapping entries and process only the vertical offset ones
                 String value = (String) entry.getValue();
                 if (value.contains(
@@ -172,12 +172,7 @@ public class VerticalResampler {
 
     /**
      * Resample the provided gridCoverage by applying the underlying VerticalGridTransform, to
-     * adjust the height values
-     *
-     * @param gridCoverage
-     * @return
-     * @throws FactoryException
-     * @throws TransformException
+     * adjust the height values.
      */
     public GridCoverage2D resample(GridCoverage2D gridCoverage)
             throws FactoryException, TransformException {

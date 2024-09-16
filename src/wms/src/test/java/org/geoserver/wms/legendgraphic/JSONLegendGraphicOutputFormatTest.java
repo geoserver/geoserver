@@ -129,7 +129,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                                 MockData.ROAD_SEGMENTS.getLocalPart());
         GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(), multipleRulesStyle);
         req.setRule(rule.getName());
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
         req.setFormat(JSONFormat);
         final int HEIGHT_HINT = 30;
         req.setHeight(HEIGHT_HINT);
@@ -168,7 +168,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         GetLegendGraphicRequest req = getRequest(feature.getSchema(), multipleRulesStyle);
 
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
 
         // use default values for the rest of parameters
 
@@ -745,7 +745,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(transformStyle);
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
         req.setFormat(JSONFormat);
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
         // was the legend painted?
@@ -800,7 +800,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(style);
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
 
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
 
@@ -852,7 +852,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(transformStyle);
         // printStyle(transformStyle);
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
         req.setFormat(JSONFormat);
 
         JSONObject result = this.legendProducer.buildLegendGraphic(req);
@@ -1609,7 +1609,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(multipleRulesStyle);
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
 
         // use default values for the rest of parameters
 
@@ -1653,7 +1653,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                 FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(multipleRulesStyle);
-        req.setLegendOptions(new HashMap<String, String>());
+        req.setLegendOptions(new HashMap<>());
         req.setFormat(JSONFormat);
 
         JSONObject result = this.legendProducer.buildLegendGraphic(req);

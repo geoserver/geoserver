@@ -24,7 +24,7 @@ public class JDBCUserGroupServicePanel extends UserGroupServicePanel<JDBCUserGro
 
         add(new JDBCConnectionPanel<>("cx", model));
         add(new CheckBox("creatingTables"));
-        add(new TextField("propertyFileNameDDL"));
-        add(new TextField("propertyFileNameDML"));
+        add(new TextField<>("propertyFileNameDDL"));
+        add(new TextField<>("propertyFileNameDML"));
     }
 }

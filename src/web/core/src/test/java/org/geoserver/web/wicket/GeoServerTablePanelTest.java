@@ -188,7 +188,7 @@ public class GeoServerTablePanelTest {
     static class IntegerProvider extends GeoServerDataProvider<Integer> {
 
         static final Property<Integer> IDX =
-                new Property<Integer>() {
+                new Property<>() {
                     @Override
                     public String getName() {
                         return "idx";

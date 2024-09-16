@@ -45,7 +45,7 @@ public class SecuredSimpleFeatureCollectionTest {
                     public void accepts(FeatureVisitor visitor, ProgressListener progress)
                             throws IOException {
                         lastVisitor = visitor;
-                    };
+                    }
                 };
     }
 

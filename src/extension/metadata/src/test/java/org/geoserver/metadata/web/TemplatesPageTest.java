@@ -18,7 +18,6 @@ import org.geoserver.metadata.web.panel.MetadataPanel;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -186,8 +185,8 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
                         .size());
 
         // print(tester.getLastRenderedPage(), true, true);
-        Assert.assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        Assert.assertEquals(
+        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        assertEquals(
                 "Template 'simple fields' is not deleted. Linked to layers: topp:mylayer",
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         tester.assertLabel(

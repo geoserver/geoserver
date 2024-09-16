@@ -14,7 +14,7 @@ import java.util.Set;
 /** A Class reporting a Set of default file extensions for some commonly used spatial files */
 public class SpatialFileExtensionsProvider implements SupplementalFileExtensionsProvider {
 
-    public SpatialFileExtensionsProvider() {};
+    public SpatialFileExtensionsProvider() {}
 
     static class JPEGFileExtensionsProvider extends DefaultSupplementalFileExtensionsProvider {
 
@@ -23,7 +23,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
                     new HashSet<>(Arrays.asList("jpeg", "jpg")),
                     new HashSet<>(Arrays.asList("jpw", "wld", "prj")));
         }
-    };
+    }
 
     static class TIFFFileExtensionsProvider extends DefaultSupplementalFileExtensionsProvider {
 
@@ -34,7 +34,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
                             Arrays.asList(
                                     "tfw", "wld", "aux", "rrd", "xml", "tif.aux.xml", "prj")));
         }
-    };
+    }
 
     static class PNGFileExtensionsProvider extends DefaultSupplementalFileExtensionsProvider {
 
@@ -43,7 +43,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
                     new HashSet<>(Arrays.asList("png")),
                     new HashSet<>(Arrays.asList("pnw", "wld", "aux.xml", "xml", "prj")));
         }
-    };
+    }
 
     static class NetCDFFileExtensionsProvider extends DefaultSupplementalFileExtensionsProvider {
 
@@ -52,7 +52,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
                     new HashSet<>(Arrays.asList("nc")),
                     new HashSet<>(Arrays.asList("ncx", "aux.xml", "xml", "prj")));
         }
-    };
+    }
 
     static class GribFileExtensionsProvider extends DefaultSupplementalFileExtensionsProvider {
 
@@ -69,7 +69,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
                                     "xml",
                                     "prj")));
         }
-    };
+    }
 
     static class ShapeFileExtensionsProvider extends DefaultSupplementalFileExtensionsProvider {
 
@@ -88,7 +88,7 @@ public class SpatialFileExtensionsProvider implements SupplementalFileExtensions
                                     "shp.xml",
                                     "prj")));
         }
-    };
+    }
 
     private static final ShapeFileExtensionsProvider SHAPEFILE_PROVIDER =
             new ShapeFileExtensionsProvider();

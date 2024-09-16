@@ -81,8 +81,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         new PropertyModel<>(settingsModel, "verboseExceptions")));
         form.add(new CheckBox("globalServices"));
         form.add(
-                new TextField<Integer>(
-                                "numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
+                new TextField<>("numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
                         .add(RangeValidator.minimum(0)));
         form.add(
                 new Select2DropDownChoice<>(
@@ -95,7 +94,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         Arrays.asList(ResourceErrorHandling.values()),
                         new ResourceErrorHandlingRenderer()));
         form.add(
-                new TextField<String>(
+                new TextField<>(
                         "proxyBaseUrl", new PropertyModel<>(settingsModel, "proxyBaseUrl")));
         form.add(new CheckBox("useHeadersProxyURL"));
 
@@ -128,7 +127,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         wmc.add(logHeadersCheckBox);
         wmc.add(xmlPostRequestLogBufferSize);
         MetadataMapModel<Boolean> requestCheckModel =
-                new MetadataMapModel<Boolean>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
+                new MetadataMapModel<>(metadataModel, LOG_REQUESTS_ENABLED, Boolean.class) {
                     @Override
                     public void setObject(Boolean object) {
                         super.setObject(object);
@@ -155,7 +154,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(new CheckBox("trailingSlashMatch"));
 
-        form.add(new TextField<Integer>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
+        form.add(new TextField<>("featureTypeCacheSize").add(RangeValidator.minimum(0)));
 
         IModel<String> lockProviderModel = new PropertyModel<>(globalInfoModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
@@ -288,7 +287,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     logProfiles.add(res.name());
                 }
 
-                Collections.sort(logProfiles, String.CASE_INSENSITIVE_ORDER);
+                logProfiles.sort(String.CASE_INSENSITIVE_ORDER);
             }
         } catch (Exception e) {
             LOGGER.log(
@@ -337,7 +336,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         @Override
         public ResourceErrorHandling getObject(
                 String id, IModel<? extends List<? extends ResourceErrorHandling>> choices) {
-            return id == null || "".equals(id) ? null : ResourceErrorHandling.valueOf(id);
+            return id == null || id.isEmpty() ? null : ResourceErrorHandling.valueOf(id);
         }
     }
 }

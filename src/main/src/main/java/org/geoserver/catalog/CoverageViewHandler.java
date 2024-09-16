@@ -162,7 +162,7 @@ class CoverageViewHandler {
         void visit(GridCoverage2DReader reader);
 
         GeneralBounds getOriginalEnvelope();
-    };
+    }
 
     abstract class AbstractEnvelopeComposer implements EnvelopeComposer {
         GeneralBounds env = null;
@@ -217,7 +217,7 @@ class CoverageViewHandler {
 
         private static double DELTA = 1E-10;
 
-        private Set<ParameterDescriptor<List>> dynamicParameters;
+        private Set<ParameterDescriptor<List>> dynamicParameters; // NOPMD
 
         private String[] metadataNames;
 

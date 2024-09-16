@@ -228,7 +228,7 @@ public enum JSONType {
             if (id_policy == null || "true".equals(id_policy)) {
                 return null; // use fid as id in output
             }
-            if ("false".equals(id_policy) || id_policy.length() == 0) {
+            if ("false".equals(id_policy) || id_policy.isEmpty()) {
                 return ""; // suppress id from output
             }
             return id_policy;

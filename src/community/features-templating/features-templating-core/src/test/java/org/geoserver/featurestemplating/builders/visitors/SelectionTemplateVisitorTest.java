@@ -5,7 +5,7 @@
 package org.geoserver.featurestemplating.builders.visitors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -91,7 +91,7 @@ public class SelectionTemplateVisitorTest {
                 assertEquals(1, composite.getChildren().size());
                 assertTrue(composite.getChildren().get(0) instanceof IncludeFlatPropertySelection);
             }
-            assertFalse("two".equals(key));
+            assertNotEquals("two", key);
         }
         Set<String> props = visitor.getQueryProperties();
         List<String> expected = Arrays.asList("geometry", "one", "b", "c");

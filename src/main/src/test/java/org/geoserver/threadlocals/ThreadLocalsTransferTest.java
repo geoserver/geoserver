@@ -78,7 +78,7 @@ public class ThreadLocalsTransferTest extends GeoServerSystemTestSupport {
         final ThreadLocalsTransfer transfer = new ThreadLocalsTransfer();
         Future<Void> future =
                 executor.submit(
-                        new Callable<Void>() {
+                        new Callable<>() {
 
                             @Override
                             public Void call() throws Exception {
@@ -148,5 +148,5 @@ public class ThreadLocalsTransferTest extends GeoServerSystemTestSupport {
         abstract void assertThreadLocalCleaned();
 
         abstract void assertThreadLocalApplied();
-    };
+    }
 }

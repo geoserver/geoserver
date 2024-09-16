@@ -51,7 +51,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
     @Autowired private ConfigurationService configService;
 
-    private NamespaceContextImpl namespaceContext = new NamespaceContextImpl();;
+    private NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
 
     @PostConstruct
     public void setupNamespaces() {

@@ -152,7 +152,7 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTest
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
     }
 
@@ -169,7 +169,7 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTest
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 0);
+        assertEquals(0, features.size());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTest
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
     }
 

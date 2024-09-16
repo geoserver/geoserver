@@ -767,6 +767,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
      * @throws IOException
      */
     @Test(expected = FileNotFoundException.class)
+    @SuppressWarnings("PMD.UnusedLocalVariable")
     public void testMissingStyleThrowsException() throws IOException {
         Catalog catalog = getCatalog();
         StyleInfo missing = catalog.getFactory().createStyle();
@@ -774,7 +775,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         missing.setFilename("missing.sld");
 
         ResourcePool pool = new ResourcePool(catalog);
-        try (BufferedReader reader = pool.readStyle(missing)) {
+        try (BufferedReader ignored = pool.readStyle(missing)) {
             fail("FileNotFoundException expected for missing style files");
         }
     }
@@ -908,7 +909,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;
-                    };
+                    }
                 };
 
         // setup all the mocks

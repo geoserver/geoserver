@@ -59,7 +59,7 @@ public class LayerGroupHelper {
             PublishedInfo p = group.getLayers().get(i);
             StyleInfo s;
             // Handle incomplete layer groups, especially those constructed by the XStreamPersister
-            if (group.getStyles() == null || group.getStyles().size() == 0) {
+            if (group.getStyles() == null || group.getStyles().isEmpty()) {
                 s = null;
             } else {
                 s = group.getStyles().get(i);
@@ -145,7 +145,7 @@ public class LayerGroupHelper {
             PublishedInfo p = group.getLayers().get(i);
             StyleInfo s;
             // Handle incomplete layer groups, especially those constructed by the XStreamPersister
-            if (group.getStyles() == null || group.getStyles().size() == 0) {
+            if (group.getStyles() == null || group.getStyles().isEmpty()) {
                 s = null;
             } else {
                 s = group.getStyles().get(i);
@@ -473,6 +473,7 @@ public class LayerGroupHelper {
      *
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public Stack<LayerGroupInfo> checkLoops() {
         Stack<LayerGroupInfo> path = new Stack<>();
         if (checkLoops(group, group.getLayers(), group.getStyles(), path)) {
@@ -484,6 +485,7 @@ public class LayerGroupHelper {
         }
     }
 
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public String getLoopAsString(Stack<LayerGroupInfo> path) {
         if (path == null) {
             return "";
@@ -504,6 +506,7 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static boolean checkLoops(
             LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
         if (groupStyles != null) {
@@ -525,6 +528,7 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static boolean checkLoops(
             LayerGroupInfo group,
             List<PublishedInfo> layers,
@@ -573,6 +577,7 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the style group contains itself, or another LayerGroup contains itself
      */
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static boolean checkStyleGroupLoops(
             StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         try {
@@ -642,6 +647,7 @@ public class LayerGroupHelper {
         }
     }
 
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         for (LayerGroupInfo groupInPath : path) {
             if (groupInPath.getId() != null && groupInPath.getId().equals(group.getId())) {

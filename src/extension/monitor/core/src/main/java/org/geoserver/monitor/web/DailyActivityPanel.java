@@ -31,7 +31,7 @@ public class DailyActivityPanel extends ActivityChartBasePanel {
         then.set(Calendar.SECOND, 0);
 
         return new Date[] {then.getTime(), now};
-    };
+    }
 
     @Override
     protected RegularTimePeriod getTimePeriod(Date time) {

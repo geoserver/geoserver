@@ -6,7 +6,6 @@
 package org.geoserver.web;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import org.apache.wicket.markup.html.basic.Label;
@@ -96,21 +95,16 @@ public class CapabilitiesHomePagePanel extends Panel {
 
         super(id);
         capsLinks.sort(
-                new Comparator<CapsInfo>() {
-                    @Override
-                    public int compare(CapsInfo o1, CapsInfo o2) {
-                        int serviceOrder =
-                                o1.getService()
-                                        .toUpperCase()
-                                        .compareTo(o2.getService().toUpperCase());
-                        int versionOrder = -o1.version.compareTo(o2.getVersion());
+                (o1, o2) -> {
+                    int serviceOrder =
+                            o1.getService().toUpperCase().compareTo(o2.getService().toUpperCase());
+                    int versionOrder = -o1.version.compareTo(o2.getVersion());
 
-                        return serviceOrder != 0 ? serviceOrder : versionOrder;
-                    }
+                    return serviceOrder != 0 ? serviceOrder : versionOrder;
                 });
 
         ListView<CapsInfo> view =
-                new ListView<CapsInfo>("services", capsLinks) {
+                new ListView<>("services", capsLinks) {
                     private static final long serialVersionUID = 1L;
 
                     @Override

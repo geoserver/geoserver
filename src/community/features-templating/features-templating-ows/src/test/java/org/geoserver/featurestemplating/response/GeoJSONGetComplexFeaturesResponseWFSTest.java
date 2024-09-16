@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import net.sf.json.JSONArray;
@@ -77,7 +76,7 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
         sb.append(GEOJSON_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeatureGeoJSON(features.getJSONObject(0));
         checkAdditionalInfo(result);
@@ -93,7 +92,7 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
         sb.append(GEOJSON_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         JSONObject feature = features.getJSONObject(0);
         assertEquals("FeatureName: MURRADUC BASALT", feature.getString("name"));
         checkMappedFeatureGeoJSON(feature);
@@ -121,7 +120,7 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTes
         JSONObject result =
                 (JSONObject) postJson("wfs?" + GEOJSON_MF_TEMPLATE + "=true", xml.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeatureGeoJSON(features.getJSONObject(0));
         checkAdditionalInfo(result);

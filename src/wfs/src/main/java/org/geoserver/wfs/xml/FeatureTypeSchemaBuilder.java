@@ -286,16 +286,14 @@ public abstract class FeatureTypeSchemaBuilder {
             Set<String> includes = new HashSet<>();
             for (Map.Entry<String, List<FeatureTypeInfo>> stringListEntry :
                     ns2featureTypeInfos.entrySet()) {
-                Map.Entry entry = (Map.Entry) stringListEntry;
-                String prefix = (String) entry.getKey();
-                List types = (List) entry.getValue();
+                String prefix = stringListEntry.getKey();
+                List<FeatureTypeInfo> types = stringListEntry.getValue();
 
-                StringBuffer typeNames = new StringBuffer();
-                for (Object type : types) {
-                    FeatureTypeInfo info = (FeatureTypeInfo) type;
-                    FeatureType featureType = info.getFeatureType();
+                StringBuilder typeNames = new StringBuilder();
+                for (FeatureTypeInfo type : types) {
+                    FeatureType featureType = type.getFeatureType();
                     Object schemaUri = featureType.getUserData().get("schemaURI");
-                    if (schemaUri != null && schemaUri instanceof Map) {
+                    if (schemaUri instanceof Map) {
                         // should always be a Map.. set in AppSchemaDataAccessConfigurator
                         // impose iteration order
                         @SuppressWarnings("unchecked")
@@ -312,7 +310,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                     includes);
                         }
                     } else {
-                        typeNames.append(info.prefixedName()).append(",");
+                        typeNames.append(type.prefixedName()).append(",");
                     }
                 }
                 if (typeNames.length() > 0) {
@@ -1124,7 +1122,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             return gml32Schema;
-        };
+        }
 
         XSDSchema createGml32Schema() {
             try {

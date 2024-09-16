@@ -30,7 +30,7 @@ public class StringParameterFilterSubform
     private static final long serialVersionUID = -3815153551079914831L;
 
     private static final IConverter<List<String>> CONVERT =
-            new IConverter<List<String>>() {
+            new IConverter<>() {
 
                 private static final long serialVersionUID = -7486127358227242772L;
 
@@ -67,7 +67,7 @@ public class StringParameterFilterSubform
         add(defaultValue);
 
         final TextArea<List<String>> values =
-                new TextArea<List<String>>("values", new PropertyModel<>(model, "values")) {
+                new TextArea<>("values", new PropertyModel<>(model, "values")) {
                     /** serialVersionUID */
                     private static final long serialVersionUID = 1L;
 

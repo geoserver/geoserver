@@ -2,7 +2,6 @@ package org.geoserver.restconfig.api.v1.mapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -97,8 +96,8 @@ public class CoverageResponseMapperTest extends SerializationTest {
         assertEquals(Collections.singletonList(-9.999999933815813E36d), dim.getNullValues());
         NumberRange range = dim.getRange();
         assertNotNull(range);
-        assertTrue(Double.NEGATIVE_INFINITY == range.getMin().doubleValue());
-        assertTrue(Double.POSITIVE_INFINITY == range.getMax().doubleValue());
+        assertEquals(Double.NEGATIVE_INFINITY, range.getMin().doubleValue(), 0.0);
+        assertEquals(Double.POSITIVE_INFINITY, range.getMax().doubleValue(), 0.0);
     }
 
     /**

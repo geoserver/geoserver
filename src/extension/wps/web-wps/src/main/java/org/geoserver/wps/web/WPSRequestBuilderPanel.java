@@ -111,7 +111,7 @@ public class WPSRequestBuilderPanel extends Panel {
 
         // the process description
         final Label descriptionLabel =
-                new Label("processDescription", new PropertyModel(this, "description"));
+                new Label("processDescription", new PropertyModel<>(this, "description"));
         descriptionContainer.add(descriptionLabel);
         // description value is set later in initProcessView()
 
@@ -119,7 +119,7 @@ public class WPSRequestBuilderPanel extends Panel {
         inputContainer.setVisible(false);
         add(inputContainer);
         inputView =
-                new ListView<InputParameterValues>("inputs", new PropertyModel(execute, "inputs")) {
+                new ListView<>("inputs", new PropertyModel<>(execute, "inputs")) {
 
                     @Override
                     protected void populateItem(ListItem item) {
@@ -131,7 +131,7 @@ public class WPSRequestBuilderPanel extends Panel {
                                         "paramDescription",
                                         p.description.toString(Locale.ENGLISH)));
                         // TODO: roll out an extension point for these editors
-                        final PropertyModel property = new PropertyModel(pv, "values[0].value");
+                        final PropertyModel property = new PropertyModel<>(pv, "values[0].value");
                         if (pv.isBoundingBox()) {
                             EnvelopePanel envelope = new EnvelopePanel("paramValue", property);
                             envelope.setCRSFieldVisible(true);
@@ -153,7 +153,7 @@ public class WPSRequestBuilderPanel extends Panel {
                             Fragment f =
                                     new Fragment(
                                             "paramValue", "literal", WPSRequestBuilderPanel.this);
-                            FormComponent literal = new TextField("literalValue", property);
+                            FormComponent literal = new TextField<>("literalValue", property);
                             literal.setRequired(p.minOccurs > 0);
                             literal.setLabel(new Model<>(p.key));
                             f.add(literal);
@@ -168,7 +168,7 @@ public class WPSRequestBuilderPanel extends Panel {
         outputContainer.setVisible(false);
         add(outputContainer);
         outputView =
-                new ListView("outputs", new PropertyModel(execute, "outputs")) {
+                new ListView("outputs", new PropertyModel<>(execute, "outputs")) {
 
                     @Override
                     protected void populateItem(ListItem item) {
@@ -182,9 +182,9 @@ public class WPSRequestBuilderPanel extends Panel {
                                         p.description.toString(Locale.ENGLISH)));
                         if (pv.isComplex()) {
                             DropDownChoice mime =
-                                    new DropDownChoice(
+                                    new DropDownChoice<>(
                                             "mime",
-                                            new PropertyModel(pv, "mimeType"),
+                                            new PropertyModel<>(pv, "mimeType"),
                                             pv.getSupportedMime());
                             item.add(mime);
                         } else {
@@ -274,15 +274,16 @@ public class WPSRequestBuilderPanel extends Panel {
         userpwdContainer.setVisible(false);
         authenticationContainer.add(userpwdContainer);
 
-        final TextField username = new TextField("username", new PropertyModel(this, "username"));
+        final TextField username =
+                new TextField<>("username", new PropertyModel<>(this, "username"));
         userpwdContainer.add(username);
 
         final PasswordTextField password =
-                new PasswordTextField("password", new PropertyModel(this, "password"));
+                new PasswordTextField("password", new PropertyModel<>(this, "password"));
         password.setRequired(false);
         userpwdContainer.add(password);
 
-        CheckBox checkbox = new CheckBox("authenticate", new PropertyModel(this, "authenticate"));
+        CheckBox checkbox = new CheckBox("authenticate", new PropertyModel<>(this, "authenticate"));
         checkbox.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
 

@@ -47,15 +47,15 @@ import org.junit.Test;
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport {
 
-    static interface TestService1 extends ServiceInfo {};
+    static interface TestService1 extends ServiceInfo {}
 
-    static interface TestService2 extends ServiceInfo {};
-
-    @SuppressWarnings("serial")
-    static class TestService1Impl extends ServiceInfoImpl implements TestService1 {};
+    static interface TestService2 extends ServiceInfo {}
 
     @SuppressWarnings("serial")
-    static class TestService2Impl extends ServiceInfoImpl implements TestService2 {};
+    static class TestService1Impl extends ServiceInfoImpl implements TestService1 {}
+
+    @SuppressWarnings("serial")
+    static class TestService2Impl extends ServiceInfoImpl implements TestService2 {}
 
     private WorkspaceInfo testWs1, testWs2;
 
@@ -295,7 +295,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         protected TestService1 createServiceFromScratch(GeoServer gs) {
             return new TestService1Impl();
         }
-    };
+    }
 
     static final class TestServiceLoader2 extends XStreamServiceLoader<TestService2> {
 
@@ -312,5 +312,5 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         protected TestService2 createServiceFromScratch(GeoServer gs) {
             return new TestService2Impl();
         }
-    };
+    }
 }

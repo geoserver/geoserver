@@ -158,9 +158,9 @@ public class GetCapabilities {
             final ContactInfo contact = csw.getGeoServer().getGlobal().getSettings().getContact();
 
             sp.setProviderName(
-                    (contact.getContactOrganization() != null
+                    contact.getContactOrganization() != null
                             ? contact.getContactOrganization()
-                            : ""));
+                            : "");
 
             OnlineResourceType providerSite = owsf.createOnlineResourceType();
             sp.setProviderSite(providerSite);
@@ -713,18 +713,18 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
     public SpatialOperatorsImpl getSpatialOperators() {
         if (spatialOperands == null
                 || spatialOperands.getOperators() == null
-                || spatialOperands.getOperators().size() == 0) {
+                || spatialOperands.getOperators().isEmpty()) {
             synchronized (this) {
                 if (spatialOperands == null
                         || spatialOperands.getOperators() == null
-                        || spatialOperands.getOperators().size() == 0) {
+                        || spatialOperands.getOperators().isEmpty()) {
                     spatialOperands = new SpatialOperatorsImpl();
 
                     for (SpatialOperator operator : spatialOperators) {
-                        if ((spatialOperands).getOperators() == null) {
+                        if (spatialOperands.getOperators() == null) {
                             ((SpatialOperatorsImpl) spatialOperands).setOperators(new HashSet<>());
                         }
-                        (spatialOperands).getOperators().add(operator);
+                        spatialOperands.getOperators().add(operator);
                     }
                 }
             }

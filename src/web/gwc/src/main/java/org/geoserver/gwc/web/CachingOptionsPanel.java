@@ -128,7 +128,7 @@ public class CachingOptionsPanel extends Panel {
             vectorFormatsGroup = new CheckGroup<>("vectorFormatsGroup", vectorFormatsModel);
             configs.add(vectorFormatsGroup);
             ListView<String> formatsList =
-                    new ListView<String>("vectorFromats", formats) {
+                    new ListView<>("vectorFromats", formats) {
                         private static final long serialVersionUID = 1L;
 
                         @Override
@@ -150,7 +150,7 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup = new CheckGroup<>("rasterFormatsGroup", rasterFormatsModel);
             configs.add(rasterFormatsGroup);
             ListView<String> formatsList =
-                    new ListView<String>("rasterFromats", formats) {
+                    new ListView<>("rasterFromats", formats) {
                         private static final long serialVersionUID = 1L;
 
                         @Override
@@ -171,7 +171,7 @@ public class CachingOptionsPanel extends Panel {
             otherFormatsGroup = new CheckGroup<>("otherFormatsGroup", otherFormatsModel);
             configs.add(otherFormatsGroup);
             ListView<String> formatsList =
-                    new ListView<String>("otherFromats", formats) {
+                    new ListView<>("otherFromats", formats) {
                         private static final long serialVersionUID = 1L;
 
                         @Override
@@ -201,7 +201,7 @@ public class CachingOptionsPanel extends Panel {
         configs.add(new WarningSkipsPanel("warningSkips", warningSkipsModel));
 
         cachedGridsets.add(
-                new IValidator<Set<String>>() {
+                new IValidator<>() {
 
                     private static final long serialVersionUID = 1L;
 
@@ -234,7 +234,7 @@ public class CachingOptionsPanel extends Panel {
                     validatable.error(error);
                 }
             }
-        };
+        }
         FormatsValidator validator = new FormatsValidator();
         vectorFormatsGroup.add(validator);
         rasterFormatsGroup.add(validator);

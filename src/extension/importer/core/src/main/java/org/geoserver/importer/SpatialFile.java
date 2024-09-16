@@ -95,7 +95,7 @@ public class SpatialFile extends FileData {
         final List<String> styleExtensions =
                 Lists.transform(
                         Styles.handlers(),
-                        new Function<StyleHandler, String>() {
+                        new Function<>() {
                             @Nullable
                             @Override
                             public String apply(@Nullable StyleHandler input) {

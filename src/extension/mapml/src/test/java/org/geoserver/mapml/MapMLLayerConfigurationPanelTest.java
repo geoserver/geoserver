@@ -7,7 +7,6 @@ package org.geoserver.mapml;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.data.test.MockData.PONDS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
-import static org.geoserver.web.GeoServerWicketTestSupport.tester;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

@@ -177,7 +177,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
         // DirectDownload capability is only checked for Coverage layers
         if (info instanceof CoverageInfo) {
-            CoverageInfo coverageInfo = ((CoverageInfo) info);
+            CoverageInfo coverageInfo = (CoverageInfo) info;
             MetadataMap metadata = coverageInfo.getMetadata();
 
             boolean directDownloadEnabled = false;

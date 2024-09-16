@@ -59,7 +59,7 @@ public class RESTRestoreTest extends BackupRestoreTestSupport {
             }
 
             if (cnt < 100) {
-                assertTrue("COMPLETED".equals(execution.getString("status")));
+                assertEquals("COMPLETED", execution.getString("status"));
             }
         }
     }

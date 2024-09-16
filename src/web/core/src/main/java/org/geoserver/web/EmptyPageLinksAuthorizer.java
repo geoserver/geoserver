@@ -36,7 +36,7 @@ public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
         // hide the page if there is demo around
         GeoServerApplication app = GeoServerApplication.get();
         for (Class<?> linkClass : linkClasses) {
-            if (app.getBeansOfType(linkClass).size() > 0) {
+            if (!app.getBeansOfType(linkClass).isEmpty()) {
                 return true;
             }
         }

@@ -96,7 +96,7 @@ public class NativeTypeBinding extends AbstractComplexBinding {
         nativ.setSafeToIgnore(((Boolean) node.getAttributeValue("safeToIgnore")).booleanValue());
 
         // &lt;xsd:any processContents="lax" namespace="##other" minOccurs="0"/>
-        if (instance.getText() != null && instance.getText().length() != 0) {
+        if (instance.getText() != null && !instance.getText().isEmpty()) {
             nativ.setValue(instance.getText());
         }
         return nativ;

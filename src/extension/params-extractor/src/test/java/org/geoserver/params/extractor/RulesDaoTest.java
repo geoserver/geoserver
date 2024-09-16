@@ -4,7 +4,6 @@
  */
 package org.geoserver.params.extractor;
 
-import static org.geoserver.params.extractor.RulesDao.getRules;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 

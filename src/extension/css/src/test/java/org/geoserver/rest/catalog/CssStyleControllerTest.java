@@ -46,7 +46,7 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
 
         catalog = getCatalog();
 
-        namespaceContext = new org.springframework.util.xml.SimpleNamespaceContext();
+        namespaceContext = new SimpleNamespaceContext();
         namespaceContext.bindNamespaceUri("sld", "http://www.opengis.net/sld");
         namespaceContext.bindNamespaceUri("ogc", "http://www.opengis.net/ogc");
 

@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import net.sf.json.JSONArray;
@@ -47,7 +46,7 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
                         .append("&cql_filter= features.name = 'Name: Goose Island' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(features.getJSONObject(0).getString("name"), "Name: Goose Island");
         checkAdditionalInfo(result);
     }
@@ -62,7 +61,7 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
                         .append("&cql_filter= NAME = 'Goose Island' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 1);
+        assertEquals(1, features.size());
         assertEquals(features.getJSONObject(0).getString("name_cod"), "Goose Island");
         checkAdditionalInfo(result);
     }

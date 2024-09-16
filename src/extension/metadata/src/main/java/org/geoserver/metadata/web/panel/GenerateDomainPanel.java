@@ -41,7 +41,7 @@ public class GenerateDomainPanel extends Panel {
     private FeatureTypeInfo fti;
 
     public GenerateDomainPanel(String id, FeatureTypeInfo fti) {
-        super(id, new Model<>(new HashMap<String, Object>()));
+        super(id, new Model<>(new HashMap<>()));
         this.fti = fti;
     }
 
@@ -55,9 +55,9 @@ public class GenerateDomainPanel extends Panel {
         DropDownChoice<Boolean> methodChoice =
                 new DropDownChoice<>(
                         "method",
-                        new PropertyModel<Boolean>(getDefaultModel(), "method"),
+                        new PropertyModel<>(getDefaultModel(), "method"),
                         Lists.newArrayList(false, true),
-                        new IChoiceRenderer<Boolean>() {
+                        new IChoiceRenderer<>() {
                             private static final long serialVersionUID = 1966992066973104491L;
 
                             @Override

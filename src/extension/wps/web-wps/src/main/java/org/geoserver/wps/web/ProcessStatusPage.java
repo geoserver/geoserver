@@ -42,7 +42,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         ProcessStatusProvider provider = new ProcessStatusProvider();
 
         table =
-                new GeoServerTablePanel<ExecutionStatus>("table", provider, true) {
+                new GeoServerTablePanel<>("table", provider, true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -64,7 +64,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        dismissSelected.setEnabled(table.getSelection().size() > 0);
+                        dismissSelected.setEnabled(!table.getSelection().isEmpty());
                         target.add(dismissSelected);
                     }
                 };
@@ -144,7 +144,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                         public void onClose(AjaxRequestTarget target) {
                             // if the selection has been cleared out it's sign a deletion
                             // occurred, so refresh the table
-                            if (table.getSelection().size() == 0) {
+                            if (table.getSelection().isEmpty()) {
                                 setEnabled(false);
                             }
                             target.add(ProcessDismissLink.this);

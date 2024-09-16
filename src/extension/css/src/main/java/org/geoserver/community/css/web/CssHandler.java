@@ -15,7 +15,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -143,9 +142,8 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
         }
 
         // in this case, just do a plain on the fly conversion
-        try (Reader reader = toReader(input)) {
-            StyledLayerDescriptor sld = convertToSLD(toReader(input));
-            return sld;
+        try (Reader unusedReader = toReader(input)) { // NOPMD
+            return convertToSLD(toReader(input));
         }
     }
 
@@ -171,12 +169,12 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
             throws IOException {
-        try (Reader reader = toReader(input)) {
+        try (Reader unusedReader = toReader(input)) { // NOPMD
             // full parse to perform the validation
             convertToSLD(toReader(input));
             return Collections.emptyList();
         } catch (Exception e) {
-            return Arrays.asList(e);
+            return List.of(e);
         }
     }
 

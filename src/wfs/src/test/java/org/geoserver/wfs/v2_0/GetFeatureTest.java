@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
@@ -235,6 +236,28 @@ public class GetFeatureTest extends WFS20TestSupport {
     public void testGetPropertyNameStar() throws Exception {
         testGetFifteenAll(
                 "wfs?request=GetFeature&typename=cdf:Fifteen&version=2.0.0&service=wfs&propertyname=*");
+    }
+
+    @Test
+    public void testGetPropertyNameOneValueServiceNotSet() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&typename=cite:Ponds&version=2.0.0&cql_filter=TYPE%3D%27Stock%20Pond%27&propertyname=TYPE");
+        NodeList features = doc.getElementsByTagName("cite:Ponds");
+        assertNotEquals(0, features.getLength());
+        int count = 0;
+        for (int i = 0; i < features.getLength(); i++) {
+            Element feature = (Element) features.item(i);
+            for (int j = 0; j < feature.getChildNodes().getLength(); j++) {
+                if (feature.getChildNodes().item(j).getNodeName().equals("cite:TYPE")) {
+                    count++;
+                }
+                if (feature.getChildNodes().item(j).getNodeName().equals("cite:NAME")) {
+                    fail("Unexpected property found");
+                }
+            }
+        }
+        assertEquals(features.getLength(), count);
     }
 
     private void testGetFifteenAll(String request) throws Exception {

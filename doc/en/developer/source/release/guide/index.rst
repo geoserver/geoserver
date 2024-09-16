@@ -102,7 +102,7 @@ When creating the first release candidate of a series, there are some extra step
     
     ant -f build/rename.xml 
     
-  .. note:: use of sed
+  .. note:: Alternative use of sed
      
      To update these files using sed::
   

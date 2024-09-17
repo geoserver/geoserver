@@ -82,32 +82,36 @@ public class RemoteData extends ImportData {
         this.password = password;
     }
 
+    @SuppressWarnings("PMD.UseTryWithResources")
     public ImportData resolve(Importer importer) throws IOException {
-        // prepare the target
+        // Prepare the target directory
         Directory target = Directory.createNew(importer.getUploadRoot());
 
-        FileSystemManager manager = null;
-        FileObject fo = null;
+        // shared file system manager - do not close
+        FileSystemManager sharedManager = VFS.getManager();
+
+        // try-with-resources not used, as finally block responsible to close
+        // both the file object and the associated file system.
+        FileObject fileObject;
+
+        if (username != null) {
+            StaticUserAuthenticator auth = new StaticUserAuthenticator(domain, username, password);
+            FileSystemOptions opts = new FileSystemOptions();
+            DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
+            fileObject = sharedManager.resolveFile(location, opts);
+        } else {
+            fileObject = sharedManager.resolveFile(location);
+        }
+
         try {
-            manager = VFS.getManager();
-
-            if (username != null) {
-                StaticUserAuthenticator auth =
-                        new StaticUserAuthenticator(domain, username, password);
-                FileSystemOptions opts = new FileSystemOptions();
-                DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
-                fo = manager.resolveFile(location, opts);
-            } else {
-                fo = manager.resolveFile(location);
-            }
-
-            target.accept(fo);
-
+            target.accept(fileObject);
         } finally {
-            if (fo != null) {
-                FileSystem fs = fo.getFileSystem();
-                fo.close();
-                manager.closeFileSystem(fs);
+            if (fileObject != null) {
+                FileSystem fs = fileObject.getFileSystem();
+                fileObject.close();
+
+                // careful that we do not close shared file system, only remote file system
+                sharedManager.closeFileSystem(fs);
             }
         }
 

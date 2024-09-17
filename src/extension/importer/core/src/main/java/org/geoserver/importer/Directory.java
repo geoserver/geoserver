@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.util.IOUtils;
@@ -386,19 +387,15 @@ public class Directory extends FileData {
     }
 
     public void accept(FileObject fo) throws IOException {
+        FileSystemManager sharedManager = VFS.getManager();
+
         FileName name = fo.getName();
         String localName = name.getBaseName();
         File dest = child(localName);
-        FileObject dfo = null;
-        try {
-            dfo = VFS.getManager().resolveFile(dest.getAbsolutePath());
+        try (FileObject dfo = sharedManager.resolveFile(dest.getAbsolutePath())) {
             dfo.copyFrom(fo, new AllFileSelector());
 
             unpack(dest);
-        } finally {
-            if (dfo != null) {
-                dfo.close();
-            }
         }
     }
 

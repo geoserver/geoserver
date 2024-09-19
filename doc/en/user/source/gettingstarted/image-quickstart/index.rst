@@ -10,7 +10,7 @@ This tutorial walks through the steps of publishing a World + Image with GeoServ
 Data preparation
 ----------------
 
-First let's gather that the data that we'll be publishing.
+First let's gather the data that we'll be publishing.
 
 #. Download the Natural Earth 1:50m Shaded Relief raster:
    
@@ -72,7 +72,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
     
 #. This page displays a list of stores, including the type of store and the workspace that the store belongs to.
 
-#. In order to add the geopackage, you need to create a new store. Click the :guilabel:`Add new Store` button. You will be redirected to a list of the data sources supported by GeoServer. Note that the data sources are extensible, so your list may look slightly different.
+#. In order to add the geopackage, you need to create a new store. Click the :guilabel:`Add new Store` button. You will be redirected to a list of data sources supported by GeoServer. Note that data sources are extensible, so your list may look slightly different.
   
 #. From the list of :guilabel:`Raster Data Sources` locate and click the :guilabel:`WorldImage` link.
 
@@ -96,7 +96,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
       * - Description
         - :kbd:`Grayscale shaded relief of land areas.`
    
-   This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the :guilabel:`Data Source Name` simple as they will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
+   This information is internal to GeoServer and is not used as part of the web service protocols. We recommend keeping the :guilabel:`Data Source Name` simple as it will be used to form folders in the data directory (so keep any operating system restrictions on character use in mind).
    
    .. figure:: images/layer_basic.png
       
@@ -161,7 +161,7 @@ Now that we have located the image, we can publish this information as a layer.
 
       Basic Resource Info
 
-#. Check the :guilabel:`Coordiante Reference Systems` information is as listed below.
+#. Check the :guilabel:`Coordinate Reference Systems` information is as listed below.
 
    .. note:: In this case select ``Force declared`` to prefer the GeoServer internal EPSG database definition of WGS84 over the :file:`prj` file provided alongside the same image.
 
@@ -181,7 +181,7 @@ Now that we have located the image, we can publish this information as a layer.
       
       Coordinate Reference Systems
 
-#. Locate :guilabel:`Bounding Boces` and generate the layer's bounding boxes by clicking the :guilabel:`Compute from SRS bounds` and then :guilabel:`Compute from native bounds` links.
+#. Locate :guilabel:`Bounding Boxes` and generate the layer's bounding boxes by clicking the :guilabel:`Compute from SRS bounds` and then :guilabel:`Compute from native bounds` links.
    
    .. note:: In this case we are choosing a slightly larger bounding box that fully contains the image.
       
@@ -195,7 +195,7 @@ Now that we have located the image, we can publish this information as a layer.
 
 #. Scroll to the top of the page and navigate to the :guilabel:`Publishing` tab.
 
-#. Locate the :guilabel:`WMS Settings` heading, where we can set the style.Ensure that the :guilabel:`Default Style` is set to ``raster``.
+#. Locate the :guilabel:`WMS Settings` heading, where we can set the style. Ensure that the :guilabel:`Default Style` is set to ``raster``.
 
    .. figure:: images/layer_style.png
 

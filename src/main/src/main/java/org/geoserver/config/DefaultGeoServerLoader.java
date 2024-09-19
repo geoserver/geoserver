@@ -17,7 +17,12 @@ import org.geoserver.platform.GeoServerResourceLoader;
  * Default GeoServerLoader which loads and persists configuration from the classic GeoServer data
  * directory structure.
  *
+ * <p>Note as of GeoServer 2.26, the new default {@link GeoServerLoader} for data-directory catalogs
+ * is {@link DataDirectoryGeoServerLoader}, and this is a fallback default if that one is disabled.
+ * Check its Javadocs for more information.
+ *
  * @author Justin Deoliveira, OpenGeo
+ * @see DataDirectoryGeoServerLoader
  */
 public class DefaultGeoServerLoader extends GeoServerLoader {
 

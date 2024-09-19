@@ -2432,7 +2432,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Check coordinate at xpathExpression against provided coordiante. Coordinate values are
+     * Check coordinate at xpathExpression against provided coordinate. Coordinate values are
      * compared as doubles (with small delta) rather than as strings to account for floating point
      * differences.
      *

@@ -144,14 +144,12 @@ extlinks = {
 # Common substitutions
 
 rst_epilog = "\n" \
- ".. |install_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"`\n" \
- ".. |install_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"`\n" \
- ".. |install_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver`\n" \
- ".. |install_directory_mac| replace:: :file:`/Applications`\n" \
- ".. |data_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"\\\\data_dir`\n" \
- ".. |data_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"\\\\data_dir`\n" \
- ".. |data_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver/data`\n" \
- ".. |data_directory_mac| replace:: :file:`/Applications/GeoServer.app/Contents/Resources/Java/data_dir`"
+ ".. |install_directory_win| replace:: :file:`C:\\\\Program Files\\\\GeoServer "+release+"`\n" \
+ ".. |install_directory_linux| replace:: :file:`/var/lib/tomcat9/webapps/geoserver`\n" \
+ ".. |install_directory_mac| replace:: :file:`~/Applications`\n" \
+ ".. |data_directory_win| replace:: :file:`C:\\\\ProgramData\\\\GeoServer`\n" \
+ ".. |data_directory_linux| replace:: :file:`/var/opt/geoserver/data`\n" \
+ ".. |data_directory_mac| replace:: :file:`~/Library/Application Support/GeoServer/data_dir`"
 
 # Options for HTML output
 # -----------------------

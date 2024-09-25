@@ -22,10 +22,12 @@ By default GeoServer includes an example data directory allowing you to try out 
      * - Platform
        - Default location
      * - Linux 
-       - :file:`/var/lib/tomcat9/webapps/geoserver/data_dir`
+       - :file:`/usr/share/geoserver/data_dir`
      * - Windows
-       - :file:`C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps\\geoserver\\data`
-
+       - :file:`C:\\Program Files\\GeoServer\\data_dir`
+  
+  The windows :file:`Program Files` location above is not ideal due to restrictions placed on this location.
+  
 * Web archive: If GeoServer is running as a **web archive** inside of your application server, the data directory is by default located at :file:`<web application root>/data``. 
   
   .. list-table::
@@ -46,7 +48,7 @@ By default GeoServer includes an example data directory allowing you to try out 
      * - Platform
        - Default location
      * - Windows (Installer)
-       - :file:`C:\\ProgramData\\GeoServer`
+       - :file:`%ProgramData%\\GeoServer`
 
 * Docker: The Docker image maintains a data directory in :file:``/opt/geoserver_data``.
   

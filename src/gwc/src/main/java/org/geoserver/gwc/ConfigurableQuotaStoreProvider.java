@@ -129,6 +129,13 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
     }
 
     @Override
+    public void destroy() throws Exception {
+        if (store != null) {
+            store.close();
+        }
+    }
+
+    @Override
     protected QuotaStore getQuotaStoreByName(String quotaStoreName)
             throws ConfigurationException, IOException {
         if ("JDBC".equals(quotaStoreName)) {

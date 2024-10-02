@@ -1,4 +1,4 @@
-package org.geootols.dggs.clickhouse;
+package org.geotools.dggs.clickhouse;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

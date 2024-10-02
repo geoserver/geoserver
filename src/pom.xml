@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.26-SNAPSHOT</version>
+  <version>2.27-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -88,10 +88,10 @@
   </distributionManagement>
 
   <properties>
-    <gs.version>2.26-SNAPSHOT</gs.version>
-    <gt.version>32-SNAPSHOT</gt.version>
-    <gwc.version>1.26-SNAPSHOT</gwc.version>
-    <jts.version>1.19.0</jts.version>
+    <gs.version>2.27-SNAPSHOT</gs.version>
+    <gt.version>33-SNAPSHOT</gt.version>
+    <gwc.version>1.27-SNAPSHOT</gwc.version>
+    <jts.version>1.20.0</jts.version>
     <spring.version>5.3.39</spring.version>
     <spring.security.version>5.8.14</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>
@@ -103,8 +103,8 @@
     <wicket.version>9.15.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.14</httpclient.version>
-    <imageio-ext.version>1.4.12</imageio-ext.version>
-    <jaiext.version>1.1.26</jaiext.version>
+    <imageio-ext.version>1.4.13</imageio-ext.version>
+    <jaiext.version>1.1.27</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -707,6 +707,11 @@
         <version>${hibernate-generic-dao-version}</version>
       </dependency>
       <dependency>
+        <groupId>net.sf.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>1.8</version>
+      </dependency>
+      <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>${mysql.jdbc.version}</version>
@@ -921,7 +926,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.0</version>
+        <version>2.9.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

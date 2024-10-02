@@ -1,0 +1,123 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: GeoServer
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Andrea
+    family-names: Aime
+    affiliation: GeoSolutions It
+  - given-names: Alessio
+    family-names: Fabiani
+    affiliation: GeoSolutions It
+  - given-names: Brad
+    family-names: Hards
+  - given-names: Nils
+    family-names: Bühner
+  - given-names: Daniele
+    family-names: Romagnoli
+    affiliation: GeoSolutions It
+  - given-names: Emanuele
+    family-names: Tajariol
+    affiliation: GeoSolutions It
+  - given-names: Fernando
+    family-names: Miño
+    affiliation: GeoSolutions It
+  - given-names: Gabriel
+    family-names: Roldan
+    affiliation: Camptocamp
+  - given-names: Ian
+    family-names: Turton
+    orcid: 'https://orcid.org/0000-0001-5631-6491'
+  - given-names: James
+    family-names: Hughes
+  - given-names: Jody
+    family-names: Garnett
+    affiliation: GeoCat BV
+    email: jody.garnett@gmail.com
+    orcid: 'https://orcid.org/0009-0003-1298-7113'
+  - given-names: Josh
+    family-names: Fix
+  - given-names: Jukka
+    family-names: Rahkonen
+  - given-names: Mark
+    family-names: Prins
+    orcid: 'https://orcid.org/0009-0006-1942-7903'
+    affiliation: B3Partners
+  - given-names: Nuno
+    family-names: Oliveira
+    affiliation: GeoSolutions It
+  - given-names: Peter
+    family-names: Rushforth
+  - given-names: Alessandro
+    family-names: Parma
+    affiliation: GeoSolutions It
+  - given-names: Steve
+    family-names: Ikeoka
+  - given-names: Simone
+    family-names: Giannecchini
+    affiliation: GeoSolutions It
+  - given-names: Kevin
+    family-names: Smith
+    affiliation: Vivid Solutions
+  - given-names: Torben
+    family-names: Barsballe
+    affiliation: Planet Federal
+  - name: GeoSolutions SRL
+    city: Camaiore
+    country: IT
+    post-code: '55041'
+    address: Via Carignoni 51
+    location: Lucca
+    region: Tuscany
+    tel: '+390584962313'
+    fax: '+390584660272'
+    website: 'https://www.geosolutionsgroup.com/'
+    email: info@geosolutionsgroup.com
+  - name: GeoCat BV
+    address: Veenderweg 13
+    city: Bennekom
+    country: NL
+    post-code: 6721 WD
+    tel: +31 (0) 318 416 664
+    website: 'https://www.geocat.net/'
+    email: info@geocat.net
+  - name: Open Source Geospatial Foundation
+    address: '9450 SW Gemini Dr. #42523'
+    location: Beaverton
+    region: Oregon
+    post-code: '97008'
+    country: US
+    email: info@osgeo.org
+    website: 'https://www.osgeo.org/'
+repository-code: 'http://github.com/geoserver/geoserver'
+url: 'https://geoserver.org'
+repository-artifact: 'https://sourceforge.net/projects/geoserver/files/GeoServer'
+abstract: >-
+  Java web application to share and edit geospatial data.
+  Publish from any major spatial data source using open
+  standards. GeoServer implements industry standard OGC
+  protocols such as Web Feature Service (WFS), Web Map
+  Service (WMS), and Web Coverage Service (WCS). Additional
+  formats and publication options are available as
+  extensions including Web Processing Service (WPS), and Web
+  Map Tile Service (WMTS).
+keywords:
+  - GIS
+  - webapping
+  - WMS
+  - WFS
+  - WCS
+  - WPS
+  - OGC
+  - standards
+  - spatial
+  - mapping
+  - open geospatial consortium
+  - open source geospatial foundation
+  - osgeo
+license: GPL-2.0

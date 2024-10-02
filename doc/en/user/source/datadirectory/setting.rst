@@ -3,14 +3,21 @@
 Setting the data directory location
 ===================================
 
-The procedure for setting the location of the GeoServer data directory is dependent on the type of GeoServer installation. Follow the instructions below specific to the target platform. 
+The ``GEOSERVER_DATA_DIR`` application property are determined using the first value obtained from: Java System Properties, Web Application context parameters, or System Environmental Variable.
+
+* Follow the instructions below to learn how to set the environmental variable location. There are different instructions for each target platform.
+
+* The page on :ref:`application_properties` has instructions for defining ``GEOSERVER_DATA_DIR`` using a Java System Property or Web Application context parameters.
 
 .. note:: If the location of the GeoServer data directory is not set explicitly, the directory ``data_dir`` under the root of the GeoServer installation will be chosen by default.
+
 
 Windows
 -------
 
-On Windows platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable.
+On Windows platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable, system property, or web context parameter.
+
+* |data_directory_win| (example location)
 
 To set the environment variable:
 
@@ -29,41 +36,72 @@ To set the environment variable:
 Linux
 -----
 
-On Linux platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable. Setting the variable can be achieved with the following command (in the terminal):
+On Linux platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable, system property, or web context parameter.
 
-.. code-block:: console
+* |data_directory_linux| (example location)
 
-   export GEOSERVER_DATA_DIR=/var/lib/geoserver_data
+To set the environment variable:
 
-To make the variable persist, place the command in the ``.bash_profile`` or ``.bashrc`` file. Ensure that this done for the user running GeoServer.
+#. Setting the variable can be achieved with the following command (in the terminal):
+
+   .. code-block:: console
+
+      export GEOSERVER_DATA_DIR=/var/opt/geoserver/data
+
+#. To make the variable persist, place the command in the :file:``.bash_profile`` or :file:``.bashrc`` file.
+   Ensure that this done for the user running GeoServer.
 
 Mac OS X
 --------
 
 For the binary install of GeoServer on Mac OS X, the data directory is set in the same way as for Linux. 
 
-For the Mac OS X install, set the ``GEOSERVER_DATA_DIR`` environment variable to the desired directory location. See `this page <http://developer.apple.com/mac/library/qa/qa2001/qa1067.html>`_ for details on how to set an environment variable in Mac OS X.
+* |data_directory_mac| (example location)
+
+For the Mac OS X install, set the ``GEOSERVER_DATA_DIR`` environment variable to the desired directory location.
+
+#. Setting the variable can be achieved with the following command (in the terminal):
+
+   .. code-block:: console
+
+      export GEOSERVER_DATA_DIR="~/Library/Application Support/GeoServer/data_dir"
+
+#. To make the variable persist, place the command in your preferred shell startup file:
+
+    * Bash: :file:``.bash_profile`` or :file:``.bashrc``
+    * ZSH: :file:`~/.zshrc`
 
 Web archive
 -----------
 
-When running a GeoServer WAR inside a servlet container, the data directory can be specified in a number of ways. The recommended method is to set a **servlet context parameter**. An alternative is to set a **Java system property**.
+When running a GeoServer WAR inside a servlet container, the data directory can be specified in a number of ways. 
 
 Context parameter
 ^^^^^^^^^^^^^^^^^
 
-To specify the data directory using a servlet context parameter, create the following ``<context-param>`` element in the ``WEB-INF/web.xml`` file for the GeoServer application:
+1. Tomcat: Use your application server to configure the GeoServer web application via :file:`conf/Catalina/localhost/geoserver.xml` file:
 
-.. code-block:: xml
+   .. code-block:: xml
 
-   <web-app>
-     ...
-     <context-param>
-       <param-name>GEOSERVER_DATA_DIR</param-name>
-       <param-value>/var/lib/geoserver_data</param-value>
-     </context-param>
-     ...
-   </web-app>
+      <Context docBase="geoserver.war">
+        <Parameter name="GEOSERVER_DATA_DIR"
+                   value="/var/opt/geoserver/data" override="false"/>
+      </Context>
+
+2. To specify the data directory using a servlet context parameter, create the following ``<context-param>`` element in the ``WEB-INF/web.xml`` file for the GeoServer application.
+
+   This approach is not recommended, as the same steps must be performed each time you update.
+
+   .. code-block:: xml
+   
+      <web-app>
+        ...
+        <context-param>
+          <param-name>GEOSERVER_DATA_DIR</param-name>
+          <param-value>/var/lib/geoserver_data</param-value>
+        </context-param>
+        ...
+      </web-app>
 
 Java system property
 ^^^^^^^^^^^^^^^^^^^^
@@ -74,12 +112,17 @@ It is also possible to specify the data directory location with a Java system pr
 
 The method of setting the Java system property is dependent on the servlet container:
 
-* For **Tomcat**, edit the file :file:`bin/setclasspath.sh` under the root of the Tomcat installation. Specify the ``GEOSERVER_DATA_DIR`` system property by setting the ``CATALINA_OPTS`` variable:
+* For **Tomcat** on Linux, edit the file :file:`bin/setenv.sh` under the root of the Tomcat installation. Specify the ``GEOSERVER_DATA_DIR`` system property by setting the ``CATALINA_OPTS`` variable:
 
   .. code-block:: console
 
-     CATALINA_OPTS="-DGEOSERVER_DATA_DIR=/var/lib/geoserver_data"
+     # Append system properties
+     CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_DATA_DIR=/var/lib/geoserver_data"
 
+* For **Tomcat** on Windows use Apache Tomcat Properties application, navigating to the **Java** tab to edit **Java Options**::
+
+     -DGEOSERVER_DATA_DIR=C:\ProgramData\GeoServer\data
+   
 * For **Glassfish**, edit the file :file:`domains/<<domain>>/config/domain.xml` under the root of the Glassfish installation, where ``<<domain>>`` refers to the domain that the GeoServer web application is deployed under. Add a ``<jvm-options>`` element inside the ``<java-config>`` element:
 
   .. code-block:: xml
@@ -121,7 +164,7 @@ Java system property:
 
 .. code-block:: console
 
-   CATALINA_OPTS="-DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml"
+   CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml"
 
 Multiple files
 ^^^^^^^^^^^^^^
@@ -151,4 +194,4 @@ Java system property:
 
 .. code-block:: console
 
-   CATALINA_OPTS="-DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"
+   CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"

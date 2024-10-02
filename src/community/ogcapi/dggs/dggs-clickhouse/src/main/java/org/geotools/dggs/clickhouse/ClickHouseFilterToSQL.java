@@ -14,12 +14,11 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geootols.dggs.clickhouse;
+package org.geotools.dggs.clickhouse;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 import org.geotools.data.jdbc.FilterToSQL;
 
 public class ClickHouseFilterToSQL extends FilterToSQL {
@@ -28,7 +27,6 @@ public class ClickHouseFilterToSQL extends FilterToSQL {
     protected void writeLiteral(Object literal) throws IOException {
         if (literal instanceof Date) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-            sdf.setTimeZone(TimeZone.getTimeZone("CET"));
             String isoDate = sdf.format(((Date) literal));
 
             out.write("parseDateTimeBestEffort('" + isoDate + "')");

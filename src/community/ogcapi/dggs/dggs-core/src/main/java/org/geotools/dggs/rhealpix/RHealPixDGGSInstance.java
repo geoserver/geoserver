@@ -390,9 +390,14 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                             // find the neighbors of the cell
                             @SuppressWarnings("unchecked")
                             List<String> neighbors =
-                                    interpreter.getValue(
-                                            "list(Cell(dggs, id).neighbors(False).values())",
-                                            List.class);
+                                    (List<String>)
+                                            interpreter
+                                                    .getValue(
+                                                            "list(Cell(dggs, id).neighbors(False).values())",
+                                                            List.class)
+                                                    .stream()
+                                                    .map(o -> String.valueOf((o)))
+                                                    .collect(Collectors.toList());
                             // compute the zones that we haven't hit yet
                             List<String> newZones = new ArrayList<>(neighbors);
                             newZones.removeAll(result);

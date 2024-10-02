@@ -6,6 +6,7 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.catalog.ResourcePoolTest.TEST_DIRECTORY_STORE_FACTORY_SPI;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
@@ -33,10 +34,13 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.property.PropertyDataStore;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -45,6 +49,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class DataStoreControllerTest extends CatalogRESTTestSupport {
+
+    @BeforeClass
+    public static void registerTestDirectoryStore() {
+        // a "catch-all" datastore that will use any File without requiring a filetype/dbtype
+        DataStoreFinder.registerFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+    }
+
+    @AfterClass
+    public static void deregisterTestDirectoryStore() {
+        DataStoreFinder.deregisterFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+    }
 
     @Before
     public void addDataStores() throws IOException {

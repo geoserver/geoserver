@@ -15,8 +15,9 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.util.logging.Logging;
 
 /**
- * Factory for rHealPix DGGS instances. TODO: for now it always returns a TB16-Pix instance, but it
- * should be easy to extend it to allow any parametrization.
+ * Factory for rHealPix DGGS instances. TODO: for now it always returns a rHEALPix instance based on
+ * WGS84 ellipsoid with a lon0 of 131.25 degrees east, but it should be easy to extend it to allow
+ * any parametrization.
  */
 public class RHealPixDGGSFactory implements DGGSFactory {
 
@@ -46,7 +47,7 @@ public class RHealPixDGGSFactory implements DGGSFactory {
 
     @Override
     public DGGSInstance createInstance(Map<String, ?> params) throws IOException {
-        return new RHealPixDGGSInstance(new JEPWebRuntime(INITIALIZER), "TB16-Pix");
+        return new RHealPixDGGSInstance(new JEPWebRuntime(INITIALIZER), "rHEALPix");
     }
 
     @Override

@@ -7,6 +7,7 @@ package org.geoserver.wms.map;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.util.List;
+import java.util.Map;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.style.Rule;
@@ -78,6 +79,8 @@ public final class LiteFeatureTypeStyle {
     /** The meta buffer for the current layer */
     int metaBuffer;
 
+    public Map<String, String> options;
+
     /**
      * use this for only the 1st FTS. We don't actually create an image for it -- we just use the
      * graphics. WATCH OUT FOR THIS. NOTE: image=null in this case
@@ -87,11 +90,13 @@ public final class LiteFeatureTypeStyle {
             Graphics2D graphics,
             List<Rule> ruleList,
             List<Rule> elseRuleList,
-            Expression transformation) {
+            Expression transformation,
+            Map<String, String> options) {
         this.layer = layer;
         this.graphics = graphics;
         this.ruleList = ruleList.toArray(new Rule[ruleList.size()]);
         this.elseRules = elseRuleList.toArray(new Rule[elseRuleList.size()]);
         this.transformation = transformation;
+        this.options = options;
     }
 }

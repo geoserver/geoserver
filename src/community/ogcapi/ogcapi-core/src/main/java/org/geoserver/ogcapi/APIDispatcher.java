@@ -83,6 +83,8 @@ public class APIDispatcher extends AbstractController {
 
     static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ogcapi");
+    public static final String SERVICE_DISABLED_PREFIX = "Service ";
+    public static final String SERVICE_DISABLED_SUFFIX = " is disabled";
 
     // SHARE
     /** list of callbacks */
@@ -423,11 +425,30 @@ public class APIDispatcher extends AbstractController {
                 response.getOutputStream().print(hec.getMessage());
             }
         } else {
-            APIExceptionHandler handler = getExceptionHandler(t, request);
-            if (handler == null) {
-                response.sendError(500, t.getMessage());
+            // for service unavailable, we want to return a 404, not a 500
+            if (t instanceof ServiceException
+                    && ((ServiceException) t).getCode() != null
+                    && ((ServiceException) t)
+                            .getCode()
+                            .equals(ServiceException.SERVICE_UNAVAILABLE)) {
+                if (request.getService() != null && request.getService().getId() != null) {
+                    // The error message references the ServiceInfo name, which may not match the
+                    // requested service id
+                    response.sendError(
+                            404,
+                            SERVICE_DISABLED_PREFIX
+                                    + request.getService().getId()
+                                    + SERVICE_DISABLED_SUFFIX);
+                } else {
+                    response.sendError(404, t.getMessage());
+                }
             } else {
-                handler.handle(t, response);
+                APIExceptionHandler handler = getExceptionHandler(t, request);
+                if (handler == null) {
+                    response.sendError(500, t.getMessage());
+                } else {
+                    handler.handle(t, response);
+                }
             }
         }
     }

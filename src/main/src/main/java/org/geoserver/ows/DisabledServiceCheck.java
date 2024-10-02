@@ -60,11 +60,16 @@ public class DisabledServiceCheck implements DispatcherCallback {
                 } else {
                     // check if the service is enabled
                     if (!info.isEnabled()) {
-                        throw new ServiceException("Service " + info.getName() + " is disabled");
+                        throw new ServiceException(
+                                "Service " + info.getName() + " is disabled",
+                                ServiceException.SERVICE_UNAVAILABLE);
                     }
                 }
             } catch (Exception e) {
                 // TODO: log this
+                if (e instanceof ServiceException) {
+                    throw (ServiceException) e;
+                }
                 throw new ServiceException(e);
             }
         } else {

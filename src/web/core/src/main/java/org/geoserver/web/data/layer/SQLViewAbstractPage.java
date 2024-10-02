@@ -431,7 +431,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     }
 
     /**
-     * Grabs the feature type from the store, but takes a peek at figuring out the geoemtry type and
+     * Grabs the feature type from the store, but takes a peek at figuring out the geometry type and
      * srids
      */
     SimpleFeatureType guessFeatureType(

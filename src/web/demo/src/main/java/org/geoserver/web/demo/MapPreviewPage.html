@@ -20,8 +20,9 @@
   </wicket:fragment>
   
   <!--  The custom drop down with optgroups -->
-  <wicket:fragment wicket:id="menuFragment">
-    <select wicket:id="menu">
+  <wicket:fragment wicket:id="menuFragment" class="menu-page-select">
+    <!-- map-preview-page-menu-select class is required for CSP-JS integration - see renderHeader-->
+    <select wicket:id="menu"  class="map-preview-page-menu-select">
       <option><wicket:message key="selectOne">Select one</wicket:message></option>
       <optgroup label="WMS" wicket:id="wms">
           <option wicket:id="wmsFormats"></option>

@@ -13,7 +13,7 @@
         <include>gs-ogcapi-core*.jar</include>
         <include>gs-features-templating-core*.jar</include>
         <include>gt-brewer*.jar</include>
-        <include>gt-jdbc-cql2-*.jar</include>
+        <include>gt-cql2-*.jar</include>
         <include>jackson-dataformat-*.jar</include>
         <include>jackson-databind-*.jar</include>
         <include>jackson-annotation*.jar</include>

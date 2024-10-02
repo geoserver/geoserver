@@ -5,6 +5,7 @@
 package org.geoserver.web.wicket;
 
 import java.util.List;
+import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
@@ -80,11 +81,10 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
     @Override
     protected void onComponentTag(ComponentTag tag) {
         super.onComponentTag(tag);
-        AjaxRequestTarget target = getRequestCycle().find(AjaxRequestTarget.class);
-        if (target != null) {
-            // Unbind select2 before ajax update, or the dropdown will be duplicated
-            target.prependJavaScript("$('#" + getMarkupId() + "').select2('destroy');");
-        }
+        Optional<AjaxRequestTarget> target = getRequestCycle().find(AjaxRequestTarget.class);
+        // Unbind select2 before ajax update, or the dropdown will be duplicated
+        target.ifPresent(
+                t -> t.prependJavaScript("$('#" + getMarkupId() + "').select2('destroy');"));
     }
 
     /** Mimics keyboard behavior of native drop down choices */

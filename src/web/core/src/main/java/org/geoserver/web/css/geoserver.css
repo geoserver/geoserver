@@ -208,6 +208,9 @@ Utility Classes
 .w-15-em {
   width: 15em !important;
 }
+.w-23-em {
+  width: 23em !important;
+}
 .w-25-em {
   width: 25em !important;
 }
@@ -216,6 +219,9 @@ Utility Classes
 }
 .w-50-em {
   width: 50em !important;
+}
+.w-80-em {
+  width: 80em !important;
 }
 .w-100-em {
   width: 100em !important;
@@ -233,7 +239,71 @@ Utility Classes
 .w-95 {
   width: 95% !important;
 }
+
+w-1pct {
+    width: 1%;
+}
+
+w-90pct {
+    width: 90%;
+}
+
+w-99pct {
+    width: 99%;
+}
+
+w-100pct {
+    width: 100%;
+}
+
+w-30px {
+    width: 30px;
+}
+
+w-50px {
+    width: 50px;
+}
+
+w-80px {
+    width: 80px;
+}
+
+w-120px {
+    width: 120px;
+}
+
+w-200px {
+    width: 200px;
+}
+
+w-240px {
+    width: 240px;
+}
+
+w-260px {
+    width: 260px;
+}
+
+w-300px {
+    width: 300px;
+}
+
+w-600px {
+    width: 600px;
+}
+
+min-w-200px {
+    min-width: 200px;
+}
+
+max-w-100pct {
+    max-width: 100%;
+}
+
 /* heights */
+.h-1pt5-em {
+  height: 1.5em !important;
+}
 .h-2-em {
   height: 2em !important;
 }
@@ -254,6 +324,32 @@ Utility Classes
 }
 .h-100-em {
   height: 100em !important;
+}
+
+h-50px {
+    height: 50px;
+}
+
+h-100px {
+    height: 100px;
+}
+
+h-100pct {
+    height: 100%;
+}
+
+/* more migration utils */
+
+margin-left-5pct {
+    margin-left: 5%;
+}
+
+visibility-hidden {
+    visibility: hidden;
+}
+
+visibility-visible {
+    visibility: visible;
 }
 
 /* positioning */
@@ -1642,4 +1738,67 @@ li.select2-results__option {
 
 .genericToolbar * {
    margin: 0px 0.2em;
+}
+
+traceback {
+    padding-top: 16px;
+    white-space: pre;
+    font-family: monospace;
+}
+
+gwc-remove-link {
+    position:absolute;
+    right:0;
+    text-align:right;
+}
+
+codemirror {
+    border: 1px solid black;
+    padding-bottom: 3px;
+}
+
+italic {
+    font-style: italic;
+}
+
+padding-1em {
+    padding: 1em;
+}
+
+padding-right-25pct {
+    padding-right: 25%;
+}
+
+bottom-margin-1em {
+    margin-bottom: 1em;
+}
+
+bottom-padding-0pt5em {
+    padding-bottom: 0.5em;
+}
+
+bottom-padding-2em {
+    padding-bottom: 2em;
+}
+
+srs-demo-map-container {
+    width:512px;
+    height:256px;
+    background-color:white;
+}
+
+reproj-console-geom {
+    height: 2em;
+    width: 55em;
+}
+
+image-chooser-img {
+    display: block;
+    float:right;
+    max-width: 35px;
+    max-height: 35px;
+}
+
+.hidden {
+    display: none;
 }

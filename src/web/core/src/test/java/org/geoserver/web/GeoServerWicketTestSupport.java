@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.feedback.IFeedbackMessageFilter;
@@ -37,9 +38,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        // prevent Wicket from bragging about us being in dev mode (and run
-        // the tests as if we were in production all the time)
-        System.setProperty("wicket.configuration", "deployment");
+        System.setProperty("wicket.configuration", getWicketConfiguration().name());
         // Disable CSRF protection for tests, since the test framework doesn't set the Referer
         System.setProperty(GEOSERVER_CSRF_DISABLED, "true");
 
@@ -50,6 +49,15 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
                 (GeoServerApplication) applicationContext.getBean("webApplication");
         tester = new WicketTester(app, false);
         app.init();
+    }
+
+    /**
+     * Sets up the Wicket mode, deployment or development. By default, deplyment, prevent Wicket
+     * from logging about being in dev mode (and run the tests as if we were in production all the
+     * time)
+     */
+    protected RuntimeConfigurationType getWicketConfiguration() {
+        return RuntimeConfigurationType.DEPLOYMENT;
     }
 
     @After

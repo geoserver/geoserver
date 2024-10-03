@@ -34,6 +34,7 @@ import org.geoserver.util.XCQL;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.filter.text.cql2.CQLException;
 
+// TODO WICKET8 - Verify this page works OK
 public class TemplateRuleConfigurationPanel extends Panel {
 
     CompoundPropertyModel<TemplateRule> templateRuleModel;
@@ -105,8 +106,8 @@ public class TemplateRuleConfigurationPanel extends Panel {
         AjaxSubmitLink submitLink =
                 new AjaxSubmitLink("save") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onSubmit(target, form);
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        super.onSubmit(target);
                         cleanFeedbackPanel();
                         TemplateRule rule = theForm.getModelObject();
                         if (!validateAndReport(rule)) return;
@@ -117,13 +118,13 @@ public class TemplateRuleConfigurationPanel extends Panel {
                     }
 
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
                         if (theForm.hasError()) target.add(ruleFeedbackPanel);
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         if (theForm.hasError()) target.add(ruleFeedbackPanel);
                     }
                 };
@@ -136,7 +137,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
                 new AjaxSubmitLink("cancel") {
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         clearForm(target);
                     }
                 });

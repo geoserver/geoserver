@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -25,6 +24,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
 
+// TODO WICKET8 - Verify this page works OK
 public class BulkImportPanel extends Panel {
 
     private static final long serialVersionUID = -7787191736336649903L;
@@ -61,7 +61,7 @@ public class BulkImportPanel extends Panel {
                     private static final long serialVersionUID = -3288982013478650146L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         String csvData = new String(fileUpload.getFileUpload().getBytes());
                         if (csvData.isEmpty()) {
                             error(
@@ -125,7 +125,7 @@ public class BulkImportPanel extends Panel {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                     }
                 };

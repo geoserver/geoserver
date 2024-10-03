@@ -114,6 +114,12 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <!-- TODO WICKET8 - this fix isn't WICKET8 specific -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-iau-wkt</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

@@ -25,6 +25,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -43,7 +44,6 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.geoserver.catalog.Catalog;
@@ -178,7 +178,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                             org.apache.wicket.markup.ComponentTag tag) {
                                         String loginPath = getResourcePath(info.getLoginPath());
                                         tag.put("action", loginPath);
-                                    };
+                                    }
                                 };
 
                         Image image;
@@ -500,9 +500,44 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // need it)
         response.render(
                 new PriorityHeaderItem(
-                        JavaScriptHeaderItem.forReference(
-                                new JavaScriptResourceReference(
-                                        JQueryResourceReference.class, VERSION_3))));
+                        JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "css/blueprint/screen.css"),
+                        "screen, projection"));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "css/blueprint/print.css"),
+                        "print"));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "css/bootstrap-utilities.min.css"),
+                        "all"));
+        response.render(
+                CssReferenceHeaderItem.forReference(
+                        new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"),
+                        "screen, projection"));
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "js/jquery.placeholder.js")));
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "js/jquery.fullscreen.js")));
+
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+
+        // due to Content-security-policy, JS must be rendered by Wicket.  This inits the textboxes
+        // for placeholders.
+        response.render(OnDomReadyHeaderItem.forScript("$('input, textarea').placeholder();"));
+
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

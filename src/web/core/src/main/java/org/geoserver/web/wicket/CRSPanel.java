@@ -15,7 +15,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
@@ -55,7 +54,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
     private static Behavior READ_ONLY = new AttributeModifier("readonly", new Model<>("readonly"));
 
     /** pop-up window for WKT and SRS list */
-    protected ModalWindow popupWindow;
+    protected GSModalWindow popupWindow;
 
     /** srs/epsg code text field */
     protected TextField<String> srsTextField;
@@ -155,7 +154,7 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      */
     void initComponents() {
 
-        popupWindow = new ModalWindow("popup");
+        popupWindow = new GSModalWindow("popup");
         add(popupWindow);
 
         srsTextField = new TextField<>("srs", new Model<>());

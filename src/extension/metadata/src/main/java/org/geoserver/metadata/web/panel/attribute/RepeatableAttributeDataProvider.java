@@ -15,7 +15,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class RepeatableAttributeDataProvider<T extends Serializable>
-        extends GeoServerDataProvider<ComplexMetadataAttribute<T>> implements IModel<List<T>> {
+        extends GeoServerDataProvider<ComplexMetadataAttribute<T>> {
 
     private static final long serialVersionUID = -255037580716257623L;
 
@@ -87,17 +87,13 @@ public class RepeatableAttributeDataProvider<T extends Serializable>
         return attributeConfiguration;
     }
 
-    @Override
-    public List<T> getObject() {
-        List<T> list = new ArrayList<>();
-        for (ComplexMetadataAttribute<T> item : items) {
-            list.add(item.getValue());
-        }
-        return list;
-    }
-
-    @Override
-    public void setObject(List<T> object) {
-        throw new UnsupportedOperationException();
+    public IModel<List<T>> getModel() {
+        return () -> {
+            List<T> list = new ArrayList<>();
+            for (ComplexMetadataAttribute<T> item : items) {
+                list.add(item.getValue());
+            }
+            return list;
+        };
     }
 }

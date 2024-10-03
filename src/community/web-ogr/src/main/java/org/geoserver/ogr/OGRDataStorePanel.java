@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -32,6 +33,7 @@ import org.geotools.data.ogr.OGRDataStoreFactory;
 import org.geotools.data.ogr.jni.JniOGRDataStoreFactory;
 
 /** Custom data store panel for OGR data stores */
+// TODO WICKET8 - Verify this page works OK
 public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
 
     /**
@@ -107,7 +109,7 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                                 }
 
                                 @Override
-                                public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                                public void onSubmit(AjaxRequestTarget target) {
                                     gsDialog.setTitle(new Model<String>(windowTitle));
                                     gsDialog.showOkCancel(target, new OGRDialogDelegate());
                                 }
@@ -160,15 +162,17 @@ public class OGRDataStorePanel extends DefaultDataStoreEditPanel {
                                 new GeoServerFileChooser(id, new Model<File>(file)) {
                                     @Override
                                     protected void fileClicked(
-                                            File file, AjaxRequestTarget target) {
+                                            File file, Optional<AjaxRequestTarget> target) {
                                         // clear the raw input of the field
                                         // won't show the new model
                                         // value
                                         textField.clearInput();
                                         textField.setModelObject(file.getAbsolutePath());
 
-                                        target.add(textField);
-                                        dialog.close(target);
+                                        if (target.isPresent()) {
+                                            target.get().add(textField);
+                                            dialog.close(target.get());
+                                        }
                                     };
                                 };
                         chooser.setFilter(fileFilter);

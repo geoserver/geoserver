@@ -10,13 +10,13 @@
         </li>
         <li>
           <label for="cleanUpFreq"><wicket:message key="cleanUpFreq">Force cache disk quota is exceeded every:</wicket:message></label>
-          <input class="text" wicket:id="cleanUpFreq" id="cleanUpFreq" type="text" style="width: 80px;"/>
+          <input class="text w-80px" wicket:id="cleanUpFreq" id="cleanUpFreq" type="text"/>
           <wicket:message key="cleanUpFreqUnits">minutes</wicket:message>
           <div wicket:id="cleanUpLastRun">(Last run: X minutes ago.)</div>
         </li>
         <li>
           <label for="globalQuota"><wicket:message key="setGlobalQuota">Set cache disk quota to:</wicket:message></label>
-          <input class="text" wicket:id="globalQuota" id="globalQuota" type="text" style="width: 80px;"/>
+          <input class="text w-80px" wicket:id="globalQuota" id="globalQuota" type="text"/>
           <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"></select>
           <div wicket:id="globalQuotaProgressBar"></div>
         </li>

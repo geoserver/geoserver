@@ -75,6 +75,7 @@ import org.geotools.util.logging.Logging;
  * Style page tab for displaying editing the style metadata. Includes style upload and generation
  * functionality. Delegates to {@link ExternalGraphicPanel} for editing the legend.
  */
+// TODO WICKET8 - Verify this page works OK
 public class StyleAdminPanel extends StyleEditTabPanel {
     private static final long serialVersionUID = -2443344473474977026L;
     private static final Logger LOGGER = Logging.getLogger(StyleAdminPanel.class);
@@ -444,7 +445,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             private static final long serialVersionUID = 55921414750155395L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 // we need to force validation or the value won't be converted
                 templates.processInput();
                 nameTextField.processInput();
@@ -487,7 +488,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             private static final long serialVersionUID = -6388040033082157163L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 // we need to force validation or the value won't be converted
                 styles.processInput();
                 StyleInfo style = styles.getConvertedInput();
@@ -526,7 +527,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             private static final long serialVersionUID = 658341311654601761L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 FileUpload upload = fileUploadField.getFileUpload();
                 if (upload == null) {
                     warn("No file selected.");

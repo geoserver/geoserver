@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -40,6 +39,7 @@ import org.geoserver.web.demo.DemoRequest;
 import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.process.GeoServerProcessors;
@@ -63,7 +63,7 @@ public class WPSRequestBuilderPanel extends Panel {
 
     String description;
 
-    ModalWindow responseWindow;
+    GSModalWindow responseWindow;
 
     private Component feedback;
 
@@ -196,7 +196,7 @@ public class WPSRequestBuilderPanel extends Panel {
         outputContainer.add(outputView);
 
         // the output response window
-        responseWindow = new ModalWindow("responseWindow");
+        responseWindow = new GSModalWindow("responseWindow");
         add(responseWindow);
         // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");

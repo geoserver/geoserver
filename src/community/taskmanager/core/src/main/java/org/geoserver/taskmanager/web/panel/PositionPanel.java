@@ -52,9 +52,9 @@ public class PositionPanel extends Panel {
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
                         if (batch.getElements().indexOf(be) == 0) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };
@@ -85,9 +85,9 @@ public class PositionPanel extends Panel {
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
                         if (batch.getElements().indexOf(be) == batch.getElements().size() - 1) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };

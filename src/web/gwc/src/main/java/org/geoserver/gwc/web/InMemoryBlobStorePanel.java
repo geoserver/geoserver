@@ -19,7 +19,6 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -44,6 +43,7 @@ import org.geowebcache.storage.blobstore.memory.CacheStatistics;
  *
  * @author Nicola Lagomarsini Geosolutions
  */
+// TODO WICKET8 - Verify this page works OK
 public class InMemoryBlobStorePanel extends Panel {
 
     /** Key for the miss rate */
@@ -228,7 +228,7 @@ public class InMemoryBlobStorePanel extends Panel {
                 new AjaxButton("statistics") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             final ConfigurableBlobStore store =
                                     GeoServerExtensions.bean(ConfigurableBlobStore.class);

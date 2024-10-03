@@ -9,7 +9,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -20,6 +19,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
@@ -46,11 +46,11 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
         super(panelId, model);
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
 
-        final ModalWindow modal = new ModalWindow("modal");
+        final GSModalWindow modal = new GSModalWindow("modal");
         modal.setInitialWidth(800);
         modal.setTitle(new ParamResourceModel("modalTitle", SolrConfigurationPanel.this));
         modal.setWindowClosedCallback(
-                (ModalWindow.WindowClosedCallback)
+                (GSModalWindow.WindowClosedCallback)
                         target -> {
                             if (_layerInfo != null) {
                                 GeoServerApplication app = (GeoServerApplication) getApplication();
@@ -111,7 +111,7 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
         @Override
         protected void respond(AjaxRequestTarget target) {
             if (first) {
-                ModalWindow window = (ModalWindow) getComponent();
+                GSModalWindow window = (GSModalWindow) getComponent();
                 window.show(target);
                 first = false;
             }

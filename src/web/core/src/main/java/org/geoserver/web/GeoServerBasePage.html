@@ -1,33 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<wicket:head>
-    <meta http-equiv="X-UA-Compatible" content="IE=10" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title wicket:id="pageTitle">GeoServer</title>
-    <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
-	<wicket:link>
-      <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection" />
-      </wicket:link>
-      <wicket:link>
-      <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print" />
-      </wicket:link>
-      <wicket:link>
-        <link rel="stylesheet" href="css/bootstrap-utilities.min.css" type="text/css" media="all" />
-	  <link rel="stylesheet" href="css/geoserver.css" type="text/css" media="screen, projection" />
-	  </wicket:link>
-      <!--[if IE]>
-      <wicket:link>
-        <link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection" />
-        </wicket:link>
-      <![endif]-->
-      <wicket:link>
-      <script type="text/javascript" src="js/jquery.placeholder.js"></script>
-      </wicket:link>
-    <wicket:link>
-        <script type="text/javascript" src="js/jquery.fullscreen.js"></script>
-    </wicket:link>
-	</wicket:head>
+    <wicket:head>
+        <meta http-equiv="X-UA-Compatible" content="IE=10" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title wicket:id="pageTitle">GeoServer</title>
+        <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
+    </wicket:head>
 <body>
   <div id="header">
     <div class="wrap">
@@ -39,9 +18,6 @@
 	      		<button class="positive icon" type="submit">
 	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
 	      		</button>
-		        <script type="text/javascript">
-		            $('input, textarea').placeholder();
-		        </script>	      		
 	      	</form>
 	      </span>
 	      
@@ -99,7 +75,7 @@
   </div><!-- /#main -->
   <!-- The feebdback component needs a local style so that the Wicket Ajax support can flip
        its value to "display: true". Will not work with a class, do not use one here -->
-  <div id="ajaxFeedback" style="display: none">
+  <div id="ajaxFeedback">
     <img alt="Loading..." wicket:id="ajaxFeedbackImage"/>
   </div>
 </body>

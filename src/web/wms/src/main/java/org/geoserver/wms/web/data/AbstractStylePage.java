@@ -24,11 +24,11 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -45,6 +45,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.StringValue;
@@ -69,6 +70,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -83,6 +85,7 @@ import org.xml.sax.SAXParseException;
  * you do modify anything in this class (especially the models), manually retest that the edits are
  * not lost on tab switch.
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
@@ -112,6 +115,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     JavaScriptHeaderItem.forReference(
                             new PackageResourceReference(
                                     AbstractStylePage.class, "js/spectrum/spectrum.js")));
+            response.render(
+                    CssHeaderItem.forReference(
+                            new CssResourceReference(AbstractStylePage.class, "StylePage.css")));
             String enableSpectrum =
                     "$(\"#chooser\").spectrum({\n"
                             + "    color: \""
@@ -149,7 +155,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     protected CodeMirrorEditor editor;
 
-    protected ModalWindow popup;
+    protected GSModalWindow popup;
 
     protected GeoServerDialog dialog;
 
@@ -233,7 +239,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.setMultiPart(true);
 
         /* init popup */
-        popup = new ModalWindow("popup");
+        popup = new GSModalWindow("popup");
         styleForm.add(popup);
         /* init tabs */
         List<ITab> tabs = new ArrayList<>();
@@ -379,7 +385,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         add(
                 new AjaxSubmitLink("apply", styleForm) {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         // If we have a new style, go to the edit page
                         if (style == null) {
                             StyleInfo s = getStyleInfo();
@@ -411,7 +417,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
                         // Re-initialize the Legend model object, if it is null.
                         if (styleModel.getObject().getLegend() == null) {
                             styleModel
@@ -421,15 +427,21 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+                        attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
                     }
                 });
         add(
                 new AjaxSubmitLink("save", styleForm) {
                     @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
-                        if (form.hasError()) {
+                    protected void onAfterSubmit(AjaxRequestTarget target) {
+                        if (getForm().hasError()) {
                             addFeedbackPanels(target);
                         } else {
                             doReturn(StylePage.class);
@@ -437,8 +449,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+                        attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
                     }
                 });
         Link<StylePage> cancelLink =
@@ -643,7 +661,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     /** Subclasses must implement to define the submit behavior */
     protected abstract void onStyleFormSubmit();
 
-    protected ModalWindow getPopup() {
+    protected GSModalWindow getPopup() {
         return popup;
     }
 
@@ -714,7 +732,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        public void onSubmit(AjaxRequestTarget target) {
                             if (getLayerInfo() == null || getLayerInfo().getId() == null) {
                                 switch (index) {
                                     case 1:

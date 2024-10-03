@@ -14,7 +14,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -27,6 +26,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /** A panel that lets the user select a layer and copy its metadata to the current layer. */
+// TODO WICKET8 - Verify this page works OK
 public abstract class CopyFromLayerPanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -77,7 +77,7 @@ public abstract class CopyFromLayerPanel extends Panel {
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 ResourceInfo res;
                 if (dropDown.getModelObject() == null || "".equals(dropDown.getModelObject())) {
                     error(
@@ -130,7 +130,7 @@ public abstract class CopyFromLayerPanel extends Panel {
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
+            protected void onError(AjaxRequestTarget target) {
                 target.add(getFeedbackPanel());
             }
         };

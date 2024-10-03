@@ -10,13 +10,13 @@ import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.list.ListView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 import org.geotools.feature.NameImpl;
 import org.junit.Test;
@@ -53,8 +53,8 @@ public class ElasticConfigurationPanelIT extends ElasticTestSupport {
         // use REST client to add an attribute
         client.addTextAttribute(indexName, "testText");
 
-        ModalWindow modal =
-                (ModalWindow)
+        GSModalWindow modal =
+                (GSModalWindow)
                         tester.getLastRenderedPage()
                                 .get("publishedinfo:tabs:panel:theList:2:content:modal");
         // closing the modal window in testing does not trigger the WindowClosedBehavior

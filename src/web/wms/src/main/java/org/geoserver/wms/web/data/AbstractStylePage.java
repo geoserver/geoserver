@@ -430,6 +430,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+                        attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
+                    }
                 });
         add(
                 new AjaxSubmitLink("save", styleForm) {
@@ -445,6 +451,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     @Override
                     protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
+                    }
+
+                    @Override
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+                        attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
                     }
                 });
         Link<StylePage> cancelLink =

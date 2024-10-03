@@ -14,8 +14,6 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -46,7 +44,6 @@ import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
-import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
@@ -70,8 +67,6 @@ import org.springframework.web.bind.annotation.RestController;
                 RestBaseController.ROOT_PATH
                         + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}/index")
 public class StructuredCoverageController extends AbstractCatalogController {
-
-    private static final Logger LOGGER = Logging.getLogger(StructuredCoverageController.class);
 
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
@@ -134,9 +129,6 @@ public class StructuredCoverageController extends AbstractCatalogController {
 
         GranuleSource source = getGranuleSource(workspaceName, storeName, coverageName);
         Query q = toQuery(filter, offset, limit);
-
-        LOGGER.log(Level.SEVERE, "Still need to parse the filters");
-
         return forceNonNullNamespace(source.getGranules(q));
     }
 

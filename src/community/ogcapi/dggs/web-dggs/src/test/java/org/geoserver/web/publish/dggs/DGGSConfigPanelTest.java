@@ -1,0 +1,101 @@
+/* (c) 2024 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.web.publish.dggs;
+
+import static org.geoserver.data.test.MockData.DEFAULT_PREFIX;
+import static org.geoserver.data.test.MockData.PONDS;
+import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_OFFSET_KEY;
+import static org.junit.Assert.*;
+
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.data.resource.ResourceConfigurationPage;
+import org.geotools.dggs.gstore.DGGSGeometryStoreFactory;
+import org.geotools.feature.NameImpl;
+import org.junit.Test;
+
+public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
+
+    public static final String PUBLISHED_INFO = "publishedinfo";
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // don't set up the default layers
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // create a geometry DGGS store
+        Catalog catalog = getCatalog();
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        DataStoreInfo dggs = builder.buildDataStore("dggs");
+        dggs.setType("DGGS Geometry Store");
+        dggs.getConnectionParameters().put(DGGSGeometryStoreFactory.DGGS_FACTORY_ID.key, "H3");
+        catalog.add(dggs);
+
+        // create a layer with a geometry DGGS store
+        builder.setStore(dggs);
+        FeatureTypeInfo fti = builder.buildFeatureType(new NameImpl("H3"));
+        builder.setupBounds(fti);
+        LayerInfo li = builder.buildLayer(fti);
+        catalog.add(fti);
+        catalog.add(li);
+
+        // add one of the default layers as a non DGGS test case
+        testData.addVectorLayer(PONDS, getCatalog());
+    }
+
+    @Test
+    public void testPanelSave() {
+        login();
+        tester.startPage(new ResourceConfigurationPage(DEFAULT_PREFIX, "H3"));
+        tester.assertNoErrorMessage();
+
+        // switch to the publishing tab
+        tester.clickLink("publishedinfo:tabs:tabs-container:tabs:1:link");
+        tester.assertNoErrorMessage();
+
+        Form form = (Form) tester.getComponentFromLastRenderedPage(PUBLISHED_INFO);
+        String configPanelPath = getComponentPath(form, DGGSConfigPanel.class);
+        assertNotNull(configPanelPath);
+        FormTester formTester = tester.newFormTester(PUBLISHED_INFO);
+        // compute path relative to the form
+        String resolutionOffsetPath =
+                configPanelPath.substring(PUBLISHED_INFO.length() + 1) + ":resolutionOffset";
+        formTester.setValue(resolutionOffsetPath, "1");
+        formTester.submit();
+        tester.clickLink("publishedinfo:save");
+        tester.assertNoErrorMessage();
+
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("H3");
+        assertEquals(
+                Integer.valueOf(1), fti.getMetadata().get(CONFIGURED_OFFSET_KEY, Integer.class));
+    }
+
+    @Test
+    public void testPanelNonDGGS() {
+        login();
+        tester.startPage(new ResourceConfigurationPage(PONDS.getPrefix(), PONDS.getLocalPart()));
+        tester.assertNoErrorMessage();
+
+        // switch to the publishing tab
+        tester.clickLink("publishedinfo:tabs:tabs-container:tabs:1:link");
+        tester.assertNoErrorMessage();
+
+        // panel should not be found, not a DGGS layer
+        Form form = (Form) tester.getComponentFromLastRenderedPage(PUBLISHED_INFO);
+        String configPanelPath = getComponentPath(form, DGGSConfigPanel.class);
+        assertNull(configPanelPath);
+    }
+}

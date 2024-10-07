@@ -141,4 +141,9 @@ public class Bounds {
         return (other.min.x >= this.min.x && other.max.x <= this.max.x)
                 && (other.min.y >= this.min.y && other.max.y <= this.max.y);
     }
+
+    @Override
+    public String toString() {
+        return "Bounds{" + "min=" + min + ", max=" + max + '}';
+    }
 }

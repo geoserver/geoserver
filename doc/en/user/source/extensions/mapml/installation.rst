@@ -47,6 +47,39 @@ If the ``Represent multi-layer requests as multiple elements`` is checked (and t
 
 .. figure:: images/mapml_wms_multi_extent.png
 
+TiledCRS
+--------
+MapML supports 4 built-in TiledCRS:
+
+- MapML:WGS84 (or EPSG:4326)
+- MapML:OSMTILE (or EPSG:3857)
+- MapML:CBMTILE (or EPSG:3978)
+- MapML:APSTILE (or EPSG:5936)
+
+In addition, is it possible to configure custom TiledCRS based on the available WMTS GridSets.
+A new MapML TCRS Settings menu is available in the GeoServer UI on the Settings section:
+
+.. figure:: images/mapml_tcrs_menu.png
+
+
+It provides a selector containing available GridSets. Administrator can select GridSets from the left list that will be converted to TiledCRSs.
+
+
+.. figure:: images/mapml_tcrs_selector.png
+
+
+Notes:
+
+- Gridsets containing ":" character in the name won't be listed
+- Gridsets with non-numeric levels or without a common prefix won't be listed
+
+
+For example, the UTM14WGS84Quad specified in the above selector has the following definition, which only contains numeric level names.
+
+.. figure:: images/mapml_utm_gridset.png
+
+
+
 Styles
 ------
 
@@ -262,7 +295,7 @@ MapML resources will be available for any published WMS layers by making a GetMa
   
 **SRS/CRS**
 
-Note that the WMS SRS or CRS must be one of the projections supported by MapML:
+Note that the WMS SRS or CRS must be one of the built-in projections supported by MapML or one of the TCRS configured through the dedicated section. Built-in MapML CRS are:
 
 - MapML:WGS84 (or EPSG:4326)
 - MapML:OSMTILE (or EPSG:3857)

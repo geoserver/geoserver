@@ -6,32 +6,27 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
-import java.util.HashMap;
+import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.mapml.tcrs.Bounds;
+import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.mapml.tcrs.Point;
 import org.geoserver.mapml.tcrs.TiledCRS;
-import org.geoserver.mapml.xml.ProjType;
+import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.proj.PROJFormattable;
+import org.geotools.referencing.proj.PROJFormatter;
 
 /** Class delegated to build an HTML Document embedding a MapML Viewer. */
 public class MapMLHTMLOutput {
 
-    public static final HashMap<String, TiledCRS> PREVIEW_TCRS_MAP = new HashMap<>();
-
-    static {
-        PREVIEW_TCRS_MAP.put("OSMTILE", new TiledCRS("OSMTILE"));
-        PREVIEW_TCRS_MAP.put("CBMTILE", new TiledCRS("CBMTILE"));
-        PREVIEW_TCRS_MAP.put("APSTILE", new TiledCRS("APSTILE"));
-        PREVIEW_TCRS_MAP.put("WGS84", new TiledCRS("WGS84"));
-    }
-
     private String layerLabel;
     private HttpServletRequest request;
-    private ProjType projType;
+    private MapMLProjection projType;
     private String sourceUrL;
     private int zoom = 0;
     private Double latitude = 0.0;
@@ -54,7 +49,7 @@ public class MapMLHTMLOutput {
     public static class HTMLOutputBuilder {
         private String layerLabel;
         private HttpServletRequest request;
-        private ProjType projType;
+        private MapMLProjection projType;
         private String sourceUrL;
         private ReferencedEnvelope projectedBbox;
         private int zoom = 0;
@@ -72,7 +67,7 @@ public class MapMLHTMLOutput {
             return this;
         }
 
-        public HTMLOutputBuilder setProjType(ProjType projType) {
+        public HTMLOutputBuilder setProjType(MapMLProjection projType) {
             this.projType = projType;
             return this;
         }
@@ -126,8 +121,9 @@ public class MapMLHTMLOutput {
                         "mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; border: none; vertical-align: middle }\n")
                 .append("mapml-viewer:not(:defined) > * { display: none; } n")
                 .append("map-layer { display: none; }\n")
-                .append("</style>\n")
-                .append("<noscript>\n")
+                .append("</style>\n");
+        appendProjectionScript(projType, sb);
+        sb.append("<noscript>\n")
                 .append("<style>\n")
                 .append("mapml-viewer:not(:defined) > :not(map-layer) { display: initial; }\n")
                 .append("</style>\n")
@@ -136,7 +132,7 @@ public class MapMLHTMLOutput {
                 .append("</head>\n")
                 .append("<body>\n")
                 .append("<mapml-viewer projection=\"")
-                .append(projType.value())
+                .append(projType.getTiledCRS().getParams().getName())
                 .append("\" ")
                 .append("zoom=\"")
                 .append(computeZoom(projType, projectedBbox))
@@ -158,14 +154,87 @@ public class MapMLHTMLOutput {
         return sb.toString();
     }
 
+    private void appendProjectionScript(MapMLProjection projType, StringBuilder sb) {
+        if (!projType.isBuiltIn()) {
+            sb.append("<script type=\"module\">\n")
+                    .append("let customProjectionDefinition = `\n")
+                    .append(buildDefinition(projType.getTiledCRS(), 10))
+                    .append("let map = document.querySelector(\"mapml-viewer\");\n")
+                    .append(
+                            "let cProjection = map.defineCustomProjection(customProjectionDefinition);\n")
+                    .append("map.projection = cProjection;\n")
+                    .append("</script>");
+        }
+    }
+
+    private String buildDefinition(TiledCRS tiledCRS, int indentChars) {
+        TiledCRSParams params = tiledCRS.getParams();
+        int tileSize = params.getTILE_SIZE();
+        String name = params.getName();
+        Point origin = params.getOrigin();
+        String indent = " ".repeat(indentChars);
+        String originString = String.format("[%.8f, %.8f]", origin.getX(), origin.getY());
+
+        double[] resolutions = params.getResolutions();
+        StringBuilder resolutionsString = new StringBuilder("[");
+        for (int i = 0; i < resolutions.length; i++) {
+            resolutionsString.append(resolutions[i]);
+            if (i != resolutions.length - 1) {
+                resolutionsString.append(", ");
+            }
+        }
+        resolutionsString.append("]");
+
+        Bounds bounds = params.getBounds();
+        String boundsString =
+                String.format(
+                        Locale.ENGLISH,
+                        "[[%.8f, %.8f], [%.8f, %.8f]]",
+                        bounds.getMin().getX(),
+                        bounds.getMin().getY(),
+                        bounds.getMax().getX(),
+                        bounds.getMax().getY());
+
+        CoordinateReferenceSystem crs = tiledCRS.getCRS();
+        PROJFormatter formatter = new PROJFormatter();
+        String projString = formatter.toPROJ((PROJFormattable) crs);
+        StringBuilder sb =
+                new StringBuilder("{\n")
+                        .append("\"projection\": \"")
+                        .append(name)
+                        .append("\",\n")
+                        .append(indent)
+                        .append("\"origin\": ")
+                        .append(originString)
+                        .append(",\n")
+                        .append(indent)
+                        .append("\"resolutions\": ")
+                        .append(resolutionsString)
+                        .append(",\n")
+                        .append(indent)
+                        .append("\"bounds\": ")
+                        .append(boundsString)
+                        .append(",\n")
+                        .append(indent)
+                        .append("\"tilesize\": ")
+                        .append(tileSize)
+                        .append(",\n")
+                        .append(indent)
+                        .append("\"proj4string\" : \"")
+                        .append(projString)
+                        .append("\"\n")
+                        .append("}`;\n");
+        return sb.toString();
+    }
+
     private String buildViewerPath(HttpServletRequest request) {
         String base = ResponseUtils.baseURL(request);
         return ResponseUtils.buildURL(
                 base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
     }
 
-    private int computeZoom(ProjType projType, ReferencedEnvelope projectedBbox) {
-        TiledCRS tcrs = PREVIEW_TCRS_MAP.get(projType.value());
+    private int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {
+        TiledCRS tcrs = projType.getTiledCRS();
         boolean flipAxis =
                 CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem())
                         .equals(CRS.AxisOrder.NORTH_EAST);

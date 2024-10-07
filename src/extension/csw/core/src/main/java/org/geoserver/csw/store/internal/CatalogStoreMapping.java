@@ -121,7 +121,7 @@ public class CatalogStoreMapping {
     /**
      * Return a mapping element from a mapped key
      *
-     * @param key the mapped key
+     * @param pattern property path pattern
      * @return the element, null if key doesn't exist
      */
     public Collection<CatalogStoreMappingElement> elements(PropertyPath pattern) {

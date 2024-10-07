@@ -6,6 +6,7 @@
 package org.geoserver.csw.store.internal;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.internal.CatalogStoreMapping.CatalogStoreMappingElement;
 import org.geoserver.csw.util.PropertyPath;
@@ -109,7 +110,8 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
             return elements.stream().findFirst().get().getContent();
         } else {
             FilterFunction_list list = new FilterFunction_list();
-            list.setParameters(elements.stream().map(el -> el.getContent()).toList());
+            list.setParameters(
+                    elements.stream().map(el -> el.getContent()).collect(Collectors.toList()));
             return list;
         }
     }

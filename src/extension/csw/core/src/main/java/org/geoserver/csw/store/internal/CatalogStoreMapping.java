@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.util.PropertyPath;
@@ -124,7 +125,9 @@ public class CatalogStoreMapping {
      * @return the element, null if key doesn't exist
      */
     public Collection<CatalogStoreMappingElement> elements(PropertyPath pattern) {
-        return mappingElements.stream().filter(el -> el.getKey().matches(pattern)).toList();
+        return mappingElements.stream()
+                .filter(el -> el.getKey().matches(pattern))
+                .collect(Collectors.toList());
     }
 
     /**

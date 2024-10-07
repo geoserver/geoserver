@@ -178,6 +178,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             return (TreeBranch) nodes.get(index);
         }
 
+        @Override
         public TreeFork clone() {
             TreeFork fork = new TreeFork(descriptor);
             fork.multiple = multiple;

@@ -140,6 +140,7 @@ public class PropertyPath {
         return elements.size();
     }
 
+    @Override
     public String toString() {
         return toDothPath();
     }

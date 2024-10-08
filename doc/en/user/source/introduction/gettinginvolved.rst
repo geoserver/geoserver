@@ -62,7 +62,7 @@ The GeoServer Developers list is for for those working directly on the project, 
    
    The `Community Development <https://geoserver.org/devel/>`__ page provides additional communication options for developers.
 
-Reporitng a Bug
+Reporting a Bug
 ---------------
 
 If you enounter a problem when working with GeoServer, then please let us know through forum or mailing list above.

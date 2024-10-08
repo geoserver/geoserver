@@ -264,25 +264,27 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent(
                 "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
-        tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
-        tester.assertInvisible("dialog:dialog:content:form:userPanel:display");
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel", ChooseImagePanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel:image", DropDownChoice.class);
+        tester.assertInvisible("dialog:dialog:modal:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
         List<? extends String> choices =
                 ((DropDownChoice<String>)
                                 tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:image"))
+                                        "dialog:dialog:modal:content:form:userPanel:image"))
                         .getChoices();
         assertEquals(3, choices.size());
         assertEquals("otherpicture.jpg", choices.get(0));
         assertEquals("somepicture.png", choices.get(1));
         assertEquals("vector.svg", choices.get(2));
 
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.select("userPanel:image", 1);
 
-        tester.executeAjaxEvent("dialog:dialog:content:form:userPanel:image", "change");
-        tester.assertVisible("dialog:dialog:content:form:userPanel:display");
+        tester.executeAjaxEvent("dialog:dialog:modal:content:form:userPanel:image", "change");
+        tester.assertVisible("dialog:dialog:modal:content:form:userPanel:display");
 
         formTester.submit("submit");
 
@@ -294,8 +296,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                                 + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
                                 + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
                                 + "(.*)\" />\\\\n"
-                                + "<Format>(.*)</Format>\\\\n"
-                                + "</ExternalGraphic>\\\\n'\\)");
+                                + "<Format>([^<]+)<..Format>\\\\n"
+                                + "<..ExternalGraphic>\\\\n'\\)");
         Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
         assertTrue(matcher.find());
         assertEquals("somepicture.png", matcher.group(1));
@@ -303,7 +305,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         // test uploading
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         org.apache.wicket.util.file.File file =
                 new org.apache.wicket.util.file.File(
                         URLs.urlToFile(getClass().getResource("GeoServer_75.png")));
@@ -363,10 +365,12 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent(
                 "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
-        tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel", ChooseImagePanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel:image", DropDownChoice.class);
 
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.select("userPanel:image", 0);
         formTester.submit("submit");
 
@@ -378,8 +382,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                                 + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
                                 + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
                                 + "(.*)\" />\\\\n"
-                                + "<Format>(.*)</Format>\\\\n"
-                                + "</ExternalGraphic>\\\\n'\\)");
+                                + "<Format>(.*)<..Format>\\\\n"
+                                + "<..ExternalGraphic>\\\\n'\\)");
         Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
         assertTrue(matcher.find());
         assertEquals("somepicture.png", matcher.group(1));
@@ -440,14 +444,16 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testLayerAttributesUnreachableLayer() throws Exception {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
-        tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
+        tester.assertComponent(
+                "styleForm:popup:modal:content:layer.table", GeoServerTablePanel.class);
         tester.executeAjaxEvent(
-                "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
+                "styleForm:popup:modal:content:layer.table:navigatorBottom:navigator:last",
+                "click");
         tester.assertLabel(
-                "styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name",
+                "styleForm:popup:modal:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name",
                 "unlayer");
         tester.executeAjaxEvent(
-                "styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link",
+                "styleForm:popup:modal:content:layer.table:listContainer:items:30:itemProperties:2:component:link",
                 "click");
         tester.assertContains("Failed to load attribute list, internal error is:");
     }
@@ -456,12 +462,14 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     public void testLayerAttributesTabWMS() {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
-        tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
+        tester.assertComponent(
+                "styleForm:popup:modal:content:layer.table", GeoServerTablePanel.class);
 
         // 31 layers total, 25 layers per page; foo should not appear on page 1 or 2.
         tester.assertContainsNot("wmsstore");
         tester.executeAjaxEvent(
-                "styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
+                "styleForm:popup:modal:content:layer.table:navigatorBottom:navigator:last",
+                "click");
         tester.assertContainsNot("wmsstore");
     }
 

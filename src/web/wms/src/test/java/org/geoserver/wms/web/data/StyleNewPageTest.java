@@ -490,25 +490,27 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent(
                 "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
-        tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
-        tester.assertInvisible("dialog:dialog:content:form:userPanel:display");
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel", ChooseImagePanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel:image", DropDownChoice.class);
+        tester.assertInvisible("dialog:dialog:modal:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
         List<? extends String> choices =
                 ((DropDownChoice<String>)
                                 tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:image"))
+                                        "dialog:dialog:modal:content:form:userPanel:image"))
                         .getChoices();
         assertEquals(4, choices.size());
         assertEquals("otherpicture.jpg", choices.get(1));
         assertEquals("somepicture.png", choices.get(2));
         assertEquals("vector.svg", choices.get(3));
 
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.select("userPanel:image", 2);
 
-        tester.executeAjaxEvent("dialog:dialog:content:form:userPanel:image", "change");
-        tester.assertVisible("dialog:dialog:content:form:userPanel:display");
+        tester.executeAjaxEvent("dialog:dialog:modal:content:form:userPanel:image", "change");
+        tester.assertVisible("dialog:dialog:modal:content:form:userPanel:display");
 
         formTester.submit("submit");
 
@@ -520,8 +522,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                                 + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
                                 + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
                                 + "(.*)\" />\\\\n"
-                                + "<Format>(.*)</Format>\\\\n"
-                                + "</ExternalGraphic>\\\\n'\\)");
+                                + "<Format>(.*)<..Format>\\\\n"
+                                + "<..ExternalGraphic>\\\\n'\\)");
         Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
         assertTrue(matcher.find());
         assertEquals("somepicture.png", matcher.group(1));
@@ -529,7 +531,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
 
         // test uploading
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         org.apache.wicket.util.file.File file =
                 new org.apache.wicket.util.file.File(
                         getClass().getResource("GeoServer_75.png").getFile());
@@ -561,7 +563,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
 
         // test uploading
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         org.apache.wicket.util.file.File file =
                 new org.apache.wicket.util.file.File(
                         dd.getStyles().get("');foo('.png").file().getPath());
@@ -597,24 +599,26 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
                 "click");
 
-        tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
-        tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
-        tester.assertInvisible("dialog:dialog:content:form:userPanel:display");
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel", ChooseImagePanel.class);
+        tester.assertComponent(
+                "dialog:dialog:modal:content:form:userPanel:image", DropDownChoice.class);
+        tester.assertInvisible("dialog:dialog:modal:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
         List<? extends String> choices =
                 ((DropDownChoice<String>)
                                 tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:image"))
+                                        "dialog:dialog:modal:content:form:userPanel:image"))
                         .getChoices();
         assertEquals(3, choices.size());
         assertEquals("otherpicture.jpg", choices.get(1));
         assertEquals("somepicture.png", choices.get(2));
 
-        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.select("userPanel:image", 2);
 
-        tester.executeAjaxEvent("dialog:dialog:content:form:userPanel:image", "change");
-        tester.assertVisible("dialog:dialog:content:form:userPanel:display");
+        tester.executeAjaxEvent("dialog:dialog:modal:content:form:userPanel:image", "change");
+        tester.assertVisible("dialog:dialog:modal:content:form:userPanel:display");
 
         formTester.submit("submit");
 
@@ -626,7 +630,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent(
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
                 "click");
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         org.apache.wicket.util.file.File file =
                 new org.apache.wicket.util.file.File(
                         getClass().getResource("GeoServer_75.png").getFile());

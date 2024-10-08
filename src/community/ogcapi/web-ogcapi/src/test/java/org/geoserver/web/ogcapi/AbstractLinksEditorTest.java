@@ -36,7 +36,7 @@ public abstract class AbstractLinksEditorTest extends GeoServerWicketTestSupport
 
     @Test
     public void testDisplayLinks() throws Exception {
-        print(tester.getLastRenderedPage(), true, true);
+       // print(tester.getLastRenderedPage(), true, true);
 
         // check existing link
         tester.assertModelValue(EDITOR + ITEM1 + REL, link.getRel());
@@ -53,7 +53,7 @@ public abstract class AbstractLinksEditorTest extends GeoServerWicketTestSupport
         // (this generates a new set of ids for all link components, starting from 2)
         tester.clickLink(EDITOR + ":addLink");
 
-        print(tester.getLastRenderedPage(), true, true);
+        //print(tester.getLastRenderedPage(), true, true);
 
         // fill the links
         FormTester ft = tester.newFormTester(getFormName());

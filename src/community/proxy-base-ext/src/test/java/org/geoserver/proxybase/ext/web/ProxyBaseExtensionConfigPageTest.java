@@ -59,7 +59,7 @@ public class ProxyBaseExtensionConfigPageTest extends GeoServerWicketTestSupport
         tester.startPage(ProxyBaseExtensionConfigPage.class);
         tester.assertRenderedPage(ProxyBaseExtensionConfigPage.class);
 
-        print(tester.getLastRenderedPage(), true, true);
+        //print(tester.getLastRenderedPage(), true, true);
 
         // click the edit link of the first rule
         tester.clickLink("rulesPanel:listContainer:items:1:itemProperties:4:component:link");

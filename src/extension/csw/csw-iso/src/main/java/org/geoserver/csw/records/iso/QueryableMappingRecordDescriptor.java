@@ -165,7 +165,7 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
                 Resource f = loader.get("csw").get(fileName);
 
                 if (!Resources.exists(f)) {
-                    if (mappingName == null) {
+                    if (Strings.isNullOrEmpty(mappingName)) {
                         IOUtils.copy(getClass().getResourceAsStream(fileName), f.out());
                     } else {
                         return null;

@@ -27,6 +27,7 @@
         <include>imageio-ext-*rangereader*.jar</include>
         <include>jackson-datatype*.jar</include>
         <include>jackson-module*.jar</include>
+        <include>json-utils-2.*.jar</include>
         <include>kotlin-stdlib*.jar</include>
         <include>*netty*.jar</include>
         <include>okhttp*.jar</include>
@@ -35,6 +36,8 @@
         <include>protocol-core-2.*.jar</include>
         <include>reactive-streams*.jar</include>
         <include>regions-2.*.jar</include>
+        <include>retries-2.*.jar</include>
+        <include>retries-spi-2.*.jar</include>
         <include>rxjava*.jar</include>
         <include>s3-2.*.jar</include>
         <include>sdk-core-2.*.jar</include>
@@ -45,6 +48,7 @@
         <include>http-auth-*2*.jar</include>
         <include>identity-spi*.jar</include>
         <include>metrics-spi-2.*.jar</include>
+        <include>third-party-jackson-core-2.*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -40,9 +40,11 @@ public class DGGSResolutionCalculator {
 
     /* The GetMap scale denominator, as an {@link Double}, duplicated here to avoid a dependency
      * onto gs-wms */
-    private static final String WMS_SCALE_DENOMINATOR = "WMS_SCALE_DENOMINATOR";
+    public static final String WMS_SCALE_DENOMINATOR = "WMS_SCALE_DENOMINATOR";
 
     private static final double DISTANCE_SCALE_FACTOR = 0.0254 / (25.4 / 0.28);
+
+    public static final String CONFIGURED_OFFSET_KEY = "dggs.resOffset";
 
     double[] levelThresholds;
 
@@ -90,14 +92,22 @@ public class DGGSResolutionCalculator {
         }
 
         // do we have a resoution delta?
-        int resolutionDelta =
+        Optional<Integer> resolutionDelta =
                 viewParams
                         .map(m -> m.get(VP_RESOLUTION_DELTA))
-                        .map(n -> safeConvert(n, Integer.class))
-                        .orElse(0);
+                        .map(n -> safeConvert(n, Integer.class));
+        // if not available through the request, try the values coming from the configuration
+        if (!resolutionDelta.isPresent()) {
+            Hints.ConfigurationMetadataKey offsetKey =
+                    Hints.ConfigurationMetadataKey.get(CONFIGURED_OFFSET_KEY);
+            resolutionDelta =
+                    Optional.ofNullable(hints.get(offsetKey))
+                            .map(n -> safeConvert(n, Integer.class));
+        }
+        int resOffset = resolutionDelta.orElse(0);
 
         // compute resolution and eventually apply delta
-        return distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resolutionDelta)
+        return distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resOffset)
                 .orElse(defaultResolution);
     }
 

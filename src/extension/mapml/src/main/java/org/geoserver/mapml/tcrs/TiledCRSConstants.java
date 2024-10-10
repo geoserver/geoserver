@@ -5,6 +5,8 @@
 package org.geoserver.mapml.tcrs;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
@@ -17,6 +19,62 @@ public class TiledCRSConstants {
     public static final HashMap<String, TiledCRSParams> tiledCRSDefinitions = new HashMap<>();
 
     public static final HashMap<String, TiledCRSParams> tiledCRSBySrsName = new HashMap<>();
+
+    static class CRSMapper {
+
+        Set<String> inputCRSs;
+
+        String outputCRS;
+
+        public CRSMapper(Set<String> inputCRSs, String outputCRS) {
+            this.inputCRSs = inputCRSs;
+            this.outputCRS = outputCRS;
+        }
+
+        boolean isSupporting(String inputCRS) {
+            return inputCRSs.contains(inputCRS);
+        }
+
+        String getOutputCRS() {
+            return outputCRS;
+        }
+    }
+
+    private static final Set<CRSMapper> crsMappers;
+
+    static {
+        crsMappers = new HashSet<>();
+        crsMappers.add(
+                new CRSMapper(
+                        Set.of(
+                                "EPSG:4326",
+                                "urn:ogc:def:crs:EPSG::4326",
+                                "urn:ogc:def:crs:MapML::WGS84"),
+                        "EPSG:4326"));
+        crsMappers.add(
+                new CRSMapper(
+                        Set.of("EPSG:3857", "urn:ogc:def:crs:EPSG::3857", "MapML:OSMTILE"),
+                        "EPSG:3857"));
+        crsMappers.add(
+                new CRSMapper(
+                        Set.of("EPSG:5936", "urn:ogc:def:crs:EPSG::5936", "MapML:APSTILE"),
+                        "EPSG:5936"));
+        crsMappers.add(
+                new CRSMapper(
+                        Set.of("EPSG:3978", "urn:ogc:def:crs:EPSG::3978", "MapML:CBMTILE"),
+                        "EPSG:3978"));
+    }
+
+    public static String getSupportedOutputCRS(String proj) {
+        String outputCRS = null;
+        for (CRSMapper mapper : crsMappers) {
+            if (mapper.isSupporting(proj)) {
+                outputCRS = mapper.getOutputCRS();
+                break;
+            }
+        }
+        return outputCRS;
+    }
 
     static {
         final String WGS84_NAME = "WGS84";

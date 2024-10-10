@@ -50,6 +50,9 @@ public final class MapMLConstants {
     /** MapML layer metadata use tiles */
     public static final String MAPML_USE_TILES = "mapml.useTiles";
 
+    /** MapML layer metadata remote client request */
+    public static final String MAPML_USE_REMOTE = "mapml.useRemote";
+
     /** MapML layer resource metadata */
     public static final String RESOURCE_METADATA = "resource.metadata";
 
@@ -86,6 +89,9 @@ public final class MapMLConstants {
     /** USE_TILES */
     public static final String USE_TILES = "useTiles";
 
+    /** REMOTE */
+    public static final String USE_REMOTE = "useRemote";
+
     /** LICENSE_LINK */
     public static final String LICENSE = "licenseLink";
 
@@ -107,6 +113,8 @@ public final class MapMLConstants {
     public static final String REL_ZOOMOUT = "zoomout";
     public static final String REL_NEXT = "next";
     public static final String REL_LICENSE = "license";
+    public static final String REL_IMAGE = "image";
+    public static final String REL_TILE = "tile";
 
     public static final List<String> ZOOM_RELS = Arrays.asList(REL_ZOOMIN, REL_ZOOMOUT);
     public static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE =

@@ -78,6 +78,20 @@ Using tiles to access the layer can increase the performance of your web map. Th
 **Use Tiles**
   If the "Use Tiles" checkbox is checked, by default the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.  If one or more of the MapML-defined GridSets is referenced by the layer or layer group in its "Tile Caching" profile, GeoServer will generate tile references instead of generating WMS GetMap URLs in the MapML document body.
 
+Client Requests
+^^^^^^^^^^^^^^^
+
+When configuring a cascaded WMS or WMTS remote layers, a new "Client Requests" setting is available.
+
+**Remote**
+  If the "Remote" checkbox is checked, the link templates embedded in MapML will refer to the remote WMS/WMTS.
+  The MapML viewer will directly contact the remote server if certain criteria are met:
+
+- No restricting DataAccessLimit security is associated to the layer (e.g. with GeoFence integration) that will do filtering, clipping or similar operations. In that case, the MapML will point to the local GeoServer so that the param is honored.
+- No vendor parameters are used in the incoming request. If vendor parameters are used (e.g., request clipping with geometric mask) the MapML is pointing to the local GeoServer so that the vendor parameter is honored
+- The remote Server is supporting the requested CoordinateReferenceSystem for that layer.
+- GetTile requests will be sent to the remote server if there is a compatible gridset for that layer (same origin, same CRS, same tile sizes, same levels and same resolutions)
+
 Vector Settings
 ^^^^^^^^^^^^^^^
 

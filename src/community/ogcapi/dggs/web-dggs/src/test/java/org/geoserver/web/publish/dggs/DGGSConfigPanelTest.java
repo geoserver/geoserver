@@ -6,8 +6,12 @@ package org.geoserver.web.publish.dggs;
 
 import static org.geoserver.data.test.MockData.DEFAULT_PREFIX;
 import static org.geoserver.data.test.MockData.PONDS;
+import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MAXRES_KEY;
+import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MINRES_KEY;
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_OFFSET_KEY;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.tester.FormTester;
@@ -21,6 +25,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geotools.dggs.gstore.DGGSGeometryStoreFactory;
 import org.geotools.feature.NameImpl;
+import org.junit.Before;
 import org.junit.Test;
 
 public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
@@ -56,8 +61,16 @@ public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
         testData.addVectorLayer(PONDS, getCatalog());
     }
 
-    @Test
-    public void testPanelSave() {
+    @Before
+    public void resetConfiguration() throws Exception {
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("H3");
+        fti.getMetadata().remove(CONFIGURED_OFFSET_KEY);
+        fti.getMetadata().remove(CONFIGURED_MINRES_KEY);
+        fti.getMetadata().remove(CONFIGURED_MAXRES_KEY);
+        getCatalog().save(fti);
+    }
+
+    private String openDGGSPanel() {
         login();
         tester.startPage(new ResourceConfigurationPage(DEFAULT_PREFIX, "H3"));
         tester.assertNoErrorMessage();
@@ -69,18 +82,33 @@ public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
         Form form = (Form) tester.getComponentFromLastRenderedPage(PUBLISHED_INFO);
         String configPanelPath = getComponentPath(form, DGGSConfigPanel.class);
         assertNotNull(configPanelPath);
-        FormTester formTester = tester.newFormTester(PUBLISHED_INFO);
         // compute path relative to the form
-        String resolutionOffsetPath =
-                configPanelPath.substring(PUBLISHED_INFO.length() + 1) + ":resolutionOffset";
-        formTester.setValue(resolutionOffsetPath, "1");
+        String baseFormPath = configPanelPath.substring(PUBLISHED_INFO.length() + 1);
+        return baseFormPath;
+    }
+
+    @Test
+    public void testPanelSave() {
+        String baseFormPath = openDGGSPanel();
+
+        // set some values and save
+        FormTester formTester = tester.newFormTester(PUBLISHED_INFO);
+        formTester.setValue(baseFormPath + ":resolutionOffset", "1");
+        formTester.setValue(baseFormPath + ":minResolution", "2");
+        formTester.setValue(baseFormPath + ":maxResolution", "5");
         formTester.submit();
         tester.clickLink("publishedinfo:save");
         tester.assertNoErrorMessage();
 
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("H3");
-        assertEquals(
-                Integer.valueOf(1), fti.getMetadata().get(CONFIGURED_OFFSET_KEY, Integer.class));
+        assertIntegerMetadataKey(fti, CONFIGURED_OFFSET_KEY, 1);
+        assertIntegerMetadataKey(fti, CONFIGURED_MINRES_KEY, 2);
+        assertIntegerMetadataKey(fti, CONFIGURED_MAXRES_KEY, 5);
+    }
+
+    private static void assertIntegerMetadataKey(
+            FeatureTypeInfo fti, String key, int expectedValue) {
+        assertEquals(Integer.valueOf(expectedValue), fti.getMetadata().get(key, Integer.class));
     }
 
     @Test
@@ -97,5 +125,32 @@ public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
         Form form = (Form) tester.getComponentFromLastRenderedPage(PUBLISHED_INFO);
         String configPanelPath = getComponentPath(form, DGGSConfigPanel.class);
         assertNull(configPanelPath);
+    }
+
+    @Test
+    public void testMinMaxIndividualValidation() {
+        String baseFormPath = openDGGSPanel();
+
+        // set values outside of the DGGS supported range (0-16 for H3)
+        FormTester formTester = tester.newFormTester(PUBLISHED_INFO);
+        formTester.setValue(baseFormPath + ":minResolution", "-1");
+        formTester.setValue(baseFormPath + ":maxResolution", "25");
+        formTester.submit();
+        tester.assertErrorMessages(
+                "The value of 'Minimum resolution in layer' must be at least 0.",
+                "The value of 'Maximum resolution in layer' must be at most 15.");
+    }
+
+    @Test
+    public void testMinMaxConsistencyValidation() {
+        String baseFormPath = openDGGSPanel();
+
+        // set values inside of the DGGS supported range, but min > max
+        FormTester formTester = tester.newFormTester(PUBLISHED_INFO);
+        formTester.setValue(baseFormPath + ":minResolution", "6");
+        formTester.setValue(baseFormPath + ":maxResolution", "2");
+        formTester.submit();
+        tester.assertErrorMessages(
+                "DGGS minimum layer resolution but be less or equal than the maximum resolution.");
     }
 }

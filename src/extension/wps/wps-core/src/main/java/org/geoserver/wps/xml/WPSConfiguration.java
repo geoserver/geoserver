@@ -13,7 +13,6 @@ import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.xml.v1_0_0.GetFeatureTypeBinding;
-import org.geotools.wfs.WFSParserDelegate;
 import org.geotools.wfs.v1_0.WFS;
 import org.geotools.wfs.v1_1.WFSConfiguration;
 import org.geotools.wfs.v2_0.bindings.CopyingHandler;
@@ -50,7 +49,8 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
         // replace WFSParserDelegate from GeoTools with a new one using GeoServer
         // GetFeatureTypeBinding,
         // able to parse viewParams attribute and enable usage of SQL views
-        Object wfs = container.getComponentInstanceOfType(WFSParserDelegate.class);
+
+        Object wfs = container.getComponentInstanceOfType(org.geotools.wfs.WFSParserDelegate.class);
         container.unregisterComponentByInstance(wfs);
         // XSDParserDelegate with CatalogNamespaceSupport
         container.registerComponentInstance(
@@ -66,6 +66,8 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
                         },
                         new CatalogNamespaceSupport(
                                 GeoServerExtensions.bean(LocalWorkspaceCatalog.class))));
+
+        container.registerComponentInstance(new org.geoserver.wfs.xml.v2_0.WFSParserDelegate());
         container.registerComponentImplementation(ComplexDataHandler.class);
     }
 

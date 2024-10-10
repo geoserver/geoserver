@@ -22,4 +22,10 @@
 
     <bean id="dggsServiceDescriptor" class="org.geoserver.web.data.store.dggs.DGGSServiceDescriptionProvider">
     </bean>
+
+    <bean id="dggsLayerConfig" class="org.geoserver.web.publish.dggs.DGGSConfigurationPageInfo">
+        <property name="id" value="dggsLayerConfig"/>
+        <property name="titleKey" value="publish.layer.config.dggs"/>
+        <property name="componentClass" value="org.geoserver.web.publish.dggs.DGGSConfigPanel"/>
+    </bean>
 </beans>

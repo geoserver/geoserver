@@ -66,7 +66,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         tester.clickLink("form:crs:wkt", true);
         assertTrue(window.isShown());
 
-        tester.assertModelValue("form:crs:popup:content:wkt", crs.toWKT());
+        tester.assertModelValue("form:crs:popup:modal:content:wkt", crs.toWKT());
     }
 
     @Test
@@ -224,7 +224,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         tester.clickLink("form:crs:wkt", true);
         assertTrue(window.isShown());
 
-        tester.assertModelValue("form:crs:popup:content:wkt", crs.toWKT());
+        tester.assertModelValue("form:crs:popup:modal:content:wkt", crs.toWKT());
     }
 
     @Test
@@ -242,8 +242,8 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
 
         // filter by name
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("crs:popup:content:table:filterForm:filter", "IAU:30115");
-        ft.submit("crs:popup:content:table:filterForm:submit");
+        ft.setValue("crs:popup:modal:content:table:filterForm:filter", "IAU:30115");
+        ft.submit("crs:popup:modal:content:table:filterForm:submit");
 
         // find and click the link with the 30115 code
         tester.getLastRenderedPage()

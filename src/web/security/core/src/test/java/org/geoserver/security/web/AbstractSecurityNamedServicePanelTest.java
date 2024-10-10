@@ -206,7 +206,6 @@ public abstract class AbstractSecurityNamedServicePanelTest
         return formTester.getForm().get("config.className").getDefaultModelObjectAsString();
     }
 
-    // TODO: WICKET 9 fix this
     @SuppressWarnings("unchecked")
     protected <T extends SecurityNamedServicePanelInfo> void setSecurityConfigClassName(
             Class<T> clazz) throws Exception {
@@ -215,15 +214,17 @@ public abstract class AbstractSecurityNamedServicePanelTest
                 i -> {
                     if (i instanceof ListItem) {
                         ListItem<? extends Object> listItem = (ListItem<? extends Object>) i;
-                        listItem.forEach(
-                                action -> {
-                                    if (action instanceof AjaxLink) {
-                                        AjaxLink link = (AjaxLink) action;
-                                        if (link.isEnabled()) {
-                                            tester.executeAjaxEvent(link, "click");
+                        if (clazz.isInstance(listItem.getModelObject())) {
+                            listItem.forEach(
+                                    action -> {
+                                        if (action instanceof AjaxLink) {
+                                            AjaxLink link = (AjaxLink) action;
+                                            if (link.isEnabled()) {
+                                                tester.executeAjaxEvent(link, "click");
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                        }
                     }
                 });
     }

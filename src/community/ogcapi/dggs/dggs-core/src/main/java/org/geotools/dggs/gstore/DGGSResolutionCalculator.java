@@ -16,6 +16,9 @@
  */
 package org.geotools.dggs.gstore;
 
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static org.geotools.dggs.gstore.DGGSStore.VP_RESOLUTION;
 import static org.geotools.dggs.gstore.DGGSStore.VP_RESOLUTION_DELTA;
 
@@ -44,7 +47,23 @@ public class DGGSResolutionCalculator {
 
     private static final double DISTANCE_SCALE_FACTOR = 0.0254 / (25.4 / 0.28);
 
+    /** The key used to store the resolution offset in the layer metadata */
     public static final String CONFIGURED_OFFSET_KEY = "dggs.resOffset";
+
+    static final Hints.ConfigurationMetadataKey OFFSET_HINTS_KEY =
+            Hints.ConfigurationMetadataKey.get(CONFIGURED_OFFSET_KEY);
+
+    /** The key used to store the minimum resolution in the layer metadata */
+    public static final String CONFIGURED_MINRES_KEY = "dggs.minResolution";
+
+    static final Hints.ConfigurationMetadataKey MINRES_HINTS_KEY =
+            Hints.ConfigurationMetadataKey.get(CONFIGURED_MINRES_KEY);
+
+    /** The key used to store the maximum resolution in the layer metadata */
+    public static final String CONFIGURED_MAXRES_KEY = "dggs.maxResolution";
+
+    static final Hints.ConfigurationMetadataKey MAXRES_HINTS_KEY =
+            Hints.ConfigurationMetadataKey.get(CONFIGURED_MAXRES_KEY);
 
     double[] levelThresholds;
 
@@ -98,17 +117,30 @@ public class DGGSResolutionCalculator {
                         .map(n -> safeConvert(n, Integer.class));
         // if not available through the request, try the values coming from the configuration
         if (!resolutionDelta.isPresent()) {
-            Hints.ConfigurationMetadataKey offsetKey =
-                    Hints.ConfigurationMetadataKey.get(CONFIGURED_OFFSET_KEY);
-            resolutionDelta =
-                    Optional.ofNullable(hints.get(offsetKey))
-                            .map(n -> safeConvert(n, Integer.class));
+            resolutionDelta = getIntegerHint(hints, OFFSET_HINTS_KEY);
         }
         int resOffset = resolutionDelta.orElse(0);
 
         // compute resolution and eventually apply delta
-        return distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resOffset)
-                .orElse(defaultResolution);
+        int resolution =
+                distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resOffset)
+                        .orElse(defaultResolution);
+
+        // see if there is a min/max resolution set, if so, use it (don't limit to 0 on purpose,
+        // if a resolution has been forced to an invalid value, it should not return zones)
+        resolution = max(getIntegerHint(hints, MINRES_HINTS_KEY).orElse(-MAX_VALUE), resolution);
+        resolution = min(getIntegerHint(hints, MAXRES_HINTS_KEY).orElse(MAX_VALUE), resolution);
+
+        return resolution;
+    }
+
+    /**
+     * Given the hints and a key, returns the integer value associated with the key, as an {@link
+     * Optional}.
+     */
+    private Optional<Integer> getIntegerHint(Hints hints, Object key) {
+        return Optional.ofNullable((Integer) hints.get(key))
+                .map(n -> safeConvert(n, Integer.class));
     }
 
     /**

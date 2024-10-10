@@ -54,6 +54,7 @@ import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.factory.Hints.ConfigurationMetadataKey;
 
@@ -69,7 +70,8 @@ import org.geotools.util.factory.Hints.ConfigurationMetadataKey;
  * @author Gabriel Roldan
  * @version $Id$
  */
-public class GeoServerFeatureSource implements SimpleFeatureSource {
+public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSource>
+        implements SimpleFeatureSource {
     /** Shared package logger */
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
@@ -143,6 +145,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      */
     GeoServerFeatureSource(
             FeatureSource<SimpleFeatureType, SimpleFeature> source, Settings settings) {
+        super(DataUtilities.simple(source));
         this.source = DataUtilities.simple(source);
         this.schema = settings.schema;
         this.definitionQuery = settings.definitionQuery;

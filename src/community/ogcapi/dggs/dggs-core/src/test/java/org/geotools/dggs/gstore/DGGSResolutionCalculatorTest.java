@@ -59,10 +59,10 @@ public class DGGSResolutionCalculatorTest {
     }
 
     @Test
-    public void testGetTargetResolutionDistance() {
+    public void testGetTargetResolutionDistanceLarge() {
         Query query = new Query("testLayer");
         Hints hints = new Hints();
-        hints.put(Hints.GEOMETRY_DISTANCE, 10d); // 10 degrees
+        hints.put(Hints.GEOMETRY_DISTANCE, 10d); // degrees
         query.setHints(hints);
 
         int resolution = calculator.getTargetResolution(query, 1);
@@ -70,13 +70,46 @@ public class DGGSResolutionCalculatorTest {
     }
 
     @Test
+    public void testGetResolutionMin() {
+        Query query = new Query("testLayer");
+        Hints hints = new Hints();
+        hints.put(Hints.GEOMETRY_DISTANCE, 10d); // 10 degrees
+        hints.put(DGGSResolutionCalculator.MINRES_HINTS_KEY, 5); // min resolution is 5
+        query.setHints(hints);
+
+        int resolution = calculator.getTargetResolution(query, 1);
+        assertEquals(5, resolution);
+    }
+
+    @Test
+    public void testGetTargetResolutionDistanceSmall() {
+        Query query = new Query("testLayer");
+        Hints hints = new Hints();
+        hints.put(Hints.GEOMETRY_DISTANCE, 0.001d); // degrees
+        query.setHints(hints);
+
+        int resolution = calculator.getTargetResolution(query, 1);
+        assertEquals(5, resolution);
+    }
+
+    @Test
+    public void testGetResolutionMax() {
+        Query query = new Query("testLayer");
+        Hints hints = new Hints();
+        hints.put(Hints.GEOMETRY_DISTANCE, 0.001); // in degrees
+        hints.put(DGGSResolutionCalculator.MAXRES_HINTS_KEY, 2);
+        query.setHints(hints);
+
+        int resolution = calculator.getTargetResolution(query, 1);
+        assertEquals(2, resolution);
+    }
+
+    @Test
     public void testGetTargetResolutionDistanceOffset() {
         Query query = new Query("testLayer");
         Hints hints = new Hints();
         hints.put(Hints.GEOMETRY_DISTANCE, 10d); // 10 degrees
-        Hints.ConfigurationMetadataKey offsetKey =
-                Hints.ConfigurationMetadataKey.get(DGGSResolutionCalculator.CONFIGURED_OFFSET_KEY);
-        hints.put(offsetKey, 1);
+        hints.put(DGGSResolutionCalculator.OFFSET_HINTS_KEY, 1);
         query.setHints(hints);
 
         int resolution = calculator.getTargetResolution(query, 1);

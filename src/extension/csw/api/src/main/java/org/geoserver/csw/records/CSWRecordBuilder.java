@@ -5,6 +5,8 @@
  */
 package org.geoserver.csw.records;
 
+import org.geoserver.csw.util.PropertyPath;
+
 /**
  * A helper that builds CSW Dublin core records as GeoTools features
  *
@@ -17,13 +19,23 @@ public class CSWRecordBuilder extends GenericRecordBuilder {
     }
 
     /** Adds an element to the current record */
-    public void addElement(String name, String... values) {
-        super.addElement(name + ".value", values);
+    public void addElement(PropertyPath name, String... values) {
+        super.addElement(name.add("value"), (Object[]) values);
     }
 
     /** Adds an element to the current record with scheme */
+    public void addElementWithScheme(PropertyPath name, String scheme, String value) {
+        super.addElement(name.add("value"), value);
+        super.addElement(name.add("scheme"), scheme);
+    }
+
+    @Deprecated
+    public void addElement(String name, String... values) {
+        addElement(PropertyPath.fromDotPath(name), values);
+    }
+
+    @Deprecated
     public void addElementWithScheme(String name, String scheme, String value) {
-        super.addElement(name + ".value", value);
-        super.addElement(name + ".scheme", scheme);
+        addElementWithScheme(PropertyPath.fromDotPath(name), scheme, value);
     }
 }

@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.geoserver.catalog.Keyword;
@@ -29,6 +30,9 @@ public class GetRecordsTest extends MDTestSupport {
         forestInfo.getMetadata().put("date", "09/10/2012");
         forestInfo.getMetadata().put("contact", "blabla");
         forestInfo.getMetadata().put("contact-href", "http://blabla");
+        forestInfo
+                .getMetadata()
+                .put("ref-system", Lists.newArrayList("ref-system-one", "ref-system-two"));
         forestInfo.setLatLonBoundingBox(
                 new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
         forestInfo.getKeywords().add(new Keyword("CustomKeyWord-1"));
@@ -197,6 +201,65 @@ public class GetRecordsTest extends MDTestSupport {
                 "http://blabla",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmx:Anchor/@xlink:href",
                 d);
+
+        assertXpathEvaluatesTo(
+                "therole",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty[1]/gmd:role/gmd:CI_RoleCode",
+                d);
+        assertXpathEvaluatesTo(
+                "therole",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty[2]/gmd:role/gmd:CI_RoleCode",
+                d);
+
+        // check indexed mappings
+        assertXpathEvaluatesTo(
+                "second/first key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[2]/gmd:MD_Keywords/gmd:keyword[1]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "second/second key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[2]/gmd:MD_Keywords/gmd:keyword[2]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "nonsense",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[2]/gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode",
+                d);
+        assertXpathEvaluatesTo(
+                "third/first key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[3]/gmd:MD_Keywords/gmd:keyword[1]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "third/second key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[3]/gmd:MD_Keywords/gmd:keyword[2]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "third/third key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[3]/gmd:MD_Keywords/gmd:keyword[3]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "third/fourth key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[3]/gmd:MD_Keywords/gmd:keyword[4]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "nonsense",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[3]/gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode",
+                d);
+        assertXpathEvaluatesTo(
+                "fourth key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[4]/gmd:MD_Keywords/gmd:keyword[1]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "nonsense",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[4]/gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode",
+                d);
+        assertXpathEvaluatesTo(
+                "fifth key",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[5]/gmd:MD_Keywords/gmd:keyword[1]/gco:CharacterString",
+                d);
+        assertXpathEvaluatesTo(
+                "nonsense",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[5]/gmd:MD_Keywords/gmd:type/gmd:MD_KeywordTypeCode",
+                d);
     }
 
     @Test
@@ -206,7 +269,7 @@ public class GetRecordsTest extends MDTestSupport {
                         + "&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd"
                         + "&maxRecords=100";
         Document d = getAsDOM(request);
-        print(d);
+        // print(d);
         // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
 
         // check we have the expected results
@@ -348,6 +411,57 @@ public class GetRecordsTest extends MDTestSupport {
         assertXpathExists(
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']",
                 d);
+    }
+
+    @Test
+    public void testFilterIndexed() throws Exception {
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd&constraint=ReferenceSystem='EPSG:4326'";
+        Document d = getAsDOM(request);
+        // print(d);
+        // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+        assertXpathEvaluatesTo("15", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&constraint=\"gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString\"='ref-system-one'";
+        d = getAsDOM(request);
+        // print(d);
+        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&constraint=\"gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString\"='EPSG:4326'";
+        d = getAsDOM(request);
+        // print(d);
+        assertXpathEvaluatesTo("15", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd&constraint=ReferenceSystem='ref-system-one'";
+        d = getAsDOM(request);
+        // print(d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&constraint=\"gmd:referenceSystemInfo[1]/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString\"='EPSG:4326'";
+        d = getAsDOM(request);
+        // print(d);
+        assertXpathEvaluatesTo("15", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&constraint=\"gmd:referenceSystemInfo[2]/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString\"='EPSG:4326'";
+        d = getAsDOM(request);
+        print(d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsMatched", d);
+
+        request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&constraint=\"gmd:referenceSystemInfo[2]/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString\"='ref-system-two'";
+        d = getAsDOM(request);
+        // print(d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsMatched", d);
     }
 
     @Test

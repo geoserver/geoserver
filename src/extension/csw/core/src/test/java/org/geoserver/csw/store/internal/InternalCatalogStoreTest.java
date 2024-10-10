@@ -5,8 +5,8 @@
 package org.geoserver.csw.store.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.geoserver.csw.CSWTestSupport;
+import org.geoserver.csw.util.PropertyPath;
 import org.geoserver.security.PropertyFileWatcher;
 import org.junit.Test;
 
@@ -45,9 +46,18 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         assertNotNull(store.getMappings("Record"));
         assertEquals(1, store.getMappings("Record").size());
         CatalogStoreMapping mapping = store.getMappings("Record").get(0);
-        assertNotNull(mapping.getElement("identifier.value"));
-        assertNull(mapping.getElement("format.value"));
+        assertTrue(mapping.elements(PropertyPath.fromDotPath("format.value")).isEmpty());
+        assertFalse(
+                store.getMappings("Record")
+                        .get(0)
+                        .elements(PropertyPath.fromDotPath("identifier.value"))
+                        .isEmpty());
 
+        assertTrue(
+                store.getMappings("Record")
+                        .get(0)
+                        .elements(PropertyPath.fromDotPath("format.value"))
+                        .isEmpty());
         // On Linux and older versions of JDK last modification resolution is one second,
         // and we need the watcher to see the file as changed. Account for slow build servers too.
         PropertyFileWatcher watcher = store.watchers.get("Record").iterator().next();
@@ -63,6 +73,13 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
 
         mapping = store.getMappings("Record").get(0);
         // mapping should be automatically reloaded now
-        assertEquals("img/jpeg", mapping.getElement("format.value").getContent().toString());
+        assertEquals(
+                "img/jpeg",
+                store.getMappings("Record").get(0)
+                        .elements(PropertyPath.fromDotPath("format.value")).stream()
+                        .findFirst()
+                        .get()
+                        .getContent()
+                        .toString());
     }
 }

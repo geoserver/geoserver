@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.AbstractRecordDescriptor;
 import org.geoserver.csw.records.QueryablesMapping;
-import org.geoserver.csw.store.internal.CatalogStoreMapping;
+import org.geoserver.csw.util.PropertyPath;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -107,7 +107,7 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
                                     .getPropertyName(),
                             getNamespaceSupport());
 
-            return CatalogStoreMapping.toDotPath(steps);
+            return PropertyPath.fromXPath(steps).toDothPath();
         }
     }
 

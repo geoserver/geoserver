@@ -17,7 +17,6 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
-import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
@@ -80,7 +79,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
             CatalogStoreMapping mapping,
             RecordDescriptor rd,
             Map<String, String> interpolationProperties) {
-        super(CSWRecordDescriptor.RECORD_TYPE);
+        super(rd.getFeatureType());
         this.offset = offset;
         this.count = count;
         this.filter = filter;

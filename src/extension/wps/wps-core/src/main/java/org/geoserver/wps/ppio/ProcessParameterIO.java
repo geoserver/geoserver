@@ -93,6 +93,7 @@ public abstract class ProcessParameterIO {
         defaults.add(new WFSPPIO.WFS11());
         defaults.add(new WFSPPIO.WFS10Alternate());
         defaults.add(new WFSPPIO.WFS11Alternate());
+        defaults.add(new WFSPPIO.WFS20());
 
         // CRS
         defaults.add(new CoordinateReferenceSystemPPIO());

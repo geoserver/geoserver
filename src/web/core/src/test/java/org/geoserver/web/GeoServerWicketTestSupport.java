@@ -38,7 +38,7 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     }
 
     @AfterClass
-    public  static void cleanupWicketConfiguration() throws Exception {
+    public static void cleanupWicketConfiguration() throws Exception {
         System.clearProperty("wicket.configuration");
     }
 

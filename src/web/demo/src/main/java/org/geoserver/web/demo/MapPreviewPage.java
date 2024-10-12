@@ -301,7 +301,7 @@ public class MapPreviewPage extends GeoServerBasePage {
         // onChange event handled by JS (see renderHeader)
         // we need 2 things;
         // 1. wmsLink
-        // 2. wmsLink
+        // 2. wfsLink
 
         menu.add(new AttributeAppender("wmsLink", new Model<>(layer.getWmsLink()), ";"));
         menu.add(new AttributeAppender("wfsLink", new Model<>(layer.buildWfsLink()), ";"));

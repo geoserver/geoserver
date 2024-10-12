@@ -25,6 +25,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSupport {
@@ -34,6 +35,11 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     public static void disableBrowserDetection() {
         // disable browser detection, makes testing harder for nothing
         GeoServerApplication.DETECT_BROWSER = false;
+    }
+
+    @AfterClass
+    public static void cleanupWicketConfiguration() throws Exception {
+        System.clearProperty("wicket.configuration");
     }
 
     @Override

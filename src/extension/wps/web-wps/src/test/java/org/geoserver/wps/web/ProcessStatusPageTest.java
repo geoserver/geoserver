@@ -97,7 +97,7 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         // this submits the dialog
         tester.clickLink("dialog:dialog:modal:content:form:submit", true);
         // this makes the dialog actually close
-        tester.getComponentFromLastRenderedPage("dialog:dialog")
+        tester.getComponentFromLastRenderedPage("dialog:dialog:modal")
                 .getBehaviors()
                 .forEach(
                         b -> {

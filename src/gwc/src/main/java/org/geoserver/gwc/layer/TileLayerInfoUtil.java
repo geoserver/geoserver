@@ -178,7 +178,7 @@ public class TileLayerInfoUtil {
 
         // Remove the filter as groups shouldn't have auto-updating styles
         if (filter != null && filter instanceof StyleParameterFilter) {
-            layerInfo.removeParameterFilter("STYLES");
+            ((StyleParameterFilter) filter).setLayer(layer);
         }
     }
 

@@ -113,7 +113,7 @@ public class GroupPanel extends Panel {
 
         h.add(
                 add =
-                        new Link("addNew") {
+                        new Link<>("addNew") {
                             @Override
                             public void onClick() {
                                 setResponsePage(

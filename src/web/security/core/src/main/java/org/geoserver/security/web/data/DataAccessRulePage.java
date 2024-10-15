@@ -84,7 +84,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
                                 new CatalogModeModel(DataAccessRuleDAO.get().getMode())));
         add(form);
         form.add(
-                new AjaxLink("catalogModeHelp") {
+                new AjaxLink<>("catalogModeHelp") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         dialog.showInfo(

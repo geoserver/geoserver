@@ -129,7 +129,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             Link link = null;
             add(
                     link =
-                            new Link("mplink") {
+                            new Link<>("mplink") {
                                 @Override
                                 public void onClick() {
                                     setResponsePage(new MasterPasswordChangePage());
@@ -168,7 +168,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             add(label);
             add(
                     link =
-                            new Link("adminlink") {
+                            new Link<>("adminlink") {
                                 @Override
                                 public void onClick() {
                                     setResponsePage(linkPage);

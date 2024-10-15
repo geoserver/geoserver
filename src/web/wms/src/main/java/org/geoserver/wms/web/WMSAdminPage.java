@@ -158,7 +158,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
         form.add(new CheckBox("bBOXForEachCRS"));
         form.add(
-                new AjaxLink("bBOXForEachCRSHelp") {
+                new AjaxLink<>("bBOXForEachCRSHelp") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         dialog.showInfo(

@@ -57,7 +57,7 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
                     }
                 });
         form.add(
-                new AjaxLink("cancel") {
+                new AjaxLink<>("cancel") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         doReturn();

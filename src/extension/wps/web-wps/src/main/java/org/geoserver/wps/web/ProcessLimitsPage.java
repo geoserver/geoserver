@@ -166,7 +166,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                 };
         form.add(apply);
         Link cancel =
-                new Link("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         doReturn();

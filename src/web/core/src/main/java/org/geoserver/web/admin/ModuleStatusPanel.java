@@ -77,7 +77,7 @@ public class ModuleStatusPanel extends Panel {
                                         new Model<>(
                                                 item.getModelObject().getVersion().orElse(""))));
                         msgLink =
-                                new AjaxLink("msg") {
+                                new AjaxLink<>("msg") {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         popup.setInitialHeight(325);

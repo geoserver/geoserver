@@ -65,7 +65,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
             super(id);
 
             add(
-                    new Link("edit") {
+                    new Link<>("edit") {
                         @Override
                         @SuppressWarnings("unchecked")
                         public void onClick() {

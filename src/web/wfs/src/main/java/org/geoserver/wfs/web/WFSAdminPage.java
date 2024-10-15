@@ -197,7 +197,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
                         "srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
         form.add(srsList);
         form.add(
-                new AjaxLink("otherSRSHelp") {
+                new AjaxLink<>("otherSRSHelp") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         dialog.showInfo(

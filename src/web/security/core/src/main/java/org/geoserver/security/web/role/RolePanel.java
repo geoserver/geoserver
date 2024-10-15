@@ -105,7 +105,7 @@ public class RolePanel extends Panel {
         // the add button
         h.add(
                 add =
-                        new Link("addNew") {
+                        new Link<>("addNew") {
                             @Override
                             public void onClick() {
                                 setResponsePage(

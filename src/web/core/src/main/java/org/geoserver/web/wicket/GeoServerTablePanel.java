@@ -516,7 +516,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** The hidden button that will submit the form when the user presses enter in the text field */
     AjaxLink getClearFilterLink(String previousInput) {
         AjaxLink clearButton =
-                new AjaxLink("clear") {
+                new AjaxLink<>("clear") {
 
                     static final long serialVersionUID = 5334592790005438960L;
 

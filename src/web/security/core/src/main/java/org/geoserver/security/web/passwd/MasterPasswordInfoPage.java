@@ -57,7 +57,7 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
                     }
                 });
         form.add(
-                new AjaxLink("back") {
+                new AjaxLink<>("back") {
                     private static final long serialVersionUID = 1L;
 
                     @Override

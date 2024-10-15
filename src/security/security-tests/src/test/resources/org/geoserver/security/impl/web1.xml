@@ -92,7 +92,7 @@
               If a mime type matches any of the regular expressions then it will be compressed.
               -->
          <param-name>compressed-types</param-name>
-         <param-value>text/.*,.*xml.*,application/json,application/x-javascript</param-value>
+         <param-value>text/.*,.*xml.*,application/json,application/javascript</param-value>
      </init-param>
    </filter>
 

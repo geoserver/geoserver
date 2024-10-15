@@ -14,7 +14,7 @@ import org.geotools.wfs.v2_0.WFS;
 /** Extend GeoTools WFSConfiguration to provide a custom binding class for GetFeatureType */
 public class WFSConfiguration extends org.geotools.wfs.v2_0.WFSConfiguration {
 
-    WFSConfiguration() {
+    public WFSConfiguration() {
         // OGC and OWS add two extra GML configurations in the mix, make sure to configure them
         // all with a geomtetry factory supporting curves
         CurvedGeometryFactory gf = new CurvedGeometryFactory(Double.MAX_VALUE);

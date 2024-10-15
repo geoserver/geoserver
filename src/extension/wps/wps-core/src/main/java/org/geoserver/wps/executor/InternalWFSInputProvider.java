@@ -4,11 +4,11 @@
  */
 package org.geoserver.wps.executor;
 
-import net.opengis.wfs.GetFeatureType;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
 import org.geoserver.wfs.WebFeatureService;
+import org.geoserver.wfs.WebFeatureService20;
 import org.geoserver.wfs.kvp.GetFeatureKvpRequestReader;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wps.ppio.ComplexPPIO;
@@ -33,20 +33,48 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
 
     @Override
     protected Object getValueInternal(ProgressListener listener) throws Exception {
-        WebFeatureService wfs = (WebFeatureService) context.getBean("wfsServiceTarget");
-        GetFeatureType gft = null;
+        Object gft = null;
         InputReferenceType ref = input.getReference();
+
         if (ref.getMethod() == MethodType.POST_LITERAL) {
-            gft = (GetFeatureType) ref.getBody();
+            gft = ref.getBody();
         } else {
-            GetFeatureKvpRequestReader reader =
-                    (GetFeatureKvpRequestReader) context.getBean("getFeatureKvpReader");
-            gft = (GetFeatureType) kvpParse(ref.getHref(), reader);
+            String version = getVersion(ref.getHref());
+            GetFeatureKvpRequestReader reader;
+            if ("2.0.0".equals(version)) {
+                reader = (GetFeatureKvpRequestReader) context.getBean("getFeature20KvpReader");
+            } else {
+                reader = (GetFeatureKvpRequestReader) context.getBean("getFeatureKvpReader");
+            }
+            gft = kvpParse(ref.getHref(), reader);
         }
 
-        FeatureCollectionResponse featureCollectionType = wfs.getFeature(gft);
-        // this will also deal with axis order issues
-        return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
+        if (gft instanceof net.opengis.wfs.GetFeatureType) {
+            WebFeatureService wfs = (WebFeatureService) context.getBean("wfsServiceTarget");
+
+            FeatureCollectionResponse featureCollectionType =
+                    wfs.getFeature((net.opengis.wfs.GetFeatureType) gft);
+            // this will also deal with axis order issues
+            return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
+        } else if (gft instanceof net.opengis.wfs20.GetFeatureType) {
+            WebFeatureService20 wfs = (WebFeatureService20) context.getBean("wfsService20Target");
+
+            FeatureCollectionResponse featureCollectionType =
+                    wfs.getFeature((net.opengis.wfs20.GetFeatureType) gft);
+            // this will also deal with axis order issues
+            return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
+        } else {
+
+            if (gft == null) {
+                throw new UnsupportedOperationException("We didn't get a valid GetFeatureType.");
+            }
+            throw new UnsupportedOperationException(
+                    "We can't handle the inner WFS request. Provided GetFeatureType is of class "
+                            + gft.getClass().getCanonicalName()
+                            + "\nContent: ["
+                            + gft
+                            + "]\n");
+        }
     }
 
     @Override

@@ -157,7 +157,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
                     }
                 });
         form.add(
-                new Link("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         doReturn();

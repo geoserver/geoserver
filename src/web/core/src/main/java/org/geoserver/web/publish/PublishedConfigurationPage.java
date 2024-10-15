@@ -358,7 +358,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     private Link<?> cancelLink() {
-        return new Link("cancel") {
+        return new Link<>("cancel") {
             private static final long serialVersionUID = -9007727127569731882L;
 
             @Override

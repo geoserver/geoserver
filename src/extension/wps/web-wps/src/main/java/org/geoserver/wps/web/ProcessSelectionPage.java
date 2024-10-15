@@ -142,7 +142,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                                     new Fragment(id, "linkFragment", ProcessSelectionPage.this);
                             // we use a submit link to avoid losing the other edits in the form
                             Link link =
-                                    new Link("link") {
+                                    new Link<>("link") {
                                         @Override
                                         public void onClick() {
                                             FilteredProcess fp = itemModel.getObject();
@@ -182,7 +182,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                 };
         form.add(apply);
         Link cancel =
-                new Link("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         setResponsePage(wpsAccessRulePage);

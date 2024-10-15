@@ -21,7 +21,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
-public class SelectionDataRuleRemovalLink extends AjaxLink {
+public class SelectionDataRuleRemovalLink extends AjaxLink<Object> {
 
     static final Logger LOGGER = Logging.getLogger(SelectionDataRuleRemovalLink.class);
 

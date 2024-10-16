@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.wfs.GeoPackageGetFeatureOutputFormat">
+      <constructor-arg ref="geoServer" />
+    </bean>
+     
+    <!-- bean so this will appear on the Modules list in the GS web interface-->
+    <bean id="GeoPKGOutputWFSExtension"
+          class="org.geoserver.platform.ModuleStatusImpl">
+        <property name="module" value="gs-geopkg-output-wfs" />
+        <property name="name" value="GeoPKG Output Extension for WFS" />
+        <property name="component" value="GeoPKG Output for WFS" />
+        <property name="available" value="true" />
+        <property name="enabled" value="true" />
+    </bean>
+</beans>

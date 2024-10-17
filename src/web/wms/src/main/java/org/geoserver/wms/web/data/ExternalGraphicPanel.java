@@ -152,7 +152,7 @@ public class ExternalGraphicPanel extends Panel {
         height.setOutputMarkupId(true);
         table.add(height);
 
-        table.add(new AttributeModifier("style", showhideStyleModel));
+        table.add(AttributeModifier.replace("class", showhideStyleModel));
 
         container.add(table);
 
@@ -279,12 +279,7 @@ public class ExternalGraphicPanel extends Panel {
     }
 
     private void updateVisibility(boolean b) {
-        if (b) {
-            showhideStyleModel.setObject("");
-        } else {
-            showhideStyleModel.setObject("display:none");
-        }
-        // table.setVisible(b);
+        showhideStyleModel.setObject(b ? "" : "hidden");
         autoFill.setVisible(b);
         hide.setVisible(b);
         show.setVisible(!b);

@@ -11,12 +11,16 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxFallbackLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -153,16 +157,26 @@ public abstract class FileDataView extends Panel {
                     }
                 };
 
-        fileContent =
-                new WebMarkupContainer("fileContent") {
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        if (tableHeight != null) {
-                            tag.getAttributes()
-                                    .put("style", "overflow:auto; height:" + tableHeight);
+        fileContent = new WebMarkupContainer("fileContent");
+        if (tableHeight != null) {
+            fileContent.setOutputMarkupId(true);
+            fileContent.add(AttributeModifier.replace("class", "overflowAuto"));
+            fileContent.add(
+                    new Behavior() {
+                        private static final long serialVersionUID = 4820788798632906484L;
+
+                        @Override
+                        public void renderHead(Component component, IHeaderResponse response) {
+                            String script =
+                                    "document.getElementById('"
+                                            + fileContent.getMarkupId()
+                                            + "').style.height = '"
+                                            + StringEscapeUtils.escapeEcmaScript(tableHeight)
+                                            + "';";
+                            response.render(OnLoadHeaderItem.forScript(script));
                         }
-                    }
-                };
+                    });
+        }
 
         fileContent.add(fileTable);
 

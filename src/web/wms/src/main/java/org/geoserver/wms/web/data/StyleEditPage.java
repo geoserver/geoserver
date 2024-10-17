@@ -8,13 +8,12 @@ package org.geoserver.wms.web.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.SLDHandler;
@@ -55,9 +54,8 @@ public class StyleEditPage extends AbstractStylePage {
             if (si.getWorkspace() == null) {
                 styleForm.setEnabled(false);
 
-                editor.add(new AttributeAppender("class", new Model<>("disabled"), " "));
-                get("validate")
-                        .add(new AttributeAppender("style", new Model<>("display:none;"), " "));
+                editor.add(AttributeModifier.append("class", "disabled"));
+                get("validate").add(AttributeModifier.append("class", "hidden"));
                 add(
                         new Behavior() {
 

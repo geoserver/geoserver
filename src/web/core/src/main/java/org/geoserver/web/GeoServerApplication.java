@@ -28,7 +28,6 @@ import org.apache.wicket.Session;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.csp.CSPDirective;
-import org.apache.wicket.csp.CSPDirectiveSrcValue;
 import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
@@ -224,6 +223,18 @@ public class GeoServerApplication extends WebApplication
         getResourceSettings().getLocalizer().clearCache();
     }
 
+    /**
+     * Gets the nonce that will be used in the script-src and style-src directives of the
+     * Content-Security-Policy header for this request. The nonce attribute can be added to script
+     * or style elements to allow them to work with Wicket's CSP which blocks inline scripts and
+     * styles. This method should only be used in cases where it is not possible to refactor the
+     * code to work with the CSP, such as when the CSP violations are coming directly from
+     * third-party libraries with built-in support for CSP nonces.
+     */
+    public String getNonce() {
+        return getCspSettings().getNonce(RequestCycle.get());
+    }
+
     /** Initialization override which sets up a locator for i18n resources. */
     @SuppressWarnings("deprecation")
     @Override
@@ -231,37 +242,18 @@ public class GeoServerApplication extends WebApplication
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
+        // Wicket's default Content-Security-Policy value is:
+        //   default-src 'none'; script-src 'strict-dynamic' 'nonce-XYZ'; style-src 'nonce-XYZ';
+        //   img-src 'self'; connect-src 'self'; font-src 'self'; manifest-src 'self';
+        //   child-src 'self'; frame-src 'self'; base-uri 'self';
+        // GeoServer adds data: to the img-src directive to allow image data URIs used by
+        // OpenLayers, CodeMirror, the datetime picker and color picker (primarily for Style Editor)
         if (CSP_STRICT) {
-            getCspSettings()
-                    .blocking()
-                    .clear()
-                    .add(
-                            CSPDirective.SCRIPT_SRC,
-                            CSPDirectiveSrcValue.STRICT_DYNAMIC,
-                            CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.IMG_SRC, "'self'", "data:")
-                    .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
+            getCspSettings().blocking().strict().add(CSPDirective.IMG_SRC, "data:");
         } else {
-            // More relaxed configuration: report only
-            getCspSettings()
-                    .reporting()
-                    .clear()
-                    .add(
-                            CSPDirective.SCRIPT_SRC,
-                            CSPDirectiveSrcValue.STRICT_DYNAMIC,
-                            CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.IMG_SRC, "'self'", "data:")
-                    .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
+            // More relaxed configuration: disable blocking and enable reporting only
+            getCspSettings().blocking().disabled();
+            getCspSettings().reporting().strict().add(CSPDirective.IMG_SRC, "data:");
         }
         /*
          * The order string resource loaders are added to IResourceSettings is of importance so we need to add any contributed loader prior to the

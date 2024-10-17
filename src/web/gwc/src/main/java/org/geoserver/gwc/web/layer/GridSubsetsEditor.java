@@ -200,9 +200,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         if (!gridsetExists) {
                             gridSetLabel.add(
                                     new AttributeModifier(
-                                            "style",
-                                            new Model<>(
-                                                    "color:red;text-decoration:line-through;")));
+                                            "class", new Model<>("gwc-missing-gridset")));
                             getPage()
                                     .warn(
                                             "GridSet "

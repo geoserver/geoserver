@@ -1,22 +1,14 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head>
 <title><wicket:message key="title">Activity</wicket:message></title>
-<wicket:head>
-  <style type="text/css">
-   form label {
-      display: inline;
-   }
-  </style>
-</wicket:head>
-
 </head>
 <body>
 <wicket:panel>
      <form wicket:id="form" class="pb-1 ps-5">
-        <label for="from">From</label>
+        <label for="from" class="inline">From</label>
         <input type="text" wicket:id="from" id="start" class="pe-4 d-inline"></input>
         
-        <label for="to">To</label>
+        <label for="to" class="inline">To</label>
         <input type="text" wicket:id="to" id="end" class="d-inline"></input>
         
         <a href="#" wicket:id="refresh" class="refresh-link">Refresh</a>

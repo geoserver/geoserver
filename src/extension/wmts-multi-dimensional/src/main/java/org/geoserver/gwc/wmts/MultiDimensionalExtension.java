@@ -101,6 +101,12 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
      */
     public static final String SIDECAR_TYPE = "wmtsMultidimSidecarType";
 
+    /**
+     * Points to a different store for the SIDECAR_TYPE feature type, which might be faster for
+     * certain operations.
+     */
+    public static final String SIDECAR_STORE = "wmtsMultidimSidecarStore";
+
     public static final String SORT_BY_END = "SORT_BY_END";
 
     private final FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();

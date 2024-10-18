@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
@@ -26,6 +28,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.MultiDimensionalExtension;
+import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -44,6 +47,7 @@ import org.geotools.util.logging.Logging;
 public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
 
     static final Logger LOGGER = Logging.getLogger(MultiDimLayerPanel.class);
+    private final DropDownChoice<String> sidecarStore;
 
     public MultiDimLayerPanel(String id, IModel<? extends LayerInfo> layerModel) {
         super(id, layerModel);
@@ -53,14 +57,30 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
 
         PropertyModel<MetadataMap> metadataModel =
                 new PropertyModel<>(layerModel, "resource.metadata");
+        MapModel<String> sidecarStoreModel =
+                new MapModel<>(metadataModel, MultiDimensionalExtension.SIDECAR_STORE);
+        sidecarStore =
+                new DropDownChoice<>("sidecarStore", sidecarStoreModel, getAvailableStores());
         MapModel<String> sidecarTypeModel =
                 new MapModel<>(metadataModel, MultiDimensionalExtension.SIDECAR_TYPE);
         DropDownChoice<String> sidecarType =
-                new DropDownChoice<>("sidecarType", sidecarTypeModel, getAvailableTypes());
+                new DropDownChoice<>(
+                        "sidecarType", sidecarTypeModel, getAvailableTypes(sidecarStore));
         sidecarType.add(new SidecarValidator());
+        sidecarStore.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        sidecarType.setChoices(getAvailableTypes(sidecarStore));
+                        target.add(sidecarTypeContainer);
+                    }
+                });
+        sidecarTypeContainer.add(sidecarStore);
         sidecarTypeContainer.add(sidecarType);
         LayerInfo layer = (LayerInfo) getDefaultModelObject();
         sidecarTypeContainer.setVisible(layer.getResource() instanceof FeatureTypeInfo);
+        sidecarTypeContainer.setOutputMarkupId(true);
 
         MapModel<Integer> expandLimitDefaultModel =
                 new MapModel<>(metadataModel, MultiDimensionalExtension.EXPAND_LIMIT_KEY);
@@ -77,23 +97,48 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
         add(expandLimitMax);
     }
 
-    private List<String> getAvailableTypes() {
+    private List<String> getAvailableTypes(DropDownChoice<String> storeChoice) {
         try {
             LayerInfo layer = (LayerInfo) getDefaultModelObject();
             ResourceInfo resource = layer.getResource();
             if (!(resource instanceof FeatureTypeInfo)) return Collections.emptyList();
 
-            DataAccess<? extends FeatureType, ? extends Feature> store =
-                    ((DataStoreInfo) resource.getStore()).getDataStore(null);
-            return store.getNames().stream()
-                    .map(n -> n.getLocalPart())
-                    .filter(t -> t != null && !t.equals(layer.getResource().getNativeName()))
-                    .collect(Collectors.toList());
+            String storeName = storeChoice.getModelObject();
+            if (storeName == null) {
+                // no store selected, then use the main feature type store and exclude the main type
+                DataAccess<? extends FeatureType, ? extends Feature> store =
+                        ((DataStoreInfo) resource.getStore()).getDataStore(null);
+                return store.getNames().stream()
+                        .map(n -> n.getLocalPart())
+                        .filter(t -> t != null && !t.equals(layer.getResource().getNativeName()))
+                        .sorted()
+                        .collect(Collectors.toList());
+            } else {
+                // separate store, no filtering needed
+                DataStoreInfo si = DimensionsUtils.getStoreByName(resource, storeName);
+                DataAccess<? extends FeatureType, ? extends Feature> store = si.getDataStore(null);
+                return store.getNames().stream()
+                        .map(n -> n.getLocalPart())
+                        .sorted()
+                        .collect(Collectors.toList());
+            }
+
         } catch (IOException e) {
             error(getErrorMessage("sidecarTypesLoadError"));
             LOGGER.log(Level.SEVERE, "Failed to load list of feature types", e);
             return Collections.emptyList();
         }
+    }
+
+    private List<String> getAvailableStores() {
+        LayerInfo layer = (LayerInfo) getDefaultModelObject();
+        ResourceInfo resource = layer.getResource();
+        if (!(resource instanceof FeatureTypeInfo)) return Collections.emptyList();
+
+        return resource.getCatalog().getDataStores().stream()
+                .map(si -> si.getWorkspace().getName() + ":" + si.getName())
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     private class SidecarValidator implements IValidator<String> {
@@ -108,10 +153,19 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
                 DataStore store =
                         (DataStore)
                                 ((DataStoreInfo) layer.getResource().getStore()).getDataStore(null);
-                Map<String, AttributeDescriptor> sidecarAttributes =
-                        getAttributesMap(store, sidecarType);
+                String sidecarStoreName = MultiDimLayerPanel.this.sidecarStore.getModelObject();
+                DataStore sidecarStore;
+                if (sidecarStoreName == null) {
+                    sidecarStore = store;
+                } else {
+                    DataStoreInfo dsi =
+                            DimensionsUtils.getStoreByName(layer.getResource(), sidecarStoreName);
+                    sidecarStore = (DataStore) dsi.getDataStore(null);
+                }
                 Map<String, AttributeDescriptor> mainAttributes =
                         getAttributesMap(store, nativeType);
+                Map<String, AttributeDescriptor> sidecarAttributes =
+                        getAttributesMap(sidecarStore, sidecarType);
 
                 layer.getResource()
                         .getMetadata()
@@ -133,6 +187,7 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
             } catch (IOException e) {
                 LOGGER.log(
                         Level.SEVERE, "Failed to load the target feature type for validation", e);
+                error(getErrorMessage("validationError", e.getMessage()));
             }
         }
 

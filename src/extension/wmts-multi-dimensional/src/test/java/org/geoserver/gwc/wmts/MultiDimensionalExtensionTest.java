@@ -15,11 +15,6 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -28,19 +23,16 @@ import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
-import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
-import org.junit.After;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -51,40 +43,6 @@ import org.w3c.dom.Document;
  * main four operations: GetCapabilities, DescribeDomains, GetHistogram and GetFewature
  */
 public class MultiDimensionalExtensionTest extends TestsSupport {
-
-    // xpath engine that will be used to check XML content
-    private static XpathEngine xpath;
-
-    {
-        // registering namespaces for the xpath engine
-        Map<String, String> namespaces = new HashMap<>();
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
-        namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
-        namespaces.put(
-                "md",
-                "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-        xpath = XMLUnit.newXpathEngine();
-    }
-
-    @After
-    public void cleanupVectorSidecar() throws Exception {
-        Catalog catalog = getCatalog();
-        FeatureTypeInfo vector = catalog.getFeatureTypeByName(getLayerId(VECTOR_ELEVATION_TIME));
-        vector.getMetadata().remove(MultiDimensionalExtension.SIDECAR_TYPE);
-        catalog.save(vector);
-    }
-
-    private void setupVectorSidecar() throws Exception {
-        Catalog catalog = getCatalog();
-        FeatureTypeInfo vector = catalog.getFeatureTypeByName(getLayerId(VECTOR_ELEVATION_TIME));
-        vector.getMetadata()
-                .put(MultiDimensionalExtension.SIDECAR_TYPE, SIDECAR_VECTOR_ET.getLocalPart());
-        catalog.save(vector);
-    }
 
     @Override
     protected void afterSetup(SystemTestData testData) {
@@ -337,47 +295,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='180.0']", "1");
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
-    }
-
-    @Test
-    public void testVectorSidecarDescribeDomainsOperation() throws Exception {
-        // setup sidecar, has different values than the main table, checking that indeed it's being
-        // used
-        setupVectorSidecar();
-
-        // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME));
-        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response);
-        print(result);
-        // check that we have two domains
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
-
-        // check the elevation domain
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']",
-                "1");
-        checkXpathCount(
-                result, "/md:Domains/md:DimensionDomain[md:Domain='11.0,12.0,13.0,15.0']", "1");
-        // check the time domain
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[md:Domain='2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z']",
-                "1");
-        // check the space domain
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-170.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-80.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='170.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='80.0']", "1");
     }
 
     @Test
@@ -909,29 +826,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
-    public void testVectorSidecarGetHistogramOperationForTime() throws Exception {
-        // setup sidecar, it has different values on purpose
-        setupVectorSidecar();
-
-        // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
-                        getLayerId(VECTOR_ELEVATION_TIME));
-        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response);
-        print(result);
-        // check the returned histogram
-        checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
-        checkXpathCount(
-                result,
-                "/md:Histogram[md:Domain="
-                        + "'2011-02-11T00:00:00.000Z/2011-02-12T00:00:00.000Z/P1M']",
-                "1");
-        checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
-    }
-
-    @Test
     public void testVectorEmptyTimeHistogram() throws Exception {
         // perform the get histogram operation request, using a non existing elevation value
         String queryRequest =
@@ -1019,29 +913,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
-    public void testVectorSidecarGetFeatureOperation() throws Exception {
-        // setup sidecar, it has different values on purpose
-        setupVectorSidecar();
-
-        // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME));
-        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
-        // check the returned features
-        checkXpathCount(result, "/wmts:feature", "4");
-        checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "4");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='11.0']", "1");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='12.0']", "1");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='13.0']", "1");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='15.0']", "1");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='2011-02-11T00:00:00.000Z']", "3");
-        checkXpathCount(result, "/wmts:feature[wmts:dimension='2011-02-12T00:00:00.000Z']", "1");
-    }
-
-    @Test
     public void testVectorGetFeatureOperationWithTimeFilter() throws Exception {
         // perform the get histogram operation request
         String queryRequest =
@@ -1067,73 +938,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // this request should fail whit an exception report
         assertThat(response.getContentAsString(), containsString("Missing Request parameter"));
         assertThat(response.getStatus(), is(400));
-    }
-
-    /** Helper method that will create a default value strategy, minimum value in this case. */
-    private DimensionDefaultValueSetting minimumValue() {
-        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
-        defaultValueSetting.setStrategyType(DimensionDefaultValueSetting.Strategy.MINIMUM);
-        return defaultValueSetting;
-    }
-
-    private void registerLayerDimension(
-            ResourceInfo info,
-            String dimensionName,
-            String attributeName,
-            DimensionPresentation presentation,
-            DimensionDefaultValueSetting defaultValue) {
-        registerLayerDimension(
-                info, dimensionName, attributeName, null, presentation, defaultValue);
-    }
-
-    /** Helper method that will register a dimension for some layer. */
-    private void registerLayerDimension(
-            ResourceInfo info,
-            String dimensionName,
-            String attributeName,
-            String endAttribute,
-            DimensionPresentation presentation,
-            DimensionDefaultValueSetting defaultValue) {
-        DimensionInfo dimension = new DimensionInfoImpl();
-        dimension.setEnabled(true);
-        dimension.setPresentation(presentation);
-        dimension.setDefaultValue(defaultValue);
-        dimension.setAttribute(attributeName);
-        if (endAttribute != null) dimension.setEndAttribute(endAttribute);
-        info.getMetadata().put(dimensionName, dimension);
-        getCatalog().save(info);
-    }
-
-    /**
-     * Helper method that simply extracts the result of a request to a string and builds a document.
-     * Also checks that the content type is 'text/xml'.
-     */
-    private Document getResultAsDocument(MockHttpServletResponse response) throws Exception {
-        return getResultAsDocument(response, "text/xml");
-    }
-
-    /**
-     * Helper method that simply extracts the result of a request to a string and build a document.
-     * Also checks the content type of the response.
-     */
-    private Document getResultAsDocument(MockHttpServletResponse response, String contentType)
-            throws Exception {
-        return getResultAsDocument(response, getBaseMimeType(contentType), HttpStatus.OK);
-    }
-
-    private Document getResultAsDocument(
-            MockHttpServletResponse response, String contentType, HttpStatus expectedStatus)
-            throws Exception {
-        String result = response.getContentAsString();
-        assertThat(response.getStatus(), is(expectedStatus.value()));
-        assertThat(getBaseMimeType(response.getContentType()), is(contentType));
-        return XMLUnit.buildTestDocument(result);
-    }
-
-    /** Helper method that perform a XPATH count and check the result. */
-    private void checkXpathCount(Document result, String path, String count) throws Exception {
-        String finalPath = String.format("count(/%s)", path);
-        assertThat(xpath.evaluate(finalPath, result), is(count));
     }
 
     @Override
@@ -1185,28 +989,6 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // print(dom);
         assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("2012-02-11T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
-    }
-
-    @Test
-    public void testVectorSidecarGetDomainValuesOnTime() throws Exception {
-        // setup sidecar, has different domain values on purpose
-        setupVectorSidecar();
-
-        // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getLayerId(VECTOR_ELEVATION_TIME)
-                        + "&TileMatrixSet=EPSG:4326&domain=time";
-        Document dom = getAsDOM(baseRequest);
-        print(dom);
-        assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
-        assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
-        assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
-        assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
-        assertXpathEvaluatesTo(
-                "2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z",
-                "/md:DomainValues/md:Domain",
-                dom);
     }
 
     @Test

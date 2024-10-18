@@ -212,7 +212,7 @@ WMS GetMap considerations
 
 By default, each layer/style pair that is requested via the GetMap parameters is composed into a single <map-extent>...<map-link tref="...">...</map-extent> structure as exemplified above.  
 
-If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <layer-> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
+If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <map-layer> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
 
 .. figure:: images/mapml_wms_multi_extent.png
 
@@ -304,7 +304,7 @@ You can add layers to the map as you like, by dragging the URL bar value generat
 
 If all goes well, you should see the layers stacked on the map and in the layer control.
 
-MapML visualization is supported by the MapML.js project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about MapML.js at the project `website <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <layer-> elements: 
+MapML visualization is supported by the MapML.js project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about MapML.js at the project `website <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <map-layer> elements: 
 
 .. code-block:: html
 
@@ -319,12 +319,12 @@ MapML visualization is supported by the MapML.js project. The MapML viewer is bu
           html, body { height: 100%; }
           * { margin: 0; padding: 0; }
           mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }
-          mapml-viewer:not(:defined) > * { display: none; } layer- { display: none; }
+          mapml-viewer:not(:defined) > * { display: none; } map-layer { display: none; }
         </style>
       </head>
       <body>
         <mapml-viewer projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
-          <layer- label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></layer->
+          <map-layer label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></map-layer>
         </mapml-viewer>
       </body>
     </html>

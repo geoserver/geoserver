@@ -47,11 +47,11 @@ This would result in a head section that would resemble:
           html, body { height: 100%; }
           * { margin: 0; padding: 0; }
           mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; border: none; vertical-align: middle }
-          mapml-viewer:not(:defined) > * { display: none; } nlayer- { display: none; }
+          mapml-viewer:not(:defined) > * { display: none; } map-layer { display: none; }
       </style>
       <noscript>
       <style>
-          mapml-viewer:not(:defined) > :not(layer-) { display: initial; }
+          mapml-viewer:not(:defined) > :not(map-layer) { display: initial; }
       </style>
       </noscript>
       <!-- Added from the template -->

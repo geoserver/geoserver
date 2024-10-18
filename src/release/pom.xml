@@ -159,7 +159,17 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-geopkg-output</artifactId>
+      <artifactId>gs-geopkg-output-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-geopkg-output-wms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-geopkg-output-wfs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -26,7 +26,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -576,7 +582,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+        when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         Resource result = layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
         assertSame(mockResult, result);
@@ -630,7 +636,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+        when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         TileJSON result = layerInfoTileLayer.getTileJSON();
         assertEquals("test:MockLayerInfoName", result.getName());
@@ -693,7 +699,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+        when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         TileJSON result = layerGroupInfoVectorTileLayer.getTileJSON();
         assertEquals("MockLayerGroupVectors", result.getName());
@@ -770,7 +776,7 @@ public class GeoServerTileLayerTest {
 
         Resource mockResult = mock(Resource.class);
         ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+        when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         TileJSON result = layerGroupInfoVectorTileLayer.getTileJSON();
         assertEquals("MockLayerGroupMixed", result.getName());
@@ -877,8 +883,7 @@ public class GeoServerTileLayerTest {
         public GeoServerTileLayer prepareTileLayer() throws Exception {
             Resource mockResult = mock(Resource.class);
             ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-            Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any()))
-                    .thenReturn(mockResult);
+            when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
             return new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         }
@@ -934,7 +939,7 @@ public class GeoServerTileLayerTest {
 
     @Test
     public void testGetTile() throws Exception {
-        long[] tileIndex = new long[] {0, 0, 0};
+        long[] tileIndex = {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
@@ -956,7 +961,7 @@ public class GeoServerTileLayerTest {
     @Test
     public void testGetTileWarningNoSkip() throws Exception {
         // no skips setup, will cache permanently
-        long[] tileIndex = new long[] {0, 0, 0};
+        long[] tileIndex = {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
@@ -974,7 +979,7 @@ public class GeoServerTileLayerTest {
     @Test
     public void testGetTileWarningMismatchedSkip() throws Exception {
         // skips on nearest, gets a warning as default, caches permanently
-        long[] tileIndex = new long[] {0, 0, 0};
+        long[] tileIndex = {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
@@ -992,7 +997,7 @@ public class GeoServerTileLayerTest {
     @Test
     public void testGetTileWarningSkip() throws Exception {
         // skips on nearest and default, gets a warning as default, no persistent cache occurs
-        long[] tileIndex = new long[] {0, 0, 0};
+        long[] tileIndex = {0, 0, 0};
         GetTileMockTester tester = new GetTileMockTester();
         GeoServerTileLayer tileLayer = tester.prepareTileLayer();
 
@@ -1034,7 +1039,7 @@ public class GeoServerTileLayerTest {
                         .getGridSubset("EPSG:4326")
                         .getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
 
-        long[] tileIndex = new long[] {coverage[0], coverage[1], zoomLevel};
+        long[] tileIndex = {coverage[0], coverage[1], zoomLevel};
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
         Dispatcher.REQUEST.set(new Request());
 
@@ -1080,7 +1085,7 @@ public class GeoServerTileLayerTest {
                         .getGridSubset("EPSG:4326")
                         .getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
 
-        long[] tileIndex = new long[] {coverage[0], coverage[1], zoomLevel};
+        long[] tileIndex = {coverage[0], coverage[1], zoomLevel};
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
 
         Dispatcher.REQUEST.remove();
@@ -1119,7 +1124,7 @@ public class GeoServerTileLayerTest {
                         .getGridSubset("EPSG:4326")
                         .getCoverage(zoomLevel); // {minx,miny,max,maxy,zoomlevel}
 
-        long[] tileIndex = new long[] {coverage[0], coverage[1], zoomLevel};
+        long[] tileIndex = {coverage[0], coverage[1], zoomLevel};
         ConveyorTile conveyorTile = tester.prepareConveyorTile(tileLayer, tileIndex);
         GeoServerTileLayer.WEB_MAP.set(tester.prepareFakeMap(1024, 1024));
         ConveyorTile result = tileLayer.getTile(conveyorTile);

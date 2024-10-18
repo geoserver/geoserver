@@ -24,13 +24,25 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+@SuppressWarnings("PMD.SystemPrintln")
+@Ignore
 public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
     static final String LAYER_NAME =
@@ -70,7 +82,6 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
      * through the IDE).
      */
     @Test
-    @Ignore
     public void runBenchmark() throws Exception {
 
         Options options =
@@ -80,6 +91,13 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                         .resultFormat(ResultFormatType.JSON)
                         .build();
         new Runner(options).run();
+    }
+
+    private static class GeoServerBenchmarkSuppport extends GeoServerSystemTestSupport {
+        @Override
+        public MockHttpServletResponse getAsServletResponse(String path) throws Exception {
+            return super.getAsServletResponse(path);
+        }
     }
 
     @BenchmarkMode(Mode.Throughput)
@@ -96,8 +114,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
             AtomicInteger currentIndex = new AtomicInteger(0);
 
-            GeoServerSystemTestSupport geoServerSystemTestSupport =
-                    new GeoServerSystemTestSupport();
+            GeoServerBenchmarkSuppport geoServerSystemTestSupport =
+                    new GeoServerBenchmarkSuppport();
 
             // Track how many cache hits we get just to help validate correctness of our benchmark
             Map<String, Integer> cacheHitRate = new ConcurrentHashMap<>();
@@ -123,10 +141,14 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
                 int cacheMisses = cacheHitRate.getOrDefault("MISS", 0);
                 int totalRequests = cacheHits + cacheMisses;
                 double cacheHitRate = (double) cacheHits / totalRequests;
-                System.out.println("Total requests: " + totalRequests);
-                System.out.println("Cache hits: " + cacheHits);
-                System.out.println("Cache misses: " + cacheMisses);
-                System.out.println("Cache hit rate: " + cacheHitRate);
+                extracted("Total requests: " + totalRequests);
+                extracted("Cache hits: " + cacheHits);
+                extracted("Cache misses: " + cacheMisses);
+                extracted("Cache hit rate: " + cacheHitRate);
+            }
+
+            private static void extracted(String totalRequests) {
+                System.out.println(totalRequests);
             }
         }
 
@@ -151,6 +173,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         public static class GwcWithConcurrencyAndNoCacheHitsState
                 extends AbstractGwcWithConcurrency {
 
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 1);
@@ -160,7 +183,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithoutConcurrencyAndNoCacheHitsState
                 extends AbstractGwcWithoutConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 1);
@@ -170,7 +193,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithConcurrencyAnd50PercentCacheHitsState
                 extends AbstractGwcWithConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 2);
@@ -180,7 +203,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithoutConcurrencyAnd50PercentCacheHitsState
                 extends AbstractGwcWithoutConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 2);
@@ -190,7 +213,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithConcurrencyAnd75PercentCacheHitsState
                 extends AbstractGwcWithConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 4);
@@ -200,7 +223,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithoutConcurrencyAnd75PercentCacheHitsState
                 extends AbstractGwcWithoutConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 4);
@@ -210,7 +233,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithConcurrencyAnd90PercentCacheHitsState
                 extends AbstractGwcWithConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 16);
@@ -220,7 +243,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
         public static class GwcWithoutConcurrencyAnd90PercentCacheHitsState
                 extends AbstractGwcWithoutConcurrency {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 tileIndices = getTileIndices(LAYER_NAME, null, 11, 100000, 4, 16);
@@ -229,7 +252,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         }
 
         public static class NoGwcState extends AbstractBenchmarkState {
-
+            @Override
             public void setup() throws Exception {
                 super.setup();
                 GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
@@ -440,17 +463,16 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
      * @throws IOException
      */
     static void saveToCsv(String location, long[][] tileIndices) throws IOException {
-        PrintWriter writer = new PrintWriter(new FileWriter(location));
-        String gridsetId = "EPSG:4326";
-        final GWC gwc = GWC.get();
-        final TileLayer tileLayer = gwc.getTileLayerByName(LAYER_NAME);
-        final GridSubset gridSubset = tileLayer.getGridSubset(gridsetId);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(location))) {
+            String gridsetId = "EPSG:4326";
+            final GWC gwc = GWC.get();
+            final TileLayer tileLayer = gwc.getTileLayerByName(LAYER_NAME);
+            final GridSubset gridSubset = tileLayer.getGridSubset(gridsetId);
 
-        for (long[] tileIndex : tileIndices) {
-            BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
-            writer.println(bounds.toString());
+            for (long[] tileIndex : tileIndices) {
+                BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
+                writer.println(bounds.toString());
+            }
         }
-
-        writer.close();
     }
 }

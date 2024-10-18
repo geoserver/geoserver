@@ -113,7 +113,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         xpath = XMLUnit.newXpathEngine();
 
         Catalog catalog = getCatalog();
@@ -123,6 +123,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         layerMeta.getMetadata().put("mapml.useTiles", false);
         catalog.save(layerMeta);
+
+        // disable background tile saving, some tests check for the presence of the tiles on disk
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setMetaTilingThreads(0);
+        gwc.saveConfig(config);
     }
 
     @After

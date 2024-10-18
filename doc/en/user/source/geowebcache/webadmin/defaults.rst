@@ -77,6 +77,20 @@ Enable Data Security
 
 Enables the :ref:`gwc_data_security` in the embedded GeoWebCache.
 
+Metatiling threads count
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This setting determines the number of threads that will be used to encode and save metatiles.
+By default, a user requested tile will be encoded on main request thread and immediately returned,
+but the remaining tiles will be encoded and saved on asynchronous threads to decrease latency
+experienced by the user.
+
+Possible values for this setting:
+
+* **unset**, which will use a default thread pool size, equal to 2 times the number of cores
+* **0**, which will disable concurrency and all tiles belonging to the metatile will be encoded/saved on the main request thread
+* **a positive integer**, which will set the number of threads to the specified value
+
 Default Caching Options for GeoServer Layers
 --------------------------------------------
 

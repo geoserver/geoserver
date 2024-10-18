@@ -39,7 +39,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -317,16 +320,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (metaTilingThreads == 0) {
             return null;
         }
-        ThreadPoolExecutor executor =
-                new ThreadPoolExecutor(
-                        metaTilingThreads,
-                        metaTilingThreads,
-                        10,
-                        TimeUnit.SECONDS,
-                        new LinkedBlockingQueue<>(),
-                        threadFactory);
-        executor.allowCoreThreadTimeOut(true);
-        return executor;
+        return Executors.newFixedThreadPool(metaTilingThreads, threadFactory);
     }
 
     /**

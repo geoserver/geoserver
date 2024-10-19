@@ -168,7 +168,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 8749672113664556346L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            public void onSubmit(AjaxRequestTarget target) {
                 if (!metadataTemplateModel.getObject().getLinkedLayers().isEmpty()) {
                     dialog.showOkCancel(
                             target,

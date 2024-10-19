@@ -85,11 +85,11 @@ public class GSModalWindow extends Panel {
         delegate.showUnloadConfirmation(unloadConfirmation);
     }
 
-    public interface PageCreator extends ModalWindow.PageCreator {};
+    public interface PageCreator extends ModalWindow.PageCreator {}
 
-    public interface WindowClosedCallback extends ModalWindow.WindowClosedCallback {};
+    public interface WindowClosedCallback extends ModalWindow.WindowClosedCallback {}
 
-    public interface CloseButtonCallback extends ModalWindow.CloseButtonCallback {};
+    public interface CloseButtonCallback extends ModalWindow.CloseButtonCallback {}
 
     public void setPageCreator(PageCreator pageCreator) {
         delegate.setPageCreator(pageCreator);

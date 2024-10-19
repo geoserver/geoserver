@@ -15,7 +15,7 @@ import org.geoserver.web.wicket.GSModalWindow;
 public class SubProcessBuilder extends WebPage {
 
     public SubProcessBuilder(ExecuteRequest request, final GSModalWindow window) {
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         final WPSRequestBuilderPanel builder = new WPSRequestBuilderPanel("builder", request);

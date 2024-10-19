@@ -522,26 +522,25 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
     public void assertFixRepeat(ComplexMetadataMap parent) {
         // list simple fields
-        Assert.assertEquals(1, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(1, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
         // list of objects
-        Assert.assertEquals(1, parent.size("referencesystem-object-list"));
+        assertEquals(1, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
         // list of nested objects
-        Assert.assertEquals(1, parent.size("feature-catalog"));
+        assertEquals(1, parent.size("feature-catalog"));
         ComplexMetadataMap submapNested01 = parent.subMap("feature-catalog/feature-attribute", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "First object catalog object", submapNested01.get(String.class, "name").getValue());
-        Assert.assertEquals("String", submapNested01.get(String.class, "type").getValue());
-        Assert.assertEquals(1, submapNested01.size("domain"));
+        assertEquals("String", submapNested01.get(String.class, "type").getValue());
+        assertEquals(1, submapNested01.size("domain"));
         ComplexMetadataMap submapdomain = submapNested01.subMap("domain", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "a domain for first catalog object",
                 submapdomain.get(String.class, "code").getValue());
-        Assert.assertEquals("15", submapdomain.get(String.class, "value").getValue());
+        assertEquals("15", submapdomain.get(String.class, "value").getValue());
     }
 }

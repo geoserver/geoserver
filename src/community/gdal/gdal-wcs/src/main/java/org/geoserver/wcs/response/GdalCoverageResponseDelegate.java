@@ -13,10 +13,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.ZipOutputStream;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.FormatAdapter;
 import org.geoserver.ogr.core.FormatConverter;
@@ -56,7 +58,8 @@ import org.vfny.geoserver.wcs.WcsException;
  *
  * @author Stefano Costa, GeoSolutions
  */
-public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, FormatConverter {
+public class GdalCoverageResponseDelegate
+        implements CoverageResponseDelegate, FormatConverter, GeoServerLifecycleHandler {
 
     private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
 
@@ -80,11 +83,18 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
     /** Map holding the descriptors of the supported GDAL formats (keyed by format name). */
     static Map<String, Format> formats = new HashMap<String, Format>();
+
     /** Map holding the descriptors of the supported GDAL formats (keyed by mime type). */
     static Map<String, Format> formatsByMimeType = new HashMap<String, Format>();
 
     /** Lock guarding concurrent access to the maps holding the format descriptors. */
     private ReadWriteLock formatsLock;
+
+    /**
+     * Supports caching and lazily computing the gdal_translate availability, and ability to clear
+     * the computed value on reset/reload
+     */
+    private AtomicReference<Boolean> available = new AtomicReference<>(null);
 
     /** @param gs */
     public GdalCoverageResponseDelegate(GeoServer gs, ToolWrapperFactory wrapperFactory) {
@@ -396,12 +406,37 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
 
     @Override
     public boolean isAvailable() {
-        ToolWrapper gdal = gdalWrapperFactory.createWrapper(gdalTranslateExecutable, environment);
-        return gdal.isAvailable();
+        return available.updateAndGet(
+                b -> {
+                    if (b == null) {
+                        ToolWrapper gdal =
+                                gdalWrapperFactory.createWrapper(
+                                        gdalTranslateExecutable, environment);
+                        return gdal.isAvailable();
+                    } else {
+                        return b;
+                    }
+                });
     }
 
     @Override
     public String getConformanceClass(String format) {
         return "http://www.opengis.net/spec/WCS_coverage-encoding-x" + getMimeType(format);
+    }
+
+    @Override
+    public void onReset() {
+        available.set(null);
+    }
+
+    @Override
+    public void onDispose() {}
+
+    @Override
+    public void beforeReload() {}
+
+    @Override
+    public void onReload() {
+        available.set(null);
     }
 }

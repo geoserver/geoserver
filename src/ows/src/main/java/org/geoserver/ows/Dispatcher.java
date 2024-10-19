@@ -60,6 +60,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xsd.EMFUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -118,7 +119,7 @@ import org.xml.sax.SAXException;
  */
 public class Dispatcher extends AbstractController {
     /** Logging instance */
-    static Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    static Logger logger = Logging.getLogger("org.geoserver.ows");
 
     /** flag to control wether the dispatcher is cite compliant */
     boolean citeCompliant = false;
@@ -129,7 +130,7 @@ public class Dispatcher extends AbstractController {
     static final Charset UTF8 = StandardCharsets.UTF_8;
 
     /** The amount of bytes to be read to determine the proper xml reader in POST request */
-    int XML_LOOKAHEAD = 8192;
+    static int XML_LOOKAHEAD = 8192;
 
     /** list of callbacks */
     List<DispatcherCallback> callbacks = Collections.emptyList();
@@ -384,6 +385,30 @@ public class Dispatcher extends AbstractController {
                 request.getInput().reset();
             }
         }
+        initRequestContext(request);
+
+        return fireInitCallback(request);
+    }
+
+    /**
+     * Initializes the request context by parsing the request path into two components: the
+     * 'context' and the 'path'. The 'context' is the part of the URI before the last '/' and the
+     * 'path' is the part after the last '/'.
+     *
+     * <p>This method processes the given {@link Request} object to extract and set the context and
+     * path based on the HTTP request URI. Leading and trailing slashes are stripped from the
+     * request path before the context and path are determined.
+     *
+     * @param request the {@link Request} object whose context and path need to be initialized.
+     * @throws NullPointerException if the {@link Request} or its HTTP request is null.
+     *     <pre>
+     * Example:
+     * If the request URI is "/app/resource/item", then:
+     * - context: "app/resource"
+     * - path: "item"
+     * </pre>
+     */
+    public static void initRequestContext(Request request) {
         // parse the request path into two components. (1) the 'path' which
         // is the string after the last '/', and the 'context' which is the
         // string before the last '/'
@@ -413,8 +438,6 @@ public class Dispatcher extends AbstractController {
 
         request.setContext(context);
         request.setPath(path);
-
-        return fireInitCallback(request);
     }
 
     private boolean isForm(String contentType) {
@@ -501,47 +524,7 @@ public class Dispatcher extends AbstractController {
     }
 
     Service service(Request req) throws Exception {
-        // check kvp
-        if (req.getKvp() != null) {
-
-            req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
-            req.setVersion(
-                    normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
-            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
-            req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
-        }
-        // check the body
-        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
-            req = readOpPost(req);
-        }
-
-        // try to infer from context
-        // JD: for cite compliance, a service *must* be specified explicitley by
-        // either a kvp, or an xml attribute, however in reality the context
-        // is often a good way to infer the service or request
-        String service = req.getService();
-
-        if ((service == null) || (req.getRequest() == null)) {
-            Map map = readOpContext(req);
-
-            if (service == null) {
-                service = normalize((String) map.get("service"));
-
-                if ((service != null) && !citeCompliant) {
-                    req.setService(service);
-                }
-            }
-
-            if (req.getRequest() == null) {
-                req.setRequest(normalize((String) map.get("request")));
-            }
-        }
-
-        if (service == null) {
-            // give up
-            throw new ServiceException(
-                    "Could not determine service", "MissingParameterValue", "service");
-        }
+        String service = getServiceFromRequest(req);
 
         // load from teh context
         Service serviceDescriptor = findService(service, req.getVersion(), req.getNamespace());
@@ -567,6 +550,61 @@ public class Dispatcher extends AbstractController {
         }
         req.setServiceDescriptor(serviceDescriptor);
         return fireServiceDispatchedCallback(req, serviceDescriptor);
+    }
+
+    /**
+     * Retrieves the service name from the given request object, which may contain key-value pairs
+     * (KVP) or a request body. If the service name is not explicitly provided in the request,
+     * attempts to infer it from the request context.
+     *
+     * @param req The request object containing information about the service and request.
+     * @return The name of the service extracted from the request.
+     * @throws ServiceException If the service name cannot be determined from the request.
+     * @throws Exception If an unexpected error occurs during the extraction process.
+     */
+    public String getServiceFromRequest(Request req) throws Exception {
+        // check kvp
+        if (req.getKvp() != null) {
+
+            req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
+            req.setVersion(
+                    normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
+            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
+            req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
+        }
+        // check the body
+        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
+            readOpPost(req);
+        }
+
+        // try to infer from context
+        // JD: for cite compliance, a service *must* be specified explicitly by
+        // either a kvp, or a xml attribute, however in reality the context
+        // is often a good way to infer the service or request
+        String service = req.getService();
+
+        if ((service == null) || (req.getRequest() == null)) {
+            Map map = readOpContext(req);
+
+            if (service == null) {
+                service = normalize((String) map.get("service"));
+
+                if ((service != null) && !citeCompliant) {
+                    req.setService(service);
+                }
+            }
+
+            if (req.getRequest() == null) {
+                req.setRequest(normalize((String) map.get("request")));
+            }
+        }
+
+        if (service == null) {
+            // give up
+            throw new ServiceException(
+                    "Could not determine service", "MissingParameterValue", "service");
+        }
+        return service;
     }
 
     Service fireServiceDispatchedCallback(Request req, Service service) {
@@ -676,8 +714,10 @@ public class Dispatcher extends AbstractController {
                 boolean kvpParsed = false;
                 boolean xmlParsed = false;
 
-                if (req.getKvp() != null && !req.getKvp().isEmpty()) {
-                    // use the kvp reader mechanism
+                if (req.getKvp() != null
+                        && !req.getKvp().isEmpty()
+                        && (!(req.getKvp().size() == 1 && req.getKvp().containsKey("service")))) {
+                    // use the kvp reader mechanism, but not if the only kvp is the service
                     try {
                         requestBean = parseRequestKVP(parameterType, req);
                         kvpParsed = true;
@@ -1492,6 +1532,19 @@ public class Dispatcher extends AbstractController {
     }
 
     Map<String, Object> parseKVP(Request req, Map<String, Object> kvp) {
+        // if the service is not explicitly set, some parsers will not be found
+        if (!kvp.containsKey("service") && !kvp.containsKey("SERVICE") && !citeCompliant) {
+            String service = null;
+            try {
+                service = getServiceFromRequest(req);
+                if (!"OWS".equalsIgnoreCase(service)) { // OWS is too generic for the parser lookup
+                    kvp.put("service", service);
+                }
+                logger.log(Level.FINER, "service kvp parameter not found, setting to " + service);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Unable to determine service from kvp or context");
+            }
+        }
         List<Throwable> errors = KvpUtils.parse(kvp);
         if (!errors.isEmpty()) {
             req.setError(errors.get(0));
@@ -1505,7 +1558,7 @@ public class Dispatcher extends AbstractController {
         if (kvpReader != null) {
             Object requestBean = kvpReader.createRequest();
 
-            if (requestBean != null) {
+            if (requestBean != null && request.getKvp() != null && request.getRawKvp() != null) {
                 requestBean = kvpReader.read(requestBean, request.getKvp(), request.getRawKvp());
             }
 
@@ -1557,11 +1610,33 @@ public class Dispatcher extends AbstractController {
         Map<String, String> map = new HashMap<>();
         if (request.getPath() != null) {
             map.put("service", request.getPath());
+        } else if (request.getHttpRequest() != null
+                && request.getHttpRequest().getServletPath() != null) {
+            // Path not found so try to fall back on HTTPRequest Servlet Path
+            String service =
+                    extractServiceFromHttpRequest(request.getHttpRequest().getRequestURI());
+            if (!service.trim().isEmpty()) {
+                map.put("service", service.trim().toUpperCase());
+            }
         }
 
         return map;
     }
 
+    private static String extractServiceFromHttpRequest(String servletPath) {
+        int startIndex = servletPath.lastIndexOf("/") + 1;
+        int endIndex = servletPath.indexOf("?");
+
+        if (startIndex == 0) {
+            return ""; // No forward slash found
+        }
+
+        if (endIndex == -1) {
+            return servletPath.substring(startIndex); // No question mark found
+        }
+
+        return servletPath.substring(startIndex, endIndex);
+    }
     /**
      * To be called once determined the incoming request is an HTTP POST request
      * with a request body, and the request's {@link Request#getInput() input
@@ -1590,7 +1665,7 @@ public class Dispatcher extends AbstractController {
      * @return a {@link Map} containing the parsed parameters.
      * @throws Exception if there was an error reading the input.
      */
-    public Request readOpPost(Request req) throws Exception {
+    public static Request readOpPost(Request req) throws Exception {
         String namespace;
         String elementName;
         String request;
@@ -1635,7 +1710,7 @@ public class Dispatcher extends AbstractController {
         return req;
     }
 
-    private XMLStreamReader createParserForRootElement(Request req)
+    private static XMLStreamReader createParserForRootElement(Request req)
             throws IOException, FactoryConfigurationError, XMLStreamException {
         char[] buff = new char[XML_LOOKAHEAD];
         {

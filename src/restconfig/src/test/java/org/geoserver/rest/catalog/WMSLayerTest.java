@@ -14,11 +14,11 @@ import static org.geoserver.rest.catalog.HttpTestUtils.istream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -405,7 +405,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertThat(response.getContentAsString(), not(containsString(exception)));
 
         // No exception thrown
-        assertThat(response.getContentAsString(), isEmptyString());
+        assertThat(response.getContentAsString(), emptyString());
 
         // CASE 2: wmsstore set
 
@@ -420,7 +420,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertThat(response.getContentAsString(), not(containsString(exception)));
 
         // No exception thrown
-        assertThat(response.getContentAsString(), isEmptyString());
+        assertThat(response.getContentAsString(), emptyString());
     }
 
     @Test

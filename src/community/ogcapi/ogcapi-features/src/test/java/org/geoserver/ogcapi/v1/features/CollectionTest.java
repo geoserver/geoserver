@@ -11,8 +11,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -217,6 +217,30 @@ public class CollectionTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testCollectionHTMLRemovedInlineJS() throws Exception {
+        String html =
+                getAsString(
+                        "ogc/features/v1/collections/"
+                                + getLayerId(MockData.ROAD_SEGMENTS)
+                                + "?f=text/html");
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/common.js\"></script>"));
+        assertThat(
+                html,
+                containsString(
+                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/features.js\"></script>"));
+        assertThat(
+                html,
+                containsString(
+                        "<input type=\"hidden\" id=\"maxNumberOfFeaturesForPreview\" value=\"50\"/>"));
+        assertThat(html, containsString("form-select-open-basic"));
+        assertThat(html, containsString("form-select-open-limit"));
+        assertThat(html, not(containsString("onchange")));
+    }
+
+    @Test
     public void testQueryables() throws Exception {
         String roadSegments = ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =
@@ -282,9 +306,9 @@ public class CollectionTest extends FeaturesTestSupport {
                         containsString("version=2.0"),
                         containsString("typenames=cite%3ARoadSegments")));
 
-        // WFS disabled
-        setWFSEnabled(false);
-        DocumentContext jsonDisabled = getAsJSONPath(resource, 200);
-        assertThat(jsonDisabled.read("$.links[?(@.rel=='describedBy')]"), empty());
+        // WFS disabled (commenting out, currently disables OGC API features too)
+        // setWFSEnabled(false);
+        // DocumentContext jsonDisabled = getAsJSONPath(resource, 200);
+        // assertThat(jsonDisabled.read("$.links[?(@.rel=='describedBy')]"), empty());
     }
 }

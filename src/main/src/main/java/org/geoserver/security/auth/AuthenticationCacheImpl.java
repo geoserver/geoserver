@@ -38,4 +38,7 @@ public class AuthenticationCacheImpl implements AuthenticationCache {
 
     @Override
     public void put(String filterName, String cacheKey, Authentication auth) {}
+
+    @Override
+    public void onReset() {}
 }

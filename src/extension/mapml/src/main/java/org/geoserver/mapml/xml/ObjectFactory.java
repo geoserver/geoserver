@@ -55,6 +55,7 @@ public class ObjectFactory {
             new QName("http://www.w3.org/1999/xhtml", "map-properties");
     private static final QName _MultiPointCoordinates_QNAME =
             new QName("http://www.w3.org/1999/xhtml", "map-coordinates");
+    private static final QName _A_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-a");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes
@@ -296,6 +297,16 @@ public class ObjectFactory {
         return new JAXBElement<>(_Polygon_QNAME, Polygon.class, null, value);
     }
 
+    /** Create an instance of {@link JAXBElement }{@code <}{@link A }{@code >}} */
+    @XmlElementDecl(
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-a",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
+    public JAXBElement<A> createA(A value) {
+        return new JAXBElement<>(_A_QNAME, A.class, null, value);
+    }
+
     /** Create an instance of {@link JAXBElement }{@code <}{@link PropertyContent }{@code >}} */
     @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-properties")
     public JAXBElement<PropertyContent> createProperties(PropertyContent value) {
@@ -339,11 +350,11 @@ public class ObjectFactory {
             namespace = "http://www.w3.org/1999/xhtml",
             name = "map-coordinates",
             scope = MultiLineString.class)
-    public JAXBElement<List<String>> createMultiLineStringCoordinates(List<String> value) {
+    public JAXBElement<List> createMultiLineStringCoordinates(List value) {
         return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,
                 ((Class) List.class),
                 MultiLineString.class,
-                ((List<String>) value));
+                ((List<Coordinates>) value));
     }
 }

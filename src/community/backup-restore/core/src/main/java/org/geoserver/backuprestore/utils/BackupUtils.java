@@ -19,7 +19,6 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
-import org.codehaus.plexus.util.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
@@ -89,10 +88,10 @@ public class BackupUtils {
         Resource directory = Resources.createRandom("tmp", "", root);
 
         do {
-            FileUtils.forceDelete(directory.dir());
+            directory.delete();
         } while (Resources.exists(directory));
 
-        FileUtils.forceMkdir(directory.dir());
+        directory.dir();
 
         return Files.asResource(directory.dir());
     }
@@ -143,7 +142,7 @@ public class BackupUtils {
                         manager.resolveFile(sourceFolder.dir().getAbsolutePath()));
 
         try {
-            if ("zip".equalsIgnoreCase(FileUtils.getExtension(archiveFile.path()))) {
+            if ("zip".equalsIgnoreCase(Paths.extension(archiveFile.path()))) {
                 // apache VFS does not support ZIP as writable FileSystem
 
                 OutputStream fos = archiveFile.out();

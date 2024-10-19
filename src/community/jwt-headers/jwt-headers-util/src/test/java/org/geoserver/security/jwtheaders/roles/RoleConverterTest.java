@@ -24,7 +24,7 @@ public class RoleConverterTest {
         JwtConfiguration config = new JwtConfiguration();
 
         config.setRoleConverterString(null);
-        Map<String, String> map = config.getRoleConverterAsMap();
+        Map<String, List<String>> map = config.getRoleConverterAsMap();
         Assert.assertEquals(0, map.size());
 
         config.setRoleConverterString("");
@@ -50,18 +50,18 @@ public class RoleConverterTest {
         JwtConfiguration config = new JwtConfiguration();
 
         config.setRoleConverterString("a=b");
-        Map<String, String> map = config.getRoleConverterAsMap();
+        Map<String, List<String>> map = config.getRoleConverterAsMap();
         Assert.assertEquals(1, map.size());
         Assert.assertTrue(map.containsKey("a"));
-        Assert.assertEquals("b", map.get("a"));
+        Assert.assertEquals(Arrays.asList("b"), map.get("a"));
 
         config.setRoleConverterString("a=b;c=d");
         map = config.getRoleConverterAsMap();
         Assert.assertEquals(2, map.size());
         Assert.assertTrue(map.containsKey("a"));
-        Assert.assertEquals("b", map.get("a"));
+        Assert.assertEquals(Arrays.asList("b"), map.get("a"));
         Assert.assertTrue(map.containsKey("c"));
-        Assert.assertEquals("d", map.get("c"));
+        Assert.assertEquals(Arrays.asList("d"), map.get("c"));
     }
 
     /**
@@ -75,24 +75,24 @@ public class RoleConverterTest {
 
         // bad format
         config.setRoleConverterString("a=b;c=;d");
-        Map<String, String> map = config.getRoleConverterAsMap();
+        Map<String, List<String>> map = config.getRoleConverterAsMap();
         Assert.assertEquals(1, map.size());
         Assert.assertTrue(map.containsKey("a"));
-        Assert.assertEquals("b", map.get("a"));
+        Assert.assertEquals(Arrays.asList("b"), map.get("a"));
 
         // bad chars
         config.setRoleConverterString("a= b** ;c=**;d");
         map = config.getRoleConverterAsMap();
         Assert.assertEquals(1, map.size());
         Assert.assertTrue(map.containsKey("a"));
-        Assert.assertEquals("b", map.get("a"));
+        Assert.assertEquals(Arrays.asList("b"), map.get("a"));
 
         // removes html tags
         config.setRoleConverterString("a= <script> ;c=**;d");
         map = config.getRoleConverterAsMap();
         Assert.assertEquals(1, map.size());
         Assert.assertTrue(map.containsKey("a"));
-        Assert.assertEquals("script", map.get("a"));
+        Assert.assertEquals(Arrays.asList("script"), map.get("a"));
     }
 
     /** Tests simple conversion, with setOnlyExternalListedRoles(false); */
@@ -132,5 +132,24 @@ public class RoleConverterTest {
         Assert.assertEquals(1, internalRoles.size());
 
         Assert.assertEquals("d", internalRoles.get(0));
+    }
+
+    /**
+     * Test for creating multiple roles. purpose - make sure that a user can get multiple GS roles
+     * from a single OIDC role.
+     */
+    @Test
+    public void testMultipleRoles() {
+        JwtConfiguration config = new JwtConfiguration();
+        config.setRoleConverterString("a=ROLE_ADMINISTRATOR;a=ADMIN");
+        config.setOnlyExternalListedRoles(true);
+
+        RoleConverter roleConverter = new RoleConverter(config);
+        List<String> externalRoles = Arrays.asList("a");
+        List<String> internalRoles = roleConverter.convert(externalRoles);
+        Assert.assertEquals(2, internalRoles.size());
+
+        Assert.assertEquals("ROLE_ADMINISTRATOR", internalRoles.get(0));
+        Assert.assertEquals("ADMIN", internalRoles.get(1));
     }
 }

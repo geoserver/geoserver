@@ -115,7 +115,7 @@ public class SecureTreeNode {
         // if the roles is just "*" any granted authority will match
         if (roles.equals(EVERYBODY)) return true;
 
-        // let's scan thru the the authorities granted to the user and
+        // let's scan thru the authorities granted to the user and
         // see if he matches any of the write roles
         if (user == null || user.getAuthorities() == null) return false;
         // look for a match on the roles, using the "root" rules as well (root can do everything)

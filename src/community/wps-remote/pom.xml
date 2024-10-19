@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -16,6 +16,7 @@
   <name>Web Processing Service - Remote processes invocation</name>
 
   <properties>
+
     <smack.version>4.0.5</smack.version>
     <vysper.version>0.7</vysper.version>
   </properties>

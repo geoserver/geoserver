@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-security</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community.security</groupId>
@@ -23,6 +23,7 @@
   <modules>
     <module>oauth2-openid-connect-core</module>
     <module>oauth2-openid-connect-web</module>
+    <module>oauth2-openid-connect-assembly</module>
   </modules>
 
 </project>

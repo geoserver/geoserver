@@ -54,10 +54,5 @@ public class PasswordTextFieldWriteOnlyModel extends PasswordTextField {
                 delegate.setObject(object);
             }
         }
-
-        @Override
-        public void detach() {
-            // nothing to do here
-        }
     }
 }

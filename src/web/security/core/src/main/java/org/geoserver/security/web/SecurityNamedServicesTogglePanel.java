@@ -10,6 +10,8 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -43,6 +45,21 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
     protected abstract ContentPanel createPanel(String id, IModel<T> config);
 
     protected static class ContentPanel<T> extends Panel {
+
+        @Override
+        public void renderHead(IHeaderResponse response) {
+            super.renderHead(response);
+            // Content-Security-Policy: inline styles must be nonce=...
+            String css =
+                    " #edit {\n"
+                            + "   margin-top: -20px; \n"
+                            + "   padding-bottom: 0.5em; \n"
+                            + "   padding-right:1em;\n"
+                            + " }";
+            response.render(
+                    CssHeaderItem.forCSS(
+                            css, "org-geoserver-security-web-data-DataSecurityPage-1"));
+        }
 
         public ContentPanel(String id, final IModel<T> model) {
             super(id);

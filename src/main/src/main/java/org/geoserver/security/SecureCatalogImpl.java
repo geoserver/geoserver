@@ -9,7 +9,7 @@ import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.or;
 
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -162,17 +162,19 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<CoverageInfo> getCoverages() {
-        return filterResources(user(), delegate.getCoverages());
+        return getResources(CoverageInfo.class);
     }
 
     @Override
     public List<CoverageInfo> getCoveragesByNamespace(NamespaceInfo namespace) {
+        // filter in-place, there's logic in DefaultCatalogFacade.getResourcesByNamespace() we don't
+        // want to duplicate here in order to create a filter
         return filterResources(user(), delegate.getCoveragesByNamespace(namespace));
     }
 
     @Override
     public List<CoverageInfo> getCoveragesByCoverageStore(CoverageStoreInfo store) {
-        return filterResources(user(), delegate.getCoveragesByCoverageStore(store));
+        return getResourcesByStore(store, CoverageInfo.class);
     }
 
     @Override
@@ -185,7 +187,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<CoverageInfo> getCoveragesByStore(CoverageStoreInfo store) {
-        return filterResources(user(), delegate.getCoveragesByStore(store));
+        return getResourcesByStore(store, CoverageInfo.class);
     }
 
     @Override
@@ -227,7 +229,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<CoverageStoreInfo> getCoverageStores() {
-        return filterStores(user(), delegate.getCoverageStores());
+        return getStores(CoverageStoreInfo.class);
     }
 
     @Override
@@ -286,7 +288,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<DataStoreInfo> getDataStores() {
-        return filterStores(user(), delegate.getDataStores());
+        return getStores(DataStoreInfo.class);
     }
 
     @Override
@@ -330,7 +332,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<FeatureTypeInfo> getFeatureTypes() {
-        return filterResources(user(), delegate.getFeatureTypes());
+        return getResources(FeatureTypeInfo.class);
     }
 
     @Override
@@ -348,7 +350,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {
-        return filterResources(user(), delegate.getFeatureTypesByDataStore(store));
+        return getResourcesByStore(store, FeatureTypeInfo.class);
     }
 
     @Override
@@ -392,27 +394,36 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<LayerGroupInfo> getLayerGroups() {
-        return filterGroups(user(), delegate.getLayerGroups());
+        return getAll(LayerGroupInfo.class);
     }
 
     @Override
     public List<LayerGroupInfo> getLayerGroupsByWorkspace(String workspaceName) {
+        // there's a bunch of logic in CatalogImpl.getLayerGroupsByWorkspace(String) and
+        // DefaultCatalogFacade.getLayerGroupsByWorkspace(WorkspaceInfo),
+        // so don't delegate to this.getAll(Filter) and hence to list(). Filtering by workspace
+        // should reduce the number of matches enough anyway
         return filterGroups(user(), delegate.getLayerGroupsByWorkspace(workspaceName));
     }
 
     @Override
     public List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace) {
+        // there's a bunch of logic in CatalogImpl.getLayerGroupsByWorkspace(WorkspaceInfo) and
+        // DefaultCatalogFacade.getLayerGroupsByWorkspace(WorkspaceInfo),
+        // so don't delegate to this.getAll(Filter) and hence to list(). Filtering by workspace
+        // should reduce the number of matches enough anyway
         return filterGroups(user(), delegate.getLayerGroupsByWorkspace(workspace));
     }
 
     @Override
     public List<LayerInfo> getLayers() {
-        return filterLayers(acceptAll());
+        return getAll(LayerInfo.class);
     }
 
     @Override
     public List<LayerInfo> getLayers(ResourceInfo resource) {
-        return filterLayers(Predicates.equal("resource.id", resource.getId()));
+        Filter filter = Predicates.equal("resource.id", resource.getId());
+        return getAll(LayerInfo.class, filter);
     }
 
     @Override
@@ -422,14 +433,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         Filter filter =
                 or(Predicates.equal("defaultStyle.id", id), Predicates.equal("styles.id", id));
 
-        return filterLayers(filter);
-    }
-
-    private List<LayerInfo> filterLayers(final Filter filter) {
-
-        try (CloseableIterator<LayerInfo> iterator = list(LayerInfo.class, filter)) {
-            return ImmutableList.copyOf(iterator);
-        }
+        return getAll(LayerInfo.class, filter);
     }
 
     @Override
@@ -450,7 +454,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<NamespaceInfo> getNamespaces() {
-        return filterNamespaces(user(), delegate.getNamespaces());
+        return getAll(NamespaceInfo.class);
     }
 
     @Override
@@ -485,7 +489,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
-        return filterResources(user(), delegate.getResources(clazz));
+        return getAll(clazz);
     }
 
     @Override
@@ -511,7 +515,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz) {
-        return filterResources(user(), delegate.getResourcesByStore(store, clazz));
+        Filter filter = Predicates.equal("store.id", store.getId());
+        return getAll(clazz, filter);
     }
 
     @Override
@@ -545,7 +550,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
-        return filterStores(user(), delegate.getStores(clazz));
+        return getAll(clazz);
     }
 
     @Override
@@ -572,7 +577,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<WorkspaceInfo> getWorkspaces() {
-        return filterWorkspaces(user(), delegate.getWorkspaces());
+        return getAll(WorkspaceInfo.class);
     }
 
     // -------------------------------------------------------------------
@@ -1461,7 +1466,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public List<StyleInfo> getStyles() {
-        return filterStyles(user(), delegate.getStyles());
+        return getAll(StyleInfo.class);
     }
 
     @Override
@@ -1616,6 +1621,25 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return result;
     }
 
+    /** Delegates to {@link #getAll(Class, Filter) getAll(of, Filter.INCLUDE)} */
+    protected <T extends CatalogInfo> List<T> getAll(Class<T> of) {
+        return getAll(of, acceptAll());
+    }
+
+    /**
+     * Builds up and returns a list of objects matching the {@link #securityFilter(Class, Filter)
+     * securityFilter(of, filter)}, giving the {@link ResourceAccessManager} a chance to optimize
+     * the security filter (e.g. encode to a native catalog back-end filter), also for bulk methods
+     * returning {@code List<T>}
+     *
+     * @see #list(Class, Filter, Integer, Integer, SortBy)
+     */
+    protected <T extends CatalogInfo> List<T> getAll(Class<T> of, Filter filter) {
+        try (CloseableIterator<T> it = list(of, filter)) {
+            return Lists.newArrayList(it);
+        }
+    }
+
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
         return list(of, filter, null, null, (SortBy) null);
@@ -1719,7 +1743,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         }
 
         Filter securityFilter = this.accessManager.getSecurityFilter(user, infoType);
-
+        if (Filter.INCLUDE.equals(filter)) {
+            return securityFilter;
+        }
         // create a filter combined with the security credentials check
         return Predicates.and(filter, securityFilter);
     }

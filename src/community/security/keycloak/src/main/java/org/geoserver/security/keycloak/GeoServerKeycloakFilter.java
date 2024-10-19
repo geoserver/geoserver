@@ -331,7 +331,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         KeycloakDeployment deployment = keycloakContext.resolveDeployment(exchange);
         deployment.setDelegateBearerErrorResponseSending(true);
         AdapterTokenStore tokenStore =
-                adapterTokenStoreFactory.createAdapterTokenStore(deployment, request);
+                adapterTokenStoreFactory.createAdapterTokenStore(deployment, request, response);
         RequestAuthenticator authenticator =
                 new SpringSecurityRequestAuthenticator(
                         exchange, request, deployment, tokenStore, -1);

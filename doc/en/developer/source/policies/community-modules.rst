@@ -163,11 +163,9 @@ Requirements
 
 The following properties must hold true in order to promote a community module:
 
-#. **The module has at least a "handful" of users**
+#. **The module is not site-specific and can be configured for use by the general GeoServer community.**
 
-   In order to avoid cluttering the main code base, only those community 
-   modules which are of interest to at least 3 users (this may include the 
-   maintainer) are promoted.
+   A community module of interest to multiple users would meet this goal; while a community module that has hard-coded a domain name would not.
 
 #. **The module has a designated and active maintainer**
 
@@ -413,10 +411,10 @@ The following outlines the steps to demote a module to community status:
 
 #. **Call for a maintainer**
 
-   Before demoting the module first try to find a new maintainer for it. Send
-   an email to both the developer and user list advertising the module is in 
-   danger of getting pushed back to community status. Wait a few days to see 
-   if anyone steps up to take on maintainership.
+   Before demoting the module first try to find a new maintainer for it. Both notify
+   GeoServer Devel mailing list and GeoServer User forum that module is in 
+   danger of reverting to community status. Wait a few days to see 
+   if anyone steps up to take on maintainership or provide funding.
 
 #. **Move the module and update the build**
 
@@ -441,9 +439,9 @@ appreciated.
 
    The more time you can give to the project in lieu of your departure the 
    better. Send an email to the developers list as soon as you know you will 
-   be dropping off
+   be dropping off.
 
 #. **Find a new maintainer**
 
    While often not possible, any attempt to find a new maintainer for the 
-   module is greatly appreciated.
+   module is greatly appreciated - maybe someone who has contributed to the module before.

@@ -165,7 +165,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
         add(belongsTo(contactInfo, locale));
 
-        add(footerMessage(contactInfo, locale));
+        add(footerMessage());
         add(footerContact(contactInfo, locale));
 
         if (admin) {
@@ -635,7 +635,13 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         return belongsToMessage;
     }
 
-    private Label footerMessage(ContactInfo ignoredContactInfo, Locale ignoredLocale) {
+    private Label footerMessage() {
+        boolean admin = getSession().isAdmin();
+        if (!admin) {
+            Label footerMessage = new Label("footerMessage", "");
+            return footerMessage;
+        }
+
         String version = String.valueOf(new ResourceModel("version").getObject());
 
         HashMap<String, String> params = new HashMap<>();

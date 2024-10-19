@@ -7,8 +7,10 @@ package org.geoserver.ogcapi.v1.dggs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
@@ -18,6 +20,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class LandingPageTest extends OGCApiTestSupport {
@@ -178,8 +181,24 @@ public class LandingPageTest extends OGCApiTestSupport {
                 Link.REL_DATA,
                 Link.REL_DATA);
         // check title
-        assertEquals("DGGS 1.0 server", json.read("title"));
+        assertEquals("Discrete Global Grid Systems Service", json.read("title"));
         // check description
-        assertEquals("", json.read("description"));
+        assertTrue(((String) json.read("description")).contains("OGCAPI-DGGS"));
+    }
+
+    @Test
+    public void testDisabledService() throws Exception {
+        GeoServer gs = getGeoServer();
+        DGGSInfo service = gs.getService(DGGSInfo.class);
+        service.setEnabled(false);
+        gs.save(service);
+        try {
+            MockHttpServletResponse httpServletResponse =
+                    getAsMockHttpServletResponse("ogc/dggs/v1", 404);
+            assertEquals("Service DGGS is disabled", httpServletResponse.getErrorMessage());
+        } finally {
+            service.setEnabled(true);
+            gs.save(service);
+        }
     }
 }

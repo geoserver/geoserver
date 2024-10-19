@@ -15,6 +15,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 
+// TODO WICKET8 - Verify this page works OK
 public class ContactPage extends ServerAdminPage {
 
     private final IModel<GeoServer> geoServerModel;
@@ -59,18 +60,18 @@ public class ContactPage extends ServerAdminPage {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.add(form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(getForm());
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     save(false);
                 } catch (IllegalArgumentException e) {
-                    form.error(e.getMessage());
-                    target.add(form);
+                    getForm().error(e.getMessage());
+                    target.add(getForm());
                 }
             }
         };

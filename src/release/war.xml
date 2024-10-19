@@ -42,7 +42,7 @@
      </file>
      <file>
        <source>../licenses/NOTICE.md</source>
-       <outputDirectory>license</outputDirectory>
+       <outputDirectory>licenses</outputDirectory>
        <destName>NOTICE.txt</destName>
      </file>
      <file>

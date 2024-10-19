@@ -56,7 +56,7 @@ Key provider using a property file
 This key provider uses a property file named ``authkeys.properties``. The default user/group service
 is named ``default``. The ``authkeys.properties`` for this service would be located at
 
-``$GEOSERVER_DATA_DIR/security/usergroup/default/authkeys.propeties``
+``$GEOSERVER_DATA_DIR/security/usergroup/default/authkeys.properties``
  
 A sample file looks as follows::
 

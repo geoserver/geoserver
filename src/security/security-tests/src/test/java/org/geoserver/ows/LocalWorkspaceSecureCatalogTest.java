@@ -71,7 +71,13 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     public void testAccessToStyle() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
+        SecureCatalogImpl sc =
+                new SecureCatalogImpl(catalog, mgr) {
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
         assertEquals(2, sc.getStyles().size());
 
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
@@ -88,7 +94,13 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     public void testAccessToLayerGroup() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
+        SecureCatalogImpl sc =
+                new SecureCatalogImpl(catalog, mgr) {
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
         assertEquals(catalog.getLayerGroups().size(), sc.getLayerGroups().size());
 
         // all groups in this one or global
@@ -118,7 +130,13 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         CatalogFilterAccessManager mgr = setupAccessManager();
         inheritance.setValue("false");
 
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
+        SecureCatalogImpl sc =
+                new SecureCatalogImpl(catalog, mgr) {
+                    @Override
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+                };
         assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupGlobal)));
         assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupTopp)));
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");

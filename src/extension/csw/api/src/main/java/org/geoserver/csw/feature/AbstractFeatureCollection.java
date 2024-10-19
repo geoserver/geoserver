@@ -91,7 +91,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     /**
      * Open a resource based Iterator, we will call close( iterator ).
      *
-     * <p>Please subclass to provide your own iterator for the the ResourceCollection, note <code>
+     * <p>Please subclass to provide your own iterator for the ResourceCollection, note <code>
      * iterator()</code> is implemented to call <code>open()</code> and track the results in for
      * later <code>purge()</code>.
      *

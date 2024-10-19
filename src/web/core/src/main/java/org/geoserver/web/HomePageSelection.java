@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -44,6 +45,7 @@ import org.geotools.util.logging.Logging;
  * Strategy to manage selection of {@link WorkspaceInfo} and {@link PublishedInfo}, as well as
  * describing the selection results.
  */
+// TODO WICKET8 - Verify this page works OK
 abstract class HomePageSelection implements Serializable {
 
     static final Logger LOGGER = Logging.getLogger(HomePageSelection.class);
@@ -119,16 +121,12 @@ abstract class HomePageSelection implements Serializable {
                         "select",
                         new PropertyModel<>(page, "workspaceInfo"),
                         new WorkspacesModel(),
-                        new WorkspaceChoiceNameRenderer()) {
-
+                        new WorkspaceChoiceNameRenderer());
+        component.add(
+                new FormComponentUpdatingBehavior() {
                     @Override
-                    protected boolean wantOnSelectionChangedNotifications() {
-                        return true;
-                    }
-
-                    @Override
-                    protected void onSelectionChanged(WorkspaceInfo newSelection) {
-                        super.onSelectionChanged(newSelection);
+                    protected void onUpdate() {
+                        WorkspaceInfo newSelection = component.getModelObject();
                         if (newSelection != null) {
                             page.selectHomePage(newSelection.getName(), null);
                         } else {
@@ -136,7 +134,7 @@ abstract class HomePageSelection implements Serializable {
                             page.selectHomePage(workspaceName, null);
                         }
                     }
-                };
+                });
         component.setNullValid(true);
 
         Fragment fragment = new Fragment(componentId, "select", page);
@@ -198,16 +196,12 @@ abstract class HomePageSelection implements Serializable {
                         "select",
                         new PropertyModel<>(page, "publishedInfo"),
                         layersModel,
-                        layersRenderer) {
-
+                        layersRenderer);
+        component.add(
+                new FormComponentUpdatingBehavior() {
                     @Override
-                    protected boolean wantOnSelectionChangedNotifications() {
-                        return true;
-                    }
-
-                    @Override
-                    protected void onSelectionChanged(PublishedInfo newSelection) {
-                        super.onSelectionChanged(newSelection);
+                    protected void onUpdate() {
+                        PublishedInfo newSelection = component.getModelObject();
                         if (newSelection != null) {
                             String prefixed = newSelection.prefixedName();
                             if (prefixed.contains(":")) {
@@ -223,7 +217,7 @@ abstract class HomePageSelection implements Serializable {
                             page.selectHomePage(workspaceName, null);
                         }
                     }
-                };
+                });
         component.setNullValid(true);
 
         Fragment fragment = new Fragment(componentId, "select", page);

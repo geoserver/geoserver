@@ -218,6 +218,16 @@ public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo>
     }
 
     @Override
+    public String getAuthKey() {
+        return delegate.getAuthKey();
+    }
+
+    @Override
+    public void setAuthKey(String authKey) {
+        delegate.setAuthKey(authKey);
+    }
+
+    @Override
     public Date getDateModified() {
         return delegate.getDateModified();
     }

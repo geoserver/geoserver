@@ -18,7 +18,7 @@
       <fieldset>
        <legend>
            <span class="border-0" wicket:id="icon"></span>
-           <span class="border-0 text-nowrap" wicket:id="title" style="margin-left: 20px; font-weight:normal;"></span>
+           <span class="border-0 text-nowrap" wicket:id="title" class="header-title"></span>
        </legend>
      </fieldset>
 
@@ -32,18 +32,18 @@
            <span><wicket:message key="resume"></wicket:message></span>
          </a>
          <a href="" wicket:id="cancel">
-           <span><wicket:message key="cancel"></wicket:message></span>
+           <span><wicket:message key="abandon"></wicket:message></span>
          </a>
        </div>
      </li>
    </ul>
    
-   <div style="width:95%">
+   <div class="w-95">
        <form wicket:id="form" class="clearfix">
          <div class="float-start"><wicket:message key="maxLines">details level</wicket:message>&nbsp;<input type="number" wicket:id="expand"/></div>
          <div class="float-end"><a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
        </form>
-       <div><textarea readonly="readonly" style="width:100%;height:50em;font-size:small" wicket:id="details"></textarea></div>
+       <div><textarea readonly="readonly" class="detailstext" wicket:id="details"></textarea></div>
        <a href="#" wicket:id="download"><wicket:message key="download">download backup archive</wicket:message></a>
     </div>
     

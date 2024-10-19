@@ -167,7 +167,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                         }
 
                         if (component == null) {
-                            // show a plain label if the the subclass did not create any component
+                            // show a plain label if the subclass did not create any component
                             component = new Label("component", property.getModel(itemModel));
                         } else if (!"component".equals(component.getId())) {
                             // add some checks for the id, the error message
@@ -207,7 +207,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
                         @Override
                         public void onComponentTag(Component component, ComponentTag tag) {
-                            tag.put("style", "width:1%");
+                            tag.put("class", "w-1pct");
                         }
                     });
         }

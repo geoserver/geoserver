@@ -3,14 +3,14 @@
 Publishing a Layer Group
 ========================
 
-This tutorial walks through the steps of publishing a layer group combing several layers into a basemap.
+This tutorial walks through the steps of publishing a layer group combining several layers into a basemap.
 
 .. note:: This tutorial assumes that GeoServer is running at ``http://localhost:8080/geoserver``.
 
 Data preparation
 ----------------
 
-First let's gather that the data that we'll be publishing.
+First let's gather the data that we'll be publishing.
 
 #. Complete the previous tutorials:
    
@@ -27,9 +27,9 @@ Create a layer group
       
       Layer Groups
     
-#. This page displays a list of layer groups, workspace that the group belongs to.
+#. This page displays a list of layer groups and the workspace the group belongs to.
    
-   .. note:: Layer groups are allowed to be "global" allowing a map to be created combing layers from several workspaces into a single visual.
+   .. note:: Layer groups are allowed to be "global", allowing a map to be created combining layers from several workspaces into a single visual.
    
 #. At the top of the list :guilabel:`Layer Groups` locate and click the :guilabel:`Add new layer group` link.
    
@@ -79,9 +79,9 @@ Create a layer group
       
       Layer group layers in drawing order
    
-#. Locate the :guilabel:`Coordiante Reference Systems` and press :guilabel:`Generate Bounds`.
+#. Locate the :guilabel:`Coordinate Reference Systems` and press :guilabel:`Generate Bounds`.
    
-   Now that layers are listed we they can be used to determine the corodinate reference system and bounds of the layer group.
+   Now that layers are listed they can be used to determine the coordinate reference system and bounds of the layer group.
    
    .. figure:: images/layers_crs.png 
       

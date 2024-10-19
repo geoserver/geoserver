@@ -17,7 +17,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -42,6 +41,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.layer.CascadedWFSStoredQueryEditPage;
 import org.geoserver.web.data.layer.SQLViewEditPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
@@ -57,7 +57,7 @@ import org.geotools.util.logging.Logging;
 public class FeatureResourceConfigurationPanel extends ResourceConfigurationPanel {
     static final Logger LOGGER = Logging.getLogger(FeatureResourceConfigurationPanel.class);
 
-    ModalWindow reloadWarningDialog;
+    GSModalWindow reloadWarningDialog;
 
     ListView<AttributeTypeInfo> attributes;
 
@@ -139,9 +139,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 };
         reloadContainer.add(warning);
 
-        add(reloadWarningDialog = new ModalWindow("reloadWarningDialog"));
+        add(reloadWarningDialog = new GSModalWindow("reloadWarningDialog"));
         reloadWarningDialog.setPageCreator(
-                (ModalWindow.PageCreator)
+                (GSModalWindow.PageCreator)
                         () ->
                                 new ReloadWarningDialog(
                                         new StringResourceModel(

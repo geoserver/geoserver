@@ -54,15 +54,4 @@ will be called multiple times if there are various feature collections
    </li>
 </ul>
 </#list>
-<script>
- window.onload=function(){
- var toggler = document.getElementsByClassName("caret");
- var i;
- for (let item of toggler) {
-      item.addEventListener("click", function() {
-      this.parentElement.querySelector(".nested").classList.toggle("active");
-      this.classList.toggle("caret-down");
-    });
-   }
- }
-</script>
+<script src="${resourceLink('webresources/ogcapi/features.js')}"></script>

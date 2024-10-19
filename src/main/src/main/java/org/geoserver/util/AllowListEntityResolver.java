@@ -28,7 +28,10 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     public static String UNRESTRICTED = "*";
 
     /** Location of Open Geospatical Consortium schemas for OGC OpenGIS standards */
-    public static String OGC = "schemas.opengis.net|www.opengis.net";
+    public static String OGC1 = "schemas.opengis.net";
+
+    public static String OGC2 = "www.opengis.net";
+    public static String OGC = OGC1 + "|" + OGC2;
 
     /**
      * Location of {@code http://inspire.ec.europa.eu/schemas/ } XSD documents for INSPIRE program
@@ -43,7 +46,16 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
     protected static final Logger LOGGER = Logging.getLogger(AllowListEntityResolver.class);
 
-    /** Internal uri references */
+    /**
+     * Internal uri references.
+     *
+     * <ul>
+     *   <li>allow schema parsing for validation.
+     *   <li>http(s) - external schema reference
+     *   <li>jar - internal schema reference
+     *   <li>vfs - internal schema reference (JBoss/WildFly)
+     * </ul>
+     */
     private static final Pattern INTERNAL_URIS = Pattern.compile("(?i)(jar:file|vfs)[^?#;]*\\.xsd");
 
     /** Allowed http(s) locations */
@@ -82,11 +94,13 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
             ALLOWED_URIS =
                     Pattern.compile(
                             "(?i)(http|https)://("
-                                    + W3C
+                                    + Pattern.quote(W3C)
                                     + "|"
-                                    + OGC
+                                    + Pattern.quote(OGC1)
                                     + "|"
-                                    + INSPIRE
+                                    + Pattern.quote(OGC2)
+                                    + "|"
+                                    + Pattern.quote(INSPIRE)
                                     + ")/[^?#;]*\\.xsd");
         } else {
             StringBuilder pattern = new StringBuilder("(?i)(http|https)://(");
@@ -97,7 +111,7 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                 } else {
                     pattern.append('|');
                 }
-                pattern.append(allow);
+                pattern.append(Pattern.quote(allow));
             }
             pattern.append(")/[^?#;]*\\.xsd");
             String regex = pattern.toString();
@@ -131,6 +145,14 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
         try {
             String uri;
+            if (systemId == null) {
+                if (name != null) {
+                    LOGGER.finest("resolveEntity name: " + name);
+                    return null;
+                }
+                throw new SAXException("External entity systemId not provided");
+            }
+
             if (URI.create(systemId).isAbsolute()) {
                 uri = systemId;
             } else {
@@ -174,5 +196,15 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
         // do not allow external entities
         throw new SAXException(ERROR_MESSAGE_BASE + systemId);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("AllowListEntityResolver:( ");
+        builder.append(this.baseURL);
+        builder.append(" ");
+        builder.append(this.ALLOWED_URIS);
+        builder.append(")");
+        return builder.toString();
     }
 }

@@ -8,3 +8,9 @@ The :guilabel:`About Page` provides information about GeoServer along with usefu
 .. figure:: images/about.png
    
    About GeoServer Page
+   
+When logged in build informaiton is listed here.
+
+.. figure:: images/about-build.png
+   
+   About GeoServer Page Build Information

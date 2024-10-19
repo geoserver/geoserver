@@ -33,6 +33,6 @@
   </rangeSubset>
   <output>
       <crs>EPSG:32633</crs>
-      <format>GeoTIFF</format>
+      <format>image/png</format>
   </output>
 </GetCoverage>

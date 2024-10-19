@@ -1632,7 +1632,7 @@ public class CatalogBuilder {
                 || resource instanceof WMTSLayerInfo)
             return catalog.getStyleByName(StyleInfo.DEFAULT_RASTER);
 
-        // for vectors we depend on the the nature of the default geometry
+        // for vectors we depend on the nature of the default geometry
         String styleName;
         FeatureTypeInfo featureType = (FeatureTypeInfo) resource;
         if (featureType.getFeatureType() == null) {

@@ -6,8 +6,8 @@ info:
   description: The REST API for Disk Quota management provides a RESTful interface through which clients can configure the disk usage limits and expiration policies for a GeoWebCache instance through simple HTTP calls.  Since disk usage increases geometrically by zoom level, one single seeding task could fill up an entire storage device. Because of this, GeoWebCache employs a disk quota system where one can specify the maximum amount of disk space to use for a particular layer, as well as logic on how to proceed when that quota is reached. There are two different policies for managing the disk quotas - Least Frequently Used (LFU) and Least Recently Used (LRU).
   contact:
     name: GeoServer
-    email: 'geoserver-users@sourceforge.net'
-    url: 'http://geoserver.org/comm/'
+    email: 'geoserver-users@osgeo.org'
+    url: 'https://geoserver.org/comm/'
 host: localhost:8080
 schemes:
 - http

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.demo;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,14 +17,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxCallListener;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,6 +33,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -48,12 +51,57 @@ import org.geotools.util.logging.Logging;
  * @since 1.8.x
  * @version $Id$
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
-    final Resource demoDir;
+    /**
+     * Javascript required by the Demo Request page to do the client-side requests. This is shared
+     * among other modules (cf WCS Request Builder, and WPS Request Builder).
+     *
+     * <p>See static block, below.
+     */
+    public static String demoRequestsJavascript;
+
+    /**
+     * Style sheet (Content-Security-Policy does not allow inline-styles)
+     *
+     * <p>See static block, below.
+     */
+    public static String demoRequestsCSS;
+
+    static {
+        try {
+            var demo_request_js =
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    DemoRequestsPage.class.getResourceAsStream(
+                                            "/org/geoserver/web/demo/demo-requests.js"),
+                                    Charsets.UTF_8));
+            var xml_pretty_print_js =
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    DemoRequestsPage.class.getResourceAsStream(
+                                            "/org/geoserver/web/demo/xml-pretty-print.js"),
+                                    Charsets.UTF_8));
+            var js = demo_request_js + "\n" + xml_pretty_print_js;
+            demoRequestsJavascript = js;
+
+            demoRequestsCSS =
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    DemoRequestsPage.class.getResourceAsStream(
+                                            "/org/geoserver/web/demo/demo-requests.css"),
+                                    Charsets.UTF_8));
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "error occurred reading demoRequestsJavascript", e);
+        }
+    }
+
+    Resource demoDir;
 
     private TextField<String> urlTextField;
 
@@ -63,7 +111,43 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     private PasswordTextField password;
 
-    public DemoRequestsPage() {
+    private CheckBox prettyXML;
+    private CheckBox openNewPage;
+
+    public DemoRequestsPage(PageParameters parameters) {
+        super(parameters);
+        setup();
+        if (parameters != null) {
+            if (parameters.get("xml") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestBody(parameters.get("xml").toString());
+            }
+            if (parameters.get("url") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestUrl(parameters.get("url").toString());
+            }
+        }
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptContentHeaderItem.forScript(demoRequestsJavascript, null));
+        response.render(CssHeaderItem.forCSS(demoRequestsCSS, "demoRequestsCSS"));
+
+        // setup onClick events (Content-security-policy doesn't allow onClick events in the HTML)
+        String script = "\n";
+
+        script +=
+                "$('#linkSubmit').on('click',function() {\ndocument.getElementById('openNewWindow').checked = false; \nsubmitRequest();\n} \n);\n\n";
+        script +=
+                "$('#linkSubmitNewWin').on('click',function() {\ndocument.getElementById('openNewWindow').checked = true;\nsubmitRequest();\n} );\n\n";
+
+        script += "\n";
+        response.render(OnDomReadyHeaderItem.forScript(script));
+    }
+
+    public void setup() {
         try {
             GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
             demoDir = Resources.serializable(loader.get("demo"));
@@ -77,12 +161,30 @@ public class DemoRequestsPage extends GeoServerBasePage {
         setUpDemoRequestsForm(demoDir);
     }
 
+    public DemoRequestsPage() {
+        setup();
+    }
+
     /** Package visible constructor aimed to help in setting up unit tests for this class */
     DemoRequestsPage(final Resource demoDir) {
         this.demoDir = Resources.serializable(demoDir);
         DemoRequest model = new DemoRequest(demoDir.path());
         setDefaultModel(new Model<>(model));
         setUpDemoRequestsForm(demoDir);
+    }
+
+    DemoRequestsPage(final Resource demoDir, PageParameters parameters) {
+        this(demoDir);
+        if (parameters != null) {
+            if (parameters.get("xml") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestBody(parameters.get("xml").toString());
+            }
+            if (parameters.get("url") != null) {
+                ((DemoRequest) this.getDefaultModel().getObject())
+                        .setRequestUrl(parameters.get("url").toString());
+            }
+        }
     }
 
     /**
@@ -221,44 +323,15 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         password = new PasswordTextField("password", new PropertyModel<>(requestModel, "password"));
         password.setRequired(false);
+        password.setResetPassword(false);
         demoRequestsForm.add(password);
 
-        final ModalWindow responseWindow = new ModalWindow("responseWindow");
-        add(responseWindow);
+        prettyXML = new CheckBox("prettyXML", new PropertyModel<>(requestModel, "prettyXML"));
+        demoRequestsForm.add(prettyXML);
 
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
-
-        responseWindow.setPageCreator(
-                (ModalWindow.PageCreator) () -> new DemoRequestResponse(requestModel));
-
-        demoRequestsForm.add(
-                new AjaxSubmitLink("submit", demoRequestsForm) {
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target, Form testWfsPostForm) {
-                        responseWindow.show(target);
-                    }
-
-                    @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                        super.updateAjaxAttributes(attributes);
-                        // we need to force EditArea to update the textarea contents (which it
-                        // hides)
-                        // before submitting the form, otherwise the contents won't be the ones the
-                        // user
-                        // edited
-                        attributes
-                                .getAjaxCallListeners()
-                                .add(
-                                        new AjaxCallListener() {
-                                            @Override
-                                            public CharSequence getBeforeHandler(
-                                                    Component component) {
-                                                return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();";
-                                            }
-                                        });
-                    }
-                });
+        openNewPage =
+                new CheckBox("openNewWindow", new PropertyModel<>(requestModel, "openNewWindow"));
+        demoRequestsForm.add(openNewPage);
     }
 
     private List<String> getDemoList(final Resource demoDir) {

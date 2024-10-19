@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-ogcapi</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -72,12 +72,11 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-cql-json</artifactId>
+      <artifactId>gt-cql2-json</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql2-text</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -171,6 +170,10 @@
       <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
     </dependency>
   </dependencies>
 

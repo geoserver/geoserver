@@ -1,0 +1,30 @@
+<assembly>
+  <id>gsr-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>	
+        <include>gs-gsr*.jar</include>
+        <include>gs-ogcapi-core*.jar</include>
+        <include>jackson-databind*.jar</include>
+        <include>jackson-annotations*.jar</include>
+        <include>jackson-dataformat-*.jar</include>
+        <include>swagger-core*.jar</include>
+        <include>swagger-models*.jar</include>
+        <include>gson*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

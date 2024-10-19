@@ -692,7 +692,7 @@ This service could be any kind of URL  -  e.g. direct link to the image or WMS/W
     </complexType>
     <element name="DownlinkInformation" substitutionGroup="gml:AbstractObject" type="eop:DownlinkInformationType">
         <annotation>
-            <documentation>Information about the the downlinking (to earth) of the data.</documentation>
+            <documentation>Information about the downlinking (to earth) of the data.</documentation>
         </annotation>
     </element>
     <complexType name="DownlinkInformationType">

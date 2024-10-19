@@ -16,7 +16,7 @@
       </li>
       <#if collection.extent.temporal??>
       <#assign temporal = collection.extent.temporal>
-      <li id="${collection.htmlId}_temporal"><b>Temporal extent</b>: ${temporal.minValue?datetime?iso_utc}/${temporal.maxValue?datetime?iso_utc}</li>
+      <li id="${collection.htmlId}_temporal"><b>Temporal extent</b>: ${temporal.minValue}/${temporal.maxValue}</li>
       </#if>
   </ul>
 </div>
@@ -27,7 +27,7 @@
       or choose another format:
     </div>
     <div class="col-auto py-1">
-      <select class="form-select form-select-sm" onchange="window.open(this.options[this.selectedIndex].value);this.selectedIndex=0" >
+      <select class="form-select form-select-sm form-select-open-basic">
         <option value="none" selected>-- Please choose a format --</option>
         <#list collection.getLinksExcept("coverage", "image/geotiff") as link>
         <option value="${link.href}">${link.type}</option>

@@ -114,6 +114,7 @@ import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.auth.TestingAuthenticationCache;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
@@ -259,6 +260,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                     return path.matches(".*modules[\\\\/]extension[\\\\/]xsd[\\\\/].*\\.xsd")
                             || path.matches(".*modules[\\\\/]ogc[\\\\/].*\\.xsd");
                 }
+
+                @Override
+                public String toString() {
+                    return "PreventLocalEntityResolver";
+                }
             };
 
     @Override
@@ -338,6 +344,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
 
+            getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);
         }
     }
@@ -2424,7 +2431,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Check coordinate at xpathExpression against provided coordiante. Coordinate values are
+     * Check coordinate at xpathExpression against provided coordinate. Coordinate values are
      * compared as doubles (with small delta) rather than as strings to account for floating point
      * differences.
      *

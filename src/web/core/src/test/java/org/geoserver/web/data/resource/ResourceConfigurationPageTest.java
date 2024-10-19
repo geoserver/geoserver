@@ -98,6 +98,7 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.security.core.Authentication;
@@ -121,6 +122,11 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 "null_srid_line.properties",
                 ResourceConfigurationPageTest.class,
                 getCatalog());
+    }
+
+    @Before
+    public void resetAttributeRenames() throws IOException {
+        revertLayer(MockData.GENERICENTITY);
     }
 
     @Test
@@ -233,11 +239,11 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         login();
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, true);
         tester.startPage(page);
-        // print(tester.getLastRenderedPage(), true, true, true);
+        print(tester.getLastRenderedPage(), true, true, true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:computeLatLon",
-                "onclick");
-        // print(tester.getLastRenderedPage(), true, true, true);
+                "click");
+        print(tester.getLastRenderedPage(), true, true, true);
         // we used to have error messages
         tester.assertNoErrorMessage();
         Component llbox =
@@ -459,7 +465,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // click first item in SRS (urn:ogc:def:crs:EPSG::4326)
         tester.clickLink(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
 
         // assert that native SRS has changed from EPSG:26713 to urn:ogc:def:crs:EPSG::4326
@@ -576,7 +582,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // click first item in SRS
         tester.clickLink(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
 
         // assert that native SRS has changed
@@ -614,20 +620,20 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         DataView epsgContainer =
                 (DataView)
                         tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items");
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items");
 
         // we got two epsg in the otherSrs container
         assertEquals(3, epsgContainer.size());
 
         Component epsgComponent1 =
                 tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link:label");
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link:label");
         Component epsgComponent2 =
                 tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:2:itemProperties:0:component:link:label");
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:2:itemProperties:0:component:link:label");
         Component epsgComponent3 =
                 tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:3:itemProperties:0:component:link:label");
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:3:itemProperties:0:component:link:label");
 
         // checks that they have been properly displayed with not urn format being cut
         assertEquals("urn:ogc:def:crs:EPSG::3006", epsgComponent1.getDefaultModel().getObject());
@@ -826,7 +832,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // click first item in SRS
         tester.clickLink(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
         tester.clickLink(
                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:computeNative", true);
@@ -1033,5 +1039,51 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, null);
         features.add(b.buildFeature(null));
         store.addFeatures(features);
+    }
+
+    @Test
+    public void testRenameAndMove() {
+        String layerId = getLayerId(MockData.GENERICENTITY);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        tester.assertLabel("publishedinfoname", layerId);
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
+
+        // enable attribute customization
+        String attributesPanel = "publishedinfo:tabs:panel:theList:1:content:attributePanel:";
+        FormTester form = tester.newFormTester("publishedinfo");
+        form.setValue("tabs:panel:theList:1:content:attributePanel:customizeFeatureType", "true");
+        tester.executeAjaxEvent(attributesPanel + "customizeFeatureType", "click");
+        tester.assertInvisible(attributesPanel + "attributesTable");
+        tester.assertVisible(attributesPanel + "attributesEditor");
+
+        // customize one attribute, just rename it
+        String firstItemProperties =
+                "tabs:panel:theList:1:content:attributePanel:attributesEditor:table:listContainer:items:1:itemProperties";
+        form.setValue(firstItemProperties + ":2:component:text", "abstract");
+
+        // now move it down
+        // - simulate blur happening only in the browser as the editor loses focus)
+        // - simulate click on the down link
+        tester.executeAjaxEvent(
+                "publishedinfo:" + firstItemProperties + ":2:component:text", "blur");
+        tester.executeAjaxEvent(
+                "publishedinfo:" + firstItemProperties + ":1:component:down:link", "click");
+
+        // save
+        form.submit("apply");
+        tester.assertNoErrorMessage();
+
+        // check the attribute customization was performed, renamed attribute and moved down
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        List<AttributeTypeInfo> attributes = fti.getAttributes();
+        assertNotNull(attributes);
+        assertEquals(6, attributes.size());
+        AttributeTypeInfo att = attributes.get(1); // used to be 0
+        assertEquals("abstract", att.getName());
+        assertEquals("description", att.getSource());
     }
 }

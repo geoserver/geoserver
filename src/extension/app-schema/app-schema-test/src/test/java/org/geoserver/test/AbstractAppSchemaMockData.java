@@ -54,7 +54,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /** URI for gsml namespace. */
     public static final String GSML_URI = "urn:cgi:xmlns:CGI:GeoSciML:2.0";
 
-    /** Schema location URL for the the top-level gsml XSD. */
+    /** Schema location URL for the top-level gsml XSD. */
     public static final String GSML_SCHEMA_LOCATION_URL =
             "http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd";
 

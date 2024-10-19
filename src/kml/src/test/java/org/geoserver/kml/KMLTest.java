@@ -7,7 +7,7 @@ package org.geoserver.kml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -486,7 +486,7 @@ public class KMLTest extends WMSTestSupport {
             throws XpathException {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         String coordinates = xpath.evaluate(path, doc);
-        assertThat(coordinates, not(isEmptyString()));
+        assertThat(coordinates, not(emptyString()));
         double[] ordinates =
                 Arrays.stream(coordinates.split("\\s*,\\s*"))
                         .mapToDouble(Double::parseDouble)

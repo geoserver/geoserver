@@ -24,6 +24,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -110,6 +112,49 @@ public class MapPreviewPage extends GeoServerBasePage {
                 };
         table.setOutputMarkupId(true);
         add(table);
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+
+        // setup onChange events (Content-security-policy doesn't allow onClick events in the HTML)
+        String script = "\n";
+
+        script +=
+                "\n         //1. attach to the appropriate <select> elements (marked with class map-preview-page-menu-select)\n"
+                        + "        //2. when onChange called:\n"
+                        + "        //    a. is this WMS (otherwise its WFS)\n"
+                        + "        //    b. determine the format attribute selector (its different for WMS and WFS). This is from the optionGroup\n"
+                        + "        //       the selected option is from (WMS or WFS).\n"
+                        + "        //    c. determine actual format (i.e. image/png) - this is the option's `value`\n"
+                        + "        //    d. the \"&maxFeature=50\" is a constant (based on the configuration).  Used by WFS.\n"
+                        + "        //    e. use either the attribute wmsLink of wfsLink as the base url and add\n"
+                        + "        //         i. format specifier\n"
+                        + "        //        ii. \"&maxFeature=50\" (see above) if its WFS\n"
+                        + "        //    f. open a new window to computed url (NOTE: this is a popup and might be blocked by browser)\n"
+                        + "        //    g. reset the selected item to \"Select one\" so user can choose a different one (or different layer)"
+                        + "\n\n$('.map-preview-page-menu-select').on('change',function(event) {\n"
+                        + "    //debugger;\n\n"
+                        + "    var isWMS = this.options[this.selectedIndex].parentNode.label == 'WMS';\n"
+                        + "    var formatAtt= isWMS ? 'format' : 'outputFormat';\n"
+                        + "    var actualFormat = this.options[this.selectedIndex].value;\n"
+                        + "    var maxFeature = '"
+                        + getMaxFeatures()
+                        + "';\n"
+                        + "     var url='';\n"
+                        + "     if (isWMS) {\n"
+                        + "       url=this.getAttribute('wmsLink') + '&' + formatAtt + '=' + actualFormat;\n"
+                        + "    }\n"
+                        + "    else {\n"
+                        + "       url=this.getAttribute('wfsLink') + '&' + formatAtt + '=' + actualFormat + maxFeature;\n"
+                        + "    }\n"
+                        + "    window.open(url);\n"
+                        + "    this.selectedIndex=0;\n"
+                        + "}\n"
+                        + ");\n\n";
+        script += "\n";
+        response.render(OnDomReadyHeaderItem.forScript(script));
     }
 
     private List<ExternalLink> commonFormatLinks(PreviewLayer layer) {
@@ -252,24 +297,14 @@ public class MapPreviewPage extends GeoServerBasePage {
         wfsFormatsGroup.setVisible(CollectionUtils.isNotEmpty(wfsOutputFormats));
         menu.add(wfsFormatsGroup);
 
-        // build the wms request, redirect to it in a new window, reset the selection
-        String wmsUrl =
-                "'" + layer.getWmsLink() + "&format=' + this.options[this.selectedIndex].value";
-        String wfsUrl =
-                "'"
-                        + layer.buildWfsLink()
-                        + getMaxFeatures()
-                        + "&outputFormat=' + this.options[this.selectedIndex].value";
-        String choice =
-                "(this.options[this.selectedIndex].parentNode.label == 'WMS') ? "
-                        + wmsUrl
-                        + " : "
-                        + wfsUrl;
-        menu.add(
-                new AttributeAppender(
-                        "onchange",
-                        new Model<>("window.open(" + choice + ");this.selectedIndex=0"),
-                        ";"));
+        // onChange event handled by JS (see renderHeader)
+        // we need 2 things;
+        // 1. wmsLink
+        // 2. wfsLink
+
+        menu.add(new AttributeAppender("wmsLink", new Model<>(layer.getWmsLink()), ";"));
+        menu.add(new AttributeAppender("wfsLink", new Model<>(layer.buildWfsLink()), ";"));
+
         f.add(menu);
         return f;
     }

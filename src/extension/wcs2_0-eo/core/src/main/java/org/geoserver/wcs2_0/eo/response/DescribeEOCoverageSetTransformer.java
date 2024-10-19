@@ -198,7 +198,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
                 return dcs.getCount();
             }
 
-            // fall back on the the default value, it's ok if it's null
+            // fall back on the default value, it's ok if it's null
             return wcs.getMetadata().get(WCSEOMetadata.COUNT_DEFAULT.key, Integer.class);
         }
 

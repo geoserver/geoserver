@@ -34,9 +34,4 @@ public class ResourceModel implements IModel<ResourceInfo> {
     public void setObject(ResourceInfo object) {
         this.resourceInfo = object;
     }
-
-    @Override
-    public void detach() {
-        // nothing specific to do
-    }
 }

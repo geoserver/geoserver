@@ -60,6 +60,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.data.InternationalContentHelper;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -1108,6 +1109,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 handleLayer(layer, isRoot);
                 commit();
             } catch (Exception e) {
+                // abort processing if the user closed the connection
+                ClientStreamAbortedException.rethrowUncheked(e);
                 // report what layer we failed on to help the admin locate and fix it
 
                 if (skipping) {
@@ -1415,6 +1418,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                         handleLayerGroup(group, isRoot);
                         commit();
                     } catch (Exception e) {
+                        // abort processing if the user closed the connection
+                        ClientStreamAbortedException.rethrowUncheked(e);
                         // report what layer we failed on to help the admin locate and fix it
                         if (skipping) {
                             if (group != null) {

@@ -15,7 +15,7 @@ import org.geoserver.security.password.PasswordValidator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
- * This interface is an extenstion to {@link UserDetailsService}
+ * This interface is an extension to {@link UserDetailsService}
  *
  * <p>A class implementing this interface implements a read only backend for user and group
  * management
@@ -40,14 +40,14 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener);
 
     /**
-     * Returns the the group object, null if not found
+     * Returns the group object, null if not found
      *
      * @return null if group not found
      */
     GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException;
 
     /**
-     * Returns the the user object, null if not found
+     * Returns the user object, null if not found
      *
      * @return null if user not found
      */

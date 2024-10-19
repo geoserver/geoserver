@@ -5,7 +5,7 @@ $Id: WmsCapabilities.js,v 1.6 2005/03/06 04:14:51 madair1 Exp $
 
 /**
  * Stores a Web Map Server (WMS) Capabilities document as defined by the 
- * Open Geospatial Consortium (http://opengis.org and extensions the the WMC.  
+ * Open Geospatial Consortium (http://opengis.org and extensions the WMC.  
  *
  * @constructor
  * @author Mike Adair

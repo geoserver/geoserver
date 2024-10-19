@@ -97,9 +97,9 @@ from the LDAP repository and allow access rights to be assigned to those roles.
 #. Click the ``Users,Group,Roles`` link located under the ``Security`` section 
    of the navigation sidebar.
    
-#. Click the ``Add new link`` under the  ``Role Services`` section.
+#. Click the ``Add new`` link under the ``Role Services`` section.
 
-#. Click the ``LDAP`` option under the  ``New Role Service`` section.
+#. Click the ``LDAP`` option under the ``New Role Service`` section.
 
    .. figure:: images/ldap14.jpg
       :align: center

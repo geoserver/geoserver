@@ -12,10 +12,12 @@ import static org.junit.Assert.assertNotNull;
 import com.jayway.jsonpath.DocumentContext;
 import java.io.IOException;
 import java.util.List;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.Service;
 import org.geotools.api.data.Query;
@@ -23,6 +25,7 @@ import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LandingPageTest extends STACTestSupport {
 
@@ -201,5 +204,21 @@ public class LandingPageTest extends STACTestSupport {
                         "http://localhost:8080/geoserver/ogc/stac/v1/collections/GS_TEST",
                         "http://localhost:8080/geoserver/ogc/stac/v1/collections/ATMTEST",
                         "http://localhost:8080/geoserver/ogc/stac/v1/collections/ATMTEST2"));
+    }
+
+    @Test
+    public void testDisabledService() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.setEnabled(false);
+        gs.save(service);
+        try {
+            MockHttpServletResponse httpServletResponse =
+                    getAsMockHttpServletResponse("ogc/stac/v1", 404);
+            assertEquals("Service STAC is disabled", httpServletResponse.getErrorMessage());
+        } finally {
+            service.setEnabled(true);
+            gs.save(service);
+        }
     }
 }

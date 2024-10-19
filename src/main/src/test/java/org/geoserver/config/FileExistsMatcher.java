@@ -7,7 +7,6 @@ package org.geoserver.config;
 import java.io.File;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
 public class FileExistsMatcher extends BaseMatcher<File> {
@@ -17,7 +16,6 @@ public class FileExistsMatcher extends BaseMatcher<File> {
      *
      * @param target the target instance against which others should be assessed
      */
-    @Factory
     public static Matcher<File> fileExists() {
         return new FileExistsMatcher();
     }

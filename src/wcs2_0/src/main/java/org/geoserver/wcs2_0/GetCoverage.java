@@ -1749,7 +1749,7 @@ public class GetCoverage {
      * <p>The method tries to enforce the WCS Resource Limits specified at config time.
      *
      * @param coverage the {@link GridCoverage2D} to work on
-     * @param extensions the list of WCS extension to look for the the RangeSubset one
+     * @param extensions the list of WCS extension to look for the RangeSubset one
      * @param hints an instance of {@link Hints} to use for the operations.
      * @return a new instance of {@link GridCoverage2D} or the source one in case no operation was
      *     needed.

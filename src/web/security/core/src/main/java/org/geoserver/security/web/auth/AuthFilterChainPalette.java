@@ -79,11 +79,6 @@ public class AuthFilterChainPalette extends Palette<String> {
         }
 
         @Override
-        public void detach() {
-            // do nothing
-        }
-
-        @Override
         public void setObject(List<String> object) {
             throw new UnsupportedOperationException();
         }

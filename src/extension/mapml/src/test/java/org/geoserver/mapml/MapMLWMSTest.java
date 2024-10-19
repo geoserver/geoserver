@@ -8,6 +8,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
+import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -40,10 +43,12 @@ import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -98,7 +103,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MapMLWMSTest extends MapMLTestSupport {
 
-    private XpathEngine xpath;
+    protected XpathEngine xpath;
 
     @Override
     protected void registerNamespaces(Map<String, String> namespaces) {
@@ -186,8 +191,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         LayerGroupInfo lgi = catalog.getLayerGroupByName(NATURE_GROUP);
         lgi.setInternationalTitle(title);
         CoordinateReferenceSystem webMerc =
-                MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS();
-        Bounds webMercBounds = MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getBounds();
+                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS();
+        Bounds webMercBounds = MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getBounds();
         double x1 = webMercBounds.getMin().x;
         double x2 = webMercBounds.getMax().x;
         double y1 = webMercBounds.getMin().y;
@@ -259,7 +264,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
         assertSame(
-                MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
+                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
         m = testLayersAndGroupsMapML(lgi, null);
         title = m.getHead().getTitle();
@@ -271,7 +276,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
         assertSame(
-                MapMLDocumentBuilder.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
+                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
         m = testLayersAndGroupsMapML(lgi, Locale.CANADA_FRENCH);
         title = m.getHead().getTitle();
@@ -355,6 +360,63 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertFalse(
                 "Response should not contain a ServiceException",
                 response.getContentAsString().contains("ServiceException"));
+    }
+
+    @Test
+    public void testMapMLDefaultMimeType() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WMSInfo wms = geoServer.getService(WMSInfo.class);
+        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
+        geoServer.save(wms);
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        li.getResource().getMetadata().put(MapMLConstants.MAPML_MIME, "img/jpeg");
+        LayerInfo li2 = cat.getLayerByName(MockData.LINES.getLocalPart());
+        li2.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
+        li2.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li);
+        cat.save(li2);
+        Mapml mapmlExtent =
+                new MapMLWMSRequest()
+                        .name(MockData.POLYGONS.getLocalPart())
+                        .srs("EPSG:3857")
+                        .getAsMapML();
+
+        List<Link> extentLinks =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtent.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksForSingle = getLinkByRelType(extentLinks, RelType.IMAGE);
+        assertTrue(
+                "Image link tref should contain img/jpeg format despite no format passed into request",
+                imageLinksForSingle.get(0).getTref().contains("format=img/jpeg"));
+        Mapml mapmlExtentWithTwo =
+                new MapMLWMSRequest()
+                        .name(
+                                MockData.POLYGONS.getLocalPart()
+                                        + ","
+                                        + MockData.LINES.getLocalPart())
+                        .srs("EPSG:3857")
+                        .getAsMapML();
+        List<Link> extentLinksOne =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtentWithTwo.getBody().getExtents().get(0).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksOne = getLinkByRelType(extentLinksOne, RelType.IMAGE);
+        assertTrue(
+                "Image link tref should contain img/jpeg format despite no format passed into request",
+                imageLinksOne.get(0).getTref().contains("format=img/jpeg"));
+        List<Link> extentLinksTwo =
+                getTypeFromInputOrDataListOrLink(
+                        mapmlExtentWithTwo.getBody().getExtents().get(1).getInputOrDatalistOrLink(),
+                        Link.class);
+        List<Link> imageLinksTwo = getLinkByRelType(extentLinksTwo, RelType.IMAGE);
+        assertTrue(
+                "Image link tref should contain img/jpeg format despite no format passed into request "
+                        + "and no default set in metadata because first requested layer has default set",
+                imageLinksTwo.get(0).getTref().contains("format=img/jpeg"));
     }
 
     @Test
@@ -923,9 +985,10 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Test
-    public void testShardingMapMLLayer() throws Exception {
-
-        // set up mapml layer to useTiles
+    public void testLegacyShardingConfig() throws Exception {
+        // Although sharding support has been removed, test that everything is working fine
+        // and no configured sharding is being used even if it was configured (simulating
+        // an old layer configured in the past with sharding enabled)
         Catalog catalog = getCatalog();
         ResourceInfo layerMeta =
                 catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
@@ -953,20 +1016,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
         String url = xpath.evaluate("//html:map-link[@rel='image']/@tref", doc);
-        assertTrue(url.startsWith("http://{s}.example.com"));
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist[@id='servers'])", doc);
+        assertFalse(url.startsWith("http://{s}.example.com"));
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist[@id='servers'])", doc);
         assertXpathEvaluatesTo(
-                "1",
+                "0",
                 "count(//html:map-input[@list='servers'][@type='hidden'][@shard='true'][@name='s'])",
                 doc);
-        assertXpathEvaluatesTo("3", "count(//html:map-datalist/map-option)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist/map-option[@value='server1'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist/map-option[@value='server2'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:map-datalist/map-option[@value='server3'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option[@value='server1'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option[@value='server2'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-datalist/map-option[@value='server3'])", doc);
 
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
         url = xpath.evaluate("//html:map-link[@rel='query']/@tref", doc);
-        assertTrue(url.startsWith("http://{s}.example.com"));
+        assertFalse(url.startsWith("http://{s}.example.com"));
     }
 
     @Test
@@ -1518,6 +1581,96 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Test
+    public void testXMLHeadTemplate() throws Exception {
+        File template = null;
+        try {
+            String layerId = getLayerId(MockData.ROAD_SEGMENTS);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_XML_HEAD_FTL);
+            FileUtils.write(
+                    template,
+                    "<map-style>.polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}</map-style>\n"
+                            + "<map-link href=\"${serviceLink(\"${base}\",\"${path}\",\"${kvp}\")}\" rel=\"${rel}\" title=\"templateinsertedstyle\"/>",
+                    "UTF-8");
+
+            MockRequestResponse requestResponse =
+                    getMockRequestResponse(
+                            MockData.ROAD_SEGMENTS.getPrefix()
+                                    + ":"
+                                    + MockData.ROAD_SEGMENTS.getLocalPart(),
+                            null,
+                            null,
+                            "EPSG:3857",
+                            null);
+            Mapml mapml = parseMapML(requestResponse);
+            List<Link> styleLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.STYLE);
+            Link templateStyleLink = styleLinks.get(0);
+            assertEquals("templateinsertedstyle", templateStyleLink.getTitle());
+            assertEquals(
+                    "http://localhost:8080/geoserver/wms?SRS=EPSG%3A3857&REQUEST=GetMap&FORMAT=text%2Fmapml&FORMAT_OPTIONS=%7BMAPML-WMS-FORMAT%3Dimage%2Fpng%7D&BBOX=SRSEnvelope%5B0.0%20%3A%20111319.49079327357%2C%20-7.081154551613622E-10%20%3A%20111325.14286638486%5D&VERSION=1.3.0&WIDTH=150&SERVICE=WMS&HEIGHT=150&LAYERS=cite%3ARoadSegments",
+                    templateStyleLink.getHref());
+            String templateStyle = mapml.getHead().getStyle();
+            assertEquals(
+                    ".bbox {display:none} .RoadSegments-r1-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; stroke:#C0A000; stroke-linecap:butt} .RoadSegments-r2-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; stroke:#000000; stroke-linecap:butt} .RoadSegments-r3-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; stroke:#E04000; stroke-linecap:butt} .polygon-r1-s1{stroke-opacity:3.0; stroke-dashoffset:4; stroke-width:2.0; fill:#AAAAAA; fill-opacity:3.0; stroke:#DD0000; stroke-linecap:butt}",
+                    templateStyle);
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
+    public void testPreviewHeadTemplate() throws Exception {
+        File template = null;
+        try {
+            String layerId = getLayerId(MockData.LAKES);
+            FeatureTypeInfo resource =
+                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().get(resource).dir();
+            template = new File(parent, MAPML_PREVIEW_HEAD_FTL);
+            FileUtils.write(template, "<link rel=\"stylesheet\" href=\"mystyle.css\">", "UTF-8");
+            FileUtils.write(
+                    template,
+                    "<style>\n"
+                            + " body {\n"
+                            + "  background-color: linen;\n"
+                            + " }\n"
+                            + "</style>",
+                    "UTF-8",
+                    true);
+
+            String path =
+                    "cite/wms?LAYERS=Lakes"
+                            + "&STYLES=&FORMAT="
+                            + MapMLConstants.MAPML_HTML_MIME_TYPE
+                            + "&SERVICE=WMS&VERSION=1.3.0"
+                            + "&REQUEST=GetMap"
+                            + "&SRS=epsg:3857"
+                            + "&BBOX=-13885038,2870337,-7455049,6338174"
+                            + "&WIDTH=150"
+                            + "&HEIGHT=150"
+                            + "&format_options="
+                            + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                            + ":image/png";
+            Document doc = getAsJSoup(path);
+            Element link = doc.select("link").first();
+            String linkRel = link.attr("rel");
+            String linkSrc = link.attr("href");
+            assertThat(linkRel, containsString("stylesheet"));
+            assertThat(linkSrc, containsString("mystyle.css"));
+            Element style = doc.select("style").get(2);
+            assertEquals("body {\n" + "  background-color: linen;\n" + " }", style.html());
+        } finally {
+            if (template != null) {
+                template.delete();
+            }
+        }
+    }
+
+    @Test
     public void testInvalidProjectionHTML() throws Exception {
         String path =
                 "cite/wms?LAYERS=Lakes"
@@ -1588,6 +1741,47 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 alternateLinks, ProjType.APSTILE, new Envelope(-1E7, 1.4E7, -1E7, 1.4E7), 1e6);
         testAlternateBounds(
                 alternateLinks, ProjType.CBMTILE, new Envelope(-8.1E6, 8.3E6, -3.6E6, 1.23E7), 1e5);
+    }
+
+    @Test
+    public void testLicenseIsPopulated() throws Exception {
+        // set up mapml layer license data
+        Catalog catalog = getCatalog();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
+
+        layerMeta.getMetadata().put(MapMLConstants.LICENSE_TITLE, "Apache-2.0");
+        layerMeta
+                .getMetadata()
+                .put(MapMLConstants.LICENSE_LINK, "https://opensource.org/license/apache-2-0");
+
+        catalog.save(layerMeta);
+        assertTrue(layerMeta.getMetadata().containsKey(MapMLConstants.LICENSE_TITLE));
+        assertTrue(layerMeta.getMetadata().containsKey(MapMLConstants.LICENSE_LINK));
+
+        assertTrue(
+                layerMeta
+                        .getMetadata()
+                        .get(MapMLConstants.LICENSE_TITLE)
+                        .toString()
+                        .equalsIgnoreCase("Apache-2.0"));
+
+        MockRequestResponse requestResponseEnglish =
+                getMockRequestResponse(
+                        MockData.BASIC_POLYGONS.getPrefix()
+                                + ":"
+                                + MockData.BASIC_POLYGONS.getLocalPart(),
+                        null,
+                        Locale.ENGLISH,
+                        "EPSG:3857",
+                        null);
+
+        Mapml mapml = parseMapML(requestResponseEnglish);
+        List<Link> licenseLinks = getLinkByRelType(mapml.getHead().getLinks(), RelType.LICENSE);
+        assertEquals(1, licenseLinks.size());
+        Link licenseLink = licenseLinks.get(0);
+        assertEquals("Apache-2.0", licenseLink.getTitle());
+        assertEquals("https://opensource.org/license/apache-2-0", licenseLink.getHref());
     }
 
     private void testAlternateBounds(

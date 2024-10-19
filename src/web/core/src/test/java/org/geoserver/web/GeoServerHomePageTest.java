@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +22,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -62,7 +64,8 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     public void testProvidedGetCapabilities() {
         tester.startPage(GeoServerHomePage.class);
 
-        tester.assertListView(
+        tester.assertComponent("providedCaps", org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue(
                 "providedCaps",
                 Collections.singletonList(
                         getGeoServerApplication()
@@ -105,7 +108,9 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         List<GeoServerHomePageContentProvider> providers =
                 geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
         assertFalse(providers.isEmpty());
-        tester.assertListView("contributedContent", providers);
+        tester.assertComponent(
+                "contributedContent", org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue("contributedContent", providers);
     }
 
     @Test
@@ -288,6 +293,23 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         tester.startPage(GeoServerHomePage.class);
         tester.assertComponent("form:workspace:select", Select2DropDownChoice.class);
         tester.assertComponent("form:layer:select", Select2DropDownChoice.class);
+    }
+
+    @Test
+    public void testHideSensitiveInfo() throws Exception {
+        logout();
+        tester.startPage(GeoServerHomePage.class);
+
+        var version = new StringResourceModel("version", null, null).getString();
+
+        String responseTxt = tester.getLastResponse().getDocument();
+        assertFalse(responseTxt.contains(version));
+
+        login();
+        tester.startPage(GeoServerHomePage.class);
+
+        responseTxt = tester.getLastResponse().getDocument();
+        assertTrue(responseTxt.contains(version));
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {

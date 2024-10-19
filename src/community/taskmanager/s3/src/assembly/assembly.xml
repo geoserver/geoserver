@@ -1,0 +1,25 @@
+<assembly>
+  <id>taskmanager-s3-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-taskmanager-s3*.jar</include>
+        <include>aws-java-sdk-s3*.jar</include>
+        <include>h2-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

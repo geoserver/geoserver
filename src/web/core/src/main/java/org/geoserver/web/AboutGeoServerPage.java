@@ -6,6 +6,7 @@
 package org.geoserver.web;
 
 import java.util.logging.Level;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.geotools.util.factory.GeoTools;
 
@@ -17,10 +18,23 @@ import org.geotools.util.factory.GeoTools;
 public class AboutGeoServerPage extends GeoServerBasePage {
 
     public AboutGeoServerPage() {
-        add(new Label("geotoolsVersion", GeoTools.getVersion().toString()));
-        add(new Label("geotoolsRevision", GeoTools.getBuildRevision()));
-        add(new Label("geowebcacheVersion", getGwcVersion()));
-        add(new Label("geowebcacheRevision", getGwcRevision()));
+        // hide info based on if the user is admin or not
+        var privateInfo = new WebMarkupContainer("privateInfo");
+        add(privateInfo);
+
+        var isAdmin = getSession().isAdmin();
+        if (isAdmin) {
+            privateInfo.add(new Label("geotoolsVersion", GeoTools.getVersion().toString()));
+            privateInfo.add(new Label("geotoolsRevision", GeoTools.getBuildRevision()));
+            privateInfo.add(new Label("geowebcacheVersion", getGwcVersion()));
+            privateInfo.add(new Label("geowebcacheRevision", getGwcRevision()));
+        } else {
+            add(new Label("geotoolsVersion", GeoTools.getVersion().toString()));
+            add(new Label("geotoolsRevision", GeoTools.getBuildRevision()));
+            add(new Label("geowebcacheVersion", getGwcVersion()));
+            add(new Label("geowebcacheRevision", getGwcRevision()));
+            privateInfo.setVisible(false);
+        }
     }
 
     public String getGwcVersion() {

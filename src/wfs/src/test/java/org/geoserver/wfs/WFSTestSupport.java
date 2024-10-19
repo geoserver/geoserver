@@ -67,6 +67,17 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
 
         // init xmlunit
+        Map<String, String> namespaces = getNamespaces();
+
+        CiteTestData.registerNamespaces(namespaces);
+
+        setUpNamespaces(namespaces);
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+
+        setUpInternal(testData);
+    }
+
+    public Map<String, String> getNamespaces() {
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("ows", "http://www.opengis.net/ows");
@@ -78,13 +89,7 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("gs", "http://geoserver.org");
         namespaces.put("soap12", "http://www.w3.org/2003/05/soap-envelope");
-
-        CiteTestData.registerNamespaces(namespaces);
-
-        setUpNamespaces(namespaces);
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-
-        setUpInternal(testData);
+        return namespaces;
     }
 
     protected void setUpInternal(SystemTestData testData) throws Exception {}

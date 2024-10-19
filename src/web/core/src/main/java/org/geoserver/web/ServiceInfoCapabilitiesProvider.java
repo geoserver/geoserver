@@ -94,6 +94,9 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
                 for (ServiceLinkDescription link : provider.getServiceLinks(workspaceInfo, null)) {
                     skip.add(link.getServiceType().toLowerCase());
                     skip.add(link.getProtocol().toLowerCase());
+                    if (link.getSpecificServiceType() != null) {
+                        skip.add(link.getSpecificServiceType().toLowerCase());
+                    }
                 }
             }
         }

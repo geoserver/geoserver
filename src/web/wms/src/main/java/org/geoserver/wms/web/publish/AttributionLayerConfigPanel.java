@@ -11,7 +11,6 @@ import java.net.URLConnection;
 import javax.imageio.ImageIO;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -23,6 +22,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 
 /** Configures a {@link LayerInfo} geo-search related metadata */
+// TODO WICKET8 - Verify this page works OK
 public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<PublishedInfo> {
 
     private static final long serialVersionUID = -5229831547353122190L;
@@ -84,7 +84,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                     private static final long serialVersionUID = 6814575194862084111L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         if (logo.getDefaultModelObjectAsString() != null) {
                             try {
                                 URL url = new URL(logo.getDefaultModelObjectAsString());

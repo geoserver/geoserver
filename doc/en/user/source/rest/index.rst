@@ -43,6 +43,7 @@ The following links provide direct access to the GeoServer REST API documentatio
 * :api:`/wmtslayers <wmtslayers.yaml>`
 * :api:`/wmtsstores <wmtsstores.yaml>`
 * :api:`/workspaces <workspaces.yaml>`
+* :api:`/urlchecks <urlchecks.yaml>`
 * :api:`/usergroup <usergroup.yaml>`
 * :api:`/roles <roles.yaml>`
 
@@ -97,7 +98,8 @@ This section contains a number of examples which illustrate some of the most com
    stores   
    imagemosaic
    appschema
-   
+   urlchecks
+
    
 
 .. toctree::

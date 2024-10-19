@@ -137,8 +137,10 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                             + se.getColumnNumber()
                             + " -- "
                             + se.getLocalizedMessage());
+        } catch (SAXException sax) {
+            throw new ServiceException(cleanSaxException(sax));
         } catch (Exception e) {
-            throw new ServiceException(e);
+            throw new ServiceException(cleanException(e));
         }
 
         return getMapRequest;

@@ -37,6 +37,7 @@ import org.geowebcache.layer.TileLayer;
  *
  * @author Niels Charlier
  */
+// TODO WICKET8 - Verify this page works OK
 public class BlobStorePage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -59024268194792891L;
@@ -249,7 +250,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         }
 
         @Override
-        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+        public void onSubmit(AjaxRequestTarget target) {
 
             final BlobStoreInfo blobStore = (BlobStoreInfo) getForm().getModelObject();
 
@@ -315,7 +316,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void onError(AjaxRequestTarget target, Form<?> form) {
+        protected void onError(AjaxRequestTarget target) {
             addFeedbackPanels(target);
         }
     }

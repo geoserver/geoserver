@@ -18,7 +18,7 @@ jobs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.5
+        maven-version: 3.9.8
     - name: Maven repository caching
       uses: actions/cache@v4
       with:

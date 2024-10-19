@@ -64,6 +64,7 @@ import org.geoserver.web.ToolPage;
 import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("unchecked")
 public class CatalogStressTester extends GeoServerSecuredPage {
 
@@ -198,7 +199,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 5767430648099432407L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         setResponsePage(ToolPage.class);
                     }
                 });
@@ -208,7 +209,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     private static final long serialVersionUID = -4087484089208211355L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         progress.setDefaultModelObject("");
                         startLink.setVisible(false);
                         target.add(startLink);

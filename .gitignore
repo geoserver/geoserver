@@ -2,6 +2,7 @@ build-full.bat
 target
 .settings
 .classpath
+.factorypath
 .project
 .metadata
 .DS_Store
@@ -42,3 +43,5 @@ src/release/installer/win/target/
 # spotless up to date checks
 .spotless-index
 
+# Eclipse stuff
+src/web/app/.temp-Start*

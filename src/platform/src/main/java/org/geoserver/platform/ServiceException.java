@@ -35,6 +35,7 @@ public class ServiceException extends RuntimeException {
     public static final String VERSION_NEGOTIATION_FAILED = "VersionNegotiationFailed";
 
     public static final String INVALID_DIMENSION_VALUE = "InvalidDimensionValue";
+    public static final String SERVICE_UNAVAILABLE = "ServiceUnavailable";
 
     /**
      * Vendor exception code used when too much memory would have been needed to serve the request

@@ -120,10 +120,10 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
 
             // test the copy style link
             tester.newFormTester("styleForm").select("context:panel:templates", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:templates", "onchange");
+            tester.executeAjaxEvent("styleForm:context:panel:templates", "change");
             Component generateLink =
                     tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
-            tester.executeAjaxEvent(generateLink, "onClick");
+            tester.executeAjaxEvent(generateLink, "click");
             // check single quote in the message has been escaped
             assertThat(
                     tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
@@ -146,10 +146,10 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
 
             // test the copy style link
             tester.newFormTester("styleForm").select("context:panel:existingStyles", 1);
-            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "onchange");
+            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "change");
             Component copyLink =
                     tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
-            tester.executeAjaxEvent(copyLink, "onClick");
+            tester.executeAjaxEvent(copyLink, "click");
             // check single quote in the message has been escaped
             assertThat(
                     tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));

@@ -169,4 +169,9 @@
     <constructor-arg ref="gwcFacade" />
     <constructor-arg ref="geoServer" />
   </bean>
+
+  <bean id="gwcZoomContextFinder" class="org.geoserver.gwc.GWCZoomContextFinder">
+    <constructor-arg ref="gwcGridSetBroker"/>
+  </bean>
+
 </beans>

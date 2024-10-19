@@ -416,7 +416,7 @@
             <xs:element ref="Department" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="MailStop" type="MailStopType" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation>A MailStop is where the the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
+                    <xs:documentation>A MailStop is where the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element ref="PostalCode" minOccurs="0"/>
@@ -480,7 +480,7 @@
             <xs:element ref="AddressLine" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="MailStopName" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation>Name of the the Mail Stop. eg. MSP, MS, etc</xs:documentation>
+                    <xs:documentation>Name of the Mail Stop. eg. MSP, MS, etc</xs:documentation>
                 </xs:annotation>
                 <xs:complexType mixed="true">
                     <xs:attribute name="Type"/>
@@ -657,7 +657,7 @@
             </xs:element>
             <xs:element name="MailStop" type="MailStopType" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation>A MailStop is where the the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
+                    <xs:documentation>A MailStop is where the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element ref="PostalCode" minOccurs="0"/>
@@ -1318,7 +1318,7 @@
                 </xs:element>
                 <xs:element name="MailStop" type="MailStopType" minOccurs="0">
                     <xs:annotation>
-                        <xs:documentation>A MailStop is where the the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
+                        <xs:documentation>A MailStop is where the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element ref="PostalCode" minOccurs="0"/>
@@ -1471,7 +1471,7 @@
                 </xs:choice>
                 <xs:element name="MailStop" type="MailStopType" minOccurs="0">
                     <xs:annotation>
-                        <xs:documentation>A MailStop is where the the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
+                        <xs:documentation>A MailStop is where the mail is delivered to within a premise/subpremise/firm or a facility.</xs:documentation>
                     </xs:annotation>
                 </xs:element>
                 <xs:element ref="PostalCode" minOccurs="0"/>

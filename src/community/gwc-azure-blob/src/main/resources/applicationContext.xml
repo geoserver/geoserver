@@ -11,7 +11,7 @@
    Bean configuration file for the gwc-azure-blob module
   </description>
   
-  <bean id="AzureBlobStoreConfigProvider" class="org.geowebcache.azure.AzureBlobStoreConfigProvider">
+  <bean id="AzureBlobStoreConfigProvider" class="org.geowebcache.azure.AzureBlobStoreConfigProvider" depends-on="gwcSynchEnv" >
     <description>
       Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode AzureBlobStoreInfo instances
     </description>

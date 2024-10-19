@@ -179,7 +179,7 @@ public class KmlEncodingContext {
     /** Protected constructor used by WFS output format to create a fake kml encoding context */
     protected KmlEncodingContext() {}
 
-    /** Returns the the kmplacemark value (either specified in the request, or the default one) */
+    /** Returns the kmplacemark value (either specified in the request, or the default one) */
     boolean computeKmplacemark() {
         Object kmplacemark = request.getFormatOptions().get("kmplacemark");
         if (kmplacemark != null) {
@@ -189,7 +189,7 @@ public class KmlEncodingContext {
         }
     }
 
-    /** Returns the the kmattr value (either specified in the request, or the default one) */
+    /** Returns the kmattr value (either specified in the request, or the default one) */
     boolean computeKMAttr() {
         Object kmattr = request.getFormatOptions().get("kmattr");
         if (kmattr == null) {

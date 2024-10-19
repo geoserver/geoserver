@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minidev.json.JSONArray;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geotools.api.filter.Filter;
@@ -83,7 +84,7 @@ public class SearchTest extends STACTestSupport {
             assertTrue(link.read("merge"));
         } else {
             assertEquals(
-                    "http://localhost:8080/geoserver/ogc/stac/v1/search?collections=SAS1,LANDSAT8",
+                    "http://localhost:8080/geoserver/ogc/stac/v1/search?collections=SAS1%2CLANDSAT8",
                     link.read("href"));
         }
     }
@@ -162,6 +163,32 @@ public class SearchTest extends STACTestSupport {
                         + "}";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
         checkCollectionsSinglePage(doc, 2, containsInAnyOrder("LANDSAT8", "LANDSAT8"));
+    }
+
+    @Test
+    public void testCollectionsCqlPostSort() throws Exception {
+        // two SAS1, two Landsat, sorted in descending order
+        String request =
+                "{\n"
+                        + "  \"collections\": [\n"
+                        + "    \"SAS1\",\n"
+                        + "    \"LANDSAT8\"\n"
+                        + "  ],\n"
+                        + "  \"sortby\": [{\"field\":\"constellation\",\"direction\":\"desc\"}]\n"
+                        + "}";
+        DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
+        checkCollectionsSinglePage(doc, 4, contains("SAS1", "SAS1", "LANDSAT8", "LANDSAT8"));
+        // the two landsat8 should be first
+        String request2 =
+                "{\n"
+                        + "  \"collections\": [\n"
+                        + "    \"SAS1\",\n"
+                        + "    \"LANDSAT8\"\n"
+                        + "  ],\n"
+                        + "  \"sortby\": [{\"field\":\"constellation\",\"direction\":\"asc\"}]\n"
+                        + "}";
+        DocumentContext doc2 = postAsJSONPath("ogc/stac/v1/search", request2, 200);
+        checkCollectionsSinglePage(doc2, 4, contains("LANDSAT8", "LANDSAT8", "SAS1", "SAS1"));
     }
 
     @Test
@@ -327,8 +354,8 @@ public class SearchTest extends STACTestSupport {
     @Test
     public void testPagingLinksFirst() throws Exception {
         String requestPath =
-                "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
-                        + "&filter=eo:cloud_cover=0&filter-lang=cql-text&limit=1";
+                "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
+                        + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
         assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
@@ -352,8 +379,8 @@ public class SearchTest extends STACTestSupport {
     @Test
     public void testPagingLinksSecond() throws Exception {
         String requestPath =
-                "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
-                        + "&filter=eo:cloud_cover=0&filter-lang=cql-text&limit=1&startIndex=1";
+                "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
+                        + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=1";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
         assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
@@ -384,8 +411,8 @@ public class SearchTest extends STACTestSupport {
     @Test
     public void testPagingLinksLast() throws Exception {
         String requestPath =
-                "ogc/stac/v1/search?collections=SAS1,LANDSAT8"
-                        + "&filter=eo:cloud_cover=0&filter-lang=cql-text&limit=1&startIndex=2";
+                "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
+                        + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=2";
         DocumentContext doc = getAsJSONPath(requestPath, 200);
         assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
@@ -775,5 +802,47 @@ public class SearchTest extends STACTestSupport {
         List<String> collections = Arrays.asList("SAS1");
         Filter filter = getStacService().parseFilter(collections, "s1:ipf_version>2", null);
         assertEquals(2.0, ((Literal) ((IsGreaterThanImpl) filter).getExpression2()).getValue());
+    }
+
+    @Test
+    public void testPagingLinksProxyBase() throws Exception {
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("https://thehost/geoserver");
+        getGeoServer().save(global);
+
+        try {
+            String requestPath =
+                    "ogc/stac/v1/search?collections=SAS1%2CLANDSAT8"
+                            + "&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=1";
+            DocumentContext doc = getAsJSONPath(requestPath, 200);
+            assertEquals(Integer.valueOf(4), doc.read("numberMatched"));
+            assertEquals(Integer.valueOf(1), doc.read("numberReturned"));
+
+            // three links expected, prev, self and next
+            assertEquals(Integer.valueOf(3), doc.read("links.length()"));
+
+            // prev link (order should be stable, linked hash maps all around)
+            DocumentContext prev = readSingleContext(doc, "links[?(@.rel=='prev')]");
+            assertEquals(OGCAPIMediaTypes.GEOJSON_VALUE, prev.read("type"));
+            assertEquals(
+                    "https://thehost/geoserver/ogc/stac/v1/search?collections=SAS1%2CLANDSAT8&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=0",
+                    prev.read("href"));
+
+            // self link
+            DocumentContext self = readSingleContext(doc, "links[?(@.rel=='self')]");
+            assertEquals(OGCAPIMediaTypes.GEOJSON_VALUE, self.read("type"));
+            assertEquals("https://thehost/geoserver/" + requestPath, self.read("href"));
+
+            // next link (order should be stable, linked hash maps all around)
+            DocumentContext next = readSingleContext(doc, "links[?(@.rel=='next')]");
+            assertEquals(OGCAPIMediaTypes.GEOJSON_VALUE, next.read("type"));
+            assertEquals(
+                    "https://thehost/geoserver/ogc/stac/v1/search?collections=SAS1%2CLANDSAT8&filter=eo%3Acloud_cover%3D0&filter-lang=cql-text&limit=1&startIndex=2",
+                    next.read("href"));
+
+        } finally {
+            global.getSettings().setProxyBaseUrl(null);
+            getGeoServer().save(global);
+        }
     }
 }

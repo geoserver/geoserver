@@ -64,7 +64,7 @@ public class PaletteFormComponent<T extends Serializable> extends FormComponentP
                             public Component newAvailableHeader(final String componentId) {
                                 return new Label(
                                         componentId,
-                                        new ResourceModel(getAvaliableHeaderPropertyKey()));
+                                        new ResourceModel(getAvailableHeaderPropertyKey()));
                             }
                         });
         palette.add(new DefaultTheme());
@@ -81,7 +81,7 @@ public class PaletteFormComponent<T extends Serializable> extends FormComponentP
     /**
      * @return the default key, subclasses may override, if "Available" is not illustrative enough
      */
-    protected String getAvaliableHeaderPropertyKey() {
+    protected String getAvailableHeaderPropertyKey() {
         return "PaletteFormComponent.availableHeader";
     }
 

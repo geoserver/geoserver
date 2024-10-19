@@ -47,7 +47,7 @@ public class RHealPixGeometryStoreTest {
             DGGSGeometryStore store = new DGGSGeometryStore(instance);
             String[] typeNames = store.getTypeNames();
             assertEquals(1, typeNames.length);
-            assertEquals("TB16-Pix", typeNames[0]);
+            assertEquals("rHEALPix", typeNames[0]);
         }
     }
 }

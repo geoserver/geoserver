@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 /**
  * This is an exact copy of org.springframework.security.web.authentication.www.DigestAuthUtils;
  *
- * <p>The Spring class has package visibility, no idea why. The functionally is used for test cases
+ * <p>The Spring class has package visibility, no idea why. The functionality is used for test cases
  * and may be used by a client agent using the geoserver library
  *
  * @author mcr

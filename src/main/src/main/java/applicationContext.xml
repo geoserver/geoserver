@@ -221,6 +221,7 @@
      <property name="mappings">
        <props>
         <prop key="/schemas/**">classpathPublisher</prop>
+        <prop key="/webresources/**">classpathPublisher</prop>
         <prop key="/j_acegi_security_check">classpathPublisher</prop>
         <prop key="/j_spring_security_check">classpathPublisher</prop>
         <prop key="/login">classpathPublisher</prop>
@@ -355,6 +356,10 @@
   <bean id="charSeparatedViewParamsFormatParser" class="org.geoserver.ows.kvp.CharSeparatedViewParamsFormatParser">
   </bean>
   <bean id="xmlViewParamsFormatParser" class="org.geoserver.ows.kvp.XMLViewParamsFormatParser">
+  </bean>
+
+  <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
+    <constructor-arg value="1000"/>
   </bean>
 
 </beans>

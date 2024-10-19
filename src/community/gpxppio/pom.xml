@@ -10,12 +10,13 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-gpxppio</artifactId>
   <packaging>jar</packaging>
   <name>GPX PPIO for WPS</name>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.extension</groupId>

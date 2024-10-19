@@ -128,6 +128,7 @@
         }
     </style>
     <script src="${relBaseUrl}/openlayers3/ol.js" type="text/javascript"></script>
+    <script src="${relBaseUrl}/webresources/wms/OpenLayers3Map.js" type="text/javascript"></script>
     <title>OpenLayers map preview</title>
   </head>
   <body>
@@ -135,21 +136,21 @@
       <ul>
         <li>
           <a>WMS version:</a>
-          <select id="wmsVersionSelector" onchange="setWMSVersion(value)">
+          <select id="wmsVersionSelector">
             <option value="1.1.1">1.1.1</option>
             <option value="1.3.0">1.3.0</option>
           </select>
         </li>
         <li>
           <a>Tiling:</a>
-          <select id="tilingModeSelector" onchange="setTileMode(value)">
+          <select id="tilingModeSelector">
             <option value="untiled">Single tile</option>
             <option value="tiled">Tiled</option>
           </select>
         </li>
         <li>
           <a>Antialias:</a>
-          <select id="antialiasSelector" onchange="setAntialiasMode(value)">
+          <select id="antialiasSelector">
             <option value="full">Full</option>
             <option value="text">Text only</option>
             <option value="none">Disabled</option>
@@ -157,7 +158,7 @@
         </li>
         <li>
           <a>Format:</a>
-          <select id="imageFormatSelector" onchange="setImageFormat(value)">
+          <select id="imageFormatSelector">
             <option value="image/png">PNG 24bit</option>
             <option value="image/png8">PNG 8bit</option>
             <option value="image/gif">GIF</option>
@@ -168,7 +169,7 @@
         </li>
         <li>
           <a>Styles:</a>
-          <select id="imageFormatSelector" onchange="setStyle(value)">
+          <select id="styleSelector">
             <option value="">Default</option>
             <#list styles as style>          
                <option value="${style}">${style}</option>  
@@ -177,7 +178,7 @@
         </li>
         <li>
           <a>Width/Height:</a>
-          <select id="widthSelector" onchange="setWidth(value)">
+          <select id="widthSelector">
              <!--
              These values come from a statistics of the viewable area given a certain screen area
              (but have been adapted a litte, simplified numbers, added some resolutions for wide screen)
@@ -192,7 +193,7 @@
                 <option value="1600">1600</option>
                 <option value="1900">1900</option>
             </select>
-            <select id="heigthSelector" onchange="setHeight(value)">
+            <select id="heightSelector">
                 <option value="auto">Auto</option>
                 <option value="300">300</option>
                 <option value="400">400</option>
@@ -212,246 +213,35 @@
                   <option value="fid">FeatureID</option>
               </select>
               <input type="text" size="80" id="filter"/>
-              <a id="updateFilterButton" href="#" onClick="updateFilter()" title="Apply filter">Apply</a>
-              <a id="resetFilterButton" href="#" onClick="resetFilter()" title="Reset filter">Reset</a>
+              <a id="updateFilterButton" href="#" title="Apply filter">Apply</a>
+              <a id="resetFilterButton" href="#" title="Reset filter">Reset</a>
           </li>
         </ul>
       </div>
     <div id="map">
-      <div class="ol-toggle-options ol-unselectable"><a title="Toggle options toolbar" onClick="toggleControlPanel()" href="#toggle">...</a></div>
+      <div class="ol-toggle-options ol-unselectable"><a id="options" title="Toggle options toolbar" href="#toggle">...</a></div>
     </div>
     <div id="wrapper">
         <div id="location"></div>
-        <div id="scale">
+        <div id="scale"></div>
     </div>
     <div id="nodelist">
         <em>Click on the map to get feature info</em>
     </div>
-    <script type="text/javascript">
-    <#outputformat "JavaScript">
-      var pureCoverage = ${pureCoverage?string};
-      // if this is just a coverage or a group of them, disable a few items,
-      // and default to jpeg format
-      var format = 'image/png';
-      var bounds = [${request.bbox.minX?c}, ${request.bbox.minY?c},
-                    ${request.bbox.maxX?c}, ${request.bbox.maxY?c}];
-      if (pureCoverage) {
-        document.getElementById('antialiasSelector').disabled = true;
-        document.getElementById('jpeg').selected = true;
-        format = "image/jpeg";
-      }
-
-      var supportsFiltering = ${supportsFiltering?string};
-      if (!supportsFiltering) {
-        document.getElementById('filterType').disabled = true;
-        document.getElementById('filter').disabled = true;
-        document.getElementById('updateFilterButton').disabled = true;
-        document.getElementById('resetFilterButton').disabled = true;
-      }
-
-      var mousePositionControl = new ol.control.MousePosition({
-        className: 'custom-mouse-position',
-        target: document.getElementById('location'),
-        coordinateFormat: ol.coordinate.createStringXY(5),
-        undefinedHTML: '&nbsp;'
-      });
-      var untiled = new ol.layer.Image({
-        source: new ol.source.ImageWMS({
-          ratio: 1,
-          url: '${baseUrl}/${servicePath?js_string}',
-          params: {'FORMAT': format,
-                   'VERSION': '1.1.1',  
-             <#list parameters as param>
-                "${param.name?js_string}": '${param.value?js_string}',
-             </#list>
-          }
-        })
-      });
-      var tiled = new ol.layer.Tile({
-        visible: false,
-        source: new ol.source.TileWMS({
-          url: '${baseUrl}/${servicePath?js_string}',
-          params: {'FORMAT': format, 
-                   'VERSION': '1.1.1',
-                   tiled: true,
-             <#list parameters as param>
-                "${param.name?js_string}": '${param.value?js_string}',
-             </#list>
-             tilesOrigin: ${request.bbox.minX?c} + "," + ${request.bbox.minY?c}
-          }
-        })
-      });
-      var projection = new ol.proj.Projection({
-          code: '${request.SRS?js_string}',
-          units: '${units?js_string}',
-          <#if yx == "true">
-          axisOrientation: 'neu',
-          </#if>
-          global: ${global}
-      });
-      var map = new ol.Map({
-        controls: ol.control.defaults({
-          attribution: false
-        }).extend([mousePositionControl]),
-        target: 'map',
-        layers: [
-          untiled,
-          tiled
-        ],
-        view: new ol.View({
-           projection: projection
-        })
-      });
-      map.getView().on('change:resolution', function(evt) {
-        var resolution = evt.target.get('resolution');
-        var units = map.getView().getProjection().getUnits();
-        var dpi = 25.4 / 0.28;
-        var mpu = ol.proj.METERS_PER_UNIT[units];
-        var scale = resolution * mpu * 39.37 * dpi;
-        if (scale >= 9500 && scale <= 950000) {
-          scale = Math.round(scale / 1000) + "K";
-        } else if (scale >= 950000) {
-          scale = Math.round(scale / 1000000) + "M";
-        } else {
-          scale = Math.round(scale);
-        }
-        document.getElementById('scale').innerHTML = "Scale = 1 : " + scale;
-      });
-      map.getView().fit(bounds, map.getSize());
-      map.on('singleclick', function(evt) {
-        document.getElementById('nodelist').innerHTML = "Loading... please wait...";
-        var view = map.getView();
-        var viewResolution = view.getResolution();
-        var source = untiled.get('visible') ? untiled.getSource() : tiled.getSource();
-        var url = source.getGetFeatureInfoUrl(
-          evt.coordinate, viewResolution, view.getProjection(),
-          {'INFO_FORMAT': 'text/html', 'FEATURE_COUNT': 50});
-        if (url) {
-          document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
-        }
-      });
-
-      // sets the chosen WMS version
-      function setWMSVersion(wmsVersion) {
-        map.getLayers().forEach(function(lyr) {
-          lyr.getSource().updateParams({'VERSION': wmsVersion});
-        });
-        if(wmsVersion == "1.3.0") {
-            origin = bounds[1] + ',' + bounds[0];
-        } else {
-            origin = bounds[0] + ',' + bounds[1];
-        }
-        tiled.getSource().updateParams({'tilesOrigin': origin});
-      }
-
-      // Tiling mode, can be 'tiled' or 'untiled'
-      function setTileMode(tilingMode) {
-        if (tilingMode == 'tiled') {
-          untiled.set('visible', false);
-          tiled.set('visible', true);
-        } else {
-          tiled.set('visible', false);
-          untiled.set('visible', true);
-        }
-      }
-
-      function setAntialiasMode(mode) {
-        map.getLayers().forEach(function(lyr) {
-          lyr.getSource().updateParams({'FORMAT_OPTIONS': 'antialias:' + mode});
-        });
-      }
-
-      // changes the current tile format
-      function setImageFormat(mime) {
-        map.getLayers().forEach(function(lyr) {
-          lyr.getSource().updateParams({'FORMAT': mime});
-        });
-      }
-
-      function setStyle(style){
-        map.getLayers().forEach(function(lyr) {
-          lyr.getSource().updateParams({'STYLES': style});
-        });
-      }
-
-      function setWidth(size){
-        var mapDiv = document.getElementById('map');
-        var wrapper = document.getElementById('wrapper');
-
-        if (size == "auto") {
-          // reset back to the default value
-          mapDiv.style.width = null;
-          wrapper.style.width = null;
-        }
-        else {
-          mapDiv.style.width = size + "px";
-          wrapper.style.width = size + "px";
-        }
-        // notify OL that we changed the size of the map div
-        map.updateSize();
-      }
-
-      function setHeight(size){
-        var mapDiv = document.getElementById('map');
-        if (size == "auto") {
-          // reset back to the default value
-          mapDiv.style.height = null;
-        }
-        else {
-          mapDiv.style.height = size + "px";
-        }
-        // notify OL that we changed the size of the map div
-        map.updateSize();
-      }
-
-      function updateFilter(){
-        if (!supportsFiltering) {
-          return;
-        }
-        var filterType = document.getElementById('filterType').value;
-        var filter = document.getElementById('filter').value;
-        // by default, reset all filters
-        var filterParams = {
-          'FILTER': null,
-          'CQL_FILTER': null,
-          'FEATUREID': null
-        };
-        if (filter.replace(/^\s\s*/, '').replace(/\s\s*$/, '') != "") {
-          if (filterType == "cql") {
-            filterParams["CQL_FILTER"] = filter;
-          }
-          if (filterType == "ogc") {
-            filterParams["FILTER"] = filter;
-          }
-          if (filterType == "fid")
-            filterParams["FEATUREID"] = filter;
-          }
-          // merge the new filter definitions
-          map.getLayers().forEach(function(lyr) {
-            lyr.getSource().updateParams(filterParams);
-          });
-        }
-
-        function resetFilter() {
-          if (!supportsFiltering) {
-            return;
-          }
-          document.getElementById('filter').value = "";
-          updateFilter();
-        }
-
-        // shows/hide the control panel
-        function toggleControlPanel(){
-          var toolbar = document.getElementById("toolbar");
-          if (toolbar.style.display == "none") {
-            toolbar.style.display = "block";
-          }
-          else {
-            toolbar.style.display = "none";
-          }
-          map.updateSize()
-        }
-    </#outputformat>
-    </script>
+    <input type="hidden" id="pureCoverage" value="${pureCoverage}"/>
+    <input type="hidden" id="supportsFiltering" value="${supportsFiltering}"/>
+    <input type="hidden" id="minX" value="${request.bbox.minX?c}"/>
+    <input type="hidden" id="minY" value="${request.bbox.minY?c}"/>
+    <input type="hidden" id="maxX" value="${request.bbox.maxX?c}"/>
+    <input type="hidden" id="maxY" value="${request.bbox.maxY?c}"/>
+    <input type="hidden" id="SRS" value="${request.SRS}"/>
+    <input type="hidden" id="yx" value="${yx}"/>
+    <input type="hidden" id="global" value="${global}"/>
+    <input type="hidden" id="baseUrl" value="${baseUrl}"/>
+    <input type="hidden" id="servicePath" value="${servicePath}"/>
+    <input type="hidden" id="units" value="${units}"/>
+    <#list parameters as param>
+    <input type="hidden" class="param" title="${param.name}" value="${param.value}"/>
+    </#list>
   </body>
 </html>

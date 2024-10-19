@@ -10,9 +10,9 @@ This tutorial walks through the steps of publishing a Shapefile with GeoServer.
 Data preparation
 ----------------
 
-First let's gather that the data that we'll be publishing.
+First let's gather the data that we'll be publishing.
 
-#. Download the file :download:`nyc_roads.zip`. This archive contains a shapefile of roads from New York City that will be used during in this tutorial.
+#. Download the file :download:`nyc_roads.zip`. This archive contains a shapefile of roads from New York City that will be used in this tutorial.
 
 #. Unzip the :file:`nyc_roads.zip` into a new directory named :file:`nyc_roads`. The archive contains the following four files::
 
@@ -21,7 +21,7 @@ First let's gather that the data that we'll be publishing.
       nyc_roads.dbf
       nyc_roads.prj
 
-#. Move the ``nyc_roads`` directory into ``<GEOSERVER_DATA_DIR>/data``, where ``<GEOSERVER_DATA_DIR>`` is the root of the :ref:`GeoServer data directory <datadir>`. If no changes have been made to the GeoServer file structure, the path is ``geoserver/data_dir/data/nyc_roads``. 
+#. Move the ``nyc_roads`` directory into ``<GEOSERVER_DATA_DIR>/data``, where ``<GEOSERVER_DATA_DIR>`` is the root of the :ref:`GeoServer data directory <datadir>`. If no changes were made to the GeoServer file structure then the path is ``geoserver/data_dir/data/nyc_roads``. 
  
 Creating a new workspace
 ------------------------
@@ -61,7 +61,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 Create a store
 --------------
 
-Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the shapefile. 
+Once the workspace is created we are ready to add a new store. The store tells GeoServer how to connect to the shapefile. 
 
 #. Navigate to :menuselection:`Data-->Stores`.
     

@@ -74,7 +74,7 @@ class RHealPixZoneIterator<R> implements Iterator<R> {
     public boolean hasNext() {
         // look for the next item, or drill down through children
         while (next == null && !candidates.isEmpty()) {
-            String test = candidates.pop();
+            String test = String.valueOf(candidates.pop());
             RHealPixZone zone = rpix.getZone(test);
             if (accept.apply(zone)) {
                 next = map.apply(zone);

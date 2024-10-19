@@ -10,13 +10,17 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,6 +48,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class DispatcherTest {
     @Test
@@ -118,19 +124,67 @@ public class DispatcherTest {
         DelegatingServletInputStream input =
                 new DelegatingServletInputStream(new ByteArrayInputStream(body.getBytes()));
 
-        Dispatcher dispatcher = new Dispatcher();
-
         try (BufferedReader buffered = new BufferedReader(new InputStreamReader(input))) {
             buffered.mark(2048);
             Request req = new Request();
             req.setInput(buffered);
 
-            Request res = dispatcher.readOpPost(req);
+            Request res = Dispatcher.readOpPost(req);
             assertSame(req, res);
             assertEquals("Hello", res.getRequest());
             assertEquals("hello", res.getService());
         }
     }
+
+    @Test
+    public void testReadOpPostServiceExceptions() throws Exception {
+        // Test XmlRequestReader cleanException handling
+        MessageXmlParser parser = new MessageXmlParser();
+
+        IOException ioException = new FileNotFoundException("notFound.txt");
+        SAXException saxException = new SAXException(ioException);
+        SAXException saxParseException =
+                new SAXParseException("glitch", "test.xsd", "test.xsd", 30, 12);
+
+        Exception clean = parser.cleanException(ioException);
+        String message = clean.getLocalizedMessage();
+        assertFalse(message.contains("notFound.txt"));
+
+        Exception cleanSAX = parser.cleanSaxException(saxException);
+        String message2 = cleanSAX.getLocalizedMessage();
+        assertFalse(message2.contains("notFound.txt"));
+
+        Exception cleanSAXParse = parser.cleanSaxException(saxParseException);
+        assertSame(saxParseException, cleanSAXParse);
+    }
+
+    //        // Test ServiceException via dispatcher
+    //        MockHttpServletRequest request = new MockHttpServletRequest();
+    //        request.setContextPath("/geoserver");
+    //        request.setRequestURI("/geoserver/hello");
+    //        request.setMethod("post");
+    //
+    //        String dtdExternal = "<!DOCTYPE foo [\n" +
+    //                "        <!ENTITY % external SYSTEM \"invalid.xsd\">\n" +
+    //                "        %external;\n" +
+    //                "        ]>";
+    //        String body = dtdExternal+"\n<Hello service=\"hello\"/>";
+    //        DelegatingServletInputStream input =
+    //                new DelegatingServletInputStream(new ByteArrayInputStream(body.getBytes()));
+    //
+    //        try (BufferedReader buffered = new BufferedReader(new InputStreamReader(input))) {
+    //            buffered.mark(2048);
+    //            Request requst = new Request();
+    //            requst.setInput(buffered);
+    //
+    //            Request response = Dispatcher.readOpPost(requst);
+    //            assertSame(requst, response);
+    //        }
+    //        catch (ServiceException serviceException) {
+    //            assertTrue(serviceException.getMessage().contains("xml request is most probably
+    // not compliant to hello element"));
+    //        }
+    //    }
 
     @Test
     public void testParseKVP() throws Exception {
@@ -197,6 +251,55 @@ public class DispatcherTest {
     }
 
     @Test
+    public void testParseXMLServiceException() throws Exception {
+        URL url = getClass().getResource("applicationContext.xml");
+        File file = File.createTempFile("geoserver", "req");
+        try (FileSystemXmlApplicationContext context =
+                new FileSystemXmlApplicationContext(url.toString())) {
+
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+            String dtdExternal =
+                    "<!DOCTYPE foo [\n"
+                            + "        <!ENTITY % external SYSTEM \"invalid.xsd\">\n"
+                            + "        %external;\n"
+                            + "        ]>";
+            String body = dtdExternal + "\n<Hello service=\"hello\"/>";
+
+            try (FileOutputStream output = new FileOutputStream(file)) {
+                output.write(body.getBytes());
+                output.flush();
+            }
+
+            try (BufferedReader input =
+                    new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+
+                input.mark(8192);
+
+                Request req = new Request();
+                req.setInput(input);
+                req.setRequest("Hello");
+                req.setPostRequestElementName("Hello");
+                req.setService("hello");
+
+                try {
+                    Object request = dispatcher.parseRequestXML(null, input, req);
+                    fail("ServiceException expected due to invalid DTD reference:" + request);
+                } catch (SAXException e) {
+                    assertSame(e.getClass(), SAXException.class);
+                    String messsage = e.getMessage();
+                    assertFalse(messsage.contains("invalid.xsd"));
+                } catch (Throwable t) {
+                    fail(
+                            "ServiceException expected, to test use use of XmlRequestReader.cleanException(t)");
+                }
+            }
+        } finally {
+            file.delete();
+        }
+    }
+
+    @Test
     public void testHelloOperationGet() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
@@ -249,8 +352,8 @@ public class DispatcherTest {
                                 Request request, Operation operation, Object result) {
                             Operation op = Dispatcher.REQUEST.get().getOperation();
                             Assert.assertNotNull(op);
-                            Assert.assertTrue(op.getService().getService() instanceof HelloWorld);
-                            Assert.assertTrue(op.getParameters()[0] instanceof Message);
+                            assertTrue(op.getService().getService() instanceof HelloWorld);
+                            assertTrue(op.getParameters()[0] instanceof Message);
                             return result;
                         }
                     });
@@ -544,7 +647,7 @@ public class DispatcherTest {
 
             Object result = dispatcher.execute(new Request(), opDescriptor);
             Assert.assertEquals("p1p2", result);
-            Assert.assertTrue(invokeDirectCalled.get());
+            assertTrue(invokeDirectCalled.get());
         }
     }
 
@@ -692,7 +795,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
 
-            Assert.assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
+            assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
             Assert.assertEquals(
                     TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             Assert.assertEquals(
@@ -729,7 +832,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
 
-            Assert.assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
+            assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
             Assert.assertEquals(
                     TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             Assert.assertEquals(
@@ -766,7 +869,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
 
-            Assert.assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
+            assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
             Assert.assertEquals(
                     TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             Assert.assertEquals(
@@ -804,7 +907,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
 
-            Assert.assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
+            assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
             Assert.assertEquals(
                     TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             Assert.assertEquals(
@@ -845,7 +948,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
 
-            Assert.assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
+            assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
             Assert.assertEquals(
                     TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             Assert.assertEquals(
@@ -889,7 +992,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
             Assert.assertEquals("Hello world!", response.getContentAsString());
-            Assert.assertTrue(firedCallback.get());
+            assertTrue(firedCallback.get());
             Assert.assertEquals(
                     TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             Assert.assertEquals(
@@ -1010,7 +1113,7 @@ public class DispatcherTest {
             // Service exception, null is returned.
             Assert.assertNull(mov);
             // Check the response
-            Assert.assertTrue(response.getContentAsString().contains("Could not parse the XML"));
+            assertTrue(response.getContentAsString().contains("Could not parse the XML"));
         }
     }
 
@@ -1065,7 +1168,7 @@ public class DispatcherTest {
             // Service exception, null is returned.
             Assert.assertNull(mov);
             // Check the response
-            Assert.assertTrue(response.getContentAsString().contains("Could not parse the KVP"));
+            assertTrue(response.getContentAsString().contains("Could not parse the KVP"));
         }
     }
 

@@ -86,7 +86,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
                             gridSetName);
 
             if (isInternal) {
-                link.add(new AttributeModifier("style", new Model<>("font-style: italic;")));
+                link.add(new AttributeModifier("class", new Model<>("italic")));
                 link.add(
                         new AttributeModifier(
                                 "title", new ResourceModel("nameLink.titleInternalGridSet")));

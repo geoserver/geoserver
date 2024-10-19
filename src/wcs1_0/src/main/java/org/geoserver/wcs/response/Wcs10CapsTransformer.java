@@ -32,6 +32,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -573,6 +574,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
                     handleCoverageOfferingBrief(cvInfo);
                     commit();
                 } catch (Exception e) {
+                    // abort processing if the user closed the connection
+                    ClientStreamAbortedException.rethrowUncheked(e);
                     if (skipMisconfigured) {
                         reset();
                         LOGGER.log(

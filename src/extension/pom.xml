@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -394,6 +394,12 @@
         <module>metadata</module>
       </modules>
     </profile>
+    <profile>
+      <id>rat</id>
+      <modules>
+        <module>rat</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -443,6 +449,7 @@
         <module>mapml</module>
         <module>geopkg-output</module>
         <module>metadata</module>
+        <module>rat</module>
       </modules>
     </profile>
 
@@ -494,6 +501,7 @@
         <module>mapml</module>
         <module>geopkg-output</module>
         <module>metadata</module>
+        <module>rat</module>
       </modules>
     </profile>
   </profiles>

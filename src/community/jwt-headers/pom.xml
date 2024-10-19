@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -23,6 +23,7 @@
     <module>jwt-headers-util</module>
     <module>gs-jwt-headers</module>
   </modules>
+
   <dependencies>
 
     <!--
@@ -50,5 +51,4 @@
     </profile>
 
   </profiles>
-
 </project>

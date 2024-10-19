@@ -217,7 +217,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 return coverageResults.toArray(new GridCoverage2D[] {});
             }
 
-            // get native elements and then play with the the requested ones
+            // get native elements and then play with the requested ones
             final GeneralBounds nativeEnvelope = reader.getOriginalEnvelope();
             final CoordinateReferenceSystem nativeCRS =
                     nativeEnvelope.getCoordinateReferenceSystem();

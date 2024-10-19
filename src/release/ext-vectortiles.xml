@@ -13,6 +13,7 @@
         <include>java-vector-tile*.jar</include>
         <include>gson*.jar</include>
         <include>protobuf-java*.jar</include>
+        <include>gt-process-geometry*.jar</include>
       </includes>      
     </fileSet>
     <fileSet>

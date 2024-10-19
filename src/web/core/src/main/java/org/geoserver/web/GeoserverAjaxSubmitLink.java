@@ -27,19 +27,19 @@ public abstract class GeoserverAjaxSubmitLink extends AjaxSubmitLink {
     }
 
     @Override
-    protected void onError(AjaxRequestTarget target, Form<?> form) {
-        super.onError(target, form);
+    protected void onError(AjaxRequestTarget target) {
+        super.onError(target);
         page.addFeedbackPanels(target);
     }
 
     @Override
-    protected final void onSubmit(AjaxRequestTarget target, Form<?> form) {
+    protected final void onSubmit(AjaxRequestTarget target) {
         try {
-            onSubmitInternal(target, form);
+            onSubmitInternal(target);
         } finally {
             page.addFeedbackPanels(target);
         }
     }
 
-    protected abstract void onSubmitInternal(AjaxRequestTarget target, Form<?> form);
+    protected abstract void onSubmitInternal(AjaxRequestTarget target);
 }

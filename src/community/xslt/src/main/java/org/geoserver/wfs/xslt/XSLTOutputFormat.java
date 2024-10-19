@@ -240,7 +240,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
             }
             if (transformerException != null) {
                 throw new WFSException(
-                        "Failed to run the the XSTL transformation", transformerException);
+                        "Failed to run the XSTL transformation", transformerException);
             }
         }
     }

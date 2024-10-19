@@ -16,7 +16,7 @@ jobs:
       matrix:
         jdk: [ 11, 17, 21 ]
         dist: [ 'temurin' ]
-        os: [ 'ubuntu-20.04' ]
+        os: [ 'ubuntu-22.04' ]
     runs-on: ${{ matrix.os }}
     
     steps:
@@ -25,16 +25,16 @@ jobs:
         # 500 commits, set to 0 to get all
         fetch-depth: 500
     - name: Set up JDK ${{ matrix.jdk }}
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: ${{ matrix.jdk }}
         distribution: ${{ matrix.dist }}
     - name: Set up Maven
-      uses: stCarolas/setup-maven@v4.5
+      uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.5
+        maven-version: 3.9.8
     - name: Maven repository caching
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}

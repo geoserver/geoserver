@@ -4,13 +4,14 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-gwc-distributed</artifactId>
   <name>GWC Distributed Caching Plugin</name>
   <url>http://maven.apache.org</url>
   <properties>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>

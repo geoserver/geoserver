@@ -5,7 +5,7 @@ $Id: ContextCollection.js,v 1.9 2005/03/01 04:49:25 madair1 Exp $
 
 /**
  * Stores a Web Map Context (WMC) Collection document as defined by the Open 
- * GIS Consortium http://opengis.org and extensions the the WMC.  
+ * GIS Consortium http://opengis.org and extensions the WMC.  
  * @constructor
  * @base ModelBase
  * @author Mike Adair

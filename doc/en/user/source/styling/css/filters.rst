@@ -130,8 +130,8 @@ hash sign (``#``)::
     GeoServer layers, the CSS module deviates from standard CSS slightly in this
     regard.  Future revisions may use some form of munging to avoid this deviation.
 
-Filtering by rendering context (scale)
---------------------------------------
+Filtering by rendering context: scale
+-------------------------------------
 
 Often, there are aspects of a map that should change based on the context in
 which it is being viewed.  For example, a road map might omit residential roads
@@ -170,6 +170,51 @@ the suffixes k (kilo), M (mega), G (giga) can be used, for example::
     While property filters (currently) use the more complex ECQL syntax,
     pseudo-attributes cannot use complex expressions and MUST take the form of
     <PROPERTY><OPERATOR><LITERAL>.
+
+Filtering by rendering context: zoom
+------------------------------------
+
+Similar to scale based control, one can limit the application of a rule
+by referring to a zoom level using ``@z``.
+By default the values of ``@z`` are interpreted as scale denominators in the 
+WebMercatorQuad tile matrix set (the well known one used by most XYZ tile providers).
+
+And example with results similar to the scale example would look as follows::
+
+    [roadtype = 'Residential'][@z < 13] {
+        stroke: black;
+    }
+
+The @z variable can be used with the following comparison operators: `<`, `<=`, `=`, `>`, `>=`.
+In case of equality, the range between the median scale denominator below the zoom
+level, and the one above, is used.
+So for example, when using `@z=13`, the translated SLD will use a range of
+scale denominators between 50k and 100k.
+
+If other reference gridsets are desired, it's possible to use the ``tileMatrixSet``
+directive at the top of the CSS file. For example::
+
+    @tileMatrixSet 'EPSG:4326'
+
+    [roadtype = 'Residential'][@z < 13] {
+        stroke: black;
+    }
+
+The context details that are provided are as follows:
+
+.. list-table::
+    :widths: 20 80
+    :header-rows: 1
+
+    * - Pseudo-Attribute
+      - Meaning
+    * - @tileMatrixSet
+      - Directive placed at the top of the CSS document, referencing a TileMatrixSet known to GeoWebCache
+    * - @z
+      - A zoom level in the current tile matrix set (WebMercatorQuad, unless otherwise specified)
+
+.. note:: 
+    Unlike @z is currently limited to usage in selectors, it cannot be used in property expressions like @sd does
 
 Filtering symbols
 -----------------

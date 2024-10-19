@@ -173,7 +173,7 @@ import si.uom.SI;
 public class ResourcePool {
 
     /**
-     * OGC "cilyndrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
+     * OGC "cylindrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
      */
     static final double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
 
@@ -705,15 +705,12 @@ public class ResourcePool {
         connectionParameters =
                 ResourcePool.getParams(connectionParameters, catalog.getResourceLoader());
 
-        // obtain the factory
+        // obtain the factory, either using the "type", or if not found, using the parameters
         DataAccessFactory factory = null;
         try {
             factory = getDataStoreFactory(info);
         } catch (IOException e) {
-            throw new IOException(
-                    "Failed to find the datastore factory for "
-                            + info.getName()
-                            + ", did you forget to install the store extension jar?");
+            // ignoring since the error message is the same as for the null factory, see line below
         }
         if (factory == null) {
             throw new IOException(
@@ -725,9 +722,8 @@ public class ResourcePool {
 
         // ensure that the namespace parameter is set for the datastore
         if (!connectionParameters.containsKey("namespace") && params != null) {
-            // if we grabbed the factory, check that the factory actually supports
-            // a namespace parameter, if we could not get the factory, assume that
-            // it does
+            // if we grabbed the factory, check that the factory actually supports a namespace
+            // parameter, if we could not get the factory, assume that it does
             boolean supportsNamespace = false;
 
             for (Param p : params) {
@@ -749,8 +745,7 @@ public class ResourcePool {
             }
         }
 
-        // see if the store has a repository param, if so, pass the one wrapping
-        // the store
+        // see if the store has a repository param, if so, pass the one wrapping the store
         if (params != null) {
             for (Param p : params) {
                 if (Repository.class.equals(p.getType())) {
@@ -772,7 +767,19 @@ public class ResourcePool {
             }
         }
 
-        dataStore = DataStoreUtils.getDataAccess(connectionParameters);
+        // use the factory obtained through the lookup first
+        try {
+            dataStore = DataStoreUtils.getDataAccess(factory, connectionParameters);
+        } catch (IOException e) {
+            LOGGER.log(
+                    Level.INFO,
+                    String.format(
+                            "Failed to create the store using the configured factory (%s), will try a generic lookup now.",
+                            factory.getClass()),
+                    e);
+            dataStore = DataStoreUtils.getDataAccess(connectionParameters);
+        }
+
         if (dataStore == null) {
             /*
              * Preserve DataStore retyping behaviour by calling
@@ -1970,16 +1977,27 @@ public class ResourcePool {
             WMSStoreInfo expandedStore, EntityResolver entityResolver)
             throws IOException, org.geotools.ows.ServiceException {
         HTTPClient client = getHTTPClient(expandedStore);
-        String capabilitiesURL = expandedStore.getCapabilitiesURL();
-        URL serverURL = new URL(capabilitiesURL);
+        URL serverURL = new URL(expandedStore.getCapabilitiesURL());
         Map<String, Object> hints = new HashMap<>();
         hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
         hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
         if (entityResolver != null) {
             hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
         }
-
-        return new WebMapServer(serverURL, client, hints);
+        WebMapServer wms;
+        if (StringUtils.isNotEmpty(expandedStore.getHeaderName())
+                && StringUtils.isNotEmpty(expandedStore.getHeaderValue())) {
+            wms =
+                    new WebMapServer(
+                            serverURL,
+                            client,
+                            hints,
+                            Collections.singletonMap(
+                                    expandedStore.getHeaderName(), expandedStore.getHeaderValue()));
+        } else {
+            wms = new WebMapServer(serverURL, client, hints);
+        }
+        return wms;
     }
 
     /**
@@ -2084,10 +2102,17 @@ public class ResourcePool {
         }
         String username = info.getUsername();
         String password = info.getPassword();
+        String authKey = info.getAuthKey();
         int connectTimeout = info.getConnectTimeout();
         int readTimeout = info.getReadTimeout();
         client.setUser(username);
         client.setPassword(password);
+        if (authKey != null) {
+            String[] kv = authKey.split("=");
+            if (kv.length == 2) {
+                client.setExtraParams(Map.of(kv[0], kv[1]));
+            }
+        }
         client.setConnectTimeout(connectTimeout);
         client.setReadTimeout(readTimeout);
 

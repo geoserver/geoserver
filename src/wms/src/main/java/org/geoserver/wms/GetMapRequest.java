@@ -221,7 +221,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Gets a list of the the filters that will be applied to each layer before rendering
+     * Gets a list of the filters that will be applied to each layer before rendering
      *
      * @return A list of {@link Filter}.
      */

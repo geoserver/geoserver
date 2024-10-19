@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbcconfig</artifactId>
@@ -12,6 +12,7 @@
   <name>GeoServer JDBC Catalog</name>
   <description>Manage GeoServer Catalog configuration in a database.</description>
   <properties>
+
     <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
     <jdbcconfig.oracle.skip>true</jdbcconfig.oracle.skip>
   </properties>

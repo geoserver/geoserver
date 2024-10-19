@@ -199,6 +199,12 @@ public class FeatureService {
         return geoServer.getService(WFSInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public WFSInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     private Catalog getCatalog() {
         return geoServer.getCatalog();
     }

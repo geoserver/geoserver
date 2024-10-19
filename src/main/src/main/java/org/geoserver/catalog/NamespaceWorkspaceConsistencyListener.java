@@ -155,7 +155,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
      * If post modify event catalog object is a namespace or an workspace this method will make sure
      * both have the same isolation.
      *
-     * <p>The namespaces or the workspace will only be saved if the the isolation is not the same,
+     * <p>The namespaces or the workspace will only be saved if the isolation is not the same,
      * avoiding infinite loops.
      *
      * @param info catalog object associate to the event

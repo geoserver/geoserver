@@ -51,7 +51,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
         // do nothing
     }
 
-    /** To be called at the the end of a transaction, frees the current {@link Connection} */
+    /** To be called at the end of a transaction, frees the current {@link Connection} */
     protected void releaseConnection() throws SQLException {
         if (connection != null) {
             connection.close();

@@ -13,7 +13,6 @@ import java.awt.RenderingHints;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
@@ -22,23 +21,23 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geoserver.wms.map.StyleQueryUtil;
+import org.geoserver.wms.vector.iterator.VTFeature;
+import org.geoserver.wms.vector.iterator.VTIterator;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
-import org.geotools.api.feature.Attribute;
-import org.geotools.api.feature.ComplexAttribute;
-import org.geotools.api.feature.Feature;
-import org.geotools.api.feature.GeometryAttribute;
-import org.geotools.api.feature.Property;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
+import org.geotools.process.geometry.PolygonLabelProcess;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 
 public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
@@ -97,10 +96,9 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
         CoordinateReferenceSystem sourceCrs;
         for (Layer layer : mapContent.layers()) {
-
             FeatureSource<?, ?> featureSource = layer.getFeatureSource();
-            GeometryDescriptor geometryDescriptor =
-                    featureSource.getSchema().getGeometryDescriptor();
+            FeatureType schema = featureSource.getSchema();
+            GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             if (null == geometryDescriptor) {
                 continue;
             }
@@ -112,7 +110,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                             StyleQueryUtil.getFeatureStyles(
                                     layer,
                                     StyleQueryUtil.getMapScale(mapContent, renderingArea),
-                                    featureSource.getSchema()));
+                                    schema));
             if (this.tileBuilderFactory.shouldOversampleScale()) {
                 // buffer is in pixels (style pixels), need to convert to paint area pixels
                 buffer *=
@@ -123,9 +121,11 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                                 1); // if 0 (i.e. test case), don't expand
             }
 
-            Query query = StyleQueryUtil.getStyleQuery(layer, mapContent);
-            Hints hints = query.getHints();
+            VectorTileOptions vectorTileOptions = new VectorTileOptions(layer, mapContent);
 
+            Query query = StyleQueryUtil.getStyleQuery(layer, mapContent);
+            vectorTileOptions.customizeQuery(query);
+            Hints hints = query.getHints();
             Pipeline pipeline =
                     getPipeline(
                             mapContent,
@@ -135,16 +135,37 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                             featureSource.getSupportedHints(),
                             hints,
                             buffer);
-
             hints.remove(Hints.SCREENMAP);
-
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
+            String layerName = schema.getName().getLocalPart();
+            boolean coalesceEnabled = vectorTileOptions.isCoalesceEnabled();
+            run(
+                    features,
+                    pipeline,
+                    geometryDescriptor,
+                    vectorTileBuilder,
+                    layer,
+                    false,
+                    layerName,
+                    coalesceEnabled);
 
-            run(features, pipeline, geometryDescriptor, vectorTileBuilder, layer);
+            if (vectorTileOptions.generateLabelLayer()) {
+                vectorTileOptions.customizeLabelQuery(query);
+                features = featureSource.getFeatures(query);
+                layerName = layerName + "_labels";
+                run(
+                        features,
+                        pipeline,
+                        geometryDescriptor,
+                        vectorTileBuilder,
+                        layer,
+                        vectorTileOptions.isPolygonLabelEnabled(),
+                        layerName,
+                        coalesceEnabled);
+            }
         }
 
-        WebMap map = vectorTileBuilder.build(mapContent);
-        return map;
+        return vectorTileBuilder.build(mapContent);
     }
 
     protected Pipeline getPipeline(
@@ -175,44 +196,28 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         return pipeline;
     }
 
-    private Map<String, Object> getProperties(ComplexAttribute feature) {
-        Map<String, Object> props = new TreeMap<>();
-        for (Property p : feature.getProperties()) {
-            if (!(p instanceof Attribute) || (p instanceof GeometryAttribute)) {
-                continue;
-            }
-            String name = p.getName().getLocalPart();
-            Object value;
-            if (p instanceof ComplexAttribute) {
-                value = getProperties((ComplexAttribute) p);
-            } else {
-                value = p.getValue();
-            }
-            if (value != null) {
-                props.put(name, value);
-            }
-        }
-        return props;
-    }
-
     void run(
             FeatureCollection<?, ?> features,
             Pipeline pipeline,
             GeometryDescriptor geometryDescriptor,
             VectorTileBuilder vectorTileBuilder,
-            Layer layer) {
+            Layer layer,
+            boolean labelPoint,
+            String layerName,
+            boolean coalesce) {
         Stopwatch sw = Stopwatch.createStarted();
         int count = 0;
         int total = 0;
-        Feature feature;
 
-        try (FeatureIterator<?> it = features.features()) {
+        final String geometryName = geometryDescriptor.getName().getLocalPart();
+        try (VTIterator it = VTIterator.getIterator(features.features(), coalesce)) {
             while (it.hasNext()) {
-                feature = it.next();
+                VTFeature feature = it.next();
                 total++;
-                Geometry finalGeom;
 
-                Geometry originalGeom = (Geometry) feature.getDefaultGeometryProperty().getValue();
+                Geometry originalGeom = feature.getGeometry();
+                if (labelPoint) originalGeom = getLabelPoint(originalGeom);
+                Geometry finalGeom;
                 try {
                     finalGeom = pipeline.execute(originalGeom);
                 } catch (Exception processingException) {
@@ -226,12 +231,8 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                     continue;
                 }
 
-                final String layerName = feature.getType().getName().getLocalPart();
-                final String featureId = feature.getIdentifier().toString();
-                final String geometryName = geometryDescriptor.getName().getLocalPart();
-
-                final Map<String, Object> properties = getProperties(feature);
-
+                final String featureId = feature.getFeatureId();
+                final Map<String, Object> properties = feature.getProperties();
                 vectorTileBuilder.addFeature(
                         layerName, featureId, geometryName, finalGeom, properties);
                 count++;
@@ -243,9 +244,16 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                     String.format(
                             "Added %,d out of %,d features of '%s' in %s",
                             count, total, layer.getTitle(), sw);
-            // System.err.println(msg);
             LOGGER.fine(msg);
         }
+    }
+
+    /** Computes a label point for the geometry, using the "poly label" algorithm for polygons */
+    private Geometry getLabelPoint(Geometry originalGeom) {
+        if (originalGeom instanceof Polygon || originalGeom instanceof MultiPolygon) {
+            return PolygonLabelProcess.PolyLabeller(originalGeom, null);
+        }
+        return originalGeom;
     }
 
     /** @return {@code null}, not a raster format. */

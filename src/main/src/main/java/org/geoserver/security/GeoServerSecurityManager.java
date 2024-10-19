@@ -693,6 +693,17 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return authCache;
     }
 
+    /**
+     * Used to supply an authentication cache (for testing) in GeoServerSystemTestSupport
+     *
+     * @param authCache
+     */
+    public void setAuthenticationCache(AuthenticationCache authCache) {
+        synchronized (this) {
+            this.authCache = authCache;
+        }
+    }
+
     AuthenticationCache lookupAuthenticationCache() {
         AuthenticationCache authCache = GeoServerExtensions.bean(AuthenticationCache.class);
         return authCache != null ? authCache : new GuavaAuthenticationCacheImpl(1000);

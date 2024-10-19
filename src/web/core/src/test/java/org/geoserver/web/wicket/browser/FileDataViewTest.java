@@ -9,6 +9,7 @@ import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -56,7 +57,7 @@ public class FileDataViewTest {
 
                                             @Override
                                             protected void linkNameClicked(
-                                                    File file, AjaxRequestTarget target) {
+                                                    File file, Optional<AjaxRequestTarget> target) {
                                                 lastClicked = file;
                                             }
                                         }));

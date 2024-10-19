@@ -19,6 +19,7 @@ package org.geoserver.wps.ppio;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +62,19 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         if (is != null) {
             is.close();
         }
+    }
+
+    @Test
+    public void testDecodeGeometries() throws Exception {
+        GeoJSONPPIO ppio = new GeoJSONPPIO.Geometries(getGeoServer());
+        String string = "{\"type\":\"Point\",\"coordinates\":[1.123456789,2]}";
+        Point point1 = (Point) ppio.decode(string);
+        assertEquals(1.123456789, point1.getX(), EPS);
+        assertEquals(2.0, point1.getY(), EPS);
+        ByteArrayInputStream input = new ByteArrayInputStream(string.getBytes());
+        Point point2 = (Point) ppio.decode(input);
+        assertEquals(1.123456789, point2.getX(), EPS);
+        assertEquals(2.0, point2.getY(), EPS);
     }
 
     @Test

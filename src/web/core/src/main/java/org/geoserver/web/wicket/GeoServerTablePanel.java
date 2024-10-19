@@ -15,7 +15,8 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnEventHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -50,6 +51,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  *
  * @param <T>
  */
+// TODO WICKET8 - Verify this page works OK
 public abstract class GeoServerTablePanel<T> extends Panel {
 
     private static final long serialVersionUID = -5275268446479549108L;
@@ -158,13 +160,16 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     private static final long serialVersionUID = -1252520208030081584L;
 
                     @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        tag.put(
-                                "onkeypress",
-                                "if(event.keyCode == 13) {document.getElementById('"
-                                        + hiddenSubmit.getMarkupId()
-                                        + "').click();return false;}");
+                    public void renderHead(IHeaderResponse response) {
+                        super.renderHead(response);
+
+                        response.render(
+                                OnEventHeaderItem.forComponent(
+                                        this,
+                                        "keypress",
+                                        "if(event.keyCode == 13) {document.getElementById('"
+                                                + hiddenSubmit.getMarkupId()
+                                                + "').click();return false;}"));
                     }
 
                     @Override
@@ -292,7 +297,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                                 getComponentForProperty("component", itemModel, property);
 
                         if (component == null) {
-                            // show a plain label if the the subclass did not create any component
+                            // show a plain label if the subclass did not create any component
                             component = new Label("component", property.getModel(itemModel));
                         } else if (!"component".equals(component.getId())) {
                             // add some checks for the id, the error message
@@ -501,7 +506,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             static final long serialVersionUID = 5334592790005438960L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
                 rememeberFilter();
             }
@@ -775,11 +780,6 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         @Override
         public void setObject(Boolean object) {
             selection[index] = object.booleanValue();
-        }
-
-        @Override
-        public void detach() {
-            // nothing to do
         }
     }
 

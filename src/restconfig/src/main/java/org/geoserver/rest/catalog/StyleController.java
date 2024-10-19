@@ -82,6 +82,7 @@ import org.xml.sax.EntityResolver;
 public class StyleController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
+    static final String SLD_TEMP_PREFIX = "_sld";
 
     @Autowired
     public StyleController(@Qualifier("catalog") Catalog catalog) {
@@ -593,7 +594,7 @@ public class StyleController extends AbstractCatalogController {
      * @throws IOException if there was an error extracting the archive
      */
     private File unzipSldPackage(InputStream object) throws IOException {
-        File tempDir = Files.createTempDirectory("_sld").toFile();
+        File tempDir = Files.createTempDirectory(SLD_TEMP_PREFIX).toFile();
 
         org.geoserver.util.IOUtils.decompress(object, tempDir);
 

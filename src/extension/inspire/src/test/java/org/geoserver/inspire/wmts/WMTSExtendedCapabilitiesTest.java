@@ -94,4 +94,40 @@ public class WMTSExtendedCapabilitiesTest extends ServicesTestSupport {
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
     }
+
+    @Test
+    public void testUnSupportedLanguages() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMTSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+        getGeoServer().save(serviceInfo);
+        final Document dom = getAsDOM(WMTS_1_0_0_GETCAPREQUEST + "&LANGUAGE=unsupported");
+        NodeList nodeList = dom.getElementsByTagNameNS(VS_VS_OWS_NAMESPACE, "ExtendedCapabilities");
+        final Element extendedCaps = (Element) nodeList.item(0);
+
+        final Element suppLangs =
+                (Element)
+                        extendedCaps
+                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                                .item(0);
+
+        nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
+        assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
+        nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
+        assertEquals("Number of Supported Languages", 2, nodeList.getLength());
+
+        final String responseLanguage =
+                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                        .item(0)
+                        .getFirstChild()
+                        .getNextSibling()
+                        .getFirstChild()
+                        .getNodeValue();
+        assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
+    }
 }

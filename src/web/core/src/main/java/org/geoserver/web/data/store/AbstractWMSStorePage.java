@@ -32,6 +32,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  * @author Andrea Aime
  * @see StoreEditPanel
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
@@ -46,6 +47,10 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
     protected TextParamPanel<String> usernamePanel;
 
     protected PasswordParamPanel password;
+
+    protected TextParamPanel<String> headerNamePanel;
+    protected TextParamPanel<String> headerValuePanel;
+    protected TextParamPanel<String> authKeyPanel;
 
     void initUI(final WMSStoreInfo store) {
         IModel<WMSStoreInfo> model = new Model<>(store);
@@ -124,6 +129,30 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                                 new ResourceModel("AbstractWMSStorePage.password"),
                                 false));
 
+        headerNamePanel =
+                new TextParamPanel<>(
+                        "headerNamePanel",
+                        new PropertyModel<>(model, "headerName"),
+                        new ResourceModel("AbstractWMSStorePage.headerName"),
+                        false);
+        form.add(headerNamePanel);
+
+        headerValuePanel =
+                new TextParamPanel<>(
+                        "headerValuePanel",
+                        new PropertyModel<>(model, "headerValue"),
+                        new ResourceModel("AbstractWMSStorePage.headerValue"),
+                        false);
+        form.add(headerValuePanel);
+
+        authKeyPanel =
+                new TextParamPanel<>(
+                        "authKeyPanel",
+                        new PropertyModel<>(model, "authKey"),
+                        new ResourceModel("AbstractWMSStorePage.authKey"),
+                        false);
+        form.add(authKeyPanel);
+
         // max concurrent connections
         final PropertyModel<Boolean> useHttpConnectionPoolModel =
                 new PropertyModel<>(model, "useConnectionPooling");
@@ -199,20 +228,20 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         return new AjaxSubmitLink("save", form) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.add(form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(getForm());
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 form.process(this);
-                WMSStoreInfo info = (WMSStoreInfo) form.getModelObject();
+                WMSStoreInfo info = (WMSStoreInfo) getForm().getModelObject();
                 try {
                     onSave(info, target);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.add(form);
+                    target.add(getForm());
                 }
             }
         };

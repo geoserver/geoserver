@@ -8,6 +8,8 @@ package org.geoserver.security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -246,6 +248,16 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
     public LayerGroupAccessLimits getAccessLimits(
             Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
         return delegate.getAccessLimits(user, layerGroup, containers);
+    }
+
+    @Override
+    public Filter getSecurityFilter(Authentication user, final Class<? extends CatalogInfo> clazz) {
+        return delegate.getSecurityFilter(user, clazz);
+    }
+
+    @Override
+    public boolean isWorkspaceAdmin(Authentication user, Catalog catalog) {
+        return delegate.isWorkspaceAdmin(user, catalog);
     }
 
     public ResourceAccessManager unwrap() {

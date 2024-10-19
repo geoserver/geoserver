@@ -116,19 +116,11 @@ public class CssStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // css generates a single UserStyle with multiple feature type styles
+        // css generates multiple NamedLayer
         assertThat(
-                dom,
-                hasXPath(
-                        "//sld:FeatureTypeStyle[1]/sld:FeatureTypeName",
-                        namespaceContext,
-                        equalTo("states")));
+                dom, hasXPath("//sld:NamedLayer[1]/sld:Name", namespaceContext, equalTo("states")));
         assertThat(
-                dom,
-                hasXPath(
-                        "//sld:FeatureTypeStyle[2]/sld:FeatureTypeName",
-                        namespaceContext,
-                        equalTo("roads")));
+                dom, hasXPath("//sld:NamedLayer[2]/sld:Name", namespaceContext, equalTo("roads")));
     }
 
     @Test

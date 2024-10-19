@@ -498,6 +498,8 @@ public class ImportProcess implements GeoServerProcess {
             listener.progress(100);
             listener.complete();
             return layerInfo.prefixedName();
+        } catch (ProcessException e) {
+            throw e;
         } catch (MalformedURLException e) {
             throw new ProcessException("URL Error", e);
         } catch (IOException e) {
@@ -580,6 +582,8 @@ public class ImportProcess implements GeoServerProcess {
             listener.complete();
 
             return layerInfo.prefixedName();
+        } catch (ProcessException pe) {
+            throw pe;
         } catch (Exception e) {
             throw new ProcessException(
                     "Failed to complete the import inside the GeoServer catalog", e);

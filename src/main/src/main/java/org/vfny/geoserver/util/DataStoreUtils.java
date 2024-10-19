@@ -62,6 +62,16 @@ public abstract class DataStoreUtils {
             return null;
         }
 
+        return getDataAccess(factory, params);
+    }
+
+    /**
+     * Creates a {@link DataAccess} using the given params and factory, verbatim, and then
+     * eventually wraps it into a renaming wrapper so that feature type names are good ones from the
+     * wfs point of view (that is, no ":" in the type names)
+     */
+    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(
+            DataAccessFactory factory, Map<String, Serializable> params) throws IOException {
         DataAccess<? extends FeatureType, ? extends Feature> store =
                 factory.createDataStore(params);
         if (store == null) {

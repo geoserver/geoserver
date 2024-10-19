@@ -210,11 +210,11 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertNoErrorMessage();
         // Ensure that the Layer List page is rendered correctly
         tester.assertComponent(
-                "publishedinfo:tabs:panel:layers:popup:content:listContainer:items",
+                "publishedinfo:tabs:panel:layers:popup:modal:content:listContainer:items",
                 DataView.class);
         // Get the DataView containing the Layer List
         DataView<?> dataView =
-                (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:content:listContainer:items");
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -236,11 +236,11 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertNoErrorMessage();
         // Ensure that the Style Group List page is rendered correctly
         tester.assertComponent(
-                "publishedinfo:tabs:panel:layers:popup:content:listContainer:items",
+                "publishedinfo:tabs:panel:layers:popup:modal:content:listContainer:items",
                 DataView.class);
         // Get the DataView containing the Style Group List
         DataView<?> dataView =
-                (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:content:listContainer:items");
         // Ensure that the Row count is equal to the style in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -263,11 +263,11 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertNoErrorMessage();
         // Ensure that the Layer List page is rendered correctly
         tester.assertComponent(
-                "publishedinfo:tabs:panel:layers:popup:content:listContainer:items",
+                "publishedinfo:tabs:panel:layers:popup:modal:content:listContainer:items",
                 DataView.class);
         // Get the DataView containing the Layer List
         DataView<?> dataView =
-                (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:content:listContainer:items");
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -295,13 +295,14 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // Click on the link
         tester.clickLink("publishedinfo:tabs:panel:layers:addLayerGroup");
         tester.assertNoErrorMessage();
+
         // Ensure that the Layer List page is rendered correctly
         tester.assertComponent(
-                "publishedinfo:tabs:panel:layers:popup:content:listContainer:items",
+                "publishedinfo:tabs:panel:layers:popup:modal:content:listContainer:items",
                 DataView.class);
         // Get the DataView containing the Layer List
         DataView<?> dataView =
-                (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:content:listContainer:items");
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -571,9 +572,6 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.select(
                 "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
-        form.setValue(
-                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
@@ -598,24 +596,14 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.select(
                 "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
+
+        // set the titles
+        form.setValue(
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
         form.setValue(
                 "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
-        tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
-        form.select(
-                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
-                20);
-        form.setValue(
-                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
-                "another international title");
-        tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
-                "click");
-
-        // set mandatory fields
-        form = tester.newFormTester("publishedinfo");
+                "an international abstract");
 
         form.setValue("tabs:panel:name", "international-layer-group");
         form.setValue("tabs:panel:bounds:minX", "-180");
@@ -623,6 +611,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:maxX", "180");
         form.setValue("tabs:panel:bounds:maxY", "90");
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+        form.select("tabs:panel:mode", 0);
         form.submit("save");
         tester.assertNoErrorMessage();
     }
@@ -732,7 +721,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayer",
                     "click");
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:1:itemProperties:0:component:link",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:modal:content:listContainer:items:1:itemProperties:0:component:link",
                     "click");
             tester.executeAjaxEvent(
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayerGroup",
@@ -785,14 +774,14 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayerGroup",
                     "click");
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:3:itemProperties:0:component:link",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:modal:content:listContainer:items:3:itemProperties:0:component:link",
                     "click");
 
             tester.executeAjaxEvent(
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayer",
                     "click");
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:1:itemProperties:0:component:link",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:modal:content:listContainer:items:1:itemProperties:0:component:link",
                     "click");
 
             FormTester ft = tester.newFormTester("publishedinfo");
@@ -872,7 +861,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
             // select the LayerGroupStyle.
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:2:itemProperties:0:component:link",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:modal:content:listContainer:items:2:itemProperties:0:component:link",
                     "click");
 
             // forces the model of the default style checkbox to be set to false

@@ -446,7 +446,12 @@ The parameters are as follows:
    * - MaxAllowedTiles
      - Sets the maximum number of tiles that can be loaded simultaneously for a request. For large mosaics, this parameter should be set to avoid saturating the server by loading too many granules simultaneously.
    * - MergeBehavior
-     - The method used to handle overlapping granules during the mosaic operation. Can be ``FLAT`` (only the topmost granule is visible in the case of an overlap) or ``STACK`` (a band-stacking merge is applied to the overlapping granules). Default is ``FLAT``.
+     - The method used to handle overlapping granules during the mosaic operation. Can be:
+
+         - ``FLAT`` (default), only the topmost granule is visible in the case of an overlap)
+         - ``STACK``, a band-stacking merge is applied to the overlapping granules, each granule becomes a different output band in the result.
+         - ``MIN``, the overlapping granules are merged by taking the minimum value amongst the overlapping pixels. The granules do not need to overlap exactly. 
+         - ``MAX``, the overlapping granules are merged by taking the maximum value amongst the overlapping pixels. The granules do not need to overlap exactly.
    * - OutputTransparentColor
      - Set the transparent color for the mosaic. This parameter make sense for RGB or paletted mosaics, but not for a DEM or MetOc data. See below for an example:
 

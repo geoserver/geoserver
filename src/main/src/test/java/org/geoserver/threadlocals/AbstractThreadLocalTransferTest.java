@@ -59,14 +59,14 @@ public abstract class AbstractThreadLocalTransferTest {
 
         @Override
         public Void call() throws Exception {
-            // this is the the main thread, we are actually running inside the thread pool
+            // this is the main thread, we are actually running inside the thread pool
             assertNotEquals(originalThread, Thread.currentThread());
 
             // apply the thread local, check it has been applied correctly
             transfer.apply(storage);
             assertThreadLocalApplied();
 
-            // clean up, check the therad local is now empty
+            // clean up, check the thread local is now empty
             transfer.cleanup();
             assertThreadLocalCleaned();
 

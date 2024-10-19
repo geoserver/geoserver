@@ -135,6 +135,15 @@ public final class StyleQueryUtil {
         return query;
     }
 
+    public static List<LiteFeatureTypeStyle> getLiteFeatureStyles(
+            Layer layer, WMSMapContent mapContent) {
+        final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
+        final double mapScale = getMapScale(mapContent, renderingArea);
+        FeatureSource<?, ?> featureSource = layer.getFeatureSource();
+        FeatureType schema = featureSource.getSchema();
+        return getFeatureStyles(layer, mapScale, schema);
+    }
+
     /**
      * Computes the scale denominator for the given map content and rendering area
      *
@@ -327,7 +336,12 @@ public final class StyleQueryUtil {
                 Graphics2D graphics = null;
                 lfts =
                         new LiteFeatureTypeStyle(
-                                layer, graphics, ruleList, elseRuleList, fts.getTransformation());
+                                layer,
+                                graphics,
+                                ruleList,
+                                elseRuleList,
+                                fts.getTransformation(),
+                                fts.getOptions());
 
                 result.add(lfts);
             }
@@ -468,7 +482,7 @@ public final class StyleQueryUtil {
      * destCRS.
      *
      * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
-     *     transform if the the two crs are equal
+     *     transform if the two crs are equal
      * @throws FactoryException If no transform is available to the destCRS
      */
     public static MathTransform buildTransform(

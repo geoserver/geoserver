@@ -93,9 +93,6 @@ public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServe
         public void setObject(List<GeoServerUserGroup> object) {
             this.groups = object;
         }
-
-        @Override
-        public void detach() {}
     }
 
     @Override
@@ -104,7 +101,7 @@ public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServe
     }
 
     @Override
-    protected String getAvaliableHeaderPropertyKey() {
+    protected String getAvailableHeaderPropertyKey() {
         return "UserGroupPaletteFormComponent.availableHeader";
     }
 }

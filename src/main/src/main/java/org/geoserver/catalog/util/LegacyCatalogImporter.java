@@ -325,6 +325,12 @@ public class LegacyCatalogImporter {
             dataStore.getConnectionParameters().put("namespace", ns.getURI());
 
             dataStore.setEnabled((Boolean) map.get("enabled"));
+
+            // some tolerance for legacy app-schema tests
+            if ("app-schema".equals(connectionParams.get("dbtype"))) {
+                dataStore.setType("Application Schema DataAccess");
+            }
+
             catalog.add(dataStore);
 
             if (dataStore.isEnabled()) {

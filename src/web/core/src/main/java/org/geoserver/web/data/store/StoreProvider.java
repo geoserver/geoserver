@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.Catalog;
@@ -45,13 +44,9 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
                 @Override
                 public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
-                    return new AbstractReadOnlyModel<>() {
-
-                        @Override
-                        public String getObject() {
-                            StoreInfo si = itemModel.getObject();
-                            return (String) getPropertyValue(si);
-                        }
+                    return () -> {
+                        StoreInfo si = itemModel.getObject();
+                        return (String) getPropertyValue(si);
                     };
                 }
 

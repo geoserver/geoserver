@@ -103,7 +103,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MapMLWMSTest extends MapMLTestSupport {
 
-    private XpathEngine xpath;
+    protected XpathEngine xpath;
 
     @Override
     protected void registerNamespaces(Map<String, String> namespaces) {

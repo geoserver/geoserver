@@ -7,17 +7,22 @@ package org.geoserver.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.geotools.util.logging.Logging;
 
 /** Displays a message suggesting the user to login or to elevate his privileges */
 public class GeoServerErrorPage extends GeoServerBasePage {
+    static final Logger LOGGER = Logging.getLogger(GeoServerErrorPage.class);
 
     public GeoServerErrorPage(Throwable error) {
+        LOGGER.log(Level.INFO, "Failure during page processing", error);
         IModel notice = null, errorText = new Model<>("");
 
         boolean trace = false;

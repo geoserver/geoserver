@@ -7,14 +7,15 @@ package org.geoserver.wps.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
+import org.geoserver.web.wicket.GSModalWindow;
 
+// TODO WICKET8 - Verify this page works OK
 public class SubProcessBuilder extends WebPage {
 
-    public SubProcessBuilder(ExecuteRequest request, final ModalWindow window) {
-        Form form = new Form<>("form");
+    public SubProcessBuilder(ExecuteRequest request, final GSModalWindow window) {
+        Form form = new Form("form");
         add(form);
 
         final WPSRequestBuilderPanel builder = new WPSRequestBuilderPanel("builder", request);
@@ -24,13 +25,13 @@ public class SubProcessBuilder extends WebPage {
                 new AjaxSubmitLink("apply") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         window.close(target);
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         target.add(builder.getFeedbackPanel());
                     }
                 });

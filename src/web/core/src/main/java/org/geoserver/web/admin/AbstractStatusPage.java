@@ -115,7 +115,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
 
                             @Override
                             public boolean getStatelessHint(Component component) {
-                                // this will force canCallListenerInterfaceAfterExpiry to be false
+                                // this will force canCallListenerAfterExpiry to be false
                                 // when a pending Ajax request
                                 // is processed for expired tabs, we can't predict the Ajax events
                                 // that will be used

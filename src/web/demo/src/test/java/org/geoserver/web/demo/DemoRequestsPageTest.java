@@ -78,7 +78,6 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testOpenNewPage() {
         final FormTester requestFormTester = tester.newFormTester("demoRequestsForm");
-
         requestFormTester.select("demoRequestsList", 0);
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 

@@ -36,6 +36,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
+// TODO WICKET8 - Verify this page works OK
 public class WMSLayerImporterPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -3413451886777414860L;
@@ -154,7 +155,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = -7161320029912723242L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 try {
                     // grab the selection
                     List<LayerResource> selection = layers.getSelection();
@@ -201,14 +202,14 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 7089389540839181808L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 try {
 
                     publishLayers(provider.getItems());
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Error while setting up mass import", e);
                 }
-                target.add(form);
+                target.add(getForm());
                 addFeedbackPanels(target);
             }
         };
@@ -300,11 +301,6 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         public void setObject(String object) {
             throw new UnsupportedOperationException();
         }
-
-        @Override
-        public void detach() {
-            // nothing to do
-        }
     }
 
     final class IconModel implements IModel<PackageResourceReference> {
@@ -340,11 +336,6 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         @Override
         public void setObject(PackageResourceReference object) {
             throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void detach() {
-            // nothing to do
         }
     }
 }

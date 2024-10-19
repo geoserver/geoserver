@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxFallbackLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -24,6 +25,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author Andrea Aime - OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 public abstract class FileBreadcrumbs extends Panel {
     private static final long serialVersionUID = 2821319341957784628L;
 
@@ -52,7 +54,7 @@ public abstract class FileBreadcrumbs extends Panel {
                                             4295991386838610752L;
 
                                     @Override
-                                    public void onClick(AjaxRequestTarget target) {
+                                    public void onClick(Optional<AjaxRequestTarget> target) {
                                         pathItemClicked(getModelObject(), target);
                                     }
                                 };
@@ -71,7 +73,7 @@ public abstract class FileBreadcrumbs extends Panel {
         setDefaultModelObject(selection);
     }
 
-    protected abstract void pathItemClicked(File file, AjaxRequestTarget target);
+    protected abstract void pathItemClicked(File file, Optional<AjaxRequestTarget> target);
 
     static class BreadcrumbModel implements IModel<List<File>> {
         private static final long serialVersionUID = -3497123851146725406L;
@@ -107,11 +109,6 @@ public abstract class FileBreadcrumbs extends Panel {
         @Override
         public void setObject(List<File> object) {
             throw new UnsupportedOperationException("This model cannot be set!");
-        }
-
-        @Override
-        public void detach() {
-            // nothing to do here
         }
     }
 }

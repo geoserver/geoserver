@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.security.GeoServerRoleService;
@@ -129,16 +128,12 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                         } else if (property.getName().equals("validated")) {
                             final IModel<Boolean> hasValidatorsModel = model;
                             IModel<String> availableModel =
-                                    new AbstractReadOnlyModel<>() {
-
-                                        @Override
-                                        public String getObject() {
-                                            Boolean value = hasValidatorsModel.getObject();
-                                            if (Boolean.TRUE.equals(value)) {
-                                                return "*";
-                                            } else {
-                                                return "";
-                                            }
+                                    () -> {
+                                        Boolean value = hasValidatorsModel.getObject();
+                                        if (Boolean.TRUE.equals(value)) {
+                                            return "*";
+                                        } else {
+                                            return "";
                                         }
                                     };
                             return new Label(id, availableModel);

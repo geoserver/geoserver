@@ -10,7 +10,7 @@ This tutorial walks through the steps of defining a style and associating it wit
 Data preparation
 ----------------
 
-First let's gather that the data that we'll be publishing.
+First let's gather the data that we'll be publishing.
 
 #. Complete the previous tutorials:
    
@@ -29,7 +29,7 @@ Create a style
     
 #. This page displays a list of styles, including the workspace the style belongs to.
    
-   .. note:: Styles groups are allowed to be "global" allowing a style to be defined that can be used by any layer.
+   .. note:: Styles groups are allowed to be "global", allowing a style to be defined and be used by any layer.
    
 #. At the top of the list :guilabel:`Styles` list, locate and click the :guilabel:`Add a new style` link.
       
@@ -58,7 +58,7 @@ Create a style
       
       Style Content configured to generate a polygon default style.
 
-#. Under :guilabel:`Generate a default style` locate and click the :guilabel:`Generate` link to populate the style editor with a generated outline of a polygion style.
+#. Under :guilabel:`Generate a default style` locate and click the :guilabel:`Generate` link to populate the style editor with a generated outline of a polygon style.
 
    .. figure:: images/generate.png
    
@@ -70,7 +70,7 @@ Create a style
    
    * Use the search to filter with ``tutorial`` to locate ``tutorial:countries``.
    
-   * Select the :guilabel:`Default` checkbox for ``tutorial:countries`` to use the ``tutorial:background`` style the default for this layer.
+   * Check the :guilabel:`Default` checkbox for ``tutorial:countries`` to use the ``tutorial:background`` style the default for this layer.
       
    .. figure:: images/publish.png
       

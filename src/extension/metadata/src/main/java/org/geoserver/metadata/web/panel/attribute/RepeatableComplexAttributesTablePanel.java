@@ -12,7 +12,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
@@ -35,6 +34,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
+// TODO WICKET8 - Verify this page works OK
 public class RepeatableComplexAttributesTablePanel extends Panel {
     private static final long serialVersionUID = 1297739738862860160L;
 
@@ -87,7 +87,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                     private static final long serialVersionUID = 6840006565079316081L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         dataProvider.addField();
                         updateTable();
                         ((MarkupContainer) tablePanel.get("listContainer").get("items"))
@@ -108,7 +108,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                     private static final long serialVersionUID = 6840006565079316081L;
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         dialog.setInitialHeight(generator.getDialogContentHeight());
                         dialog.showOkCancel(
                                 target,
@@ -234,8 +234,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                                                     -8829474855848647384L;
 
                                             @Override
-                                            public void onSubmit(
-                                                    AjaxRequestTarget target, Form<?> form) {
+                                            public void onSubmit(AjaxRequestTarget target) {
                                                 removeFields(target, itemModel);
                                                 updateTable();
                                                 container.removeAll();

@@ -8,6 +8,8 @@ package org.geoserver.security.web.auth;
 import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
@@ -61,6 +63,16 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
         // show correct panel for existing configuration
         RoleSource rs = model.getObject().getRoleSource();
         addRoleSourceDropDown(container, rs);
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        // Content-Security-Policy: inline styles must be nonce=...
+        String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
+        response.render(
+                CssHeaderItem.forCSS(
+                        css,
+                        "org-geoserver-security-web-auth-PreAuthenticatedUserNameFilterPanel"));
     }
 
     protected Panel getRoleSourcePanel(RoleSource model) {

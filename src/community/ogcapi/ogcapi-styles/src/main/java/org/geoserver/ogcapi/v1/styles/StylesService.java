@@ -151,6 +151,12 @@ public class StylesService {
         return geoServer.getService(StylesServiceInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public StylesServiceInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")

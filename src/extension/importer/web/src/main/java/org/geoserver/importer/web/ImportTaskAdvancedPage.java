@@ -40,6 +40,7 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CRSPanel;
 
+// TODO WICKET8 - Verify this page works OK
 public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
     CheckBox reprojectCheckBox;
@@ -82,7 +83,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         form.add(
                 new AjaxSubmitLink("save") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         ImportTask task = model.getObject();
                         TransformChain<? extends ImportTransform> txChain = task.getTransform();
 
@@ -207,8 +208,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                             item.add(
                                     new AjaxButton("apply") {
                                         @Override
-                                        protected void onSubmit(
-                                                AjaxRequestTarget target, Form<?> form) {
+                                        protected void onSubmit(AjaxRequestTarget target) {
                                             attChoice.processInput();
                                             typeChoice.processInput();
                                             dateFormatTextField.processInput();
@@ -242,8 +242,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                             item.add(
                                     new AjaxButton("cancel") {
                                         @Override
-                                        protected void onSubmit(
-                                                AjaxRequestTarget target, Form<?> form) {
+                                        protected void onSubmit(AjaxRequestTarget target) {
                                             remaps.remove(item.getModelObject());
                                             target.add(remapContainer);
                                         }

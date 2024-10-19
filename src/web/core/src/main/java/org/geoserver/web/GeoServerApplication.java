@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -26,6 +27,8 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.csp.CSPDirective;
+import org.apache.wicket.csp.CSPDirectiveSrcValue;
 import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
@@ -36,16 +39,13 @@ import org.apache.wicket.request.IRequestHandlerDelegate;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.component.IRequestablePage;
-import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
-import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.settings.RequestCycleSettings.RenderStrategy;
-import org.apache.wicket.util.IProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ValidationException;
 import org.geoserver.config.GeoServer;
@@ -79,6 +79,7 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
  */
+// TODO WICKET8 - Verify this page works OK
 public class GeoServerApplication extends WebApplication
         implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 
@@ -93,9 +94,17 @@ public class GeoServerApplication extends WebApplication
     public static boolean DETECT_BROWSER =
             Boolean.valueOf(System.getProperty("org.geoserver.web.browser.detect", "true"));
 
+    /**
+     * System property that can be used to enable strict CSP restrictions - simulating wicket10
+     * environment.
+     *
+     * <p>Sample use: {@code org.geoserver.web.csp.strict=true}
+     */
+    public static boolean CSP_STRICT =
+            Boolean.valueOf(System.getProperty("org.geoserver.web.csp.strict", "false"));
+
     public static final String GEOSERVER_CSRF_DISABLED = "GEOSERVER_CSRF_DISABLED";
     public static final String GEOSERVER_CSRF_WHITELIST = "GEOSERVER_CSRF_WHITELIST";
-    public static final String JQUERY_VERSION_3 = "jquery/jquery-3.5.1.js";
     ApplicationContext applicationContext;
 
     /**
@@ -216,12 +225,44 @@ public class GeoServerApplication extends WebApplication
     }
 
     /** Initialization override which sets up a locator for i18n resources. */
+    @SuppressWarnings("deprecation")
     @Override
     protected void init() {
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
-
+        if (CSP_STRICT) {
+            getCspSettings()
+                    .blocking()
+                    .clear()
+                    .add(
+                            CSPDirective.SCRIPT_SRC,
+                            CSPDirectiveSrcValue.STRICT_DYNAMIC,
+                            CSPDirectiveSrcValue.NONCE)
+                    .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
+                    .add(CSPDirective.IMG_SRC, "'self'", "data:")
+                    .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
+        } else {
+            // More relaxed configuration: report only
+            getCspSettings()
+                    .reporting()
+                    .clear()
+                    .add(
+                            CSPDirective.SCRIPT_SRC,
+                            CSPDirectiveSrcValue.STRICT_DYNAMIC,
+                            CSPDirectiveSrcValue.NONCE)
+                    .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
+                    .add(CSPDirective.IMG_SRC, "'self'", "data:")
+                    .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
+                    .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
+        }
         /*
          * The order string resource loaders are added to IResourceSettings is of importance so we need to add any contributed loader prior to the
          * standard ones so it takes precedence. Otherwise it won't be hit due to GeoServerStringResourceLoader never resolving to null but falling
@@ -238,10 +279,7 @@ public class GeoServerApplication extends WebApplication
                 .getStringResourceLoaders()
                 .add(0, new GeoServerStringResourceLoader());
         getDebugSettings().setAjaxDebugModeEnabled(false);
-        getJavaScriptLibrarySettings()
-                .setJQueryReference(
-                        new JavaScriptResourceReference(
-                                JQueryResourceReference.class, JQUERY_VERSION_3));
+        getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.INSTANCE_3);
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
         // generates infinite redirections, commented out for the moment
         // getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
@@ -300,8 +338,7 @@ public class GeoServerApplication extends WebApplication
     }
 
     @Override
-    public IProvider<IExceptionMapper> getExceptionMapperProvider() {
-        // IProvider is functional, remove a bit of boilerplate
+    public Supplier<IExceptionMapper> getExceptionMapperProvider() {
         return () ->
                 new DefaultExceptionMapper() {
                     @Override
@@ -411,7 +448,7 @@ public class GeoServerApplication extends WebApplication
     //
     // }
 
-    static class CallbackRequestCycleListener extends AbstractRequestCycleListener {
+    static class CallbackRequestCycleListener implements IRequestCycleListener {
         private List<WicketCallback> callbacks;
 
         public CallbackRequestCycleListener(GeoServerApplication app) {

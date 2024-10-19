@@ -72,9 +72,6 @@ public class DropDownPanel extends Panel {
                             public void setObject(List<String> object) {
                                 throw new UnsupportedOperationException();
                             }
-
-                            @Override
-                            public void detach() {}
                         },
                         createRenderer(attributeKey));
         choice.add(

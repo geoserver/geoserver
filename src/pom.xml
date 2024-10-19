@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.26-SNAPSHOT</version>
+  <version>2.27-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer</name>
   <inceptionYear>2006</inceptionYear>
@@ -88,23 +88,23 @@
   </distributionManagement>
 
   <properties>
-    <gs.version>2.26-SNAPSHOT</gs.version>
-    <gt.version>32-SNAPSHOT</gt.version>
-    <gwc.version>1.26-SNAPSHOT</gwc.version>
+    <gs.version>2.27-SNAPSHOT</gs.version>
+    <gt.version>33-SNAPSHOT</gt.version>
+    <gwc.version>1.27-SNAPSHOT</gwc.version>
     <jts.version>1.20.0</jts.version>
     <spring.version>5.3.39</spring.version>
     <spring.security.version>5.8.14</spring.security.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <servlet-api.version>3.1.0</servlet-api.version>
-    <jetty.version>9.4.52.v20230823</jetty.version>
+    <jetty.version>9.4.55.v20240627</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
     <poi.version>5.2.5</poi.version>
-    <wicket.version>7.18.0</wicket.version>
+    <wicket.version>9.18.0</wicket.version>
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.14</httpclient.version>
-    <imageio-ext.version>1.4.12</imageio-ext.version>
-    <jaiext.version>1.1.26</jaiext.version>
+    <imageio-ext.version>1.4.13</imageio-ext.version>
+    <jaiext.version>1.1.27</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -489,7 +489,12 @@
       </dependency>
       <dependency>
         <groupId>org.geotools</groupId>
-        <artifactId>gt-cql-json</artifactId>
+        <artifactId>gt-cql2-text</artifactId>
+        <version>${gt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-cql2-json</artifactId>
         <version>${gt.version}</version>
       </dependency>
       <dependency>
@@ -926,7 +931,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.0</version>
+        <version>2.9.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -966,6 +971,11 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient-cache</artifactId>
         <version>${httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.10.1</version>
       </dependency>
 
       <!-- logging dependencies -->
@@ -1806,6 +1816,13 @@
       <!-- unit testing -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit4</artifactId>
+            <version>2.22.2</version>
+          </dependency>
+        </dependencies>
         <configuration>
           <runOrder>alphabetical</runOrder>
           <includes>
@@ -2049,7 +2066,7 @@
             <link>http://docs.geotools.org/latest/javadocs/</link>
             <link>http://xmlgraphics.apache.org/batik/javadoc</link>
             <link>http://freemarker.sourceforge.net/docs/api/</link>
-            <link>https://ci.apache.org/projects/wicket/apidocs/7.x/</link>
+            <link>https://ci.apache.org/projects/wicket/apidocs/9.x/</link>
           </links>
         </configuration>
       </plugin>
@@ -2188,7 +2205,7 @@
             <link>http://docs.geotools.org/latest/javadocs/</link>
             <link>http://xmlgraphics.apache.org/batik/javadoc</link>
             <link>http://freemarker.sourceforge.net/docs/api/</link>
-            <link>https://ci.apache.org/projects/wicket/apidocs/7.x/</link>
+            <link>https://ci.apache.org/projects/wicket/apidocs/9.x/</link>
           </links>
         </configuration>
       </plugin>

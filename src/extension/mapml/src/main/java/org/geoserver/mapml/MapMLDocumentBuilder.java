@@ -11,6 +11,7 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_REMOTE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLHTMLOutput.PREVIEW_TCRS_MAP;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
@@ -54,7 +55,10 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.GeoServer;
@@ -181,13 +185,6 @@ public class MapMLDocumentBuilder {
 
     private Boolean isMultiExtent = MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
     private MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
-
-    static {
-        PREVIEW_TCRS_MAP.put("OSMTILE", new TiledCRS("OSMTILE"));
-        PREVIEW_TCRS_MAP.put("CBMTILE", new TiledCRS("CBMTILE"));
-        PREVIEW_TCRS_MAP.put("APSTILE", new TiledCRS("APSTILE"));
-        PREVIEW_TCRS_MAP.put("WGS84", new TiledCRS("WGS84"));
-    }
 
     /**
      * Constructor
@@ -606,6 +603,7 @@ public class MapMLDocumentBuilder {
                                         .getGridSubset(projType.value())
                                 != null;
         boolean useTiles = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_TILES, Boolean.class));
+        boolean useRemote = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_REMOTE, Boolean.class));
         boolean useFeatures = useFeatures(layer, layerMeta);
 
         return new MapMLLayerMetadata(
@@ -623,6 +621,7 @@ public class MapMLDocumentBuilder {
                 styleName,
                 tileLayerExists,
                 useTiles,
+                useRemote,
                 useFeatures,
                 cqlFilter,
                 defaultMimeType);
@@ -1335,15 +1334,10 @@ public class MapMLDocumentBuilder {
         setElevationParam(mapMLLayerMetadata, params, gstl);
         setCustomDimensionParam(mapMLLayerMetadata, params, gstl);
         setCqlFilterParam(mapMLLayerMetadata, params);
-        String urlTemplate = "";
-        try {
-            urlTemplate =
-                    URLDecoder.decode(
-                            ResponseUtils.buildURL(
-                                    baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
-                            "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-        }
+        MapMLURLBuilder mangler =
+                new MapMLURLBuilder(
+                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+        String urlTemplate = mangler.getUrlTemplate();
         tileLink.setTref(urlTemplate);
         extentList.add(tileLink);
     }
@@ -1473,15 +1467,10 @@ public class MapMLDocumentBuilder {
         params.put("transparent", Boolean.toString(mapMLLayerMetadata.isTransparent()));
         params.put("width", "256");
         params.put("height", "256");
-        String urlTemplate = "";
-        try {
-            urlTemplate =
-                    URLDecoder.decode(
-                            ResponseUtils.buildURL(
-                                    baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
-                            "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-        }
+        MapMLURLBuilder mangler =
+                new MapMLURLBuilder(
+                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+        String urlTemplate = mangler.getUrlTemplate();
         tileLink.setTref(urlTemplate);
         extentList.add(tileLink);
     }
@@ -1611,15 +1600,10 @@ public class MapMLDocumentBuilder {
         params.put("language", this.request.getLocale().getLanguage());
         params.put("width", "{w}");
         params.put("height", "{h}");
-        String urlTemplate = "";
-        try {
-            urlTemplate =
-                    URLDecoder.decode(
-                            ResponseUtils.buildURL(
-                                    baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
-                            "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-        }
+        MapMLURLBuilder mangler =
+                new MapMLURLBuilder(
+                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+        String urlTemplate = mangler.getUrlTemplate();
         imageLink.setTref(urlTemplate);
         extentList.add(imageLink);
     }
@@ -1660,21 +1644,6 @@ public class MapMLDocumentBuilder {
      * Generate inputs and links that the client will use to generate WMTS GetFeatureInfo requests
      */
     private void generateWMTSQueryClientLinks(MapMLLayerMetadata mapMLLayerMetadata) {
-        // query i value (x)
-        Input input = new Input();
-        input.setName("i");
-        input.setType(InputType.LOCATION);
-        input.setUnits(UnitType.TILE);
-        input.setAxis(AxisType.I);
-        extentList.add(input);
-
-        // query j value (y)
-        input = new Input();
-        input.setName("j");
-        input.setType(InputType.LOCATION);
-        input.setUnits(UnitType.TILE);
-        input.setAxis(AxisType.J);
-        extentList.add(input);
 
         // query link
         Link queryLink = new Link();
@@ -1695,17 +1664,33 @@ public class MapMLDocumentBuilder {
         params.put("infoformat", "text/mapml");
         params.put("i", "{i}");
         params.put("j", "{j}");
-        String urlTemplate = "";
-        try {
-            urlTemplate =
-                    URLDecoder.decode(
-                            ResponseUtils.buildURL(
-                                    baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
-                            "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
+        MapMLURLBuilder mangler =
+                new MapMLURLBuilder(
+                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+        String urlTemplate = mangler.getUrlTemplate();
+        // It may be that the mangler decided to not generate any query URL due
+        // to unsupported info formats from the remote layer. So we are not
+        // generating the query link.
+        if (urlTemplate != null) {
+            // query i value (x)
+            Input input = new Input();
+            input.setName("i");
+            input.setType(InputType.LOCATION);
+            input.setUnits(UnitType.TILE);
+            input.setAxis(AxisType.I);
+            extentList.add(input);
+
+            // query j value (y)
+            input = new Input();
+            input.setName("j");
+            input.setType(InputType.LOCATION);
+            input.setUnits(UnitType.TILE);
+            input.setAxis(AxisType.J);
+            extentList.add(input);
+
+            queryLink.setTref(urlTemplate);
+            extentList.add(queryLink);
         }
-        queryLink.setTref(urlTemplate);
-        extentList.add(queryLink);
     }
 
     /** Generate inputs and links the client will use to create WMS GetFeatureInfo requests */
@@ -1714,21 +1699,6 @@ public class MapMLDocumentBuilder {
         if (mapMLLayerMetadata.isUseTiles()) {
             units = UnitType.TILE;
         }
-        // query i value (x)
-        Input input = new Input();
-        input.setName("i");
-        input.setType(InputType.LOCATION);
-        input.setUnits(units);
-        input.setAxis(AxisType.I);
-        extentList.add(input);
-
-        // query j value (y)
-        input = new Input();
-        input.setName("j");
-        input.setType(InputType.LOCATION);
-        input.setUnits(units);
-        input.setAxis(AxisType.J);
-        extentList.add(input);
 
         // query link
         Link queryLink = new Link();
@@ -1744,7 +1714,7 @@ public class MapMLDocumentBuilder {
         params.put("layers", mapMLLayerMetadata.getLayerName());
         params.put("query_layers", mapMLLayerMetadata.getLayerName());
         params.put("styles", mapMLLayerMetadata.getStyleName());
-        if (mapMLLayerMetadata.getCqlFilter() != null) {
+        if (StringUtils.isNotBlank(mapMLLayerMetadata.getCqlFilter())) {
             params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         }
         setTimeParam(mapMLLayerMetadata, params, null);
@@ -1764,17 +1734,33 @@ public class MapMLDocumentBuilder {
         params.put("transparent", Boolean.toString(mapMLLayerMetadata.isTransparent()));
         params.put("x", "{i}");
         params.put("y", "{j}");
-        String urlTemplate = "";
-        try {
-            urlTemplate =
-                    URLDecoder.decode(
-                            ResponseUtils.buildURL(
-                                    baseUrlPattern, path, params, URLMangler.URLType.SERVICE),
-                            "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
+        MapMLURLBuilder mangler =
+                new MapMLURLBuilder(
+                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+        String urlTemplate = mangler.getUrlTemplate();
+        // It may be that the mangler decided to not generate any query URL due
+        // to unsupported info formats from the remote layer. So we are not
+        // generating the query link.
+        if (urlTemplate != null) {
+            // query i value (x)
+            Input input = new Input();
+            input.setName("i");
+            input.setType(InputType.LOCATION);
+            input.setUnits(units);
+            input.setAxis(AxisType.I);
+            extentList.add(input);
+
+            // query j value (y)
+            input = new Input();
+            input.setName("j");
+            input.setType(InputType.LOCATION);
+            input.setUnits(units);
+            input.setAxis(AxisType.J);
+            extentList.add(input);
+
+            queryLink.setTref(urlTemplate);
+            extentList.add(queryLink);
         }
-        queryLink.setTref(urlTemplate);
-        extentList.add(queryLink);
     }
 
     private void setCqlFilterParam(
@@ -2333,6 +2319,7 @@ public class MapMLDocumentBuilder {
         private boolean tileLayerExists;
 
         private boolean useTiles;
+        private boolean useRemote;
 
         private boolean timeEnabled;
         private boolean elevationEnabled;
@@ -2395,6 +2382,7 @@ public class MapMLDocumentBuilder {
                 String styleName,
                 boolean tileLayerExists,
                 boolean useTiles,
+                boolean useRemote,
                 boolean useFeatures,
                 String cqFilter,
                 String defaultMimeType) {
@@ -2412,6 +2400,7 @@ public class MapMLDocumentBuilder {
             this.isTransparent = isTransparent;
             this.tileLayerExists = tileLayerExists;
             this.useTiles = useTiles;
+            this.useRemote = useRemote;
             this.useFeatures = useFeatures;
             this.cqlFilter = cqFilter;
             this.defaultMimeType = defaultMimeType;
@@ -2739,6 +2728,24 @@ public class MapMLDocumentBuilder {
         }
 
         /**
+         * get if the layer uses remote
+         *
+         * @return boolean
+         */
+        public boolean isUseRemote() {
+            return useRemote;
+        }
+
+        /**
+         * set if the layer uses remote
+         *
+         * @param useRemote boolean
+         */
+        public void setUseRemote(boolean useRemote) {
+            this.useRemote = useRemote;
+        }
+
+        /**
          * get the ReferencedEnvelope object
          *
          * @return ReferencedEnvelope
@@ -2809,5 +2816,16 @@ public class MapMLDocumentBuilder {
         public void setDefaultMimeType(String defaultMimeType) {
             this.defaultMimeType = defaultMimeType;
         }
+    }
+
+    public static boolean isWMSOrWMTSStore(LayerInfo layerInfo) {
+        if (layerInfo != null) {
+            ResourceInfo resourceInfo = layerInfo.getResource();
+            if (resourceInfo != null) {
+                StoreInfo storeInfo = resourceInfo.getStore();
+                return storeInfo instanceof WMSStoreInfo || storeInfo instanceof WMTSStoreInfo;
+            }
+        }
+        return false;
     }
 }

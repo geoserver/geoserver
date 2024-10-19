@@ -138,10 +138,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
 
-        assertMaxFeaturesInData(
-                (DataView<Component>)
-                        tester.getComponentFromLastRenderedPage("table:listContainer:items"),
-                maxFeatures);
+        assertMaxFeaturesInData(tester.getLastResponseAsString(), maxFeatures);
 
         maxFeatures = 0;
         wfsInfo.setMaxNumberOfFeaturesForPreview(maxFeatures);
@@ -150,10 +147,21 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
 
-        assertMaxFeaturesInData(
-                (DataView<Component>)
-                        tester.getComponentFromLastRenderedPage("table:listContainer:items"),
-                maxFeatures);
+        assertMaxFeaturesInData(tester.getLastResponseAsString(), maxFeatures);
+    }
+
+    /**
+     * Max features is handled by a Javascript building the URLs client, so we need to check its
+     * code to make sure the maxFeatures parameter is being set correctly.
+     */
+    private void assertMaxFeaturesInData(String html, int maxFeatures) {
+        String PREFIX = "var maxFeature = '";
+        String END = "';";
+        if (maxFeatures > 0) {
+            assertThat(html, containsString(PREFIX + "&maxFeatures=" + maxFeatures + END));
+        } else {
+            assertThat(html, containsString(PREFIX + END));
+        }
     }
 
     @Test
@@ -173,24 +181,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                 assertFalse(url.contains("gml+xml"));
                 assertTrue(url.contains("gml%2Bxml"));
                 break;
-            }
-        }
-    }
-
-    private void assertMaxFeaturesInData(DataView<Component> data, int maxFeatures) {
-        for (org.apache.wicket.Component datum : data) {
-            MarkupContainer c = (MarkupContainer) datum;
-            MarkupContainer list = (MarkupContainer) c.get("itemProperties:4:component:menu");
-            for (Behavior b : list.getBehaviors()) {
-                if (b instanceof AttributeModifier) {
-                    AttributeModifier am = (AttributeModifier) b;
-                    String url = am.toString();
-                    if (maxFeatures > 0) {
-                        assertTrue(url.contains("&maxFeatures=" + maxFeatures));
-                    } else {
-                        assertFalse(url.contains("&maxFeatures="));
-                    }
-                }
             }
         }
     }
@@ -275,13 +265,12 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             html,
                             "wicketPath",
                             path.replace(":", "_") + "_itemProperties_4_component_menu");
-            String onchange = menuTester.getAttribute("onchange");
             assertThat(
-                    onchange,
+                    menuTester.getAttribute("wmsLink"),
                     containsString(
-                            "http://localhost/context/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3ALakes%20%2B%20a%20plus&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format="));
+                            "http://localhost/context/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3ALakes%20%2B%20a%20plus&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles="));
             assertThat(
-                    onchange,
+                    menuTester.getAttribute("wfsLink"),
                     containsString(
                             "http://localhost/context/cite/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cite%3ALakes%20%2B%20a%20plus"));
         } finally {

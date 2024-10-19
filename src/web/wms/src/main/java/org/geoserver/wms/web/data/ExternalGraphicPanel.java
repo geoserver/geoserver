@@ -58,6 +58,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
 /** Allows setting the data for using an ExternalImage */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
     private static final long serialVersionUID = 5098470683723890874L;
@@ -171,7 +172,7 @@ public class ExternalGraphicPanel extends Panel {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         updateVisibility(true);
                         target.add(ExternalGraphicPanel.this);
                     }
@@ -184,7 +185,7 @@ public class ExternalGraphicPanel extends Panel {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         onlineResource.setModelObject("");
                         onlineResource.clearInput();
                         format.setModelObject("");

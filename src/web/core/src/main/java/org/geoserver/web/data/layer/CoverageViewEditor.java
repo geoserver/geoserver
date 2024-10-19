@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
@@ -31,7 +30,11 @@ import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageView.SelectedResolution;
 
-/** */
+/**
+ * A panel for editing a coverage view.
+ *
+ * <p>It allows to select the input coverages and the output bands.
+ */
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     IModel<List<String>> coverages;
@@ -161,7 +164,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 new AjaxButton("addBand") {
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         List<String> selection = (List<String>) coveragesChoice.getModelObject();
                         compositionType = compositionChoice.getModelObject();
                         List<CoverageBand> bandsList = new ArrayList<>();
@@ -202,7 +205,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 new AjaxButton("removeAllBands") {
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         List<CoverageBand> outputBands =
                                 (List<CoverageBand>) outputBandsChoice.getModelObject();
                         outputBands.clear();
@@ -222,7 +225,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 new AjaxButton("removeBands") {
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    public void onSubmit(AjaxRequestTarget target) {
 
                         List<CoverageBand> removedBands =
                                 (List<CoverageBand>) outputBandsChoice.getModel().getObject();

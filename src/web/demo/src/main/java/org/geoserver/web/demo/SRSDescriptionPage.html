@@ -45,51 +45,8 @@
         </li>
         <li wicket:id="areaOfValidityMap">
           <div>
-            <img id="aovMap" wicket:id="aovMap" style="display:none;"/>
-            <div id="aovMapContainer" style="width:512px; height:256px;background-color:white;"></div>
-        <script>
-            var map = null;
-            
-            function initMap(srs, units, bbox, resolution){
-                var format = 'image/png';
-
-                var projection = new ol.proj.Projection({
-                    code: srs,
-                    units: units,
-                    axisOrientation: 'neu',
-                });
-
-                // setup single tiled layer
-                var untiled = new ol.layer.Image({
-                    title: 'CRS Area Of Validity',
-                    source: new ol.source.ImageWMS({
-                      url: document.getElementById("aovMap").src,
-                      params: {LAYERS: '', VERSION: '1.1.1', FORMAT: format}
-                    })
-                });
-
-                map = new ol.Map({
-                    target: 'aovMapContainer',
-                    layers: [untiled],
-                    controls: ol.control.defaults({attribution: false}).extend([
-                        new ol.control.MousePosition({
-                            coordinateFormat: ol.coordinate.createStringXY(4),
-                            projection: projection,
-                            undefinedHTML: '&nbsp;'
-                        })
-                    ]),
-                    view: new ol.View({
-                      center: [0, 0],
-                      zoom: 2,
-                      extent: bbox,
-                      projection: projection,
-                      maxResolution: resolution
-                    })
-                });
-
-                map.getView().fit(bbox,map.getSize());
-            }
-        </script>
+            <img id="aovMap" wicket:id="aovMap" class="hidden"></img>
+            <div id="aovMapContainer" class="srs-demo-map-container"></div>
           </div>
         </li>
       </ul>

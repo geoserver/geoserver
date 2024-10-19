@@ -222,12 +222,6 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             return new IModel<List<Double>>() {
 
                                 @Override
-                                public void detach() {
-                                    // TODO Auto-generated method stub
-
-                                }
-
-                                @Override
                                 public List<Double> getObject() {
                                     return item.getNullValues();
                                 }
@@ -247,11 +241,6 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         @Override
                         public Object getPropertyValue(final CoverageDimensionInfo item) {
                             return new IModel<Double>() {
-
-                                @Override
-                                public void detach() {
-                                    // nothing to do
-                                }
 
                                 @Override
                                 public Double getObject() {
@@ -281,11 +270,6 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         @Override
                         public Object getPropertyValue(final CoverageDimensionInfo item) {
                             return new IModel<Double>() {
-
-                                @Override
-                                public void detach() {
-                                    // nothing to do
-                                }
 
                                 @Override
                                 public Double getObject() {

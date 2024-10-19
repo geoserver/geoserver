@@ -76,21 +76,53 @@
         <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
     </bean>
 
-    <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader" lazy-init="true" init-method="init">
-	<constructor-arg ref="geofenceConfigurationManager" />
-        <property name="realRuleReaderService" ref="${ruleReaderBackend}"/>
+    <bean id="defaultContainerAccessResolver" class="org.geoserver.geofence.containers.DefaultContainerAccessResolver">
+        <property name="ruleReaderService" ref="${ruleReaderFrontend}" />
+    </bean>
+
+    <bean id="containerAccessCacheLoaderFactory" class="org.geoserver.geofence.containers.ContainerAccessCacheLoaderFactory">
+        <constructor-arg ref="defaultContainerAccessResolver"/>
+    </bean>
+
+    <bean id="geofenceCacheManager" class="org.geoserver.geofence.cache.CacheManager" >
+        <constructor-arg index="0" ref="geofenceConfigurationManager"/>
+        
+        <property name="ruleServiceLoaderFactory">
+            <bean class="org.geoserver.geofence.cache.RuleCacheLoaderFactory">
+                <constructor-arg ref="${ruleReaderBackend}"/>
+            </bean>
+        </property>
+        <property name="containerAccessCacheLoaderFactory" ref="containerAccessCacheLoaderFactory"/>
+    </bean>
+
+    <bean id="cachedRuleReader" class="org.geoserver.geofence.cache.CachedRuleReader">
+	<!--<constructor-arg ref="geofenceCacheManager" />-->
+        <property name="cacheManager" ref="geofenceCacheManager"/>
     </bean>
 
     <bean id="geofenceRuleAccessManager" class="org.geoserver.geofence.GeofenceAccessManager">
             <constructor-arg index="0" ref="${ruleReaderFrontend}" />
             <constructor-arg index="1" ref="rawCatalog" />
             <constructor-arg index="2" ref="geofenceConfigurationManager" />
-            <constructor-arg index="3" ref="geoFenceWpsHelper" />
+            <constructor-arg index="3" >
+                <!-- Resolver without cache --> 
+                <!-- We may want to use the DefaultContainerAccessResolver instead of the cached one for testing purposes -->
+                <!--                
+                <bean class="org.geoserver.geofence.containers.DefaultContainerAccessResolver">
+                    <constructor-arg ref="${ruleReaderFrontend}"/>
+                </bean>-->                
+                <!-- Resolver with cache -->
+                <bean class="org.geoserver.geofence.containers.CachedContainerAccessResolver">
+                    <constructor-arg ref="geofenceCacheManager"/>
+                </bean>                                
+            </constructor-arg>
+            <constructor-arg index="4" ref="geoFenceWpsHelper" />
+            
             <property name="groupsCache" ref="layerGroupContainmentCache"/>
     </bean>
 
     <bean id="geofenceConfigurationController" class="org.geoserver.geofence.config.GeoFenceConfigurationController">
-        <property name="cachedRuleReader" ref="cachedRuleReader"/>
+        <property name="cacheManager" ref="geofenceCacheManager"/>
         <property name="configurationManager" ref="geofenceConfigurationManager"/>
     </bean>
 

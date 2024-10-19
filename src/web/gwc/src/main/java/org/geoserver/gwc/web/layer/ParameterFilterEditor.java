@@ -55,6 +55,7 @@ import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 
+// TODO WICKET8 - Verify this page works OK
 class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
     private static final Logger LOGGER = Logging.getLogger(ParameterFilterEditor.class);
@@ -213,8 +214,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                                     private static final long serialVersionUID = 1L;
 
                                     @Override
-                                    protected void onSubmit(
-                                            AjaxRequestTarget target, Form<?> form) {
+                                    protected void onSubmit(AjaxRequestTarget target) {
                                         getList().remove(getDefaultModelObject());
                                         target.add(container);
                                     }

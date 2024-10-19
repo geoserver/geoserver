@@ -1,34 +1,5 @@
 <html xmlns:wicket="http://wicket.apache.org/">
-<wicket:head>
- <script defer="defer" type="text/javascript">
-     // reference https://www.foolishdeveloper.com/2021/12/save-textarea-text-to-file.html
-     function downloadFile(filename) {
-          // It works on all HTML5 Ready browsers as it uses the download attribute of the <a> element:
-          const element = document.createElement('a');
-
-          //A blob is a data type that can store binary data
-          // "type" is a MIME type
-          // It can have a different value, based on a file you want to save
-          const dumpContent = document.getElementById("dumpContent").value;
-          const blob = new Blob([dumpContent], { type: 'plain/text' });
-
-          //createObjectURL() static method creates a DOMString containing a URL representing the object given in the parameter.
-          const fileUrl = URL.createObjectURL(blob);
-
-          //setAttribute() Sets the value of an attribute on the specified element.
-          element.setAttribute('href', fileUrl); //file location
-          element.setAttribute('download', filename); // file name
-          element.style.display = 'none';
-
-          //use appendChild() method to move an element from one element to another
-          document.body.appendChild(element);
-          element.click();
-
-          //The removeChild() method of the Node interface removes a child node from the DOM and returns the removed node
-          document.body.removeChild(element);
-        };
- </script>
-</wicket:head>
+<wicket:head></wicket:head>
 <body>
 <wicket:panel>
     <div class="w-95">
@@ -38,7 +9,7 @@
         </div>
 
         <div><textarea id="dumpContent" readonly="readonly" class="w-100 h-50-em text-small" wicket:id="dumpContent"></textarea></div>
-        <a onclick="downloadFile('dump.log')"><wicket:message key="download">download as dump text</wicket:message></a>
+        <a href="#" id="downloadlink" wicket:id="downloadlink"><wicket:message key="download">download as dump text</wicket:message></a>
     </div>
 </wicket:panel>
 </body>

@@ -16,7 +16,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -32,6 +31,7 @@ import org.geoserver.taskmanager.web.panel.MultiLabelCheckBoxPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -71,7 +71,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialHeight(150);
-        ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
+        ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(
                 new AjaxLink<Object>("addNew") {

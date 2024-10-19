@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geootols.dggs.clickhouse.ClickHouseDGGSDataStore;
-import org.geootols.dggs.clickhouse.ClickHouseDGGStoreFactory;
 import org.geotools.dggs.DGGSFactoryFinder;
 import org.geotools.test.OnlineTestCase;
 import org.geotools.util.logging.Logging;
@@ -34,6 +32,14 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
 
     @Override
     protected void connect() throws Exception {
+        this.dataStore = getDataStore();
+        setupTestData(dataStore);
+    }
+
+    /** Subclasses should override this to create the test data. */
+    protected abstract void setupTestData(ClickHouseDGGSDataStore dataStore) throws Exception;
+
+    protected ClickHouseDGGSDataStore getDataStore() throws Exception {
         String dggsId = getDGGSId();
         if (!DGGSFactoryFinder.getFactory(dggsId).isPresent()) {
             throw new Exception(dggsId + " is not present, skipping the test");
@@ -42,7 +48,7 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
         ClickHouseDGGStoreFactory factory = new ClickHouseDGGStoreFactory();
         @SuppressWarnings("unchecked")
         Map<String, ?> params = (Map) fixture;
-        this.dataStore = (ClickHouseDGGSDataStore) factory.createDataStore(params);
+        return (ClickHouseDGGSDataStore) factory.createDataStore(params);
     }
 
     @Override
@@ -64,7 +70,7 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
     @Override
     protected Properties createExampleFixture() {
         Properties fixture = new Properties();
-        fixture.put("driver", "ru.yandex.clickhouse.ClickHouseDriver");
+        fixture.put("driver", ClickHouseJDBCDataStoreFactory.DRIVER_CLASSNAME);
         fixture.put("url", "jdbc:clickhouse://localhost:8123/test");
         fixture.put("host", "localhost");
         fixture.put("database", "test");

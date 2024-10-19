@@ -179,9 +179,6 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
             }
             parent.getCatalog().save(layer);
         }
-
-        @Override
-        public void detach() {}
     }
 
     private class AssociatedStyleModel implements IModel<Boolean> {
@@ -215,8 +212,5 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
             }
             parent.getCatalog().save(layer);
         }
-
-        @Override
-        public void detach() {}
     }
 }

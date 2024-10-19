@@ -36,3 +36,13 @@ To install these modules:
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
 #. On restart the services are listed at http://localhost:8080/geoserver
+
+The DGGS datastore can read data from a ClickHouse database. In case you want to use JNDI along
+with Tomcat, here is a sample data source declaration for the ``etc/context.xml`` file:
+
+.. code-block:: xml
+    
+   <Resource name="jdbc/clickhouse" auth="Container" type="javax.sql.DataSource"
+               maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+               username="myUser" password="myPassword" driverClassName="ru.yandex.clickhouse.ClickHouseDriver"
+               url="jdbc:clickhouse://localhost:8123/theDatabase?http_connection_provider=HTTP_CLIENT"/>

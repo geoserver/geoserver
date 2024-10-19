@@ -8,7 +8,7 @@
        <form wicket:id="filtersForm">
 	      <fieldset wicket:id="parameterFilters">
 	        <legend><label wicket:id="key">Key</label></legend>
-	        <div style="position:absolute; right:0; text-align:right;">
+	        <div class="gwc-remove-link">
 	        <a href="#" wicket:id="removeLink"><span wicket:id="removeIcon" /></a></div>
 	        <div wicket:id="subform">Filter Specific Details</div>
 	      </fieldset>
@@ -19,7 +19,7 @@
    <div>
    Add filter
     <input type="text" wicket:id="newFilterKey" list="commonKeys"/>
-    <datalist id="commonKeys" style="display:none;">
+    <datalist id="commonKeys" class="hidden">
       <option wicket:id="commonKeys">KEY</option>
     </datalist>
     <select class="select" wicket:id="availableFilterTypes"></select>

@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.web.auth;
 
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
@@ -22,5 +24,13 @@ public class HeaderAuthFilterPanel
         super(id, model);
 
         add(new TextField("principalHeaderAttribute").setRequired(true));
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        // Content-Security-Policy: inline styles must be nonce=...
+        String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
+        response.render(
+                CssHeaderItem.forCSS(css, "org-geoserver-security-web-auth-HeaderAuthFilterPanel"));
     }
 }

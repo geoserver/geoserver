@@ -16,7 +16,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -40,6 +39,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author mcr
  */
+// TODO WICKET8 - Verify this page works OK
 public class AuthenticationKeyFilterPanel
         extends AuthenticationFilterPanel<AuthenticationKeyFilterConfig> {
 
@@ -98,7 +98,7 @@ public class AuthenticationKeyFilterPanel
         add(
                 new AjaxSubmitLink("synchronize") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             // AuthenticationKeyFilterPanel.this.updateModel();
                             AuthenticationKeyFilterConfig config =

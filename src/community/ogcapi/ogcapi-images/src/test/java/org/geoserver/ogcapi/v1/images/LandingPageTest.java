@@ -11,12 +11,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LandingPageTest extends ImagesTestSupport {
 
@@ -152,5 +154,21 @@ public class LandingPageTest extends ImagesTestSupport {
         assertEquals("Testbed Experiments", json.read("title"));
         // check description
         assertTrue(((String) json.read("description")).contains("OGCAPI Testbed"));
+    }
+
+    @Test
+    public void testDisabledService() throws Exception {
+        GeoServer gs = getGeoServer();
+        ImagesServiceInfo service = gs.getService(ImagesServiceInfo.class);
+        service.setEnabled(false);
+        gs.save(service);
+        try {
+            MockHttpServletResponse httpServletResponse =
+                    getAsMockHttpServletResponse("ogc/images/v1", 404);
+            assertEquals("Service Images is disabled", httpServletResponse.getErrorMessage());
+        } finally {
+            service.setEnabled(true);
+            gs.save(service);
+        }
     }
 }

@@ -50,6 +50,9 @@ public class OWS20Exception extends ServiceException {
                 new OWSExceptionCode(
                         "InvalidCoverageType", 404, "Coverage addressed is not a grid coverage");
 
+        public static final OWSExceptionCode ServiceUnavailable =
+                new OWSExceptionCode("ServiceUnavailable", 503, "Service Unavailable");
+
         private final String exceptionCode;
         private final Integer httpCode;
         private final String httpMessage;

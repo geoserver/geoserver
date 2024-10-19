@@ -239,7 +239,7 @@ public class NetCDFDimensionsManager {
             }
 
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
             public void addValue(Object object) {
                 ((Set) values).add(object);
             }
@@ -373,6 +373,7 @@ public class NetCDFDimensionsManager {
          *
          * @param endTime specify whether it needs to return the second value of a time range
          */
+        @SuppressWarnings("PMD.UnnecessaryCast")
         private Double getTime(Object input, boolean endTime) {
             long time = 0;
             if (input instanceof Timestamp) {

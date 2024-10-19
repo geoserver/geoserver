@@ -256,10 +256,11 @@ public abstract class FreeMarkerTemplateManager {
         }
     }
 
+    @SuppressWarnings("PMD.UseCollectionIsEmpty") // complex collections isEmpty impl is broken
     protected Template getContentTemplate(FeatureCollection fc, Charset charset)
             throws IOException {
         Template content = null;
-        if (fc != null && !fc.isEmpty()) {
+        if (fc != null && fc.size() > 0) {
             ResourceInfo ri = wms.getResourceInfo(FeatureCollectionDecorator.getName(fc));
             if (!(fc.getSchema() instanceof SimpleFeatureType)) {
                 // if there is a specific template for complex features, use that.

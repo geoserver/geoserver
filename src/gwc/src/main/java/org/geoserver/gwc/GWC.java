@@ -1300,7 +1300,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                         quota.add(used);
                     } catch (InterruptedException e) {
                         log.fine(e.getMessage());
-                        return;
                     }
                 };
         monitor.getQuotaStore().accept(visitor);

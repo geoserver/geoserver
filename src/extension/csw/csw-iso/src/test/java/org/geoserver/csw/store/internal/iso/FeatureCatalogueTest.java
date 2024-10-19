@@ -28,12 +28,12 @@ public class FeatureCatalogueTest extends MDTestSupport {
                 (FeatureTypeInfo) getCatalog().getLayerByName("Forests").getResource();
         // attributes can be copied from feature type
         MetadataMap custom = new MetadataMap();
-        custom.put("object-catalog/name", new ArrayList<String>());
-        custom.put("object-catalog/definition", new ArrayList<String>());
-        custom.put("object-catalog/type", new ArrayList<String>());
-        custom.put("object-catalog/min-occurence", new ArrayList<Integer>());
-        custom.put("object-catalog/max-occurence", new ArrayList<Integer>());
-        custom.put("object-catalog/domain/value", new ArrayList<ArrayList<String>>());
+        custom.put("object-catalog/name", new ArrayList<>());
+        custom.put("object-catalog/definition", new ArrayList<>());
+        custom.put("object-catalog/type", new ArrayList<>());
+        custom.put("object-catalog/min-occurence", new ArrayList<>());
+        custom.put("object-catalog/max-occurence", new ArrayList<>());
+        custom.put("object-catalog/domain/value", new ArrayList<>());
         for (PropertyDescriptor descr : forestInfo.getFeatureType().getDescriptors()) {
             ((ArrayList<String>) custom.get("object-catalog/name"))
                     .add(descr.getName().getLocalPart());
@@ -46,7 +46,7 @@ public class FeatureCatalogueTest extends MDTestSupport {
             ((ArrayList<Integer>) custom.get("object-catalog/max-occurence"))
                     .add(descr.getMaxOccurs());
             ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value"))
-                    .add(new ArrayList<String>());
+                    .add(new ArrayList<>());
         }
         ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value")).get(0).add("a");
         ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value")).get(0).add("b");

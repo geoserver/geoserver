@@ -117,7 +117,7 @@ public class MBStyleHandler extends StyleHandler {
 
         // in this case, just do a plain on the fly conversion
         try (Reader reader = toReader(input)) {
-            return convertToSLD(toReader(input));
+            return convertToSLD(reader);
         } catch (ParseException e) {
             throw new IOException(e);
         }

@@ -367,6 +367,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
     }
 
     /** Checks if the streams are equals, note that the {@link InputStream}s are also closed. */
+    @SuppressWarnings("PMD.UseTryWithResources")
     private void checkInputStreams(InputStream is, InputStream is2) throws IOException {
         try {
             assertTrue(IOUtils.contentEquals(is, is2));

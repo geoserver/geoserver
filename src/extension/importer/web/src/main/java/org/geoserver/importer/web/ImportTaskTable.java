@@ -99,7 +99,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             Component c = null;
             if (state == ImportTask.State.ERROR) {
                 c =
-                        new SimpleAjaxLink<ImportTask>(
+                        new SimpleAjaxLink<>(
                                 id,
                                 itemModel,
                                 new StatusDescriptionModel(property.getModel(itemModel))) {
@@ -149,7 +149,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     @SuppressWarnings("unchecked")
     SimpleAjaxLink createFixCRSLink(String id, final IModel<ImportTask> itemModel) {
-        return new SimpleAjaxLink(id, new Model("Fix...")) {
+        return new SimpleAjaxLink<>(id, new Model<>("Fix...")) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 dialog.showOkCancel(
@@ -349,7 +349,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         public NoCRSPanel(String id, final IModel<ImportTask> model) {
             super(id, model);
 
-            Form form = new Form("form");
+            Form form = new Form<>("form");
             add(form);
 
             form.add(
@@ -418,10 +418,10 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                                             } catch (IOException e) {
                                                 error(e);
                                             }
-                                        };
+                                        }
                                     });
                         }
-                    }.add(new Label("name", new PropertyModel(model, "layer.name")))
+                    }.add(new Label("name", new PropertyModel<>(model, "layer.name")))
                             .add(new Icon("icon", new DataIconModel(model.getObject().getData()))));
         }
     }
@@ -486,7 +486,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             super(id);
 
             add(
-                    new Link<ImportTask>("link", model) {
+                    new Link<>("link", model) {
                         @Override
                         public void onClick() {
                             setResponsePage(new ImportTaskAdvancedPage(getModel()));
@@ -503,7 +503,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
             add(popupWindow = new GSModalWindow("popup"));
             add(
-                    new AjaxLink<ImportTask>("link", model) {
+                    new AjaxLink<>("link", model) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             popupWindow.setContent(
@@ -523,7 +523,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             add(new Label("message", ex.getLocalizedMessage()));
             add(new TextArea<>("stackTrace", new Model<>(handleStackTrace(ex))));
             add(
-                    new AjaxLink("copy") {
+                    new AjaxLink<>("copy") {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             String text = handleStackTrace(ex);

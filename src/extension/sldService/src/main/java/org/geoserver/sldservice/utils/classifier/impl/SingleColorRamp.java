@@ -40,7 +40,7 @@ public abstract class SingleColorRamp implements ColorRamp {
     }
 
     private void createRamp() {
-        double step = (225.0 / (double) classNum);
+        double step = (225d / classNum);
         for (int i = 1; i <= classNum; i++) {
             colors.add(getColorForIndex(step, i));
         }

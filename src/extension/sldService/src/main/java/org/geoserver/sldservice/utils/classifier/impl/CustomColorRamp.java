@@ -128,6 +128,7 @@ public class CustomColorRamp implements ColorRamp {
         }
     }
 
+    @SuppressWarnings("PMD.UnnecessaryCast")
     private void interpolate(
             List<Color> result, Color start, Color end, int samples, boolean offset) {
         if (offset) {
@@ -144,6 +145,7 @@ public class CustomColorRamp implements ColorRamp {
         interpolate(colors, start, end, samples);
     }
 
+    @SuppressWarnings("PMD.UnnecessaryCast")
     private void interpolate(List<Color> result, Color start, Color end, int samples) {
         int red;
         int green;

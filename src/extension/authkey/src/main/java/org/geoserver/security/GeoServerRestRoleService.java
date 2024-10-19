@@ -515,7 +515,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
             // If the key wasn't in the "easy to compute" group, we need to
             // do things the hard way.
             Callable<String> authorization =
-                    new Callable<String>() {
+                    new Callable<>() {
 
                         @Override
                         public String call() throws Exception {

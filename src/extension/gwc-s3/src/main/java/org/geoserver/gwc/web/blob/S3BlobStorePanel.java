@@ -37,8 +37,7 @@ public class S3BlobStorePanel extends Panel {
                         .add(titleModifier("awsAccessKey.title")));
         add(
                 new PasswordTextFieldWriteOnlyModel(
-                                "awsSecretKey",
-                                new PropertyModel<String>(configModel, "awsSecretKey"))
+                                "awsSecretKey", new PropertyModel<>(configModel, "awsSecretKey"))
                         .setRequired(false)
                         .add(titleModifier("awsSecretKey.title")));
         add(new TextField<>("prefix").add(titleModifier("prefix.title")));

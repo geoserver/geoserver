@@ -343,7 +343,7 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(1, derivedAtts.get("refsystem-as-list").get(1).intValue());
 
         // UNLINK
-        service.merge(parent, new ArrayList<ComplexMetadataMap>(), derivedAtts);
+        service.merge(parent, new ArrayList<>(), derivedAtts);
 
         Assert.assertEquals(null, parent.get(String.class, "identifier-single").getValue());
         Assert.assertEquals(null, parent.get(String.class, "number-field").getValue());

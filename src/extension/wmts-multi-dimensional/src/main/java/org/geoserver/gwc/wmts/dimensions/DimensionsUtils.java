@@ -362,7 +362,7 @@ public final class DimensionsUtils {
         else if (end == null) end = start;
         @SuppressWarnings("unchecked")
         ComparableRange result =
-                new ComparableRange(Comparable.class, (Comparable) start, (Comparable) end);
+                new ComparableRange<>(Comparable.class, (Comparable) start, (Comparable) end);
         return result;
     }
 
@@ -440,7 +440,7 @@ public final class DimensionsUtils {
                     values.add((Comparable) attr);
                 }
             }
-            Collections.sort(values, new ComparableComparator());
+            Collections.sort(values, new ComparableComparator<>());
             return values;
         }
     }

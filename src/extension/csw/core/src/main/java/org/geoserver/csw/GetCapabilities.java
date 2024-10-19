@@ -713,11 +713,11 @@ class CSWSpatialCapabilities extends SpatialCapabiltiesImpl {
     public SpatialOperatorsImpl getSpatialOperators() {
         if (spatialOperands == null
                 || spatialOperands.getOperators() == null
-                || spatialOperands.getOperators().size() == 0) {
+                || spatialOperands.getOperators().isEmpty()) {
             synchronized (this) {
                 if (spatialOperands == null
                         || spatialOperands.getOperators() == null
-                        || spatialOperands.getOperators().size() == 0) {
+                        || spatialOperands.getOperators().isEmpty()) {
                     spatialOperands = new SpatialOperatorsImpl();
 
                     for (SpatialOperator operator : spatialOperators) {

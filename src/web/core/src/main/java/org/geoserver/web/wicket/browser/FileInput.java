@@ -137,7 +137,7 @@ public class FileInput extends Panel {
                                             target.get().add(textField);
                                             dialog.close(target.get());
                                         }
-                                    };
+                                    }
                                 };
                         chooser.setFileTableHeight(null);
                         chooser.setFilter(fileFilter);

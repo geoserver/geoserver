@@ -34,16 +34,7 @@ public class DescribeRecord {
      * for the moment here is a set of different ways to refer to XML schema
      */
     static final Set<String> SUPPORTED_SCHEMA_LANGUAGES =
-            new HashSet<String>() {
-                /** */
-                private static final long serialVersionUID = -7972590028331744087L;
-
-                {
-                    add("XMLSCHEMA");
-                    add("http://www.w3.org/2001/XMLSchema");
-                    add("http://www.w3.org/XML/Schema");
-                }
-            };
+            Set.of("XMLSCHEMA", "http://www.w3.org/2001/XMLSchema", "http://www.w3.org/XML/Schema");
 
     CSWInfo csw;
 

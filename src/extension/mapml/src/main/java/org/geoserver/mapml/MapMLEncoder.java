@@ -53,9 +53,7 @@ public class MapMLEncoder {
     public void encode(Mapml mapml, OutputStream output) {
         try {
             XMLStreamWriter writer =
-                    new Wrapper(
-                            (XMLStreamWriter)
-                                    XMLOutputFactory.newInstance().createXMLStreamWriter(output));
+                    new Wrapper(XMLOutputFactory.newInstance().createXMLStreamWriter(output));
             createMarshaller().marshal(mapml, writer);
             writer.flush();
         } catch (JAXBException | XMLStreamException e) {

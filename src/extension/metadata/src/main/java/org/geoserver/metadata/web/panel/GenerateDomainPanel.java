@@ -55,9 +55,9 @@ public class GenerateDomainPanel extends Panel {
         DropDownChoice<Boolean> methodChoice =
                 new DropDownChoice<>(
                         "method",
-                        new PropertyModel<Boolean>(getDefaultModel(), "method"),
+                        new PropertyModel<>(getDefaultModel(), "method"),
                         Lists.newArrayList(false, true),
-                        new IChoiceRenderer<Boolean>() {
+                        new IChoiceRenderer<>() {
                             private static final long serialVersionUID = 1966992066973104491L;
 
                             @Override

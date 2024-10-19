@@ -316,6 +316,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     /** Parse encodingParams */
+    @SuppressWarnings("PMD.MissingOverride") // static method in base class
     protected NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
         if (keys != null

@@ -65,7 +65,7 @@ public class GWCTestHelpers {
         layer.setDefaultStyle(defaultStyle);
 
         if (extraStyles != null) {
-            Set styles = new HashSet();
+            Set styles = new HashSet<>();
             for (String name : extraStyles) {
                 StyleInfoImpl extra = new StyleInfoImpl(null);
                 extra.setName(name);

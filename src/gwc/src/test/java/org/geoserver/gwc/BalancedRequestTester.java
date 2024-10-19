@@ -20,6 +20,7 @@ import org.geoserver.platform.ServiceException;
  */
 final class BalancedRequestTester implements DispatcherCallback {
 
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     Stack<Request> requestStack = new Stack<>();
 
     @Override

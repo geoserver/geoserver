@@ -445,9 +445,8 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     public Object visit(Beyond filter, Object extraData) {
         return combine(
                 filter,
-                new FilterReplacer<
-                        Beyond>() { // beyond filter takes extra properties, therefore needs its own
-                    // filterreplacer
+                // beyond filter takes extra properties, therefore needs its own filterreplacer
+                new FilterReplacer<>() {
 
                     @Override
                     public Expression getExpression1(Beyond filter) {
@@ -492,9 +491,8 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     public Object visit(DWithin filter, Object extraData) {
         return combine(
                 filter,
-                new FilterReplacer<
-                        DWithin>() { // DWithin filter takes extra properties, therefore needs its
-                    // own filterreplacer
+                // DWithin filter takes extra properties, therefore needs its own filter replacer
+                new FilterReplacer<>() {
 
                     @Override
                     public Expression getExpression1(DWithin filter) {

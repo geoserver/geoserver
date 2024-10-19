@@ -31,6 +31,7 @@ import org.geotools.feature.SchemaException;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("PMD.UnnecessaryCast")
 public class ImportTask implements Serializable {
 
     /** serialVersionUID */

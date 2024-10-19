@@ -144,7 +144,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
         // in this case, just do a plain on the fly conversion
         try (Reader reader = toReader(input)) {
-            StyledLayerDescriptor sld = convertToSLD(toReader(input));
+            StyledLayerDescriptor sld = convertToSLD(reader);
             return sld;
         }
     }
@@ -173,7 +173,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
             throws IOException {
         try (Reader reader = toReader(input)) {
             // full parse to perform the validation
-            convertToSLD(toReader(input));
+            convertToSLD(reader);
             return Collections.emptyList();
         } catch (Exception e) {
             return Arrays.asList(e);

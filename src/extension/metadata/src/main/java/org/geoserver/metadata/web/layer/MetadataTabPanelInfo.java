@@ -36,6 +36,6 @@ public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
                 selectedTemplates.add(template);
             }
         }
-        return new ListModel<MetadataTemplate>(selectedTemplates);
+        return new ListModel<>(selectedTemplates);
     }
 }

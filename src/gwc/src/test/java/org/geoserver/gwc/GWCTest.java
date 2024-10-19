@@ -1072,8 +1072,7 @@ public class GWCTest {
     public void testDispatchGetMapDoesntMatchTileCache() throws Exception {
         GetMapRequest request = new GetMapRequest();
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
 
         rawKvp.put("layers", "more,than,one,layer");
@@ -1123,7 +1122,7 @@ public class GWCTest {
         GetMapRequest request = new GetMapRequest();
 
         @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
 
         rawKvp.put("layers", tileLayer.getName());
@@ -1213,7 +1212,7 @@ public class GWCTest {
 
         GetMapRequest request = new GetMapRequest();
         @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
 
         StringBuilder target = new StringBuilder();
@@ -1243,7 +1242,7 @@ public class GWCTest {
         // Create the new GetMapRequest
         GetMapRequest request = new GetMapRequest();
         @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         rawKvp.put("CQL_FILTER", "include");
         request.setRawKvp(rawKvp);
         StringBuilder target = new StringBuilder();
@@ -1292,7 +1291,7 @@ public class GWCTest {
         GetMapRequest request = new GetMapRequest();
 
         @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         rawKvp.put(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN, "true");
         request.setRawKvp(rawKvp);
         rawKvp.put("layers", "test:mockLayer");
@@ -1339,7 +1338,7 @@ public class GWCTest {
         GetMapRequest request = new GetMapRequest();
 
         @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
         request.setFormat("image/png");
 
@@ -1431,7 +1430,7 @@ public class GWCTest {
         GetMapRequest request = new GetMapRequest();
 
         @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
         request.setFormat("image/png");
         request.setSRS("EPSG:900913");
@@ -1450,7 +1449,7 @@ public class GWCTest {
                         bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
         request.setBbox(reqBbox);
 
-        assertTrue(!tileLayer.getInfo().cachedStyles().isEmpty());
+        assertFalse(tileLayer.getInfo().cachedStyles().isEmpty());
 
         for (String style : tileLayer.getInfo().cachedStyles()) {
 

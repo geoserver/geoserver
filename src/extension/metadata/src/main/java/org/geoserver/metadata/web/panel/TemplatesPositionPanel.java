@@ -30,7 +30,7 @@ public class TemplatesPositionPanel extends Panel {
             GeoServerTablePanel<MetadataTemplate> tablePanel) {
         super(id, model);
         ImageAjaxLink<Object> upLink =
-                new ImageAjaxLink<Object>(
+                new ImageAjaxLink<>(
                         "up",
                         new PackageResourceReference(
                                 GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
@@ -61,7 +61,7 @@ public class TemplatesPositionPanel extends Panel {
         add(upLink);
 
         ImageAjaxLink<Object> downLink =
-                new ImageAjaxLink<Object>(
+                new ImageAjaxLink<>(
                         "down",
                         new PackageResourceReference(
                                 GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {

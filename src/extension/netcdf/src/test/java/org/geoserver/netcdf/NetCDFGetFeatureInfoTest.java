@@ -24,7 +24,7 @@ public class NetCDFGetFeatureInfoTest extends WMSTestSupport {
                 new QName(MockData.SF_URI, "analyzed_sst", MockData.SF_PREFIX),
                 "test-data/sst.nc",
                 "nc",
-                new HashMap(),
+                new HashMap<>(),
                 getClass(),
                 getCatalog());
         // workaround for SystemTestData assumption that rasters with a single coverage

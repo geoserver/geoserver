@@ -164,6 +164,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         try {
             final Set<String> layerNames = tileLayerCatalog.getLayerNames();
 
+            @SuppressWarnings("PMD.UselessQualifiedThis")
             Function<String, Optional<TileLayer>> lazyLayerFetch =
                     CatalogConfiguration.this::getLayer;
 

@@ -150,6 +150,7 @@ public class MonitorFilterTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.EmptyControlStatement")
     public void testWithUnboundedBody() throws Exception {
         final int UNBOUNDED_BODY_SIZE = 10000; // Something really big
 

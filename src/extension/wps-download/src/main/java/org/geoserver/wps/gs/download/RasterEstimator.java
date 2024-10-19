@@ -70,6 +70,7 @@ class RasterEstimator {
      * @param targetSizeY the size of the target image along the Y axis
      * @param bandIndices the band indices selected for output, in case of raster input
      */
+    @SuppressWarnings("PMD.UnnecessaryCast")
     public boolean execute(
             final ProgressListener progressListener,
             CoverageInfo coverageInfo,

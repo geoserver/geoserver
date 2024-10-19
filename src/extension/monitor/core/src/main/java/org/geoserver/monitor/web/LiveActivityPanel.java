@@ -30,7 +30,7 @@ public class LiveActivityPanel extends Panel {
         super(id);
 
         GeoServerTablePanel<RequestData> requests =
-                new GeoServerTablePanel<RequestData>("requests", new LiveRequestDataProvider()) {
+                new GeoServerTablePanel<>("requests", new LiveRequestDataProvider()) {
                     private static final long serialVersionUID = -431473636413825153L;
 
                     @Override

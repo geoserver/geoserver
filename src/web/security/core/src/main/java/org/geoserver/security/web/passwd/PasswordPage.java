@@ -26,7 +26,7 @@ public class PasswordPage extends AbstractSecurityPage {
 
         form.add(new MasterPasswordProviderChoice("providerName"));
         form.add(
-                new Link("changePassword") {
+                new Link<>("changePassword") {
                     @Override
                     public void onClick() {
                         MasterPasswordChangePage page = new MasterPasswordChangePage();
@@ -36,7 +36,7 @@ public class PasswordPage extends AbstractSecurityPage {
                 });
 
         form.add(
-                new Link("masterPasswordInfo") {
+                new Link<>("masterPasswordInfo") {
                     @Override
                     public void onClick() {
                         MasterPasswordInfoPage page = new MasterPasswordInfoPage();
@@ -65,7 +65,7 @@ public class PasswordPage extends AbstractSecurityPage {
                     }
                 });
         form.add(
-                new AjaxLink("cancel") {
+                new AjaxLink<>("cancel") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         doReturn();

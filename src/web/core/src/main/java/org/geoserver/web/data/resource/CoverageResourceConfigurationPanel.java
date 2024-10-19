@@ -82,7 +82,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         final CoverageView coverageView =
                 coverage.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
         coverageViewContainer.add(
-                new Link("editCoverageView") {
+                new Link<>("editCoverageView") {
 
                     @Override
                     public void onClick() {

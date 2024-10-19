@@ -28,7 +28,7 @@ public class DeveloperToolbar extends Panel {
 
         // Clears the resource caches
         add(
-                new IndicatingAjaxLink("clearCache") {
+                new IndicatingAjaxLink<>("clearCache") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         GeoServerApplication.get().clearWicketCaches();
@@ -37,7 +37,7 @@ public class DeveloperToolbar extends Panel {
 
         // Reloads the whole catalog and config from the file system
         add(
-                new IndicatingAjaxLink("reload") {
+                new IndicatingAjaxLink<>("reload") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         try {

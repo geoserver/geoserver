@@ -196,7 +196,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         LayerInfo layerInfo = model.getObject();
         MapModel<Boolean> useRemoteModel =
                 new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, MapMLConstants.RESOURCE_METADATA),
+                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
                         MapMLConstants.MAPML_USE_REMOTE);
         CheckBox useRemote = new CheckBox(MapMLConstants.USE_REMOTE, useRemoteModel);
         remoteClientRequestContainer.setOutputMarkupId(true);

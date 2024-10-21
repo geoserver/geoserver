@@ -125,11 +125,11 @@ public class MapMLHTMLOutput {
                 .append(
                         "mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; border: none; vertical-align: middle }\n")
                 .append("mapml-viewer:not(:defined) > * { display: none; } n")
-                .append("layer- { display: none; }\n")
+                .append("map-layer { display: none; }\n")
                 .append("</style>\n")
                 .append("<noscript>\n")
                 .append("<style>\n")
-                .append("mapml-viewer:not(:defined) > :not(layer-) { display: initial; }\n")
+                .append("mapml-viewer:not(:defined) > :not(map-layer) { display: initial; }\n")
                 .append("</style>\n")
                 .append("</noscript>\n")
                 .append(templateHeader)
@@ -146,12 +146,12 @@ public class MapMLHTMLOutput {
                 .append("lon=\"")
                 .append(longitude)
                 .append("\" controls controlslist=\"geolocation\">\n")
-                .append("<layer- label=\"")
+                .append("<map-layer label=\"")
                 .append(escapeHtml4(layerLabel))
                 .append("\" ")
                 .append("src=\"")
                 .append(sourceUrL)
-                .append("\" checked></layer->\n")
+                .append("\" checked></map-layer>\n")
                 .append("</mapml-viewer>\n")
                 .append("</body>\n")
                 .append("</html>");
@@ -160,7 +160,8 @@ public class MapMLHTMLOutput {
 
     private String buildViewerPath(HttpServletRequest request) {
         String base = ResponseUtils.baseURL(request);
-        return ResponseUtils.buildURL(base, "/mapml/viewer/widget/mapml-viewer.js", null, URLMangler.URLType.RESOURCE);
+        return ResponseUtils.buildURL(
+                base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
     }
 
     private int computeZoom(ProjType projType, ReferencedEnvelope projectedBbox) {

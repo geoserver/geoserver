@@ -40,7 +40,7 @@ import org.geotools.factory.CommonFactoryFinder;
 public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     static final Property<StoreInfo> DATA_TYPE =
-            new AbstractProperty<StoreInfo>("datatype") {
+            new AbstractProperty<>("datatype") {
 
                 @Override
                 public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
@@ -62,7 +62,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> NAME = new BeanProperty<>("name", "name");
 
     static final Property<StoreInfo> TYPE =
-            new AbstractProperty<StoreInfo>("type") {
+            new AbstractProperty<>("type") {
 
                 @Override
                 public Object getPropertyValue(StoreInfo item) {

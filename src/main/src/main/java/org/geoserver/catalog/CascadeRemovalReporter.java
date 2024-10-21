@@ -32,7 +32,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         DELETE,
         STYLE_RESET,
         EXTRA_STYLE_REMOVED,
-        GROUP_CHANGED;
+        GROUP_CHANGED
     }
 
     /** The catalog used to drill down into the containment hierarchy */

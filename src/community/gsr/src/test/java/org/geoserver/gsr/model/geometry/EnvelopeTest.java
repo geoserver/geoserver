@@ -9,7 +9,8 @@
  */
 package org.geoserver.gsr.model.geometry;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class EnvelopeTest {
         Envelope validEnvelope = new Envelope(xmin1, ymin1, xmax1, ymax1, spatialReference);
         Envelope invalidEnvelope = new Envelope(xmin2, ymin2, xmax2, ymax2, spatialReference);
 
-        assertEquals(true, validEnvelope.isValid());
-        assertEquals(false, invalidEnvelope.isValid());
+        assertTrue(validEnvelope.isValid());
+        assertFalse(invalidEnvelope.isValid());
     }
 }

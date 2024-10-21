@@ -26,7 +26,7 @@ public class RegexParameterFilterSubform
         extends AbstractParameterFilterSubform<RegexParameterFilter> {
 
     private static final IValidator<String> REGEXP_VALIDATOR =
-            new IValidator<String>() {
+            new IValidator<>() {
 
                 private static final long serialVersionUID = 3753607592277740081L;
 

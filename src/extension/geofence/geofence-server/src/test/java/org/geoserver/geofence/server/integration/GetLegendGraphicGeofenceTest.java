@@ -5,7 +5,6 @@
 
 package org.geoserver.geofence.server.integration;
 
-import static org.geoserver.geofence.server.integration.GeofenceGetMapIntegrationTest.deleteRules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

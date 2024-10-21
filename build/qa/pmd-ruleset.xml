@@ -36,7 +36,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
       <!-- The rule reports false positives for closeable arguments that are used             -->
       <!-- closed within the method body. This suppression tries to avoid false positives for -->
       <!-- this case, until we can switch to Java 9 and just use try(variable) {...} without  -->
-      <!-- the need to instatiate the variable in the try                                     -->
+      <!-- the need to instantiate the variable in the try                                     -->
       <property name="violationSuppressXPath">
         <value>
           <![CDATA[
@@ -46,7 +46,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
               ]
               [ pmd-java:typeIs('java.lang.AutoCloseable') and
                 fn:substring-before(@Image, '.') = ancestor::MethodDeclaration/MethodDeclarator//VariableDeclaratorId/@Name
-              ]"/>
+              ]
             ]]>
         </value>
       </property>
@@ -71,6 +71,8 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/codestyle.xml/IdenticalCatchBranches" />
   <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
   <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
+  <rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
+  <rule ref="category/java/codestyle.xml/UnnecessarySemicolon"/>
   <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
   <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
   <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues"/>
@@ -78,15 +80,6 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/errorprone.xml/CheckSkipResult"/>
   <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray"/>
   <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
-  <rule ref="category/java/errorprone.xml/EmptyFinallyBlock"/>
-  <rule ref="category/java/errorprone.xml/EmptyIfStmt"/>
-  <rule ref="category/java/errorprone.xml/EmptyInitializer"/>
-  <rule ref="category/java/errorprone.xml/EmptyStatementBlock"/>
-  <rule ref="category/java/errorprone.xml/EmptyStatementNotInLoop"/>
-  <rule ref="category/java/errorprone.xml/EmptySwitchStatements"/>
-  <rule ref="category/java/errorprone.xml/EmptySynchronizedBlock"/>
-  <rule ref="category/java/errorprone.xml/EmptyTryBlock"/>
-  <rule ref="category/java/errorprone.xml/EmptyWhileStmt"/>
   <rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
   <rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
   <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode"/>
@@ -100,7 +93,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
         <!-- When calling the store to close, PMD wants the full prefix before the call to -->
         <!-- the method to match, so let's try to use common var names for store ...       -->
         <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close,closeFileSystem"/>
-        <property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream|java.io.ByteArrayInputStream|java.io.StringWriter|java.io.CharArrayWriter|java.util.stream.Stream|java.util.stream.IntStream|java.util.stream.LongStream|java.util.stream.DoubleStream|java.io.StringReader|org.apache.commons.vfs2.FileSystemManager" />
+        <property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream,java.io.ByteArrayInputStream,java.io.StringWriter,java.io.CharArrayWriter,java.util.stream.Stream,java.util.stream.IntStream,java.util.stream.LongStream,java.util.stream.DoubleStream,java.io.StringReader,org.apache.commons.vfs2.FileSystemManager" />
     </properties>
   </rule>
   <rule ref="category/java/multithreading.xml/AvoidThreadGroup"/>
@@ -109,13 +102,12 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/performance.xml/BigIntegerInstantiation"/>
   <rule ref="category/java/bestpractices.xml/PrimitiveWrapperInstantiation"/>
   <rule ref="category/java/performance.xml/StringInstantiation"/>
-  <rule name="wildcards" language="java" message="No Wildcard Imports" class="net.sourceforge.pmd.lang.rule.XPathRule">
+  <rule name="wildcards" language="java" message="No Wildcard Imports" class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
     <description>
       Don't use wildcard imports
     </description>
     <priority>3</priority>
     <properties>
-      <property name="version" value="2.0"/>
       <property name="xpath">
         <value><![CDATA[
           //ImportDeclaration[@ImportedName=@PackageName]

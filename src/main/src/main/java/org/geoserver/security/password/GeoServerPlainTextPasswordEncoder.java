@@ -44,7 +44,7 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
 
             @Override
             public String encodePassword(char[] rawPass, Object salt) {
-                return new String(rawPass);
+                return String.valueOf(rawPass);
             }
         };
     }

@@ -37,7 +37,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
         setHeaderPanel(headerPanel());
         add(
                 rulesPanel =
-                        new GeoServerTablePanel<RuleModel>("rulesPanel", new RulesModel(), true) {
+                        new GeoServerTablePanel<>("rulesPanel", new RulesModel(), true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -107,14 +107,14 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
     private Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         header.add(
-                new AjaxLink<Object>("addNew") {
+                new AjaxLink<>("addNew") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         setResponsePage(new ParamsExtractorRulePage(Optional.empty()));
                     }
                 });
         header.add(
-                new AjaxLink<Object>("removeSelected") {
+                new AjaxLink<>("removeSelected") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         RulesModel.delete(
@@ -133,7 +133,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
             super(id);
             this.setOutputMarkupId(true);
             ImageAjaxLink<Object> editLink =
-                    new ImageAjaxLink<Object>(
+                    new ImageAjaxLink<>(
                             "edit", new PackageResourceReference(getClass(), "img/edit.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {

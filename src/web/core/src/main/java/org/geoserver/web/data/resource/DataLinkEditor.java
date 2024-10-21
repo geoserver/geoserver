@@ -54,8 +54,7 @@ public class DataLinkEditor extends Panel {
         table.setOutputMarkupId(true);
         container.add(table);
         links =
-                new ListView<DataLinkInfo>(
-                        "links", new PropertyModel<>(resourceModel, "dataLinks")) {
+                new ListView<>("links", new PropertyModel<>(resourceModel, "dataLinks")) {
 
                     @Override
                     protected void populateItem(ListItem<DataLinkInfo> item) {
@@ -84,7 +83,7 @@ public class DataLinkEditor extends Panel {
 
                         // remove link
                         AjaxLink<DataLinkInfo> link =
-                                new AjaxLink<DataLinkInfo>("removeLink", item.getModel()) {
+                                new AjaxLink<>("removeLink", item.getModel()) {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
@@ -126,7 +125,7 @@ public class DataLinkEditor extends Panel {
 
     private void updateLinksVisibility() {
         ResourceInfo ri = (ResourceInfo) getDefaultModelObject();
-        boolean anyLink = ri.getDataLinks().size() > 0;
+        boolean anyLink = !ri.getDataLinks().isEmpty();
         table.setVisible(anyLink);
         noData.setVisible(!anyLink);
     }

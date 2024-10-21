@@ -58,7 +58,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
     public NewCachedLayerPage() {
 
         table =
-                new GeoServerTablePanel<TileLayer>("table", provider, true) {
+                new GeoServerTablePanel<>("table", provider, true) {
 
                     private static final long serialVersionUID = -5260899839139961722L;
 
@@ -222,5 +222,5 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                         }
                     });
         }
-    };
+    }
 }

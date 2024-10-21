@@ -9,7 +9,8 @@
  */
 package org.geoserver.gsr.model.geometry;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -32,8 +33,8 @@ public class RingTest {
         Ring validRing = new Ring(coords1);
         Ring invalidRing = new Ring(coords2);
 
-        assertEquals(true, validRing.isValid());
-        assertEquals(false, invalidRing.isValid());
+        assertTrue(validRing.isValid());
+        assertFalse(invalidRing.isValid());
     }
 
     /*

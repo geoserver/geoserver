@@ -42,7 +42,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testValues() throws Exception {
         tester.startPage(WMSAdminPage.class);
         tester.assertModelValue("form:keywords", wms.getKeywords());
-        tester.assertModelValue("form:srs", new ArrayList<String>());
+        tester.assertModelValue("form:srs", new ArrayList<>());
     }
 
     @Test

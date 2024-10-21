@@ -36,7 +36,7 @@ public abstract class FileBreadcrumbs extends Panel {
 
         this.rootFile = rootFile;
         add(
-                new ListView<File>("path", new BreadcrumbModel(rootFile, currentFile)) {
+                new ListView<>("path", new BreadcrumbModel(rootFile, currentFile)) {
 
                     private static final long serialVersionUID = -855582301247703291L;
 
@@ -48,8 +48,7 @@ public abstract class FileBreadcrumbs extends Panel {
                         // the link to the current path item
                         Label name = new Label("pathItem", file.getName() + "/");
                         Link<File> link =
-                                new IndicatingAjaxFallbackLink<File>(
-                                        "pathItemLink", item.getModel()) {
+                                new IndicatingAjaxFallbackLink<>("pathItemLink", item.getModel()) {
 
                                     private static final long serialVersionUID =
                                             4295991386838610752L;

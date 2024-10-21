@@ -53,7 +53,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
             // make sure we don't serialize the list, but get it fresh from the dataProvider,
             // to avoid serialization issues seen in GEOS-8273
             this.properties =
-                    new LoadableDetachableModel<List<Property<T>>>() {
+                    new LoadableDetachableModel<>() {
 
                         @Override
                         protected List<Property<T>> load() {
@@ -130,7 +130,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
             GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
         // create one component per viewable property
         IModel<List<Property<T>>> propertyList =
-                new LoadableDetachableModel<List<Property<T>>>() {
+                new LoadableDetachableModel<>() {
 
                     @Override
                     protected List<Property<T>> load() {
@@ -138,7 +138,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                     }
                 };
         ListView<Property<T>> items =
-                new ListView<Property<T>>("itemProperties", propertyList) {
+                new ListView<>("itemProperties", propertyList) {
 
                     private static final long serialVersionUID = -7089826211241039856L;
 
@@ -161,7 +161,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                                             downTitle);
 
                         } else if (property == RENDERING_ORDER) {
-                            component = new Label("component", new Model<String>());
+                            component = new Label("component", new Model<>());
                         } else {
                             component = getComponentForProperty("component", itemModel, property);
                         }

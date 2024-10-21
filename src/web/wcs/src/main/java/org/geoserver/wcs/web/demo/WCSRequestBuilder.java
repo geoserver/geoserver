@@ -51,7 +51,7 @@ public class WCSRequestBuilder extends GeoServerBasePage {
 
     public WCSRequestBuilder() {
         // the form
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         var model = new Model<>(new WCSRequestModel());

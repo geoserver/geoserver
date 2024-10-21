@@ -39,7 +39,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
         // the middle table
         add(
                 table =
-                        new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
                             private static final long serialVersionUID = 8028081894753417294L;
 
                             @Override
@@ -77,7 +77,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(table.getSelection().size() > 0);
+                                removal.setEnabled(!table.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });
@@ -92,7 +92,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<WorkspaceNewPage>("addNew", WorkspaceNewPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", WorkspaceNewPage.class));
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

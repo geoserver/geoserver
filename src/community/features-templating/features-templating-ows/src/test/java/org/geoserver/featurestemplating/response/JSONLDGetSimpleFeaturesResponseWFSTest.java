@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -40,7 +39,7 @@ public class JSONLDGetSimpleFeaturesResponseWFSTest extends JSONLDGetSimpleFeatu
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertTrue(features.size() == 0);
+        assertEquals(0, features.size());
     }
 
     @Test

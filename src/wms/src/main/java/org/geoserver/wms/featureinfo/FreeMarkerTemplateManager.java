@@ -256,6 +256,7 @@ public abstract class FreeMarkerTemplateManager {
         }
     }
 
+    @SuppressWarnings("PMD.UseCollectionIsEmpty") // complex features collection isEmpty not working
     protected Template getContentTemplate(FeatureCollection fc, Charset charset)
             throws IOException {
         Template content = null;

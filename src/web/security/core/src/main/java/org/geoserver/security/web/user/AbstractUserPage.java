@@ -163,8 +163,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
         container.add(
                 calculatedRoles =
-                        new ListView<GeoServerRole>(
-                                "calculatedRoles", new CalculatedRoleModel(user)) {
+                        new ListView<>("calculatedRoles", new CalculatedRoleModel(user)) {
                             @Override
                             @SuppressWarnings("unchecked")
                             protected void populateItem(ListItem<GeoServerRole> item) {

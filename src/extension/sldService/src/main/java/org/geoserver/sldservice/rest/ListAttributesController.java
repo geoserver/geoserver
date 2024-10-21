@@ -91,7 +91,7 @@ public class ListAttributesController extends AbstractCatalogController {
                             .getHeaderValue());
         }
         if (layerInfo == null) {
-            return wrapObject(new ArrayList(), ArrayList.class);
+            return wrapObject(new ArrayList<>(), ArrayList.class);
         }
 
         if (layerInfo != null && layerInfo.getResource() instanceof FeatureTypeInfo) {
@@ -116,7 +116,7 @@ public class ListAttributesController extends AbstractCatalogController {
                 return wrapObject(out, LayerAttributesList.class);
             }
         }
-        return wrapObject(new ArrayList(), ArrayList.class);
+        return wrapObject(new ArrayList<>(), ArrayList.class);
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Error generating Attributes List!")

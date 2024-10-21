@@ -93,7 +93,7 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new SRSListTextArea(
                         "srs",
                         LiveCollectionModel.list(
-                                new PropertyModel<List<String>>(model, "resource.responseSRS")));
+                                new PropertyModel<>(model, "resource.responseSRS")));
         srsList.setOutputMarkupId(true);
         srsList.setVisible(Boolean.TRUE.equals(overrideServiceSRSModel.getObject()));
         otherSrsContainer.add(srsList);

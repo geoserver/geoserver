@@ -68,12 +68,12 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
         setReturnPage(returnPage);
         this.process = process;
 
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         final List<InputLimit> inputLimits = buildInputLimits(process);
         GeoServerDataProvider<InputLimit> inputLimitsProvider =
-                new GeoServerDataProvider<ProcessLimitsPage.InputLimit>() {
+                new GeoServerDataProvider<>() {
 
                     @Override
                     protected List<
@@ -94,7 +94,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                 };
 
         table =
-                new GeoServerTablePanel<InputLimit>("table", inputLimitsProvider) {
+                new GeoServerTablePanel<>("table", inputLimitsProvider) {
 
                     @Override
                     protected Component getComponentForProperty(

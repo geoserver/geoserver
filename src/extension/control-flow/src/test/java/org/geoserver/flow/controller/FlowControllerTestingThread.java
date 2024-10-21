@@ -15,7 +15,7 @@ public class FlowControllerTestingThread extends Thread {
         TIMED_OUT,
         PROCESSING,
         COMPLETE
-    };
+    }
 
     FlowController[] controllers;
     boolean proceed;

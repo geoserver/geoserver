@@ -459,7 +459,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         getClass().getResource("WMSPostLayerGroupWithStyleGroup.xml").openStream();
                 BufferedReader input = new BufferedReader(new InputStreamReader(resourceStream))) {
 
-            request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
             String layer = MockData.BASIC_POLYGONS.getLocalPart();
             assertEquals(1, request.getLayers().size());

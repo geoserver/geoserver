@@ -57,7 +57,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     public WorkspaceNewPage() {
         WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
         this.model = new CompoundPropertyModel<>(ws);
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         List<ITab> tabs = new ArrayList<>();
 
         tabs.add(
@@ -98,7 +98,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         }
 
         tabbedPanel =
-                new TabbedPanel<ITab>("tabs", tabs) {
+                new TabbedPanel<>("tabs", tabs) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -125,7 +125,7 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
     }
 
     private AjaxLink<Void> cancelLink() {
-        return new AjaxLink<Void>("cancel") {
+        return new AjaxLink<>("cancel") {
             private static final long serialVersionUID = -1731475076965108576L;
 
             @Override

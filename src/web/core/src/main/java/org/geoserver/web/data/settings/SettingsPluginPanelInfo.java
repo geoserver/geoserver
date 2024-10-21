@@ -60,7 +60,7 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel>
         List<SettingsPluginPanelInfo> panels =
                 application.getBeansOfType(SettingsPluginPanelInfo.class);
 
-        return new ListView<SettingsPluginPanelInfo>(id, panels) {
+        return new ListView<>(id, panels) {
 
             /** */
             private static final long serialVersionUID = 3967381810650109343L;

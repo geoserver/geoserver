@@ -148,7 +148,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         // when editing a default style, disallow changing the name
         if (StylePage.isDefaultStyle(style)) {
             nameTextField.add(
-                    new IValidator<String>() {
+                    new IValidator<>() {
                         String originalName = style.getName();
 
                         @Override
@@ -188,7 +188,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                         "format",
                         formatBinding,
                         new StyleFormatsModel(),
-                        new ChoiceRenderer<String>() {
+                        new ChoiceRenderer<>() {
 
                             private static final long serialVersionUID = 2064887235303504013L;
 
@@ -217,7 +217,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 });
         add(formatChoice);
 
-        formatReadOnlyMessage = new WebMarkupContainer("formatReadOnly", new Model<String>());
+        formatReadOnlyMessage = new WebMarkupContainer("formatReadOnly", new Model<>());
         formatReadOnlyMessage.setVisible(false);
         add(formatReadOnlyMessage);
         // add the Legend fields

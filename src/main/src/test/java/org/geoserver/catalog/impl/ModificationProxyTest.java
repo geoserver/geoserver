@@ -274,7 +274,7 @@ public class ModificationProxyTest {
 
     /** Matches a modification proxy wrapping an object matching the given matcher */
     public static <T> Matcher<T> modProxy(Matcher<T> objectMatcher) {
-        return new BaseMatcher<T>() {
+        return new BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {

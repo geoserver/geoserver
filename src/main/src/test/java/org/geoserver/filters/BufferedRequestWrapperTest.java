@@ -41,8 +41,9 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
                         req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
         byte[] b = new byte[32];
         try (ServletInputStream sis = req.getInputStream()) {
-            /* clear out the request body */
-            while ((sis.readLine(b, 0, 32)) > 0) ;
+            while ((sis.readLine(b, 0, 32)) > 0) { // NOPMD
+                // clear out the request body
+            }
         }
 
         try (ServletInputStream sis = wrapper.getInputStream()) {
@@ -95,8 +96,9 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
     @SuppressWarnings("PMD.EmptyWhileStmt")
     private void clearOutBody(HttpServletRequest req) throws IOException {
         try (BufferedReader br = req.getReader()) {
-            /* clear out the body */
-            while ((br.readLine()) != null) ;
+            while ((br.readLine()) != null) { // NOPMD
+                // clear out the request body
+            }
         }
     }
 

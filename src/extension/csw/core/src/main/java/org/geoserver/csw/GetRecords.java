@@ -265,7 +265,7 @@ public class GetRecords {
     }
 
     private ElementSetType getElementSet(QueryType query) {
-        if (query.getElementName() != null && query.getElementName().size() > 0) {
+        if (query.getElementName() != null && !query.getElementName().isEmpty()) {
             return ElementSetType.FULL;
         }
         ElementSetType elementSet =

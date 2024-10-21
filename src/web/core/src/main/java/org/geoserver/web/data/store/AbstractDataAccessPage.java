@@ -114,7 +114,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         paramsForm.add(dataStoreNamePanel);
 
         paramsForm.add(
-                new TextParamPanel<String>(
+                new TextParamPanel<>(
                         "dataStoreDescriptionPanel",
                         new PropertyModel<>(model, "description"),
                         new ResourceModel("AbstractDataAccessPage.description", "Description"),

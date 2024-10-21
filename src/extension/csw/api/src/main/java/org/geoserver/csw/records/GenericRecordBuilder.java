@@ -186,7 +186,7 @@ public class GenericRecordBuilder implements RecordBuilder {
 
         if (index == path.length - 1) {
             if (descriptor.getType() instanceof ComplexType) {
-                fillTreeNodes(value, descriptor, (List<TreeNode>) treenodes);
+                fillTreeNodes(value, descriptor, treenodes);
                 // wrap simple content in complex attribute
                 AttributeType simpleType =
                         new AttributeTypeImpl(

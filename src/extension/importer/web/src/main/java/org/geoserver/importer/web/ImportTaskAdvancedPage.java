@@ -51,7 +51,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         ImportTask item = model.getObject();
         // item.getTransform().get
 
-        Form form = new Form("form");
+        Form<Object> form = new Form<>("form");
         add(form);
 
         ReprojectTransform reprojectTx = item.getTransform().get(ReprojectTransform.class);
@@ -163,7 +163,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
             remaps = itemModel.getObject().getTransform().getAll(AttributeRemapTransform.class);
             remapList =
-                    new ListView<AttributeRemapTransform>("remaps", remaps) {
+                    new ListView<>("remaps", remaps) {
 
                         @Override
                         protected void populateItem(final ListItem<AttributeRemapTransform> item) {
@@ -180,7 +180,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                             "type",
                                             new PropertyModel<>(item.getModel(), "type"),
                                             types,
-                                            new ChoiceRenderer<Class<?>>() {
+                                            new ChoiceRenderer<>() {
 
                                                 @Override
                                                 public Object getDisplayValue(Class<?> object) {
@@ -253,7 +253,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
             remapContainer.add(remapList);
 
             add(
-                    new AjaxLink<ImportTask>("add", itemModel) {
+                    new AjaxLink<>("add", itemModel) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             remaps.add(new AttributeRemapTransform(null, null));

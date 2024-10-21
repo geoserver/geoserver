@@ -33,7 +33,7 @@ public class ContactPanel extends Panel {
         TextArea<String> area = new TextArea<>("welcome", new PropertyModel<>(model, "welcome"));
         add(area);
         InternationalStringPanel<TextArea<String>> internationalStringPanelAbstract =
-                new InternationalStringPanel<TextArea<String>>(
+                new InternationalStringPanel<>(
                         "internationalWelcome",
                         new PropertyModel<>(model, "internationalWelcome"),
                         area,

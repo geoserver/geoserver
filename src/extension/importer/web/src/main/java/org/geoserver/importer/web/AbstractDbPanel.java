@@ -60,7 +60,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
     public AbstractDbPanel(String id) {
         super(id);
 
-        Form form = new Form("form");
+        Form<Object> form = new Form<>("form");
         add(form);
 
         // connection type chooser
@@ -100,7 +100,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
                         "connType",
                         new PropertyModel<>(this, "connectionType"),
                         new Model<>(connectionTypeList),
-                        new ChoiceRenderer<String>() {
+                        new ChoiceRenderer<>() {
 
                             @Override
                             public String getIdValue(String object, int index) {

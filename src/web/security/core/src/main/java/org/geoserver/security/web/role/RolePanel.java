@@ -44,7 +44,7 @@ public class RolePanel extends Panel {
         RoleListProvider provider = new RoleListProvider(this.roleServiceName);
         add(
                 roles =
-                        new GeoServerTablePanel<GeoServerRole>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -66,7 +66,7 @@ public class RolePanel extends Panel {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(roles.getSelection().size() > 0);
+                                removal.setEnabled(!roles.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });
@@ -99,7 +99,7 @@ public class RolePanel extends Panel {
                     new Label("message", new StringResourceModel("noCreateStore", this, null))
                             .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
-            h.add(new Label("message", new Model()));
+            h.add(new Label("message", new Model<>()));
         }
 
         // the add button

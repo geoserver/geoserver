@@ -291,7 +291,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && (layout == null || layout.isEmpty())) {
             try {
                 Interpolation interpolation = null;
-                if (request.getInterpolations() != null && request.getInterpolations().size() > 0) {
+                if (request.getInterpolations() != null && !request.getInterpolations().isEmpty()) {
                     interpolation = request.getInterpolations().get(0);
                 }
 

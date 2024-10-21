@@ -50,8 +50,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
     public CoverageBandsConfigurationPanel(String id, final IModel model) {
         super(id, model);
         bands =
-                new GeoServerTablePanel<CoverageDimensionInfo>(
-                        "bands", new CoverageDimensionsProvider(), true) {
+                new GeoServerTablePanel<>("bands", new CoverageDimensionsProvider(), true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -154,7 +153,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
     }
 
     protected Component buildUnitField(String id, IModel<String> model) {
-        return new AutoCompleteTextField<String>(id, model) {
+        return new AutoCompleteTextField<>(id, model) {
             @Override
             protected Iterator<String> getChoices(String input) {
                 if (Strings.isEmpty(input)) {
@@ -193,7 +192,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
             List<Property<CoverageDimensionInfo>> result = new ArrayList<>();
             result.add(new BeanProperty<>("band", "name"));
             result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("dimensionType") {
+                    new AbstractProperty<>("dimensionType") {
 
                         @Override
                         public Object getPropertyValue(CoverageDimensionInfo item) {
@@ -216,7 +215,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         }
                     });
             result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("nullValues") {
+                    new AbstractProperty<>("nullValues") {
 
                         @Override
                         public Object getPropertyValue(CoverageDimensionInfo item) {
@@ -237,7 +236,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         }
                     });
             result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("minRange") {
+                    new AbstractProperty<>("minRange") {
 
                         @Override
                         public Object getPropertyValue(final CoverageDimensionInfo item) {
@@ -266,7 +265,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         }
                     });
             result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("maxRange") {
+                    new AbstractProperty<>("maxRange") {
 
                         @Override
                         public Object getPropertyValue(final CoverageDimensionInfo item) {

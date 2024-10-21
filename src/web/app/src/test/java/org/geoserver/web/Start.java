@@ -154,7 +154,7 @@ public class Start {
         // SSL host name given ?
         String sslHost = System.getProperty("ssl.hostname");
         ServerConnector https = null;
-        if (sslHost != null && sslHost.length() > 0) {
+        if (sslHost != null && !sslHost.isEmpty()) {
             Security.addProvider(new BouncyCastleProvider());
             SslContextFactory ssl = createSSLContextFactory(sslHost);
 

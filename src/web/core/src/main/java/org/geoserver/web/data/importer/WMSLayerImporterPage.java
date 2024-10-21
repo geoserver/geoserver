@@ -73,7 +73,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
         form.setOutputMarkupId(true);
         add(form);
         layers =
-                new GeoServerTablePanel<LayerResource>("layerChooser", provider, true) {
+                new GeoServerTablePanel<>("layerChooser", provider, true) {
 
                     private static final long serialVersionUID = -5817898784100419973L;
 
@@ -122,7 +122,7 @@ public class WMSLayerImporterPage extends GeoServerSecuredPage {
 
     SimpleAjaxLink<LayerResource> resourceChooserLink(
             String id, IModel<LayerResource> itemModel, IModel<?> label) {
-        return new SimpleAjaxLink<LayerResource>(id, itemModel, label) {
+        return new SimpleAjaxLink<>(id, itemModel, label) {
 
             private static final long serialVersionUID = 163167608296661157L;
 

@@ -60,7 +60,7 @@ public class CasAuthFilterPanel
         add(new HelpLink("singleSignOutParametersHelp", this).setDialog(dialog));
         add(new HelpLink("proxyTicketParametersHelp", this).setDialog(dialog));
 
-        add(new TextField<String>("casServerUrlPrefix"));
+        add(new TextField<>("casServerUrlPrefix"));
         add(new CheckBox("sendRenew"));
         add(new TextField<String>("proxyCallbackUrlPrefix").setRequired(false));
 
@@ -109,7 +109,7 @@ public class CasAuthFilterPanel
         CheckBox createSession = new CheckBox("singleSignOut");
         add(createSession);
 
-        add(new TextField<String>("urlInCasLogoutPage"));
+        add(new TextField<>("urlInCasLogoutPage"));
         add(
                 new AjaxSubmitLink("urlInCasLogoutPageTest") {
                     @Override
@@ -161,7 +161,7 @@ public class CasAuthFilterPanel
 
     static class CustomAttributePanel extends Panel {
         public CustomAttributePanel(String id) {
-            super(id, new Model());
+            super(id, new Model<>());
             add(new TextField<String>("customAttributeName").setRequired(true));
         }
     }

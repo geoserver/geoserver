@@ -68,13 +68,13 @@ public class RasterizerController extends BaseSLDServiceController {
         JET,
         RANDOM,
         CUSTOM
-    };
+    }
 
     public enum COLORMAP_TYPE {
         RAMP,
         INTERVALS,
         VALUES
-    };
+    }
 
     private static final String DEFAULT_MIN = "0.0";
 

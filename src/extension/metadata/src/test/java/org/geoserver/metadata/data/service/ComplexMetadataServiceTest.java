@@ -17,7 +17,6 @@ import java.util.Map;
 import org.geoserver.metadata.AbstractMetadataTest;
 import org.geoserver.metadata.data.model.ComplexMetadataMap;
 import org.geoserver.metadata.data.model.impl.ComplexMetadataMapImpl;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,58 +43,55 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         children.add(child);
 
         // simple fields original values
-        Assert.assertEquals(
+        assertEquals(
                 "the-identifier-single", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("99", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals("99", parent.get(String.class, "number-field").getValue());
+        assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
 
         HashMap<String, List<Integer>> descriptionMap = new HashMap<>();
         service.merge(parent, children, descriptionMap);
 
         // Should be updated simple fields
-        Assert.assertEquals(
+        assertEquals(
                 "template-identifier", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals(
-                "Or select this row", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals("77", parent.get(String.class, "number-field").getValue());
+        assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
 
-        Assert.assertEquals(0, descriptionMap.get("identifier-single").get(0).intValue());
-        Assert.assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
-        Assert.assertEquals(0, descriptionMap.get("dropdown-field").get(0).intValue());
+        assertEquals(0, descriptionMap.get("identifier-single").get(0).intValue());
+        assertEquals(0, descriptionMap.get("number-field").get(0).intValue());
+        assertEquals(0, descriptionMap.get("dropdown-field").get(0).intValue());
         // list simple fields
-        Assert.assertEquals(3, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(3, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
         // Object fields
         ComplexMetadataMap submap = parent.subMap("referencesystem-object");
-        Assert.assertEquals("object-code", submap.get(String.class, "code").getValue());
-        Assert.assertEquals("object-codeSpace", submap.get(String.class, "code-space").getValue());
+        assertEquals("object-code", submap.get(String.class, "code").getValue());
+        assertEquals("object-codeSpace", submap.get(String.class, "code-space").getValue());
         // list of objects
-        Assert.assertEquals(2, parent.size("referencesystem-object-list"));
+        assertEquals(2, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = parent.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
         // list of nested objects
-        Assert.assertEquals(2, parent.size("feature-catalog"));
+        assertEquals(2, parent.size("feature-catalog"));
         ComplexMetadataMap submapNested01 = parent.subMap("feature-catalog/feature-attribute", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "First object catalog object", submapNested01.get(String.class, "name").getValue());
-        Assert.assertEquals("String", submapNested01.get(String.class, "type").getValue());
-        Assert.assertEquals(1, submapNested01.size("domain"));
+        assertEquals("String", submapNested01.get(String.class, "type").getValue());
+        assertEquals(1, submapNested01.size("domain"));
         ComplexMetadataMap submapdomain = submapNested01.subMap("domain", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "a domain for first catalog object",
                 submapdomain.get(String.class, "code").getValue());
-        Assert.assertEquals("15", submapdomain.get(String.class, "value").getValue());
+        assertEquals("15", submapdomain.get(String.class, "value").getValue());
     }
 
     @Test
@@ -112,36 +108,33 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         service.merge(parent, children, descriptionMap);
 
         // simple fields
-        Assert.assertEquals(
+        assertEquals(
                 "the-identifier-single", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("99", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals("99", parent.get(String.class, "number-field").getValue());
+        assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
         // list simple fields
-        Assert.assertEquals(3, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(3, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
         // Should be updated Object fields
         ComplexMetadataMap submap = parent.subMap("referencesystem-object");
-        Assert.assertEquals("templateValue-code", submap.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "templateValue-codeSpace", submap.get(String.class, "code-space").getValue());
+        assertEquals("templateValue-code", submap.get(String.class, "code").getValue());
+        assertEquals("templateValue-codeSpace", submap.get(String.class, "code-space").getValue());
 
-        Assert.assertEquals(0, descriptionMap.get("referencesystem-object").get(0).intValue());
+        assertEquals(0, descriptionMap.get("referencesystem-object").get(0).intValue());
 
         // list of objects
-        Assert.assertEquals(2, parent.size("referencesystem-object-list"));
+        assertEquals(2, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = parent.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
     }
 
     @Test
@@ -158,41 +151,39 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         service.merge(parent, children, descriptionMap);
 
         // simple fields
-        Assert.assertEquals(
+        assertEquals(
                 "the-identifier-single", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("99", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals("99", parent.get(String.class, "number-field").getValue());
+        assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
         // Should be updated list simple fields
-        Assert.assertEquals(5, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(5, parent.size("refsystem-as-list"));
+        assertEquals(
                 "template-value01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "template--value02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 2).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 3).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 4).getValue());
 
-        Assert.assertEquals(0, descriptionMap.get("refsystem-as-list").get(0).intValue());
-        Assert.assertEquals(1, descriptionMap.get("refsystem-as-list").get(1).intValue());
+        assertEquals(0, descriptionMap.get("refsystem-as-list").get(0).intValue());
+        assertEquals(1, descriptionMap.get("refsystem-as-list").get(1).intValue());
         // Object fields
-        Assert.assertEquals(
+        assertEquals(
                 "object-code", parent.get(String.class, "referencesystem-object/code").getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "object-codeSpace",
                 parent.get(String.class, "referencesystem-object/code-space").getValue());
         // list of objects
-        Assert.assertEquals(2, parent.size("referencesystem-object-list"));
+        assertEquals(2, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = parent.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
     }
 
     @Test
@@ -209,53 +200,49 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         service.merge(parent, children, descriptionMap);
 
         // simple fields
-        Assert.assertEquals(
+        assertEquals(
                 "the-identifier-single", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("99", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals("99", parent.get(String.class, "number-field").getValue());
+        assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
         // list simple fields
-        Assert.assertEquals(3, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(3, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
         // Object fields
-        Assert.assertEquals(
+        assertEquals(
                 "object-code", parent.get(String.class, "referencesystem-object/code").getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "object-codeSpace",
                 parent.get(String.class, "referencesystem-object/code-space").getValue());
         // Should be updated list of objects
-        Assert.assertEquals(4, parent.size("referencesystem-object-list"));
+        assertEquals(4, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submapTemplateOne = parent.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submapTemplateTwo = parent.subMap("referencesystem-object-list", 1);
         ComplexMetadataMap submapUserInputOne = parent.subMap("referencesystem-object-list", 2);
         ComplexMetadataMap submapUserInputTwo = parent.subMap("referencesystem-object-list", 3);
-        Assert.assertEquals(
-                "list-objectcode01", submapUserInputOne.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("list-objectcode01", submapUserInputOne.get(String.class, "code").getValue());
+        assertEquals(
                 "list-objectcodeSpace01",
                 submapUserInputOne.get(String.class, "code-space").getValue());
-        Assert.assertEquals(
-                "list-objectcode02", submapUserInputTwo.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("list-objectcode02", submapUserInputTwo.get(String.class, "code").getValue());
+        assertEquals(
                 "list-objectcodeSpace02",
                 submapUserInputTwo.get(String.class, "code-space").getValue());
-        Assert.assertEquals(
-                "template-code01", submapTemplateOne.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("template-code01", submapTemplateOne.get(String.class, "code").getValue());
+        assertEquals(
                 "template-codespace01",
                 submapTemplateOne.get(String.class, "code-space").getValue());
-        Assert.assertEquals(
-                "template-code02", submapTemplateTwo.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("template-code02", submapTemplateTwo.get(String.class, "code").getValue());
+        assertEquals(
                 "template-codespace02",
                 submapTemplateTwo.get(String.class, "code-space").getValue());
 
-        Assert.assertEquals(0, descriptionMap.get("referencesystem-object-list").get(0).intValue());
-        Assert.assertEquals(1, descriptionMap.get("referencesystem-object-list").get(1).intValue());
+        assertEquals(0, descriptionMap.get("referencesystem-object-list").get(0).intValue());
+        assertEquals(1, descriptionMap.get("referencesystem-object-list").get(1).intValue());
     }
 
     @Test
@@ -271,31 +258,26 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         service.merge(parent, children, new HashMap<>());
 
         // list of objects
-        Assert.assertEquals(2, parent.size("referencesystem-object-list"));
+        assertEquals(2, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = parent.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
         // Should be updated list of nested objects
-        Assert.assertEquals(1, parent.size("feature-catalog/feature-attribute"));
+        assertEquals(1, parent.size("feature-catalog/feature-attribute"));
         ComplexMetadataMap submapTemplate = parent.subMap("feature-catalog/feature-attribute", 0);
-        Assert.assertEquals(
-                "template-identifier", submapTemplate.get(String.class, "name").getValue());
-        Assert.assertEquals("Geometry", submapTemplate.get(String.class, "type").getValue());
-        Assert.assertEquals(2, submapTemplate.size("domain"));
+        assertEquals("template-identifier", submapTemplate.get(String.class, "name").getValue());
+        assertEquals("Geometry", submapTemplate.get(String.class, "type").getValue());
+        assertEquals(2, submapTemplate.size("domain"));
         ComplexMetadataMap submapdomain01 = submapTemplate.subMap("domain", 0);
         ComplexMetadataMap submapdomain02 = submapTemplate.subMap("domain", 1);
-        Assert.assertEquals(
-                "template-domain-code01", submapdomain01.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("template-domain-code01", submapdomain01.get(String.class, "code").getValue());
+        assertEquals(
                 "template-domain-code01", submapdomain01.get(String.class, "value").getValue());
-        Assert.assertEquals(
-                "template-domain-code02", submapdomain02.get(String.class, "code").getValue());
-        Assert.assertEquals(
+        assertEquals("template-domain-code02", submapdomain02.get(String.class, "code").getValue());
+        assertEquals(
                 "template-domain-code02", submapdomain02.get(String.class, "value").getValue());
     }
 
@@ -319,48 +301,47 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         // LINK
         service.merge(parent, children, derivedAtts);
 
-        Assert.assertEquals(
+        assertEquals(
                 "template-identifier", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("77", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals(
-                "Or select this row", parent.get(String.class, "dropdown-field").getValue());
-        Assert.assertEquals(0, derivedAtts.get("identifier-single").get(0).intValue());
-        Assert.assertEquals(0, derivedAtts.get("number-field").get(0).intValue());
-        Assert.assertEquals(0, derivedAtts.get("dropdown-field").get(0).intValue());
+        assertEquals("77", parent.get(String.class, "number-field").getValue());
+        assertEquals("Or select this row", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals(0, derivedAtts.get("identifier-single").get(0).intValue());
+        assertEquals(0, derivedAtts.get("number-field").get(0).intValue());
+        assertEquals(0, derivedAtts.get("dropdown-field").get(0).intValue());
 
-        Assert.assertEquals(5, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(5, parent.size("refsystem-as-list"));
+        assertEquals(
                 "template-value01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "template--value02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 2).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 3).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 4).getValue());
-        Assert.assertEquals(0, derivedAtts.get("refsystem-as-list").get(0).intValue());
-        Assert.assertEquals(1, derivedAtts.get("refsystem-as-list").get(1).intValue());
+        assertEquals(0, derivedAtts.get("refsystem-as-list").get(0).intValue());
+        assertEquals(1, derivedAtts.get("refsystem-as-list").get(1).intValue());
 
         // UNLINK
-        service.merge(parent, new ArrayList<ComplexMetadataMap>(), derivedAtts);
+        service.merge(parent, new ArrayList<>(), derivedAtts);
 
-        Assert.assertEquals(null, parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals(null, parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals(null, parent.get(String.class, "dropdown-field").getValue());
-        Assert.assertNull(derivedAtts.get("identifier-single"));
-        Assert.assertNull(derivedAtts.get("number-field"));
-        Assert.assertNull(derivedAtts.get("dropdown-field"));
+        assertNull(parent.get(String.class, "identifier-single").getValue());
+        assertNull(parent.get(String.class, "number-field").getValue());
+        assertNull(parent.get(String.class, "dropdown-field").getValue());
+        assertNull(derivedAtts.get("identifier-single"));
+        assertNull(derivedAtts.get("number-field"));
+        assertNull(derivedAtts.get("dropdown-field"));
 
-        Assert.assertEquals(3, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(3, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
 
-        Assert.assertNull(derivedAtts.get("refsystem-as-list"));
+        assertNull(derivedAtts.get("refsystem-as-list"));
     }
 
     @Test
@@ -476,45 +457,43 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
         assertNull(parent.subMap("doesn't exist either").get(String.class, "duh").getValue());
 
         // simple fields original values
-        Assert.assertEquals(
+        assertEquals(
                 "the-identifier-single", parent.get(String.class, "identifier-single").getValue());
-        Assert.assertEquals("99", parent.get(String.class, "number-field").getValue());
-        Assert.assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
+        assertEquals("99", parent.get(String.class, "number-field").getValue());
+        assertEquals("Select me", parent.get(String.class, "dropdown-field").getValue());
 
         // list simple fields
-        Assert.assertEquals(3, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(3, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-02", parent.get(String.class, "refsystem-as-list", 1).getValue());
-        Assert.assertEquals(
+        assertEquals(
                 "list-refsystem-03", parent.get(String.class, "refsystem-as-list", 2).getValue());
         // Object fields
         ComplexMetadataMap submap = parent.subMap("referencesystem-object");
-        Assert.assertEquals("object-code", submap.get(String.class, "code").getValue());
-        Assert.assertEquals("object-codeSpace", submap.get(String.class, "code-space").getValue());
+        assertEquals("object-code", submap.get(String.class, "code").getValue());
+        assertEquals("object-codeSpace", submap.get(String.class, "code-space").getValue());
         // list of objects
-        Assert.assertEquals(2, parent.size("referencesystem-object-list"));
+        assertEquals(2, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = parent.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
         // list of nested objects
-        Assert.assertEquals(2, parent.size("feature-catalog"));
+        assertEquals(2, parent.size("feature-catalog"));
         ComplexMetadataMap submapNested01 = parent.subMap("feature-catalog/feature-attribute", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "First object catalog object", submapNested01.get(String.class, "name").getValue());
-        Assert.assertEquals("String", submapNested01.get(String.class, "type").getValue());
-        Assert.assertEquals(1, submapNested01.size("domain"));
+        assertEquals("String", submapNested01.get(String.class, "type").getValue());
+        assertEquals(1, submapNested01.size("domain"));
         ComplexMetadataMap submapdomain = submapNested01.subMap("domain", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "a domain for first catalog object",
                 submapdomain.get(String.class, "code").getValue());
-        Assert.assertEquals("15", submapdomain.get(String.class, "value").getValue());
+        assertEquals("15", submapdomain.get(String.class, "value").getValue());
     }
 
     @Test
@@ -543,26 +522,25 @@ public class ComplexMetadataServiceTest extends AbstractMetadataTest {
 
     public void assertFixRepeat(ComplexMetadataMap parent) {
         // list simple fields
-        Assert.assertEquals(1, parent.size("refsystem-as-list"));
-        Assert.assertEquals(
+        assertEquals(1, parent.size("refsystem-as-list"));
+        assertEquals(
                 "list-refsystem-01", parent.get(String.class, "refsystem-as-list", 0).getValue());
         // list of objects
-        Assert.assertEquals(1, parent.size("referencesystem-object-list"));
+        assertEquals(1, parent.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = parent.subMap("referencesystem-object-list", 0);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
-        Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
+        assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
+        assertEquals("list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
         // list of nested objects
-        Assert.assertEquals(1, parent.size("feature-catalog"));
+        assertEquals(1, parent.size("feature-catalog"));
         ComplexMetadataMap submapNested01 = parent.subMap("feature-catalog/feature-attribute", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "First object catalog object", submapNested01.get(String.class, "name").getValue());
-        Assert.assertEquals("String", submapNested01.get(String.class, "type").getValue());
-        Assert.assertEquals(1, submapNested01.size("domain"));
+        assertEquals("String", submapNested01.get(String.class, "type").getValue());
+        assertEquals(1, submapNested01.size("domain"));
         ComplexMetadataMap submapdomain = submapNested01.subMap("domain", 0);
-        Assert.assertEquals(
+        assertEquals(
                 "a domain for first catalog object",
                 submapdomain.get(String.class, "code").getValue());
-        Assert.assertEquals("15", submapdomain.get(String.class, "value").getValue());
+        assertEquals("15", submapdomain.get(String.class, "value").getValue());
     }
 }

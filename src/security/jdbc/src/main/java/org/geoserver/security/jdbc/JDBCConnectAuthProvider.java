@@ -45,6 +45,7 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
+    @SuppressWarnings({"PMD.EmptyControlStatement", "PMD.UnusedLocalVariable"})
     @Override
     public Authentication authenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {

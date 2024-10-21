@@ -629,11 +629,13 @@ public class LegacyCatalogImporter {
         }
 
         for (Map<String, Object> stringObjectMap : cInfoReader.coverageDimensions()) {
-            Map map = (Map) stringObjectMap;
             CoverageDimensionInfo cd = factory.createCoverageDimension();
-            cd.setName((String) map.get("name"));
-            cd.setDescription((String) map.get("description"));
-            cd.setRange(NumberRange.create((Double) map.get("min"), (Double) map.get("max")));
+            cd.setName((String) stringObjectMap.get("name"));
+            cd.setDescription((String) stringObjectMap.get("description"));
+            cd.setRange(
+                    NumberRange.create(
+                            (Double) stringObjectMap.get("min"),
+                            (Double) stringObjectMap.get("max")));
             coverage.getDimensions().add(cd);
         }
 

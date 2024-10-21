@@ -81,7 +81,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
         Form<?> formCustom = new Form<>("formCustom");
         add(formCustom);
 
-        TextField<String> ruleList = new TextField<>("ruleList", new Model<String>());
+        TextField<String> ruleList = new TextField<>("ruleList", new Model<>());
         formCustom.add(ruleList);
 
         FileUploadField csvCustom = new FileUploadField("customCsv");
@@ -92,7 +92,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
         Form<?> formClear = new Form<>("formClear");
         add(formClear);
 
-        CheckBox clearTemplates = new CheckBox("clearTemplates", new Model<Boolean>());
+        CheckBox clearTemplates = new CheckBox("clearTemplates", new Model<>());
 
         formClear.add(clearTemplates);
 
@@ -374,7 +374,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
     }
 
     private AjaxLink<Object> fixButton(GeoServerDialog dialog) {
-        return new AjaxLink<Object>("fix") {
+        return new AjaxLink<>("fix") {
             private static final long serialVersionUID = 4636152085574084063L;
 
             @Override
@@ -406,7 +406,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
                             @Override
                             public void onClose(AjaxRequestTarget target) {
                                 if (ok) {
-                                    GlobalModel<Float> progressModel = new GlobalModel<Float>(0.0f);
+                                    GlobalModel<Float> progressModel = new GlobalModel<>(0.0f);
                                     MetaDataBulkService service =
                                             GeoServerApplication.get()
                                                     .getApplicationContext()
@@ -444,7 +444,7 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
                 optionsGeonetwork.add(geonetwork.getName());
             }
         }
-        return new DropDownChoice<>("geonetworkName", new Model<String>(), optionsGeonetwork);
+        return new DropDownChoice<>("geonetworkName", new Model<>(), optionsGeonetwork);
     }
 
     private int numberOfLayers() {

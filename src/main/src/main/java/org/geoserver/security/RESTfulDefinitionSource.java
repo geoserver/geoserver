@@ -266,7 +266,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
     }
 
     private String substringBeforeLast(String str, String separator) {
-        if (str == null || separator == null || str.length() == 0 || separator.length() == 0) {
+        if (str == null || separator == null || str.isEmpty() || separator.isEmpty()) {
             return str;
         }
         int pos = str.lastIndexOf(separator);
@@ -277,10 +277,10 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
     }
 
     private String substringAfterLast(String str, String separator) {
-        if (str == null || str.length() == 0) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
-        if (separator == null || separator.length() == 0) {
+        if (separator == null || separator.isEmpty()) {
             return "";
         }
         int pos = str.lastIndexOf(separator);

@@ -155,7 +155,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         container.add(table);
 
         grids =
-                new ListView<XMLGridSubset>("gridSubsets", new ArrayList<>(model.getObject())) {
+                new ListView<>("gridSubsets", new ArrayList<>(model.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -196,7 +196,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         final Label gridSetLabel =
                                 new Label(
                                         "gridSet",
-                                        new PropertyModel<String>(item.getModel(), "gridSetName"));
+                                        new PropertyModel<>(item.getModel(), "gridSetName"));
                         if (!gridsetExists) {
                             gridSetLabel.add(
                                     new AttributeModifier(
@@ -291,7 +291,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                             gridSetBounds =
                                     new Label(
                                             "bounds",
-                                            new PropertyModel<Integer>(item.getModel(), "extent"));
+                                            new PropertyModel<>(item.getModel(), "extent"));
                         } else {
                             gridSetBounds =
                                     new Label(
@@ -301,8 +301,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         item.add(gridSetBounds);
 
                         final Component removeLink =
-                                new ImageAjaxLink<Object>(
-                                        "removeLink", GWCIconFactory.DELETE_ICON) {
+                                new ImageAjaxLink<>("removeLink", GWCIconFactory.DELETE_ICON) {
 
                                     private static final long serialVersionUID =
                                             -5072597940769821889L;

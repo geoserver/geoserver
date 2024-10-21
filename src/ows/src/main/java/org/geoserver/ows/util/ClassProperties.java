@@ -58,9 +58,9 @@ public class ClassProperties {
 
         // avoid keeping lots of useless empty arrays in memory for
         // the long term, use just one
-        if (methods.size() == 0) methods = EMPTY;
-        if (getters.size() == 0) getters = EMPTY;
-        if (setters.size() == 0) setters = EMPTY;
+        if (methods.isEmpty()) methods = EMPTY;
+        if (getters.isEmpty()) getters = EMPTY;
+        if (setters.isEmpty()) setters = EMPTY;
     }
 
     /**

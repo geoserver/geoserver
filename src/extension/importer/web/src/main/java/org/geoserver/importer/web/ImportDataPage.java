@@ -83,16 +83,16 @@ public class ImportDataPage extends GeoServerSecuredPage {
     String storeName;
 
     ImportContextTable importTable;
-    AjaxLink removeImportLink;
+    AjaxLink<?> removeImportLink;
 
     GeoServerDialog dialog;
 
     public ImportDataPage(PageParameters params) {
-        Form form = new Form("form");
+        Form<Object> form = new Form<>("form");
         add(form);
 
         sourceList =
-                new AjaxRadioPanel<Source>(
+                new AjaxRadioPanel<>(
                         "sources", Arrays.asList(Source.values()), Source.SPATIAL_FILES) {
                     @Override
                     protected void onRadioSelect(AjaxRequestTarget target, Source newSelection) {
@@ -158,7 +158,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         WorkspaceInfo ws = workspace.getObject();
         store = new StoreModel<>(ws != null ? catalog.getDefaultDataStore(ws) : null);
         storeChoice =
-                new DropDownChoice<StoreInfo>(
+                new DropDownChoice<>(
                         "store",
                         store,
                         new EnabledStoresModel(workspace),
@@ -166,14 +166,14 @@ public class ImportDataPage extends GeoServerSecuredPage {
                     @Override
                     protected String getNullValidKey() {
                         return ImportDataPage.class.getSimpleName() + "." + super.getNullValidKey();
-                    };
+                    }
                 };
         storeChoice.setOutputMarkupId(true);
 
         storeChoice.setNullValid(true);
         form.add(storeChoice);
 
-        form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
+        form.add(statusLabel = new Label("status", new Model<>()).setOutputMarkupId(true));
         form.add(new SubmitLink(form));
         form.add(new CancelLink().setOutputMarkupId(true).setEnabled(false));
 
@@ -194,7 +194,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
                         removeImportLink.setEnabled(!getSelection().isEmpty());
                         target.add(removeImportLink);
-                    };
+                    }
                 };
         importTable.setOutputMarkupId(true);
         importTable.setFilterable(false);
@@ -557,7 +557,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
                             statusLabel.setDefaultModelObject(msg);
                             target.add(statusLabel);
-                        };
+                        }
 
                         @Override
                         public boolean canCallListener(Component component) {
@@ -579,7 +579,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         protected void disableLink(ComponentTag tag) {
             super.disableLink(tag);
             ImporterWebUtils.disableLink(tag);
-        };
+        }
 
         @Override
         public void onClick(AjaxRequestTarget target) {

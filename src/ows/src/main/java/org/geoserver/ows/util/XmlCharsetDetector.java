@@ -81,19 +81,19 @@ public class XmlCharsetDetector {
             // But using StringBuffer will make this uglier, not?
             LOGGER.finer(
                     "First 4 bytes of XML doc are : "
-                            + Integer.toHexString((int) b4[0] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[0] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[0]
                             + "') "
-                            + Integer.toHexString((int) b4[1] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[1] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[1]
                             + "') "
-                            + Integer.toHexString((int) b4[2] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[2] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[2]
                             + "') "
-                            + Integer.toHexString((int) b4[3] & 0xff).toUpperCase()
+                            + Integer.toHexString(b4[3] & 0xff).toUpperCase()
                             + " ('"
                             + (char) b4[3]
                             + "')");
@@ -118,7 +118,7 @@ public class XmlCharsetDetector {
         encInfo.copyFrom(getEncodingName(b4, count));
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Charset detection phase 1. Inferred encoding: " + encInfo.toString());
+            LOGGER.fine("Charset detection phase 1. Inferred encoding: " + encInfo);
         }
 
         // Rewinding to beginning of data
@@ -182,7 +182,7 @@ public class XmlCharsetDetector {
          */
         if ("ISO-10646-UCS-4".equals(ENCODING)) {
             if (null != isBigEndian) {
-                boolean isBE = isBigEndian.booleanValue();
+                boolean isBE = isBigEndian;
 
                 if (isBE) {
                     reader = new UCSReader(stream, UCSReader.UCS4BE);
@@ -301,7 +301,7 @@ public class XmlCharsetDetector {
         // UCS-2|4 charsets are handled with custom reader
         if ("ISO-10646-UCS-4".equals(charset)) {
             if (null != isBigEndian) {
-                boolean isBE = isBigEndian.booleanValue();
+                boolean isBE = isBigEndian;
 
                 if (isBE) {
                     reader = new UCSReader(istream, UCSReader.UCS4BE);
@@ -315,7 +315,7 @@ public class XmlCharsetDetector {
             }
         } else if ("ISO-10646-UCS-2".equals(charset)) {
             if (null != isBigEndian) {
-                boolean isBE = isBigEndian.booleanValue();
+                boolean isBE = isBigEndian;
 
                 if (isBE) {
                     reader = new UCSReader(istream, UCSReader.UCS4BE);
@@ -463,7 +463,7 @@ public class XmlCharsetDetector {
              */
             if ((6 > count) || (!"<?xml ".equals(sw.toString()))) {
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer("Invalid(?) XML declaration: " + sw.toString() + ".");
+                    LOGGER.finer("Invalid(?) XML declaration: " + sw + ".");
                 }
 
                 return null;

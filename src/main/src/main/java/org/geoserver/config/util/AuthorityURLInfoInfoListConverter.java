@@ -73,7 +73,7 @@ public class AuthorityURLInfoInfoListConverter {
             array.add(jsonAuth);
         }
 
-        if (array.size() == 0) {
+        if (array.isEmpty()) {
             // list was made of only null objects?
             return null;
         }

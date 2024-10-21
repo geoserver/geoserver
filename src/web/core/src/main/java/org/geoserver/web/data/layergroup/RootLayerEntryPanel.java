@@ -34,7 +34,7 @@ public class RootLayerEntryPanel extends Panel {
         setOutputMarkupId(true);
 
         final TextField<LayerInfo> rootLayerField =
-                new TextField<LayerInfo>("rootLayer") {
+                new TextField<>("rootLayer") {
                     private static final long serialVersionUID = -8033503312874828019L;
 
                     @SuppressWarnings("unchecked")
@@ -68,7 +68,7 @@ public class RootLayerEntryPanel extends Panel {
         }
 
         DropDownChoice<StyleInfo> styleField =
-                new DropDownChoice<StyleInfo>("rootLayerStyle", styles) {
+                new DropDownChoice<>("rootLayerStyle", styles) {
                     private static final long serialVersionUID = 1190134258726393181L;
 
                     @SuppressWarnings("unchecked")
@@ -87,7 +87,7 @@ public class RootLayerEntryPanel extends Panel {
         final GSModalWindow popupWindow = new GSModalWindow("popup");
         add(popupWindow);
         add(
-                new AjaxLink<Object>("add") {
+                new AjaxLink<>("add") {
                     private static final long serialVersionUID = 723787950130153037L;
 
                     @Override

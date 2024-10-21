@@ -20,6 +20,6 @@ public class PlainCodePage extends WebPage {
             final GSModalWindow container, final GSModalWindow responseWindow, String initialXml) {
         this.code = initialXml;
 
-        add(new Label("code", new PropertyModel(this, "code")));
+        add(new Label("code", new PropertyModel<>(this, "code")));
     }
 }

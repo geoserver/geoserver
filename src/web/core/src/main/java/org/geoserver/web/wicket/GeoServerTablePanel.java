@@ -156,7 +156,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter =
-                new TextField<String>("filter", new Model<>()) {
+                new TextField<>("filter", new Model<>()) {
                     private static final long serialVersionUID = -1252520208030081584L;
 
                     @Override
@@ -201,7 +201,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer.setOutputMarkupId(true);
         add(listContainer);
         dataView =
-                new DataView<T>("items", dataProvider) {
+                new DataView<>("items", dataProvider) {
                     private static final long serialVersionUID = 7201317388415148823L;
 
                     @Override
@@ -248,7 +248,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     protected ListView<Property<T>> buildLinksListView(
             final GeoServerDataProvider<T> dataProvider) {
-        return new ListView<Property<T>>("sortableLinks", dataProvider.getVisibleProperties()) {
+        return new ListView<>("sortableLinks", dataProvider.getVisibleProperties()) {
 
             private static final long serialVersionUID = -7565457802398721254L;
 
@@ -276,7 +276,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         // make sure we don't serialize the list, but get it fresh from the dataProvider,
         // to avoid serialization issues seen in GEOS-8273
         IModel<List<Property<T>>> propertyList =
-                new LoadableDetachableModel<List<Property<T>>>() {
+                new LoadableDetachableModel<>() {
 
                     @Override
                     protected List<Property<T>> load() {
@@ -285,7 +285,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 };
         // create one component per viewable property
         ListView<Property<T>> items =
-                new ListView<Property<T>>("itemProperties", propertyList) {
+                new ListView<>("itemProperties", propertyList) {
 
                     private static final long serialVersionUID = -4552413955986008990L;
 
@@ -561,7 +561,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * direction when clicked again
      */
     <S> AjaxLink<S> sortLink(final GeoServerDataProvider<T> dataProvider, ListItem<S> item) {
-        return new AjaxLink<S>("link", item.getModel()) {
+        return new AjaxLink<>("link", item.getModel()) {
 
             private static final long serialVersionUID = -6180419488076488737L;
 
@@ -735,7 +735,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             super(id);
 
             add(navigator = updatingPagingNavigator());
-            add(matched = new Label("filterMatch", new Model<String>()));
+            add(matched = new Label("filterMatch", new Model<>()));
             updateMatched();
         }
 

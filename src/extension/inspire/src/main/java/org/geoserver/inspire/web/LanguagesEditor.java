@@ -31,14 +31,14 @@ public class LanguagesEditor extends FormComponentPanel<String> {
         } else {
             langList = new ArrayList<>();
         }
-        languages = new ListMultipleChoice<>("languages", new Model<ArrayList<String>>(), langList);
+        languages = new ListMultipleChoice<>("languages", new Model<>(), langList);
 
         languages.setOutputMarkupId(true);
         add(languages);
 
         langChoice = new LanguageDropDownChoice("selectLanguage", new Model<>());
         langChoice.setChoiceRenderer(
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public String getIdValue(String object, int index) {
                         return object;

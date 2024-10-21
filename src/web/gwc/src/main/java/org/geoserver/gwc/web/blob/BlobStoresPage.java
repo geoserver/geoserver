@@ -54,7 +54,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
 
         // the add button
         header.add(
-                new AjaxLink<Object>("addNew") {
+                new AjaxLink<>("addNew") {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -177,8 +177,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 String id, IModel<BlobStoreInfo> itemModel, Property<BlobStoreInfo> property) {
             final BlobStoreInfo blobStore = itemModel.getObject();
             if (property == BlobStoresProvider.ID) {
-                return new SimpleAjaxLink<BlobStoreInfo>(
-                        id, itemModel, property.getModel(itemModel)) {
+                return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -206,7 +205,7 @@ public class BlobStoresPage extends GeoServerSecuredPage {
 
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
-            remove.setEnabled(blobStoresPanel.getSelection().size() > 0);
+            remove.setEnabled(!blobStoresPanel.getSelection().isEmpty());
             target.add(remove);
         }
     }

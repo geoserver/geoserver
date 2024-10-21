@@ -124,7 +124,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 try {
                     requestedUpdateSequence = Long.parseLong(request.getUpdateSequence());
                 } catch (NumberFormatException e) {
-                    if (request.getUpdateSequence().length() == 0) requestedUpdateSequence = 0;
+                    if (request.getUpdateSequence().isEmpty()) requestedUpdateSequence = 0;
                     else
                         throw new WcsException(
                                 "Invalid update sequence number format, " + "should be an integer",

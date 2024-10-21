@@ -25,7 +25,6 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -252,7 +251,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
             add(
                     lgEntryPanel =
-                            new LayerGroupEntryPanel<LayerGroupInfo>(
+                            new LayerGroupEntryPanel<>(
                                     "layers", getPublishedInfo(), wsChoice.getModel()) {
 
                                 @Override
@@ -275,8 +274,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             add(
                     new KeywordsEditor(
                             "keywords",
-                            LiveCollectionModel.list(
-                                    new PropertyModel<List<KeywordInfo>>(myModel, "keywords"))));
+                            LiveCollectionModel.list(new PropertyModel<>(myModel, "keywords"))));
 
             if (!isAuthenticatedAsAdmin()) {
                 if (isNew) {
@@ -325,7 +323,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     @Override
     protected void doSaveInternal() {
         // validation
-        if (lgEntryPanel.getEntries().size() == 0) {
+        if (lgEntryPanel.getEntries().isEmpty()) {
             error(new ParamResourceModel("oneLayerMinimum", getPage()).getObject());
             return;
         }

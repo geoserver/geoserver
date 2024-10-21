@@ -86,20 +86,20 @@ public class LegendUtils {
     /** Legend layouts */
     public enum LegendLayout {
         HORIZONTAL,
-        VERTICAL;
+        VERTICAL
     }
 
     public enum VAlign {
         TOP,
         MIDDLE,
-        BOTTOM;
+        BOTTOM
     }
 
     public enum HAlign {
         LEFT,
         CENTERED,
         RIGHT,
-        JUSTIFIED;
+        JUSTIFIED
     }
 
     /** Default {@link Font} name for legends. */

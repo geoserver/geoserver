@@ -152,7 +152,7 @@ public class GeoServerSecurityFilterChainProxy
     @Override
     public void afterPropertiesSet() {
         createFilterChain();
-    };
+    }
 
     void createFilterChain() {
 

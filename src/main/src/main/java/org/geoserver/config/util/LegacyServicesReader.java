@@ -103,8 +103,8 @@ public class LegacyServicesReader {
             value("JaiMemoryCapacity", globalElement, global, Integer.class);
             Integer jmc = (Integer) global.get("JaiMemoryCapacity");
             if (jmc != null) {
-                double d = (double) (jmc / Runtime.getRuntime().maxMemory());
-                d = d > 1d ? 1d : d;
+                double d = ((double) jmc / Runtime.getRuntime().maxMemory());
+                d = Math.min(d, 1d);
                 global.put("JaiMemoryCapacity", d);
             }
         } catch (Exception e) {

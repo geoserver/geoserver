@@ -57,7 +57,7 @@ public class PreviewLayer {
         Vector,
         Remote,
         Group
-    };
+    }
 
     LayerInfo layerInfo;
 
@@ -249,7 +249,7 @@ public class PreviewLayer {
         params.put("srs", String.valueOf(request.getSRS()));
         params.put(
                 "styles",
-                request.getStyles().size() > 0 ? request.getStyles().get(0).getName() : "");
+                !request.getStyles().isEmpty() ? request.getStyles().get(0).getName() : "");
         // allow customization of parameters
         parameterCustomizer.accept(request, params);
         return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);

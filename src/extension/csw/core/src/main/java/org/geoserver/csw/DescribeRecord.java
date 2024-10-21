@@ -34,7 +34,7 @@ public class DescribeRecord {
      * for the moment here is a set of different ways to refer to XML schema
      */
     static final Set<String> SUPPORTED_SCHEMA_LANGUAGES =
-            new HashSet<String>() {
+            new HashSet<>() {
                 /** */
                 private static final long serialVersionUID = -7972590028331744087L;
 

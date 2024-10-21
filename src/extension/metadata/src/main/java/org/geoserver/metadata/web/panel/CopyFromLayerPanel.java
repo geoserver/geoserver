@@ -68,7 +68,7 @@ public abstract class CopyFromLayerPanel extends Panel {
                 layers.add(res.prefixedName());
             }
         }
-        return new DropDownChoice<>("layer", new Model<String>(""), new ArrayList<>(layers));
+        return new DropDownChoice<>("layer", new Model<>(""), new ArrayList<>(layers));
     }
 
     private AjaxSubmitLink createCopyAction(

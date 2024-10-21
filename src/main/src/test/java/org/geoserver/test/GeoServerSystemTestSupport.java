@@ -1043,7 +1043,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         int status = response.getStatus();
         if (responseCode != status) {
             String content = response.getContentAsString();
-            if (content == null || content.length() == 0) {
+            if (content == null || content.isEmpty()) {
                 throw new ServiceException(
                         "expected status <" + responseCode + "> but was <" + status + ">");
             } else {
@@ -1345,7 +1345,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         int status = response.getStatus();
         if (statusCode != status) {
             String content = response.getContentAsString();
-            if (content == null || content.length() == 0) {
+            if (content == null || content.isEmpty()) {
                 throw new ServiceException(
                         "expected status <" + statusCode + "> but was <" + status + ">");
             } else {
@@ -1362,7 +1362,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         int status = response.getStatus();
         if (statusCode != status) {
             String content = response.getContentAsString();
-            if (content == null || content.length() == 0) {
+            if (content == null || content.isEmpty()) {
                 throw new ServiceException(
                         "expected status <" + statusCode + "> but was <" + status + ">");
             } else {
@@ -2351,10 +2351,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     /** Parses a stream into a String */
     protected String string(InputStream input) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        char[] buf = new char[8192];
+        StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 sb.append("\n");

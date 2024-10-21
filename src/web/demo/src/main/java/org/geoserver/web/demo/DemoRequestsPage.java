@@ -225,7 +225,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
                         "demoRequestsList",
                         reqFileNameModel,
                         demoList,
-                        new ChoiceRenderer<String>() {
+                        new ChoiceRenderer<>() {
                             @Override
                             public String getIdValue(String obj, int index) {
                                 return obj;

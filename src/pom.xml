@@ -159,7 +159,7 @@
     <errorProneFlags></errorProneFlags>
     <errorProne.version>2.18.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
-    <pmd.version>6.42.0</pmd.version>
+    <pmd.version>7.4.0</pmd.version>
     <hsql.version>2.7.2</hsql.version>
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
@@ -2520,7 +2520,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>3.14.0</version>
+            <version>3.24.0</version>
             <executions>
               <execution>
                 <goals>
@@ -2560,8 +2560,6 @@
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
               <includeTests>true</includeTests>
-              <sourceEncoding>UTF-8</sourceEncoding>
-              <outputEncoding>UTF-8</outputEncoding>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>

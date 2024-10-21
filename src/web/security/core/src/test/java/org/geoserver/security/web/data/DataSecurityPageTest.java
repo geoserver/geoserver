@@ -6,8 +6,8 @@
 package org.geoserver.security.web.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -79,7 +79,7 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
     protected void simulateDeleteSubmit() throws Exception {
 
         DataAccessRuleDAO.get().reload();
-        assertTrue(DataAccessRuleDAO.get().getRules().size() > 0);
+        assertFalse(DataAccessRuleDAO.get().getRules().isEmpty());
 
         SelectionDataRuleRemovalLink link = (SelectionDataRuleRemovalLink) getRemoveLink();
         Method m =

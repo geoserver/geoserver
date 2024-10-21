@@ -220,6 +220,6 @@ public class RuleFilterBuilder {
 
     private boolean addRole(String role, Set<String> excluded, boolean getAllRoles) {
         boolean addRole = getAllRoles || config.getRoles().contains(role);
-        return addRole && !(excluded.contains(role));
+        return addRole && !excluded.contains(role);
     }
 }

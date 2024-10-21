@@ -65,7 +65,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
     public WPSRequestBuilder(String procName) {
         // the form
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         var model = new Model<>(new WPSRequestModel());

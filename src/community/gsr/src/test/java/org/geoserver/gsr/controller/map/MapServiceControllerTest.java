@@ -130,6 +130,6 @@ public class MapServiceControllerTest extends ControllerTest {
                                         + "/cite/MapServer/find?f=json&searchText=Ash&layers=8");
         System.out.println(result.toString());
         JSONArray results = (JSONArray) result.get("results");
-        assertTrue("Results should have one element", results.size() == 1);
+        assertEquals("Results should have one element", 1, results.size());
     }
 }

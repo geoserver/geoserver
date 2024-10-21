@@ -152,7 +152,7 @@ public class JAIPage extends ServerAdminPage {
                 new DropDownChoice<>(
                         "pngEncoderType",
                         encoders,
-                        new ChoiceRenderer<JAIInfo.PngEncoderType>() {
+                        new ChoiceRenderer<>() {
                             private static final long serialVersionUID = 1L;
 
                             @Override

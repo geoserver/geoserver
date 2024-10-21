@@ -70,7 +70,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
                 return enc.decrypt(input);
             }
         }
-    };
+    }
 
     /**
      * Look up in the Spring Context for an implementation of {@link ICryptFactory} if nothing found

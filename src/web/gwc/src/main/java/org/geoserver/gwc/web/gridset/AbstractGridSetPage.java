@@ -350,8 +350,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         public GridSetCRSPanel(String id, IModel<GridSetInfo> model) {
             super(id, new PropertyModel<>(model, "crs"));
             this.infoModel = model;
-            units = new Label("units", new Model<String>());
-            metersPerUnit = new Label("metersPerUnit", new Model<String>());
+            units = new Label("units", new Model<>());
+            metersPerUnit = new Label("metersPerUnit", new Model<>());
             units.setOutputMarkupId(true);
             metersPerUnit.setOutputMarkupId(true);
 

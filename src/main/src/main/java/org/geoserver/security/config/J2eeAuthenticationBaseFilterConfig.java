@@ -49,5 +49,5 @@ public class J2eeAuthenticationBaseFilterConfig extends PreAuthenticatedUserName
         public boolean equals(RoleSource other) {
             return other != null && other.toString().equals(toString());
         }
-    };
+    }
 }

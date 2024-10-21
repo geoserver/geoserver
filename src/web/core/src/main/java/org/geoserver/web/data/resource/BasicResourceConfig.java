@@ -28,7 +28,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -73,8 +72,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(
                 new KeywordsEditor(
                         "keywords",
-                        LiveCollectionModel.list(
-                                new PropertyModel<List<KeywordInfo>>(model, "keywords"))));
+                        LiveCollectionModel.list(new PropertyModel<>(model, "keywords"))));
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 

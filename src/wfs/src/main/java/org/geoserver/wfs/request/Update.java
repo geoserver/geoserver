@@ -13,7 +13,6 @@ import net.opengis.wfs.WfsFactory;
 import net.opengis.wfs20.UpdateType;
 import net.opengis.wfs20.Wfs20Factory;
 import org.eclipse.emf.ecore.EObject;
-import org.geoserver.wfs.request.Insert.WFS11;
 
 /**
  * Update element in a Transaction request.

@@ -57,7 +57,7 @@ public class FileInput extends Panel {
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);
         textField =
-                new AutoCompleteTextField<String>("paramValue", getFileModel(paramValue)) {
+                new AutoCompleteTextField<>("paramValue", getFileModel(paramValue)) {
                     @Override
                     protected Iterator<String> getChoices(String input) {
                         try {
@@ -137,7 +137,7 @@ public class FileInput extends Panel {
                                             target.get().add(textField);
                                             dialog.close(target.get());
                                         }
-                                    };
+                                    }
                                 };
                         chooser.setFileTableHeight(null);
                         chooser.setFilter(fileFilter);

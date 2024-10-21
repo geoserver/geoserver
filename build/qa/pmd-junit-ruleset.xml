@@ -30,7 +30,7 @@ GeoTools Junit ruleset. See https://pmd.github.io/latest/pmd_userdocs_understand
   <rule name="DisallowJunit3"
       language="java"
       message="Avoid using JUnit3"
-      class="net.sourceforge.pmd.lang.rule.XPathRule" >
+      class="net.sourceforge.pmd.lang.rule.xpath.XPathRule" >
     <description>
         Don't use JUnit3, use JUnit4 instead
     </description>

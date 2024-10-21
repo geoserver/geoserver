@@ -40,7 +40,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         LayerGroupProvider provider = new LayerGroupProvider();
         add(
                 table =
-                        new GeoServerTablePanel<LayerGroupInfo>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             private static final long serialVersionUID = 714777934301159139L;
 
@@ -121,8 +121,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(
-                new BookmarkablePageLink<LayerGroupEditPage>("addNew", LayerGroupEditPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", LayerGroupEditPage.class));
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

@@ -74,7 +74,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     /** Add appender to configuration and start listening for events. */
     public void startRecording() {
         @SuppressWarnings({
-            "resource",
+            "PMD.UnnecessaryReturn",
             "PMD.CloseResource"
         }) // current context, no need to enforce AutoClosable
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
@@ -84,8 +84,8 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         if (check == null) {
             configuration.addAppender(this);
             this.start();
-        } else if (check == this) {
-            return; // already configured, so that is okay then
+        } else if (check == this) { // NOPMD
+            // already configured, so that is okay then
         } else {
             throw new IllegalStateException(
                     "Unable to configure '"
@@ -153,15 +153,15 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     /** Remove appender from logging configuration (and stop listening for events). */
     public void stopRecording() {
         @SuppressWarnings({
-            "resource",
+            "PMD.UnnecessaryReturn",
             "PMD.CloseResource"
         }) // current context, no need to enforce AutoClosable
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration configuration = ctx.getConfiguration();
 
         Appender check = configuration.getAppender(getName());
-        if (check == null) {
-            return; // already de-configured, so nothing to do
+        if (check == null) { // NOPMD
+            // already de-configured, so nothing to do
         } else if (check == this) {
             configuration.getAppenders().remove(getName(), this);
             this.stopRecording();

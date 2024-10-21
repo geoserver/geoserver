@@ -48,7 +48,7 @@ public class GeoFenceAuthenticationProvider extends GeoServerAuthenticationProvi
 
     @Override
     public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
-        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     @Override

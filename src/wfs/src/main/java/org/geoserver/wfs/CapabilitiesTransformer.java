@@ -95,7 +95,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         FeatureTypeList,
         Filter_Capabilities,
         All
-    };
+    }
 
     static final Set<Sections> ALL_SECTIONS =
             Collections.unmodifiableSet(

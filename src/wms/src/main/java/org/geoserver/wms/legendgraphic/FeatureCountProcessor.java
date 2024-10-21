@@ -54,7 +54,7 @@ import org.geotools.util.SimpleInternationalString;
  */
 class FeatureCountProcessor {
 
-    static final StyleFactory SF = (StyleFactory) CommonFactoryFinder.getStyleFactory();
+    static final StyleFactory SF = CommonFactoryFinder.getStyleFactory();
     public static final String WIDTH = "WIDTH";
     public static final String HEIGHT = "HEIGHT";
 
@@ -284,7 +284,7 @@ class FeatureCountProcessor {
                                         }
                                     }
                                 });
-                    };
+                    }
                 };
         getMap.run(getMapRequest);
 

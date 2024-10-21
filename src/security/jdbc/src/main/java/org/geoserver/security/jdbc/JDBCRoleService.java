@@ -105,7 +105,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             dmlProps = Util.loadUniversal(file.in());
 
             String fileNameDDL = jdbcConfig.getPropertyFileNameDDL();
-            if (fileNameDDL != null && fileNameDDL.length() > 0) {
+            if (fileNameDDL != null && !fileNameDDL.isEmpty()) {
                 file =
                         checkORCreateJDBCPropertyFile(
                                 fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);

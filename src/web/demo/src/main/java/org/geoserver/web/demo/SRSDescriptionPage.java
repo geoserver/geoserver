@@ -293,7 +293,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                     }
                 });
         TabbedPanel<ITab> wktTabs =
-                new TabbedPanel<ITab>("wktTabs", tabs) {
+                new TabbedPanel<>("wktTabs", tabs) {
                     @Override
                     protected String getTabContainerCssClass() {
                         return "tab-row tab-row-compact";

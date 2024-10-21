@@ -108,7 +108,7 @@ public class GMLFileFormat extends VectorFormat {
         public Configuration getConfiguration() {
             return configuration;
         }
-    };
+    }
 
     @Override
     public FeatureReader read(ImportData data, ImportTask task) throws IOException {

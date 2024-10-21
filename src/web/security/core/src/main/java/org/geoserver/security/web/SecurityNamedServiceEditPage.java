@@ -66,7 +66,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
     class ContentPanel extends Panel {
 
         public ContentPanel(String id, IModel<T> config) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             Form<T> form = new Form<>("form", new CompoundPropertyModel<>(config));
             add(form);
@@ -95,7 +95,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
     class BasicLayoutPanel extends Panel {
 
         public BasicLayoutPanel(String id, IModel<T> config) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             add(new ContentPanel("panel", config));
         }
@@ -108,7 +108,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
     class TabbedLayoutPanel extends Panel {
 
         public TabbedLayoutPanel(String id, final IModel<T> config) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             List<ITab> tabs = new ArrayList<>();
 
@@ -147,7 +147,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
     class ErrorPanel extends Panel {
 
         public ErrorPanel(String id, final Exception error) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             add(new Label("message", new PropertyModel<>(error, "message")));
             add(new TextArea<>("stackTrace", new Model<>(handleStackTrace(error))));
@@ -162,7 +162,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
 
         public String getLabelKey() {
             return "error";
-        };
+        }
 
         String handleStackTrace(Exception error) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();

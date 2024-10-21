@@ -63,7 +63,7 @@ public class LogPage extends GeoServerSecuredPage {
 
     @SuppressWarnings("serial")
     public LogPage(PageParameters params) {
-        Form<?> form = new Form("form");
+        Form<?> form = new Form<>("form");
         add(form);
 
         /**
@@ -125,7 +125,7 @@ public class LogPage extends GeoServerSecuredPage {
         add(logs);
 
         add(
-                new Link<Object>("download") {
+                new Link<>("download") {
 
                     @Override
                     public void onClick() {

@@ -217,6 +217,7 @@ public class WorkspaceController extends AbstractCatalogController {
         return uriComponents;
     }
 
+    @SuppressWarnings("PMD.UseDiamondOperator")
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<WorkspaceInfo>(WorkspaceInfo.class) {

@@ -5,6 +5,7 @@
 package org.geoserver.metadata.data.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -54,9 +55,9 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     public void testLoad() throws IOException {
         MetadataTemplate actual = templateService.findByName("allData");
 
-        Assert.assertNotNull(actual.getName());
-        Assert.assertEquals("allData", actual.getName());
-        Assert.assertNotNull(actual.getMetadata());
+        assertNotNull(actual.getName());
+        assertEquals("allData", actual.getName());
+        assertNotNull(actual.getMetadata());
     }
 
     @Test
@@ -71,8 +72,8 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         templateService.save(metadataTemplate);
 
         MetadataTemplate actual = templateService.findByName("new-record");
-        Assert.assertEquals("new-record", actual.getName());
-        Assert.assertNotNull(actual.getMetadata());
+        assertEquals("new-record", actual.getName());
+        assertNotNull(actual.getMetadata());
 
         // assert was stored in dir
         assertEquals(nof + 1, dir.list().size());
@@ -111,7 +112,7 @@ public class TemplateServiceTest extends AbstractMetadataTest {
     @Test
     public void testUpdate() throws IOException {
         MetadataTemplate initial = templateService.findByName("simple fields");
-        Assert.assertEquals("template-identifier", initial.getMetadata().get("identifier-single"));
+        assertEquals("template-identifier", initial.getMetadata().get("identifier-single"));
         Assert.assertTrue(initial.getLinkedLayers().contains("mylayerFeatureId"));
 
         initial.getMetadata().put("identifier-single", "updated-value");
@@ -123,14 +124,14 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         IModel<ComplexMetadataMap> initialMetadataModel =
                 new Model<>(
                         new ComplexMetadataMapImpl((HashMap<String, Serializable>) initialCustom));
-        Assert.assertEquals(
+        assertEquals(
                 1, initialMetadataModel.getObject().size("feature-catalog/feature-attribute/type"));
 
         templateService.save(initial);
         templateService.update(initial, null);
 
         MetadataTemplate actual = templateService.findByName("simple fields");
-        Assert.assertEquals("updated-value", actual.getMetadata().get("identifier-single"));
+        assertEquals("updated-value", actual.getMetadata().get("identifier-single"));
 
         // check if the linked metadata is updated.
         LayerInfo myLayer = geoServer.getCatalog().getLayer("myLayerId");
@@ -139,11 +140,10 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         IModel<ComplexMetadataMap> metadataModel =
                 new Model<>(new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom));
 
-        Assert.assertEquals(
+        assertEquals(
                 "updated-value",
                 metadataModel.getObject().get(String.class, "identifier-single").getValue());
         // only linked data from the linked template should change
-        Assert.assertEquals(
-                1, metadataModel.getObject().size("feature-catalog/feature-attribute/type"));
+        assertEquals(1, metadataModel.getObject().size("feature-catalog/feature-attribute/type"));
     }
 }

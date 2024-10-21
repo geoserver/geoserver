@@ -91,7 +91,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
 
         private CoverageView coverageView;
 
-        private String name;
+        private String name; // NOPMD
 
         private boolean readOnly;
 

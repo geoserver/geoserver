@@ -88,8 +88,7 @@ public class RepeatableAttributesTablePanel extends Panel {
             Map<String, List<Integer>> derivedAtts) {
 
         GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
-                new GeoServerTablePanel<ComplexMetadataAttribute<String>>(
-                        "attributesTablePanel", dataProvider) {
+                new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
 
                     private IModel<ComplexMetadataAttribute<String>> disabledValue = null;
 

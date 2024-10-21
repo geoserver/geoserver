@@ -175,8 +175,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         queryType.setHandle((String) node.getAttributeValue("handle"));
 
         // <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
-        @SuppressWarnings("unchecked")
-        List<QName> typeNameList = new ArrayList();
+        List<QName> typeNameList = new ArrayList<>();
         typeNameList.add((QName) node.getAttributeValue("typeName"));
         queryType.setTypeName(typeNameList);
 

@@ -63,7 +63,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
         }
         this.title = pf.getTitle().toString(getLocale());
 
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
@@ -82,7 +82,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
         settings.setShowListOnFocusGain(true);
         settings.setMaxHeightInPx(100);
         processSelector =
-                new GeoServerTablePanel<FilteredProcess>("selectionTable", provider) {
+                new GeoServerTablePanel<>("selectionTable", provider) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -108,7 +108,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                             @SuppressWarnings("unchecked")
                             IModel<Object> pm = (IModel<Object>) property.getModel(itemModel);
                             TextArea<?> roles =
-                                    new TextArea<Object>("roles", pm) {
+                                    new TextArea<>("roles", pm) {
                                         @Override
                                         @SuppressWarnings("unchecked")
                                         public <C> IConverter<C> getConverter(Class<C> type) {
@@ -142,7 +142,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                                     new Fragment(id, "linkFragment", ProcessSelectionPage.this);
                             // we use a submit link to avoid losing the other edits in the form
                             Link link =
-                                    new Link("link") {
+                                    new Link<>("link") {
                                         @Override
                                         public void onClick() {
                                             FilteredProcess fp = itemModel.getObject();
@@ -182,7 +182,7 @@ public class ProcessSelectionPage extends AbstractSecurityPage {
                 };
         form.add(apply);
         Link cancel =
-                new Link("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         setResponsePage(wpsAccessRulePage);

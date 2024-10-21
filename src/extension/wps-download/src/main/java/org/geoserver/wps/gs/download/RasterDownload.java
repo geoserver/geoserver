@@ -324,8 +324,7 @@ class RasterDownload {
                     // provided what requested
 
                     final RenderedImage rasterData = gridCoverage.getRenderedImage();
-                    final GridEnvelope requestedRange =
-                            (GridEnvelope) requestedGridGeometry.getGridRange();
+                    final GridEnvelope requestedRange = requestedGridGeometry.getGridRange();
 
                     // Preliminar check between requested imageLayout and coverage imageLayout
                     final int requestedW = requestedRange.getSpan(0);
@@ -694,7 +693,7 @@ class RasterDownload {
                     MismatchedDimensionException, TransformException {
 
         RenderedImage rasterData = gridCoverage.getRenderedImage();
-        final GridEnvelope requestedRange = (GridEnvelope) requestedGridGeometry.getGridRange();
+        final GridEnvelope requestedRange = requestedGridGeometry.getGridRange();
         final int requestedW = requestedRange.getSpan(0);
         final int requestedH = requestedRange.getSpan(1);
 

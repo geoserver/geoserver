@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 import org.geotools.util.logging.Logging;
@@ -46,22 +45,18 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA),
-                        MapMLConstants.LICENSE_TITLE);
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.LICENSE_TITLE);
         TextField<String> licenseTitle = new TextField<>("licenseTitle", licenseTitleModel);
         add(licenseTitle);
 
         MapModel<String> licenseLinkModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA),
-                        MapMLConstants.LICENSE_LINK);
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.LICENSE_LINK);
         TextField<String> licenseLink = new TextField<>("licenseLink", licenseLinkModel);
         add(licenseLink);
 
         // add the checkbox to select tiled or not
         MapModel<Boolean> useTilesModel =
-                new MapModel<>(new PropertyModel<MetadataMap>(model, METADATA), "mapml.useTiles");
+                new MapModel<>(new PropertyModel<>(model, METADATA), "mapml.useTiles");
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
         useTiles.add(
                 new OnChangeAjaxBehavior() {
@@ -75,8 +70,7 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         add(useTiles);
 
         MapModel<String> mimeModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA), MapMLConstants.MAPML_MIME);
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_MIME);
         boolean useTilesFromModel =
                 Boolean.TRUE.equals(
                         model.getObject().getMetadata().get(MAPML_USE_TILES, Boolean.class));

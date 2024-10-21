@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.remote;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -92,16 +92,16 @@ public class RemoteProcessTest extends WPSTestSupport {
         assertNotNull(factory);
         Set<Name> names = factory.getNames();
         assertNotNull(names);
-        assertTrue(names.size() == 0);
+        assertEquals(0, names.size());
 
         final NameImpl name = new NameImpl("default", "Service");
         factory.registerProcess(
                 new RemoteServiceDescriptor(name, "Service", "A test service", null, null, null));
-        assertTrue(names.size() == 1);
+        assertEquals(1, names.size());
         assertTrue(names.contains(name));
 
         factory.deregisterProcess(name);
-        assertTrue(names.size() == 0);
+        assertEquals(0, names.size());
     }
 
     @Test
@@ -115,12 +115,12 @@ public class RemoteProcessTest extends WPSTestSupport {
 
         Set<Name> names = factory.getNames();
         assertNotNull(names);
-        assertTrue(names.size() == 0);
+        assertEquals(0, names.size());
 
         final NameImpl name = new NameImpl("default", "Service");
         try {
             remoteClient.execute(name, null, null, null);
-            assertTrue(names.size() == 1);
+            assertEquals(1, names.size());
             assertTrue(names.contains(name));
 
             factory.deregisterProcess(name);
@@ -128,7 +128,7 @@ public class RemoteProcessTest extends WPSTestSupport {
             LOGGER.log(Level.WARNING, "", e);
             fail(e.getLocalizedMessage());
         } finally {
-            assertTrue(names.size() == 0);
+            assertEquals(0, names.size());
         }
     }
 
@@ -169,7 +169,7 @@ public class RemoteProcessTest extends WPSTestSupport {
             assertNotNull(presence);
 
             assertTrue(presence.isAvailable());
-            assertTrue("Orchestrator Active".equals(presence.getStatus()));
+            assertEquals("Orchestrator Active", presence.getStatus());
 
             List<RemoteMachineDescriptor> remoteMachines =
                     xmppRemoteClient.getRegisteredProcessingMachines();
@@ -178,21 +178,20 @@ public class RemoteProcessTest extends WPSTestSupport {
 
             for (RemoteMachineDescriptor machine : remoteMachines) {
                 if (!"test".equals(machine.getServiceName().getNamespaceURI())) {
-                    assertTrue(xmppUserName.equals(machine.getServiceName().getLocalPart()));
+                    assertEquals(xmppUserName, machine.getServiceName().getLocalPart());
                     assertTrue(
                             Arrays.asList(serviceChannels)
                                     .contains(machine.getServiceName().getNamespaceURI()));
 
-                    assertTrue(
-                            machine.getNodeJID()
-                                    .equals(
-                                            machine.getServiceName().getNamespaceURI()
-                                                    + "@"
-                                                    + configuration.get("xmpp_bus")
-                                                    + "."
-                                                    + xmppDomain
-                                                    + "/"
-                                                    + xmppUserName));
+                    assertEquals(
+                            machine.getNodeJID(),
+                            machine.getServiceName().getNamespaceURI()
+                                    + "@"
+                                    + configuration.get("xmpp_bus")
+                                    + "."
+                                    + xmppDomain
+                                    + "/"
+                                    + xmppUserName);
                 }
             }
         } catch (Exception e) {
@@ -295,7 +294,7 @@ public class RemoteProcessTest extends WPSTestSupport {
         try {
             msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
         } catch (IOException e) {
-            assertFalse(e.getLocalizedMessage(), true);
+            fail(e.getLocalizedMessage());
         }
     }
 
@@ -354,15 +353,19 @@ public class RemoteProcessTest extends WPSTestSupport {
         try {
             msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
         } catch (IOException e) {
-            assertFalse(e.getLocalizedMessage(), true);
+            fail(e.getLocalizedMessage());
         }
 
-        assertTrue(
+        assertEquals(
                 "LoadAverage does not match!",
-                registeredProcessingMachines.get(0).getLoadAverage().equals(14.6));
-        assertTrue(
+                14.6,
+                registeredProcessingMachines.get(0).getLoadAverage(),
+                0.0);
+        assertEquals(
                 "MemoryPerc does not match!",
-                registeredProcessingMachines.get(0).getMemPercUsed().equals(89.3));
+                89.3,
+                registeredProcessingMachines.get(0).getMemPercUsed(),
+                0.0);
     }
 
     /** */

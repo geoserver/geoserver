@@ -185,7 +185,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
         // build the submit/cancel
         blobStoreForm.add(new SaveLink(originalStore, assignedLayers));
-        blobStoreForm.add(new BookmarkablePageLink<BlobStoreInfo>("cancel", BlobStoresPage.class));
+        blobStoreForm.add(new BookmarkablePageLink<>("cancel", BlobStoresPage.class));
     }
 
     protected void save(

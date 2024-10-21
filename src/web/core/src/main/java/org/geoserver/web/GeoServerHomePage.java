@@ -38,6 +38,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.INamedParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -211,7 +212,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             capsProviders = Model.ofList(new ArrayList<>());
         }
         ListView<CapabilitiesHomePageLinkProvider> capsView =
-                new ListView<CapabilitiesHomePageLinkProvider>("providedCaps", capsProviders) {
+                new ListView<>("providedCaps", capsProviders) {
                     private static final long serialVersionUID = -4859682164111586340L;
 
                     @Override
@@ -390,12 +391,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         // layer prefix)
         String workspace =
                 Optional.ofNullable(getPageParameters().get("workspace"))
-                        .map(p -> p.toString())
+                        .map(StringValue::toString)
                         .orElse(null);
 
         String layer =
                 Optional.ofNullable(getPageParameters().get("layer"))
-                        .map(p -> p.toString())
+                        .map(StringValue::toString)
                         .orElse(null);
         if (layer != null) {
             workspace = toWorkspace(workspace, layer);
@@ -502,8 +503,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         final IModel<List<GeoServerHomePageContentProvider>> contentProviders =
                 getContentProviders(GeoServerHomePageContentProvider.class);
 
-        return new ListView<GeoServerHomePageContentProvider>(
-                "contributedContent", contentProviders) {
+        return new ListView<>("contributedContent", contentProviders) {
             private static final long serialVersionUID = 3756653714268296207L;
 
             @Override
@@ -569,30 +569,25 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
             numberFormat.setGroupingUsed(true);
 
             catalogLinks.add(
-                    new BookmarkablePageLink<LayerPage>("layersLink", LayerPage.class)
+                    new BookmarkablePageLink<>("layersLink", LayerPage.class)
                             .add(new Label("nlayers", numberFormat.format(layerCount))));
-            catalogLinks.add(
-                    new BookmarkablePageLink<NewLayerPage>("addLayerLink", NewLayerPage.class));
+            catalogLinks.add(new BookmarkablePageLink<>("addLayerLink", NewLayerPage.class));
 
             catalogLinks.add(
-                    new BookmarkablePageLink<LayerGroupPage>("groupsLink", LayerGroupPage.class)
+                    new BookmarkablePageLink<>("groupsLink", LayerGroupPage.class)
                             .add(new Label("ngroups", numberFormat.format(groupCount))));
-            catalogLinks.add(
-                    new BookmarkablePageLink<LayerGroupEditPage>(
-                            "addGroupLink", LayerGroupEditPage.class));
+            catalogLinks.add(new BookmarkablePageLink<>("addGroupLink", LayerGroupEditPage.class));
 
             catalogLinks.add(
-                    new BookmarkablePageLink<StorePage>("storesLink", StorePage.class)
+                    new BookmarkablePageLink<>("storesLink", StorePage.class)
                             .add(new Label("nstores", numberFormat.format(storesCount))));
-            catalogLinks.add(
-                    new BookmarkablePageLink<NewDataPage>("addStoreLink", NewDataPage.class));
+            catalogLinks.add(new BookmarkablePageLink<>("addStoreLink", NewDataPage.class));
 
             catalogLinks.add(
-                    new BookmarkablePageLink<WorkspacePage>("workspacesLink", WorkspacePage.class)
+                    new BookmarkablePageLink<>("workspacesLink", WorkspacePage.class)
                             .add(new Label("nworkspaces", numberFormat.format(wsCount))));
             catalogLinks.add(
-                    new BookmarkablePageLink<WorkspaceNewPage>(
-                            "addWorkspaceLink", WorkspaceNewPage.class));
+                    new BookmarkablePageLink<>("addWorkspaceLink", WorkspaceNewPage.class));
             return catalogLinks;
         } finally {
             sw.stop();
@@ -635,14 +630,12 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 new Label(
                         "belongsTo",
                         new StringResourceModel(
-                                "GeoServerHomePage.belongsTo",
-                                this,
-                                new Model<HashMap<String, String>>(params)));
+                                "GeoServerHomePage.belongsTo", this, new Model<>(params)));
         belongsToMessage.setEscapeModelStrings(false);
         return belongsToMessage;
     }
 
-    private Label footerMessage(ContactInfo contactInfo, Locale locale) {
+    private Label footerMessage(ContactInfo ignoredContactInfo, Locale ignoredLocale) {
         boolean admin = getSession().isAdmin();
         if (!admin) {
             Label footerMessage = new Label("footerMessage", "");
@@ -658,9 +651,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 new Label(
                         "footerMessage",
                         new StringResourceModel(
-                                "GeoServerHomePage.footer",
-                                this,
-                                new Model<HashMap<String, String>>(params)));
+                                "GeoServerHomePage.footer", this, new Model<>(params)));
 
         footerMessage.setEscapeModelStrings(false);
         return footerMessage;
@@ -682,9 +673,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
                 new Label(
                         "footerContact",
                         new StringResourceModel(
-                                "GeoServerHomePage.footerContact",
-                                this,
-                                new Model<HashMap<String, String>>(params)));
+                                "GeoServerHomePage.footerContact", this, new Model<>(params)));
 
         message.setEscapeModelStrings(false);
         return message;
@@ -708,7 +697,7 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
     private <T> IModel<List<T>> getContentProviders(final Class<T> providerClass) {
         IModel<List<T>> providersModel =
-                new LoadableDetachableModel<List<T>>() {
+                new LoadableDetachableModel<>() {
                     private static final long serialVersionUID = 3042209889224234562L;
 
                     @Override
@@ -781,11 +770,11 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
     /**
      * Determine layer parameter from select input.
      *
-     * @param workspaceName
+     * @param ignoredWorkspaceName
      * @param layerName
      * @return layer parameter value
      */
-    String toLayer(String workspaceName, String layerName) {
+    String toLayer(String ignoredWorkspaceName, String layerName) {
         if (!Strings.isEmpty(layerName)) {
             if (layerName.contains(":")) {
                 return layerName.substring(layerName.indexOf(":") + 1);

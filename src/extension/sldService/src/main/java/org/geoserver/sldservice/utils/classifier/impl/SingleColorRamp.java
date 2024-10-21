@@ -15,7 +15,7 @@ public abstract class SingleColorRamp implements ColorRamp {
 
     private int classNum = 0;
 
-    private List<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     @Override
     public int getNumClasses() {
@@ -40,7 +40,7 @@ public abstract class SingleColorRamp implements ColorRamp {
     }
 
     private void createRamp() {
-        double step = (225.0 / (double) classNum);
+        double step = (225.0 / classNum);
         for (int i = 1; i <= classNum; i++) {
             colors.add(getColorForIndex(step, i));
         }

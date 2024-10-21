@@ -52,7 +52,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    };
+    }
 
     protected String root() {
         return "csw?";

@@ -87,7 +87,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         assertEquals(feautureRows + 1, sheet.getPhysicalNumberOfRows());
 
         // check the header is what we expect
-        final SimpleFeatureType schema = (SimpleFeatureType) fs.getSchema();
+        final SimpleFeatureType schema = fs.getSchema();
         final Row header = sheet.getRow(0);
         assertEquals("FID", header.getCell(0).getRichStringCellValue().toString());
         for (int i = 0; i < schema.getAttributeCount(); i++) {
@@ -144,7 +144,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
                 getAsServletResponse(
                         "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");
         try (InputStream in = getBinaryInputStream(resp);
-                Workbook wb = new XSSFWorkbook(in); ) {
+                Workbook wb = new XSSFWorkbook(in)) {
             testMultipleFeatureTypes(wb);
         }
     }

@@ -52,14 +52,16 @@ public class OwsUtilsTest {
         try {
             OwsUtils.put(baz, "map", "k", "v");
             Assert.fail("null map should cause exception");
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
+            // ignore
         }
 
-        baz.map = new HashMap();
+        baz.map = new HashMap<>();
         try {
             OwsUtils.put(baz, "xyz", "k", "v");
             Assert.fail("bad property should cause exception");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
+            // ignore
         }
 
         Assert.assertTrue(baz.map.isEmpty());

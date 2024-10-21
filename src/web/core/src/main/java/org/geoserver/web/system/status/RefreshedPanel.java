@@ -68,7 +68,7 @@ public class RefreshedPanel extends Panel {
         add(time);
 
         ListView<MetricValue> list =
-                new ListView<MetricValue>("metrics", metricMdl) {
+                new ListView<>("metrics", metricMdl) {
                     private static final long serialVersionUID = -5654700538264617274L;
 
                     private int counter;
@@ -84,14 +84,13 @@ public class RefreshedPanel extends Panel {
                         item.add(
                                 new Label(
                                         "info",
-                                        new PropertyModel<MetricValue>(
+                                        new PropertyModel<>(
                                                 new MetricValueI18nDescriptionWrapper(
                                                         item.getModel().getObject(), this),
                                                 "description")),
                                 new Label(
                                         "value",
-                                        new PropertyModel<MetricValue>(
-                                                item.getModel(), "valueUnit")));
+                                        new PropertyModel<>(item.getModel(), "valueUnit")));
                         if (counter % 2 == 0) {
                             item.add(new AttributeModifier("class", "odd"));
                         } else {

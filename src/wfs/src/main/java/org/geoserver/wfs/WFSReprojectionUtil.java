@@ -6,7 +6,6 @@
 package org.geoserver.wfs;
 
 import org.geoserver.catalog.ResourcePool;
-import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
@@ -97,7 +96,7 @@ class WFSReprojectionUtil {
 
     /**
      * Convenience method, same as calling {@link #applyDefaultCRS} and then {@link
-     * #reprojectFilter(Filter, SimpleFeatureType)} in a row
+     * #reprojectFilter(Filter, FeatureType)} in a row
      */
     public static Filter normalizeFilterCRS(
             Filter filter, FeatureType schema, CoordinateReferenceSystem defaultCRS) {

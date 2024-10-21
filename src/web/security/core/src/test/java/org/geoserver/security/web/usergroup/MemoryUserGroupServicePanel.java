@@ -24,6 +24,6 @@ public class MemoryUserGroupServicePanel
     public MemoryUserGroupServicePanel(String id, IModel<MemoryUserGroupServiceConfigImpl> model) {
         super(id, model);
 
-        add(new TextField("toBeEncrypted"));
+        add(new TextField<>("toBeEncrypted"));
     }
 }

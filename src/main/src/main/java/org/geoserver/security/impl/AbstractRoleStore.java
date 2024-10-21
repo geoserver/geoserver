@@ -257,7 +257,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
             roles.remove(role);
             setModified(true);
         }
-        if (helper.user_roleMap.get(username) != null && roles != null && roles.size() == 0) {
+        if (helper.user_roleMap.get(username) != null && roles != null && roles.isEmpty()) {
             helper.user_roleMap.remove(username);
         }
     }

@@ -120,8 +120,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
         TextField<String> desicription =
                 new TextField<>(
-                        "description",
-                        new PropertyModel<String>(metadataTemplateModel, "description"));
+                        "description", new PropertyModel<>(metadataTemplateModel, "description"));
         form.add(desicription);
 
         List<ITab> tabs = new ArrayList<>();
@@ -143,7 +142,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                         return new LinkedLayersPanel(panelId, metadataTemplateModel);
                     }
                 });
-        form.add(new TabbedPanel<ITab>("metadataTabs", tabs));
+        form.add(new TabbedPanel<>("metadataTabs", tabs));
 
         this.add(form);
     }
@@ -154,8 +153,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
     }
 
     private TextField<String> createNameField(final Form<?> form, final AjaxSubmitLink saveButton) {
-        return new TextField<String>(
-                "name", new PropertyModel<String>(metadataTemplateModel, "name")) {
+        return new TextField<>("name", new PropertyModel<>(metadataTemplateModel, "name")) {
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
@@ -222,7 +220,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
     }
 
     private AjaxLink<Object> createCancelButton() {
-        return new AjaxLink<Object>("cancel") {
+        return new AjaxLink<>("cancel") {
             private static final long serialVersionUID = -6892944747517089296L;
 
             @Override

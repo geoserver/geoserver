@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.web.service;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.lang.reflect.Method;
 import org.apache.wicket.Component;
@@ -64,7 +64,7 @@ public class ServiceAccessRulePageTest extends AbstractListPageTest<ServiceAcces
     @Override
     protected void simulateDeleteSubmit() throws Exception {
 
-        assertTrue(ServiceAccessRuleDAO.get().getRules().size() > 0);
+        assertFalse(ServiceAccessRuleDAO.get().getRules().isEmpty());
 
         SelectionServiceRemovalLink link = (SelectionServiceRemovalLink) getRemoveLink();
         Method m =

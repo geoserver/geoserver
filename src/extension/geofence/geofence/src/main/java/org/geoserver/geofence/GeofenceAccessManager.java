@@ -529,7 +529,7 @@ public class GeofenceAccessManager
                 for (GrantedAuthority authority : user.getAuthorities()) {
                     String authRole = authority.getAuthority();
                     boolean addRole = getAllRoles || config.getRoles().contains(authRole);
-                    addRole = addRole && !(excluded.contains(authRole));
+                    addRole = addRole && !excluded.contains(authRole);
 
                     if (addRole) {
                         roles.add(authRole);
@@ -964,7 +964,7 @@ public class GeofenceAccessManager
             // if default use geofence default
             if (styleName != null) {
                 checkStyleAllowed(rule, styleName);
-            } else if ((rule.getDefaultStyle() != null)) {
+            } else if (rule.getDefaultStyle() != null) {
                 try {
                     StyleInfo si = catalog.getStyleByName(rule.getDefaultStyle());
                     if (si == null) {

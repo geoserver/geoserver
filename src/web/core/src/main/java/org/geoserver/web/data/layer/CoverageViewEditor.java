@@ -30,8 +30,11 @@ import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageView.SelectedResolution;
 
-// TODO WICKET8 - Verify this page works OK
-@SuppressWarnings("serial")
+/**
+ * A panel for editing a coverage view.
+ *
+ * <p>It allows to select the input coverages and the output bands.
+ */
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     IModel<List<String>> coverages;
@@ -72,7 +75,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                         "coveragesChoice",
                         new Model<>(),
                         new ArrayList<>(coverages.getObject()),
-                        new ChoiceRenderer<String>() {
+                        new ChoiceRenderer<>() {
                             @Override
                             public Object getDisplayValue(String coverage) {
                                 return coverage;
@@ -87,7 +90,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                         "outputBandsChoice",
                         new Model<>(),
                         new ArrayList<>(outputBands.getObject()),
-                        new ChoiceRenderer<CoverageBand>() {
+                        new ChoiceRenderer<>() {
                             @Override
                             public Object getDisplayValue(CoverageBand vcb) {
                                 return vcb.getDefinition();
@@ -111,7 +114,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                 new DropDownChoice<>(
                         "compositionType",
                         new PropertyModel<>(this, "compositionType"),
-                        Arrays.asList(CompositionType.BAND_SELECT),
+                        List.of(CompositionType.BAND_SELECT),
                         new CompositionTypeRenderer());
 
         compositionChoice.setOutputMarkupId(true);

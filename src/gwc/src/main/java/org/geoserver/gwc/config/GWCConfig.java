@@ -249,7 +249,7 @@ public class GWCConfig implements Cloneable, Serializable {
         if (isSane()) {
             return this;
         }
-        GWCConfig sane = GWCConfig.getOldDefaults();
+        GWCConfig sane = getOldDefaults();
         sane.setRequireTiledParameter(true);
         // sane.setCacheLayersByDefault(cacheLayersByDefault);
         if (metaTilingX > 0) {

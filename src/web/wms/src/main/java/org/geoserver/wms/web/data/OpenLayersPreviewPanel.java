@@ -88,7 +88,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         PropertyModel<String> layerNameModel =
                 new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
-                new SimpleAjaxLink<String>("change.layer", layerNameModel) {
+                new SimpleAjaxLink<>("change.layer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
                     @Override

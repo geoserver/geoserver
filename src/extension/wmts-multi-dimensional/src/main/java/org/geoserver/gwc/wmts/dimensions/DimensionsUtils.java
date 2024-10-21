@@ -360,7 +360,7 @@ public final class DimensionsUtils {
         // we set the other right?
         if (start == null) start = end;
         else if (end == null) end = start;
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "PMD.UseDiamondOperator"})
         ComparableRange result =
                 new ComparableRange(Comparable.class, (Comparable) start, (Comparable) end);
         return result;
@@ -422,7 +422,7 @@ public final class DimensionsUtils {
         return getValuesWithDuplicates(attributeName, null, featureCollection);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.UseDiamondOperator"})
     static List<Comparable> getValuesWithDuplicates(
             String attributeName, String endAttributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values

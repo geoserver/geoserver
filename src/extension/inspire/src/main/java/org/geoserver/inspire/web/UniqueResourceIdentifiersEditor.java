@@ -61,7 +61,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
 
         // the link list
         identifiers =
-                new GeoServerTablePanel<UniqueResourceIdentifier>("identifiers", provider, false) {
+                new GeoServerTablePanel<>("identifiers", provider, false) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -182,7 +182,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 (IValidator<UniqueResourceIdentifiers>)
                         validatable -> {
                             UniqueResourceIdentifiers identifiers = provider.getItems();
-                            if (identifiers.size() == 0) {
+                            if (identifiers.isEmpty()) {
                                 ValidationError error = new ValidationError();
                                 String message =
                                         new ParamResourceModel("noSpatialDatasetIdentifiers", this)

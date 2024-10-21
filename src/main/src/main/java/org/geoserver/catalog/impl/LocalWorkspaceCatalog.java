@@ -535,7 +535,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         }
 
         public static <T> List<T> createList(List<T> object, Class<T> clazz) {
-            return new ProxyList<T>(object, clazz) {
+            return new ProxyList<>(object, clazz) {
                 @Override
                 protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
                     return create(proxyObject, proxyInterface);

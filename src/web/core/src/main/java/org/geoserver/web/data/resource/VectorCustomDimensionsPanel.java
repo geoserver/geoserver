@@ -59,7 +59,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         mainDiv.setOutputMarkupId(true);
         add(mainDiv);
 
-        final Form addForm = new Form("form");
+        final Form addForm = new Form<>("form");
         addForm.setOutputMarkupId(true);
         mainDiv.add(addForm);
 
@@ -156,7 +156,7 @@ public class VectorCustomDimensionsPanel extends Panel {
     private RefreshingView<VectorCustomDimensionEntry> buildVectorCustomDimensionsView(
             final IModel<FeatureTypeInfo> typeInfoModel) {
         final RefreshingView<VectorCustomDimensionEntry> view =
-                new RefreshingView<VectorCustomDimensionEntry>("vectorCustomDimensionsView") {
+                new RefreshingView<>("vectorCustomDimensionsView") {
 
                     @Override
                     protected Iterator<IModel<VectorCustomDimensionEntry>> getItemModels() {

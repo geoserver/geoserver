@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -722,10 +721,7 @@ public class MockCatalogBuilder {
                         .andReturn(featureTypes)
                         .anyTimes();
                 expect(catalog.getResourcesByStore(ds, ResourceInfo.class))
-                        .andReturn(
-                                featureTypes.stream()
-                                        .map(ft -> (ResourceInfo) ft)
-                                        .collect(Collectors.toList()))
+                        .andReturn(new ArrayList<>(featureTypes))
                         .anyTimes();
                 expect(catalog.getFeatureTypesByDataStore(ds)).andReturn(featureTypes).anyTimes();
             }
@@ -737,10 +733,7 @@ public class MockCatalogBuilder {
                         .andReturn(coverages)
                         .anyTimes();
                 expect(catalog.getResourcesByStore(cs, ResourceInfo.class))
-                        .andReturn(
-                                coverages.stream()
-                                        .map(c -> (ResourceInfo) c)
-                                        .collect(Collectors.toList()))
+                        .andReturn(new ArrayList<>(coverages))
                         .anyTimes();
                 expect(catalog.getCoveragesByCoverageStore(cs)).andReturn(coverages).anyTimes();
             }

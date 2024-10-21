@@ -54,7 +54,7 @@ public class GroupPanel extends Panel {
         GroupListProvider provider = new GroupListProvider(serviceName);
         add(
                 groups =
-                        new GeoServerTablePanel<GeoServerUserGroup>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -73,9 +73,9 @@ public class GroupPanel extends Panel {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(groups.getSelection().size() > 0);
+                                removal.setEnabled(!groups.getSelection().isEmpty());
                                 target.add(removal);
-                                removalWithRoles.setEnabled(groups.getSelection().size() > 0);
+                                removalWithRoles.setEnabled(!groups.getSelection().isEmpty());
                                 target.add(removalWithRoles);
                             }
                         });
@@ -108,7 +108,7 @@ public class GroupPanel extends Panel {
                     new Label("message", new StringResourceModel("noCreateStore", this, null))
                             .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
-            h.add(new Label("message", new Model()));
+            h.add(new Label("message", new Model<>()));
         }
 
         h.add(
@@ -153,7 +153,7 @@ public class GroupPanel extends Panel {
             String id,
             IModel<GeoServerUserGroup> itemModel,
             Property<GeoServerUserGroup> property) {
-        return new SimpleAjaxLink<GeoServerUserGroup>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 setResponsePage(

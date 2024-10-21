@@ -104,7 +104,7 @@ public abstract class FileDataView extends Panel {
         add(table);
 
         DataView<File> fileTable =
-                new DataView<File>("files", fileProvider) {
+                new DataView<>("files", fileProvider) {
 
                     @Override
                     protected void populateItem(final Item<File> item) {

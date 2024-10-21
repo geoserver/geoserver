@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -293,28 +294,28 @@ public class MockData implements TestData {
     File templates;
 
     /** The datastore definition map */
-    HashMap dataStores = new HashMap();
+    HashMap dataStores = new HashMap<>();
 
     /** The set of disabled data stores */
-    Set disabledDataStores = new HashSet();
+    Set disabledDataStores = new HashSet<>();
 
     /** The datastore to namespace map */
-    private HashMap dataStoreNamepaces = new HashMap();
+    private HashMap dataStoreNamepaces = new HashMap<>();
 
     /** The namespaces map */
-    private HashMap namespaces = new HashMap();
+    private HashMap namespaces = new HashMap<>();
 
     /** The styles map */
-    private HashMap layerStyles = new HashMap();
+    private HashMap layerStyles = new HashMap<>();
 
     /** The coverage store map */
-    private HashMap coverageStores = new HashMap();
+    private HashMap coverageStores = new HashMap<>();
 
     /** The set of disabled coverage stores */
-    Set disabledCoverageStores = new HashSet();
+    Set disabledCoverageStores = new HashSet<>();
 
     /** The coverage store id to namespace map */
-    private HashMap coverageStoresNamespaces = new HashMap();
+    private HashMap coverageStoresNamespaces = new HashMap<>();
 
     public MockData() throws IOException {
         // setup the root
@@ -450,7 +451,7 @@ public class MockData implements TestData {
         if (extraProperties == null)
             addPropertiesType(name, properties, Collections.singletonMap(KEY_STYLE, styleName));
         else {
-            Map props = new HashMap(extraProperties);
+            Map props = new HashMap<>(extraProperties);
             props.put(KEY_STYLE, styleName);
             addPropertiesType(name, properties, props);
         }
@@ -548,7 +549,7 @@ public class MockData implements TestData {
         // setup the meta information to be written in the catalog
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         dataStoreNamepaces.put(name.getPrefix(), name.getPrefix());
-        Map params = new HashMap();
+        Map<Object, Object> params = new HashMap<>();
         params.put(PropertyDataStoreFactory.DIRECTORY.key, directory);
         params.put(PropertyDataStoreFactory.NAMESPACE.key, name.getNamespaceURI());
         dataStores.put(name.getPrefix(), params);
@@ -630,7 +631,7 @@ public class MockData implements TestData {
         AbstractGridFormat format = GridFormatFinder.findFormat(coverage);
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(CatalogWriter.COVERAGE_TYPE_KEY, format.getName());
         params.put(CatalogWriter.COVERAGE_URL_KEY, relpath);
         coverageStores.put(name.getLocalPart(), params);

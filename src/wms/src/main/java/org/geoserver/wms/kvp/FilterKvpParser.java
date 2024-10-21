@@ -62,7 +62,7 @@ public class FilterKvpParser extends KvpParser {
     public Object parse(String value) throws Exception {
         // seperate the individual filter strings
         List unparsed = KvpUtils.readFlat(value, KvpUtils.OUTER_DELIMETER);
-        List filters = new ArrayList();
+        List filters = new ArrayList<>();
 
         Iterator i = unparsed.listIterator();
 

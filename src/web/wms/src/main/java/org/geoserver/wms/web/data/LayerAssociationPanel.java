@@ -35,7 +35,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
         }
 
         Property<LayerInfo> workspace =
-                new AbstractProperty<LayerInfo>("Workspace") {
+                new AbstractProperty<>("Workspace") {
                     private static final long serialVersionUID = -1851109132536014276L;
 
                     @Override
@@ -45,7 +45,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                 };
 
         Property<LayerInfo> layer =
-                new AbstractProperty<LayerInfo>("Layer") {
+                new AbstractProperty<>("Layer") {
                     private static final long serialVersionUID = -1041914399204405146L;
 
                     @Override
@@ -55,7 +55,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                 };
 
         Property<LayerInfo> defaultStyle =
-                new AbstractProperty<LayerInfo>("Default") {
+                new AbstractProperty<>("Default") {
 
                     @Override
                     public Object getPropertyValue(LayerInfo x) {
@@ -64,7 +64,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                 };
 
         Property<LayerInfo> associatedStyle =
-                new AbstractProperty<LayerInfo>("Associated") {
+                new AbstractProperty<>("Associated") {
                     private static final long serialVersionUID = 890930107903888545L;
 
                     @Override
@@ -100,7 +100,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
         final LayerProvider layerProvider = new LayerProvider();
 
         GeoServerTablePanel<LayerInfo> layerTable =
-                new GeoServerTablePanel<LayerInfo>("layer.table", layerProvider) {
+                new GeoServerTablePanel<>("layer.table", layerProvider) {
                     private static final long serialVersionUID = 6100831799966767858L;
 
                     @Override
@@ -145,7 +145,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                         } else {
                             return new Label(id, text);
                         }
-                    };
+                    }
                 };
         add(layerTable);
     }
@@ -170,7 +170,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
             if (b) {
                 layer.setDefaultStyle(parent.getStyleInfo());
             } else {
-                if (layer.getStyles().size() == 0) {
+                if (layer.getStyles().isEmpty()) {
                     layer.setDefaultStyle(parent.getCatalog().getStyleByName("generic"));
                 } else {
                     StyleInfo s = layer.getStyles().iterator().next();

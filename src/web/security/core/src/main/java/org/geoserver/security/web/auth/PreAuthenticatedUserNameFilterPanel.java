@@ -99,21 +99,21 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
 
     static class HeaderPanel extends Panel {
         public HeaderPanel(String id) {
-            super(id, new Model());
+            super(id, new Model<>());
             add(new TextField("rolesHeaderAttribute").setRequired(true).setRequired(true));
         }
     }
 
     static class UserGroupServicePanel extends Panel {
         public UserGroupServicePanel(String id) {
-            super(id, new Model());
+            super(id, new Model<>());
             add(new UserGroupServiceChoice("userGroupServiceName").setRequired(true));
         }
     }
 
     static class RoleServicePanel extends Panel {
         public RoleServicePanel(String id) {
-            super(id, new Model());
+            super(id, new Model<>());
             add(new RoleServiceChoice("roleServiceName"));
         }
     }

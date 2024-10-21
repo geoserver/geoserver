@@ -122,8 +122,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     public CatalogStressTester() {
         super();
-        setDefaultModel(new Model());
-        Form form = new Form("form", new Model());
+        setDefaultModel(new Model<>());
+        Form form = new Form<>("form", new Model<>());
         add(form);
 
         IModel<List<Tuple>> wsModel = new WorkspacesTestModel();
@@ -418,7 +418,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     ResourceInfo ri = (ResourceInfo) prototype;
                     StoreInfo store = (StoreInfo) parent;
                     ri.setStore(store);
-                    ri.setNamespace(catalog.getNamespaceByPrefix((store).getWorkspace().getName()));
+                    ri.setNamespace(catalog.getNamespaceByPrefix(store.getWorkspace().getName()));
                 }
                 sw.start();
                 catalog.add((ResourceInfo) prototype);
@@ -528,7 +528,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             int limit = 100;
 
             try (CloseableIterator<StoreInfo> iter =
-                    catalog.list(StoreInfo.class, filter, null, limit, null); ) {
+                    catalog.list(StoreInfo.class, filter, null, limit, null)) {
                 List<Tuple> stores =
                         Lists.newArrayList(
                                 Iterators.transform(

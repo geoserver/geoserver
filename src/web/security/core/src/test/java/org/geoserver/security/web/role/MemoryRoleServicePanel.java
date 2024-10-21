@@ -22,6 +22,6 @@ public class MemoryRoleServicePanel extends RoleServicePanel<MemoryRoleServiceCo
     public MemoryRoleServicePanel(String id, IModel<MemoryRoleServiceConfigImpl> model) {
         super(id, model);
 
-        add(new TextField("toBeEncrypted"));
+        add(new TextField<>("toBeEncrypted"));
     }
 }

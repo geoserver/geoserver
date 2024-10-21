@@ -715,7 +715,7 @@ public class Dispatcher extends AbstractController {
                 boolean xmlParsed = false;
 
                 if (req.getKvp() != null
-                        && req.getKvp().size() > 0
+                        && !req.getKvp().isEmpty()
                         && (!(req.getKvp().size() == 1 && req.getKvp().containsKey("service")))) {
                     // use the kvp reader mechanism, but not if the only kvp is the service
                     try {

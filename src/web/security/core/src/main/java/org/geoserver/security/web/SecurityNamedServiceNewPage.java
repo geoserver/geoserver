@@ -48,7 +48,7 @@ public class SecurityNamedServiceNewPage<
         List<SecurityNamedServicePanelInfo> panelInfos = lookupPanelInfos(serviceClass);
 
         AjaxLinkGroup<SecurityNamedServicePanelInfo> serviceLinks =
-                new AjaxLinkGroup<SecurityNamedServicePanelInfo>("services", panelInfos) {
+                new AjaxLinkGroup<>("services", panelInfos) {
 
                     @Override
                     protected void populateItem(ListItem<SecurityNamedServicePanelInfo> item) {
@@ -159,7 +159,7 @@ public class SecurityNamedServiceNewPage<
 
         protected AjaxLink<T> newLink(String id, IModel<T> model) {
             AjaxLink<T> result =
-                    new AjaxLink<T>(id, model) {
+                    new AjaxLink<>(id, model) {
                         @Override
                         public void onClick(final AjaxRequestTarget target) {
                             // set all links enabled

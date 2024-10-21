@@ -57,7 +57,7 @@ public class FileExistsValidator implements IValidator<String> {
                     try {
                         URLConnection connection = uri.toURL().openConnection();
                         connection.setConnectTimeout(10000);
-                        try (InputStream is = connection.getInputStream()) {}
+                        try (InputStream ignored = connection.getInputStream()) {}
                     } catch (Exception e) {
                         IValidationError err =
                                 new ValidationError("FileExistsValidator.unreachable")

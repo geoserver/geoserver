@@ -42,7 +42,7 @@ public abstract class AjaxRadioPanel<T extends Serializable> extends Panel {
 
         final RadioGroup<T> group = new RadioGroup<>("radioGroup", new Model<>(currentSelection));
         group.add(
-                new ListView<T>("radioButtons", items) {
+                new ListView<>("radioButtons", items) {
                     @Override
                     protected void populateItem(ListItem<T> item) {
                         item.add(newRadioCell(group, item));
@@ -53,7 +53,7 @@ public abstract class AjaxRadioPanel<T extends Serializable> extends Panel {
     }
 
     protected AjaxRadio<T> newRadioCell(final RadioGroup<T> group, ListItem<T> item) {
-        return new AjaxRadio<T>("radio", item.getModel()) {
+        return new AjaxRadio<>("radio", item.getModel()) {
 
             private static final long serialVersionUID = 1L;
 

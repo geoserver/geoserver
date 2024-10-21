@@ -48,7 +48,7 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
         Form form = ft.getForm();
         DropDownChoice layer = (DropDownChoice) form.get("tabs:panel:layer");
         // test that with no workspace set global layer groups are present in the dropdown choice
-        assertTrue(layer.getChoices().size() > 0);
+        assertFalse(layer.getChoices().isEmpty());
         ft.select("tabs:panel:layer", 0);
         ft.select("tabs:panel:catalogMode", 0);
         ft.select("tabs:panel:spatialFilterType", 1);

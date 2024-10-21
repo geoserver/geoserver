@@ -300,7 +300,7 @@ public class DataStoreController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<DataStoreInfo>(DataStoreInfo.class) {
+        return new ObjectToMapWrapper<>(DataStoreInfo.class) {
 
             @Override
             protected void wrapInternal(

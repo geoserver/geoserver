@@ -484,7 +484,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         roi,
                         false);
 
-        try (AutoCloseableResource resource =
+        try (AutoCloseableResource ignored =
                 new AutoCloseableResource(getResourceManager(), gpkg)) {
 
             // Simply check that the output is in the expected format.
@@ -1066,7 +1066,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         new NullProgressListener() // progressListener
                         );
 
-        try (AutoCloseableResource resource = new AutoCloseableResource(resourceManager, raster)) {
+        try (AutoCloseableResource ignored = new AutoCloseableResource(resourceManager, raster)) {
             // Simply check that the output is in the expected format.
             // No need to validate the data, being done on another test
             assertExpectedExtension(raster, "zip");
@@ -1791,7 +1791,7 @@ public class DownloadProcessTest extends WPSTestSupport {
             referenceImage = referenceGc.getRenderedImage();
             // Setting filter to get the granule with resolution
             final PropertyName property = FF.property("location");
-            Filter filter = (Filter) FF.like(property, "green.tif");
+            Filter filter = FF.like(property, "green.tif");
 
             String roiWkt =
                     "POLYGON((160000 600000, 840000 600000, 840000 1200000, 160000 1200000,"
@@ -1870,7 +1870,7 @@ public class DownloadProcessTest extends WPSTestSupport {
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32631", true);
         MapProjection.SKIP_SANITY_CHECKS = true;
         try (AutoDisposableGeoTiffReader referenceReader = new AutoDisposableGeoTiffReader(file);
-                AutoDisposableGridCoverage2D referenceGc = referenceReader.read()) {
+                AutoDisposableGridCoverage2D ignored = referenceReader.read()) {
             // tests go out of the stricly sane area for one of the UTMs, could cause 0.006
             // meters of error and that makes the assertions fail..-
             String roiWkt =
@@ -1953,7 +1953,7 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             // Setting filter to get the granule
             final PropertyName property = FF.property("location");
-            Filter filter = (Filter) FF.like(property, "blue.tif");
+            Filter filter = FF.like(property, "blue.tif");
 
             String roiWkt =
                     "POLYGON((180000 600000, 820000 600000, 820000 1200000, 180000 1200000,"
@@ -2665,7 +2665,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                         new StaticDownloadServiceConfiguration(
                                 new DownloadServiceConfiguration(
                                         DownloadServiceConfiguration.NO_LIMIT,
-                                        (long) 10, // small number, but before fix it was not
+                                        10, // small number, but before fix it was not
                                         // triggering exception
                                         DownloadServiceConfiguration.NO_LIMIT,
                                         DownloadServiceConfiguration.NO_LIMIT,
@@ -2928,7 +2928,7 @@ public class DownloadProcessTest extends WPSTestSupport {
 
         // Setting filter to get the granule with resolution
         final PropertyName property = FF.property("resolution");
-        Filter filter = (Filter) FF.greaterOrEqual(property, FF.literal(16000));
+        Filter filter = FF.greaterOrEqual(property, FF.literal(16000));
 
         testExpectedResolution(
                 downloadProcess,
@@ -2955,7 +2955,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                 -8712.564801039759900);
 
         // Download native resolution 3
-        filter = (Filter) FF.lessOrEqual(property, FF.literal(1000));
+        filter = FF.lessOrEqual(property, FF.literal(1000));
 
         // Final checks on the result
         testExpectedResolution(

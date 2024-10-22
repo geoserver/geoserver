@@ -274,6 +274,9 @@ If you wish to change this behavior you can do so through the following properti
 * ``geoserver.xframe.shouldSetPolicy``: controls whether the X-Frame-Options header should be set at all. Default is true.
 * ``geoserver.xframe.policy``: controls what to set the X-Frame-Options header to. Default is ``SAMEORIGIN``. Valid options are ``DENY``, ``SAMEORIGIN`` and ``ALLOW-FROM [uri]``.
 
+These properties can be set either via Java system property, command line argument (-D), environment
+variable or :file:`web.xml` init parameter.
+
 .. note::
     The WMS GetMap OpenLayers output format uses iframes to display the WMS GetFeatureInfo output and
     this may not function properly if the policy is set to something other than ``SAMEORIGIN``.
@@ -281,10 +284,22 @@ If you wish to change this behavior you can do so through the following properti
 .. warning::
     The ``ALLOW-FROM`` option is not supported by modern browsers and should only be used if you know
     that browsers interacting with your GeoServer will support it. Applying this policy will be treated
-    as if no policy was set by browsers that do not support this (i.e., **NO** protection).
+    as if no policy was set by browsers that do not support this (i.e., **NO** protection). The
+    ``Content-Security-Policy`` header provides more robust support for allowing specific hosts to
+    display frames from GeoServer using the ``frame-ancestors`` directive.
 
-These properties can be set either via Java system property, command line argument (-D), environment
-variable or :file:`web.xml` init parameter.
+If the ``geoserver.csp.frameAncestors`` system property has not been set, the ``frame-ancestors``
+directive of the ``Content-Security-Policy`` header will default to being set based on the value of
+the ``X-Frame-Options`` header.
+
+* ``SAMEORIGIN`` will be ``frame-ancestors 'self'``
+* ``DENY`` will be ``frame-ancestors 'none'``
+* if the ``X-Frame-Options`` header is not set or has any other value, the ``frame-ancestors``
+  directive will be omitted
+
+When both ``frame-ancestors`` and ``X-Frame-Options`` are present, browsers that support
+``frame-ancestors`` should **enforce** the ``frame-ancestors`` policy and **ignore** the
+``X-Frame-Options`` policy.
 
 X-Content-Type-Options Policy
 '''''''''''''''''''''''''''''
@@ -330,6 +345,16 @@ If you wish to change this behavior you can do so through the following properti
 
 These properties can be set either via Java system property, command line argument (-D), environment
 variable or web.xml init parameter.
+
+.. _production_config_csp:
+
+Content-Security-Policy
+'''''''''''''''''''''''
+
+In order to mitigate cross-site scripting and clickjacking attacks GeoServer defaults to setting
+the Content-Security-Policy HTTP header based on rules configured by the administrator. See the
+:ref:`security_csp` page for more details about this header, GeoServer's default configuration and
+how to change the configuration.
 
 OWS ServiceException XML mimeType
 '''''''''''''''''''''''''''''''''

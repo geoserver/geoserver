@@ -11,9 +11,16 @@ import freemarker.template.SimpleHash;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.WorkspaceAdminAuthorizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,6 +46,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class IndexController extends RestBaseController {
 
     @Autowired private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    @Autowired private WorkspaceAdminAuthorizer wsAdminAuthorizer;
 
     @GetMapping(
             value = {"", "index"},
@@ -46,10 +54,25 @@ public class IndexController extends RestBaseController {
     public RestWrapper get() {
 
         SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
-        model.put("links", getLinks());
+        Set<String> links = getLinks();
+        if (!isAdmin()) {
+            links = filterLinksForWorkspaceAdmin(links);
+        }
+
+        model.put("links", links);
         model.put("page", RequestInfo.get());
 
         return wrapObject(model, SimpleHash.class);
+    }
+
+    private Set<String> filterLinksForWorkspaceAdmin(Set<String> links) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return links.stream()
+                .filter(
+                        uri ->
+                                wsAdminAuthorizer.canAccess(
+                                        authentication, "/rest/" + uri, HttpMethod.GET))
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     protected Set<String> getLinks() {
@@ -96,5 +119,10 @@ public class IndexController extends RestBaseController {
     @Override
     public String getTemplateName(Object o) {
         return "index";
+    }
+
+    private boolean isAdmin() {
+        GeoServerSecurityManager manager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+        return manager.checkAuthenticationForAdminRole();
     }
 }

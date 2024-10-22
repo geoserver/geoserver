@@ -9,10 +9,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.geoserver.data.test.CiteTestData.ROAD_SEGMENTS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import au.com.bytecode.opencsv.CSVReader;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.config.GeoServer;
@@ -67,6 +70,31 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CSVOutputFormatTest extends WFSTestSupport {
     private static final String CSV = "text/csv";
+
+    @Test
+    public void testWithAttributesRemoved() throws Exception {
+        String layerId = getLayerId(ROAD_SEGMENTS);
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        fti.getAttributes().addAll(fti.attributes());
+        fti.getAttributes().remove(1);
+        getCatalog().save(fti);
+
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setFeatureBounding(false);
+        gs.save(wfs);
+
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cite:RoadSegments&maxFeatures=50&outputFormat=text%2Fcsv&propertyname=NAME");
+        assertEquals(
+                "attachment; filename=RoadSegments.csv", response.getHeader("Content-Disposition"));
+
+        assertEquals(CSV, getBaseMimeType(response.getContentType()));
+        BufferedReader content =
+                new BufferedReader(new StringReader(new String(response.getContentAsByteArray())));
+        assertEquals("FID,NAME", content.readLine().strip().replace(" ", ""));
+    }
 
     @Test
     public void testFullRequest() throws Exception {

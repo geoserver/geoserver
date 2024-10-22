@@ -53,15 +53,19 @@ public class RHealPixDGGSFactory implements DGGSFactory {
     @Override
     public boolean isAvailable() {
         JEPWebRuntime runtime = new JEPWebRuntime(INITIALIZER);
+        boolean interpreterFound = false;
         try {
             runtime.getInterpreter();
+            interpreterFound = true;
             return true;
-        } catch (Exception | UnsatisfiedLinkError e) {
+            // JEP throws an UnsatisfiedLinkError if the native library is not found the first time,
+            // but from the second time over, it throws a generic Error instead
+        } catch (Exception | Error e) {
             LOGGER.log(Level.FINE, "Could not instantiate a rHEALPix DGGS", e);
             return false;
         } finally {
             try {
-                JEPWebRuntime.closeThreadIntepreter();
+                if (interpreterFound) JEPWebRuntime.closeThreadIntepreter();
             } catch (JepException e) {
                 LOGGER.log(Level.FINE, "Could not clean up the JEP runtime", e);
             }

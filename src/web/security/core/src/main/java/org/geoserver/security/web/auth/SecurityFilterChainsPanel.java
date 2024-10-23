@@ -56,7 +56,7 @@ public class SecurityFilterChainsPanel extends Panel {
 
         final boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole();
         add(
-                new AjaxLink("addServiceChain") {
+                new AjaxLink<>("addServiceChain") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         // create a new config class and instantiate the page
@@ -72,7 +72,7 @@ public class SecurityFilterChainsPanel extends Panel {
                 }.setEnabled(isAdmin));
 
         add(
-                new AjaxLink("addHtmlChain") {
+                new AjaxLink<>("addHtmlChain") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         // create a new config class and instantiate the page

@@ -142,7 +142,7 @@ public class StatusPanel extends Panel {
         add(new Label("renderer", new MapModel<>(values, KEY_JAVA_RENDERER)));
         // serialization error here
         add(
-                new Link("free.locks") {
+                new Link<>("free.locks") {
                     private static final long serialVersionUID = -2889353495319211391L;
 
                     @Override
@@ -152,7 +152,7 @@ public class StatusPanel extends Panel {
                     }
                 });
         add(
-                new Link("free.memory") {
+                new Link<>("free.memory") {
                     private static final long serialVersionUID = 3695369177295089346L;
 
                     @Override
@@ -164,7 +164,7 @@ public class StatusPanel extends Panel {
                 });
 
         add(
-                new Link("free.memory.jai") {
+                new Link<>("free.memory.jai") {
                     private static final long serialVersionUID = -3556725607958589003L;
 
                     @Override
@@ -189,7 +189,7 @@ public class StatusPanel extends Panel {
         add(new BookmarkablePageLink<>("show.fonts", JVMFontsPage.class));
 
         add(
-                new AjaxLink("clear.resourceCache") {
+                new AjaxLink<>("clear.resourceCache") {
                     private static final long serialVersionUID = 2663650174059497376L;
 
                     @Override
@@ -209,7 +209,7 @@ public class StatusPanel extends Panel {
                 });
 
         add(
-                new AjaxLink("reload.catalogConfig") {
+                new AjaxLink<>("reload.catalogConfig") {
                     private static final long serialVersionUID = -7476556423889306321L;
 
                     @Override

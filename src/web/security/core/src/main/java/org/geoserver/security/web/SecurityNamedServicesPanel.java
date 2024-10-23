@@ -51,7 +51,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
 
         final boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole();
         add(
-                new AjaxLink("add") {
+                new AjaxLink<>("add") {
                     @Override
                     @SuppressWarnings("unchecked")
                     public void onClick(AjaxRequestTarget target) {
@@ -218,7 +218,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         super.onBeforeRender();
     }
 
-    private class RemoveLink extends AjaxLink {
+    private class RemoveLink extends AjaxLink<Object> {
         public RemoveLink() {
             super("remove");
         }

@@ -84,7 +84,7 @@ public class SecurityNamedServiceNewPage<
                     }
                 });
         form.add(
-                new Link("cancel") {
+                new Link<>("cancel") {
                     @Override
                     public void onClick() {
                         doReturn();

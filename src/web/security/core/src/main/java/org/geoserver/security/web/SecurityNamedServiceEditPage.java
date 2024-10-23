@@ -80,7 +80,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
                         }
                     }.setVisible(getSecurityManager().checkAuthenticationForAdminRole()));
             form.add(
-                    new Link("cancel") {
+                    new Link<>("cancel") {
                         @Override
                         public void onClick() {
                             doReturn();
@@ -152,7 +152,7 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
             add(new Label("message", new PropertyModel<>(error, "message")));
             add(new TextArea<>("stackTrace", new Model<>(handleStackTrace(error))));
             add(
-                    new AjaxLink("copy") {
+                    new AjaxLink<>("copy") {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             copyToClipBoard(handleStackTrace(error));

@@ -154,7 +154,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         WebMarkupContainer sqlViewContainer = new WebMarkupContainer("editSqlContainer");
         attributePanel.add(sqlViewContainer);
         sqlViewContainer.add(
-                new Link("editSql") {
+                new Link<>("editSql") {
 
                     @Override
                     public void onClick() {
@@ -183,7 +183,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 new WebMarkupContainer("editCascadedStoredQueryContainer");
         attributePanel.add(cascadedStoredQueryContainer);
         cascadedStoredQueryContainer.add(
-                new Link("editCascadedStoredQuery") {
+                new Link<>("editCascadedStoredQuery") {
                     @Override
                     public void onClick() {
                         FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();

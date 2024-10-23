@@ -209,7 +209,7 @@ public class ComplexInputPanel extends Panel {
 
             Fragment f = new Fragment("editor", "subprocess", this);
             f.add(
-                    new AjaxLink("edit") {
+                    new AjaxLink<>("edit") {
 
                         @Override
                         public void onClick(AjaxRequestTarget target) {

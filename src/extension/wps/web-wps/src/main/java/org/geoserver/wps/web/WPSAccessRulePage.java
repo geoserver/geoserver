@@ -144,7 +144,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                                     new Fragment(id, "linkFragment", WPSAccessRulePage.this);
                             // we use a submit link to avoid losing the other edits in the form
                             Link link =
-                                    new Link("link") {
+                                    new Link<>("link") {
                                         @Override
                                         public void onClick() {
                                             ProcessGroupInfo pfi = itemModel.getObject();
@@ -167,7 +167,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         form.add(processFilterEditor);
 
         form.add(
-                new AjaxLink("processAccessModeHelp") {
+                new AjaxLink<>("processAccessModeHelp") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         dialog.showInfo(

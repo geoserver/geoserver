@@ -5,15 +5,11 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Level;
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -31,22 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 public class CachedLayersPageTest extends GeoServerWicketTestSupport {
-    private static final Method getReplaceModelMethod;
-
-    /*
-     * Yes, we do need to use reflection here as the stupid wicket model is private and has no setter which
-     * makes it hard to test!
-     * See https://cwiki.apache.org/confluence/display/WICKET/Testing+Pages
-     */
-    static {
-        try {
-            getReplaceModelMethod = AttributeModifier.class.getDeclaredMethod("getReplaceModel");
-            getReplaceModelMethod.setAccessible(true);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "", e);
-            throw new RuntimeException(e);
-        }
-    }
 
     @Rule
     public GeoServerExtensionsHelper.ExtensionsHelperRule extensions =
@@ -135,27 +115,8 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testNoManglePreviewLink() {
-
         // Don't add a mangler
-
-        CachedLayersPage page = new CachedLayersPage();
-
-        tester.startPage(page);
-        // print(page, true, true);
-        Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "table:listContainer:items:1:itemProperties:6:component:menu");
-        List<AttributeModifier> attr = component.getBehaviors(AttributeModifier.class);
-        try {
-            IModel<?> model = (IModel<?>) getReplaceModelMethod.invoke(attr.get(0));
-            assertTrue(
-                    "Unmangled names fail",
-                    model.getObject()
-                            .toString()
-                            .contains("http://localhost/context/cgf/gwc/demo/cgf"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        assertPreviewLinks("http://localhost/context/cgf/gwc/demo/cgf");
     }
 
     @Test
@@ -167,23 +128,21 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
                     base.append("http://rewrite/");
                 };
         extensions.singleton("testMangler", testMangler, URLMangler.class);
+        assertPreviewLinks("http://rewrite/gwc/demo/cgf");
+    }
 
+    private static void assertPreviewLinks(String url) {
         CachedLayersPage page = new CachedLayersPage();
-
         tester.startPage(page);
-        Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "table:listContainer:items:1:itemProperties:6:component:menu");
-        List<AttributeModifier> attr = component.getBehaviors(AttributeModifier.class);
-        try {
-            IModel<?> model = (IModel<?>) getReplaceModelMethod.invoke(attr.get(0));
-
-            assertTrue(
-                    "Mangled names fail",
-                    model.getObject().toString().contains("http://rewrite/gwc/demo/cgf"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        List<TagTester> tags =
+                TagTester.createTags(
+                        tester.getLastResponseAsString(),
+                        tag -> {
+                            String value = tag.getAttributes().getString("value");
+                            return value != null && value.startsWith(url);
+                        },
+                        false);
+        assertEquals("Incorrect number of preview links starting with " + url, 20, tags.size());
     }
 
     @Test

@@ -19,7 +19,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-grib</artifactId>
-      <version>${gt.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>slf4j-api</artifactId>
@@ -35,7 +34,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

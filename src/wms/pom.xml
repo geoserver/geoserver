@@ -34,16 +34,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-svg</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>fop</artifactId>
-          <groupId>org.apache.xmlgraphics</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -60,7 +50,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geojson-core</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <!-- end of SVG rendering markers support -->
     <dependency>
@@ -121,7 +110,6 @@
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-wms</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -141,13 +129,11 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-h2</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-iau-wkt</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

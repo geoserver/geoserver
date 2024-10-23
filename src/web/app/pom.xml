@@ -388,7 +388,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-kml</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -542,7 +541,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-imagepyramid</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -722,7 +720,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-sfs</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -774,7 +771,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-ogr-jni</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1665,7 +1661,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-mbtiles</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1870,7 +1865,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-stac-store</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1880,7 +1874,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-vector-mosaic</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1890,7 +1883,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-iau-wkt</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>

@@ -259,7 +259,11 @@ public class FeatureService {
     @GetMapping(
             path = "collections/{collectionId}/queryables",
             name = "getQueryables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = {
+                JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE,
+                APPLICATION_YAML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
     public Queryables queryables(@PathVariable(name = "collectionId") String collectionId)
@@ -274,7 +278,7 @@ public class FeatureService {
                         null,
                         URLMangler.URLType.RESOURCE);
         Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
-        queryables.addSelfLinks("collections/" + collectionId + "/queryables");
+        queryables.addSelfLinks("ogc/features/v1/collections/" + collectionId + "/queryables");
         return queryables;
     }
 

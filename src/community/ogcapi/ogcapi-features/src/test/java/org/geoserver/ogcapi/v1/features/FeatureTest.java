@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.v1.features;
 
 import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.v1.features.JSONFGFeaturesResponse.COORD_REF_SYS;
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -31,6 +32,7 @@ import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.APIException;
+import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.api.referencing.FactoryException;
@@ -40,11 +42,48 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FeatureTest extends FeaturesTestSupport {
 
     private static final String WEB_MERCATOR_URI = "http://www.opengis.net/def/crs/EPSG/0/3857";
+
+    @Test
+    public void testQueryablesApplicationJson() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ogc/features/v1/collections/"
+                                + roadSegments
+                                + "/queryables?f=application/json");
+        assertEquals(200, response.getStatus());
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+    }
+
+    @Test
+    public void testQueryablesApplicationSchemaJson() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ogc/features/v1/collections/"
+                                + roadSegments
+                                + "/queryables?f=application/schema%2Bjson");
+        assertEquals(200, response.getStatus());
+        assertEquals(JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE, response.getContentType());
+    }
+
+    @Test
+    public void testQueryablesApplicationYaml() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ogc/features/v1/collections/"
+                                + roadSegments
+                                + "/queryables?f=application/x-yaml");
+        assertEquals(200, response.getStatus());
+        assertEquals(APPLICATION_YAML_VALUE, response.getContentType());
+    }
 
     @Test
     public void testContentDisposition() throws Exception {

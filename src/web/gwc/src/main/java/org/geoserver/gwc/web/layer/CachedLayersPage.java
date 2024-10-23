@@ -26,7 +26,8 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -147,6 +148,17 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                     new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning").getObject();
             super.warn(warningMsg);
         }
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        String script =
+                "$('.tile-layers-page-menu-select').on('change', function(event) {\n"
+                        + "    window.open(this.options[this.selectedIndex].value);\n"
+                        + "    this.selectedIndex=0;\n"
+                        + "});";
+        response.render(OnDomReadyHeaderItem.forScript(script));
     }
 
     private Component quotaLink(String id, IModel<Quota> quotaModel) {
@@ -279,19 +291,6 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         RepeatingView previewLinks = new RepeatingView("previewLink");
 
-        int i = 0;
-        for (String gridSetId : gridSubsets) {
-            for (MimeType mimeType : mimeTypes) {
-                String label = gridSetId + " / " + mimeType.getFileExtension();
-                // build option with text and value
-                Label format = new Label(String.valueOf(i++), label);
-                String value = "gridSet=" + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", new Model<>(value)));
-                previewLinks.add(format);
-            }
-        }
-        menu.add(previewLinks);
-
         // build the wms request, redirect to it in a new window, reset the selection
         final String baseURL = ResponseUtils.baseURL(getGeoServerApplication().servletRequest());
         // Since we're working with an absolute URL, build the URL this way to ensure proxy
@@ -303,18 +302,25 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             workspaceName = layer.getName().substring(0, layer.getName().indexOf(":")) + "/";
         }
         final String demoURL =
-                "'"
-                        + ResponseUtils.buildURL(
+                ResponseUtils.buildURL(
                                 baseURL + workspaceName,
                                 "gwc/demo/" + layer.getName(),
                                 null,
                                 URLType.EXTERNAL)
-                        + "?' + this.options[this.selectedIndex].value";
-        menu.add(
-                new AttributeAppender(
-                        "onchange",
-                        new Model<>("window.open(" + demoURL + ");this.selectedIndex=0"),
-                        ";"));
+                        + "?gridSet=";
+
+        int i = 0;
+        for (String gridSetId : gridSubsets) {
+            for (MimeType mimeType : mimeTypes) {
+                String label = gridSetId + " / " + mimeType.getFileExtension();
+                // build option with text and value
+                Label format = new Label(String.valueOf(i++), label);
+                String value = demoURL + gridSetId + "&format=" + mimeType.getFormat();
+                format.add(new AttributeModifier("value", new Model<>(value)));
+                previewLinks.add(format);
+            }
+        }
+        menu.add(previewLinks);
 
         f.add(menu);
         return f;

@@ -4,11 +4,14 @@
  */
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLBaseProxyTest.getCapabilitiesURL;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
+import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -19,6 +22,8 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
+import org.geotools.ows.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.mime.TextMime;
 import org.junit.BeforeClass;
@@ -118,15 +123,31 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
     }
 
     @Override
-    protected void assertCascading(boolean shouldCascade, String url) {
-        assertTrue(url.contains("service=WMTS"));
+    protected void assertCascading(boolean shouldCascade, String url) throws Exception {
+        URL getResourceURL = null;
+        Pattern serviceTypeRE = Pattern.compile(".*SERVICE=WMTS.*", Pattern.CASE_INSENSITIVE);
+        boolean isWMTSService = serviceTypeRE.matcher(getCapabilitiesURL()).find();
+        assertTrue(isWMTSService);
         if (shouldCascade) {
+            WebMapTileServer wmts = new WebMapTileServer(new URL(getCapabilitiesURL()));
+            WMTSCapabilities capabilities = wmts.getCapabilities();
+            getResourceURL = capabilities.getRequest().getGetTile().getGet();
+            URL baseResourceURL =
+                    getResourceURL != null ? getResourceURL : new URL(getCapabilitiesURL());
+            URL base =
+                    new URL(
+                            baseResourceURL.getProtocol()
+                                    + "://"
+                                    + baseResourceURL.getHost()
+                                    + (baseResourceURL.getPort() == -1
+                                            ? ""
+                                            : ":" + baseResourceURL.getPort())
+                                    + "/");
+            String path = baseResourceURL.getPath();
+            assertTrue(url.startsWith((new URL(base, path)).toString()));
             // The remote capabilities defines a custom GridSet that matches
             // the OSMTILE with a different name: MATCHING_OSMTILE
             // Identifiers are also not simple numbers but contain a common prefix.
-            assertTrue(
-                    url.startsWith(
-                            "http://localhost:" + mockService.port() + MOCK_SERVER + CONTEXT));
             assertTrue(url.contains("layer=topp:states"));
             assertTrue(url.contains("tilematrixset=MATCHING_OSMTILE"));
             // Common prefix has been pre-pended to the tilematrix z input

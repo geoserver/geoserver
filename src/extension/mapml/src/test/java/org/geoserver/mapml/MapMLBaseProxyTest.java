@@ -13,9 +13,13 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import java.io.ByteArrayInputStream;
+import java.net.URL;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geotools.ows.wms.WMSCapabilities;
+import org.geotools.ows.wms.WebMapServer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.springframework.http.MediaType;
@@ -105,11 +109,29 @@ public class MapMLBaseProxyTest extends MapMLTestSupport {
         }
     }
 
-    protected void assertCascading(boolean shouldCascade, String url) {
+    protected void assertCascading(boolean shouldCascade, String url) throws Exception {
+
         if (shouldCascade) {
-            assertTrue(
-                    url.startsWith(
-                            "http://localhost:" + mockService.port() + MOCK_SERVER + CONTEXT));
+            URL getResourceURL = null;
+            Pattern serviceTypeRE = Pattern.compile(".*SERVICE=WMS.*", Pattern.CASE_INSENSITIVE);
+            boolean cascadingWMS = serviceTypeRE.matcher(getCapabilitiesURL()).find();
+            assertTrue(cascadingWMS);
+            WebMapServer wms = new WebMapServer(new URL(getCapabilitiesURL()));
+            WMSCapabilities capabilities = wms.getCapabilities();
+            getResourceURL = capabilities.getRequest().getGetMap().getGet();
+            URL baseResourceURL =
+                    getResourceURL != null ? getResourceURL : new URL(getCapabilitiesURL());
+            URL base =
+                    new URL(
+                            baseResourceURL.getProtocol()
+                                    + "://"
+                                    + baseResourceURL.getHost()
+                                    + (baseResourceURL.getPort() == -1
+                                            ? ""
+                                            : ":" + baseResourceURL.getPort())
+                                    + "/");
+            String path = baseResourceURL.getPath();
+            assertTrue(url.startsWith((new URL(base, path)).toString()));
             assertTrue(url.contains("layers=topp:states"));
         } else {
             assertTrue(url.startsWith("http://localhost:8080/geoserver" + CONTEXT));

@@ -5,21 +5,20 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
     private static final long serialVersionUID = 1L;
+
+    private final String script;
 
     public StatusBar(
             final String id,
@@ -28,18 +27,6 @@ public class StatusBar extends Panel {
             final IModel<String> progressMessageModel) {
         super(id);
         setOutputMarkupId(true);
-        add(
-                new Behavior() {
-                    private static final long serialVersionUID = -8058471260136015254L;
-
-                    @Override
-                    public void renderHead(Component component, IHeaderResponse response) {
-                        response.render(
-                                CssHeaderItem.forReference(
-                                        new PackageResourceReference(
-                                                StatusBar.class, "statusbar.css")));
-                    }
-                });
 
         WebMarkupContainer usageBar = new WebMarkupContainer("statusBarProgress");
         WebMarkupContainer excessBar = new WebMarkupContainer("statusBarExcess");
@@ -61,17 +48,17 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        usageBar.add(
-                new AttributeModifier(
-                        "style",
-                        new Model<>(
-                                "width: "
-                                        + usedPercentage
-                                        + "px; left: 5px; border-left: inherit;")));
-
-        String redStyle =
-                "width: " + excessPercentage + "px; left: " + (5 + usedPercentage) + "px;";
-        excessBar.add(new AttributeModifier("style", new Model<>(redStyle)));
+        this.script =
+                ""
+                        + "document.getElementsByClassName('statusBarProgress')[0].style.width = '"
+                        + usedPercentage
+                        + "px';\n"
+                        + "document.getElementsByClassName('statusBarExcess')[0].style.width = '"
+                        + excessPercentage
+                        + "px';\n"
+                        + "document.getElementsByClassName('statusBarExcess')[0].style.left = '"
+                        + (5 + usedPercentage)
+                        + "px';";
 
         add(usageBar);
         add(excessBar);
@@ -79,5 +66,14 @@ public class StatusBar extends Panel {
 
         // TODO:make the argument models truly dynamic
         // add(new AjaxSelfUpdatingTimerBehavior(Duration.seconds(5)));
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(
+                CssHeaderItem.forReference(
+                        new PackageResourceReference(StatusBar.class, "statusbar.css")));
+        response.render(OnLoadHeaderItem.forScript(this.script));
     }
 }

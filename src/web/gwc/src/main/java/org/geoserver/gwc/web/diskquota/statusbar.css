@@ -16,6 +16,8 @@
 	background-color: green;
 	height: 10px;
 	width: 50px;
+	left: 5px;
+	border-left: inherit;
 }
 
 .statusBarExcess {

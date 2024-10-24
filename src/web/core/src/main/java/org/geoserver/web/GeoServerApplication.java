@@ -28,7 +28,6 @@ import org.apache.wicket.Session;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.csp.CSPDirective;
-import org.apache.wicket.csp.CSPDirectiveSrcValue;
 import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
@@ -231,37 +230,18 @@ public class GeoServerApplication extends WebApplication
         // enable GeoServer custom resource locators
         getResourceSettings().setUseMinifiedResources(false);
         getResourceSettings().setResourceStreamLocator(new GeoServerResourceStreamLocator());
+        // Wicket's default Content-Security-Policy value is:
+        //   default-src 'none'; script-src 'strict-dynamic' 'nonce-XYZ'; style-src 'nonce-XYZ';
+        //   img-src 'self'; connect-src 'self'; font-src 'self'; manifest-src 'self';
+        //   child-src 'self'; frame-src 'self'; base-uri 'self';
+        // GeoServer adds data: to the img-src directive to allow image data URIs used by
+        // OpenLayers, CodeMirror, the datetime picker and color picker (primarily for Style Editor)
         if (CSP_STRICT) {
-            getCspSettings()
-                    .blocking()
-                    .clear()
-                    .add(
-                            CSPDirective.SCRIPT_SRC,
-                            CSPDirectiveSrcValue.STRICT_DYNAMIC,
-                            CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.IMG_SRC, "'self'", "data:")
-                    .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
+            getCspSettings().blocking().strict().add(CSPDirective.IMG_SRC, "data:");
         } else {
-            // More relaxed configuration: report only
-            getCspSettings()
-                    .reporting()
-                    .clear()
-                    .add(
-                            CSPDirective.SCRIPT_SRC,
-                            CSPDirectiveSrcValue.STRICT_DYNAMIC,
-                            CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.STYLE_SRC, CSPDirectiveSrcValue.NONCE)
-                    .add(CSPDirective.IMG_SRC, "'self'", "data:")
-                    .add(CSPDirective.CONNECT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.FONT_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.MANIFEST_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.CHILD_SRC, CSPDirectiveSrcValue.SELF)
-                    .add(CSPDirective.BASE_URI, CSPDirectiveSrcValue.SELF);
+            // More relaxed configuration: disable blocking and enable reporting only
+            getCspSettings().blocking().disabled();
+            getCspSettings().reporting().strict().add(CSPDirective.IMG_SRC, "data:");
         }
         /*
          * The order string resource loaders are added to IResourceSettings is of importance so we need to add any contributed loader prior to the

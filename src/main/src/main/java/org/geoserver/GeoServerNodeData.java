@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,15 +38,12 @@ public class GeoServerNodeData {
     /** System property, environment variable, etc... used to specify the node id. */
     public static final String GEOSERVER_NODE_OPTS = "GEOSERVER_NODE_OPTS";
 
-    static final String DEFAULT_NODE_ID_TEMPLATE =
-            "position:absolute; top:12px; left:12px; right:28px; width:auto; background:$background; padding: 1px; border: 1px solid #0076a1; color:$color; font-weight:bold";
-
     static final Logger LOGGER = Logging.getLogger(GeoServerNodeData.class);
 
     final String nodeId;
-    final String nodeIdStyle;
+    final Map<String, String> nodeIdStyle;
 
-    public GeoServerNodeData(String nodeId, String nodeIdStyle) {
+    public GeoServerNodeData(String nodeId, Map<String, String> nodeIdStyle) {
         this.nodeId = nodeId;
         this.nodeIdStyle = nodeIdStyle;
     }
@@ -83,12 +81,9 @@ public class GeoServerNodeData {
     /** Creates a node data from a format-options style string. */
     public static GeoServerNodeData createFromString(String nodeOpts) {
         String nodeId = null;
-        String nodeIdStyle = null;
+        Map<String, String> nodeIdStyle = new LinkedHashMap<>();
 
-        if (nodeOpts == null) {
-            nodeId = null;
-            nodeIdStyle = null;
-        } else {
+        if (nodeOpts != null) {
             try {
                 Map<String, String> options = parseProperties(nodeOpts);
                 String id = options.get("id");
@@ -106,15 +101,13 @@ public class GeoServerNodeData {
 
                 nodeId = id;
                 String bgcolor = options.get("background");
-                if (bgcolor == null) {
-                    bgcolor = "#dadada";
+                if (bgcolor != null) {
+                    nodeIdStyle.put("backgroundColor", bgcolor);
                 }
-                String style = DEFAULT_NODE_ID_TEMPLATE.replace("$background", bgcolor);
                 String color = options.get("color");
-                if (color == null) {
-                    color = "#0076a1";
+                if (color != null) {
+                    nodeIdStyle.put("color", color);
                 }
-                nodeIdStyle = style.replace("$color", color);
             } catch (Exception e) {
                 LOGGER.log(
                         Level.SEVERE,
@@ -122,7 +115,7 @@ public class GeoServerNodeData {
                                 + nodeOpts
                                 + " instead. Disabling NODE_ID GUI element");
                 nodeId = null;
-                nodeIdStyle = null;
+                nodeIdStyle.clear();
             }
         }
 
@@ -214,7 +207,7 @@ public class GeoServerNodeData {
     }
 
     /** The node id styling. */
-    public String getIdStyle() {
+    public Map<String, String> getIdStyle() {
         return nodeIdStyle;
     }
 }

@@ -164,6 +164,7 @@
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
     <lint>deprecation,unchecked</lint>
+    <jmh.version>1.37</jmh.version>
   </properties>
 
   <dependencyManagement>

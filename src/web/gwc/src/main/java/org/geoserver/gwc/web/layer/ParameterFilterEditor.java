@@ -41,7 +41,7 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.StyleParameterFilter;
 import org.geoserver.gwc.web.GWCIconFactory;
@@ -251,7 +251,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     @Override
                     protected void onClick(AjaxRequestTarget target, Form<?> form) {
                         StyleParameterFilter newFilter = new StyleParameterFilter();
-                        newFilter.setLayer((LayerInfo) layerModel.getObject());
+                        newFilter.setLayer((PublishedInfo) layerModel.getObject());
 
                         addFilter(newFilter);
 

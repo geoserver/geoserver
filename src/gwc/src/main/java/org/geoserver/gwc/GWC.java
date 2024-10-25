@@ -1263,10 +1263,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         updateLockProvider(gwcConfig.getLockProviderName());
 
         // Reconfigure the metatiling executor because the thread count might have changed
-        if (this.metaTilingExecutor != null) {
-            this.metaTilingExecutor.shutdown();
-        }
+        ExecutorService current = this.metaTilingExecutor;
         this.metaTilingExecutor = buildMetaTilingExecutor(gwcConfig.getMetaTilingThreads());
+        if (current != null) current.shutdown();
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig)

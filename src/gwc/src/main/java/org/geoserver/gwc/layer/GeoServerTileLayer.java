@@ -597,33 +597,36 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
         final GeoServerMetaTile metaTile = createMetaTile(conveyorTile, metaX, metaY);
 
-        /* ****************** Acquire lock on metatile ******************* */
-        final Lock metaTileLock =
-                GWC.get().getLockProvider().getLock(buildMetaTileLockKey(conveyorTile, metaTile));
+        // should we use the metatile executor?
+        Executor executor = GWC.get().getMetaTilingExecutor();
+        if (Dispatcher.REQUEST.get() == null) {
+            // Metatiling concurrency is disabled if this isn't a user request.
+            // Concurrency reduces the user-experienced latency but isn't useful for seeding.
+            // In fact, it would be harmful for seeding  because it makes it more difficult for an
+            // administrator to control the amount of resource usage for significant seeding jobs.
+            executor = null;
+        }
 
+        /* ****************** Acquire lock on metatile ******************* */
+        final Lock metaTileLock = getLock(buildMetaTileLockKey(conveyorTile, metaTile));
         try {
             boolean foundInCache = false;
             if (tryCache) {
-                /* ****************** Acquire lock on individual tile ******************* */
-                // Will block here if there is an async thread currently saving this tile
-                String lockKey = buildTileLockKey(conveyorTile, conveyorTile.getTileIndex());
-                final Lock tileLock = GWC.get().getLockProvider().getLock(lockKey);
-                try {
-                    // After getting the lock on the meta tile and individual tile, try cache again
-                    foundInCache = tryCacheFetch(conveyorTile);
-                    if (foundInCache) {
-                        LOGGER.log(
-                                Level.FINEST,
-                                () ->
-                                        "--> "
-                                                + Thread.currentThread().getName()
-                                                + " returns cache hit for "
-                                                + Arrays.toString(metaTile.getMetaGridPos()));
-                        metaTile.dispose();
+                // If we have an executor, tiles are saved asynchronously so we need to grab a
+                // tile lock to wait for the potential tile save to complete. Otherwise just read.
+                if (executor == null) {
+                    foundInCache = fetchPrimaryTile(conveyorTile, metaTile);
+                } else {
+                    /* ****************** Acquire lock on individual tile ******************* */
+                    // Will block here if there is an async thread currently saving this tile
+                    String lockKey = buildTileLockKey(conveyorTile, conveyorTile.getTileIndex());
+                    final Lock tileLock = getLock(lockKey);
+                    try {
+                        foundInCache = fetchPrimaryTile(conveyorTile, metaTile);
+                    } finally {
+                        /* ****************** Release lock on individual tile ******************* */
+                        tileLock.release();
                     }
-                } finally {
-                    /* ****************** Release lock on individual tile ******************* */
-                    tileLock.release();
                 }
             }
 
@@ -638,7 +641,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                         + " on "
                                         + metaTile);
                 try {
-                    computeMetaTile(conveyorTile, metaTile);
+                    computeMetaTile(conveyorTile, metaTile, executor);
                 } catch (Exception e) {
                     Throwables.throwIfInstanceOf(e, GeoWebCacheException.class);
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
@@ -653,7 +656,32 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         return finalizeTile(conveyorTile);
     }
 
-    private void computeMetaTile(ConveyorTile conveyorTile, GeoServerMetaTile metaTile)
+    /**
+     * Looks up the primary tile in a given meta-tile (the requested one). If the tile is found it
+     * means it has been computed since the first check, and the metatile gets disposed in
+     * preparation for an immediate return.
+     */
+    private boolean fetchPrimaryTile(ConveyorTile conveyorTile, GeoServerMetaTile metaTile) {
+        // quick return for the simple case
+        if (!tryCacheFetch(conveyorTile)) return false;
+
+        // otherwise log success, dispose the meta tile and return true
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            String threadName = Thread.currentThread().getName();
+            String gridPos = Arrays.toString(metaTile.getMetaGridPos());
+            LOGGER.finest("--> " + threadName + " returns cache hit for " + gridPos);
+        }
+        metaTile.dispose();
+        return true;
+    }
+
+    /** Acquires an exclusive lock for the given key (e.g., for a metatile or individual tile) */
+    private Lock getLock(String lockKey) throws GeoWebCacheException {
+        return GWC.get().getLockProvider().getLock(lockKey);
+    }
+
+    private void computeMetaTile(
+            ConveyorTile conveyorTile, GeoServerMetaTile metaTile, Executor executor)
             throws Exception {
         WebMap map;
         long requestTime = System.currentTimeMillis();
@@ -674,16 +702,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         final int zoomLevel = (int) gridLoc[2];
         final boolean store = this.getExpireCache(zoomLevel) != GWCVars.CACHE_DISABLE_CACHE;
 
-        Executor executor = GWC.get().getMetaTilingExecutor();
-
-        if (Dispatcher.REQUEST.get() == null) {
-            // Metatiling concurrency is disabled if this isn't a user request.
-            // Concurrency reduces the user-experienced latency but isn't
-            // useful for seeding. In fact, it would be harmful for seeding
-            // because it makes it more difficult for an administrator to
-            // control the amount of resource usage for significant seeding jobs.
-            executor = null;
-        }
         List<CompletableFuture<?>> completableFutures = new ArrayList<>();
 
         // A latch to track whether we've locked all the individual tiles or not, before
@@ -725,13 +743,13 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                             conveyorTile,
                                             resource,
                                             requestTime));
-                    if (executor != null) {
+                    if (executor == null) {
+                        // Save in cache on main thread if there's no executor
+                        saveTileTask.run();
+                    } else {
                         CompletableFuture<Void> completableFuture =
                                 CompletableFuture.runAsync(saveTileTask, executor);
                         completableFutures.add(completableFuture);
-                    } else {
-                        // Save in cache on main thread if there's no executor
-                        saveTileTask.run();
                     }
                 } else {
                     // For all other tiles, either encode/save fully asynchronously or
@@ -754,14 +772,14 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                                     gridPos,
                                     withRasterCleaner(tileSaver));
 
-                    if (executor != null) {
+                    if (executor == null) {
+                        // Run on main thread if there's no executor
+                        encodeAndSaveTask.run();
+                    } else {
                         // Fully asynchronous
                         CompletableFuture<Void> completableFuture =
                                 CompletableFuture.runAsync(encodeAndSaveTask, executor);
                         completableFutures.add(completableFuture);
-                    } else {
-                        // Run on main thread if there's no executor
-                        encodeAndSaveTask.run();
                     }
                 }
             }
@@ -813,10 +831,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             Runnable runnable) {
         return () -> {
             try {
-                Lock tileLock =
-                        GWC.get()
-                                .getLockProvider()
-                                .getLock(buildTileLockKey(conveyorTile, gridPosition));
+                Lock tileLock = getLock(buildTileLockKey(conveyorTile, gridPosition));
                 try {
                     tileLockLatch.countDown();
                     runnable.run();

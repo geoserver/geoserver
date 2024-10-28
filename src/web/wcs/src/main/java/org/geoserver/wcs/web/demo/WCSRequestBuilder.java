@@ -27,8 +27,6 @@ import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs.web.demo.GetCoverageRequest.Version;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.demo.DemoRequest;
-import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -42,8 +40,6 @@ import org.geotools.xml.transform.TransformerBase;
  */
 @SuppressWarnings("serial")
 public class WCSRequestBuilder extends GeoServerBasePage {
-
-    GSModalWindow responseWindow;
 
     WCSRequestBuilderPanel builder;
 
@@ -68,31 +64,6 @@ public class WCSRequestBuilder extends GeoServerBasePage {
         // the xml popup window
         final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
-        xmlWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
-
-        // the output response window
-        responseWindow = new GSModalWindow("responseWindow");
-        add(responseWindow);
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
-
-        responseWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> {
-                            DemoRequest request = new DemoRequest(null);
-                            HttpServletRequest http = GeoServerApplication.get().servletRequest();
-                            String url =
-                                    ResponseUtils.buildURL(
-                                            ResponseUtils.baseURL(http),
-                                            "ows",
-                                            Collections.singletonMap("strict", "true"),
-                                            URLType.SERVICE);
-                            request.setRequestUrl(url);
-                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                            return new DemoRequestResponse(new Model<>(request));
-                        });
 
         form.add(
                 new AjaxSubmitLink("execute") {
@@ -129,7 +100,8 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         try {
-                            getRequestXML();
+                            xmlWindow.setContent(
+                                    new PlainCodePage(xmlWindow.getContentId(), getRequestXML()));
                             xmlWindow.show(target);
                         } catch (Exception e) {
                             error(e.getMessage());

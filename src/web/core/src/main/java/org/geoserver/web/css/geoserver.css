@@ -102,16 +102,16 @@ body {
   text-align:left !important; /* override blueprint's ie.css */
   overflow-y: scroll;
 }
-body.help {
-  padding: 2em;
+.help {
+  padding: 1em 2em;
 }
-body.help ol, ul ul {
+.help ol, ul ul {
   color:black;
 }
-body.help ol li {
+.help ol li {
   display:list-item;
 }
-body.help p {
+.help p {
   color: black;
 }
 
@@ -1855,6 +1855,15 @@ li.select2-results__option {
     display: inline;
 }
 
+.reload-warning {
+  color: black;
+  margin: 8px;
+}
+
+.process-builder {
+  margin: 1em;
+}
+
 #processAccessMode {
     display: block;
     padding-top: 0.5em;
@@ -1871,4 +1880,35 @@ li.select2-results__option {
 #processAccessMode label {
     clear: right;
     margin-bottom: 0.5em;
+}
+
+.fontWeightBold {
+    font-weight: bold;
+}
+
+.textAlignCenter {
+    text-align: center;
+}
+
+.features-templating-info-fieldset {
+    margin-bottom: 0px;
+    margin-right: 5%;
+    width: 45%;
+}
+
+.features-templating-rule-fieldset-1 {
+    margin-top: 5px;
+    width: 65%;
+}
+
+.features-templating-rule-fieldset-2 {
+    margin-top: 10px;
+    width: 35%;
+}
+
+.features-templating-rule-save {
+    color: #0076a1;
+    font-family: Tahoma;
+    font-size: 10.8px;
+    font-weight: bold;
 }

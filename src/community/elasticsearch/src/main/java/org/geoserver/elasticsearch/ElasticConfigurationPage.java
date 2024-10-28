@@ -402,9 +402,9 @@ abstract class ElasticConfigurationPage extends Panel {
                             Property<ElasticAttribute> property,
                             ListItem<Property<ElasticAttribute>> item) {
                         if (property == ElasticAttributeProvider.STORED) {
-                            item.add(new AttributeModifier("style", Model.of("text-align:center")));
+                            item.add(AttributeModifier.replace("class", "textAlignCenter"));
                         } else if (property == ElasticAttributeProvider.ANALYZED) {
-                            item.add(new AttributeModifier("style", Model.of("text-align:center")));
+                            item.add(AttributeModifier.replace("class", "textAlignCenter"));
                         }
                     }
                 };

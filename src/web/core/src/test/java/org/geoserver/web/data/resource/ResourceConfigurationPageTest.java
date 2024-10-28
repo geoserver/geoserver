@@ -465,7 +465,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // click first item in SRS (urn:ogc:def:crs:EPSG::4326)
         tester.clickLink(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
 
         // assert that native SRS has changed from EPSG:26713 to urn:ogc:def:crs:EPSG::4326
@@ -582,7 +582,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // click first item in SRS
         tester.clickLink(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
 
         // assert that native SRS has changed
@@ -620,20 +620,20 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         DataView epsgContainer =
                 (DataView)
                         tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items");
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items");
 
         // we got two epsg in the otherSrs container
         assertEquals(3, epsgContainer.size());
 
         Component epsgComponent1 =
                 tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link:label");
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items:1:itemProperties:0:component:link:label");
         Component epsgComponent2 =
                 tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:2:itemProperties:0:component:link:label");
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items:2:itemProperties:0:component:link:label");
         Component epsgComponent3 =
                 tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:3:itemProperties:0:component:link:label");
+                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items:3:itemProperties:0:component:link:label");
 
         // checks that they have been properly displayed with not urn format being cut
         assertEquals("urn:ogc:def:crs:EPSG::3006", epsgComponent1.getDefaultModel().getObject());
@@ -832,7 +832,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
 
         // click first item in SRS
         tester.clickLink(
-                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:modal:overlay:dialog:content:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
         tester.clickLink(
                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:computeNative", true);

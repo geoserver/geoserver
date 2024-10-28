@@ -1,0 +1,264 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+div.wicket-mask-dark {  
+    position: fixed;    
+    top: 0px; 
+    left: 0px; 
+    width: 100%; 
+    height: 100%;
+    opacity: 0.1; 
+    background-color: black; 
+    filter: alpha(opacity=10); 
+    background-image: url('transparent2.png');
+}
+
+div.wicket-mask-transparent {
+    position: fixed;    
+    top: 0px; 
+    left: 0px; 
+    width: 100%; 
+    height: 100%;
+
+    background-image: url('transparent1.gif');
+}
+
+div.wicket-modal {  
+    position: fixed;
+    _position: absolute;
+    z-index: 20001; 
+    visibility: hidden;
+}
+
+
+div.wicket-modal div.w_top_1 {  
+    width: 100%;    
+    overflow: hidden;
+}
+
+div.wicket-modal div.w_top {
+    height: 11px; 
+    background-position: 0px -16px; 
+    overflow: hidden;
+    cursor:n-resize;
+    padding: 0px; margin: 0px;      
+}
+
+div.wicket-modal .w_topLeft {
+/*
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    */
+    width: 14px; 
+    height: 11px;   
+    float: left;
+    background-position: 0px 0px; 
+    overflow: hidden; 
+    cursor: nw-resize;
+}
+
+div.wicket-modal div.w_topRight {
+    /*
+    position: absolute; 
+    top: 0px; 
+    right: 0px; 
+    */
+    width: 14px; 
+    height: 11px;   
+    float: right; 
+    background-position: -16px 0px;
+    overflow: hidden; 
+    cursor: ne-resize;
+}
+
+div.wicket-modal div.w_left {
+    background-position: 0px 0px; 
+    background-repeat: repeat-y;
+    cursor: w-resize; 
+    width: 100%;
+}
+
+div.wicket-modal div.w_right_1 {
+    margin-left:10px;   
+}
+
+div.wicket-modal div.w_right {
+    background-position: right;
+    background-repeat: repeat-y; 
+    cursor:e-resize; 
+    width: 100%;    
+}
+
+div.wicket-modal div.w_content_1 {
+    margin-right: 10px;
+    cursor: auto;   
+}
+
+
+div.wicket-modal div.w_caption {
+    height: 1.4em; 
+    overflow: hidden; 
+    cursor: default;
+    position: relative;
+    background-color: white;
+    cursor: default;
+    line-height: 1.4em;
+    color: #666;
+}
+
+div.wicket-modal a.w_close {    
+    height: 16px; 
+    width: 16px; 
+    overflow: hidden;
+    background-position: -64px 0px;
+    position: absolute;
+    right: 3px;
+    padding: 0px;
+    margin: 0px;
+}
+
+div.wicket-modal a.w_close:hover {
+    float: right; 
+    height: 16px; 
+    width: 16px; 
+    overflow: hidden;
+    background-position: -80px 0px;
+    
+}
+
+div.wicket-modal h3.w_captionText {
+    height: 1.4em; 
+    position: absolute;
+    margin-left: 3px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    font-weight: bold;
+    left: 0em;
+}
+
+div.wicket-modal div.w_content_2 {
+    width: 100%; 
+    background-color: white;
+    padding-top: 0.1em;
+    _overflow: auto;
+    cursor: default;
+}
+
+div.wicket-modal div.w_content_3 {
+    border: 1px solid #bbb;
+    padding: 0px;   
+}
+
+div.wicket-modal div.w_content {
+    width: 100%;
+    background-color: white;
+}
+
+div.wicket-modal div.w_content_container {
+    position: relative;
+}
+
+div.wicket-modal iframe.wicket_modal {
+    width: 100%; 
+    height: 400px;          
+    padding: 0px; 
+    margin: 0px; 
+    border-width: 0px;
+    position: relative;
+}
+
+div.wicket-modal div.w_bottom_1 {
+    width: 100%;
+    overflow: hidden;
+    cursor: n-resize; 
+}
+
+div.wicket-modal div.w_bottom {
+    height: 15px; 
+    background-position: 0px -32px; 
+    overflow:hidden; 
+
+}
+
+div.wicket-modal div.w_bottomRight {
+    /*
+    position: absolute; 
+    bottom: 0px; 
+    right: 0px;
+    */ 
+    width: 14px; 
+    height: 15px;
+    float: right;
+    background-position: -48px 0px; 
+    cursor: nw-resize; 
+    overflow: hidden;
+}
+
+
+
+div.wicket-modal div.w_bottomLeft {
+    /*
+    position: absolute; 
+    bottom: 0px; 
+    left: 0px;
+    */ 
+    width: 14px; 
+    height: 15px;
+    float: left;
+    background-position: -32px 0px; 
+    overflow: hidden; 
+    cursor: ne-resize;
+}
+
+
+div.wicket-modal div.w_blue div.w_left,
+div.wicket-modal div.w_blue div.w_right {
+    background-image: url('frame-blue-2-alpha.png'); 
+    _background-image: url('frame-blue-2-ie.png');
+}
+
+
+div.wicket-modal div.w_blue div.w_top,
+div.wicket-modal div.w_blue div.w_bottom,
+div.wicket-modal div.w_blue div.w_topLeft,
+div.wicket-modal div.w_blue div.w_topRight,
+div.wicket-modal div.w_blue div.w_bottomRight,
+div.wicket-modal div.w_blue div.w_bottomLeft,
+div.wicket-modal div.w_blue a.w_close {
+    background-image: url('frame-blue-1-alpha.png'); 
+    _background-image: url('frame-blue-1-ie.png');
+}
+
+
+div.wicket-modal div.w_silver div.w_left,
+div.wicket-modal div.w_silver div.w_right {
+    background-image: url('frame-gray-2-alpha.png'); 
+    _background-image: url('frame-gray-2-ie.png');
+}
+
+
+div.wicket-modal div.w_silver div.w_top,
+div.wicket-modal div.w_silver div.w_bottom,
+div.wicket-modal div.w_silver div.w_topLeft,
+div.wicket-modal div.w_silver div.w_topRight,
+div.wicket-modal div.w_silver div.w_bottomRight,
+div.wicket-modal div.w_silver div.w_bottomLeft,
+div.wicket-modal div.w_silver a.w_close {
+    background-image: url('frame-gray-1-alpha.png'); 
+    _background-image: url('frame-gray-1-ie.png');
+}
+

@@ -299,7 +299,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
         // test list of linked templates
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component",
@@ -349,7 +349,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component",
@@ -403,12 +403,12 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // print(tester.getLastRenderedPage(), true, true);
         // check the link
@@ -477,7 +477,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component",
@@ -514,7 +514,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // print(tester.getLastRenderedPage(), true, true);
         tester.assertLabel(
@@ -579,7 +579,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // check table is visible
         Assert.assertNull(
@@ -602,7 +602,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         selectTemplate =
                 (DropDownChoice<?>)
@@ -612,7 +612,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component",
@@ -648,7 +648,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
         tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:geonetworkPanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:geonetworkPanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -715,7 +715,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 GeoServerDialog.class);
 
         tester.clickLink(
-                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:dialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:dialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         @SuppressWarnings("unchecked")
         GeoServerTablePanel<ComplexMetadataMap> panel =
@@ -741,7 +741,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 GeoServerDialog.class);
 
         tester.clickLink(
-                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:dialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:dialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         @SuppressWarnings("unchecked")
         GeoServerTablePanel<ComplexMetadataMap> panel2 =

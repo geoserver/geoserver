@@ -25,8 +25,6 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.demo.DemoRequest;
-import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -50,7 +48,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
     public static final String PARAM_NAME = "name";
 
-    GSModalWindow responseWindow;
     WPSRequestBuilderPanel builder;
 
     TextField<String> xml;
@@ -85,35 +82,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         // the xml popup window
         final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
-        xmlWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
-
-        // the output response window
-        responseWindow = new GSModalWindow("responseWindow");
-        add(responseWindow);
-        // removed, don't know what it did, but page maps are gone in 1.5...
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
-
-        responseWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> {
-                            DemoRequest request = new DemoRequest(null);
-                            HttpServletRequest http =
-                                    (HttpServletRequest) getRequest().getContainerRequest();
-                            String url =
-                                    ResponseUtils.buildURL(
-                                            ResponseUtils.baseURL(http),
-                                            "ows",
-                                            Collections.singletonMap("strict", "true"),
-                                            URLType.SERVICE);
-                            request.setRequestUrl(url);
-                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                            request.setUserName(builder.username);
-                            request.setPassword(builder.password);
-                            return new DemoRequestResponse(new Model<>(request));
-                        });
 
         form.add(
                 new AjaxSubmitLink("setXml") {
@@ -173,7 +141,8 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         try {
-                            getRequestXML();
+                            xmlWindow.setContent(
+                                    new PlainCodePage(xmlWindow.getContentId(), getRequestXML()));
                             xmlWindow.show(target);
                         } catch (Exception e) {
                             error(e.getMessage());

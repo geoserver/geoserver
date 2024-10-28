@@ -6,149 +6,168 @@ package org.geoserver.web.wicket;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
+import org.apache.wicket.extensions.ajax.markup.html.modal.theme.DefaultTheme;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.io.IClusterable;
 
 /**
  * Temprary replacement for the pre-Wicket 9 GSModalWindow. Should be rewritten using Wicket9+ modal
  * window facilities
  */
-@SuppressWarnings("deprecation")
 public class GSModalWindow extends Panel {
-    private ModalWindow delegate;
+
+    private static final long serialVersionUID = 4093464097152933949L;
+
+    private static final String TITLE_ID = "title";
+
+    private final ModalDialog delegate;
+
+    private final ContentsPanel panel;
+
+    private CloseButtonCallback closeButtonCallback = null;
+    private WindowClosedCallback windowClosedCallback = null;
+
+    private int initialHeight = 400;
+    private int initialWidth = 600;
+    private boolean unloadConfirmation = true;
 
     public GSModalWindow(String id) {
         super(id);
-        delegate =
-                new ModalWindow("modal") {
+        this.delegate = new ModalDialog("modal");
+        this.delegate.add(new DefaultTheme());
+        this.delegate.trapFocus();
+        add(this.delegate);
+        this.panel = new ContentsPanel(ModalDialog.CONTENT_ID);
+        this.panel.add(new WebMarkupContainer(TITLE_ID));
+        this.panel.add(new WebMarkupContainer(ModalDialog.CONTENT_ID));
+        this.panel.add(
+                new AjaxLink<>("close") {
+
+                    private static final long serialVersionUID = 8414211581955106952L;
+
                     @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        // to avoid local style being blocked by CSP
-                        tag.remove("style");
-                        tag.put("class", "hidden");
+                    public void onClick(AjaxRequestTarget target) {
+                        if (closeButtonCallback == null
+                                || closeButtonCallback.onCloseButtonClicked(target)) {
+                            close(target);
+                        }
                     }
-                };
-        add(delegate);
-    }
-
-    public void setInitialHeight(int initialHeight) {
-        delegate.setInitialHeight(initialHeight);
-    }
-
-    public void setInitialWidth(int intialWidth) {
-        delegate.setInitialWidth(intialWidth);
-    }
-
-    public void setContent(Component component) {
-        delegate.setContent(component);
-    }
-
-    public String getContentId() {
-        return delegate.getContentId();
-    }
-
-    public IModel<String> getTitle() {
-        return delegate.getTitle();
-    }
-
-    public void setTitle(String title) {
-        delegate.setTitle(title);
-    }
-
-    public void setTitle(IModel<String> title) {
-        delegate.setTitle(title);
-    }
-
-    public void show(AjaxRequestTarget target) {
-        delegate.show(target);
+                });
+        this.delegate.setContent(this.panel);
     }
 
     @Override
-    protected void onRender() {
-        this.internalRenderComponent();
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(
+                CssHeaderItem.forReference(
+                        new PackageResourceReference(getClass(), "modal/modal.css")));
+        response.render(
+                CssHeaderItem.forReference(
+                        new PackageResourceReference(getClass(), "modal/GSModalWindow.css")));
+        response.render(
+                JavaScriptHeaderItem.forReference(
+                        new PackageResourceReference(getClass(), "modal/GSModalWindow.js")));
     }
 
     public void close(AjaxRequestTarget target) {
-        delegate.close(target);
+        this.delegate.close(target);
+        if (this.unloadConfirmation) {
+            target.prependJavaScript(
+                    "\n  $(window).off('beforeunload', GSModalWindow.onbeforeunload);");
+        }
+        if (this.windowClosedCallback != null) {
+            this.windowClosedCallback.onClose(target);
+        }
     }
 
-    public void setCookieName(String cookieName) {
-        delegate.setCookieName(cookieName);
+    public String getContentId() {
+        return ModalDialog.CONTENT_ID;
     }
 
-    // This is only used in Metadata extension and taskmanager community module, and might work
-    // better on GeoServerDialog.
-    public void showUnloadConfirmation(boolean unloadConfirmation) {
-        delegate.showUnloadConfirmation(unloadConfirmation);
-    }
-
-    public interface PageCreator extends ModalWindow.PageCreator {}
-
-    public interface WindowClosedCallback extends ModalWindow.WindowClosedCallback {}
-
-    public interface CloseButtonCallback extends ModalWindow.CloseButtonCallback {}
-
-    public void setPageCreator(PageCreator pageCreator) {
-        delegate.setPageCreator(pageCreator);
+    @SuppressWarnings("unchecked")
+    public IModel<String> getTitle() {
+        return (IModel<String>) this.panel.get(TITLE_ID).getDefaultModel();
     }
 
     public boolean isShown() {
-        return delegate.isShown();
+        return this.delegate.isOpen();
     }
 
-    public void setCloseButtonCallback(GSModalWindow.CloseButtonCallback closeButtonCallback) {
-        delegate.setCloseButtonCallback(closeButtonCallback);
+    public void setContent(Component component) {
+        this.panel.replace(component);
     }
 
-    public void setWindowClosedCallback(GSModalWindow.WindowClosedCallback windowClosedCallback) {
-        delegate.setWindowClosedCallback(windowClosedCallback);
+    public void setCloseButtonCallback(CloseButtonCallback closeButtonCallback) {
+        this.closeButtonCallback = closeButtonCallback;
     }
 
-    // Mostly GeoServerDialog from here down.
-    String getHeightUnit() {
-        return delegate.getHeightUnit();
+    public void setInitialHeight(int initialHeight) {
+        this.initialHeight = initialHeight;
     }
 
-    int getInitialHeight() {
-        return delegate.getInitialHeight();
+    public void setInitialWidth(int initialWidth) {
+        this.initialWidth = initialWidth;
     }
 
-    int getInitialWidth() {
-        return delegate.getInitialWidth();
+    public void setTitle(String title) {
+        this.panel.replace(new Label(TITLE_ID, title));
     }
 
-    String getWidthUnit() {
-        return delegate.getWidthUnit();
+    public void setTitle(IModel<String> title) {
+        this.panel.replace(new Label(TITLE_ID, title));
     }
 
-    void setHeightUnit(String heightUnit) {
-        delegate.setHeightUnit(heightUnit);
+    public void setWindowClosedCallback(WindowClosedCallback windowClosedCallback) {
+        this.windowClosedCallback = windowClosedCallback;
     }
 
-    void setWidthUnit(String widthUnit) {
-        delegate.setWidthUnit(widthUnit);
+    public void show(AjaxRequestTarget target) {
+        this.delegate.open(target);
+        StringBuilder script = new StringBuilder();
+        script.append("\n  $('.w_content_container').css('height', '");
+        script.append(this.initialHeight);
+        script.append("px');");
+        script.append("\n  $('.wicket-modal').css('width', '");
+        script.append(this.initialWidth);
+        script.append("px');");
+        script.append("\n  GSModalWindow.center();");
+        if (this.unloadConfirmation) {
+            script.append("\n  $(window).on('beforeunload', GSModalWindow.onbeforeunload);");
+        }
+        target.appendJavaScript(script.toString());
     }
 
-    int getMinimalHeight() {
-        return delegate.getMinimalHeight();
+    // only used in metadata extension and taskmanager community module
+    public void showUnloadConfirmation(boolean unloadConfirmation) {
+        this.unloadConfirmation = unloadConfirmation;
     }
 
-    int getMinimalWidth() {
-        return delegate.getMinimalWidth();
+    public interface CloseButtonCallback extends IClusterable {
+
+        boolean onCloseButtonClicked(AjaxRequestTarget target);
     }
 
-    void setMinimalWidth(int minimalWidth) {
-        delegate.setMinimalWidth(minimalWidth);
+    public interface WindowClosedCallback extends IClusterable {
+
+        void onClose(AjaxRequestTarget target);
     }
 
-    void setMinimalHeight(int minimalHeight) {
-        delegate.setMinimalHeight(minimalHeight);
-    }
+    private static final class ContentsPanel extends Panel {
 
-    void setResizable(boolean resizable) {
-        delegate.setResizable(resizable);
+        private static final long serialVersionUID = -8770328867678258989L;
+
+        public ContentsPanel(String id) {
+            super(id);
+        }
     }
 }

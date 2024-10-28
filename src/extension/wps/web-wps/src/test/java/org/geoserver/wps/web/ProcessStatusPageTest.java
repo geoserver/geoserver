@@ -95,7 +95,7 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         tester.getComponentFromLastRenderedPage("headerPanel:dismissSelected").setEnabled(true);
         tester.clickLink("headerPanel:dismissSelected");
         // this submits the dialog
-        tester.clickLink("dialog:dialog:modal:content:form:submit", true);
+        tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit", true);
         // this makes the dialog actually close
         tester.getComponentFromLastRenderedPage("dialog:dialog:modal")
                 .getBehaviors()

@@ -100,7 +100,7 @@ public class URLChecksPageTest extends GeoServerWicketTestSupport {
         // click remove link
         tester.clickLink("removeSelected", true);
         // confirm on dialog
-        tester.clickLink("dialog:dialog:modal:content:form:submit");
+        tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         assertThat(getDao().getChecks(), empty());
     }

@@ -1,0 +1,19 @@
+@charset "UTF-8";
+
+.modal-dialog {
+    visibility: hidden;
+}
+
+div.wicket-modal {
+    position: static;
+    visibility: visible;
+}
+
+div.wicket-modal a.w_close {
+    z-index: 1;
+}
+
+div.wicket-modal div.w_content_container {
+    color: #0076a1;
+    overflow: auto;
+}

@@ -18,7 +18,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -28,6 +27,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
@@ -140,15 +140,12 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         reloadContainer.add(warning);
 
         add(reloadWarningDialog = new GSModalWindow("reloadWarningDialog"));
-        reloadWarningDialog.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () ->
-                                new ReloadWarningDialog(
-                                        new StringResourceModel(
-                                                "featureTypeReloadWarning", this, null)));
+        reloadWarningDialog.setContent(
+                new ReloadWarningDialog(
+                        reloadWarningDialog.getContentId(),
+                        new StringResourceModel("featureTypeReloadWarning", this, null)));
         reloadWarningDialog.setTitle(new StringResourceModel("warning", null, null));
         reloadWarningDialog.setInitialHeight(100);
-        reloadWarningDialog.setInitialHeight(200);
 
         // sql view handling
         WebMarkupContainer sqlViewContainer = new WebMarkupContainer("editSqlContainer");
@@ -270,8 +267,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         }
     }
 
-    static class ReloadWarningDialog extends WebPage {
-        public ReloadWarningDialog(StringResourceModel message) {
+    static class ReloadWarningDialog extends Panel {
+        public ReloadWarningDialog(String id, StringResourceModel message) {
+            super(id);
             add(new Label("message", message));
         }
     }

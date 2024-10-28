@@ -107,7 +107,10 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
         AjaxLink launchModalLink =
                 (AjaxLink) tester.getLastRenderedPage().get("form:panel:esPanel:edit");
         tester.executeAjaxEvent(launchModalLink, "click");
-        Form esForm = (Form) tester.getLastRenderedPage().get("form:panel:modal:content:es_form");
+        Form esForm =
+                (Form)
+                        tester.getLastRenderedPage()
+                                .get("form:panel:modal:overlay:dialog:content:content:es_form");
         assertEquals(
                 1, ((WebMarkupContainer) esForm.get("esAttributes:listContainer:items")).size());
         FeatureTypeInfo featureTypeInfo2 = getFeatureTypeInfo2();
@@ -116,9 +119,13 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
         AjaxButton refreshButton =
                 (AjaxButton)
                         tester.getLastRenderedPage()
-                                .get("form:panel:modal:content:es_form:es_refresh");
+                                .get(
+                                        "form:panel:modal:overlay:dialog:content:content:es_form:es_refresh");
         tester.executeAjaxEvent(refreshButton, "click");
-        Form esForm2 = (Form) tester.getLastRenderedPage().get("form:panel:modal:content:es_form");
+        Form esForm2 =
+                (Form)
+                        tester.getLastRenderedPage()
+                                .get("form:panel:modal:overlay:dialog:content:content:es_form");
         assertEquals(
                 2, ((WebMarkupContainer) esForm2.get("esAttributes:listContainer:items")).size());
     }

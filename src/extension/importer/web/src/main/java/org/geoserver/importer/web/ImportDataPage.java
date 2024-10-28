@@ -246,7 +246,6 @@ public class ImportDataPage extends GeoServerSecuredPage {
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialWidth(600);
         dialog.setInitialHeight(400);
-        dialog.setMinimalHeight(150);
 
         updateSourcePanel(Source.SPATIAL_FILES, null);
         updateTargetStore(null);

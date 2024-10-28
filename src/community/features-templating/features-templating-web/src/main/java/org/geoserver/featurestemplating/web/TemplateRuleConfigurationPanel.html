@@ -2,11 +2,11 @@
 <body>
 <wicket:panel>
     <legend>
-        <span><label wicket:id="ruleConfigurationLabel" style="font-weight: bold"></label></span>
+        <span><label wicket:id="ruleConfigurationLabel" class="fontWeightBold"></label></span>
     </legend>
             <form name="theForm" wicket:id="theForm" id="theForm">
                 <div class="clearfix">
-                <fieldset  class="float-start" style="width: 65%; margin-top: 5px;">
+                <fieldset  class="float-start features-templating-rule-fieldset-1">
                     <div wicket:id="ruleFeedback" id="ruleFeedback"/>
                     <ul>
                         <li>
@@ -41,7 +41,7 @@
                         </li>
                     </ul>
                 </fieldset>
-                    <fieldset class="float-end" style="width: 35%; margin-top: 10px;">
+                    <fieldset class="float-end features-templating-rule-fieldset-2">
                         <legend>
                             <wicket:message key="cqlFunctions">Available CQL functions</wicket:message>
                         </legend>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="button-group toolbar-sticky clearfix">
                     <a href="#" class="form-button-save" wicket:id="save">
-                        <label style="font-family: Tahoma;color:#0076a1;font-weight: bold;font-size:10.8px;" wicket:id="submitLabel"></label>
+                        <label wicket:id="submitLabel" class="features-templating-rule-save"></label>
                     </a>
                     <a href="#" class="form-button-cancel" wicket:id="cancel">
                         <wicket:message key="cancel">Cancel</wicket:message>

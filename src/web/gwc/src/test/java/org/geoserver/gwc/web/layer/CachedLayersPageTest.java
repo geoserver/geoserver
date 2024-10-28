@@ -178,7 +178,7 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.assertVisible("dialog");
 
         // click submit
-        tester.clickLink("dialog:dialog:modal:content:form:submit", true);
+        tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit", true);
 
         tester.assertNoErrorMessage();
     }

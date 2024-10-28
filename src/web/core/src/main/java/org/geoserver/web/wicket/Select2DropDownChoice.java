@@ -7,8 +7,8 @@ package org.geoserver.web.wicket;
 import java.util.List;
 import java.util.Optional;
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -74,7 +74,6 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
     }
 
     private void initBehaviors() {
-        add(new Select2Behavior());
         add(new KeyboardBehavior());
     }
 
@@ -88,7 +87,7 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
     }
 
     /** Mimics keyboard behavior of native drop down choices */
-    private static class KeyboardBehavior extends Behavior {
+    private static class KeyboardBehavior extends Select2Behavior {
 
         public KeyboardBehavior() {}
 
@@ -97,7 +96,33 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
             super.renderHead(component, response);
             response.render(JavaScriptHeaderItem.forReference(SELECT2_KEYBOARD_JS));
             String enabler = "enableSelect2Keyboard('" + component.getMarkupId() + "');";
+            if (isInModal(component)) {
+                // Opening and closing the dropdown is a workaround for select2 event handlers
+                // interfering with the scrollbar in a modal window. The WPS subprocess builder is
+                // the only case where GeoServer uses a select2 dropdown in a modal window.
+                enabler =
+                        "\n  "
+                                + enabler
+                                + "\n  $('#"
+                                + component.getMarkupId()
+                                + "').select2('open');\n  $('#"
+                                + component.getMarkupId()
+                                + "').select2('close');\n";
+            }
             response.render(OnLoadHeaderItem.forScript(enabler));
+        }
+
+        /** Checks if any containers in the component's parent hierarchy is a modal window */
+        private static boolean isInModal(Component component) {
+            MarkupContainer parent = component.getParent();
+            while (true) {
+                if (parent instanceof GSModalWindow) {
+                    return true;
+                } else if (parent == null) {
+                    return false;
+                }
+                parent = parent.getParent();
+            }
         }
     }
 }

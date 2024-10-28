@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -32,14 +31,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.ows.Ows11Util;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.demo.DemoRequest;
-import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
-import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.process.GeoServerProcessors;
@@ -62,8 +56,6 @@ public class WPSRequestBuilderPanel extends Panel {
     ExecuteRequest execute;
 
     String description;
-
-    GSModalWindow responseWindow;
 
     private Component feedback;
 
@@ -194,28 +186,6 @@ public class WPSRequestBuilderPanel extends Panel {
                 };
         outputView.setReuseItems(true);
         outputContainer.add(outputView);
-
-        // the output response window
-        responseWindow = new GSModalWindow("responseWindow");
-        add(responseWindow);
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
-
-        responseWindow.setPageCreator(
-                () -> {
-                    DemoRequest request = new DemoRequest(null);
-                    HttpServletRequest http =
-                            (HttpServletRequest) getRequest().getContainerRequest();
-                    String url =
-                            ResponseUtils.buildURL(
-                                    ResponseUtils.baseURL(http),
-                                    "ows",
-                                    Collections.singletonMap("strict", "true"),
-                                    URLType.SERVICE);
-                    request.setRequestUrl(url);
-                    request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                    return new DemoRequestResponse(new Model<>(request));
-                });
 
         // the describe process link
         final GeoServerAjaxFormLink describeLink =

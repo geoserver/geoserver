@@ -7,19 +7,13 @@ package org.geoserver.web.demo;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.PropertyModel;
-import org.geoserver.web.wicket.GSModalWindow;
 
 /**
  * Shows the text in a <pre> section
  */
 public class PlainCodePage extends WebPage {
-    String code;
 
-    public PlainCodePage(
-            final GSModalWindow container, final GSModalWindow responseWindow, String initialXml) {
-        this.code = initialXml;
-
-        add(new Label("code", new PropertyModel<>(this, "code")));
+    public PlainCodePage(String initialXml) {
+        add(new Label("code", initialXml));
     }
 }

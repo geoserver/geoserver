@@ -10,8 +10,7 @@
       <outputDirectory/>
       <includes>
         <include>gt-stac-store*.jar</include>
-        <include>gt-cql2-text-*.jar</include>
-        <include>gt-cql-json-*.jar</include>
+        <include>gt-cql2-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

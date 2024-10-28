@@ -140,11 +140,19 @@
                 c += (tinycolor.equals(color, current)) ? " sp-thumb-active" : "";
                 var formattedString = tiny.toString(opts.preferredFormat || "rgb");
                 var swatchStyle = rgbaSupport ? ("background-color:" + tiny.toRgbString()) : "filter:" + tiny.toFilter();
-                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
+                // Start GEOS-11585 Changes
+                // Original Code:
+                // html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
+                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-palette-el sp-thumb-inner" data-css="' + swatchStyle + ';" /></span>');
+                // End GEOS-11585 Changes
             } else {
                 var cls = 'sp-clear-display';
                 html.push($('<div />')
-                    .append($('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>')
+                    // Start GEOS-11585 Changes
+                    // Original Code:
+                    // .append($('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>')
+                    .append($('<span data-color="" data-css="background-color:transparent;" class="sp-palette-el ' + cls + '"></span>')
+                    // End GEOS-11585 Changes
                         .attr('title', opts.noColorSelectedText)
                     )
                     .html()
@@ -548,6 +556,11 @@
             }
 
             paletteContainer.html(html.join(""));
+            // Start GEOS-11585 Changes
+            $('.sp-palette-el').each(function() {
+                this.style.cssText = this.getAttribute('data-css');
+            });
+            // End GEOS-11585 Changes
         }
 
         function drawInitial() {
@@ -555,6 +568,11 @@
                 var initial = colorOnShow;
                 var current = get();
                 initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial", opts));
+                // Start GEOS-11585 Changes
+                $('.sp-palette-el').each(function() {
+                    this.style.cssText = this.getAttribute('data-css');
+                });
+                // End GEOS-11585 Changes
             }
         }
 

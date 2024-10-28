@@ -70,11 +70,6 @@ public class ComplexInputPanel extends Panel {
         subprocesswindow.setInitialWidth(700);
         subprocesswindow.setInitialHeight(500);
         add(subprocesswindow);
-        subprocesswindow.setPageCreator(
-                () ->
-                        new SubProcessBuilder(
-                                (ExecuteRequest) subprocesswindow.getDefaultModelObject(),
-                                subprocesswindow));
 
         updateEditor();
 
@@ -214,6 +209,11 @@ public class ComplexInputPanel extends Panel {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             subprocesswindow.setDefaultModel(valueModel);
+                            subprocesswindow.setContent(
+                                    new SubProcessBuilder(
+                                            (ExecuteRequest)
+                                                    subprocesswindow.getDefaultModelObject(),
+                                            subprocesswindow));
                             subprocesswindow.show(target);
                         }
                     });

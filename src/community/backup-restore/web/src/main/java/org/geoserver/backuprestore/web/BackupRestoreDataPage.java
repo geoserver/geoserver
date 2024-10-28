@@ -196,7 +196,6 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialWidth(600);
         dialog.setInitialHeight(400);
-        dialog.setMinimalHeight(150);
     }
 
     /** @param target */

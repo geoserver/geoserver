@@ -141,8 +141,10 @@ public class TemplatesPageTest extends AbstractWicketMetadataTest {
         tester.clickLink("removeSelected");
 
         // print(tester.getLastRenderedPage(), true, true);
-        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", MultiLineLabel.class);
-        tester.clickLink("dialog:dialog:modal:content:form:submit");
+        tester.assertComponent(
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel",
+                MultiLineLabel.class);
+        tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // Check update content of the table)
         assertEquals(

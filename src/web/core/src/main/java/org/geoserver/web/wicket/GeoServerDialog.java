@@ -12,7 +12,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.IFeedback;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -43,52 +42,12 @@ public class GeoServerDialog extends Panel {
         window.setTitle(title);
     }
 
-    public String getHeightUnit() {
-        return window.getHeightUnit();
-    }
-
-    public int getInitialHeight() {
-        return window.getInitialHeight();
-    }
-
-    public int getInitialWidth() {
-        return window.getInitialWidth();
-    }
-
-    public String getWidthUnit() {
-        return window.getWidthUnit();
-    }
-
-    public void setHeightUnit(String heightUnit) {
-        window.setHeightUnit(heightUnit);
-    }
-
     public void setInitialHeight(int initialHeight) {
         window.setInitialHeight(initialHeight);
     }
 
     public void setInitialWidth(int initialWidth) {
         window.setInitialWidth(initialWidth);
-    }
-
-    public void setWidthUnit(String widthUnit) {
-        window.setWidthUnit(widthUnit);
-    }
-
-    public int getMinimalHeight() {
-        return window.getMinimalHeight();
-    }
-
-    public int getMinimalWidth() {
-        return window.getMinimalWidth();
-    }
-
-    public void setMinimalHeight(int minimalHeight) {
-        window.setMinimalHeight(minimalHeight);
-    }
-
-    public void setMinimalWidth(int minimalWidth) {
-        window.setMinimalWidth(minimalWidth);
     }
 
     /**
@@ -123,7 +82,7 @@ public class GeoServerDialog extends Panel {
             AjaxRequestTarget target,
             final IModel<String> heading,
             final IModel<String>... messages) {
-        window.setPageCreator((GSModalWindow.PageCreator) () -> new InfoPage(heading, messages));
+        window.setContent(new InfoPage(window.getContentId(), heading, messages));
         window.show(target);
     }
 
@@ -204,9 +163,10 @@ public class GeoServerDialog extends Panel {
         }
     }
 
-    protected class InfoPage extends WebPage {
+    protected class InfoPage extends Panel {
         @SafeVarargs
-        public InfoPage(IModel<String> title, IModel<String>... messages) {
+        public InfoPage(String id, IModel<String> title, IModel<String>... messages) {
+            super(id);
             add(new Label("title", title));
             add(
                     new ListView<>("messages", Arrays.asList(messages)) {
@@ -272,9 +232,5 @@ public class GeoServerDialog extends Panel {
         protected boolean onCancel(AjaxRequestTarget target) {
             return true;
         }
-    }
-
-    public void setResizable(boolean resizable) {
-        window.setResizable(resizable);
     }
 }

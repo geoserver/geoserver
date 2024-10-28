@@ -101,7 +101,6 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
 
         // used for all pop-up dialogs.
         dialog = new GeoServerDialog("dialog");
-        dialog.setResizable(false);
 
         // upload button
         final AjaxLink<Void> btnUpload = new UploadButton();

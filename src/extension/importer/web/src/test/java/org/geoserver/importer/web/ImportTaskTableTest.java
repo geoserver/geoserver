@@ -64,14 +64,14 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
                 "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:find", true);
         // Select the first CRS
         tester.clickLink(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:popup:modal:content:table:listContainer:items:1:itemProperties:0:component:link",
+                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:popup:modal:overlay:dialog:content:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
         // Click the Find CRS button for the second layer to import
         tester.clickLink(
                 "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:find", true);
         // Select the first CRS
         tester.clickLink(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:popup:modal:content:table:listContainer:items:2:itemProperties:0:component:link",
+                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:popup:modal:overlay:dialog:content:content:table:listContainer:items:2:itemProperties:0:component:link",
                 true);
 
         // The EPSG codes should be set

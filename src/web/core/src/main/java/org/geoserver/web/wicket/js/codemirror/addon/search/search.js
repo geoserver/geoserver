@@ -70,8 +70,13 @@
       query = /x^/;
     return query;
   }
+  // Start GEOS-11586 Changes
+  // Original Code
+  // var queryDialog =
+  //   'Search: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
   var queryDialog =
-    'Search: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
+    'Search: <input type="text" class="CodeMirror-search-field"/> <span class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
+  // End GEOS-11586 Changes
   function doSearch(cm, rev) {
     var state = getSearchState(cm);
     if (state.query) return findNext(cm, rev);
@@ -110,9 +115,15 @@
     if (state.annotate) { state.annotate.clear(); state.annotate = null; }
   });}
 
+  // Start GEOS-11586 Changes
+  // Original Code
+  // var replaceQueryDialog =
+  //   'Replace: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
+  // var replacementQueryDialog = 'With: <input type="text" style="width: 10em" class="CodeMirror-search-field"/>';
   var replaceQueryDialog =
-    'Replace: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
-  var replacementQueryDialog = 'With: <input type="text" style="width: 10em" class="CodeMirror-search-field"/>';
+    'Replace: <input type="text" class="CodeMirror-search-field"/> <span class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
+  var replacementQueryDialog = 'With: <input type="text" class="CodeMirror-search-field"/>';
+  // End GEOS-11586 Changes
   var doReplaceConfirm = "Replace? <button>Yes</button> <button>No</button> <button>Stop</button>";
   function replace(cm, all) {
     if (cm.getOption("readOnly")) return;

@@ -49,3 +49,10 @@ div.disabled .button-toolbar {
     display: none !important;
 }
 
+.CodeMirror-search-field {
+    width: 10em !important;
+}
+
+.CodeMirror-search-hint {
+    color: #888;
+}

@@ -49,10 +49,10 @@ import org.junit.rules.TestName;
 public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
     /**
-     * On a local machine this is a long wait, but Github action VMs are slow and erratic, let's
-     * give it more time
+     * On a local machine this would be long wait, but Github action VMs are slow and erratic, let's
+     * give them more time
      */
-    private static final int MAX_WAIT_SEC = 20;
+    private static final int MAX_WAIT_SEC = 60;
 
     FileSystemResourceStore store;
 

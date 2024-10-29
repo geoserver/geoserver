@@ -57,6 +57,7 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
             throws ConfigurationException, IOException, InterruptedException {
         Resource configFile = configDir.get("geowebcache-diskquota-jdbc.xml");
         if ("JDBC".equals(config.getQuotaStore())) {
+            JDBCConfiguration.validateConfiguration(jdbcConfig);
             JDBCConfiguration encrypted = passwordHelper.encryptPassword(jdbcConfig);
             try (OutputStream os = configFile.out()) {
                 JDBCConfiguration.store(encrypted, os);
@@ -97,6 +98,9 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
      */
     public void testQuotaConfiguration(JDBCConfiguration jdbcConfiguration)
             throws ConfigurationException, IOException {
+
+        JDBCConfiguration.validateConfiguration(jdbcConfiguration);
+
         JDBCQuotaStoreFactory factory = GeoServerExtensions.bean(JDBCQuotaStoreFactory.class);
         QuotaStore qs = null;
         try {

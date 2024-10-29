@@ -131,7 +131,7 @@
     <hibernate-spatial-version>1.1.3.2</hibernate-spatial-version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <!-- NOTE: be careful if upgrading log4j, check transitive slf4j with netcdf and netcdf-out -->
-    <log4j.version>2.17.2</log4j.version>
+    <log4j.version>2.24.1</log4j.version>
     <joda-time.version>2.8.1</joda-time.version>
     <git.commit.useNative>false</git.commit.useNative>
     <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
@@ -1002,8 +1002,13 @@
       <!-- bridge slf4j to log4j -->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
+        <artifactId>log4j-slf4j2-impl</artifactId>
         <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.16</version>
       </dependency>
       <!-- bridge commons-logging to log4j -->
       <dependency>

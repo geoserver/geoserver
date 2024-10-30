@@ -79,21 +79,21 @@ If you would like some users to be able to modify data, set the service level :g
 
 If you would like some users to be able to modify some but not all of your data, set the :guilabel:`Service Level` to ``Transactional`` (or ``Complete``), and use :ref:`security_layer` to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
 
-GeoServer Data Admin Guidance
------------------------------
+GeoServer Workspace Admin Guidance
+----------------------------------
 
-Establishing a data administrator user is a recommended configuration to privileged users with limited access to the Admin Console to manage the publication of information, but are not intended to be trusted as a GeoServer Administrator with responsibility for the full global settings and system integration controls.
+Establishing a workspace administrator user is a recommended configuration providing limited access to the Admin Console to manage the publication of information, but are not intended to be trusted as a GeoServer Administrator with responsibility for the global settings and system integration controls.
 
-1. Create a role to be used for data administration.
+1. Create a role to be used for workspace administration.
 
-2. Provide this role to the Users (or Groups) requiring data admin access.
+2. Provide this role to the Users (or Groups) requiring workspace admin access.
 
 3. Provide this role :ref:`data security <security_webadmin_data>` admin access ``a`` to:
 
    * :ref:`workspace <workspace_security>` administration
    * :ref:`layer <layer_security>` administration
 
-4. Recommendation: The combination of data admin permission for a workspace and GROUP_ADMIN access provides a good combination for an individual responsible for a workspace. This provides the ability to manage and control access to the data products in a workspace.
+4. Recommendation: The combination of workspace admin permission and GROUP_ADMIN access provides a effective combination for an individual responsible for a workspace. This provides the ability to both manage and control access to the data products in a workspace.
 
 GeoServer Administrator Guidance
 --------------------------------

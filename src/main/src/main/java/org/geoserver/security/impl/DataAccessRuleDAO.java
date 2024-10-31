@@ -37,6 +37,8 @@ import org.geotools.util.logging.Logging;
  */
 public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
+    public static final String KEY_MODE = "mode";
+    private static final String KEY_SANDBOX = "filesystemSandbox";
     private static Pattern DOT = Pattern.compile("\\.");
 
     private static final Logger LOGGER = Logging.getLogger(DataAccessRuleDAO.class);
@@ -49,6 +51,8 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
     /** Default to the highest security mode */
     CatalogMode catalogMode = CatalogMode.HIDE;
+
+    String filesystemSandbox;
 
     /** Returns the instanced contained in the Spring context for the UI to use */
     public static DataAccessRuleDAO get() {
@@ -78,12 +82,13 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     protected void loadRules(Properties props) {
         SortedSet<DataAccessRule> result = new ConcurrentSkipListSet<>();
         CatalogMode catalogMode = CatalogMode.HIDE;
+        this.filesystemSandbox = null;
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String ruleKey = (String) entry.getKey();
             String ruleValue = (String) entry.getValue();
 
             // check for the mode
-            if ("mode".equalsIgnoreCase(ruleKey)) {
+            if (KEY_MODE.equalsIgnoreCase(ruleKey)) {
                 try {
                     catalogMode = CatalogMode.valueOf(ruleValue.toUpperCase());
                 } catch (Exception e) {
@@ -93,6 +98,8 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
                                     + " acceptable values are "
                                     + Arrays.asList(CatalogMode.values()));
                 }
+            } else if (KEY_SANDBOX.equalsIgnoreCase(ruleKey)) {
+                filesystemSandbox = ruleValue;
             } else {
                 DataAccessRule rule = parseDataAccessRule(ruleKey, ruleValue);
                 if (rule != null) {
@@ -208,7 +215,10 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     @Override
     protected Properties toProperties() {
         Properties props = new Properties();
-        props.put("mode", catalogMode.toString());
+        props.put(KEY_MODE, catalogMode.toString());
+        if (filesystemSandbox != null) {
+            props.put(KEY_SANDBOX, filesystemSandbox);
+        }
         for (DataAccessRule rule : rules) {
             StringBuilder sbKey =
                     new StringBuilder(DOT.matcher(rule.getRoot()).replaceAll("\\\\."));
@@ -258,5 +268,26 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         SortedSet<DataAccessRule> result = new TreeSet<>();
         for (DataAccessRule rule : getRules()) if (rule.getRoles().contains(role)) result.add(rule);
         return result;
+    }
+
+    /**
+     * Returns the file system sandbox configured in <code>layers.properties</code>, if set, or null
+     * otherwise.
+     */
+    public String getFilesystemSandbox() {
+        return filesystemSandbox;
+    }
+
+    /**
+     * Sets the file system sandbox to be used by the file access manager.
+     *
+     * @param filesystemSandbox the file system sandbox to be used by the file access manager, or
+     *     null if the sandbox should be removed
+     */
+    public void setFilesystemSandbox(String filesystemSandbox) {
+        // sanitize in case a store-like path has ben provided
+        if (filesystemSandbox.startsWith("file://"))
+            filesystemSandbox = filesystemSandbox.substring("file://".length());
+        this.filesystemSandbox = filesystemSandbox;
     }
 }

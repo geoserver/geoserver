@@ -6,6 +6,7 @@
 package org.geoserver.rest.catalog;
 
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.geoserver.security.impl.DefaultFileAccessManager.GEOSERVER_DATA_SANDBOX;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -43,6 +44,8 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
+import org.geoserver.security.FileAccessManager;
+import org.geoserver.security.impl.DefaultFileAccessManager;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.Query;
@@ -97,21 +100,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Test
     public void testWorldImageUploadZipped() throws Exception {
-        URL zip = getClass().getResource("test-data/usa.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
-
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/usa/file.worldimage",
-                        bytes,
-                        "application/zip");
-        assertEquals(201, response.getStatus());
-        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
-
-        String content = response.getContentAsString();
-        Document d = dom(new ByteArrayInputStream(content.getBytes()));
-        assertEquals("coverageStore", d.getDocumentElement().getNodeName());
+        uploadUSAWorldImage();
 
         CoverageStoreInfo cs = getCatalog().getCoverageStoreByName("sf", "usa");
         assertNotNull(cs);
@@ -855,5 +844,45 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                 "The data directory file was not deleted",
                 Resource.Type.UNDEFINED,
                 getResourceLoader().get("data/sf/usa/test3.zip").getType());
+    }
+
+    @Test
+    public void testFilesystemSandbox() throws Exception {
+        // set up a system sandbox
+        File systemSandbox = new File("./target/systemSandbox").getCanonicalFile();
+        System.setProperty(GEOSERVER_DATA_SANDBOX, systemSandbox.getAbsolutePath());
+        DefaultFileAccessManager fam =
+                (DefaultFileAccessManager) FileAccessManager.lookupFileAccessManager();
+        fam.reload();
+
+        try {
+            uploadUSAWorldImage();
+
+            // check the coverage has been uploaded indide the system sandbox
+            CoverageStoreInfo cs = getCatalog().getCoverageStoreByName("sf", "usa");
+            assertNotNull(cs);
+            assertEquals("file:" + new File(systemSandbox, "/sf/usa/usa.png"), cs.getURL());
+        } finally {
+            System.clearProperty(GEOSERVER_DATA_SANDBOX);
+            fam.reload();
+        }
+    }
+
+    private void uploadUSAWorldImage() throws Exception {
+        URL zip = getClass().getResource("test-data/usa.zip");
+        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/coveragestores/usa/file.worldimage",
+                        bytes,
+                        "application/zip");
+        assertEquals(201, response.getStatus());
+        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
+
+        String content = response.getContentAsString();
+        Document d = dom(new ByteArrayInputStream(content.getBytes()));
+        assertEquals("coverageStore", d.getDocumentElement().getNodeName());
     }
 }

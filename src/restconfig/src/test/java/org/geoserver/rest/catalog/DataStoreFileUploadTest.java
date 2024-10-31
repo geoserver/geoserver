@@ -5,6 +5,7 @@
 package org.geoserver.rest.catalog;
 
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.geoserver.security.impl.DefaultFileAccessManager.GEOSERVER_DATA_SANDBOX;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +39,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.filters.LoggingFilter;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.FileAccessManager;
+import org.geoserver.security.impl.DefaultFileAccessManager;
 import org.geotools.util.URLs;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
@@ -221,18 +224,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Test
     public void testShapefileUploadZip() throws Exception {
-        Catalog cat = getCatalog();
-        assertNull(cat.getDataStoreByName("gs", "san_andres_y_providencia"));
-
-        put(
-                ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/file.shp",
-                shpSanAndresShapefilesZipAsBytes(),
-                "application/zip");
-
-        DataStoreInfo ds = cat.getDataStoreByName("gs", "san_andres_y_providencia");
-        assertNotNull(ds);
-
-        assertEquals(1, cat.getFeatureTypesByDataStore(ds).size());
+        uploadSanAndreas();
     }
 
     @Test
@@ -502,5 +494,42 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                 "The data directory file was not deleted",
                 Resource.Type.UNDEFINED,
                 getResourceLoader().get("data/gs/san_andres_y_providencia/test3.zip").getType());
+    }
+
+    @Test
+    public void testFilesystemSandbox() throws Exception {
+        // set up a system sandbox
+        File systemSandbox = new File("./target/systemSandbox").getCanonicalFile();
+        System.setProperty(GEOSERVER_DATA_SANDBOX, systemSandbox.getAbsolutePath());
+        DefaultFileAccessManager fam =
+                (DefaultFileAccessManager) FileAccessManager.lookupFileAccessManager();
+        fam.reload();
+
+        try {
+            DataStoreInfo ds = uploadSanAndreas();
+
+            // the files have been stored in the system sandbox
+            assertEquals(
+                    "file:" + new File(systemSandbox, "gs/san_andres_y_providencia") + "/",
+                    String.valueOf(ds.getConnectionParameters().get("url")));
+        } finally {
+            System.clearProperty(GEOSERVER_DATA_SANDBOX);
+            fam.reload();
+        }
+    }
+
+    private DataStoreInfo uploadSanAndreas() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getDataStoreByName("gs", "san_andres_y_providencia"));
+
+        put(
+                ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/file.shp",
+                shpSanAndresShapefilesZipAsBytes(),
+                "application/zip");
+
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "san_andres_y_providencia");
+        assertNotNull(ds);
+        assertEquals(1, cat.getFeatureTypesByDataStore(ds).size());
+        return ds;
     }
 }

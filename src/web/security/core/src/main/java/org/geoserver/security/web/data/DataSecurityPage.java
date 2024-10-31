@@ -5,13 +5,15 @@
  */
 package org.geoserver.security.web.data;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
@@ -20,11 +22,16 @@ import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geoserver.security.impl.DefaultFileAccessManager;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -32,19 +39,22 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
+import org.geoserver.web.wicket.browser.DirectoryInput;
 
 /** A page listing data access rules, allowing for removal, addition and linking to an edit page */
 @SuppressWarnings("serial")
 public class DataSecurityPage extends AbstractSecurityPage {
 
-    static final List<CatalogMode> CATALOG_MODES =
-            Arrays.asList(CatalogMode.HIDE, CatalogMode.MIXED, CatalogMode.CHALLENGE);
+    // ArrayList as it needs to be serializable
+    static final ArrayList<CatalogMode> CATALOG_MODES =
+            new ArrayList<>(
+                    Arrays.asList(CatalogMode.HIDE, CatalogMode.MIXED, CatalogMode.CHALLENGE));
 
     private GeoServerTablePanel<DataAccessRule> rules;
 
     private SelectionDataRuleRemovalLink removal;
 
-    private RadioChoice catalogModeChoice;
+    private RadioChoice<CatalogMode> catalogModeChoice;
 
     public DataSecurityPage() {
         DataAccessRuleProvider provider = new DataAccessRuleProvider();
@@ -77,28 +87,50 @@ public class DataSecurityPage extends AbstractSecurityPage {
 
         setHeaderPanel(headerPanel());
 
-        Form form =
-                new Form<>(
-                        "catalogModeForm",
-                        new CompoundPropertyModel<>(
-                                new CatalogModeModel(DataAccessRuleDAO.get().getMode())));
+        Form form = new Form<>("otherSettingsForm");
         add(form);
         form.add(new HelpLink("catalogModeHelp").setDialog(dialog));
 
+        DataAccessRuleDAO dataAccessRuleDAO = DataAccessRuleDAO.get();
         catalogModeChoice =
-                new RadioChoice<>("catalogMode", CATALOG_MODES, new CatalogModeRenderer());
+                new RadioChoice<>(
+                        "catalogMode",
+                        new Model<>(dataAccessRuleDAO.getMode()),
+                        new Model<>(CATALOG_MODES),
+                        new CatalogModeRenderer());
         catalogModeChoice.add(new FormComponentUpdatingBehavior() {});
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
+
+        // Filesystem sandbox configuration, available only if the system administrator did
+        // not set it via a system property
+        WebMarkupContainer sandboxContainer = new WebMarkupContainer("sandboxContainer");
+        form.add(sandboxContainer);
+        DefaultFileAccessManager fam =
+                GeoServerExtensions.bean(
+                        DefaultFileAccessManager.class,
+                        getGeoServerApplication().getApplicationContext());
+        sandboxContainer.setVisible(!fam.isSystemSanboxEnabled());
+        Model<String> sandboxModel = new Model<>(dataAccessRuleDAO.getFilesystemSandbox());
+        DirectoryInput sandboxInput =
+                new DirectoryInput(
+                        "sandbox",
+                        sandboxModel,
+                        new ParamResourceModel("sandbox", this),
+                        false,
+                        new DirectoryExistsValidator());
+        sandboxInput.setPrefixPaths(false);
+        sandboxContainer.add(sandboxInput);
 
         form.add(
                 new SubmitLink("save") {
                     @Override
                     public void onSubmit() {
                         try {
-                            DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+                            DataAccessRuleDAO dao = dataAccessRuleDAO;
                             CatalogMode newMode = dao.getByAlias(catalogModeChoice.getValue());
                             dao.setCatalogMode(newMode);
+                            dao.setFilesystemSandbox(sandboxModel.getObject());
                             dao.storeRules();
                             doReturn();
                         } catch (Exception e) {
@@ -169,6 +201,23 @@ public class DataSecurityPage extends AbstractSecurityPage {
         @Override
         public String getIdValue(CatalogMode object, int index) {
             return object.name();
+        }
+    }
+
+    private static class DirectoryExistsValidator implements IValidator<String> {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void validate(IValidatable<String> validatable) {
+            String path = validatable.getValue();
+            if (path != null && !path.isEmpty()) {
+                File file = new File(path);
+                if (!file.exists() || !file.isDirectory()) {
+                    ValidationError error = new ValidationError(this);
+                    error.addKey("DataSecurityPage.sanboxNotFoundError");
+                    validatable.error(error);
+                }
+            }
         }
     }
 }

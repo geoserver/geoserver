@@ -139,7 +139,6 @@
         <module>mbtiles</module>
         <module>mbtiles-store</module>
         <module>geopkg</module>
-        <module>pgraster</module>
         <!-- TODO WICKET8 - Fix this module and re-enable -->
         <!--<module>dyndimension</module>-->
         <module>flatgeobuf</module>
@@ -207,17 +206,6 @@
       <modules>
         <module>jdbcconfig</module>
         <module>jdbcstore</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>pgraster</id>
-      <activation>
-        <property>
-          <name>pgraster</name>
-        </property>
-      </activation>
-      <modules>
-        <module>pgraster</module>
       </modules>
     </profile>
     <profile>

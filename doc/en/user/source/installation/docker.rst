@@ -191,25 +191,26 @@ Working with a Nightly build is a good way to test community modules and provide
    
    ::
    
-       activeMQ-broker            jdbcconfig                 pgraster                    
-       backup-restore             jdbcstore                  proxy-base-ext              
-       cog                        jms-cluster                s3-geotiff                  
-       colormap                   libdeflate                 sec-keycloak             
-       cov-json                   mbtiles                    sec-oauth2-geonode          
-       dds                        mbtiles-store              sec-oauth2-github           
-       dyndimension               mongodb-schemaless         sec-oauth2-google           
-       elasticsearch              ncwms                      sec-oauth2-openid-connect   
-       features-templating        netcdf-ghrsst              smart-data-loader           
-       flatgeobuf                 notification               solr                        
-       gdal-wcs                   ogcapi-coverages           spatialjson                 
-       gdal-wps                   ogcapi-dggs                stac-datastore              
-       geopkg                     ogcapi-features            taskmanager-core            
-       gpx                        ogcapi-images              taskmanager-s3              
-       gsr                        ogcapi-maps                vector-mosaic
-       gwc-azure-blobstore        ogcapi-styles              vsi                         
-       gwc-distributed            ogcapi-tiled-features      webp                        
-       gwc-mbtiles                ogcapi-tiles               wps-remote
-       gwc-sqlite                 ogr-datastore              rat
-       hz-cluster                 opensearch-eo                          
-       importer-jdbc              
-       jdbc-metrics                                      
+    activeMQ-broker            jdbcconfig                 proxy-base-ext
+    backup-restore             jdbcstore                  s3-geotiff
+    cog                        jms-cluster                sec-keycloak
+    colormap                   libdeflate                 sec-oauth2-geonode
+    cov-json                   mbtiles                    sec-oauth2-github
+    dds                        mbtiles-store              sec-oauth2-google
+    dyndimension               mongodb-schemaless         sec-oauth2-openid-connect
+    elasticsearch              ncwms                      smart-data-loader
+    features-templating        netcdf-ghrsst              solr
+    flatgeobuf                 notification               spatialjson
+    gdal-wcs                   ogcapi-coverages           stac-datastore
+    gdal-wps                   ogcapi-dggs                taskmanager-core
+    geopkg                     ogcapi-features            taskmanager-s3
+    gpx                        ogcapi-images              vector-mosaic
+    gsr                        ogcapi-maps                vsi
+    gwc-azure-blobstore        ogcapi-styles              webp
+    gwc-distributed            ogcapi-tiled-features      wps-remote
+    gwc-mbtiles                ogcapi-tiles               rat
+    gwc-sqlite                 ogr-datastore
+    hz-cluster                 opensearch-eo
+    importer-jdbc
+    jdbc-metrics
+    

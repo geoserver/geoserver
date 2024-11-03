@@ -931,16 +931,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>pgraster</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-pgraster</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>

@@ -352,7 +352,7 @@ public class APIDispatcher extends AbstractController {
     public static APIService getApiServiceAnnotation(Class<?> clazz) {
         APIService annotation = null;
         while (annotation == null && clazz != null) {
-            annotation = (APIService) clazz.getAnnotation(APIService.class);
+            annotation = clazz.getAnnotation(APIService.class);
             if (annotation == null) {
                 clazz = clazz.getSuperclass();
             }

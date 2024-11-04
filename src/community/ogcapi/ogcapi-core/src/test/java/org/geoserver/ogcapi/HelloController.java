@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/hello/v1")
 public class HelloController {
 
-    static interface HelloServiceInfo extends ServiceInfo {};
+    static interface HelloServiceInfo extends ServiceInfo {}
 
     String defaultValue = "hello";
 
@@ -51,13 +51,13 @@ public class HelloController {
     public ResponseEntity echo(@RequestBody Message message) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<String>(message.getMessage(), headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(message.getMessage(), headers, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "delete")
     @ResponseBody
     public ResponseEntity<String> delete() {
-        return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(path = "default")

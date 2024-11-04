@@ -41,7 +41,7 @@ public class ZoneWrapper {
         West,
         /** Crossing the dateline, majority of points in the east empisphere */
         East
-    };
+    }
 
     /**
      * Wraps a dateline crossing polygon so that its longitudes are all packed on one side. Will not

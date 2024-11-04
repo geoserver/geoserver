@@ -172,6 +172,6 @@ public class ThumbnailBuilder {
             LOGGER.log(Level.FINER, "Could not setup thumbnail", e);
         }
         // if we have at least a layer, we can work it
-        return request.getLayers().size() > 0;
+        return !request.getLayers().isEmpty();
     }
 }

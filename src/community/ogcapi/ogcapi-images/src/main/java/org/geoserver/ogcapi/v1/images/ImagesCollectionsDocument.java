@@ -45,7 +45,7 @@ public class ImagesCollectionsDocument extends AbstractDocument {
         boolean skipInvalid =
                 gs.getGlobal().getResourceErrorHandling()
                         == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
-        return new Iterator<ImagesCollectionDocument>() {
+        return new Iterator<>() {
 
             ImagesCollectionDocument next;
 

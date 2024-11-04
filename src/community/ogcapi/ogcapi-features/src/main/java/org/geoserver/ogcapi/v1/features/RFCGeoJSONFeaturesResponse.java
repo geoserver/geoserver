@@ -212,10 +212,10 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     protected FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
         // OGC API Features always have a collection reference, so one query
         return Optional.ofNullable(request.getQueries())
-                .filter(qs -> qs.size() > 0)
+                .filter(qs -> !qs.isEmpty())
                 .map(qs -> qs.get(0))
                 .map(q -> q.getTypeNames())
-                .filter(tns -> tns.size() > 0)
+                .filter(tns -> !tns.isEmpty())
                 .map(tns -> tns.get(0))
                 .map(tn -> new NameImpl(tn.getNamespaceURI(), tn.getLocalPart()))
                 .map(tn -> gs.getCatalog().getFeatureTypeByName(tn))

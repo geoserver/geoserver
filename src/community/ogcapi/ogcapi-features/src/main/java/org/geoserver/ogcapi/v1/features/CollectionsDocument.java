@@ -53,7 +53,7 @@ public class CollectionsDocument extends AbstractDocument {
     public Iterator<CollectionDocument> getCollections() {
         CloseableIterator<FeatureTypeInfo> featureTypes =
                 geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<CollectionDocument>() {
+        return new Iterator<>() {
 
             CollectionDocument next;
 

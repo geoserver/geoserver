@@ -59,7 +59,7 @@ public class StyleLayer {
         polygon,
         geometry,
         raster
-    };
+    }
 
     String id;
     LayerType type;

@@ -58,9 +58,8 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
             if (visit((MatrixAggregate) visitor)) return;
         } else if (visitor instanceof GroupedMatrixAggregate) {
             if (visit((GroupedMatrixAggregate) visitor)) return;
-        } else {
-            delegate.accepts(visitor, progress);
         }
+        delegate.accepts(visitor, progress);
     }
 
     private boolean visit(MatrixAggregate visitor) throws IOException {

@@ -196,7 +196,7 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
         DGGSFeatureSource source = getFeatureSource(query.getTypeName());
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         SimpleFeatureIterator features = source.getFeatures(query).features();
-        return new FeatureReader<SimpleFeatureType, SimpleFeature>() {
+        return new FeatureReader<>() {
             @Override
             public SimpleFeatureType getFeatureType() {
                 return source.getSchema();

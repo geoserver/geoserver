@@ -51,7 +51,7 @@ public class CollectionsDocument extends AbstractDocument {
     public Iterator<CollectionDocument> getCollections() {
         CloseableIterator<CoverageInfo> coverages =
                 geoServer.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
-        return new Iterator<CollectionDocument>() {
+        return new Iterator<>() {
 
             CollectionDocument next;
 

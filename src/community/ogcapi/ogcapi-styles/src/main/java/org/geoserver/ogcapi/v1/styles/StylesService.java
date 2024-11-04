@@ -335,7 +335,7 @@ public class StylesService {
         // validation
         if (validate == only || validate == yes) {
             validate(mimeType, content, handler);
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             String styleId = getStyleId(mimeType, handler, content);
             StyleInfo styleInfo = getStyleInfo(styleId, false);

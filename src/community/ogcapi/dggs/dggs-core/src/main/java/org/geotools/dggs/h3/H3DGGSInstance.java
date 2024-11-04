@@ -101,6 +101,7 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
+    @SuppressWarnings("PMD.UnnecessaryCast")
     public Iterator<Zone> zonesFromEnvelope(
             Envelope envelope, int targetResolution, boolean compact) {
         Envelope intersection = envelope.intersection(WORLD);
@@ -287,6 +288,7 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
+    @SuppressWarnings("PMD.UnnecessaryCast")
     public Iterator<Zone> neighbors(String id, int radius) {
         // Using H3 facilities. Upside fast and accurate (considering dateline and pole neighbors
         // too), downside, will quickly go OOM, radius should be limited
@@ -324,6 +326,7 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
+    @SuppressWarnings("PMD.UnnecessaryCast")
     public Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact) {
         List<GeoCoord> shell = getGeoCoords(polygon.getExteriorRing());
         List<List<GeoCoord>> holes =

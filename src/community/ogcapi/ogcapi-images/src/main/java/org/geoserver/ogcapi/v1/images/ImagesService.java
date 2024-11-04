@@ -653,7 +653,7 @@ public class ImagesService implements ApplicationContextAware {
 
         imageListeners.imageRemoved(info, feature);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

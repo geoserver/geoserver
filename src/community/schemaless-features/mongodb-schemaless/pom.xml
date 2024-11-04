@@ -24,7 +24,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-mongodb</artifactId>
-      <version>${gt.version}</version>
     </dependency>
 
     <!--   Third-party dependencies   -->
@@ -49,13 +48,11 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-referencing</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

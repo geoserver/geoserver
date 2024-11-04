@@ -26,7 +26,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-flatgeobuf</artifactId>
-      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 </project>

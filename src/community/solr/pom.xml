@@ -29,7 +29,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-solr</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>

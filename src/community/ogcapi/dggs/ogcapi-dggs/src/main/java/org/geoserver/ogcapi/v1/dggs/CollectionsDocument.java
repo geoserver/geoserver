@@ -40,11 +40,11 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     @JacksonXmlProperty(localName = "Collection")
-    @SuppressWarnings({"PMD.CloseResource", "PMD.EmptyWhileStmt"})
+    @SuppressWarnings({"PMD.CloseResource", "PMD.EmptyControlStatement"})
     public Iterator<CollectionDocument> getCollections() {
         CloseableIterator<FeatureTypeInfo> featureTypes =
                 geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<CollectionDocument>() {
+        return new Iterator<>() {
 
             CollectionDocument next;
 

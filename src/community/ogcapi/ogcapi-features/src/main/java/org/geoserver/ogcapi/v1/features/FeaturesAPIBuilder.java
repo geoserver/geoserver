@@ -67,7 +67,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
 
         // list of valid filter-lang values
         Parameter filterLang = parameters.get("filter-lang");
-        filterLang.getSchema().setEnum(new ArrayList(APIFilterParser.SUPPORTED_ENCODINGS));
+        filterLang.getSchema().setEnum(new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS));
 
         // provide actual values for limit
         Parameter limit = parameters.get("limit");

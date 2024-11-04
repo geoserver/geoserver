@@ -88,10 +88,10 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
     protected SERVICEINFOTYPE info(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         SERVICEINFOTYPE info = null;
         if (workspaceInfo != null) {
-            info = (SERVICEINFOTYPE) geoserver.getService(workspaceInfo, infoClass);
+            info = geoserver.getService(workspaceInfo, infoClass);
         }
         if (info == null) {
-            info = (SERVICEINFOTYPE) geoserver.getService(infoClass);
+            info = geoserver.getService(infoClass);
         }
         return info;
     }

@@ -47,7 +47,7 @@ public class CollectionsDocument extends AbstractDocument {
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         CloseableIterator<PublishedInfo> publisheds =
                 geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);
-        return new Iterator<CollectionDocument>() {
+        return new Iterator<>() {
 
             CollectionDocument next;
 

@@ -196,9 +196,7 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables)
-                        .map(v -> (Expression) FF.property(v))
-                        .collect(Collectors.toList());
+                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
         // run a full aggregate and build the feature
         List<Expression> timeGroupExpressions = getTimeGroup(ft);
         GroupedMatrixAggregate aggregate =
@@ -283,9 +281,7 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables)
-                        .map(v -> (Expression) FF.property(v))
-                        .collect(Collectors.toList());
+                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
         // run a full aggregate and build the feature
         GroupedMatrixAggregate aggregate =
                 new GroupedMatrixAggregate(
@@ -360,9 +356,7 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables)
-                        .map(v -> (Expression) FF.property(v))
-                        .collect(Collectors.toList());
+                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
         // run a full aggregate and build the feature
         MatrixAggregate aggregate = new MatrixAggregate(expressions, Arrays.asList(functions));
         fs.getFeatures(q).accepts(aggregate, null);
@@ -476,9 +470,7 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables)
-                        .map(v -> (Expression) FF.property(v))
-                        .collect(Collectors.toList());
+                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
         // run a full aggregate and build the feature
         GroupedMatrixAggregate aggregate =
                 new GroupedMatrixAggregate(

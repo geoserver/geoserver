@@ -53,7 +53,7 @@ public class TiledCollectionsDocument extends AbstractDocument {
         boolean skipInvalid =
                 gs.getGlobal().getResourceErrorHandling()
                         == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
-        return new Iterator<TiledCollectionDocument>() {
+        return new Iterator<>() {
 
             TiledCollectionDocument next;
 

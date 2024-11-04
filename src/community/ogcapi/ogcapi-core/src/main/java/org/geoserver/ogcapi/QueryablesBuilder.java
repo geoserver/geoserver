@@ -90,7 +90,7 @@ public class QueryablesBuilder {
     }
 
     private static Schema<?> getGeometrySchema(Class<?> binding) {
-        Schema schema = new Schema();
+        Schema schema = new Schema<>();
         String ref;
         String description;
         if (Point.class.isAssignableFrom(binding)) {

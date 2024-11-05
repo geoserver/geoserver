@@ -1,0 +1,122 @@
+name: Run CITE Tests
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/src/main/resources/GeoServerApplication_*.properties'
+      - '!**/src/main/resources/GeoServerApplication_fr.properties'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-war:
+    runs-on: ubuntu-latest
+    name: Build GeoServer WAR
+    steps:
+      - name: Checkout repository (shallow clone)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.8
+      - name: Maven repository caching
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            gs-${{ runner.os }}-maven-
+
+      - name: Build geoserver.war
+        working-directory: build/cite
+        run: make war
+
+      - name: Upload geoserver.war as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: geoserver-war
+          path: build/cite/geoserver/geoserver.war
+
+  run-cite-tests:
+    needs: build-war
+    runs-on: ubuntu-latest
+    name: CITE
+    strategy:
+      fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
+      matrix:
+        #suite: [ogcapi-features10, wcs10, wcs11, wfs10, wfs11, wms10, wms11, wms13]
+        suite: [ogcapi-features10, wms11, wcs11]
+
+    steps:
+      - name: Checkout repository (shallow clone)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download geoserver.war artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: geoserver-war
+          path: build/cite/geoserver/
+
+      - name: Build ogccite/geoserver:${{ matrix.suite }} docker image
+        working-directory: build/cite
+        run: make build suite=${{ matrix.suite }}
+
+      - name: Print services and images used for the ${{ matrix.suite }} test run
+        # in case there's a jq syntax error
+        continue-on-error: true
+        working-directory: build/cite
+        run: make print-docker-compose-services suite=${{ matrix.suite }}
+
+      - name: Pull teamengine and other required images
+        working-directory: build/cite
+        run: make pull suite=${{ matrix.suite }}
+
+      # optional, used to print out a human readable summary of test failures from the testng results xml
+      - name: Install the optional xmlstarlet utility
+        run: |
+          sudo apt-get update && sudo apt-get install -y xmlstarlet
+
+      - name: Run the ${{ matrix.suite }} CITE test suite
+        working-directory: build/cite
+        run: |
+          chmod o+w logs
+          make test suite=${{ matrix.suite }}
+
+      - name: Print full failures report
+        if: always()
+        working-directory: build/cite
+        run: make print-full-failures
+
+      - name: Print GeoServer logs
+        if: always()
+        working-directory: build/cite
+        run: make print-logs suite=${{ matrix.suite }} service=geoserver
+
+      - name: Print TeamEngine logs
+        if: always()
+        working-directory: build/cite
+        run: make print-logs suite=${{ matrix.suite }} service=teamengine
+
+      - name: Shutdown containers
+        if: always()
+        working-directory: build/cite
+        run: make stop
+
+      - name: Upload logs folder
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cite-${{ matrix.suite }}-logs
+          path: build/cite/logs/

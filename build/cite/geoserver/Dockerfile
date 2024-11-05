@@ -1,54 +1,67 @@
-FROM tomcat:9-jdk11
-LABEL maintainer="Alessandro Parma<alessandro.parma@geo-solutions.it>"
+FROM tomcat:9.0.96-jdk17-temurin-jammy
 
-ENV  DEBIAN_FRONTEND noninteractive
+# Set environment variables for Java and GeoServer options
+ENV EXTRA_JAVA_OPTS="-Xms256m -Xmx1g"
+ENV GEOSERVER_DATA_DIR=/opt/geoserver_data
+ENV GEOWEBCACHE_CACHE_DIR=/opt/geowebcache_data
 
-ENV CATALINA_BASE "$CATALINA_HOME"
+# Define GeoServer-related options
+ENV CATALINA_OPTS="$EXTRA_JAVA_OPTS \
+    --add-exports=java.desktop/sun.awt.image=ALL-UNNAMED \
+    --add-opens=java.base/java.lang=ALL-UNNAMED \
+    --add-opens=java.base/java.util=ALL-UNNAMED \
+    --add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+    --add-opens=java.base/java.text=ALL-UNNAMED \
+    --add-opens=java.desktop/java.awt.font=ALL-UNNAMED \
+    --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED \
+    --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED \
+    --add-opens=java.desktop/sun.java2d.pipe=ALL-UNNAMED \
+    -Djava.awt.headless=true -server \
+    -Dfile.encoding=UTF-8 \
+    -Djavax.servlet.request.encoding=UTF-8 \
+    -Djavax.servlet.response.encoding=UTF-8 \
+    -D-XX:SoftRefLRUPolicyMSPerMB=36000 \
+    -Xbootclasspath/a:$CATALINA_HOME/lib/marlin.jar \
+    -Dsun.java2d.renderer=sun.java2d.marlin.DMarlinRenderingEngine \
+    -Dorg.geotools.coverage.jaiext.enabled=true"
 
-ENV GEOSERVER_HOME="/var/geoserver"
-ENV GEOSERVER_LOG_DIR="${GEOSERVER_HOME}/logs"
-ENV GEOSERVER_DATA_DIR="${GEOSERVER_HOME}/datadir"
-ENV \
-    GEOSERVER_LOG_LOCATION="${GEOSERVER_LOG_DIR}/geoserver.log" \
-    GEOWEBCACHE_CONFIG_DIR="${GEOSERVER_DATA_DIR}/gwc"          \
-    GEOWEBCACHE_CACHE_DIR="${GEOSERVER_HOME}/gwc_cache_dir"
+# Create a non-root user and group for running Tomcat
+RUN groupadd -r tomcat && useradd -r -g tomcat -d /usr/local/tomcat -s /sbin/nologin tomcat
 
-RUN mkdir -p \
-    "${GEOSERVER_DATA_DIR}"     \
-    "${GEOSERVER_LOG_DIR}"      \
-    "${GEOWEBCACHE_CACHE_DIR}"  \
-    "${GEOWEBCACHE_CONFIG_DIR}"
+# Expose Tomcat's default port
+EXPOSE 8080
 
-# override at run time as needed JAVA_OPTS
-ENV JAVA_OPTS="-Xms1024m -Xmx1024m"
+# Define arguments for source file and data directory source
+ARG SOURCE_FILE
+ARG GEOSERVER_DATA_DIR_SRC
 
-# Optionally remove Tomcat manager, docs, and examples
-ARG TOMCAT_EXTRAS=false
-ENV TOMCAT_EXTRAS "$TOMCAT_EXTRAS"
-RUN \
-    if [ "$TOMCAT_EXTRAS" = false ]; then \
-        rm -rfv "${CATALINA_HOME}/webapps/*" \
-    ; fi
-
-# local dir, tar or remore URLs
-ARG GEOSERVER_DATA_DIR_SRC="./.placeholder"
-ENV GEOSERVER_DATA_DIR_SRC="${GEOSERVER_DATA_DIR_SRC}"
-ADD "${GEOSERVER_DATA_DIR_SRC}" "${GEOSERVER_DATA_DIR}"
-
-# accepts local files and URLs. Tar(s) are automatically extracted
-ARG GEOSERVER_WEBAPP_SRC="./.placeholder"
-ENV GEOSERVER_WEBAPP_SRC="${GEOSERVER_WEBAPP_SRC}"
-ADD "${GEOSERVER_WEBAPP_SRC}" "${CATALINA_BASE}/webapps/"
+# Download or copy the GeoServer WAR or ZIP file, or extract if it’s a .zip
+ADD ${SOURCE_FILE} "$CATALINA_HOME/webapps/"
 
 # zip files require explicit extracion
 RUN \
-    cd "${CATALINA_BASE}/webapps/"; \
-    if [ "${GEOSERVER_WEBAPP_SRC##*.}" = "zip" ]; then \
+    cd "$CATALINA_HOME/webapps/"; \
+    if [ "${SOURCE_FILE##*.}" = "zip" ]; then \
         unzip "./*zip"; \
-        rm ./*zip; \
-    fi
+    fi;
 
-WORKDIR "$CATALINA_BASE"
+# Copy the GeoServer data directory from the specified location
+ADD ${GEOSERVER_DATA_DIR_SRC} ${GEOSERVER_DATA_DIR}
 
-ENV TERM xterm
-EXPOSE 8080
+# Set ownership and permissions for Tomcat and GeoServer data directories
+RUN chown -R tomcat:tomcat /usr/local/tomcat \
+	&& mkdir -p $GEOSERVER_DATA_DIR \
+	&& chown -R tomcat:tomcat $GEOSERVER_DATA_DIR \
+	&& mkdir -p $GEOWEBCACHE_CACHE_DIR \
+	&& chown -R tomcat:tomcat $GEOWEBCACHE_CACHE_DIR
+
+# Switch to the unprivileged user
+USER tomcat
+WORKDIR "$CATALINA_HOME"
+
+# Define health check for GeoServer
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png || exit 1
+
+# Start Tomcat as the unprivileged user
+CMD ["catalina.sh", "run"]

@@ -497,6 +497,15 @@
       </modules>
     </profile>
     <profile>
+      <id>ogcapi-features</id>
+      <modules>
+        <module>ogcapi/ogcapi-core</module>
+        <module>ogcapi/ogcapi-features</module>
+        <module>ogcapi/web-ogcapi</module>
+        <module>ogcapi/web-features</module>
+      </modules>
+    </profile>
+    <profile>
       <id>importer-jdbc</id>
       <modules>
         <module>importer-jdbc</module>

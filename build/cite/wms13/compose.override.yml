@@ -1,5 +1,3 @@
-version: '3.0'
-
 services:
   geoserver:
     image: ogccite/geoserver:wms13

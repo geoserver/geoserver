@@ -7,34 +7,297 @@
 .DEFAULT_GOAL := help
 .PHONY = help
 suite =
-war_url = "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
+# `make war` will build the war from ../src/web/app and copy it here
+war_url = ./geoserver/geoserver.war
+
+# alternatively you can use one in .war or .zip format from an URL, for example:
+# war_url = "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
+# but it may not have all the required extensions so make sure you know what you're doing
 
 
+.PHONY: help
 help:
-	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+	@echo Usage:
+	@echo
+	@echo \# Main targets in suggested order:
+	@echo
+	@grep -h '\s##\s' $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+	@echo
+	@echo \# Additional helper targets:
+	@echo
+	@grep -h '\s###\s' $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/###//'
 
-clean:		## Will Clean the Environment of previous runs.
-	@echo Cleaning up previous runs
-	docker-compose down --remove-orphans --rmi all -v
-	docker-compose rm -vfs
+.PHONY: war
+war:	## 					Build the geoserver.war file to use for testing and place it in ./geoserver/geoserver.war
+	@$(MAKE) build-war
+	@$(MAKE) copy-war
+
+.PHONY: build
+build: ##	suite=<suite>				Build the GeoServer Docker Image for the Environment.
+ifndef suite
+	@echo "Error: suite is not specified. Please specify the suite to build the GeoServer Docker image for."
+	@$(MAKE) help
+	@exit 1
+endif
+	@echo Building the GeoServer Docker Image for the $(suite) test suite
+	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+	  build --no-cache --build-arg SOURCE_FILE=${war_url} geoserver
+
+.PHONY: test
+test: ##	suite=<suite>				Run the Test Suite with teamengine and GeoServer on docker compose.
+ifndef suite
+	@echo "Error: suite is not specified. Please specify a suite to run the tests."
+	@$(MAKE) help
+	@exit 1
+endif
+ifeq ($(suite), ogcapi-features10)
+	@$(MAKE) test-rest suite=$(suite)
+else
+	@$(MAKE) test-cli suite=$(suite)
+endif
+
+
+.PHONY: clean
+clean:	## 					Clean the Environment of previous runs.
+	@$(MAKE) stop
+	@$(MAKE) cleanlogs
+
+
+.PHONY: test-localhost
+test-localhost: ### suite=<suite>			Run the Test Suite against a local host GeoServer instance
+ifndef suite
+	@echo "Error: suite is not specified. Please specify a suite to run the tests."
+	@$(MAKE) help
+	@exit 1
+endif
+# for the time being the only suite run through teamengine's rest api is ogcapi-features10 
+ifneq ($(suite), ogcapi-features10)
+	@echo "Error: This target only supports the 'ogcapi-features10' suite."
+	@exit 1
+endif
+	@if [ "$(shell uname)" = "Darwin" ]; then \
+		echo "Detected a MacOS host Operating System. Using host.docker.internal as the host name"; \
+		iut="http://host.docker.internal:8080/geoserver/ogc/features/v1"; \
+	else \
+		echo "Detected a Linux host Operating System. Using 172.17.0.1 as the host IP address"; \
+		iut="http://172.17.0.1:8080/geoserver/ogc/features/v1"; \
+	fi; \
+	$(MAKE) test-external suite=$(suite) iut=$$iut
+
+# This target runs the specified test suite against a GeoServer instance provided by the iut parameter.
+# It performs the following actions:
+# 1. Checks if the required 'suite' and 'iut' parameters are provided, displaying an error and help message if not.
+# 2. Validates the 'iut' parameter based on the operating system:
+#    - On MacOS, it prints an error and exits if 'iut' contains '172.17.0.1'.
+#    - On Linux, it prints an error and exits if 'iut' contains 'host.docker.internal'.
+# 3. Runs either 'test-rest' or 'test-cli' based on the specified suite.
+.PHONY: test-external
+test-external: ### suite=<suite> iut=<landing URL>	Run the Test Suite against a GeoServer instance at a provided URL 
+ifndef suite
+	@echo "Error: suite is not specified. Please specify a suite to run the tests."
+	@$(MAKE) help
+	@exit 1
+endif
+ifndef iut
+	@echo "** Error: iut is not specified. Specify the iut URL. e.g., make test-external suite=ogcapi-features10 iut=http://test.example.com/geoserver/ogc/features/v1"
+	@$(MAKE) help
+	@exit 1
+endif
+	@if [ "$(shell uname)" = "Darwin" ] && echo "$(iut)" | grep -q "172.17.0.1"; then \
+		echo "Error: Using '172.17.0.1' as the iut value is not supported on MacOS. Please use 'host.docker.internal'."; \
+		exit 1; \
+	fi
+	@if [ "$(shell uname)" = "Linux" ] && echo "$(iut)" | grep -q "host.docker.internal"; then \
+		echo "Error: Using 'host.docker.internal' as the iut value is not supported on Linux. Please use '172.17.0.1'."; \
+		exit 1; \
+	fi
+ifeq ($(suite), ogcapi-features10)
+	@echo "Running REST-based tests for suite: $(suite) with iut: $(iut)"
+	@$(MAKE) test-rest suite=$(suite) iut=$(iut)
+else
+	@echo "Running CLI-based tests for suite: $(suite)"
+	@$(MAKE) test-cli suite=$(suite)
+endif
+
+
+.PHONY: version
+version: ### suite=<suite>				Print the version of the GeoServer on the current docker.
+ifndef suite
+	@echo "Error: suite is not specified. Please specify the suite print the version for."
+	@$(MAKE) help
+	@exit 1
+endif
+	@echo Getting the GeoServer version.
+	@docker run -i --rm ogccite/geoserver:$(suite) bash -c \
+	  'cd /usr/local/tomcat/webapps/ && \
+	  if [ -d geoserver ]; then cat geoserver/META-INF/MANIFEST.MF; \
+	  elif [ -f geoserver.war ]; then jar -xf geoserver.war; cat META-INF/MANIFEST.MF; \
+	  fi'
+
+
+.PHONY: ogcapi-features10-localhost
+ogcapi-features10-localhost: ###			Shortcut for make test-localhost suite=ogcapi-features10
+	@$(MAKE) test-external suite=ogcapi-features10 iut="http://172.17.0.1:8080/geoserver/ogc/features/v1"
+
+
+.PHONY: cleanlogs
+cleanlogs:
 	@echo Cleanning the previous logs.
-	rm -Rf logs/*
+	@rm -Rf logs/*
 
-build: $(suite)		## Will Build the GeoServer Docker Image for the Environment.
-	@echo Build the GeoServer Docker Image
-	docker-compose -f docker-compose.yml -f ./$(suite)/docker-compose.override.yml \
-      build --build-arg GEOSERVER_WEBAPP_SRC=${war_url} geoserver
 
-version: $(suite)   ## Will give the version of the GeoServer on the current docker.
-		@echo Getting the GeoServer version.
-		docker run -i ogccite/geoserver:$(suite) bash -c 'cd /usr/local/tomcat/webapps/ && if [ -f geoserver.war ]; then unzip -q geoserver.war; cat META-INF/MANIFEST.MF; else cat META-INF/MANIFEST.MF; fi'
+.PHONY: test-cli
+test-cli: $(suite)
+	@echo Running the $(suite) test suite with teamengine CLI
+	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+	  up --force-recreate --exit-code-from teamengine teamengine
 
-test: $(suite) | version		## Will running the Suite test with teamengine.
-		@echo running the Suite test with teamengine
-		docker-compose -f docker-compose.yml -f ./$(suite)/docker-compose.override.yml \
-      up --force-recreate --exit-code-from teamengine teamengine
+.PHONY: test-rest
+test-rest: $(suite)
+ifdef iut
+	@echo "Running the $(suite) test suite with the teamengine REST API against $(iut)"
+	@$(MAKE) start suite=$(suite) services=teamengine
+	@$(MAKE) run suite=$(suite) iut=$(iut)
+else
+	@echo "Running the $(suite) test suite with the teamengine REST API"
+	@$(MAKE) start suite=$(suite)
+	@$(MAKE) run suite=$(suite)
+endif
+	@$(MAKE) validate-testng-results
 
-webUI:		## Will running the Suite test with teamengine.
+# Starts service containers
+# Usage: make start suite=<suite> [services=<services>]
+# <services>: if not given, starts all the services in the docker composition for <suite>,
+# otherwise just the specified ones (e.g. make start suite=ogcapi-features10 services=teamengine)
+.PHONY: start
+start: ### suite=<suite> [services=<s1 s2..>]	Start the docker composition for suite. Optionally limit which services.
+ifndef suite
+	@echo "Error: suite is not specified. Please specify a suite to start the containers."
+	@echo "Usage: make start suite=<suite> [services=<services>]"
+	@exit 1
+endif
+	@echo Starting containers
+	@if [ -n "$(services)" ]; then \
+		echo "Starting services: $(services)"; \
+		docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+			up -d --force-recreate --no-deps $(services); \
+	else \
+		docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+			up -d --force-recreate; \
+	fi
+
+.PHONY: stop
+stop: ###						Shuts down the docker composition. Deos not remove logs/
+	@echo Cleaning up previous runs
+	@docker compose down --remove-orphans -v
+	@docker compose rm -vfs
+
+
+.PHONY: run
+run: $(suite)
+ifndef iut
+	@$(MAKE) wait-for url="http://localhost:18090/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" timeout=60
+endif
+	@$(MAKE) wait-for url="http://localhost:18080/teamengine/site/logo.png" timeout=60
+	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+	  exec teamengine /bin/bash -c "/run-test.sh $(suite) $(iut)"
+
+
+# first prints out a human readable report of test failures, if xmlstarlet is installed,
+# and then a summary of passed and failed test counts. This last step will result in a
+# non zero exit code if there are test failures.
+.PHONY: validate-testng-results
+validate-testng-results: $(suite)
+	@./testng-results-report.sh logs/testng-results.xml
+	@./testng-results-validate.sh logs/testng-results.xml
+
+
+.PHONY: print-full-failures
+print-full-failures:
+	@if [ -f "logs/testng-results.xml" ]; then \
+		./testng-results-full-error-report.sh logs/testng-results.xml; \
+	else \
+		echo "The file logs/testng-results.xml does not exist. Skipping the report generation."; \
+	fi
+
+.PHONY: pull
+pull: $(suite)
+	@echo starting containers
+	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+		pull --ignore-buildable
+
+.PHONY: build-war
+build-war:
+	@mvn -Prelease,ogcapi-features \
+	clean package -f ../../src/pom.xml \
+	-DskipTests  -B -ntp -U -T3 -fae
+
+.PHONY: copy-war
+copy-war:
+	cp ../../src/web/app/target/geoserver.war geoserver/geoserver.war
+
+# Waits for an url to be available (returning HTTP status code 200 or 302)
+# Usage: make wait-for url=<URL> timeout=<seconds>
+.PHONY: wait-for
+wait-for:
+	@if [ -z "$(url)" ]; then \
+		echo "Error: url parameter is required. Usage: make wait-for url=<URL> timeout=<seconds>"; \
+		exit 1; \
+	fi
+	@if [ -z "$(timeout)" ]; then \
+		echo "Error: timeout parameter is required. Usage: make wait-for url=<URL> timeout=<seconds>"; \
+		exit 1; \
+	fi
+	@echo "Waiting for $(url) to be available (timeout: $(timeout) seconds)..."
+	@start_time=$$(date +%s); \
+	while true; do \
+		elapsed_time=$$(( $$(date +%s) - $$start_time )); \
+		if [ $$elapsed_time -ge $(timeout) ]; then \
+			echo "Timeout reached: $(url) is not available after $(timeout) seconds"; \
+			exit 1; \
+		fi; \
+		if curl -s -o /dev/null -w "%{http_code}" $(url) | grep -E "^(200|302)$$" > /dev/null; then \
+			echo "$(url) is available!"; \
+			break; \
+		fi; \
+		echo "Waiting for $(url)..."; \
+		sleep 5; \
+	done
+
+# Prints logs for the specified suite and optionally a specific service.
+# Usage:
+#   make print-logs suite=<suite-name> [service=<service-name>]
+# If 'service' is not specified, logs for all services in the suite will be shown.
+.PHONY: print-logs
+print-logs:
+	@if [ -z "$(suite)" ]; then \
+		echo "Error: suite variable must be provided. Usage: make print-logs suite=<suite-name> [service=<service-name>]"; \
+		exit 1; \
+	fi
+	@if [ -n "$(service)" ]; then \
+		docker compose -f compose.yml -f ./$(suite)/compose.override.yml logs $(service); \
+	else \
+		docker compose -f compose.yml -f ./$(suite)/compose.override.yml logs; \
+	fi
+
+# Used in CI/CD to print which services and images are going to be run
+# Requires `jq`, comes pre-installed in github actions `ubuntu-latest`
+.PHONY: print-docker-compose-services
+print-services: ### suite=<suite>			Print the service names and docker images used for a given suite
+ifndef suite
+	@echo "Error: suite is not specified."
+	@exit 1
+endif
+	@if ! command -v jq &> /dev/null; then \
+		echo "jq is not installed. Please install jq to use this command."; \
+	else \
+		echo Services used in the $(suite) test suite:; \
+		docker compose -f compose.yml -f $(suite)/compose.override.yml config --format=json | jq -r '.services | to_entries | map("\t\(.key):\n  \t\timage: \(.value.image)")[]'; \
+	fi
+
+.PHONY: webUI
+webUI: ###						Start teamengine in interactive mode for the OWS services (excludes ogcapi services).
 	@echo running the Suite test with teamengine webUI
-	docker-compose -f docker-compose.yml -f ./interactive/docker-compose.override.yml \
-      up --force-recreate --no-deps --exit-code-from teamengine teamengine
+	@docker compose -f compose.yml -f ./interactive/compose.override.yml \
+	up --force-recreate --no-deps --exit-code-from teamengine teamengine
+

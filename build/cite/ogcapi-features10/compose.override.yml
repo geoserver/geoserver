@@ -1,0 +1,21 @@
+
+#name: ogcapi-features-conformance
+
+services:
+  geoserver:
+    image: ogccite/geoserver:ogcapi-features10
+    build:
+      args:
+        GEOSERVER_DATA_DIR_SRC: "./ogcapi-features10/release"
+
+  teamengine:
+    # see https://github.com/opengeospatial/teamengine-docker
+    # there's ogccite/teamengine-production and ogccite/teamengine-beta
+    # that we could use to migrate the other OWS tests to newer teamengine images
+    image: ogccite/ets-ogcapi-features10:1.7.1-teamengine-5.4.1
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

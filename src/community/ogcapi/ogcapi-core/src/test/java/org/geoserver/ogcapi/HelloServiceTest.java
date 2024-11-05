@@ -6,11 +6,12 @@
 
 package org.geoserver.ogcapi;
 
+import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,17 +19,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.TestDispatcherCallback;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
-import org.junit.After;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -36,25 +37,23 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 
-@Ignore
-public class APIDispatcherTest {
-
-    private FileSystemXmlApplicationContext applicationContext;
+public class HelloServiceTest extends GeoServerSystemTestSupport {
 
     @Before
-    public void setup() {
-        URL url = getClass().getResource("applicationContext.xml");
-        this.applicationContext = new FileSystemXmlApplicationContext(url.toString());
+    public void cleanupCallbacks() throws Exception {
+        APIDispatcher dispatcher = getAPIDispatcher();
+        dispatcher.callbacks.removeIf(c -> c instanceof TestDispatcherCallback);
     }
 
-    @After
-    public void teardown() {
-        this.applicationContext.close();
+    @Before
+    public void cleanupDefaultValue() throws Exception {
+        HelloService controller = applicationContext.getBean(HelloService.class);
+        controller.defaultValue = HelloService.DEFAULT_GREETING;
     }
 
     @Test
     public void testDefaultFormat() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -67,7 +66,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testQueryParameters() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         MockHttpServletRequest request = setupHelloRequest("message", "yo", "f", "json");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -79,37 +78,35 @@ public class APIDispatcherTest {
     }
 
     @Test
-    @Ignore // restore when XML is back as supported format
-    public void testXMLFormatQueryParameter() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+    public void testYAMLFormatQueryParameter() throws Exception {
+        APIDispatcher dispatcher = getAPIDispatcher();
 
-        MockHttpServletRequest request = setupHelloRequest("f", "xml");
+        MockHttpServletRequest request = setupHelloRequest("f", "yaml");
         MockHttpServletResponse response = new MockHttpServletResponse();
         dispatcher.handleRequest(request, response);
 
         assertEquals(200, response.getStatus());
-        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
-        assertEquals("<Message><message>hello</message></Message>", response.getContentAsString());
+        assertEquals(APPLICATION_YAML_VALUE, response.getContentType());
+        assertEquals("message: hello\n", response.getContentAsString());
     }
 
     @Test
-    @Ignore // restore when XML is back as supported format
-    public void testXMLFormatAcceptHeader() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+    public void testYAMLFormatAcceptHeader() throws Exception {
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         MockHttpServletRequest request = setupHelloRequest();
-        request.addHeader(HttpHeaders.ACCEPT, "application/xml");
+        request.addHeader(HttpHeaders.ACCEPT, APPLICATION_YAML_VALUE);
         MockHttpServletResponse response = new MockHttpServletResponse();
         dispatcher.handleRequest(request, response);
 
         assertEquals(200, response.getStatus());
-        assertEquals(MediaType.APPLICATION_XML_VALUE, response.getContentType());
-        assertEquals("<Message><message>hello</message></Message>", response.getContentAsString());
+        assertEquals(APPLICATION_YAML_VALUE, response.getContentType());
+        assertEquals("message: hello\n", response.getContentAsString());
     }
 
     @Test
     public void testPostRequest() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         String message = "{\"message\":\"Is there anyone here?\"}";
         MockHttpServletRequest request = setupEchoRequest(message, "f", "json");
@@ -124,7 +121,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDeleteRequest() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         MockHttpServletRequest request = setupDeleteRequest();
         request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -136,24 +133,23 @@ public class APIDispatcherTest {
 
     @Test
     public void testPutRequest() throws Exception {
-        try (FileSystemXmlApplicationContext context = this.applicationContext) {
-            APIDispatcher dispatcher = context.getBean(APIDispatcher.class);
-            HelloController controller = context.getBean(HelloController.class);
 
-            String newDefault = "ciao";
-            MockHttpServletRequest request = setupPutRequest(newDefault);
-            request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
-            MockHttpServletResponse response = new MockHttpServletResponse();
-            dispatcher.handleRequest(request, response);
+        APIDispatcher dispatcher = applicationContext.getBean(APIDispatcher.class);
+        HelloService controller = applicationContext.getBean(HelloService.class);
 
-            assertEquals(200, response.getStatus());
-            assertEquals(newDefault, controller.defaultValue);
-        }
+        String newDefault = "ciao";
+        MockHttpServletRequest request = setupPutRequest(newDefault);
+        request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        dispatcher.handleRequest(request, response);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(newDefault, controller.defaultValue);
     }
 
     @Test
     public void testDispatcherCallback() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         TestDispatcherCallback callback = new TestDispatcherCallback();
 
         MockHttpServletRequest request = setupHelloRequest();
@@ -168,7 +164,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackOperationName() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         AtomicReference<Request> requestReference = new AtomicReference<>();
         TestDispatcherCallback callback =
                 new TestDispatcherCallback() {
@@ -186,13 +182,13 @@ public class APIDispatcherTest {
         dispatcher.handleRequest(request, response);
         assertEquals(200, response.getStatus());
         assertEquals("Hello", requestReference.get().getService());
-        assertEquals("1.0", requestReference.get().getVersion());
+        assertEquals("1.0.1", requestReference.get().getVersion());
         assertEquals("sayHello", requestReference.get().getRequest());
     }
 
     @Test
     public void testDispatcherCallbackFailInit() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
@@ -224,7 +220,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackFailServiceDispatched() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
         TestDispatcherCallback callbackFail =
@@ -254,7 +250,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackFailOperationDispatched() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
         TestDispatcherCallback callbackFail =
@@ -283,7 +279,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackFailOperationExecuted() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
         TestDispatcherCallback callbackFail =
@@ -314,7 +310,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackFailResponseDispatched() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
         TestDispatcherCallback callbackFail =
@@ -348,7 +344,7 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackFailFinished() throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
         final AtomicBoolean firedCallback = new AtomicBoolean(false);
         TestDispatcherCallback callback1 = new TestDispatcherCallback();
         TestDispatcherCallback callback2 =
@@ -407,14 +403,90 @@ public class APIDispatcherTest {
         assertEquals("application/json", rsp.getContentType());
     }
 
+    @Test
+    public void testDocumentDefaultMime() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document");
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+        JSONObject json = (JSONObject) json(response);
+        // links to self and alternate representations
+        assertEquals("hello", json.get("message"));
+        JSONArray links = json.getJSONArray("links");
+        assertEquals(3, links.size());
+        for (int i = 0; i < links.size(); i++) {
+            JSONObject link = links.getJSONObject(i);
+            if ("self".equals(link.getString("rel"))) {
+                assertEquals("This document", link.getString("title"));
+                assertEquals("application/json", link.getString("type"));
+                assertEquals(
+                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fjson",
+                        link.getString("href"));
+            } else if ("alternate".equals(link.getString("rel"))
+                    && "application/x-yaml".equals(link.getString("type"))) {
+                assertEquals("This document as application/x-yaml", link.getString("title"));
+                assertEquals(
+                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fx-yaml",
+                        link.getString("href"));
+            } else if ("alternate".equals(link.getString("rel"))) {
+                assertEquals("This document as text/html", link.getString("title"));
+                assertEquals("text/html", link.getString("type"));
+                assertEquals(
+                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=text%2Fhtml",
+                        link.getString("href"));
+            } else {
+                fail("Unexpected link: " + link);
+            }
+        }
+    }
+
+    @Test
+    public void testDocumentHTML() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document?f=html");
+        assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
+        // Testing:
+        // - the message is in the body
+        // - service link generation
+        // - resource link generation
+        String expected =
+                "<html>\n"
+                        + "<head>\n"
+                        + "    <script src=\"http://localhost:8080/geoserver/webresources/ogcapi/hello.js\"></script>\n"
+                        + "</head>\n"
+                        + "<body>\n"
+                        + "  <p>The message: hello</p>\n"
+                        + "  <p><a class=\"wmsCapabilities\" href=\"http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS\">Capabilities URL</a></p>\n"
+                        + "</body>\n"
+                        + "</html>";
+        assertEquals(expected, response.getContentAsString());
+    }
+
+    @Test
+    public void testHelloPlainText() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/hello?f=text/plain");
+        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
+        assertEquals("hello", response.getContentAsString());
+    }
+
+    @Test
+    public void testeServiceDisabled() throws Exception {
+        HelloService hs = applicationContext.getBean(HelloService.class);
+        try {
+            hs.getServiceInfo().setEnabled(false);
+            MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1");
+            assertEquals(404, response.getStatus());
+            assertEquals("Service Hello is disabled", response.getErrorMessage());
+        } finally {
+            hs.getServiceInfo().setEnabled(true);
+        }
+    }
+
     private CodeExpectingHttpServletResponse assertHttpErrorCode(String path, int expectedCode)
             throws Exception {
-        APIDispatcher dispatcher = getDispatcher();
+        APIDispatcher dispatcher = getAPIDispatcher();
 
         MockHttpServletRequest request = setupRequestBase();
         request.setMethod("GET");
-        request.setPathInfo("/geoserver/ogc/" + path);
-        request.setRequestURI("/geoserver/ogc/" + path);
+        request.setPathInfo("/geoserver/ogc/hello/v1/" + path);
+        request.setRequestURI("/geoserver/ogc/hello/v1/" + path);
 
         CodeExpectingHttpServletResponse response =
                 new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
@@ -426,14 +498,14 @@ public class APIDispatcherTest {
         return response;
     }
 
-    private APIDispatcher getDispatcher() {
+    private APIDispatcher getAPIDispatcher() {
         return applicationContext.getBean(APIDispatcher.class);
     }
 
     private MockHttpServletRequest setupDeleteRequest() {
         MockHttpServletRequest request = setupRequestBase();
-        request.setPathInfo("/geoserver/ogc/delete");
-        request.setRequestURI("/geoserver/ogc/delete");
+        request.setPathInfo("/geoserver/ogc/hello/v1/delete");
+        request.setRequestURI("/geoserver/ogc/hello/v1/delete");
         request.setMethod("DELETE");
 
         return request;
@@ -441,10 +513,10 @@ public class APIDispatcherTest {
 
     private MockHttpServletRequest setupPutRequest(String message, String... params) {
         MockHttpServletRequest request = setupRequestBase(params);
-        request.setPathInfo("/geoserver/ogc/default");
+        request.setPathInfo("/geoserver/ogc/hello/v1/default");
         request.setMethod("PUT");
 
-        request.setRequestURI("/geoserver/ogc/default");
+        request.setRequestURI("/geoserver/ogc/hello/v1/default");
         request.setContent(message.getBytes(StandardCharsets.UTF_8));
 
         return request;
@@ -452,10 +524,10 @@ public class APIDispatcherTest {
 
     private MockHttpServletRequest setupEchoRequest(String message, String... params) {
         MockHttpServletRequest request = setupRequestBase(params);
-        request.setPathInfo("/geoserver/ogc/hello");
+        request.setPathInfo("/geoserver/ogc/hello/v1/hello");
         request.setMethod("POST");
 
-        request.setRequestURI("/geoserver/ogc/echo");
+        request.setRequestURI("/geoserver/ogc/hello/v1/echo");
         request.setContent(message.getBytes(StandardCharsets.UTF_8));
 
         return request;
@@ -463,9 +535,9 @@ public class APIDispatcherTest {
 
     private MockHttpServletRequest setupHelloRequest(String... params) {
         MockHttpServletRequest request = setupRequestBase(params);
-        request.setPathInfo("/geoserver/ogc/hello");
+        request.setPathInfo("/geoserver/ogc/hello/v1/hello");
         request.setMethod("GET");
-        request.setRequestURI("/geoserver/ogc/hello");
+        request.setRequestURI("/geoserver/ogc/hello/v1/hello");
 
         return request;
     }

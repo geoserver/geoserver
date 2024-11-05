@@ -7,6 +7,7 @@ package org.geoserver.ogcapi;
 
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
 import org.springframework.http.HttpHeaders;
@@ -26,13 +27,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
         service = "Hello",
         version = "1.0.1",
         landingPage = "ogc/hello/v1",
-        serviceClass = HelloController.HelloServiceInfo.class)
+        serviceClass = HelloService.HelloServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/hello/v1")
-public class HelloController {
+public class HelloService {
+
+    public static final String DEFAULT_GREETING = "hello";
+    private final HelloServiceInfoImpl serviceInfo;
 
     static interface HelloServiceInfo extends ServiceInfo {}
 
-    String defaultValue = "hello";
+    static class HelloServiceInfoImpl extends ServiceInfoImpl implements HelloServiceInfo {}
+
+    String defaultValue = DEFAULT_GREETING;
+
+    public HelloService() {
+        this.serviceInfo = new HelloServiceInfoImpl();
+        this.serviceInfo.setName("Hello");
+        this.serviceInfo.setTitle("Hello Service");
+        this.serviceInfo.setEnabled(true);
+    }
 
     @GetMapping(name = "landingPage")
     @ResponseBody
@@ -40,7 +53,7 @@ public class HelloController {
         return new Message("Landing page");
     }
 
-    @GetMapping(path = "hello", name = "sayHello")
+    @GetMapping(path = DEFAULT_GREETING, name = "sayHello")
     @ResponseBody
     public Message hello(@RequestParam(name = "message", required = false) String message) {
         return new Message(message != null ? message : defaultValue);
@@ -88,5 +101,20 @@ public class HelloController {
     public void httpErrorCodeExceptionWithContentType() {
         throw new HttpErrorCodeException(HttpServletResponse.SC_OK, "{\"hello\":\"world\"}")
                 .setContentType("application/json");
+    }
+
+    @GetMapping(path = "document", name = "document")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "message.ftl", fileName = "message.html")
+    public HelloDocument document() {
+        HelloDocument doc = new HelloDocument();
+        doc.setMessage(defaultValue);
+        doc.addSelfLinks("ogc/hello/v1/document");
+        return doc;
+    }
+
+    /** Used by the {@link org.geoserver.ows.DisabledServiceCheck} */
+    public HelloServiceInfo getServiceInfo() {
+        return serviceInfo;
     }
 }

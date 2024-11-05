@@ -115,7 +115,7 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
                                 return ((GenericHttpMessageConverter<?>) c)
                                         .canRead(
                                                 Message.class,
-                                                HelloController.class,
+                                                HelloService.class,
                                                 MediaType.APPLICATION_JSON);
                             else return c.canRead(Message.class, MediaType.APPLICATION_JSON);
                         });

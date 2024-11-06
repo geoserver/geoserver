@@ -16,23 +16,32 @@ Features Implementation status
      - Version
      - Implementation status
    * - Part 1: Core
-     - `1.0.0 <https://docs.opengeospatial.org/is/17-069r4/17-069r4.html>`__
+     - `1.0.1 <https://docs.ogc.org/is/17-069r4/17-069r4.html>`__
      - Passes compliance tests
    * - Part 2: Coordinate Systems by Reference
-     - `1.0.0 <https://docs.opengeospatial.org/is/18-058r1/18-058r1.htmll>`__
+     - `1.0.1 <https://docs.ogc.org/is/18-058r1/18-058r1.html>`__
      - Passes compliance tests
    * - Part 3: Filtering
-     - `Draft <http://docs.ogc.org/DRAFTS/19-079r1.html>`__
-     - Draft implemented (mind, the draft does not include a filtering language)
-   * - Part 4: Create, Replace, Update and Delete
-     - `Draft <http://docs.ogc.org/DRAFTS/20-002.html>`__
-     - Not implemented (volunteers/sponsoring wanted)
+     - `1.0.0 <https://docs.ogc.org/is/19-079r2/19-079r2.html>`__
+     - Implemented an earlier draft, being updated to final (no CITE tests yet)
    * - Common Query Language (CQL2)
-     - `Draft <https://docs.ogc.org/DRAFTS/21-065.html>`__
-     - Implements an earlier draft for for both text and JSON encodings. To be updated.
+     - `1.0.0 <https://docs.ogc.org/is/21-065r2/21-065r2.html>`__
+     - Implemented an earlier draft, being updated to final (no CITE tests yet)
+   * - Part 4: Create, Replace, Update and Delete
+     - `1.0.0 <https://docs.ogc.org/DRAFTS/20-002r1.html>`__
+     - Not implemented (volunteers/sponsoring wanted)
+   * - Part 5: search
+     - `Proposal DRAFT <https://github.com/opengeospatial/ogcapi-features/tree/master/proposals/search>`__
+     - A search endpoint for complex queries is implemented at the single collection level (POST to immediately get a response, no support for stored queries).
+   * - Part 6 - Schemas
+     - `Proposal DRAFT <https://github.com/opengeospatial/ogcapi-features/tree/master/proposals/search>`__
+     - Not implemented (volunteers/sponsoring wanted)
    * - Part n: Query by IDs
-     - `Proposal <https://github.com/opengeospatial/ogcapi-features/tree/master/proposals/query-by-ids>`__
+     - `Proposal DRAFT <https://github.com/opengeospatial/ogcapi-features/tree/master/proposals/query-by-ids>`__
      - Proposal implemented, but syntax and semantic is subject to change in a future release. Thus said, usage should be carefully considered.
+   * - Sorting
+     - `DRAFT in github <https://github.com/opengeospatial/ogcapi-features/tree/master/extensions/sorting/standard>`__
+     - Partial implementation borrowed by OGC API Records, using the sortby parameter. Sortables are not exposed.
 
 Installing the GeoServer OGC API Features module
 ------------------------------------------------
@@ -48,7 +57,7 @@ Installing the GeoServer OGC API Features module
 Use of OGC API - Features service
 ---------------------------------
 
-The OGC API Features Service is accessed via the :guilabel:`FEATURES` version :guilabel:`1.0` link on the home page.
+The OGC API Features Service is accessed via the :guilabel:`Features` version :guilabel:`1.0.1` link on the home page.
 
 Capabilities
 ''''''''''''
@@ -66,48 +75,27 @@ The service is self described using:
   .. code-block:: json
   
      {
-       "title": "GeoServer Web Feature Service",
-       "description": "This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.",
+       "title": "GeoServer Features services",
+       "description": "This services delivers vector data in raw form, including both geometries and attributes.",
        "links": [
          {
-           "href": "http://localhost:8080/geoserver/ogc/features/?f=application%2Fx-yaml",
-           "rel": "alternate",
-           "type": "application/x-yaml",
-           "title": "This document as application/x-yaml"
-         },
-         {
-           "href": "http://localhost:8080/geoserver/ogc/features/?f=application%2Fjson",
+           "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fjson",
            "rel": "self",
            "type": "application/json",
            "title": "This document"
          },
          {
-           "href": "http://localhost:8080/geoserver/ogc/features/?f=text%2Fhtml",
+           "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fx-yaml",
+           "rel": "alternate",
+           "type": "application/x-yaml",
+           "title": "This document as application/x-yaml"
+         },
+         {
+           "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=text%2Fhtml",
            "rel": "alternate",
            "type": "text/html",
            "title": "This document as text/html"
-         }
-
-* ``application/x-yaml``: A collection of :file:`yaml` documents, with references between each document for programmatic access.
- 
-  .. code-block:: yaml
-  
-     title: GeoServer Web Feature Service
-     description: This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports
-       all WFS operations including Transaction.
-     links:
-     - href: http://localhost:8080/geoserver/ogc/features/?f=application%2Fx-yaml
-       rel: self
-       type: application/x-yaml
-       title: This document
-     - href: http://localhost:8080/geoserver/ogc/features/?f=application%2Fjson
-       rel: alternate
-       type: application/json
-       title: This document as application/json
-     - href: http://localhost:8080/geoserver/ogc/features/?f=text%2Fhtml
-       rel: alternate
-       type: text/html
-       title: This document as text/html
+         },
 
 The service title and description are provided by the existing :ref:`wfs` settings.
 
@@ -177,6 +165,7 @@ To override an OGC API Features template:
 
 #. Create a file in this location, using the GeoServer |release| examples below:
 
+   * :download:`ogc/features/v1/landingPage.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/landingPage.ftl>`
    * :download:`ogc/features/v1/collection.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection.ftl>`
    * :download:`ogc/features/v1/collection_include.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection_include.ftl>`
    * :download:`ogc/features/v1/collections.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl>`
@@ -185,15 +174,14 @@ To override an OGC API Features template:
    
    The above built-in examples are for GeoServer |release|, please check for any changes when upgrading GeoServer.
 
-The templates for listing feature content are shared between OGC API services. To override a template used to list features:
+To override a template used to list features:
 
-#. Use the directory in the location you wish to override:
+#. Use the directory in the location you wish to override (can be general, specific to a workspace, datastore, or feature type):
 
    * :file:`GEOSERVER_DATA_DIR/templates`
    * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}`
    * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}` 
    * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/{featuretype}` 
-   * :download:`ogc/features/landingPage.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/landingPage.ftl>`
 
 #. Create a file in this location, using the GeoServer |release| examples below:
 
@@ -231,7 +219,7 @@ As an example customize how collections are listed:
 
    Presently each family of templates manages its own :file:`common-header.ftl` (as shown in the difference between :file:`ogc/features` service templates, and getfeature templates above).
 
-#. A restart is required, as templates are cached.
+#. A restart is not required, the system will notice when the template is updated and apply the changes automatically.
    
    .. figure:: img/template_override.png
       

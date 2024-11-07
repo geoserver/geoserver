@@ -234,14 +234,14 @@ In order to support it the GetLegendGraphic call needs the following extra param
   * BBOX
   * SRS or CRS (depending on the WMS version, SRS for 1.1.1 and CRS for 1.3.0)
   * SRCWIDTH and SRCHEIGHT, the size of the reference map (width and height already have a different meaning in GetLegendGraphic)
+
+and the following LEGEND_OPTIONS parameters:
+
+  * countMatched: adds the number of features matching the particular rule at the end of the rule label (requires visible labels to work). Applicable only to vector layers.
+  * hideEmptyRules:  hides rules that are not matching any feature. Applicable only if countMatched is true.
   
 Other parameters can also be added to better match the GetMap request, for example, it is recommended to mirror 
 filtering vendor parameters such as, for example, CQL_FILTER,FILTER,FEATUREID,TIME,ELEVATION.
-
-Content dependent evaluation is enabled via the following LEGEND_OPTIONS parameters:
- 
-  *  countMatched: adds the number of features matching the particular rule at the end of the rule label (requires visible labels to work). Applicable only to vector layers.
-  *  hideEmptyRules:  hides rules that are not matching any feature. Applicable only if countMatched is true.
   
 For example, let's assume the following layout is added to GeoServer (``legend.xml`` to be placed in ``GEOSERVER_DATA_DIR/layouts``)::
 

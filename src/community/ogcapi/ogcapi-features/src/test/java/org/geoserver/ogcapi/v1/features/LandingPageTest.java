@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
@@ -19,10 +20,8 @@ import org.geoserver.wfs.WFSInfo;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
 
 public class LandingPageTest extends FeaturesTestSupport {
 
@@ -71,14 +70,6 @@ public class LandingPageTest extends FeaturesTestSupport {
     public void testLandingPageWorkspaceSpecific() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/v1", 200);
         checkJSONLandingPage(json);
-    }
-
-    @Test
-    @Ignore
-    public void testLandingPageXML() throws Exception {
-        Document dom = getAsDOM("ogc/features/v1?f=application/xml");
-        print(dom);
-        // TODO: add actual tests in here
     }
 
     @Test
@@ -170,6 +161,15 @@ public class LandingPageTest extends FeaturesTestSupport {
                 Link.REL_DATA,
                 Link.REL_DATA,
                 Link.REL_DATA);
+
+        // check collection links
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*ogc\\/features\\/v1\\/functions.*/)].rel",
+                FunctionsDocument.REL,
+                FunctionsDocument.REL,
+                FunctionsDocument.REL);
+
         // check title
         assertEquals("Features 1.0 server", json.read("title"));
         // check description

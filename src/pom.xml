@@ -1769,6 +1769,12 @@
         <artifactId>wiremock-jre8-standalone</artifactId>
         <version>2.35.1</version>
       </dependency>
+      <dependency>
+        <groupId>com.github.erosb</groupId>
+        <artifactId>json-sKema</artifactId>
+        <version>0.19.0</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

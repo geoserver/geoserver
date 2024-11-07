@@ -35,14 +35,12 @@ public class QueryablesTest extends TilesTestSupport {
     }
 
     @Test
-    public void queryablesOnRoadSegements() throws Exception {
+    public void queryablesOnRoadSegments() throws Exception {
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/tiles/v1/collections/" + getLayerId(ROAD_SEGMENTS) + "/queryables",
                         200);
-        assertEquals(
-                "https://geojson.org/schema/MultiLineString.json",
-                json.read("properties.the_geom.$ref"));
+        assertEquals("geometry-multilinestring", json.read("properties.the_geom.format"));
         assertEquals("string", json.read("properties.FID.type"));
         assertEquals("string", json.read("properties.NAME.type"));
     }

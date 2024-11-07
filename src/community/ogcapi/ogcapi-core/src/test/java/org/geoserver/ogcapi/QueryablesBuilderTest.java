@@ -22,69 +22,69 @@ public class QueryablesBuilderTest {
     public void testGetSchema() throws Exception {
         Schema stringSchema = QueryablesBuilder.getSchema(String.class);
         assertEquals("string", stringSchema.getType());
-        assertEquals("string", stringSchema.getDescription());
+        assertEquals("string", stringSchema.getTitle());
 
         Schema integerSchema = QueryablesBuilder.getSchema(Integer.class);
         assertEquals("integer", integerSchema.getType());
-        assertEquals("integer", integerSchema.getDescription());
+        assertEquals("integer", integerSchema.getTitle());
 
         Schema longSchema = QueryablesBuilder.getSchema(Long.class);
         assertEquals("integer", longSchema.getType());
-        assertEquals("integer", longSchema.getDescription());
+        assertEquals("integer", longSchema.getTitle());
 
         Schema doubleSchema = QueryablesBuilder.getSchema(Double.class);
         assertEquals("number", doubleSchema.getType());
-        assertEquals("number", doubleSchema.getDescription());
+        assertEquals("number", doubleSchema.getTitle());
 
         Schema floatSchema = QueryablesBuilder.getSchema(Float.class);
         assertEquals("number", floatSchema.getType());
-        assertEquals("number", floatSchema.getDescription());
+        assertEquals("number", floatSchema.getTitle());
 
         Schema booleanSchema = QueryablesBuilder.getSchema(Boolean.class);
         assertEquals("boolean", booleanSchema.getType());
-        assertEquals("boolean", booleanSchema.getDescription());
+        assertEquals("boolean", booleanSchema.getTitle());
 
         Schema timeSchema = QueryablesBuilder.getSchema(java.sql.Time.class);
         assertEquals("string", timeSchema.getType());
         assertEquals("time", timeSchema.getFormat());
-        assertEquals("Time", timeSchema.getDescription());
+        assertEquals("Time", timeSchema.getTitle());
 
         Schema dateSChema = QueryablesBuilder.getSchema(java.sql.Date.class);
         assertEquals("string", dateSChema.getType());
         assertEquals("date", dateSChema.getFormat());
-        assertEquals("Date", dateSChema.getDescription());
+        assertEquals("Date", dateSChema.getTitle());
 
         Schema dateTimeSchema = QueryablesBuilder.getSchema(java.util.Date.class);
         assertEquals("string", dateTimeSchema.getType());
         assertEquals("date-time", dateTimeSchema.getFormat());
-        assertEquals("DateTime", dateTimeSchema.getDescription());
+        assertEquals("DateTime", dateTimeSchema.getTitle());
 
         Schema pointSchema = QueryablesBuilder.getSchema(Point.class);
-        assertEquals(QueryablesBuilder.POINT_SCHEMA_REF, pointSchema.get$ref());
-        assertEquals("Point", pointSchema.getDescription());
+        assertEquals("geometry-point", pointSchema.getFormat());
+        assertEquals("Point", pointSchema.getTitle());
 
         Schema multiPointSchema = QueryablesBuilder.getSchema(MultiPoint.class);
-        assertEquals(QueryablesBuilder.MULTIPOINT_SCHEMA_REF, multiPointSchema.get$ref());
-        assertEquals("MultiPoint", multiPointSchema.getDescription());
+        assertEquals("geometry-multipoint", multiPointSchema.getFormat());
+        assertEquals("MultiPoint", multiPointSchema.getTitle());
 
         Schema lineStringSchema = QueryablesBuilder.getSchema(LineString.class);
-        assertEquals(QueryablesBuilder.LINESTRING_SCHEMA_REF, lineStringSchema.get$ref());
-        assertEquals("LineString", lineStringSchema.getDescription());
+        assertEquals("geometry-linestring", lineStringSchema.getFormat());
+        assertEquals("LineString", lineStringSchema.getTitle());
 
         Schema multiLineStringSchema = QueryablesBuilder.getSchema(MultiLineString.class);
-        assertEquals(QueryablesBuilder.MULTILINESTRING_SCHEMA_REF, multiLineStringSchema.get$ref());
-        assertEquals("MultiLineString", multiLineStringSchema.getDescription());
+        assertEquals("geometry-multilinestring", multiLineStringSchema.getFormat());
+        assertEquals("MultiLineString", multiLineStringSchema.getTitle());
 
         Schema polygonSchema = QueryablesBuilder.getSchema(Polygon.class);
-        assertEquals(QueryablesBuilder.POLYGON_SCHEMA_REF, polygonSchema.get$ref());
-        assertEquals("Polygon", polygonSchema.getDescription());
+        assertEquals("geometry-polygon", polygonSchema.getFormat());
+        assertEquals("Polygon", polygonSchema.getTitle());
 
         Schema multiPolygonSchema = QueryablesBuilder.getSchema(MultiPolygon.class);
-        assertEquals(QueryablesBuilder.MULTIPOLYGON_SCHEMA_REF, multiPolygonSchema.get$ref());
-        assertEquals("MultiPolygon", multiPolygonSchema.getDescription());
+        assertEquals("geometry-multipolygon", multiPolygonSchema.getFormat());
+        assertEquals("MultiPolygon", multiPolygonSchema.getTitle());
 
         Schema geometrySchema = QueryablesBuilder.getSchema(Geometry.class);
-        assertEquals(QueryablesBuilder.GEOMETRY_SCHEMA_REF, geometrySchema.get$ref());
-        assertEquals("Generic geometry", geometrySchema.getDescription());
+        assertEquals("geometry-any", geometrySchema.getFormat());
+        assertEquals("Any geometry", geometrySchema.getTitle());
     }
 }

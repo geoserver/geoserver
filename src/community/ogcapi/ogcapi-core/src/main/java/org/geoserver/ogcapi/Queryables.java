@@ -19,8 +19,10 @@ import java.util.List;
 public class Queryables extends Schema<Object> {
 
     public static final String REL = "http://www.opengis.net/def/rel/ogc/1.0/queryables";
+    public static final String JSON_SCHEMA_DRAFT_2020_12 =
+            "https://json-schema.org/draft/2020-12/schema";
 
-    private final String schema = "https://json-schema.org/draft/2019-09/schema";
+    private final String schema = JSON_SCHEMA_DRAFT_2020_12;
 
     private String id;
 

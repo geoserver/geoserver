@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ import org.locationtech.jts.geom.Geometry;
 
 /** A document enumerating the available functions */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FunctionsDocument {
+public class FunctionsDocument extends AbstractDocument {
 
     public static final String REL = "http://www.opengis.net/def/rel/ogc/1.0/functions";
 
@@ -49,12 +50,14 @@ public class FunctionsDocument {
     public static class Function {
         String name;
         String description;
-        Argument returns;
+        List<AttributeType> returns;
         List<Argument> arguments;
 
         Function(FunctionName fn) {
             this.name = fn.getName();
-            this.returns = toParameter(fn.getReturn());
+            this.returns =
+                    Arrays.stream(toParameter(fn.getReturn()).getType())
+                            .collect(Collectors.toList());
             this.description = null; // no support for descriptions in GeoTools functions
             this.arguments =
                     fn.getArguments().stream()
@@ -66,7 +69,7 @@ public class FunctionsDocument {
             return name;
         }
 
-        public Argument getReturns() {
+        public List<AttributeType> getReturns() {
             return returns;
         }
 
@@ -92,6 +95,8 @@ public class FunctionsDocument {
                                 .map(Function::new)
                                 .distinct()
                                 .collect(Collectors.toList());
+
+        addSelfLinks("ogc/features/v1/functions");
     }
 
     private static boolean isSimpleFunction(FunctionName functionName) {

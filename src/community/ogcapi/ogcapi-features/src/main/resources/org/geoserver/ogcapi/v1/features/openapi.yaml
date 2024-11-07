@@ -329,28 +329,30 @@ components:
     filter:
       name: filter
       in: query
+      required: false
       description: Defines a filter that will be applied on items, only items matching the filter will be returned
       schema:
         type: string
+      explode: false
     filter-lang:
       name: filter-lang
       in: query
+      required: false
       description: Filter encoding used in the filter parameter
       schema:
         type: string
         enum:
           - cql-text
           - cql2-text
-        default: cql-text
+        default: cql2-text
     filter-crs:
       name: filter-crs
       in: query
-      description: Filter CRS which is being used to encode geometries in the filter parameter
       required: false
+      description: Filter CRS which is being used to encode geometries in the filter parameter
       schema:
         type: string
         format: uri-reference
-      style: form
       explode: false
     sortby:
       name: sortby

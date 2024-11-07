@@ -37,12 +37,10 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
 
 public class CollectionsTest extends FeaturesTestSupport {
 
@@ -140,14 +138,6 @@ public class CollectionsTest extends FeaturesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/cdf/ogc/features/v1/collections/Deletes/items?f=application%2Fgeo%2Bjson",
                 ((JSONArray) json.read(deleteHrefPath)).get(0));
-    }
-
-    @Test
-    @Ignore
-    public void testCollectionsXML() throws Exception {
-        Document dom = getAsDOM("ogc/features/v1/collections?f=application/xml");
-        print(dom);
-        // TODO: add actual tests
     }
 
     @Test

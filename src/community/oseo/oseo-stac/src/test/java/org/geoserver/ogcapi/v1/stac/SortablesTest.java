@@ -72,7 +72,7 @@ public class SortablesTest extends STACTestSupport {
         // check the one custom sortables added in LANDSAT8 template
         DocumentContext orbit = readContext(json, "properties.landsat:orbit");
         assertEquals("integer", orbit.read("type"));
-        assertEquals("integer", orbit.read("description"));
+        assertEquals("integer", orbit.read("title"));
     }
 
     private void checkSortableProperties(DocumentContext json) {

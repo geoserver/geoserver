@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,7 @@ import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -271,5 +273,15 @@ public class ApiTest extends FeaturesTestSupport {
                         .map(ft -> ft.getName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
+    }
+
+    @Test
+    @Ignore
+    public void testFilterCRS() throws Exception {
+        fail(
+                "We should to enumerate all supported filter-crs values, but they are likely too many, "
+                        + "and we'd have to inspect all the collections to find an exhaustive list for the"
+                        + "test. The ATS does not seem to check it either, so taking a not but not "
+                        + "implementing for the time being.");
     }
 }

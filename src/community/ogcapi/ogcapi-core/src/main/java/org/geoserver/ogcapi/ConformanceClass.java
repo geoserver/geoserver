@@ -20,11 +20,14 @@ public class ConformanceClass {
      * CQL filtering conformance classes, shared here to allow STAC using them, without depending on
      * ogc-api-features directly
      */
-    public static final String FEATURES_FILTER =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/features-filter";
+    public static final String QUERYABLES =
+            "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables";
 
     public static final String FILTER =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/filter";
+            "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter";
+
+    public static final String FEATURES_FILTER =
+            "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/features-filter";
 
     /** Sorting conformance class from OGC API - Records. */
     public static final String SORTBY =

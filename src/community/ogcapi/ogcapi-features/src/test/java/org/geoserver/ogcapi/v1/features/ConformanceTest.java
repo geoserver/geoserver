@@ -17,14 +17,8 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.IDS;
-import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
 import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
-import static org.geoserver.ogcapi.v1.features.FeatureService.CORE;
-import static org.geoserver.ogcapi.v1.features.FeatureService.CRS_BY_REFERENCE;
-import static org.geoserver.ogcapi.v1.features.FeatureService.GEOJSON;
-import static org.geoserver.ogcapi.v1.features.FeatureService.HTML;
-import static org.geoserver.ogcapi.v1.features.FeatureService.OAS30;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
@@ -32,7 +26,9 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class ConformanceTest extends FeaturesTestSupport {
 
@@ -49,14 +45,14 @@ public class ConformanceTest extends FeaturesTestSupport {
 
     private String[] getExpectedConformanceClasses() {
         return new String[] {
-            CORE,
-            OAS30,
-            HTML,
-            GEOJSON,
-            CRS_BY_REFERENCE,
+            FeatureService.CORE.getId(),
+            FeatureService.OAS30.getId(),
+            FeatureService.HTML.getId(),
+            FeatureService.GEOJSON.getId(),
+            FeatureService.CRS_BY_REFERENCE.getId(),
+            FEATURES_FILTER,
             FILTER,
             QUERYABLES,
-            FEATURES_FILTER,
             SEARCH,
             ECQL,
             ECQL_TEXT,

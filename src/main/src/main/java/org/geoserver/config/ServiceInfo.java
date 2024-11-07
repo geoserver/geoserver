@@ -24,7 +24,7 @@ import org.geotools.util.Version;
  */
 public interface ServiceInfo extends Info {
 
-    /** Identifer. */
+    /** Identifier. */
     @Override
     String getId();
 
@@ -47,7 +47,7 @@ public interface ServiceInfo extends Info {
      * Name of the service, unique within all instances of ServiceInfo within global services (or
      * within workspace services).
      *
-     * <p>Please note that the name is used in GetCapabilities output and may user supplied (do not
+     * <p>The name is used in GetCapabilities output and may user supplied (do not
      * assume this to be {@code WMS}, {@code WFS}, {@code WCS} - an example may be {@code GeoServer
      * WMS}.
      *

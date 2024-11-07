@@ -82,7 +82,7 @@ public class ApiTest extends STACTestSupport {
         assertThat(
                 html,
                 containsString(
-                        "url: \"http://localhost:8080/geoserver/ogc/stac/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
+                        "value=\"http://localhost:8080/geoserver/ogc/stac/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0"));
     }
 
     @Test

@@ -17,8 +17,14 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.IDS;
+import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
 import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
+import static org.geoserver.ogcapi.v1.features.FeatureService.CORE;
+import static org.geoserver.ogcapi.v1.features.FeatureService.CRS_BY_REFERENCE;
+import static org.geoserver.ogcapi.v1.features.FeatureService.GEOJSON;
+import static org.geoserver.ogcapi.v1.features.FeatureService.HTML;
+import static org.geoserver.ogcapi.v1.features.FeatureService.OAS30;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
@@ -26,9 +32,7 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.w3c.dom.Document;
 
 public class ConformanceTest extends FeaturesTestSupport {
 
@@ -45,13 +49,14 @@ public class ConformanceTest extends FeaturesTestSupport {
 
     private String[] getExpectedConformanceClasses() {
         return new String[] {
-            FeatureService.CORE,
-            FeatureService.OAS30,
-            FeatureService.HTML,
-            FeatureService.GEOJSON,
-            FeatureService.CRS_BY_REFERENCE,
-            FEATURES_FILTER,
+            CORE,
+            OAS30,
+            HTML,
+            GEOJSON,
+            CRS_BY_REFERENCE,
             FILTER,
+            QUERYABLES,
+            FEATURES_FILTER,
             SEARCH,
             ECQL,
             ECQL_TEXT,
@@ -66,13 +71,6 @@ public class ConformanceTest extends FeaturesTestSupport {
             SORTBY,
             IDS
         };
-    }
-
-    @Test
-    @Ignore
-    public void testConformanceXML() throws Exception {
-        Document dom = getAsDOM("ogc/features/v1?f=application/xml");
-        print(dom);
     }
 
     @Test

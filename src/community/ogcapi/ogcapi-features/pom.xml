@@ -89,5 +89,11 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.erosb</groupId>
+      <artifactId>json-sKema</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 </project>

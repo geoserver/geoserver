@@ -200,10 +200,11 @@ public class STACQueryablesBuilder {
         return expressions;
     }
 
-    private Schema<?> getSchema(String description, String ref) {
+    private Schema<?> getSchema(String title, String ref) {
         Schema schema = new Schema();
         schema.set$ref(ref);
-        schema.setDescription(description);
+        schema.setTitle(title);
+        schema.setDescription(title);
         return schema;
     }
 

@@ -238,7 +238,7 @@ In order to support it the GetLegendGraphic call needs the following extra param
 and the following LEGEND_OPTIONS parameters:
 
   * countMatched: adds the number of features matching the particular rule at the end of the rule label (requires visible labels to work). Applicable only to vector layers.
-  * hideEmptyRules:  hides rules that are not matching any feature. Applicable only if countMatched is true.
+  * hideEmptyRules:  hides rules that are not matching any feature.
   
 Other parameters can also be added to better match the GetMap request, for example, it is recommended to mirror 
 filtering vendor parameters such as, for example, CQL_FILTER,FILTER,FEATUREID,TIME,ELEVATION.

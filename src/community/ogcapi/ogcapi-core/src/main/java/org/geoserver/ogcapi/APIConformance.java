@@ -8,15 +8,34 @@ import java.util.Objects;
  * OGCAPI Web Services are defined with core functionality, strictly extended with additional, optional, functionality
  * identified by "conformance class".
  *
- * OGC Open Web Services can be extended using application profiles with additional, optional, functionality.
+ * By comparision OGC Open Web Services can be extended using application profiles with additional, optional, functionality.
  */
 public class APIConformance {
 
     /**
-     * Standards approval status.
+     * Conformance approval status.
      */
     public enum Status {
-        APPROVED, DRAFT, INFORMAL
+        /**
+         * Approved standard, stable and ready for use.
+         *
+         * This functionality is stable and enabled by default.
+         */
+        APPROVED,
+
+        /**
+         * Draft standard not yet finalized.
+         *
+         * This functionality is opt-in and should not be enabled by default.
+         */
+        DRAFT,
+
+        /**
+         * Informal, custom GeoServer specific functionality not defined by an official standard.
+         *
+         * The functionality is stable, and may be enabled if not strictly limited to OGC services.
+         */
+        INFORMAL
     }
 
     public enum Type { CORE, EXTENSION }

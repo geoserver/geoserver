@@ -88,7 +88,7 @@ public class ApiTest extends ImagesTestSupport {
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/images/v1/openapi?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/v1/openapi?f=application/yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -101,10 +101,10 @@ public class ApiTest extends ImagesTestSupport {
         MockHttpServletRequest request = createRequest("ogc/images/v1/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
+        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
-        assertThat(response.getContentType(), CoreMatchers.startsWith("application/x-yaml"));
+        assertThat(response.getContentType(), CoreMatchers.startsWith("application/yaml"));
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();
@@ -154,10 +154,10 @@ public class ApiTest extends ImagesTestSupport {
         MockHttpServletRequest request = createRequest("gs/ogc/images/v1/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
+        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
-        assertEquals("application/x-yaml", response.getContentType());
+        assertEquals("application/yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         // System.out.println(yaml);
 

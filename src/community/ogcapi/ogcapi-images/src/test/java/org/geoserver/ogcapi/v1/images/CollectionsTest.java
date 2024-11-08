@@ -31,9 +31,9 @@ public class CollectionsTest extends ImagesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/images/v1/collections/?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/v1/collections/?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
-        testCollectionsJson(json, MediaType.parseMediaType("application/x-yaml"));
+        testCollectionsJson(json, MediaType.parseMediaType("application/yaml"));
     }
 
     private void testCollectionsJson(DocumentContext json, MediaType defaultFormat)

@@ -107,9 +107,9 @@ public class CollectionsTest extends TilesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/tiles/v1/collections/?f=application/x-yaml");
+        String yaml = getAsString("ogc/tiles/v1/collections/?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
-        testCollectionsJson(json, MediaType.parseMediaType("application/x-yaml"));
+        testCollectionsJson(json, MediaType.parseMediaType("application/yaml"));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class CollectionsTest extends TilesTestSupport {
     @Test
     public void testVersionHeader() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse("ogc/tiles/v1/collections/?f=application/x-yaml");
+                getAsServletResponse("ogc/tiles/v1/collections/?f=application/yaml");
         assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 }

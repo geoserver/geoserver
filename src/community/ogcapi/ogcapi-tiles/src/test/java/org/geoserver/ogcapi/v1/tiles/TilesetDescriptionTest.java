@@ -48,7 +48,7 @@ public class TilesetDescriptionTest extends TilesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/v1\\/collections\\/cite:RoadSegments\\/tiles\\/EPSG:4326\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/x-yaml"));
+                hasItems("application/yaml"));
 
         // test the describedBy template
         assertEquals(

@@ -37,7 +37,7 @@ public class ConformanceTest extends TilesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/tiles/v1/conformance/?f=application/x-yaml");
+        String yaml = getAsString("ogc/tiles/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

@@ -71,16 +71,16 @@ public class LandingPageTest extends ImagesTestSupport {
 
     @Test
     public void testLandingPageYaml() throws Exception {
-        String yaml = getAsString("ogc/images/v1?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/v1?f=application/yaml");
         // System.out.println(yaml);
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/images\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/yaml' && @.href =~ /.*ogc\\/images\\/v1\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/images\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/yaml' && @.href =~ /.*ogc\\/images\\/v1\\/\\?.*/)].rel",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);

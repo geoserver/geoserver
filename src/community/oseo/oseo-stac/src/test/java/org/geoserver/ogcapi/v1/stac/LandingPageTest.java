@@ -74,16 +74,16 @@ public class LandingPageTest extends STACTestSupport {
 
     @Test
     public void testLandingPageYaml() throws Exception {
-        String yaml = getAsString("ogc/stac/v1?f=application/x-yaml");
+        String yaml = getAsString("ogc/stac/v1?f=application/yaml");
         // System.out.println(yaml);
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/stac\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/yaml' && @.href =~ /.*ogc\\/stac\\/v1\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/stac\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/yaml' && @.href =~ /.*ogc\\/stac\\/v1\\/\\?.*/)].rel",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);

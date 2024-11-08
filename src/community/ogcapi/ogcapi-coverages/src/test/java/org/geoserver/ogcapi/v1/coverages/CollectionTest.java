@@ -85,7 +85,7 @@ public class CollectionTest extends CoveragesTestSupport {
 
     @Test
     public void testCollectionYaml() throws Exception {
-        String yaml = getAsString("ogc/coverages/v1/collections/rs:DEM?f=application/x-yaml");
+        String yaml = getAsString("ogc/coverages/v1/collections/rs:DEM?f=application/yaml");
         checkDEMCoverage(convertYamlToJsonPath(yaml), "rs:DEM");
     }
 

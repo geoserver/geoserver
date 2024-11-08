@@ -54,8 +54,7 @@ public class CollectionTest extends ImagesTestSupport {
     @Test
     public void testImagesCollectionYaml() throws Exception {
         String waterTemp = getLayerId(WATER_TEMP);
-        String yaml =
-                getAsString("ogc/images/v1/collections/" + waterTemp + "?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/v1/collections/" + waterTemp + "?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testWaterTempCollectionJson(json);
     }

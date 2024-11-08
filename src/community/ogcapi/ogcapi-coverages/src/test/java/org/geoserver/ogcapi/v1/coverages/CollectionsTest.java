@@ -127,7 +127,7 @@ public class CollectionsTest extends CoveragesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/coverages/v1/collections/?f=application/x-yaml");
+        String yaml = getAsString("ogc/coverages/v1/collections/?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testCollectionsJson(json);
     }

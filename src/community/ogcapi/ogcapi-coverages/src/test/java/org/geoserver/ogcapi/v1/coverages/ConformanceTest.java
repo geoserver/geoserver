@@ -43,7 +43,7 @@ public class ConformanceTest extends CoveragesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/coverages/v1/conformance/?f=application/x-yaml");
+        String yaml = getAsString("ogc/coverages/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

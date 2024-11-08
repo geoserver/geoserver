@@ -60,14 +60,11 @@ public class CollectionTest extends FeaturesTestSupport {
     }
 
     @Before
-    public void enableWFS() throws Exception {
-        setWFSEnabled(true);
-    }
-
-    private void setWFSEnabled(boolean enabled) {
+    public void resetWFS() throws Exception {
         GeoServer gs = getGeoServer();
         WFSInfo wfs = gs.getService(WFSInfo.class);
-        wfs.setEnabled(enabled);
+        wfs.getSRS().clear();
+        wfs.setEnabled(true);
         gs.save(wfs);
     }
 
@@ -152,6 +149,31 @@ public class CollectionTest extends FeaturesTestSupport {
                         "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
                         "http://www.opengis.net/def/crs/EPSG/0/3857",
                         "http://www.opengis.net/def/crs/EPSG/0/32632"));
+    }
+
+    @Test
+    public void testCustomizeGlobalCRSList() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.getSRS().addAll(Arrays.asList("EPSG:4326", "EPSG:3857"));
+        gs.save(wfs);
+
+        String polygons = getLayerId(MockData.POLYGONS);
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections/" + polygons, 200);
+
+        assertEquals("cgf:Polygons", json.read("$.id", String.class));
+        String storageCrs = json.read("storageCrs");
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/32615", storageCrs);
+        // make sure the storage CRS is in the crs list, even if it was not declared globally
+        List<String> crs = json.read("crs");
+        assertEquals(4, crs.size());
+        assertThat(
+                crs,
+                hasItems(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/4326",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857",
+                        "http://www.opengis.net/def/crs/EPSG/0/32615"));
     }
 
     private List<MediaType> getFeaturesResponseFormats() {

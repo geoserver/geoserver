@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +48,15 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
 
     public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs)
             throws IOException {
+        this(geoServer, featureType, crs, null);
+    }
+
+    public CollectionDocument(
+            GeoServer geoServer,
+            FeatureTypeInfo featureType,
+            List<String> crs,
+            List<String> serviceCRS)
+            throws IOException {
         super(featureType);
         // basic info
         String collectionId = featureType.prefixedName();
@@ -57,8 +67,18 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         DateRange timeExtent = TimeExtentCalculator.getTimeExtent(featureType);
         setExtent(new CollectionExtents(bbox, timeExtent));
         this.featureType = featureType;
-        this.crs = crs;
         this.storageCrs = lookupStorageCrs();
+
+        // the crs list must contain the storage crs, make sure it is there
+        if (crs == null) {
+            this.crs = List.of(storageCrs);
+        } else if (!crsListContains(storageCrs, crs, serviceCRS)) {
+            // provided list may be immutable
+            this.crs = new ArrayList<>(crs);
+            this.crs.add(0, storageCrs);
+        } else {
+            this.crs = crs;
+        }
 
         // links
         Collection<MediaType> formats =
@@ -112,6 +132,15 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             this.mapPreviewURL =
                     ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
         }
+    }
+
+    private boolean crsListContains(
+            String storageCrs, List<String> collectionCRSs, List<String> serviceCRSs) {
+        // is it referring to the whole server CRS list?
+        if (collectionCRSs.contains("#/crs")) {
+            if (serviceCRSs != null && serviceCRSs.contains(storageCrs)) return true;
+        }
+        return collectionCRSs.contains(storageCrs);
     }
 
     private static boolean isOWSAvailable(GeoServer geoServer, String serviceId) {

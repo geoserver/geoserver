@@ -126,13 +126,13 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/features/v1/openapi?f=application/x-yaml");
+        String yaml = getAsString("ogc/features/v1/openapi?f=application/yaml");
         validateYAMLApi(yaml);
     }
 
     @Test
     public void testApiYamlExtension() throws Exception {
-        String yaml = getAsString("ogc/features/v1/openapi?f=application/x-yaml");
+        String yaml = getAsString("ogc/features/v1/openapi?f=application/yaml");
         validateYAMLApi(yaml);
     }
 
@@ -149,10 +149,10 @@ public class ApiTest extends FeaturesTestSupport {
         MockHttpServletRequest request = createRequest("ogc/features/v1/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
+        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
-        assertThat(response.getContentType(), CoreMatchers.startsWith("application/x-yaml"));
+        assertThat(response.getContentType(), CoreMatchers.startsWith("application/yaml"));
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();
@@ -253,10 +253,10 @@ public class ApiTest extends FeaturesTestSupport {
         MockHttpServletRequest request = createRequest("cdf/ogc/features/v1/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
+        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
-        assertEquals("application/x-yaml", response.getContentType());
+        assertEquals("application/yaml", response.getContentType());
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         // System.out.println(yaml);

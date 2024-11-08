@@ -119,7 +119,7 @@ public class CollectionTest extends TilesTestSupport {
                 getAsString(
                         "ogc/tiles/v1/collections/"
                                 + getLayerId(MockData.ROAD_SEGMENTS)
-                                + "?f=application/x-yaml");
+                                + "?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testRoadsCollectionJson(json);
     }

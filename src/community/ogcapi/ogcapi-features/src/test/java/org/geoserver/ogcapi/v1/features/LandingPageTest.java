@@ -74,16 +74,16 @@ public class LandingPageTest extends FeaturesTestSupport {
 
     @Test
     public void testLandingPageYaml() throws Exception {
-        String yaml = getAsString("ogc/features/v1?f=application/x-yaml");
+        String yaml = getAsString("ogc/features/v1?f=application/yaml");
         // System.out.println(yaml);
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/features\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/yaml' && @.href =~ /.*ogc\\/features\\/v1\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/features\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/yaml' && @.href =~ /.*ogc\\/features\\/v1\\/\\?.*/)].rel",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
@@ -183,7 +183,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertThat(
                 link,
                 hasItems(
-                        "<http://localhost:8080/geoserver/ogc/features/v1/?f=application%2Fx-yaml>; rel=\"alternate\"; type=\"application/x-yaml\"; title=\"This document as application/x-yaml\"",
+                        "<http://localhost:8080/geoserver/ogc/features/v1/?f=application%2Fyaml>; rel=\"alternate\"; type=\"application/yaml\"; title=\"This document as application/yaml\"",
                         "<http://localhost:8080/geoserver/ogc/features/v1/?f=application%2Fjson>; rel=\"self\"; type=\"application/json\"; title=\"This document\""));
     }
 

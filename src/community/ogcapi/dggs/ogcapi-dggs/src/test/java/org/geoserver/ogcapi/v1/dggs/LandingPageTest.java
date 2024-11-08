@@ -91,15 +91,15 @@ public class LandingPageTest extends OGCApiTestSupport {
 
     @Test
     public void testLandingPageYaml() throws Exception {
-        String yaml = getAsString("ogc/dggs/v1?f=application/x-yaml");
+        String yaml = getAsString("ogc/dggs/v1?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/dggs\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/yaml' && @.href =~ /.*ogc\\/dggs\\/v1\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,
-                "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/dggs\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type != 'application/yaml' && @.href =~ /.*ogc\\/dggs\\/v1\\/\\?.*/)].rel",
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);

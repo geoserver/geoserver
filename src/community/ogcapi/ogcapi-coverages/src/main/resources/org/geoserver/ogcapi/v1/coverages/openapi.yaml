@@ -65,7 +65,7 @@ paths:
             default: application/vnd.oai.openapi+json;version=3.0
             enum:
               - application/vnd.oai.openapi+json;version=3.0
-              - application/x-yaml
+              - application/yaml
               - text/html
 
       responses:

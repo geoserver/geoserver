@@ -31,7 +31,7 @@ public class TilesetDescriptionTest extends TiledFeaturesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/v1\\/tileMatrixSets\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/x-yaml"));
+                hasItems("application/yaml"));
 
         // check some of the basic tile matrix sets are there
         assertThat(
@@ -69,7 +69,7 @@ public class TilesetDescriptionTest extends TiledFeaturesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/v1\\/tileMatrixSets\\/EPSG%3A4326\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/x-yaml"));
+                hasItems("application/yaml"));
 
         // check basic properties
         assertThat(json.read("id"), equalTo("EPSG:4326"));
@@ -113,7 +113,7 @@ public class TilesetDescriptionTest extends TiledFeaturesTestSupport {
         assertThat(
                 json.read(
                         "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/v1\\/collections\\/cite:RoadSegments\\/tiles\\/EPSG:4326\\?.*/ && @.rel == 'alternate')].type"),
-                hasItems("application/x-yaml"));
+                hasItems("application/yaml"));
 
         // test the describedBy template
         assertEquals(

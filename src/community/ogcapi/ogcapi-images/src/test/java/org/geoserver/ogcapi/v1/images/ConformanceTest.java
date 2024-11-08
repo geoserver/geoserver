@@ -30,7 +30,7 @@ public class ConformanceTest extends ImagesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/images/v1/conformance/?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

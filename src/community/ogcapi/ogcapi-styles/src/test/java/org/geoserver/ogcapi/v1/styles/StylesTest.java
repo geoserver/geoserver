@@ -31,7 +31,7 @@ public class StylesTest extends StylesTestSupport {
         // check the self link
         assertEquals("self", readSingle(json, "links[?(@.type == 'application/json')].rel"));
         // and the alternates
-        assertEquals("alternate", readSingle(json, "links[?(@.type == 'application/x-yaml')].rel"));
+        assertEquals("alternate", readSingle(json, "links[?(@.type == 'application/yaml')].rel"));
 
         // check all the styles are there
         assertThat(

@@ -75,7 +75,7 @@ public class ConformanceTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/features/v1/conformance/?f=application/x-yaml");
+        String yaml = getAsString("ogc/features/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

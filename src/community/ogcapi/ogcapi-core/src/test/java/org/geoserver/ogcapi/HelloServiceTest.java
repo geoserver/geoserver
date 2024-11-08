@@ -87,6 +87,9 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
         assertEquals(200, response.getStatus());
         assertEquals(APPLICATION_YAML_VALUE, response.getContentType());
+        assertEquals(
+                "inline; filename=\"Message.yaml\"",
+                response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
         assertEquals("message: hello\n", response.getContentAsString());
     }
 
@@ -421,10 +424,10 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
                         "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fjson",
                         link.getString("href"));
             } else if ("alternate".equals(link.getString("rel"))
-                    && "application/x-yaml".equals(link.getString("type"))) {
-                assertEquals("This document as application/x-yaml", link.getString("title"));
+                    && "application/yaml".equals(link.getString("type"))) {
+                assertEquals("This document as application/yaml", link.getString("title"));
                 assertEquals(
-                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fx-yaml",
+                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fyaml",
                         link.getString("href"));
             } else if ("alternate".equals(link.getString("rel"))) {
                 assertEquals("This document as text/html", link.getString("title"));

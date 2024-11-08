@@ -1,0 +1,94 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--570ae188:124761b8d78:-7fb9</id>
+  <name>tasmania_water_bodies</name>
+  <nativeName>tasmania_water_bodies</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ffe</id>
+  </namespace>
+  <title>Tasmania water bodies</title>
+  <abstract>Tasmania water bodies</abstract>
+  <keywords>
+    <string>Lakes</string>
+    <string>Bodies</string>
+    <string>Australia</string>
+    <string>Water</string>
+    <string>Tasmania</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>145.97161899999998</minx>
+    <maxx>147.219696</maxx>
+    <miny>-43.031944</miny>
+    <maxy>-41.775558</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>145.97161899999998</minx>
+    <maxx>147.219696</maxx>
+    <miny>-43.031944</miny>
+    <maxy>-41.775558</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="cacheAgeMax">3600</entry>
+    <entry key="cachingEnabled">true</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="dirName">tasmania_water_bodies</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdc</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <attributes>
+    <attribute>
+      <name>the_geom</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>AREA</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>PERIMETER</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>WATER_TYPE</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>CNTRY_NAME</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>CONTINENT</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+  </attributes>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

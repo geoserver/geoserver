@@ -1,0 +1,22 @@
+<dataStore>
+  <id>DataStoreInfoImpl-1c443fee:182c0f3f209:-7ffb</id>
+  <name>NaturalEarth</name>
+  <type>GeoPackage</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-1c443fee:182c0f3f209:-7ffe</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="Batch insert size">1</entry>
+    <entry key="database">file:data/ne/natural_earth.gpkg</entry>
+    <entry key="fetch size">1000</entry>
+    <entry key="Expose primary keys">false</entry>
+    <entry key="read_only">true</entry>
+    <entry key="dbtype">geopkg</entry>
+    <entry key="namespace">https://www.naturalearthdata.com</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2022-08-21 15:20:30.885 UTC</dateCreated>
+  <dateModified>2023-01-22 22:31:38.598 UTC</dateModified>
+  <disableOnConnFailure>false</disableOnConnFailure>
+</dataStore>

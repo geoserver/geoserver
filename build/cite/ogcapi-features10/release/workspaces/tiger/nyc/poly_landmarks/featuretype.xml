@@ -1,0 +1,81 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--570ae188:124761b8d78:-7fcf</id>
+  <name>poly_landmarks</name>
+  <nativeName>poly_landmarks</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff6</id>
+  </namespace>
+  <title>Manhattan (NY) landmarks</title>
+  <abstract>Manhattan landmarks, identifies water, lakes, parks, interesting buildilngs</abstract>
+  <keywords>
+    <string>landmarks</string>
+    <string>DS_poly_landmarks</string>
+    <string>manhattan</string>
+    <string>poly_landmarks</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-74.047185</minx>
+    <maxx>-73.90782</maxx>
+    <miny>40.679648</miny>
+    <maxy>40.882078</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-74.047185</minx>
+    <maxx>-73.90782</maxx>
+    <miny>40.679648</miny>
+    <maxy>40.882078</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="cacheAgeMax">3600</entry>
+    <entry key="cachingEnabled">true</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="dirName">DS_poly_landmarks_poly_landmarks</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fda</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <attributes>
+    <attribute>
+      <name>the_geom</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>LAND</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>CFCC</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>LANAME</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+  </attributes>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

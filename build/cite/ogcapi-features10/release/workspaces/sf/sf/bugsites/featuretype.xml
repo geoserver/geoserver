@@ -1,0 +1,90 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--570ae188:124761b8d78:-7fc9</id>
+  <name>bugsites</name>
+  <nativeName>bugsites</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-8000</id>
+  </namespace>
+  <title>Spearfish bug locations</title>
+  <abstract>Sample data from GRASS, bug sites location, Spearfish, South Dakota, USA</abstract>
+  <keywords>
+    <string>spearfish</string>
+    <string>sfBugsites</string>
+    <string>insects</string>
+    <string>bugsites</string>
+    <string>tiger_beetles</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;NAD27 / UTM zone 13N&quot;, 
+  GEOGCS[&quot;NAD27&quot;, 
+    DATUM[&quot;North American Datum 1927&quot;, 
+      SPHEROID[&quot;Clarke 1866&quot;, 6378206.4, 294.9786982138982, AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]], 
+      TOWGS84[-4.2, 135.4, 181.9, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4267&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;], 
+  PARAMETER[&quot;central_meridian&quot;, -105.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;26713&quot;]]</nativeCRS>
+  <srs>EPSG:26713</srs>
+  <nativeBoundingBox>
+    <minx>590223.4382724703</minx>
+    <maxx>608462.4604629107</maxx>
+    <miny>4914107.882513998</miny>
+    <maxy>4920523.89081033</maxy>
+    <crs class="projected">EPSG:26713</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-103.86796131703647</minx>
+    <maxx>-103.63773523234195</maxx>
+    <miny>44.373938816704396</miny>
+    <maxy>44.43418821380063</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="cacheAgeMax">3600</entry>
+    <entry key="cachingEnabled">true</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="dirName">sfBugsites_bugsites</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdb</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <attributes>
+    <attribute>
+      <name>the_geom</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>cat</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>str1</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+  </attributes>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

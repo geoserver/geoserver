@@ -1,0 +1,37 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--570ae188:124761b8d78:-7fac</id>
+  <name>tasmania</name>
+  <mode>SINGLE</mode>
+  <title>Tasmania</title>
+  <abstractTxt>Tasmania Australia from Digital Chart of the World.</abstractTxt>
+  <publishables>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fba</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fb8</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fbc</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl--570ae188:124761b8d78:-7fbe</id>
+    </published>
+  </publishables>
+  <styles>
+    <style/>
+    <style/>
+    <style/>
+    <style/>
+  </styles>
+  <bounds>
+    <minx>143.83482400000003</minx>
+    <maxx>148.47914100000003</maxx>
+    <miny>-43.648056</miny>
+    <maxy>-39.573891</maxy>
+    <crs>EPSG:4326</crs>
+  </bounds>
+  <metadata>
+    <entry key="rawStyleList"></entry>
+  </metadata>
+</layerGroup>

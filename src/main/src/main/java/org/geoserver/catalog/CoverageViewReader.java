@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageViewHandler.CoveragesConsistencyChecker;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.coverage.grid.GridCoverageWriter;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.data.ResourceInfo;
@@ -65,9 +67,11 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
+import org.geotools.coverage.grid.io.PAMResourceInfo;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.data.DefaultResourceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -237,29 +241,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         List<GridCoverage2D> coverages = new ArrayList<>();
         CoveragesConsistencyChecker checker = null;
 
-        int coverageBandsSize = bands.size();
-
-        // Check params, populate band indices to read if BANDS param has been defined
-        ArrayList<Integer> selectedBandIndices = new ArrayList<>();
-        for (int m = 0; m < coverageBandsSize; m++) {
-            selectedBandIndices.add(m);
-        }
-
-        if (parameters != null) {
-            for (GeneralParameterValue parameter : parameters) {
-                final ParameterValue param = (ParameterValue) parameter;
-                if (AbstractGridFormat.BANDS.getName().equals(param.getDescriptor().getName())) {
-                    int[] bandIndicesParam = (int[]) param.getValue();
-                    if (bandIndicesParam != null) {
-                        selectedBandIndices = new ArrayList<>();
-                        for (int j : bandIndicesParam) {
-                            selectedBandIndices.add(j);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
+        ArrayList<Integer> selectedBandIndices = getBandIndices(parameters, bands);
 
         // Since composition of a raster band using a formula applied on individual bands has not
         // been implemented, the normal case is that each CoverageBand is in fact a single band from
@@ -270,62 +252,18 @@ public class CoverageViewReader implements GridCoverage2DReader {
         // This is a good spot to read coverages. Reading a coverage is done only once, it is
         // cached to be used for its other bands that possibly take part in the CoverageView
         // definition
-        HashMap<String, GridCoverage2D> inputCoverages = new HashMap<>();
-        GridCoverage2D dynamicAlphaSource = null;
-        int nonNullCoverages = 0;
-        for (int bIdx : selectedBandIndices) {
-            CoverageBand band = bands.get(bIdx);
-            List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
-
-            // Peek for coverage name
-            String coverageName = selectedBands.get(0).getCoverageName();
-            if (!inputCoverages.containsKey(coverageName)) {
-                GridCoverage2DReader reader =
-                        SingleGridCoverage2DReader.wrap(delegate, coverageName);
-                // Remove this when removing constraints
-                if (checker == null) {
-                    checker =
-                            new CoveragesConsistencyChecker(
-                                    reader, canSupportHeterogeneousCoverages);
-                } else {
-                    checker.checkConsistency(reader);
-                }
-                // bands selection parameter inside on final bands so they should not be propagated
-                // to the delegate reader
-                GeneralParameterValue[] filteredParameters = parameters;
-                if (parameters != null) {
-                    // creating a copy of parameters excluding the bands parameter
-                    filteredParameters =
-                            Arrays.stream(parameters)
-                                    .filter(
-                                            parameter ->
-                                                    !matches(parameter, AbstractGridFormat.BANDS))
-                                    .toArray(GeneralParameterValue[]::new);
-                }
-                GridCoverage2D coverage = reader.read(filteredParameters);
-                if (coverage == null) {
-                    if (handler.isHomogeneousCoverages()
-                            || handler.getEnvelopeCompositionType()
-                                    == EnvelopeCompositionType.INTERSECTION) {
-                        return null;
-                    }
-                } else {
-                    nonNullCoverages++;
-                }
-                if (dynamicAlphaSource == null && hasDynamicAlpha(coverage, reader)) {
-                    dynamicAlphaSource = coverage;
-                }
-                inputCoverages.put(coverageName, coverage);
-            }
-        }
+        ViewInputs inputAlphaNonNull =
+                getInputAlphaNonNullCoverages(
+                        parameters, selectedBandIndices, bands, checker, true);
+        if (inputAlphaNonNull == null) return null;
 
         // all readers returned null?
-        if (nonNullCoverages == 0 || inputCoverages.isEmpty()) {
+        if (inputAlphaNonNull.nonNullCoverages == 0 || inputAlphaNonNull.inputCoverages.isEmpty()) {
             return null;
         }
 
         // some returned null?
-        if (nonNullCoverages < inputCoverages.size()) {
+        if (inputAlphaNonNull.nonNullCoverages < inputAlphaNonNull.inputCoverages.size()) {
             float width, height;
             if (requestedGridGeometry != null) {
                 GridEnvelope2D range = requestedGridGeometry.getGridRange2D();
@@ -333,14 +271,17 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 height = (float) range.getHeight();
             } else {
                 GridCoverage2D reference =
-                        inputCoverages.values().stream().filter(c -> c != null).findFirst().get();
+                        inputAlphaNonNull.inputCoverages.values().stream()
+                                .filter(c -> c != null)
+                                .findFirst()
+                                .get();
                 RenderedImage ri = reference.getRenderedImage();
                 width = ri.getWidth();
                 height = ri.getHeight();
             }
 
             // build empty coverages for the missing bits
-            for (String name : inputCoverages.keySet()) {
+            for (String name : inputAlphaNonNull.inputCoverages.keySet()) {
                 GridCoverage2DReader reader = SingleGridCoverage2DReader.wrap(delegate, name);
                 ImageLayout layout = reader.getImageLayout();
                 int numBands = layout.getSampleModel(null).getNumBands();
@@ -354,46 +295,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             }
         }
 
-        // Group together bands that come from the same coverage
-        ArrayList<CoverageBand> mergedBands = new ArrayList<>();
-
-        int idx = 0;
-        CoverageBand mBand = null;
-        while (idx < selectedBandIndices.size()) {
-
-            if (mBand == null) {
-                // Create a temporary CoverageBand, to use later for SelectSampleDimension
-                // operations
-                mBand = new CoverageBand();
-                mBand.setInputCoverageBands(
-                        bands.get(selectedBandIndices.get(idx)).getInputCoverageBands());
-            }
-
-            // peek to the next band. Is it from the same coverage?
-            String coverageName =
-                    bands.get(selectedBandIndices.get(idx))
-                            .getInputCoverageBands()
-                            .get(0)
-                            .getCoverageName();
-
-            if (idx + 1 < selectedBandIndices.size()
-                    && bands.get(selectedBandIndices.get(idx + 1))
-                            .getInputCoverageBands()
-                            .get(0)
-                            .getCoverageName()
-                            .equals(coverageName)) {
-                // Same coverage, add its bands to the previous
-                ArrayList<InputCoverageBand> groupBands = new ArrayList<>();
-                groupBands.addAll(mBand.getInputCoverageBands());
-                groupBands.addAll(
-                        bands.get(selectedBandIndices.get(idx + 1)).getInputCoverageBands());
-                mBand.setInputCoverageBands(groupBands);
-            } else {
-                mergedBands.add(mBand);
-                mBand = null;
-            }
-            idx++;
-        }
+        ArrayList<CoverageBand> mergedBands = getMergedBands(selectedBandIndices, bands);
 
         // perform the band selects as needed
         int index = 0;
@@ -417,12 +319,12 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 bandIndices.add(bandIdx);
             }
 
-            GridCoverage2D coverage = inputCoverages.get(coverageName);
+            GridCoverage2D coverage = inputAlphaNonNull.inputCoverages.get(coverageName);
 
             // special case for dynamic alpha on single input, no need to actually select away the
             // alpha
             Hints localHints = new Hints(hints);
-            if (dynamicAlphaSource != null
+            if (inputAlphaNonNull.dynamicAlphaSource != null
                     && mergedBands.size() == 1
                     && (bandIndices.size() == 1 || bandIndices.size() == 3)) {
                 final int alphaBandIndex = getAlphaBandIndex(coverage);
@@ -454,13 +356,17 @@ public class CoverageViewReader implements GridCoverage2DReader {
         if (coverages.size() > 1) {
             // dynamic alpha but more than one source
             Hints localHints = new Hints(hints);
-            if (dynamicAlphaSource != null) {
+            if (inputAlphaNonNull.dynamicAlphaSource != null) {
                 int currentBandCount = countBands(coverages);
                 // and the output is suitable for getting an alpha band
                 if (currentBandCount == 1 || currentBandCount == 3) {
-                    final int alphaBandIndex = getAlphaBandIndex(dynamicAlphaSource);
+                    final int alphaBandIndex =
+                            getAlphaBandIndex(inputAlphaNonNull.dynamicAlphaSource);
                     GridCoverage2D alphaBandCoverage =
-                            retainBands(Arrays.asList(alphaBandIndex), dynamicAlphaSource, hints);
+                            retainBands(
+                                    Arrays.asList(alphaBandIndex),
+                                    inputAlphaNonNull.dynamicAlphaSource,
+                                    hints);
                     coverages.add(alphaBandCoverage);
 
                     addAlphaColorModelHint(localHints, currentBandCount);
@@ -505,6 +411,199 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
 
         return result;
+    }
+
+    private ViewInputs getInputAlphaNonNullCoverages(
+            GeneralParameterValue[] parameters,
+            ArrayList<Integer> selectedBandIndices,
+            List<CoverageBand> bands,
+            CoveragesConsistencyChecker checker,
+            Boolean includeCoverages)
+            throws IOException {
+        HashMap<String, GridCoverage2D> inputCoverages = new HashMap<>();
+        HashMap<String, GridCoverageReader> inputReaders = new HashMap<>();
+        GridCoverage2D dynamicAlphaSource = null;
+        int nonNullCoverages = 0;
+        for (int bIdx : selectedBandIndices) {
+            CoverageBand band = bands.get(bIdx);
+            List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
+
+            // Peek for coverage name
+            String coverageName = selectedBands.get(0).getCoverageName();
+            if (!inputCoverages.containsKey(coverageName)) {
+                GridCoverage2DReader reader =
+                        SingleGridCoverage2DReader.wrap(delegate, coverageName);
+                inputReaders.put(coverageName, reader);
+                // Remove this when removing constraints
+                if (checker == null) {
+                    checker =
+                            new CoveragesConsistencyChecker(
+                                    reader, canSupportHeterogeneousCoverages);
+                } else {
+                    checker.checkConsistency(reader);
+                }
+                // bands selection parameter inside on final bands so they should not be propagated
+                // to the delegate reader
+                GeneralParameterValue[] filteredParameters = parameters;
+                if (parameters != null) {
+                    // creating a copy of parameters excluding the bands parameter
+                    filteredParameters =
+                            Arrays.stream(parameters)
+                                    .filter(
+                                            parameter ->
+                                                    !matches(parameter, AbstractGridFormat.BANDS))
+                                    .toArray(GeneralParameterValue[]::new);
+                }
+                if (Boolean.TRUE.equals(includeCoverages)) {
+                    GridCoverage2D coverage = reader.read(filteredParameters);
+                    if (coverage == null) {
+                        if (handler.isHomogeneousCoverages()
+                                || handler.getEnvelopeCompositionType()
+                                        == EnvelopeCompositionType.INTERSECTION) {
+                            return null;
+                        }
+                    } else {
+                        nonNullCoverages++;
+                    }
+                    if (dynamicAlphaSource == null && hasDynamicAlpha(coverage, reader)) {
+                        dynamicAlphaSource = coverage;
+                    }
+                    inputCoverages.put(coverageName, coverage);
+                }
+            }
+        }
+        ViewInputs inputAlphaNonNull =
+                new ViewInputs(
+                        bands, inputReaders, inputCoverages, dynamicAlphaSource, nonNullCoverages);
+        return inputAlphaNonNull;
+    }
+
+    static class ViewInputs {
+        private final List<CoverageBand> bands;
+        private final HashMap<String, GridCoverageReader> inputReaders;
+        private final HashMap<String, GridCoverage2D> inputCoverages;
+        private final GridCoverage2D dynamicAlphaSource;
+        private final int nonNullCoverages;
+
+        public ViewInputs(
+                List<CoverageBand> bands,
+                HashMap<String, GridCoverageReader> inputReaders,
+                HashMap<String, GridCoverage2D> inputCoverages,
+                GridCoverage2D dynamicAlphaSource,
+                int nonNullCoverages) {
+            this.bands = bands;
+            this.inputCoverages = inputCoverages;
+            this.dynamicAlphaSource = dynamicAlphaSource;
+            this.nonNullCoverages = nonNullCoverages;
+            this.inputReaders = inputReaders;
+        }
+
+        public List<CoverageBand> getBands() {
+            return bands;
+        }
+
+        public HashMap<String, GridCoverage2D> getInputCoverages() {
+            return inputCoverages;
+        }
+
+        public GridCoverage2D getDynamicAlphaSource() {
+            return dynamicAlphaSource;
+        }
+
+        public int getNonNullCoverages() {
+            return nonNullCoverages;
+        }
+
+        public HashMap<String, GridCoverageReader> getInputReaders() {
+            return inputReaders;
+        }
+    }
+
+    /**
+     * Get the band indices to read
+     *
+     * @param parameters the parameters to read
+     * @param bands the bands to read
+     * @return the band indices to read
+     */
+    private static ArrayList<Integer> getBandIndices(
+            GeneralParameterValue[] parameters, List<CoverageBand> bands) {
+        int coverageBandsSize = bands.size();
+
+        // Check params, populate band indices to read if BANDS param has been defined
+        ArrayList<Integer> selectedBandIndices = new ArrayList<>();
+        for (int m = 0; m < coverageBandsSize; m++) {
+            selectedBandIndices.add(m);
+        }
+
+        if (parameters != null) {
+            for (GeneralParameterValue parameter : parameters) {
+                final ParameterValue param = (ParameterValue) parameter;
+                if (AbstractGridFormat.BANDS.getName().equals(param.getDescriptor().getName())) {
+                    int[] bandIndicesParam = (int[]) param.getValue();
+                    if (bandIndicesParam != null) {
+                        selectedBandIndices = new ArrayList<>();
+                        for (int j : bandIndicesParam) {
+                            selectedBandIndices.add(j);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return selectedBandIndices;
+    }
+
+    /**
+     * Get the merged bands, grouping together bands that come from the same coverage
+     *
+     * @param selectedBandIndices the indices of the bands to merge
+     * @param bands the bands to merge
+     * @return the merged bands
+     */
+    private static ArrayList<CoverageBand> getMergedBands(
+            ArrayList<Integer> selectedBandIndices, List<CoverageBand> bands) {
+        // Group together bands that come from the same coverage
+        ArrayList<CoverageBand> mergedBands = new ArrayList<>();
+
+        int idx = 0;
+        CoverageBand mBand = null;
+        while (idx < selectedBandIndices.size()) {
+
+            if (mBand == null) {
+                // Create a temporary CoverageBand, to use later for SelectSampleDimension
+                // operations
+                mBand = new CoverageBand();
+                mBand.setInputCoverageBands(
+                        bands.get(selectedBandIndices.get(idx)).getInputCoverageBands());
+            }
+
+            // peek to the next band. Is it from the same coverage?
+            String coverageName =
+                    bands.get(selectedBandIndices.get(idx))
+                            .getInputCoverageBands()
+                            .get(0)
+                            .getCoverageName();
+
+            if (idx + 1 < selectedBandIndices.size()
+                    && bands.get(selectedBandIndices.get(idx + 1))
+                            .getInputCoverageBands()
+                            .get(0)
+                            .getCoverageName()
+                            .equals(coverageName)) {
+                // Same coverage, add its bands to the previous
+                ArrayList<InputCoverageBand> groupBands = new ArrayList<>();
+                groupBands.addAll(mBand.getInputCoverageBands());
+                groupBands.addAll(
+                        bands.get(selectedBandIndices.get(idx + 1)).getInputCoverageBands());
+                mBand.setInputCoverageBands(groupBands);
+            } else {
+                mergedBands.add(mBand);
+                mBand = null;
+            }
+            idx++;
+        }
+        return mergedBands;
     }
 
     private boolean matches(
@@ -902,7 +1001,42 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     @Override
     public ResourceInfo getInfo(String coverageName) {
-        return delegate.getInfo(coverageName);
+        List<CoverageBand> bands = coverageView.getCoverageBands();
+        ArrayList<Integer> selectedBandIndices = getBandIndices(null, bands);
+        try {
+            ViewInputs viewInputs =
+                    getInputAlphaNonNullCoverages(null, selectedBandIndices, bands, null, false);
+
+            if (viewHasPAM(viewInputs)) {
+                return new CoverageViewPamResourceInfo(viewInputs);
+            } else {
+                return new DefaultResourceInfo();
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error while getting input coverages from Coverage View", e);
+        }
+        return null;
+    }
+
+    private boolean viewHasPAM(ViewInputs info) {
+        Map<String, GridCoverageReader> readers = info.getInputReaders();
+        // iterate over the view bands and check for PAMs
+        for (CoverageView.CoverageBand band : info.getBands()) {
+            for (CoverageView.InputCoverageBand inputCoverageBand : band.getInputCoverageBands()) {
+                // get the reader for the coverage associated with this input coverage band
+                GridCoverageReader reader1 = readers.get(inputCoverageBand.getCoverageName());
+                if (reader1 instanceof GridCoverage2DReader) {
+                    GridCoverage2DReader bandReader = (GridCoverage2DReader) reader1;
+                    ResourceInfo resourceInfoBand =
+                            bandReader.getInfo(inputCoverageBand.getCoverageName());
+                    // reader is associated with a PAM
+                    if (resourceInfoBand instanceof PAMResourceInfo) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override

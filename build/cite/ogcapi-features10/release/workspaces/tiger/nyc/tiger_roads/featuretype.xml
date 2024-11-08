@@ -1,0 +1,74 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--570ae188:124761b8d78:-7fcd</id>
+  <name>tiger_roads</name>
+  <nativeName>tiger_roads</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff6</id>
+  </namespace>
+  <title>Manhattan (NY) roads</title>
+  <abstract>Highly simplified road layout of Manhattan in New York..</abstract>
+  <keywords>
+    <string>DS_tiger_roads</string>
+    <string>tiger_roads</string>
+    <string>roads</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;GCS_WGS_1984&quot;, 
+  DATUM[&quot;WGS_1984&quot;, 
+    SPHEROID[&quot;WGS_1984&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Longitude&quot;, EAST], 
+  AXIS[&quot;Latitude&quot;, NORTH]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-74.02722</minx>
+    <maxx>-73.907005</maxx>
+    <miny>40.684221</miny>
+    <maxy>40.878178</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-74.02722</minx>
+    <maxx>-73.907005</maxx>
+    <miny>40.684221</miny>
+    <maxy>40.878178</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="cacheAgeMax">3600</entry>
+    <entry key="cachingEnabled">true</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="dirName">DS_tiger_roads_tiger_roads</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fda</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <attributes>
+    <attribute>
+      <name>the_geom</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>CFCC</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>NAME</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+  </attributes>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

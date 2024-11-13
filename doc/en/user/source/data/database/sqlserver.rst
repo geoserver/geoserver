@@ -10,7 +10,7 @@ Microsoft's `SQL Server <http://www.microsoft.com/sqlserver>`_ is a relational d
 Supported versions
 ------------------
 
-The extension supports SQL Server 2008 - 2019 and SQL Azure.
+The extension supports SQL Server 2019 - 2022 and SQL Azure, older versions down to 2008 may work.
 
 .. _sqlserver_install:
 

@@ -6,6 +6,7 @@
 package org.geoserver.kml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
@@ -32,6 +33,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -125,6 +127,20 @@ public class KMLTest extends WMSTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.calculateLayerGroupBounds(lg);
         catalog.add(lg);
+
+        // set up some layer titles
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.BRIDGES));
+        fti.setTitle("Bridges Title");
+        fti.setAbstract("Bridges Abstract");
+        catalog.save(fti);
+        fti = catalog.getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        fti.setTitle("Polygons Title");
+        fti.setAbstract("");
+        catalog.save(fti);
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
+        ci.setTitle("Tasmania DEM");
+        ci.setAbstract(null);
+        catalog.save(ci);
     }
 
     public void setNativeBox(Catalog catalog, String name) throws Exception {
@@ -633,8 +649,30 @@ public class KMLTest extends WMSTestSupport {
                         .getFirstChild()
                         .getNextSibling()
                         .getTextContent());
-        assertXpathEvaluatesTo("cite:Bridges", "//kml:Folder[1]/kml:name", doc);
-        assertXpathEvaluatesTo("cite:BasicPolygons", "//kml:Folder[2]/kml:name", doc);
+    }
+
+    @Test
+    public void testFolderAndOverlayNamesAndDescriptions() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wms?request=getmap&service=wms&version=1.1.1"
+                                + "&format="
+                                + KMLMapOutputFormat.MIME_TYPE
+                                + "&layers="
+                                + getLayerId(MockData.BRIDGES)
+                                + ","
+                                + getLayerId(MockData.BASIC_POLYGONS)
+                                + ","
+                                + getLayerId(MockData.TASMANIA_DEM)
+                                + "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326");
+        // print(doc);
+        assertXpathEvaluatesTo("Bridges Title", "//kml:Folder[1]/kml:name", doc);
+        assertXpathEvaluatesTo("Bridges Abstract", "//kml:Folder[1]/kml:description", doc);
+        assertXpathEvaluatesTo("Polygons Title", "//kml:Folder[2]/kml:name", doc);
+        assertXpathNotExists("//kml:Folder[2]/kml:description", doc);
+        assertXpathEvaluatesTo("Tasmania DEM", "//kml:Folder[3]/kml:name", doc);
+        assertXpathNotExists("//kml:Folder[3]/kml:description", doc);
+        assertXpathEvaluatesTo("Tasmania DEM", "//kml:Folder[3]/kml:GroundOverlay/kml:name", doc);
     }
 
     @Test

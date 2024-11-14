@@ -137,7 +137,7 @@ endif
 
 .PHONY: ogcapi-features10-localhost
 ogcapi-features10-localhost: ###			Shortcut for make test-localhost suite=ogcapi-features10
-	@$(MAKE) test-external suite=ogcapi-features10 iut="http://172.17.0.1:8080/geoserver/ogc/features/v1"
+	@$(MAKE) test-localhost suite=ogcapi-features10
 
 
 .PHONY: cleanlogs

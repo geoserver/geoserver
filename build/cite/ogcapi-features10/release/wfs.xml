@@ -64,7 +64,7 @@
   <includeWFSRequestDumpFile>false</includeWFSRequestDumpFile>
   <srs>
     <string>4326</string>
-    <string>3857</string>
+    <string>4087</string>
   </srs>
   <getFeatureOutputTypeCheckingEnabled>false</getFeatureOutputTypeCheckingEnabled>
 </wfs>

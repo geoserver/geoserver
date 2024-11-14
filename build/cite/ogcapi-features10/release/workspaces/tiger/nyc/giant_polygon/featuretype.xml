@@ -34,7 +34,7 @@
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
   <projectionPolicy>FORCE_DECLARED</projectionPolicy>
-  <enabled>false</enabled>
+  <enabled>true</enabled>
   <metadata>
     <entry key="kml.regionateFeatureLimit">10</entry>
     <entry key="cacheAgeMax">3600</entry>

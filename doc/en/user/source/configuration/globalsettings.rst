@@ -46,7 +46,11 @@ Once activated the environment parametrization Proxy Base URL can be parameters 
 Use headers for Proxy URL
 '''''''''''''''''''''''''
 
-Checking this box allows a by-request modification of the proxy URL using templates (templates based on HTTP proxy headers).
+Checking this box allows a by-request modification of the proxy URL using templates (templates based on HTTP proxy headers).  This setting may also be managed using the ``PROXY_BASE_URL_HEADERS`` boolean system property or environment variable defined by a System Administrator: setting it to true will enable the headers variables usage for proxy base URL on all workspaces, overriding any GeoServer datadir configuration.
+
+.. code-block::bash
+
+    -DPROXY_BASE_URL_HEADERS=true
 
 The supported proxy headers are:
 

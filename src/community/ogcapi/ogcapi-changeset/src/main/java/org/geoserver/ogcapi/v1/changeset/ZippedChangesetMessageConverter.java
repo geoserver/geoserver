@@ -57,7 +57,8 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        return clazz.equals(ChangeSet.class) && ZIP_MEDIA_TYPE.equals(mediaType);
+        return clazz.equals(ChangeSet.class)
+                && (mediaType == null || ZIP_MEDIA_TYPE.equals(mediaType));
     }
 
     @Override

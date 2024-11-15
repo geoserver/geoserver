@@ -209,6 +209,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - PROXY_BASE_URL_HEADER
+       
+       Enables PROXY_BASE_URL to use headers variables if set to true, overriding GeoServer datadir settings.  Default false.
+     - x
+     - x
+     - x
    * - org.geoserver.service.disabled
        
        Default comma separated list of disabled services.

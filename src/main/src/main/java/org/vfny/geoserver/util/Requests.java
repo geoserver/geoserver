@@ -49,6 +49,7 @@ public final class Requests {
     ( See GEOS-598 for more information
     */
     public static final String PROXY_PARAM = "PROXY_BASE_URL";
+    public static final String PROXY_HEADER_PARAM = "PROXY_BASE_URL_HEADERS";
 
     /**
      * Appends a context path to a base url.

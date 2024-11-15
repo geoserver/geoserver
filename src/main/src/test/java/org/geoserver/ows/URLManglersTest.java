@@ -11,10 +11,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
@@ -107,5 +109,45 @@ public class URLManglersTest extends GeoServerSystemTestSupport {
         getGeoServer().save(gi);
         url = buildURL(BASEURL, "test", null, URLType.SERVICE);
         assertEquals("${X-Forwarded-Proto}://${X-Forwarded-Host}/http://custom.host/test", url);
+    }
+
+    @Test
+    public void testProxyBaseUrlSystemProperty() {
+        System.setProperty(
+                "PROXY_BASE_URL", "${X-Forwarded-Proto}://${X-Forwarded-Host}/${proxy.custom}");
+        System.setProperty("PROXY_BASE_URL_HEADERS", "true");
+        try {
+            GeoServerEnvironment.reloadAllowEnvParametrization();
+            Map<String, String> headers = new CaseInsensitiveMap<>(new HashMap<>());
+            headers.put("X-Forwarded-Proto", "https");
+            headers.put("X-Forwarded-Host", "www.altavista.com");
+            HTTPHeadersCollector.HEADERS.set(headers);
+            String url = buildURL(BASEURL, "test", null, URLType.SERVICE);
+            assertEquals("https://www.altavista.com/http://custom.host/test", url);
+        } finally {
+            System.clearProperty("PROXY_BASE_URL");
+            System.clearProperty("PROXY_BASE_URL_HEADERS");
+            GeoServerEnvironment.reloadAllowEnvParametrization();
+        }
+    }
+
+    @Test
+    public void testProxyBaseUrlSystemPropertyDisabled() {
+        System.setProperty(
+                "PROXY_BASE_URL", "${X-Forwarded-Proto}://${X-Forwarded-Host}/${proxy.custom}");
+        System.setProperty("PROXY_BASE_URL_HEADERS", "false");
+        try {
+            GeoServerEnvironment.reloadAllowEnvParametrization();
+            Map<String, String> headers = new CaseInsensitiveMap<>(new HashMap<>());
+            headers.put("X-Forwarded-Proto", "https");
+            headers.put("X-Forwarded-Host", "www.altavista.com");
+            HTTPHeadersCollector.HEADERS.set(headers);
+            String url = buildURL(BASEURL, "test", null, URLType.SERVICE);
+            assertEquals("${X-Forwarded-Proto}://${X-Forwarded-Host}/http://custom.host/test", url);
+        } finally {
+            System.clearProperty("PROXY_BASE_URL");
+            System.clearProperty("PROXY_BASE_URL_HEADERS");
+            GeoServerEnvironment.reloadAllowEnvParametrization();
+        }
     }
 }

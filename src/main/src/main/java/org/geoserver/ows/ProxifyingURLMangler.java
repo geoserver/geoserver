@@ -105,6 +105,7 @@ public class ProxifyingURLMangler implements URLMangler {
     }
 
     private boolean resolveDoMangleHeaders() {
+        if (isUseHeadersSystemPropertyEnabled()) return true;
         Boolean wsAwareFlag = geoServer.getSettings().isUseHeadersProxyURL();
         Boolean resultFlag =
                 wsAwareFlag != null
@@ -112,6 +113,16 @@ public class ProxifyingURLMangler implements URLMangler {
                         : geoServer.getGlobal().getSettings().isUseHeadersProxyURL();
         if (resultFlag != null) return resultFlag;
         return false;
+    }
+
+    /**
+     * Check if the PROXY_BASE_URL_HEADERS system property is set to use headers for proxying.
+     *
+     * @return true if the system property is set to use headers for proxying
+     */
+    private boolean isUseHeadersSystemPropertyEnabled() {
+        String useHeadersProxyURL = GeoServerExtensions.getProperty(Requests.PROXY_HEADER_PARAM);
+        return useHeadersProxyURL != null && "true".equalsIgnoreCase(useHeadersProxyURL.trim());
     }
 
     /**

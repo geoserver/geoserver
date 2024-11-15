@@ -7,6 +7,7 @@ package org.geoserver.importer.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -20,6 +21,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 
+// TODO WICKET8 - Verify this page works OK
 public class SpatialFilePanel extends ImportSourcePanel {
 
     String file;
@@ -49,7 +51,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
     public ImportData createImportSource() throws IOException {
         File file = new File(this.file);
         return FileData.createFromFile(file);
-    };
+    }
 
     protected void initFileChooser(GeoServerFileChooser fileChooser) {
         // chooser.setFilter(new Model(new ExtensionFile"(".shp")));
@@ -61,7 +63,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
         }
 
         @Override
-        protected void onSubmit(AjaxRequestTarget target, Form form) {
+        protected void onSubmit(AjaxRequestTarget target) {
             dialog.setTitle(new ParamResourceModel("chooseFile", this));
             dialog.showOkCancel(
                     target,
@@ -80,14 +82,15 @@ public class SpatialFilePanel extends ImportSourcePanel {
                                     new GeoServerFileChooser(id, new Model<>(file)) {
                                         @Override
                                         protected void fileClicked(
-                                                File file, AjaxRequestTarget target) {
+                                                File file, Optional<AjaxRequestTarget> target) {
                                             SpatialFilePanel.this.file = file.getAbsolutePath();
 
                                             fileField.clearInput();
                                             fileField.setModelObject(file.getAbsolutePath());
-
-                                            target.add(fileField);
-                                            dialog.close(target);
+                                            if (target.isPresent()) {
+                                                target.get().add(fileField);
+                                                dialog.close(target.get());
+                                            }
                                         }
                                     };
 

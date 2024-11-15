@@ -10,7 +10,7 @@ This tutorial walks through the steps of publishing a GeoPackage with GeoServer.
 Data preparation
 ----------------
 
-First let's gather that the data that we'll be publishing.
+First let's gather the data that we'll be publishing.
 
 #. The sample data folder includes :file:`data/ne/natural_earth.gpkg`
 
@@ -186,7 +186,7 @@ Now that we have connected to the GeoPackage, we can publish the layer.
 
       Basic Resource Info
 
-#. Double check the :guilabel:`Coordiante Reference Systems` information is correct.
+#. Double check the :guilabel:`Coordinate Reference Systems` information is correct.
 
    .. list-table::
       :header-rows: 1 

@@ -31,7 +31,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
     private static final long serialVersionUID = -8599398086587516574L;
     static final Property<TileLayer> TYPE =
-            new AbstractProperty<TileLayer>("type") {
+            new AbstractProperty<>("type") {
 
                 private static final long serialVersionUID = 3215255763580377079L;
 
@@ -53,7 +53,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
     static final Property<TileLayer> QUOTA_LIMIT =
-            new AbstractProperty<TileLayer>("quotaLimit") {
+            new AbstractProperty<>("quotaLimit") {
                 private static final long serialVersionUID = 5091453765439157623L;
 
                 @Override
@@ -65,7 +65,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
             };
 
     static final Property<TileLayer> QUOTA_USAGE =
-            new AbstractProperty<TileLayer>("quotaUsed") {
+            new AbstractProperty<>("quotaUsed") {
                 private static final long serialVersionUID = 3503671083744555325L;
 
                 /** @retun the used quota for the tile layer, may be {@code null} */
@@ -85,7 +85,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
     static final Property<TileLayer> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final Property<TileLayer> PREVIEW_LINKS =
-            new AbstractProperty<TileLayer>("preview") {
+            new AbstractProperty<>("preview") {
                 private static final long serialVersionUID = 4375670219356088450L;
 
                 @Override
@@ -105,7 +105,7 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
             };
 
     static final Property<TileLayer> ACTIONS =
-            new AbstractProperty<TileLayer>("actions") {
+            new AbstractProperty<>("actions") {
                 private static final long serialVersionUID = 247933970378482802L;
 
                 @Override

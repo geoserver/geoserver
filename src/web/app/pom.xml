@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
@@ -378,7 +378,7 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-graticule</artifactId>
-          <version>2.26-SNAPSHOT</version>
+          <version>2.27-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -388,7 +388,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-kml</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -542,7 +541,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-imagepyramid</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -722,7 +720,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-sfs</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -774,7 +771,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-ogr-jni</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1650,6 +1646,21 @@
       </dependencies>
     </profile>
     <profile>
+      <id>ogcapi-features</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ogcapi-features</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-features</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>importer-jdbc</id>
       <dependencies>
         <dependency>
@@ -1665,7 +1676,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-mbtiles</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1870,7 +1880,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-stac-store</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1880,7 +1889,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-vector-mosaic</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1890,7 +1898,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-iau-wkt</artifactId>
-          <version>${gt.version}</version>
         </dependency>
       </dependencies>
     </profile>

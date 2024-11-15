@@ -116,7 +116,7 @@ public class MBStyleHandler extends StyleHandler {
         }
 
         // in this case, just do a plain on the fly conversion
-        try (Reader reader = toReader(input)) {
+        try (Reader unusedReader = toReader(input)) { // NOPMD
             return convertToSLD(toReader(input));
         } catch (ParseException e) {
             throw new IOException(e);

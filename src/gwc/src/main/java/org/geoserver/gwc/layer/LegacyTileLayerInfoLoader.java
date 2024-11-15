@@ -171,7 +171,7 @@ public class LegacyTileLayerInfoLoader {
         // backwards compatibility check for when str comes in as "EPSG:XXX,EPSG:YYY"
         String[] epsgCodes = gridSubsetsStr.split(",");
         for (String code : epsgCodes) {
-            if (code.trim().length() == 0) {
+            if (code.trim().isEmpty()) {
                 continue;
             }
             try {

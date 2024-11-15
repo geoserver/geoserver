@@ -331,7 +331,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
         SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
-        assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
+        assertEquals(new Envelope(-180, 180, -90, 90), bounds);
     }
 
     @Test
@@ -361,7 +361,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
         SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
-        assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
+        assertEquals(new Envelope(-180, 180, -90, 90), bounds);
     }
 
     private void assertProduct(String timeStart, String timeEnd) throws Exception {
@@ -383,7 +383,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
         SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
-        assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
+        assertEquals(new Envelope(-180, 180, -90, 90), bounds);
     }
 
     @Test

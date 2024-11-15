@@ -27,7 +27,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -50,6 +49,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.template.TemplateUtils;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.SimpleAjaxLink;
@@ -57,9 +57,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
 /**
- * Style page tab for displaying an OpenLayers 2 layer preview and legend. Includes a link for
+ * Style page tab for displaying an OpenLayers 3 layer preview and legend. Includes a link for
  * changing the current preview layer.
  */
+// TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
     private static final long serialVersionUID = -8742721113748106000L;
@@ -87,12 +88,12 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         PropertyModel<String> layerNameModel =
                 new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
-                new SimpleAjaxLink<String>("change.layer", layerNameModel) {
+                new SimpleAjaxLink<>("change.layer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        ModalWindow popup = parent.getPopup();
+                        GSModalWindow popup = parent.getPopup();
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);
@@ -232,9 +233,6 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         header.render(
                 new JavaScriptUrlReferenceHeaderItem(
                         ResponseUtils.buildURL(base, "/openlayers3/ol.js", null, URLType.RESOURCE),
-                        null,
-                        false,
-                        "UTF-8",
                         null));
         header.render(OnLoadHeaderItem.forScript(script.toString()));
     }

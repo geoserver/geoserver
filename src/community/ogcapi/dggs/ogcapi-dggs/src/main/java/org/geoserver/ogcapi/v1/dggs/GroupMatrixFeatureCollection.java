@@ -116,7 +116,7 @@ class GroupMatrixFeatureCollection implements SimpleFeatureCollection {
     @Override
     public boolean isEmpty() {
         try (CloseableIterator<GroupByResult> it = result.getIterator()) {
-            return features().hasNext();
+            return it.hasNext();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

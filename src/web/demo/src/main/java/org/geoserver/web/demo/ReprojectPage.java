@@ -7,7 +7,6 @@ package org.geoserver.web.demo;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -16,6 +15,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CRSPanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeometryTextArea;
 import org.geoserver.web.wicket.SRSToCRSModel;
@@ -32,6 +32,7 @@ import org.locationtech.jts.geom.Geometry;
  *
  * @author Andrea Aime - GeoSolutions
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ReprojectPage extends GeoServerBasePage {
 
@@ -44,7 +45,7 @@ public class ReprojectPage extends GeoServerBasePage {
     GeometryTextArea targetGeom;
 
     /** pop-up window for transformation details * */
-    ModalWindow popupWindow;
+    GSModalWindow popupWindow;
 
     GeoServerAjaxFormLink wktLink;
 
@@ -60,11 +61,11 @@ public class ReprojectPage extends GeoServerBasePage {
         }
 
         // the popup for transformation details
-        popupWindow = new ModalWindow("popup");
+        popupWindow = new GSModalWindow("popup");
         add(popupWindow);
 
         // the main form
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
 
         // the source CRS
@@ -75,7 +76,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         sourceCRS = srs;
                         updateTransformation(target);
-                    };
+                    }
                 };
         sourcePanel.setRequired(true);
         form.add(sourcePanel);
@@ -88,7 +89,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
                         targetCRS = srs;
                         updateTransformation(target);
-                    };
+                    }
                 };
         targetPanel.setRequired(true);
         form.add(targetPanel);
@@ -119,7 +120,7 @@ public class ReprojectPage extends GeoServerBasePage {
                 new AjaxSubmitLink("forward", form) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget at) {
                         Geometry source = sourceGeom.getModelObject();
                         if (source == null) {
                             error(
@@ -144,7 +145,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 };
@@ -154,7 +155,7 @@ public class ReprojectPage extends GeoServerBasePage {
                 new AjaxSubmitLink("backward", form) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget at) {
                         Geometry target = targetGeom.getModelObject();
                         if (target == null) {
                             error(
@@ -179,7 +180,7 @@ public class ReprojectPage extends GeoServerBasePage {
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
                 };

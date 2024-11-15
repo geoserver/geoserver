@@ -1,0 +1,52 @@
+type: object
+required:
+  - functions
+properties:
+  functions:
+    type: array
+    items:
+      type: object
+      required:
+        - name
+        - returns
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        metadataUrl:
+          type: string
+          format: uri-reference
+        arguments:
+          type: array
+          items:
+            type: object
+            required:
+              - type
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              type:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - string
+                    - number
+                    - integer
+                    - datetime
+                    - geometry
+                    - boolean
+        returns:
+          type: array
+          items:
+            type: string
+            enum:
+              - string
+              - number
+              - integer
+              - datetime
+              - geometry
+              - boolean

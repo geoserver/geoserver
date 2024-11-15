@@ -67,16 +67,17 @@ public class FeatureTypeDimensionsAccessor {
      * @param dimensionName Dimension Name
      * @return type binding class
      */
-    public Optional<Class> getBinding(String dimensionName) {
+    public Optional<Class<?>> getBinding(String dimensionName) {
         final Optional<Entry<String, DimensionInfo>> dimEntry =
                 getCustomDimensionByName(dimensionName);
         final Optional<String> attributeNameOpt =
-                dimEntry.map(x -> x.getValue()).map(x -> x.getAttribute());
-        if (!attributeNameOpt.isPresent()) return Optional.empty();
-        return typeInfo.getAttributes().stream()
-                .filter(a -> Objects.equals(a.getName(), attributeNameOpt.get()))
-                .map(a -> (Class) getBinding(a))
-                .findFirst();
+                dimEntry.map(Entry::getValue).map(DimensionInfo::getAttribute);
+        return attributeNameOpt.flatMap(
+                s ->
+                        typeInfo.getAttributes().stream()
+                                .filter(a -> Objects.equals(a.getName(), s))
+                                .map(this::getBinding)
+                                .findFirst());
     }
 
     private Class<?> getBinding(AttributeTypeInfo attributeTypeInfo) {

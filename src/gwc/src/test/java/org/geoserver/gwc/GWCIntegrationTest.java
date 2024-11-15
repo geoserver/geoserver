@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -175,7 +176,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME),
                 Matchers.describedAs(
                         "Style %0 should be in workspace %1.",
-                        (not(nullValue())), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
+                        not(nullValue()), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
 
         Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, WORKSPACED_STYLE_NAME);
@@ -232,6 +233,21 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         //        GeoServerLoader loader = GeoServerExtensions.bean(DefaultGeoServerLoader.class);
         //        loader.initializeStyles(getCatalog());
         prepareDataDirectory(testData);
+    }
+
+    @Before
+    public void resetMetatileThreads() throws Exception {
+        // reset to the default, some test are using a different value
+        setMetatileThreads(null);
+    }
+
+    private void setMetatileThreads(Integer threadCount) throws IOException {
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        if (!Objects.equals(threadCount, config.getMetaTilingThreads())) {
+            config.setMetaTilingThreads(threadCount);
+            gwc.saveConfig(config);
+        }
     }
 
     protected GridSet namedGridsetCopy(final String newName, final GridSet oldGridset) {
@@ -512,9 +528,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
 
-        final String path = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
+        final String url = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
 
-        MockHttpServletResponse response = getAsServletResponse(path);
+        MockHttpServletResponse response = getAsServletResponse(url);
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
 
@@ -522,7 +538,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(lastModifiedHeader);
         Date lastModified = DateUtils.parseDate(lastModifiedHeader);
 
-        MockHttpServletRequest httpReq = createGetRequest(path);
+        MockHttpServletRequest httpReq = createGetRequest(url);
         httpReq.addHeader("If-Modified-Since", lastModifiedHeader);
 
         response = dispatch(httpReq, "UTF-8");
@@ -533,7 +549,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Date past = new Date(lastModified.getTime() - 5000);
         String ifModifiedSince = DateUtils.formatDate(past);
 
-        httpReq = createGetRequest(path);
+        httpReq = createGetRequest(url);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -541,7 +557,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Date future = new Date(lastModified.getTime() + 5000);
         ifModifiedSince = DateUtils.formatDate(future);
 
-        httpReq = createGetRequest(path);
+        httpReq = createGetRequest(url);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatus());
@@ -1171,7 +1187,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         try {
             tld.getTileLayer("");
         } catch (Exception gwce) {
-
+            // ignored
         }
 
         // 1) Check that cite:Lakes is present
@@ -1389,6 +1405,66 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         JDBCQuotaStoreFactory.ENABLE_HSQL_AUTO_SHUTDOWN = false;
     }
 
+    @Test
+    public void testDiskQuotaH2Storage() throws Exception {
+        // normal state, quota is not enabled by default
+        GWC gwc = GWC.get();
+        ConfigurableQuotaStoreProvider provider =
+                GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        DiskQuotaConfig quota = gwc.getDiskQuotaConfig();
+        JDBCConfiguration jdbc = gwc.getJDBCDiskQuotaConfig();
+        assertFalse("Disk quota is enabled??", quota.isEnabled());
+        assertNull("jdbc quota config should be missing", jdbc);
+        assertTrue(getActualStore(provider) instanceof DummyQuotaStore);
+
+        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        String jdbcConfigPath = "gwc/geowebcache-diskquota-jdbc.xml";
+        String h2StorePath = "gwc/diskquota_page_store_h2";
+
+        // now enable it in JDBC mode, with HSQL local storage
+        quota.setEnabled(true);
+        quota.setQuotaStore("JDBC");
+        jdbc = new JDBCConfiguration();
+        jdbc.setDialect("H2");
+        ConnectionPoolConfiguration pool = new ConnectionPoolConfiguration();
+        pool.setDriver("org.h2.Driver");
+        pool.setUrl("jdbc:h2:file:./target/quota-h2");
+        pool.setUsername("sa");
+        pool.setPassword("");
+        pool.setMinConnections(1);
+        pool.setMaxConnections(1);
+        pool.setMaxOpenPreparedStatements(50);
+        jdbc.setConnectionPool(pool);
+
+        pool.setValidationQuery("SELECT 1");
+        gwc.saveDiskQuotaConfig(quota, jdbc);
+        assertNotNull(
+                "jdbc config (" + jdbcConfigPath + ") should be there",
+                dd.findFile(jdbcConfigPath));
+        assertNull(
+                "jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
+
+        File newQuotaStore = new File("./target/quota-h2.data.db");
+        assertTrue(newQuotaStore.exists());
+        try {
+            pool.setValidationQuery("SELECT 1 FROM DUAL");
+            gwc.saveDiskQuotaConfig(quota, jdbc);
+            fail("Expect configuration due to incorrect validation query used for H2");
+        } catch (ConfigurationException expected) {
+        }
+
+        File jdbcConfigFile = dd.findFile(jdbcConfigPath);
+        try (FileInputStream fis = new FileInputStream(jdbcConfigFile)) {
+            Document dom = dom(fis);
+            // print(dom);
+            String storedPassword =
+                    XMLUnit.newXpathEngine()
+                            .evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
+            // check the password has been encoded properly
+            assertTrue(storedPassword.startsWith("crypt1:"));
+        }
+    }
+
     private QuotaStore getActualStore(ConfigurableQuotaStoreProvider provider)
             throws ConfigurationException, IOException {
         return ((ConfigurableQuotaStore) provider.getQuotaStore()).getStore();
@@ -1479,6 +1555,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     /** Test that removing a layer from the catalog also removes its tile cache. */
     @Test
     public void testRemoveCachedLayer() throws Exception {
+        // disable metatile background processing, we want tiles on disk right afer requests
+        setMetatileThreads(0);
+
         // the prefixed name of the layer under test
         String layerName = getLayerId(MockData.BASIC_POLYGONS);
         assertEquals("cite:BasicPolygons", layerName);

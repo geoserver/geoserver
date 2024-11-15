@@ -64,6 +64,7 @@ import org.geoserver.web.ToolPage;
 import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("unchecked")
 public class CatalogStressTester extends GeoServerSecuredPage {
 
@@ -121,8 +122,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
     public CatalogStressTester() {
         super();
-        setDefaultModel(new Model());
-        Form form = new Form("form", new Model());
+        setDefaultModel(new Model<>());
+        Form form = new Form<>("form", new Model<>());
         add(form);
 
         IModel<List<Tuple>> wsModel = new WorkspacesTestModel();
@@ -198,7 +199,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 5767430648099432407L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         setResponsePage(ToolPage.class);
                     }
                 });
@@ -208,7 +209,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     private static final long serialVersionUID = -4087484089208211355L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         progress.setDefaultModelObject("");
                         startLink.setVisible(false);
                         target.add(startLink);
@@ -417,7 +418,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     ResourceInfo ri = (ResourceInfo) prototype;
                     StoreInfo store = (StoreInfo) parent;
                     ri.setStore(store);
-                    ri.setNamespace(catalog.getNamespaceByPrefix((store).getWorkspace().getName()));
+                    ri.setNamespace(catalog.getNamespaceByPrefix(store.getWorkspace().getName()));
                 }
                 sw.start();
                 catalog.add((ResourceInfo) prototype);
@@ -527,7 +528,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             int limit = 100;
 
             try (CloseableIterator<StoreInfo> iter =
-                    catalog.list(StoreInfo.class, filter, null, limit, null); ) {
+                    catalog.list(StoreInfo.class, filter, null, limit, null)) {
                 List<Tuple> stores =
                         Lists.newArrayList(
                                 Iterators.transform(

@@ -1,0 +1,26 @@
+
+#responseDiv {
+    min-height: 15px;
+}
+
+#responseHeadersDiv {
+    min-height: 15px;
+    margin-bottom:7px;
+}
+
+#trNewWindow {
+    display:none;
+}
+
+#divNewWindow {
+    display:flex;
+    flex-direction: row;
+}
+
+.tdNoWidth {
+    width: 1%;
+}
+
+#inputUsername {
+    width: 120px;
+}

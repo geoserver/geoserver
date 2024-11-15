@@ -48,7 +48,7 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # other places throughout the built documents.
 #
 # The replacement |version| provides short X.Y version.
-version = '2.26'
+version = '2.27'
 
 # The relacement |release| provides the full version, including alpha/beta/rc tags.
 
@@ -58,7 +58,7 @@ version = '2.26'
 # check environmental variable to see if ant build.xml passed in project.version
 project_version = os.getenv("project.version")
 if project_version == None: 
-  release = '2.26-SNAPSHOT'
+  release = '2.27-SNAPSHOT'
 else:
   release = project_version
 
@@ -70,7 +70,7 @@ branch = 'main'
 if release.find('SNAPSHOT') != -1:
    tags.add('snapshot')
    download = version+'.x'
-   release = '2.26.x'
+   release = '2.27.x'
    latest = '-latest'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
@@ -144,14 +144,12 @@ extlinks = {
 # Common substitutions
 
 rst_epilog = "\n" \
- ".. |install_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"`\n" \
- ".. |install_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"`\n" \
- ".. |install_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver`\n" \
- ".. |install_directory_mac| replace:: :file:`/Applications`\n" \
- ".. |data_directory_winXP| replace:: :file:`C:\Program Files\\\\GeoServer "+release+"\\\\data_dir`\n" \
- ".. |data_directory_win| replace:: :file:`C:\\\\Program Files (x86)\\\\GeoServer "+release+"\\\\data_dir`\n" \
- ".. |data_directory_linux| replace:: :file:`/var/lib/tomcat7/webapps/geoserver/data`\n" \
- ".. |data_directory_mac| replace:: :file:`/Applications/GeoServer.app/Contents/Resources/Java/data_dir`"
+ ".. |install_directory_win| replace:: :file:`C:\\\\Program Files\\\\GeoServer "+release+"`\n" \
+ ".. |install_directory_linux| replace:: :file:`/var/lib/tomcat9/webapps/geoserver`\n" \
+ ".. |install_directory_mac| replace:: :file:`~/Applications`\n" \
+ ".. |data_directory_win| replace:: :file:`C:\\\\ProgramData\\\\GeoServer`\n" \
+ ".. |data_directory_linux| replace:: :file:`/var/opt/geoserver/data`\n" \
+ ".. |data_directory_mac| replace:: :file:`~/Library/Application Support/GeoServer/data_dir`"
 
 # Options for HTML output
 # -----------------------

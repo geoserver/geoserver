@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.FileUtils;
@@ -1072,8 +1073,7 @@ public class GWCTest {
     public void testDispatchGetMapDoesntMatchTileCache() throws Exception {
         GetMapRequest request = new GetMapRequest();
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
 
         rawKvp.put("layers", "more,than,one,layer");
@@ -1122,8 +1122,7 @@ public class GWCTest {
     public void testDispatchGetMapNonMatchingParameterFilter() throws Exception {
         GetMapRequest request = new GetMapRequest();
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
 
         rawKvp.put("layers", tileLayer.getName());
@@ -1212,13 +1211,12 @@ public class GWCTest {
         tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
 
         GetMapRequest request = new GetMapRequest();
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
 
         StringBuilder target = new StringBuilder();
 
-        request.setElevation(Arrays.asList((Object) null));
+        request.setElevation(Collections.singletonList(null));
         boolean cachingPossible = mediator.isCachingPossible(tileLayer, request, target);
         assertTrue(cachingPossible);
         assertEquals(0, target.length());
@@ -1242,14 +1240,13 @@ public class GWCTest {
         tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
         // Create the new GetMapRequest
         GetMapRequest request = new GetMapRequest();
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         rawKvp.put("CQL_FILTER", "include");
         request.setRawKvp(rawKvp);
         StringBuilder target = new StringBuilder();
 
         // Setting CQL FILTER
-        List<Filter> cqlFilters = Arrays.asList(CQL.toFilter("include"));
+        List<Filter> cqlFilters = Collections.singletonList(CQL.toFilter("include"));
         request.setCQLFilter(cqlFilters);
         // Checking if caching is possible
         assertTrue(mediator.isCachingPossible(tileLayer, request, target));
@@ -1291,8 +1288,7 @@ public class GWCTest {
     public void testGetMapRequest() throws Throwable {
         GetMapRequest request = new GetMapRequest();
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         rawKvp.put(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN, "true");
         request.setRawKvp(rawKvp);
         rawKvp.put("layers", "test:mockLayer");
@@ -1338,8 +1334,7 @@ public class GWCTest {
             final String srs, final String expectedGridset, long[] tileIndex) throws Exception {
         GetMapRequest request = new GetMapRequest();
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
         request.setFormat("image/png");
 
@@ -1430,8 +1425,7 @@ public class GWCTest {
     public void testDispatchGetMapWithMatchingParameterFilters() throws Exception {
         GetMapRequest request = new GetMapRequest();
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> rawKvp = new CaseInsensitiveMap(new HashMap<String, String>());
+        Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
         request.setRawKvp(rawKvp);
         request.setFormat("image/png");
         request.setSRS("EPSG:900913");
@@ -1450,7 +1444,7 @@ public class GWCTest {
                         bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
         request.setBbox(reqBbox);
 
-        assertTrue(tileLayer.getInfo().cachedStyles().size() > 0);
+        assertFalse(tileLayer.getInfo().cachedStyles().isEmpty());
 
         for (String style : tileLayer.getInfo().cachedStyles()) {
 
@@ -1639,6 +1633,32 @@ public class GWCTest {
                     GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class);
             assertEquals("TEST VALUE", gwcEnvironment.resolveValue("${TEST}"));
         }
+    }
+
+    @Test
+    public void testBuildMetatilingExecutor() throws IOException {
+
+        // If user provides thread count, we expect that to be obeyed
+        GWCConfig newConfig = new GWCConfig();
+        newConfig.setMetaTilingThreads(12);
+        mediator.saveConfig(newConfig);
+        assertNotNull(mediator.getMetaTilingExecutor());
+        assertEquals(12, ((ThreadPoolExecutor) mediator.getMetaTilingExecutor()).getCorePoolSize());
+
+        // If thread count is null, we expect a default
+        newConfig = new GWCConfig();
+        newConfig.setMetaTilingThreads(null);
+        mediator.saveConfig(newConfig);
+        assertNotNull(mediator.getMetaTilingExecutor());
+        assertEquals(
+                Runtime.getRuntime().availableProcessors() * 2,
+                ((ThreadPoolExecutor) mediator.getMetaTilingExecutor()).getCorePoolSize());
+
+        // If thread count is 0, we expect a null executor
+        newConfig = new GWCConfig();
+        newConfig.setMetaTilingThreads(0);
+        mediator.saveConfig(newConfig);
+        assertNull(mediator.getMetaTilingExecutor());
     }
 
     @AfterClass

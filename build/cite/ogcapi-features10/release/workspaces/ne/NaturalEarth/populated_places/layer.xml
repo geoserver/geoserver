@@ -1,0 +1,22 @@
+<layer>
+  <name>populated_places</name>
+  <id>LayerInfoImpl-1c443fee:182c0f3f209:-7ff5</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-1c443fee:182c0f3f209:-7fcf</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl--570ae188:124761b8d78:-7fdf</id>
+    </style>
+  </styles>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-1c443fee:182c0f3f209:-7ff6</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-08-21 15:26:37.327 UTC</dateCreated>
+  <dateModified>2022-09-27 23:54:36.502 UTC</dateModified>
+</layer>

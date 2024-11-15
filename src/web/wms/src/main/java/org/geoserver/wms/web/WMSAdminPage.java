@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -22,7 +23,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
@@ -49,6 +49,7 @@ import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.HTTPURLsListTextArea;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -66,6 +67,7 @@ import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
 import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 
 /** Edits the WMS service details */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
@@ -93,7 +95,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     static final List<String> DISPOSAL_METHODS =
             new ArrayList<>(Arrays.asList(WMS.DISPOSAL_METHODS));
 
-    ModalWindow modal;
+    GSModalWindow modal;
     MimeTypesFormComponent getMapMimeTypesComponent, getFeatureInfoMimeTypesComponent;
     TreeSet<String> getMapAvailable;
     TreeSet<String> getFeatureInfoAvailable;
@@ -120,7 +122,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     protected void build(IModel info, Form form) {
 
         // popups support
-        form.add(modal = new ModalWindow("modal"));
+        form.add(modal = new GSModalWindow("modal"));
 
         // new text field for the title of the root node
         form.add(
@@ -134,7 +136,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         "rootLayerTitle",
                         "rootLayerAbstract",
                         this));
-        PropertyModel<Map<String, ?>> metadataModel = new PropertyModel(info, "metadata");
+        PropertyModel<Map<String, ?>> metadataModel = new PropertyModel<>(info, "metadata");
         MapModel rootLayerEnabled =
                 defaultedModel(
                         metadataModel,
@@ -151,12 +153,12 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         // limited srs list
         TextArea srsList =
                 new SRSListTextArea(
-                        "srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+                        "srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
         form.add(srsList);
 
         form.add(new CheckBox("bBOXForEachCRS"));
         form.add(
-                new AjaxLink("bBOXForEachCRSHelp") {
+                new AjaxLink<>("bBOXForEachCRSHelp") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         dialog.showInfo(
@@ -194,7 +196,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
         // general
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "interpolation",
                         Arrays.asList(WMSInfo.WMSInterpolation.values()),
                         new InterpolationRenderer()));
@@ -227,7 +229,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         // watermark
         form.add(new CheckBox("watermark.enabled"));
         TextField watermarkUrlField =
-                new TextField(
+                new TextField<>(
                         "watermark.uRL",
                         new FileModel(new PropertyModel<>(form.getModel(), "watermark.URL")));
         watermarkUrlField.add(new FileExistsValidator(true));
@@ -242,16 +244,16 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         transparency.add(new RangeValidator<>(0, 100));
         form.add(transparency);
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "watermark.position",
                         Arrays.asList(Position.values()),
                         new WatermarkPositionRenderer()));
         // svg
-        form.add(new CheckBox("svg.antialias", new MapModel(metadataModel, "svgAntiAlias")));
+        form.add(new CheckBox("svg.antialias", new MapModel<>(metadataModel, "svgAntiAlias")));
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "svg.producer",
-                        new MapModel(metadataModel, "svgRenderer"),
+                        new MapModel<>(metadataModel, "svgRenderer"),
                         SVG_RENDERERS,
                         new SVGMethodRenderer()));
         // png compression levels
@@ -274,7 +276,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 defaultedModel(
                         metadataModel, WMS.KML_REFLECTOR_MODE, WMS.KML_REFLECTOR_MODE_DEFAULT);
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "kml.defaultReflectorMode", kmlReflectorMode, KML_REFLECTOR_MODES));
 
         MapModel kmlSuperoverlayMode =
@@ -283,7 +285,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                         WMS.KML_SUPEROVERLAY_MODE,
                         WMS.KML_SUPEROVERLAY_MODE_DEFAULT);
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "kml.superoverlayMode", kmlSuperoverlayMode, KML_SUPEROVERLAY_MODES));
 
         form.add(
@@ -398,7 +400,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new HTTPURLsListTextArea(
                         "allowedURLsForAuthForwarding",
                         LiveCollectionModel.list(
-                                new PropertyModel(info, "allowedURLsForAuthForwarding")));
+                                new PropertyModel<>(info, "allowedURLsForAuthForwarding")));
         form.add(allowedRemoteSLDUrlsForAuthorizationForwarding);
 
         form.add(new CheckBox("defaultGroupStyleEnabled"));
@@ -419,10 +421,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             mapMarkFactoryList.setObject("");
         }
         IModel<Collection<String>> collectionModel =
-                new IModel<Collection<String>>() {
-
-                    @Override
-                    public void detach() {}
+                new IModel<>() {
 
                     @Override
                     public void setObject(Collection<String> object) {
@@ -464,10 +463,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     private IModel<List<String>> buildMarkFactoryListModel(MapModel<String> mapMarkFactoryList) {
-        return new IModel<List<String>>() {
-
-            @Override
-            public void detach() {}
+        return new IModel<>() {
 
             @Override
             public List<String> getObject() {
@@ -514,10 +510,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private IModel<Boolean> buildEnableModel(
             LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel) {
-        return new IModel<Boolean>() {
-
-            @Override
-            public void detach() {}
+        return new IModel<>() {
 
             @Override
             public void setObject(Boolean object) {
@@ -538,7 +531,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
     private Palette<String> buildMarkFactoryPalleteComponent(
             LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel) {
-        return new Palette<String>(
+        return new Palette<>(
                 "MarkFactoryPalette",
                 markFactoriesLiveCollectionModel,
                 new MarkFactoriesModel(),
@@ -623,7 +616,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                     }
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form form) {
+                    public void onSubmit(AjaxRequestTarget target) {
                         File file = null;
                         textField.processInput();
                         String input = textField.getConvertedInput();
@@ -635,15 +628,16 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                                 new GeoServerFileChooser(modal.getContentId(), new Model<>(file)) {
                                     @Override
                                     protected void fileClicked(
-                                            File file, AjaxRequestTarget target) {
+                                            File file, Optional<AjaxRequestTarget> target) {
                                         // clear the raw input of the field won't show the new model
                                         // value
                                         textField.clearInput();
                                         textField.setModelObject(file.getAbsolutePath());
-
-                                        target.add(textField);
-                                        dialog.close(target);
-                                    };
+                                        if (target.isPresent()) {
+                                            target.get().add(textField);
+                                            dialog.close(target.get());
+                                        }
+                                    }
                                 };
                         chooser.setFileTableHeight(null);
                         modal.setContent(chooser);

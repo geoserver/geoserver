@@ -55,6 +55,7 @@ import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 
+// TODO WICKET8 - Verify this page works OK
 class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
     private static final Logger LOGGER = Logging.getLogger(ParameterFilterEditor.class);
@@ -169,8 +170,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         container.add(table);
 
         filters =
-                new ListView<ParameterFilter>(
-                        "parameterFilters", new ArrayList<>(model.getObject())) {
+                new ListView<>("parameterFilters", new ArrayList<>(model.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -202,7 +202,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
                         // Create form
                         final Label keyLabel =
-                                new Label("key", new PropertyModel<String>(item.getModel(), "key"));
+                                new Label("key", new PropertyModel<>(item.getModel(), "key"));
                         item.add(keyLabel);
 
                         final Component subForm =
@@ -214,8 +214,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                                     private static final long serialVersionUID = 1L;
 
                                     @Override
-                                    protected void onSubmit(
-                                            AjaxRequestTarget target, Form<?> form) {
+                                    protected void onSubmit(AjaxRequestTarget target) {
                                         getList().remove(getDefaultModelObject());
                                         target.add(container);
                                     }
@@ -274,7 +273,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         "availableFilterTypes",
                         new Model<>(),
                         new Model<>(filterTypes),
-                        new ChoiceRenderer<Class<? extends ParameterFilter>>() {
+                        new ChoiceRenderer<>() {
 
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;

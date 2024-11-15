@@ -1,0 +1,17 @@
+<dataStore>
+  <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdc</id>
+  <name>taz_shapes</name>
+  <description>Tasmania vector data derived from Digital Chart of the World.</description>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ffd</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="create spatial index">false</entry>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="namespace">http://www.openplans.org/topp</entry>
+    <entry key="cache and reuse memory maps">false</entry>
+    <entry key="url">file:data/taz_shapes</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

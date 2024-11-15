@@ -67,6 +67,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.mockito.Mockito;
 
@@ -76,20 +78,32 @@ public class VectorTileMapOutputFormatTest {
 
     private static CoordinateReferenceSystem WGS84;
 
-    private static Style defaultPointStyle, defaultPolygonStyle, scaleDependentPolygonStyle;
+    private static Style defaultPointStyle,
+            defaultPolygonStyle,
+            scaleDependentPolygonStyle,
+            labelPolygonStyle,
+            attributesPolygonStyle,
+            coalescePolygonStyle;
 
     private VectorTileMapOutputFormat outputFormat;
 
     private VectorTileBuilder tileBuilderMock;
 
-    private FeatureLayer pointLayer, scaleDependentPolygonLayer;
+    private FeatureLayer pointLayer,
+            scaleDependentPolygonLayer,
+            labelPolygonLayer,
+            attributesPolygonLayer;
     private List<MapContent> mapContents = new ArrayList<>();
+    private MemoryDataStore ds;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         defaultPointStyle = parseStyle("default_point.sld");
         defaultPolygonStyle = parseStyle("default_polygon.sld");
         scaleDependentPolygonStyle = parseStyle("scaleDependentPolygonStyle.sld");
+        labelPolygonStyle = parseStyle("labelsPolygonStyle.sld");
+        attributesPolygonStyle = parseStyle("attributesPolygonStyle.sld");
+        coalescePolygonStyle = parseStyle("coalescePolygonStyle.sld");
 
         // avoid lots of application context unset warnings in the console
         GeoServerExtensionsHelper.init(new ApplicationContextMock());
@@ -113,7 +127,7 @@ public class VectorTileMapOutputFormatTest {
         outputFormat = new VectorTileMapOutputFormat(tileBuilderFactory);
         outputFormat.setClipToMapBounds(true);
 
-        MemoryDataStore ds = new MemoryDataStore();
+        this.ds = new MemoryDataStore();
 
         final String pointsTypeSpec = "sp:String,ip:Integer,geom:Point:srid=4326";
         final String linesTypeSpec = "sp:String,ip:Integer,geom:LineString:srid=4326";
@@ -152,25 +166,28 @@ public class VectorTileMapOutputFormatTest {
                         "polygon1",
                         "StringProp3_1",
                         1000,
-                        "POLYGON ((1 1, 2 2, 3 3, 4 4, 1 1))"));
+                        "POLYGON ((1 0, 2 0, 2 1, 1 1, 1 0))"));
         ds.addFeature(
                 feature(
                         polyType,
                         "polygon2",
                         "StringProp3_2",
                         2000,
-                        "POLYGON ((6 6, 7 7, 8 8, 9 9, 6 6))"));
+                        "POLYGON ((6 6, 7 6, 7 7, 6 7, 6 6))"));
         ds.addFeature(
                 feature(
                         polyType,
                         "polygon3",
                         "StringProp3_3",
                         3000,
-                        "POLYGON ((11 11, 12 12, 13 13, 14 14, 11 11))"));
+                        "POLYGON ((11 11, 12 11, 12 12, 11 12, 11 11))"));
 
         pointLayer = new FeatureLayer(ds.getFeatureSource("points"), defaultPointStyle);
         scaleDependentPolygonLayer =
                 new FeatureLayer(ds.getFeatureSource("polygons"), scaleDependentPolygonStyle);
+        labelPolygonLayer = new FeatureLayer(ds.getFeatureSource("polygons"), labelPolygonStyle);
+        attributesPolygonLayer =
+                new FeatureLayer(ds.getFeatureSource("polygons"), attributesPolygonStyle);
     }
 
     @After
@@ -675,7 +692,11 @@ public class VectorTileMapOutputFormatTest {
     // (((Polygon) featList.get(1).getGeometry()).getCoordinates()[0]));
     // }
 
-    protected static SimpleFeature feature(SimpleFeatureType type, String id, Object... values)
+    /**
+     * Builds a feature based on feature type, identifier, and values. The geometry can be specified
+     * as a WKT string, it will be parsed
+     */
+    public static SimpleFeature feature(SimpleFeatureType type, String id, Object... values)
             throws ParseException {
 
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type);
@@ -684,7 +705,7 @@ public class VectorTileMapOutputFormatTest {
             Object value = values[i];
             if (type.getDescriptor(i) instanceof GeometryDescriptor) {
                 if (value instanceof String) {
-                    value = new WKTReader2().read((String) value);
+                    value = parseGeometry((String) value);
                 }
             }
             builder.set(i, value);
@@ -692,10 +713,123 @@ public class VectorTileMapOutputFormatTest {
         return builder.buildFeature(id);
     }
 
+    private static Geometry parseGeometry(String value) throws ParseException {
+        return new WKTReader2().read(value);
+    }
+
     private static Style parseStyle(String styleResource) throws IOException {
         try (InputStream in = GeoServerLoader.class.getResourceAsStream(styleResource)) {
             StyledLayerDescriptor sld = new SLDHandler().parse(in, null, null, null);
             return ((NamedLayer) sld.getStyledLayers()[0]).getStyles()[0];
         }
+    }
+
+    @Test
+    public void testLabelPoints() throws Exception {
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(0, 15, 0, 15, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 0, labelPolygonLayer);
+
+        WebMap mockMap = mock(WebMap.class);
+        when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
+
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
+
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons_labels"),
+                        eq("polygon1"),
+                        eq("geom"),
+                        eq(parseGeometry("POINT (1.5 0.5)")),
+                        eq(Map.of("sp", (Object) "StringProp3_1")));
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons_labels"),
+                        eq("polygon2"),
+                        eq("geom"),
+                        eq(parseGeometry("POINT (6.5 6.5)")),
+                        eq(Map.of("sp", (Object) "StringProp3_2")));
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons_labels"),
+                        eq("polygon3"),
+                        eq("geom"),
+                        eq(parseGeometry("POINT (11.5 11.5)")),
+                        eq(Map.of("sp", (Object) "StringProp3_3")));
+    }
+
+    @Test
+    public void testAttributeSelection() throws Exception {
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(0, 15, 0, 15, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent =
+                createMapContent(mapBounds, renderingArea, 0, attributesPolygonLayer);
+
+        WebMap mockMap = mock(WebMap.class);
+        when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
+
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
+
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons"),
+                        eq("polygon1"),
+                        eq("geom"),
+                        any(Polygon.class),
+                        eq(Map.of("ip", 1000)));
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons"),
+                        eq("polygon2"),
+                        eq("geom"),
+                        any(Polygon.class),
+                        eq(Map.of("ip", 2000)));
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons"),
+                        eq("polygon3"),
+                        eq("geom"),
+                        any(Polygon.class),
+                        eq(Map.of("ip", 3000)));
+    }
+
+    @Test
+    public void testCoalesce() throws Exception {
+        // add one feature that can be merged with the others
+        ds.addFeature(
+                feature(
+                        ds.getSchema("polygons"),
+                        "polygon4",
+                        "StringProp3_3",
+                        3000,
+                        "POLYGON ((15 15, 16 15, 16 16, 15 16, 15 15))"));
+        // a feature layer with only two features having the same attributes, for simplicity
+        FeatureLayer coalescePolygonLayer =
+                new FeatureLayer(ds.getFeatureSource("polygons"), coalescePolygonStyle);
+        coalescePolygonLayer.setQuery(new Query("polygons", ECQL.toFilter("sp = 'StringProp3_3'")));
+
+        ReferencedEnvelope mapBounds = new ReferencedEnvelope(0, 15, 0, 15, WGS84);
+        Rectangle renderingArea = new Rectangle(256, 256);
+
+        WMSMapContent mapContent =
+                createMapContent(mapBounds, renderingArea, 0, coalescePolygonLayer);
+
+        WebMap mockMap = mock(WebMap.class);
+        when(tileBuilderMock.build(same(mapContent))).thenReturn(mockMap);
+
+        assertSame(mockMap, outputFormat.produceMap(mapContent));
+
+        // only one invocation total
+        verify(tileBuilderMock, times(1)).addFeature(any(), any(), any(), any(), any());
+        // with the merged feature (geometry is a multi-polygon)
+        verify(tileBuilderMock, times(1))
+                .addFeature(
+                        eq("polygons"),
+                        eq("polygon3"),
+                        eq("geom"),
+                        any(MultiPolygon.class),
+                        eq(Map.of("sp", "StringProp3_3", "ip", 3000)));
     }
 }

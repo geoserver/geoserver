@@ -1004,7 +1004,7 @@ public class XStreamPersister {
                 List<Class<?>> matches = new ArrayList<>();
                 collectSuperclasses(clazz, matches);
                 for (Iterator<Class<?>> it = matches.iterator(); it.hasNext(); ) {
-                    Class<?> sper = (Class<?>) it.next();
+                    Class<?> sper = it.next();
                     if (backwardBreifMap.get(sper) == null) {
                         it.remove();
                     }
@@ -2334,7 +2334,7 @@ public class XStreamPersister {
                     writer.endNode();
                 }
             }
-            if (vt.getParameterNames().size() > 0) {
+            if (!vt.getParameterNames().isEmpty()) {
                 for (String name : vt.getParameterNames()) {
                     VirtualTableParameter param = vt.getParameter(name);
                     writer.startNode("parameter");

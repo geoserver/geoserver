@@ -103,7 +103,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class MapMLWMSTest extends MapMLTestSupport {
 
-    private XpathEngine xpath;
+    protected XpathEngine xpath;
 
     @Override
     protected void registerNamespaces(Map<String, String> namespaces) {
@@ -113,7 +113,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         xpath = XMLUnit.newXpathEngine();
 
         Catalog catalog = getCatalog();
@@ -123,6 +123,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         layerMeta.getMetadata().put("mapml.useTiles", false);
         catalog.save(layerMeta);
+
+        // disable background tile saving, some tests check for the presence of the tiles on disk
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setMetaTilingThreads(0);
+        gwc.saveConfig(config);
     }
 
     @After
@@ -1574,7 +1580,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                         + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
                         + ":image/png";
         Document doc = getAsJSoup(path);
-        Element layer = doc.select("mapml-viewer > layer-").first();
+        Element layer = doc.select("mapml-viewer > map-layer").first();
         String layerSrc = layer.attr("src");
         assertThat(layerSrc, startsWith("http://localhost:8080/geoserver/cite/wms?"));
         assertThat(layerSrc, containsString("LAYERS=Lakes"));
@@ -1850,15 +1856,15 @@ public class MapMLWMSTest extends MapMLTestSupport {
         Document doc = Jsoup.parse(htmlResponse);
         Element webmapimport = doc.head().select("script").first();
         assertTrue(
-                "HTML document script must use mapml-viewer.js module",
-                webmapimport.attr("src").matches(".*mapml-viewer\\.js"));
+                "HTML document script must use mapml.js module",
+                webmapimport.attr("src").matches(".*mapml\\.js"));
         Element map = doc.body().select("mapml-viewer").first();
-        Element layer = map.getElementsByTag("layer-").first();
+        Element layer = map.getElementsByTag("map-layer").first();
         assertTrue(
                 "Layer must have label equal to title or layer name if no title",
                 layer.attr("label").equalsIgnoreCase(layerLabel));
         assertTrue(
-                "HTML title and layer- label attribute should be equal",
+                "HTML title and map-layer label attribute should be equal",
                 layer.attr("label").equalsIgnoreCase(doc.title()));
         String zoom = doc.select("mapml-viewer").attr("zoom");
         // zoom is calculated based on a display size and the extent of the
@@ -1867,7 +1873,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         if (layerName.equalsIgnoreCase("layerGroup")) {
             assertTrue("4".equalsIgnoreCase(zoom));
         } else {
-            assertTrue(!"0".equalsIgnoreCase(zoom));
+            assertFalse("0".equalsIgnoreCase(zoom));
         }
         return doc;
     }

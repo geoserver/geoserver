@@ -141,6 +141,12 @@ public class ImagesService implements ApplicationContextAware {
         return geoServer.getService(ImagesServiceInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public ImagesServiceInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
@@ -647,7 +653,7 @@ public class ImagesService implements ApplicationContextAware {
 
         imageListeners.imageRemoved(info, feature);
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

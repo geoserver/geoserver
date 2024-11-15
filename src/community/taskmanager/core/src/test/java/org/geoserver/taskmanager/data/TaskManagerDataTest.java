@@ -6,6 +6,7 @@ package org.geoserver.taskmanager.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -95,7 +96,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         batch = dao.init(batch);
         assertTrue(batch.getElements().isEmpty());
         el2 = util.addBatchElement(batch, task);
-        assertFalse(el.getId().equals(el2.getId()));
+        assertNotEquals(el.getId(), el2.getId());
     }
 
     @Test

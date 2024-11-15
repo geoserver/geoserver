@@ -450,7 +450,7 @@ public class WPSExecutionManager
             // Set the base to 0 in case of no inputs, as there is really nothing to do there,
             // this will make the process call the listener startup notification instead
             // otherwise the executor SubProgressListener won't delegate that method down
-            int inputsBase = inputs.size() == 0 ? 0 : 1;
+            int inputsBase = inputs.isEmpty() ? 0 : 1;
             float inputPercentage = inputsBase + inputsLongSteps * longStepPercentage;
             float outputPercentage = (hasComplexOutputs() ? longStepPercentage : 0) + 1;
             float executionPercentage = 100 - inputPercentage - outputPercentage;

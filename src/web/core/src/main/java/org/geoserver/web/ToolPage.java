@@ -30,7 +30,7 @@ public class ToolPage extends GeoServerSecuredPage {
         links = filterByAuth(links);
 
         add(
-                new ListView<ComponentInfo>("toolList", links) {
+                new ListView<>("toolList", links) {
                     @Override
                     public void populateItem(ListItem<ComponentInfo> item) {
                         final ComponentInfo info = item.getModelObject();

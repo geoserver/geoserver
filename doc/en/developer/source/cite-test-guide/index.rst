@@ -69,6 +69,7 @@ Set-up the environment
        |-- wms11
        |-- wms13
        |-- wfs11
+       |-- ogcapi-features10
        |-- interactive
        |-- logs
        |-- docker-compose.yml
@@ -95,10 +96,26 @@ automate all the commands, and the second one is running the test through WebUI:
 
       .. code:: makefile
 
-        clean: $(suite)		 This will clean the Environment of previous runs.
-        build: $(suite)		 This will build the GeoServer Docker Image for the Environment.
-        test: $(suite)		 This will run the Suite test with teamengine.
-        webUI: $(suite)		 This will run the Suite test with teamengine.
+         Usage:
+
+         # Main targets in suggested order:
+
+         war:	 					Build the geoserver.war file to use for testing and place it in ./geoserver/geoserver.war
+         build: 	suite=<suite>				Build the GeoServer Docker Image for the Environment.
+         test: 	suite=<suite>				Run the Test Suite with teamengine and GeoServer on docker compose.
+         clean:	 					Clean the Environment of previous runs.
+
+         # Additional helper targets:
+
+         test-localhost:  suite=<suite>			Run the Test Suite against a local host GeoServer instance (http://172.17.0.1:8080)
+         test-external:  suite=<suite> iut=<landing URL>	Run the Test Suite against a GeoServer instance at a provided URL
+         version:  suite=<suite>				Print the version of the GeoServer on the current docker.
+         ogcapi-features10-localhost: 			Shortcut for make test-localhost suite=ogcapi-features10
+         start:  suite=<suite> [services=<s1 s2..>]	Start the docker composition for suite. Optionally limit which services.
+         stop: 						Shuts down the docker composition. Deos not remove logs/
+         print-services:  suite=<suite>			Print the service names and docker images used for a given suite
+         webUI: 						Start teamengine in interactive mode for the OWS services (excludes ogcapi services).
+
 
    - Choose which test to run, this is an example:
 
@@ -119,14 +136,15 @@ automate all the commands, and the second one is running the test through WebUI:
           * wfs11
           * wms11
           * wms13
+          * ogcapi-features10
 
-   - Choose which GeoServer war file to test by setting the ``war_url`` environment variable inside the ``Makefile``, ex:
+   - Build the ``geoserver.war`` file to test against :
 
      .. code:: C
 
-       war_url = "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
+       make war
 
-2. If you don't want to do it inside the ``Makefile`` you have the option of adding the variable in the command when you build the docker images.
+2. Build the GeoServer Docker image set up to run a specific test suite
 
    -  To clean the local environment.
 
@@ -140,11 +158,13 @@ automate all the commands, and the second one is running the test through WebUI:
 
          make build suite=<suite-name>
 
-   - Alternative, with the ``war_url`` variable include:
+   - Alternative, specify a ``war_url`` variable to fetch the ``geoserver.war`` from an URL:
 
       .. code::
 
         make build suite=<suite-name> war_url=<url-or-the-GeoServer-war-file-desired>
+
+   The ``war_url`` can point to a ``.war`` or ``.zip`` file containing the ``.war`` like in ``https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip``
 
    -  To run the suite test.
 
@@ -578,6 +598,119 @@ Run WMS 1.3 tests
    .. image:: ./image/tewms-1_3.png
 
 
+Run OGC Features 1.0 tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Newer test suites like the ``ogcapi-features10`` one, are executed by calling teamengine's REST API,
+with a teamengine Docker image `provided by OGC <https://hub.docker.com/r/ogccite/ets-ogcapi-features10>`_ (see `Using the REST API <https://opengeospatial.github.io/teamengine/users.html>`_ section
+on the teamengine's user guide).
+
+As a result of the test run, a ``logs/testng-results.xml`` file will be generated, and a human readable summary of test
+failures, if any, will be printed to the console.
+
+Run with the locally built .war
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Make sure you've prepared the ``geoserver.war`` as instructed above with ``make war``.
+
+   .. code-block:: shell
+
+    make clean build test suite=ogcapi-features10
+
+If there are test errors, a human readable summary will be printed to the console, similar to this:
+
+   .. code-block:: shell
+
+      test-method: verifyCollectionsPathCollectionCrsPropertyContainsDefaultCrs
+      description: Implements A.1 Discovery, Abstract Test 2 (Requirement /req/crs/fc-md-crs-list B), crs property contains default crs in the collection objects in the path /collections
+      depends-on-groups: crs-conformance
+      status: FAIL
+      exception: Collection with id 'sf:restricted' at collections path /collections does not specify one of the default CRS 'http://www.opengis.net/def/crs/OGC/1.3/CRS84' or 'http://www.opengis.net/def/crs/OGC/0/CRS84h' but provides at least one spatial feature collections
+      Request URI:
+
+      test-method: verifyCollectionsPathCollectionCrsPropertyContainsDefaultCrs
+      description: Implements A.1 Discovery, Abstract Test 2 (Requirement /req/crs/fc-md-crs-list B), crs property contains default crs in the collection objects in the path /collections
+      depends-on-groups: crs-conformance
+      status: FAIL
+      exception: Collection with id 'sf:roads' at collections path /collections does not specify one of the default CRS 'http://www.opengis.net/def/crs/OGC/1.3/CRS84' or 'http://www.opengis.net/def/crs/OGC/0/CRS84h' but provides at least one spatial feature collections
+      Request URI:
+
+      Passed: 2153
+      Failed: 9
+      Skipped: 96
+      make[2]: *** [validate-testng-results] Error 1
+      make[1]: *** [test-rest] Error 2
+      make: *** [test] Error 2
+
+
+Either way, both the ``teamengine`` and ``geoserver`` containers will keep on running.
+
+Run ``make clean`` to shut them down and clean up the ``logs/`` directory.
+
+Test a GeoServer instance external to the docker composition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since teamengine runs as a Docker container, in order to reach out to a GeoServer instance running on the host,
+it needs a Landing Page URL that points to the host network. In docker there's a special IP address for that purpose,
+`172.17.0.1`, as long as the container is running on the default docker bridge network. Check out the docker [docs](Networking with standalone containers) for more info.
+
+.. attention::
+
+   In the following examples, some ``make`` targets receive an ``iut`` parameter with the URL of the OGC Features API landing page to test,
+   external to the ``teamengine``'s container network. By default, for **Linux** systems, use the **172.17.0.1** IP address.
+   However, if you're running the tests on **MacOS**, replace it with the **host.docker.internal** hostname instead.
+   This difference exists because on Linux, Docker creates a bridge network where the host is accessible via ``172.17.0.1``. On MacOS, Docker Desktop for Mac
+   runs containers within a virtualization layer, which changes the networking model. As a result, ``host.docker.internal`` is used to enable containers
+   to access the host.
+
+
+For the case of the ``ogcapi-features10``, you can simply run 
+
+   .. code-block:: shell
+
+    make ogcapi-features10-localhost
+
+And it'll print out
+
+   .. code-block:: shell
+
+    Running the ogcapi-features10 test suite with the teamengine REST API against http://172.17.0.1:8080/geoserver/ogc/features/v1
+
+The ``ogcapi-features10-localhost`` target is a special case of ``test-external``, which assumes the most common
+case of GeoServer running on ``localhost:8080``.
+
+During development or troubleshooting, you might want to either use a different GeoServer port, or
+test only a specific workspace or feature type. For that you can use a custom ``iut`` (Instance Under Test)
+URL for the ``test-external`` make target. For example, to hit a GeoServer instance running on the host
+at port ``9090``, and address only the ``sf:archsites`` layer, you can use a ``iut`` URL combining the 
+``172.17.0.1`` IP address and GeoServer's ``/sf/archsites`` virtual service:
+
+   .. code-block:: shell
+
+    make test-external suite=ogcapi-features10 iut="http://172.17.0.1:9090/geoserver/sf/archsites/ogc/features/v1"
+
+
+And it'll print out
+
+   .. code-block:: shell
+
+    Running the ogcapi-features10 test suite with the teamengine REST API against http://172.17.0.1:9090/geoserver/sf/archsites/ogc/features/v1
+
+Finally, run
+
+   .. code-block:: shell
+
+    make clean
+
+to stop the docker composition and clean up the ``logs/`` directory, or
+
+   .. code-block:: shell
+
+    make stop
+
+to just shut down the docker composition wihtout cleaning up the ``logs/`` directory.
+
 .. _commandline:
 
 .. _teamengine:
+

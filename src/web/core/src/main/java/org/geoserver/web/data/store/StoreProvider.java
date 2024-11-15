@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.Catalog;
@@ -41,17 +40,13 @@ import org.geotools.factory.CommonFactoryFinder;
 public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
     static final Property<StoreInfo> DATA_TYPE =
-            new AbstractProperty<StoreInfo>("datatype") {
+            new AbstractProperty<>("datatype") {
 
                 @Override
                 public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
-                    return new AbstractReadOnlyModel<String>() {
-
-                        @Override
-                        public String getObject() {
-                            StoreInfo si = itemModel.getObject();
-                            return (String) getPropertyValue(si);
-                        }
+                    return () -> {
+                        StoreInfo si = itemModel.getObject();
+                        return (String) getPropertyValue(si);
                     };
                 }
 
@@ -67,7 +62,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     static final Property<StoreInfo> NAME = new BeanProperty<>("name", "name");
 
     static final Property<StoreInfo> TYPE =
-            new AbstractProperty<StoreInfo>("type") {
+            new AbstractProperty<>("type") {
 
                 @Override
                 public Object getPropertyValue(StoreInfo item) {

@@ -55,6 +55,7 @@ import org.geoserver.web.security.LayerAccessDataRulePanel;
  *
  * @author Niels Charlier
  */
+// TODO WICKET8 - Verify this page works OK
 public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         extends GeoServerSecuredPage {
 
@@ -192,7 +193,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         // element
         // will validate and write down into their
         tabbedPanel =
-                new TabbedPanel<ITab>("tabs", tabs) {
+                new TabbedPanel<>("tabs", tabs) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -302,7 +303,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         return new GeoserverAjaxSubmitLink("apply", this) {
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 doSave(false);
             }
         };
@@ -357,7 +358,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     private Link<?> cancelLink() {
-        return new Link("cancel") {
+        return new Link<>("cancel") {
             private static final long serialVersionUID = -9007727127569731882L;
 
             @Override
@@ -432,7 +433,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                             getGeoServerApplication()
                                     .getBeansOfType(PublishedConfigurationPanelInfo.class));
             ListView<PublishedConfigurationPanelInfo<T>> pubPanelList =
-                    new ListView<PublishedConfigurationPanelInfo<T>>(id, pubPanels) {
+                    new ListView<>(id, pubPanels) {
                         private static final long serialVersionUID = 1L;
 
                         @Override

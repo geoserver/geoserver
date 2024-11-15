@@ -208,7 +208,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testReadMandatory() throws Exception {
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", getLayerId(BASIC_POLYGONS));
         raw.put("styles", BASIC_POLYGONS.getLocalPart());
         raw.put("format", "image/jpeg");
@@ -245,7 +245,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testReadOptional() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("bgcolor", "000000");
         kvp.put("transparent", "true");
         kvp.put("tiled", "true");
@@ -278,7 +278,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testDefaultStyle() throws Exception {
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put(
                 "layers",
                 BASIC_POLYGONS.getPrefix()
@@ -306,7 +306,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testInterpolations() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
         kvp.put("interpolations", "bicubic");
 
@@ -339,7 +339,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testFiltersForLayerGroups() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", "testGroup3");
         kvp.put("cql_filter", "ADDRESS='123 Main Street'");
         GetMapRequest request = reader.createRequest();
@@ -352,7 +352,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testInterpolationsForLayerGroups() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", "testGroup2");
         kvp.put("interpolations", "bicubic");
 
@@ -401,7 +401,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testFilter() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
         kvp.put("filter", "<Filter><FeatureId id=\"foo\"/></Filter>");
 
@@ -419,7 +419,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testCQLFilter() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("cql_filter", "foo = bar");
 
         GetMapRequest request = reader.createRequest();
@@ -433,7 +433,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testFeatureId() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("featureid", "foo");
 
         GetMapRequest request = reader.createRequest();
@@ -447,7 +447,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testSortBy() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
         kvp.put("sortBy", "FID D");
 
@@ -463,7 +463,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testSortByGroup() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", "testGroup2");
         kvp.put("sortBy", "FID D");
 
@@ -503,7 +503,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldNoDefault() throws Exception {
         // no style name, no default, we should fall back on the server default
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
         // the kvp should be already in decoded form
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
@@ -524,7 +524,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldDefault() throws Exception {
         // no style name, but the sld has a default for that layer
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -559,7 +559,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 new MockHttpClientConnectionManager(builder.toString(), true);
         reader = new GetMapKvpRequestReader(wms, manager);
         // no style name, but the sld has a default for that layer
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         String url = "http://cached_sld";
         kvp.put("sld", url);
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -596,7 +596,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 new MockHttpClientConnectionManager(builder.toString(), false);
         reader = new GetMapKvpRequestReader(wms, manager);
         // no style name, but the sld has a default for that layer
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         String url = "http://cached_sld";
         kvp.put("sld", url);
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -616,7 +616,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testSldDisabled() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -643,7 +643,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testSldBodyDisabled() throws Exception {
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("sld_body", STATES_SLD);
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
 
@@ -669,7 +669,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldNamed() throws Exception {
         // style name matching one in the sld
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -689,7 +689,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldFailLookup() throws Exception {
         // nothing matches the required style name
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryNoDefault.sld");
         kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -708,7 +708,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldConnectionFailure() throws Exception {
         // Connection for specified external SLD fails while retrieving SLD
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
 
         URL url = new URL("http://hostthatdoesnotexist/");
 
@@ -753,7 +753,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             GetMapRequest spyRequest, URL url, Header[] headers, String authHeader)
             throws Exception {
         String urlDecoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
         kvp.put("sld", urlDecoded);
 
@@ -796,7 +796,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldNotExist() throws Exception {
         // Specified external SLD does not exist
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
 
         URL url = new URL(GetMapKvpRequestReaderTest.class.getResource(""), "does-not-exist");
 
@@ -817,7 +817,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldNotXML() throws Exception {
         // Specified external SLD is not XML
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
 
         URL url = GetMapKvpRequestReaderTest.class.getResource("paletted.tif");
 
@@ -838,7 +838,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldNotSld() throws Exception {
         // Specified external SLD is XML that is not SLD
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
 
         URL url =
                 GetMapKvpRequestReaderTest.class.getResource(
@@ -861,7 +861,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldFeatureTypeConstraints() throws Exception {
         // no styles, no layer, the full definition is in the sld
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsFeatureTypeConstaint.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -890,7 +890,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldLibraryFeatureTypeConstraints() throws Exception {
         // no styles, no layer, the full definition is in the sld
-        HashMap kvp = new HashMap();
+        HashMap kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsFeatureTypeConstaint.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -934,7 +934,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     public void testRemoteWFS() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) return;
 
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", "topp:states");
         raw.put("styles", BASIC_POLYGONS.getLocalPart());
         raw.put("format", "image/png");
@@ -960,7 +960,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     public void testRemoteWFSNoStyle() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) return;
 
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", "topp:states");
         raw.put("format", "image/png");
         raw.put("srs", "epsg:4326");
@@ -983,7 +983,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     public void testRemoteWFSInvalidURL() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) return;
 
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", "topp:states");
         raw.put("format", "image/png");
         raw.put("srs", "epsg:4326");
@@ -1005,7 +1005,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testGroupInSLD() throws Exception {
         // see GEOS-1818
-        final HashMap kvp = new HashMap();
+        final HashMap kvp = new HashMap<>();
         kvp.put("srs", "epsg:4326");
         kvp.put(
                 "bbox",
@@ -1030,7 +1030,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testViewParams() throws Exception {
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", getLayerId(BASIC_POLYGONS));
         raw.put("styles", "");
         raw.put("format", "image/jpeg");
@@ -1054,7 +1054,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testMultipleViewParams() throws Exception {
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS));
         raw.put("styles", "");
         raw.put("format", "image/jpeg");
@@ -1083,7 +1083,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     /** Base request without layers */
     private HashMap setupBaseViewParamsRequest() {
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("styles", "");
         raw.put("format", "image/jpeg");
         raw.put("srs", "epsg:3003");
@@ -1175,7 +1175,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
 
         // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("sld", decoded);
         raw.put("format", "image/jpeg");
         raw.put("crs", "epsg:3003");
@@ -1203,7 +1203,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testMissingCrsParameterInGetMapRequest11() throws Exception {
         // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", getLayerId(BASIC_POLYGONS));
         raw.put("styles", BASIC_POLYGONS.getLocalPart());
         raw.put("format", "image/jpeg");
@@ -1231,7 +1231,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     private void validateMissingParameterInGetMapRequest13(String paramToRemove) throws Exception {
         // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", getLayerId(BASIC_POLYGONS));
         raw.put("styles", BASIC_POLYGONS.getLocalPart());
         raw.put("format", "image/jpeg");
@@ -1273,7 +1273,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testTransparencyValueInInspireGetMapRequest() throws Exception {
         // Fix [GEOS-9646]: INSPIRE validation get errors of GetMapRequest parameters.
-        HashMap raw = new HashMap();
+        HashMap raw = new HashMap<>();
         raw.put("layers", getLayerId(BASIC_POLYGONS));
         raw.put("styles", BASIC_POLYGONS.getLocalPart());
         raw.put("format", "image/jpeg");
@@ -1315,7 +1315,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             int port = server.getAddress().getPort();
 
             // nothing matches the required style name
-            HashMap kvp = new HashMap();
+            HashMap kvp = new HashMap<>();
             URL url = new URL("http://localhost:" + port + "/sld/style.sld");
             kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
             kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -1355,7 +1355,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             int port = server.getAddress().getPort();
 
             // nothing matches the required style name
-            HashMap kvp = new HashMap();
+            HashMap kvp = new HashMap<>();
             URL url = new URL("http://localhost:" + port + "/sld/style.sld");
             kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
             kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -1387,7 +1387,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             owsRequest.setRawKvp(new HashMap<>());
             owsRequest.getRawKvp().put("viewParamsFormat", "XML");
             Dispatcher.REQUEST.set(owsRequest);
-            HashMap raw = new HashMap();
+            HashMap raw = new HashMap<>();
             raw.put("layers", getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS));
             raw.put("styles", "");
             raw.put("format", "image/jpeg");
@@ -1426,7 +1426,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             owsRequest.setRawKvp(new HashMap<>());
             owsRequest.getRawKvp().put("viewParamsFormat", "unknown-format");
             Dispatcher.REQUEST.set(owsRequest);
-            HashMap raw = new HashMap();
+            HashMap raw = new HashMap<>();
             raw.put("layers", getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS));
             raw.put("styles", "");
             raw.put("format", "image/jpeg");

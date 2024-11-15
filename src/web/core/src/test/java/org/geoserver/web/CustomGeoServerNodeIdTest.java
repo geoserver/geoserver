@@ -6,9 +6,7 @@
 package org.geoserver.web;
 
 import java.util.List;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.model.Model;
 import org.geoserver.GeoServerNodeData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -48,7 +46,6 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
 
     public static class CustomNodeInfo implements GeoServerNodeInfo {
         static String ID = null;
-        static String STYLE = null;
 
         @Override
         public String getId() {
@@ -57,14 +54,10 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
 
         @Override
         public GeoServerNodeData getData() {
-            return new GeoServerNodeData(ID, STYLE);
+            return new GeoServerNodeData(ID, null);
         }
 
         @Override
-        public void customize(WebMarkupContainer nodeInfoContainer) {
-            if (STYLE != null) {
-                nodeInfoContainer.add(new AttributeAppender("style", new Model<>(STYLE), ";"));
-            }
-        }
+        public void customize(WebMarkupContainer nodeInfoContainer) {}
     }
 }

@@ -20,6 +20,7 @@ import org.geoserver.monitor.ows.wfs.DescribeFeatureTypeHandler;
 import org.geoserver.monitor.ows.wfs.GetFeatureHandler;
 import org.geoserver.monitor.ows.wfs.LockFeatureHandler;
 import org.geoserver.monitor.ows.wfs.TransactionHandler;
+import org.geoserver.monitor.ows.wfs20.GetFeature20Handler;
 import org.geoserver.monitor.ows.wms.GetFeatureInfoHandler;
 import org.geoserver.monitor.ows.wms.GetLegendGraphicHandler;
 import org.geoserver.monitor.ows.wms.GetMapHandler;
@@ -45,6 +46,8 @@ public class MonitorCallback implements DispatcherCallback {
         handlers.add(new GetFeatureHandler(monitor.getConfig(), catalog));
         handlers.add(new LockFeatureHandler(monitor.getConfig(), catalog));
         handlers.add(new TransactionHandler(monitor.getConfig(), catalog));
+
+        handlers.add(new GetFeature20Handler(monitor.getConfig(), catalog));
 
         // wms
         handlers.add(new GetFeatureInfoHandler(monitor.getConfig()));

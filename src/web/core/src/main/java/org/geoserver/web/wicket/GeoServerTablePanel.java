@@ -15,7 +15,8 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnEventHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -50,6 +51,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
  *
  * @param <T>
  */
+// TODO WICKET8 - Verify this page works OK
 public abstract class GeoServerTablePanel<T> extends Panel {
 
     private static final long serialVersionUID = -5275268446479549108L;
@@ -154,17 +156,20 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter =
-                new TextField<String>("filter", new Model<>()) {
+                new TextField<>("filter", new Model<>()) {
                     private static final long serialVersionUID = -1252520208030081584L;
 
                     @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        tag.put(
-                                "onkeypress",
-                                "if(event.keyCode == 13) {document.getElementById('"
-                                        + hiddenSubmit.getMarkupId()
-                                        + "').click();return false;}");
+                    public void renderHead(IHeaderResponse response) {
+                        super.renderHead(response);
+
+                        response.render(
+                                OnEventHeaderItem.forComponent(
+                                        this,
+                                        "keypress",
+                                        "if(event.keyCode == 13) {document.getElementById('"
+                                                + hiddenSubmit.getMarkupId()
+                                                + "').click();return false;}"));
                     }
 
                     @Override
@@ -196,7 +201,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer.setOutputMarkupId(true);
         add(listContainer);
         dataView =
-                new DataView<T>("items", dataProvider) {
+                new DataView<>("items", dataProvider) {
                     private static final long serialVersionUID = 7201317388415148823L;
 
                     @Override
@@ -243,7 +248,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
     protected ListView<Property<T>> buildLinksListView(
             final GeoServerDataProvider<T> dataProvider) {
-        return new ListView<Property<T>>("sortableLinks", dataProvider.getVisibleProperties()) {
+        return new ListView<>("sortableLinks", dataProvider.getVisibleProperties()) {
 
             private static final long serialVersionUID = -7565457802398721254L;
 
@@ -271,7 +276,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         // make sure we don't serialize the list, but get it fresh from the dataProvider,
         // to avoid serialization issues seen in GEOS-8273
         IModel<List<Property<T>>> propertyList =
-                new LoadableDetachableModel<List<Property<T>>>() {
+                new LoadableDetachableModel<>() {
 
                     @Override
                     protected List<Property<T>> load() {
@@ -280,7 +285,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 };
         // create one component per viewable property
         ListView<Property<T>> items =
-                new ListView<Property<T>>("itemProperties", propertyList) {
+                new ListView<>("itemProperties", propertyList) {
 
                     private static final long serialVersionUID = -4552413955986008990L;
 
@@ -501,7 +506,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             static final long serialVersionUID = 5334592790005438960L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 updateFilter(target, filter.getDefaultModelObjectAsString());
                 rememeberFilter();
             }
@@ -511,7 +516,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** The hidden button that will submit the form when the user presses enter in the text field */
     AjaxLink getClearFilterLink(String previousInput) {
         AjaxLink clearButton =
-                new AjaxLink("clear") {
+                new AjaxLink<>("clear") {
 
                     static final long serialVersionUID = 5334592790005438960L;
 
@@ -556,7 +561,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * direction when clicked again
      */
     <S> AjaxLink<S> sortLink(final GeoServerDataProvider<T> dataProvider, ListItem<S> item) {
-        return new AjaxLink<S>("link", item.getModel()) {
+        return new AjaxLink<>("link", item.getModel()) {
 
             private static final long serialVersionUID = -6180419488076488737L;
 
@@ -730,7 +735,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             super(id);
 
             add(navigator = updatingPagingNavigator());
-            add(matched = new Label("filterMatch", new Model<String>()));
+            add(matched = new Label("filterMatch", new Model<>()));
             updateMatched();
         }
 
@@ -775,11 +780,6 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         @Override
         public void setObject(Boolean object) {
             selection[index] = object.booleanValue();
-        }
-
-        @Override
-        public void detach() {
-            // nothing to do
         }
     }
 

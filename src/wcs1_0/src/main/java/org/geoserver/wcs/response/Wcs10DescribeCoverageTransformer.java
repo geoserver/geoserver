@@ -165,7 +165,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
             List<CoverageInfo> coverages;
             final boolean skipMisconfiguredThisTime;
-            if (request.getCoverage() == null || request.getCoverage().size() == 0) {
+            if (request.getCoverage() == null || request.getCoverage().isEmpty()) {
                 skipMisconfiguredThisTime = skipMisconfigured;
                 coverages = catalog.getCoverages();
             } else {

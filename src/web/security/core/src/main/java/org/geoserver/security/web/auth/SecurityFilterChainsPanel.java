@@ -56,7 +56,7 @@ public class SecurityFilterChainsPanel extends Panel {
 
         final boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole();
         add(
-                new AjaxLink("addServiceChain") {
+                new AjaxLink<>("addServiceChain") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         // create a new config class and instantiate the page
@@ -72,7 +72,7 @@ public class SecurityFilterChainsPanel extends Panel {
                 }.setEnabled(isAdmin));
 
         add(
-                new AjaxLink("addHtmlChain") {
+                new AjaxLink<>("addHtmlChain") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         // create a new config class and instantiate the page
@@ -149,7 +149,7 @@ public class SecurityFilterChainsPanel extends Panel {
                 final Property<RequestFilterChain> property) {
             @SuppressWarnings("unchecked")
             IModel<String> cast = (IModel<String>) property.getModel(model);
-            return new SimpleAjaxLink<String>(id, cast) {
+            return new SimpleAjaxLink<>(id, cast) {
 
                 String chainName = (String) property.getModel(model).getObject();
 
@@ -280,9 +280,9 @@ public class SecurityFilterChainsPanel extends Panel {
                         @Override
                         protected void onComponentTag(ComponentTag tag) {
                             if (getChains().indexOf(theChain) == 0) {
-                                tag.put("style", "visibility:hidden");
+                                tag.put("class", "visibility-hidden");
                             } else {
-                                tag.put("style", "visibility:visible");
+                                tag.put("class", "visibility-visible");
                             }
                         }
                     };
@@ -317,9 +317,9 @@ public class SecurityFilterChainsPanel extends Panel {
                         @Override
                         protected void onComponentTag(ComponentTag tag) {
                             if (getChains().indexOf(theChain) == getChains().size() - 1) {
-                                tag.put("style", "visibility:hidden");
+                                tag.put("class", "visibility-hidden");
                             } else {
-                                tag.put("style", "visibility:visible");
+                                tag.put("class", "visibility-visible");
                             }
                         }
                     };

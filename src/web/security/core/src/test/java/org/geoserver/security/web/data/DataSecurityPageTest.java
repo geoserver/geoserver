@@ -6,15 +6,14 @@
 package org.geoserver.security.web.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.MockData;
@@ -80,7 +79,7 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
     protected void simulateDeleteSubmit() throws Exception {
 
         DataAccessRuleDAO.get().reload();
-        assertTrue(DataAccessRuleDAO.get().getRules().size() > 0);
+        assertFalse(DataAccessRuleDAO.get().getRules().isEmpty());
 
         SelectionDataRuleRemovalLink link = (SelectionDataRuleRemovalLink) getRemoveLink();
         Method m =
@@ -120,15 +119,6 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
         final FormTester form = tester.newFormTester("catalogModeForm");
 
         form.select("catalogMode", 1);
-
-        form.getForm()
-                .visitChildren(
-                        RadioChoice.class,
-                        (component, visit) -> {
-                            if (component.getId().equals("catalogMode")) {
-                                ((RadioChoice) component).onSelectionChanged();
-                            }
-                        });
 
         assertEquals(
                 "MIXED",

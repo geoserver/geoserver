@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.map;
 
-import it.geosolutions.jaiext.BufferedImageAdapter;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -301,9 +300,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                                 LOGGER.finer("Metatile split on BufferedImage");
                             }
                             final BufferedImage image = (BufferedImage) metaTile;
-                            final BufferedImage subimage =
-                                    image.getSubimage(x, y, tileSize, tileSize);
-                            tile = new BufferedImageAdapter(subimage);
+                            tile = image.getSubimage(x, y, tileSize, tileSize);
                             break;
                         default:
                             throw new IllegalStateException(

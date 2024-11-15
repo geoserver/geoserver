@@ -40,7 +40,7 @@ public class AuthenticationChainPalette extends Palette<String> {
                 id,
                 model,
                 choicesModel,
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public String getIdValue(String object, int index) {
                         return (String) getDisplayValue(object);
@@ -68,11 +68,6 @@ public class AuthenticationChainPalette extends Palette<String> {
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
-        }
-
-        @Override
-        public void detach() {
-            // do nothing
         }
 
         @Override

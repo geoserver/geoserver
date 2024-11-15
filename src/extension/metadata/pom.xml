@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.wicketstuff</groupId>
       <artifactId>wicketstuff-progressbar</artifactId>
-      <version>8.3.0</version>
+      <version>${wicket.version}</version>
     </dependency>
     <!--Yaml Parser -->
     <dependency>
@@ -71,6 +71,11 @@
       <groupId>org.geoserver.csw</groupId>
       <artifactId>gs-csw-iso</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -45,7 +45,7 @@ Data
 
 The :ref:`Data` section contains configuration options for all the different data-related settings. 
 
-* The :ref:`Layer Preview <layerpreview>` page provides links to layer previews in various output formats, including the common OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.
+* The :ref:`Layer Preview <layerpreview>` page provides links to layer previews in different output formats, including the frequently used OpenLayers and KML formats. This page helps to visually verify and explore the configuration of a particular layer.
 
   **You do not need to be logged into GeoServer to access the Layer Preview.**
 
@@ -61,7 +61,7 @@ The :ref:`Data` section contains configuration options for all the different dat
 
 In each of these pages that contain a table, there are three different ways to locate an object: sorting, searching, and paging. To alphabetically sort a data type, click on the column header. For simple searching, enter the search criteria in the search box and hit Enter. And to page through the entries (25 at a time), use the arrow buttons located on the bottom and top of the table.
 
-**These pages are shown to administrators, and users that have data admin permissions.**
+**These pages are shown to administrators, and users that have workspace or layer admin permissions.**
 
 Services
 --------

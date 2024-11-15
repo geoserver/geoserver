@@ -17,6 +17,7 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.IDS;
+import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
 import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
 import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
@@ -318,8 +319,9 @@ public class FeatureService {
                         GEOJSON,
                         /* GMLSF0, GS does not use the gmlsf namespace */
                         CRS_BY_REFERENCE,
-                        FEATURES_FILTER,
                         FILTER,
+                        QUERYABLES,
+                        FEATURES_FILTER,
                         SEARCH,
                         ECQL,
                         ECQL_TEXT,

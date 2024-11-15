@@ -164,19 +164,17 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         try {
             final Set<String> layerNames = tileLayerCatalog.getLayerNames();
 
-            Function<String, Optional<TileLayer>> lazyLayerFetch =
-                    CatalogConfiguration.this::getLayer;
+            Function<String, Optional<TileLayer>> lazyLayerFetch = this::getLayer;
 
             // removing the NULL results
             // TODO Should deep copy or wrap with modification proxies,
             // see
             // org.geoserver.gwc.layer.CatalogConfigurationLayerConformanceTest.testModifyCallRequiredToChangeInfoFromGetInfo()
-            return Lists.newArrayList(
-                    layerNames.stream()
-                            .map(lazyLayerFetch)
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(Collectors.toList()));
+            return layerNames.stream()
+                    .map(lazyLayerFetch)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
         } finally {
             lock.releaseReadLock();
         }

@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.apache.commons.lang3.function.Failable;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -152,7 +153,7 @@ public class ImportProcessTest extends WPSTestSupport {
                         return new DecoratingSimpleFeatureIterator(super.features()) {
                             @Override
                             public SimpleFeature next() throws NoSuchElementException {
-
+                                Failable.run(() -> latch.await());
                                 return super.next();
                             }
                         };

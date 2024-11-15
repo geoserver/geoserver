@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -30,7 +30,7 @@
     <!--  NetCDF logging dependencies -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
     </dependency>
 
     <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-netcdf</artifactId>
-      <version>${gt.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>slf4j-api</artifactId>

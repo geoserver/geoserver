@@ -12,7 +12,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -516,7 +515,6 @@ public class TilesService {
         if (tileBytes == null) {
             return "EMPTY_TILE";
         }
-        final byte[] hash = MessageDigest.getInstance("MD5").digest(tileBytes);
         return GWC.getETag(tileBytes);
     }
 

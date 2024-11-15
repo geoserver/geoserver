@@ -15,7 +15,7 @@ import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
 
 /**
- * Binding object for the type http://www.opengis.net/wfs:PropertyType.
+ * Binding object for the type {@code http://www.opengis.net/wfs:PropertyType}.
  *
  * <p>
  *

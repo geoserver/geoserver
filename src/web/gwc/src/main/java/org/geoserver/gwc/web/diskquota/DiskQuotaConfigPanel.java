@@ -238,7 +238,7 @@ public class DiskQuotaConfigPanel extends Panel {
         final IModel<Quota> globalQuotaModel = new PropertyModel<>(diskQuotaModel, "globalQuota");
 
         final IModel<Quota> globalUsedQuotaModel =
-                new LoadableDetachableModel<Quota>() {
+                new LoadableDetachableModel<>() {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -338,7 +338,7 @@ public class DiskQuotaConfigPanel extends Panel {
                 params.put("timeUnit", timeUnits);
             }
             IModel<String> lastRunModel =
-                    new StringResourceModel(resourceId, this, new Model(params));
+                    new StringResourceModel(resourceId, this, new Model<>(params));
             add(new Label("cleanUpLastRun", lastRunModel));
         }
     }

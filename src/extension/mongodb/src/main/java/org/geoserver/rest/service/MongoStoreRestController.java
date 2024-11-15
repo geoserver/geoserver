@@ -65,7 +65,7 @@ public class MongoStoreRestController extends AbstractGeoServerController {
     public ResponseEntity<?> handleRestException(RestException ex) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<Object>(ex.toString(), headers, ex.getStatus());
+        return new ResponseEntity<>(ex.toString(), headers, ex.getStatus());
     }
 
     /** Clears schema files and entries for the provided MongoDB store. */

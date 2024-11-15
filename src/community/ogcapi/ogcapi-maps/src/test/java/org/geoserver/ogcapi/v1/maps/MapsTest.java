@@ -5,13 +5,10 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import com.jayway.jsonpath.DocumentContext;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -47,8 +44,7 @@ public class MapsTest extends MapsTestSupport {
         Document document =
                 getAsJSoup(
                         "ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html&datetime=2012-02-12T00:00:00Z");
-        boolean found = searchParameter(document, "\"datetime\": '2012-02-12T00:00:00Z'");
-        assertTrue(found);
+        assertEquals("2012-02-12T00:00:00Z", getParameterValue(document, "datetime"));
     }
 
     @Test
@@ -57,27 +53,15 @@ public class MapsTest extends MapsTestSupport {
         // failed here when no datetime provided, FTL processing error, null on js_string
         Document document =
                 getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEnd/styles/Default/map?f=html");
-        boolean found = searchParameter(document, "\"datetime\": '2012-02-12T00:00:00Z'");
-        assertFalse(found);
+        assertNull(getParameterValue(document, "datetime"));
     }
 
-    private static boolean searchParameter(Document document, String keyValue) {
-        Elements scriptsOnPage = document.select("script");
-        Matcher matcher = null;
-        // check that the datetime is in the javascript parameters
-        String keyToFind = "datetime";
-        Pattern pattern = Pattern.compile("\"" + keyToFind + "\":\\s*'(.*?)'");
-        boolean found = false;
-        for (Element element : scriptsOnPage) {
-            for (DataNode node : element.dataNodes()) {
-                matcher = pattern.matcher(node.getWholeData());
-                while (matcher.find()) {
-                    if (matcher.group().equals(keyValue)) {
-                        found = true;
-                    }
-                }
-            }
-        }
-        return found;
+    private static String getParameterValue(Document document, String key) {
+        Elements parameters = document.select("input[type='hidden'][title='" + key + "']");
+        if (parameters.isEmpty()) return null;
+        if (parameters.size() > 1)
+            fail("Found more than one element with key " + key + ": " + parameters);
+        Element parameter = parameters.first();
+        return parameter.attr("value");
     }
 }

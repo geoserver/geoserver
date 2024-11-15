@@ -53,7 +53,7 @@ public class MimeTypesFormComponent extends FormComponentPanel<String> {
 
         add(
                 palette =
-                        new Palette<String>(
+                        new Palette<>(
                                 "palette",
                                 model,
                                 choicesModel,

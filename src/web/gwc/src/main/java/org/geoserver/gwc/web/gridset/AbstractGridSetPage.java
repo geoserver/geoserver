@@ -45,6 +45,7 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 
+// TODO WICKET8 - Verify this page works OK
 abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = 2977633539319630433L;
@@ -349,8 +350,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         public GridSetCRSPanel(String id, IModel<GridSetInfo> model) {
             super(id, new PropertyModel<>(model, "crs"));
             this.infoModel = model;
-            units = new Label("units", new Model<String>());
-            metersPerUnit = new Label("metersPerUnit", new Model<String>());
+            units = new Label("units", new Model<>());
+            metersPerUnit = new Label("metersPerUnit", new Model<>());
             units.setOutputMarkupId(true);
             metersPerUnit.setOutputMarkupId(true);
 
@@ -467,13 +468,13 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 onSave(target, form);
             }
         };

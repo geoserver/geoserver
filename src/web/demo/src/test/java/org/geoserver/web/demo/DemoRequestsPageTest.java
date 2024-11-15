@@ -6,6 +6,7 @@
 package org.geoserver.web.demo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -64,32 +65,31 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
         var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
-        assertEquals(true, model.isPrettyXML());
+        assertTrue(model.isPrettyXML());
 
         requestFormTester.setValue("prettyXML", false);
 
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
         model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
-        assertEquals(false, model.isPrettyXML());
+        assertFalse(model.isPrettyXML());
     }
 
     @Test
     public void testOpenNewPage() {
         final FormTester requestFormTester = tester.newFormTester("demoRequestsForm");
-
         requestFormTester.select("demoRequestsList", 0);
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
         var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
-        assertEquals(false, model.isOpenNewWindow());
+        assertFalse(model.isOpenNewWindow());
 
         requestFormTester.setValue("openNewWindow", true);
 
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
         model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
-        assertEquals(true, model.isOpenNewWindow());
+        assertTrue(model.isOpenNewWindow());
     }
 
     @Test

@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -27,6 +28,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 
+// TODO WICKET8 - Verify this page works OK
 public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
 
     GeoServerTablePanel<RuleModel> rulesPanel;
@@ -35,7 +37,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
         setHeaderPanel(headerPanel());
         add(
                 rulesPanel =
-                        new GeoServerTablePanel<RuleModel>("rulesPanel", new RulesModel(), true) {
+                        new GeoServerTablePanel<>("rulesPanel", new RulesModel(), true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -105,14 +107,14 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
     private Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         header.add(
-                new AjaxLink<Object>("addNew") {
+                new AjaxLink<>("addNew") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         setResponsePage(new ParamsExtractorRulePage(Optional.empty()));
                     }
                 });
         header.add(
-                new AjaxLink<Object>("removeSelected") {
+                new AjaxLink<>("removeSelected") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         RulesModel.delete(
@@ -131,7 +133,7 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
             super(id);
             this.setOutputMarkupId(true);
             ImageAjaxLink<Object> editLink =
-                    new ImageAjaxLink<Object>(
+                    new ImageAjaxLink<>(
                             "edit", new PackageResourceReference(getClass(), "img/edit.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
@@ -155,19 +157,14 @@ public class ParamsExtractorConfigPage extends GeoServerSecuredPage {
             super(id);
             this.setOutputMarkupId(true);
             CheckBox activateButton =
-                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated")) {
-
+                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated"));
+            activateButton.add(
+                    new FormComponentUpdatingBehavior() {
                         @Override
-                        public void onSelectionChanged() {
-                            super.onSelectionChanged();
+                        public void onUpdate() {
                             RulesModel.saveOrUpdate(ruleModel);
                         }
-
-                        @Override
-                        protected boolean wantOnSelectionChangedNotifications() {
-                            return true;
-                        }
-                    };
+                    });
             add(activateButton);
         }
     }

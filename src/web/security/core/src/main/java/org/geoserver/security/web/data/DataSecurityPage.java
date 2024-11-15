@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -47,7 +50,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
         DataAccessRuleProvider provider = new DataAccessRuleProvider();
         add(
                 rules =
-                        new GeoServerTablePanel<DataAccessRule>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -65,7 +68,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(rules.getSelection().size() > 0);
+                                removal.setEnabled(!rules.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });
@@ -84,6 +87,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
 
         catalogModeChoice =
                 new RadioChoice<>("catalogMode", CATALOG_MODES, new CatalogModeRenderer());
+        catalogModeChoice.add(new FormComponentUpdatingBehavior() {});
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
 
@@ -106,9 +110,33 @@ public class DataSecurityPage extends AbstractSecurityPage {
         form.add(new BookmarkablePageLink<>("cancel", GeoServerHomePage.class));
     }
 
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // Content-Security-Policy: inline styles must be nonce=...
+        String css =
+                " #catalogMode {\n"
+                        + "         display:block;\n"
+                        + "         padding-top: 0.5em;\n"
+                        + "       }\n"
+                        + "       #catalogMode input {\n"
+                        + "          display: block;\n"
+                        + "          float: left;\n"
+                        + "          clear:left;\n"
+                        + "          padding-top:0.5em;\n"
+                        + "          margin-bottom: 0.5em;\n"
+                        + "       }\n"
+                        + "       #catalogMode label {\n"
+                        + "          clear:right;\n"
+                        + "          margin-bottom: 0.5em;\n"
+                        + "       }";
+        response.render(
+                CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
+    }
+
     Component editRuleLink(
             String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
-        return new SimpleAjaxLink<DataAccessRule>(id, itemModel, property.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
@@ -121,9 +149,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(
-                new BookmarkablePageLink<NewDataAccessRulePage>(
-                        "addNew", NewDataAccessRulePage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewDataAccessRulePage.class));
 
         // the removal button
         header.add(removal = new SelectionDataRuleRemovalLink("removeSelected", rules, dialog));

@@ -13,7 +13,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -39,6 +38,7 @@ import org.geoserver.web.GeoServerApplication;
  *
  * @author Andrea Aime - OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 public class MetadataLinkEditor extends Panel {
     private static final long serialVersionUID = -5721941745847988670L;
     /**
@@ -77,7 +77,7 @@ public class MetadataLinkEditor extends Panel {
         table.setOutputMarkupId(true);
         container.add(table);
         links =
-                new ListView<MetadataLinkInfo>("links", metadataLinksModel) {
+                new ListView<>("links", metadataLinksModel) {
 
                     private static final long serialVersionUID = -3241009112151911288L;
 
@@ -125,7 +125,7 @@ public class MetadataLinkEditor extends Panel {
 
                         // remove link
                         AjaxLink<MetadataLinkInfo> link =
-                                new AjaxLink<MetadataLinkInfo>("removeLink", item.getModel()) {
+                                new AjaxLink<>("removeLink", item.getModel()) {
 
                                     private static final long serialVersionUID =
                                             -6204300287066695521L;
@@ -155,7 +155,7 @@ public class MetadataLinkEditor extends Panel {
                     private static final long serialVersionUID = -695617463194724617L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         MetadataLinkInfo link = getCatalog().getFactory().createMetadataLink();
                         link.setMetadataType(LINK_TYPES.get(0));
                         link.setType("text/plain");
@@ -169,7 +169,7 @@ public class MetadataLinkEditor extends Panel {
     }
 
     private void updateLinksVisibility() {
-        boolean anyLink = metadataLinksModel.getObject().size() > 0;
+        boolean anyLink = !metadataLinksModel.getObject().isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }

@@ -7,6 +7,8 @@ package org.geoserver.security.web.passwd;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -24,7 +26,7 @@ public class PasswordPage extends AbstractSecurityPage {
 
         form.add(new MasterPasswordProviderChoice("providerName"));
         form.add(
-                new Link("changePassword") {
+                new Link<>("changePassword") {
                     @Override
                     public void onClick() {
                         MasterPasswordChangePage page = new MasterPasswordChangePage();
@@ -34,7 +36,7 @@ public class PasswordPage extends AbstractSecurityPage {
                 });
 
         form.add(
-                new Link("masterPasswordInfo") {
+                new Link<>("masterPasswordInfo") {
                     @Override
                     public void onClick() {
                         MasterPasswordInfoPage page = new MasterPasswordInfoPage();
@@ -63,11 +65,20 @@ public class PasswordPage extends AbstractSecurityPage {
                     }
                 });
         form.add(
-                new AjaxLink("cancel") {
+                new AjaxLink<>("cancel") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         doReturn();
                     }
                 });
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // Content-Security-Policy: inline styles must be nonce=...
+        String css = " #masterPasswordProvider li {\n" + "     padding-right: 1em;\n" + "   }";
+        response.render(
+                CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataAccessRulePage"));
     }
 }

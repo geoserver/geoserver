@@ -2,7 +2,7 @@
       <#if model.getProperties()??>
       <ul id="queryables">
       <#list model.getProperties() as name, definition>
-        <li><b>${name}</b>: ${definition.getDescription()}</li>
+        <li><b>${name}</b>: ${definition.getTitle()}</li>
       </#list>
       </ul>
       <#else>

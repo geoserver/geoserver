@@ -30,7 +30,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
 
         public LDAPAuthenticationPanel(String id) {
             super(id);
-            add(new TextField<String>("user"));
+            add(new TextField<>("user"));
 
             PasswordTextField pwdField = new PasswordTextField("password");
             // avoid reseting the password which results in an
@@ -48,22 +48,22 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
     public LDAPUserGroupServicePanel(String id, IModel<LDAPUserGroupServiceConfig> model) {
         super(id, model);
         /** LDAP server parameters */
-        add(new TextField<String>("serverURL").setRequired(true));
+        add(new TextField<>("serverURL").setRequired(true));
         add(new CheckBox("useTLS"));
         /** group options */
-        add(new TextField<String>("groupSearchBase").setRequired(true));
-        add(new TextField<String>("groupNameAttribute"));
-        add(new TextField<String>("groupFilter"));
-        add(new TextField<String>("allGroupsSearchFilter"));
+        add(new TextField<>("groupSearchBase").setRequired(true));
+        add(new TextField<>("groupNameAttribute"));
+        add(new TextField<>("groupFilter"));
+        add(new TextField<>("allGroupsSearchFilter"));
         /** membership options */
-        add(new TextField<String>("groupSearchFilter"));
-        add(new TextField<String>("groupMembershipAttribute"));
+        add(new TextField<>("groupSearchFilter"));
+        add(new TextField<>("groupMembershipAttribute"));
         /** user options */
-        add(new TextField<String>("userSearchBase").setRequired(true));
-        add(new TextField<String>("userNameAttribute"));
-        add(new TextField<String>("userFilter"));
-        add(new TextField<String>("allUsersSearchFilter"));
-        add(new TextField<String>("populatedAttributes"));
+        add(new TextField<>("userSearchBase").setRequired(true));
+        add(new TextField<>("userNameAttribute"));
+        add(new TextField<>("userFilter"));
+        add(new TextField<>("allUsersSearchFilter"));
+        add(new TextField<>("populatedAttributes"));
         hierarchicalGroupsInit();
 
         /** privileged account for querying the LDAP server (if needed) */
@@ -119,7 +119,7 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
                     }
                 };
         add(useNestedCheckbox);
-        nestedSearchFieldsContainer.add(new TextField<String>(MAX_GROUP_SEARCH_LEVEL));
-        nestedSearchFieldsContainer.add(new TextField<String>(NESTED_GROUP_SEARCH_FILTER));
+        nestedSearchFieldsContainer.add(new TextField<>(MAX_GROUP_SEARCH_LEVEL));
+        nestedSearchFieldsContainer.add(new TextField<>(NESTED_GROUP_SEARCH_FILTER));
     }
 }

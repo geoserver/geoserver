@@ -7,8 +7,8 @@ package org.geoserver.importer.web;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +35,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -64,6 +63,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ImportDataPage extends GeoServerSecuredPage {
 
@@ -83,16 +83,16 @@ public class ImportDataPage extends GeoServerSecuredPage {
     String storeName;
 
     ImportContextTable importTable;
-    AjaxLink removeImportLink;
+    AjaxLink<?> removeImportLink;
 
     GeoServerDialog dialog;
 
     public ImportDataPage(PageParameters params) {
-        Form form = new Form("form");
+        Form<Object> form = new Form<>("form");
         add(form);
 
         sourceList =
-                new AjaxRadioPanel<Source>(
+                new AjaxRadioPanel<>(
                         "sources", Arrays.asList(Source.values()), Source.SPATIAL_FILES) {
                     @Override
                     protected void onRadioSelect(AjaxRequestTarget target, Source newSelection) {
@@ -158,7 +158,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         WorkspaceInfo ws = workspace.getObject();
         store = new StoreModel<>(ws != null ? catalog.getDefaultDataStore(ws) : null);
         storeChoice =
-                new DropDownChoice<StoreInfo>(
+                new DropDownChoice<>(
                         "store",
                         store,
                         new EnabledStoresModel(workspace),
@@ -166,14 +166,14 @@ public class ImportDataPage extends GeoServerSecuredPage {
                     @Override
                     protected String getNullValidKey() {
                         return ImportDataPage.class.getSimpleName() + "." + super.getNullValidKey();
-                    };
+                    }
                 };
         storeChoice.setOutputMarkupId(true);
 
         storeChoice.setNullValid(true);
         form.add(storeChoice);
 
-        form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
+        form.add(statusLabel = new Label("status", new Model<>()).setOutputMarkupId(true));
         form.add(new SubmitLink(form));
         form.add(new CancelLink().setOutputMarkupId(true).setEnabled(false));
 
@@ -194,7 +194,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
                         removeImportLink.setEnabled(!getSelection().isEmpty());
                         target.add(removeImportLink);
-                    };
+                    }
                 };
         importTable.setOutputMarkupId(true);
         importTable.setFilterable(false);
@@ -342,7 +342,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             extra.add(new ExternalLink("link", source.getHelpLink(ImportDataPage.this)));
 
             if (!source.isAvailable()) {
-                get("name").add(AttributeModifier.replace("style", "font-style: italic;"));
+                get("name").add(AttributeModifier.replace("class", "italic"));
                 add(
                         AttributeModifier.replace(
                                 "title",
@@ -475,12 +475,12 @@ public class ImportDataPage extends GeoServerSecuredPage {
         }
 
         @Override
-        protected void onError(AjaxRequestTarget target, Form<?> form) {
+        protected void onError(AjaxRequestTarget target) {
             addFeedbackPanels(target);
         }
 
         @Override
-        protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
+        protected void onSubmit(AjaxRequestTarget target) {
 
             // update status to indicate we are working
             statusLabel.add(AttributeModifier.replace("class", "working-link"));
@@ -488,7 +488,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
             target.add(statusLabel);
 
             // enable cancel and disable this
-            Component cancel = form.get("cancel");
+            Component cancel = getForm().get("cancel");
             cancel.setEnabled(true);
             target.add(cancel);
 
@@ -503,13 +503,13 @@ public class ImportDataPage extends GeoServerSecuredPage {
             } catch (Exception e) {
                 error(e);
                 LOGGER.log(Level.WARNING, "Error creating import", e);
-                resetButtons(form, target);
+                resetButtons(getForm(), target);
                 return;
             }
 
             cancel.setDefaultModelObject(jobid);
             this.add(
-                    new AbstractAjaxTimerBehavior(Duration.seconds(3)) {
+                    new AbstractAjaxTimerBehavior(Duration.ofSeconds(3)) {
                         @Override
                         protected void onTimer(AjaxRequestTarget target) {
                             Importer importer = ImporterWebUtils.importer();
@@ -545,7 +545,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                                     stop(null);
 
                                     // update the button back to original state
-                                    resetButtons(form, target);
+                                    resetButtons(getForm(), target);
 
                                     addFeedbackPanels(target);
                                 }
@@ -557,20 +557,14 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
                             statusLabel.setDefaultModelObject(msg);
                             target.add(statusLabel);
-                        };
+                        }
 
                         @Override
-                        public boolean canCallListenerInterface(
-                                Component component, Method method) {
-                            if (self.equals(component)
-                                    && method.getDeclaringClass()
-                                            .equals(
-                                                    org.apache.wicket.behavior.IBehaviorListener
-                                                            .class)
-                                    && method.getName().equals("onRequest")) {
+                        public boolean canCallListener(Component component) {
+                            if (self.equals(component)) {
                                 return true;
                             }
-                            return super.canCallListenerInterface(component, method);
+                            return super.canCallListener(component);
                         }
                     });
         }
@@ -585,7 +579,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         protected void disableLink(ComponentTag tag) {
             super.disableLink(tag);
             ImporterWebUtils.disableLink(tag);
-        };
+        }
 
         @Override
         public void onClick(AjaxRequestTarget target) {

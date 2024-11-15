@@ -40,7 +40,7 @@ public class GetMapDefaults {
             // TODO: should this be part of core WMS logic? is so lets throw
             // this
             // into the GetMapKvpRequestReader
-            if ((getMap.getLayers() != null) && (getMap.getLayers().size() > 0)) {
+            if ((getMap.getLayers() != null) && (!getMap.getLayers().isEmpty())) {
                 ArrayList<Style> styles = new ArrayList<>(getMap.getLayers().size());
 
                 for (int i = 0; i < getMap.getLayers().size(); i++) {

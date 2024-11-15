@@ -10,12 +10,17 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxFallbackLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -28,6 +33,7 @@ import org.apache.wicket.util.convert.IConverter;
  *
  * @author Andrea Aime - OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public abstract class FileDataView extends Panel {
     private static final IConverter<File> FILE_NAME_CONVERTER =
@@ -102,7 +108,7 @@ public abstract class FileDataView extends Panel {
         add(table);
 
         DataView<File> fileTable =
-                new DataView<File>("files", fileProvider) {
+                new DataView<>("files", fileProvider) {
 
                     @Override
                     protected void populateItem(final Item<File> item) {
@@ -117,7 +123,7 @@ public abstract class FileDataView extends Panel {
                                 new IndicatingAjaxFallbackLink<Void>("nameLink") {
 
                                     @Override
-                                    public void onClick(AjaxRequestTarget target) {
+                                    public void onClick(Optional<AjaxRequestTarget> target) {
                                         linkNameClicked(item.getModelObject(), target);
                                     }
                                 };
@@ -151,16 +157,26 @@ public abstract class FileDataView extends Panel {
                     }
                 };
 
-        fileContent =
-                new WebMarkupContainer("fileContent") {
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        if (tableHeight != null) {
-                            tag.getAttributes()
-                                    .put("style", "overflow:auto; height:" + tableHeight);
+        fileContent = new WebMarkupContainer("fileContent");
+        if (tableHeight != null) {
+            fileContent.setOutputMarkupId(true);
+            fileContent.add(AttributeModifier.replace("class", "overflowAuto"));
+            fileContent.add(
+                    new Behavior() {
+                        private static final long serialVersionUID = 4820788798632906484L;
+
+                        @Override
+                        public void renderHead(Component component, IHeaderResponse response) {
+                            String script =
+                                    "document.getElementById('"
+                                            + fileContent.getMarkupId()
+                                            + "').style.height = '"
+                                            + StringEscapeUtils.escapeEcmaScript(tableHeight)
+                                            + "';";
+                            response.render(OnLoadHeaderItem.forScript(script));
                         }
-                    }
-                };
+                    });
+        }
 
         fileContent.add(fileTable);
 
@@ -172,7 +188,7 @@ public abstract class FileDataView extends Panel {
         table.add(new OrderByBorder<>("sizeHeader", FileProvider.SIZE, fileProvider));
     }
 
-    protected abstract void linkNameClicked(File file, AjaxRequestTarget target);
+    protected abstract void linkNameClicked(File file, Optional<AjaxRequestTarget> target);
 
     private abstract static class StringConverter implements IConverter<File> {
 

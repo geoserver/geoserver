@@ -147,7 +147,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                             public void onClose(AjaxRequestTarget target) {
                                 // if the selection has been cleared out it's sign a deletion
                                 // occurred, so refresh the table
-                                if (users.getSelection().size() == 0) {
+                                if (users.getSelection().isEmpty()) {
                                     setEnabled(false);
                                     target.add(SelectionUserRemovalLink.this);
                                     target.add(users);

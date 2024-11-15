@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-ogcapi</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -73,7 +73,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-jdbc</artifactId>
-      <version>${gt.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

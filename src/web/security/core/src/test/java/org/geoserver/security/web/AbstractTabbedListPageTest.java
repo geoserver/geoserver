@@ -13,8 +13,8 @@ import java.util.Iterator;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
 
     protected String getItemsPath() {
         return getTabbedPanelPath() + ":panel:table:listContainer:items";
-    };
+    }
 
     protected abstract String getTabbedPanelPath();
 
@@ -126,7 +126,7 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
         tester.executeAjaxEvent(selectAllPath, "click");
 
         String windowPath = getTabbedPanelPath() + ":panel:dialog:dialog";
-        ModalWindow w = (ModalWindow) testPage.get(windowPath);
+        GSModalWindow w = (GSModalWindow) testPage.get(windowPath);
         assertNull(w.getTitle()); // window was not opened
         tester.executeAjaxEvent(pathForLink, "click");
         assertNotNull(w.getTitle()); // window was opened

@@ -862,7 +862,7 @@ public class GeoJSONTest extends WFSTestSupport {
     }
 
     private org.hamcrest.Matcher<JSONObject> encodesCRS(final CoordinateReferenceSystem crs) {
-        return new org.hamcrest.BaseMatcher<JSONObject>() {
+        return new org.hamcrest.BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {

@@ -36,7 +36,7 @@ public class TestCaseInfoXStreamLoader extends XStreamServiceLoader<TestCaseInfo
     protected TestCaseInfo createServiceFromScratch(GeoServer gs) {
         TestCaseInfoImpl testCaseInfo = new TestCaseInfoImpl();
         testCaseInfo.setName("tc");
-        return (TestCaseInfo) testCaseInfo;
+        return testCaseInfo;
     }
 
     @Override

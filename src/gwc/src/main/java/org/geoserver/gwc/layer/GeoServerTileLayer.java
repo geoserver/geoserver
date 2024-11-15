@@ -29,7 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,6 +67,7 @@ import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.capabilities.CapabilityUtil;
@@ -89,6 +94,7 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
+import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.LayerListenerList;
@@ -107,6 +113,8 @@ import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
+import org.geowebcache.storage.StorageBroker;
+import org.geowebcache.storage.TileObject;
 import org.geowebcache.util.GWCVars;
 import org.geowebcache.util.ServletUtils;
 import org.locationtech.jts.geom.Envelope;
@@ -296,8 +304,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
      *   <li>The layer is not errored ({@link #getConfigErrorMessage() == null}
      * </ul>
      *
-     * The layer is enabled by configuration if: the {@code GWC.enabled} metadata property is set to
-     * {@code true} in it's corresponding {@link LayerInfo} or {@link LayerGroupInfo} {@link
+     * <p>The layer is enabled by configuration if: the {@code GWC.enabled} metadata property is set
+     * to {@code true} in it's corresponding {@link LayerInfo} or {@link LayerGroupInfo} {@link
      * MetadataMap}, or there's no {@code GWC.enabled} property set at all but the global {@link
      * GWCConfig#isCacheLayersByDefault()} is {@code true}.
      *
@@ -555,7 +563,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             metaX = metaY = 1;
         }
 
-        ConveyorTile returnTile = getMetatilingReponse(tile, true, metaX, metaY);
+        ConveyorTile returnTile = getMetatilingResponse(tile, true, metaX, metaY);
 
         sendTileRequestedEvent(returnTile);
 
@@ -579,57 +587,318 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
     }
 
-    protected ConveyorTile getMetatilingReponse(
-            ConveyorTile tile, final boolean tryCache, final int metaX, final int metaY)
+    protected ConveyorTile getMetatilingResponse(
+            ConveyorTile conveyorTile, final boolean tryCache, final int metaX, final int metaY)
             throws GeoWebCacheException, IOException {
 
-        if (tryCache && tryCacheFetch(tile)) {
-            return finalizeTile(tile);
+        if (tryCache && tryCacheFetch(conveyorTile)) {
+            return finalizeTile(conveyorTile);
         }
 
-        final GeoServerMetaTile metaTile = createMetaTile(tile, metaX, metaY);
-        Lock lock = null;
-        try {
-            /* ****************** Acquire lock ******************* */
-            lock = GWC.get().getLockProvider().getLock(buildLockKey(tile, metaTile));
-            // got the lock on the meta tile, try again
-            if (tryCache && tryCacheFetch(tile)) {
-                LOGGER.finest(
-                        "--> "
-                                + Thread.currentThread().getName()
-                                + " returns cache hit for "
-                                + Arrays.toString(metaTile.getMetaGridPos()));
-            } else {
-                LOGGER.finer(
-                        "--> "
-                                + Thread.currentThread().getName()
-                                + " submitting getMap request for meta grid location "
-                                + Arrays.toString(metaTile.getMetaGridPos())
-                                + " on "
-                                + metaTile);
-                WebMap map;
-                try {
-                    long requestTime = System.currentTimeMillis();
-                    map = dispatchGetMap(tile, metaTile);
-                    checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
-                    metaTile.setWebMap(map);
+        final GeoServerMetaTile metaTile = createMetaTile(conveyorTile, metaX, metaY);
 
-                    setupCachingStrategy(tile);
-                    saveTiles(metaTile, tile, requestTime);
+        // should we use the metatile executor?
+        Executor executor = GWC.get().getMetaTilingExecutor();
+        if (Dispatcher.REQUEST.get() == null) {
+            // Metatiling concurrency is disabled if this isn't a user request.
+            // Concurrency reduces the user-experienced latency but isn't useful for seeding.
+            // In fact, it would be harmful for seeding  because it makes it more difficult for an
+            // administrator to control the amount of resource usage for significant seeding jobs.
+            executor = null;
+        }
+
+        /* ****************** Acquire lock on metatile ******************* */
+        final Lock metaTileLock = getLock(buildMetaTileLockKey(conveyorTile, metaTile));
+        try {
+            boolean foundInCache = false;
+            if (tryCache) {
+                // If we have an executor, tiles are saved asynchronously so we need to grab a
+                // tile lock to wait for the potential tile save to complete. Otherwise just read.
+                if (executor == null) {
+                    foundInCache = fetchPrimaryTile(conveyorTile, metaTile);
+                } else {
+                    /* ****************** Acquire lock on individual tile ******************* */
+                    // Will block here if there is an async thread currently saving this tile
+                    String lockKey = buildTileLockKey(conveyorTile, conveyorTile.getTileIndex());
+                    final Lock tileLock = getLock(lockKey);
+                    try {
+                        foundInCache = fetchPrimaryTile(conveyorTile, metaTile);
+                    } finally {
+                        /* ****************** Release lock on individual tile ******************* */
+                        tileLock.release();
+                    }
+                }
+            }
+
+            if (!foundInCache) {
+                LOGGER.log(
+                        Level.FINER,
+                        () ->
+                                "--> "
+                                        + Thread.currentThread().getName()
+                                        + " submitting getMap request for meta grid location "
+                                        + Arrays.toString(metaTile.getMetaGridPos())
+                                        + " on "
+                                        + metaTile);
+                try {
+                    computeMetaTile(conveyorTile, metaTile, executor);
                 } catch (Exception e) {
                     Throwables.throwIfInstanceOf(e, GeoWebCacheException.class);
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
                 }
             }
-            /* ****************** Return lock and response ****** */
+
         } finally {
-            if (lock != null) {
-                lock.release();
-            }
-            metaTile.dispose();
+            /* ****************** Release lock on metatile ******************* */
+            metaTileLock.release();
         }
 
-        return finalizeTile(tile);
+        return finalizeTile(conveyorTile);
+    }
+
+    /**
+     * Looks up the primary tile in a given meta-tile (the requested one). If the tile is found it
+     * means it has been computed since the first check, and the metatile gets disposed in
+     * preparation for an immediate return.
+     */
+    private boolean fetchPrimaryTile(ConveyorTile conveyorTile, GeoServerMetaTile metaTile) {
+        // quick return for the simple case
+        if (!tryCacheFetch(conveyorTile)) return false;
+
+        // otherwise log success, dispose the meta tile and return true
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            String threadName = Thread.currentThread().getName();
+            String gridPos = Arrays.toString(metaTile.getMetaGridPos());
+            LOGGER.finest("--> " + threadName + " returns cache hit for " + gridPos);
+        }
+        metaTile.dispose();
+        return true;
+    }
+
+    /** Acquires an exclusive lock for the given key (e.g., for a metatile or individual tile) */
+    private Lock getLock(String lockKey) throws GeoWebCacheException {
+        return GWC.get().getLockProvider().getLock(lockKey);
+    }
+
+    private void computeMetaTile(
+            ConveyorTile conveyorTile, GeoServerMetaTile metaTile, Executor executor)
+            throws Exception {
+        WebMap map;
+        long requestTime = System.currentTimeMillis();
+
+        // Actually fetch the metatile data
+        map = dispatchGetMap(conveyorTile, metaTile);
+
+        checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
+        metaTile.setWebMap(map);
+
+        setupCachingStrategy(conveyorTile);
+
+        final long[][] gridPositions = metaTile.getTilesGridPositions();
+        final long[] gridLoc = conveyorTile.getTileIndex();
+        final GridSubset gridSubset = getGridSubset(conveyorTile.getGridSetId());
+        final int numberOfTiles = gridPositions.length;
+
+        final int zoomLevel = (int) gridLoc[2];
+        final boolean store = this.getExpireCache(zoomLevel) != GWCVars.CACHE_DISABLE_CACHE;
+
+        List<CompletableFuture<?>> completableFutures = new ArrayList<>();
+
+        // A latch to track whether we've locked all the individual tiles or not, before
+        // we can release the metatile lock.
+        CountDownLatch tileLockLatch = new CountDownLatch(numberOfTiles);
+
+        for (int tileIndex = 0; tileIndex < numberOfTiles; tileIndex++) {
+            final long[] gridPos = gridPositions[tileIndex];
+            final int finalTileIndex = tileIndex;
+
+            boolean isConveyorTile = Arrays.equals(gridLoc, gridPos);
+            if (isConveyorTile || store) {
+                if (!gridSubset.covers(gridPos)) {
+                    // edge tile outside coverage, do not store it
+                    tileLockLatch.countDown();
+                    continue;
+                }
+
+                Supplier<Resource> encodeTileTask = encodeTileTask(metaTile, tileIndex);
+
+                if (isConveyorTile) {
+                    // Always encode the conveyor tile on the main thread, and set a tentative
+                    // creation time for it (the actual save time will be later, the first
+                    // time modification check from the client will re-fetch the tile
+                    Resource resource = encodeTileTask.get();
+                    conveyorTile.setBlob(resource);
+                    conveyorTile.getStorageObject().setCreated(requestTime);
+
+                    // Saving the conveyor tile in the cache can either happen
+                    // asynchronously or on the main thread
+                    Runnable saveTileTask =
+                            withTileLock(
+                                    conveyorTile,
+                                    tileLockLatch,
+                                    gridPos,
+                                    saveTileTask(
+                                            metaTile,
+                                            tileIndex,
+                                            conveyorTile,
+                                            resource,
+                                            requestTime));
+                    if (executor == null) {
+                        // Save in cache on main thread if there's no executor
+                        saveTileTask.run();
+                    } else {
+                        CompletableFuture<Void> completableFuture =
+                                CompletableFuture.runAsync(saveTileTask, executor);
+                        completableFutures.add(completableFuture);
+                    }
+                } else {
+                    // For all other tiles, either encode/save fully asynchronously or
+                    // fully on the main thread
+                    Runnable tileSaver =
+                            () -> {
+                                Resource resource = encodeTileTask.get();
+                                saveTileTask(
+                                                metaTile,
+                                                finalTileIndex,
+                                                conveyorTile,
+                                                resource,
+                                                requestTime)
+                                        .run();
+                            };
+                    Runnable encodeAndSaveTask =
+                            withTileLock(
+                                    conveyorTile,
+                                    tileLockLatch,
+                                    gridPos,
+                                    withRasterCleaner(tileSaver));
+
+                    if (executor == null) {
+                        // Run on main thread if there's no executor
+                        encodeAndSaveTask.run();
+                    } else {
+                        // Fully asynchronous
+                        CompletableFuture<Void> completableFuture =
+                                CompletableFuture.runAsync(encodeAndSaveTask, executor);
+                        completableFutures.add(completableFuture);
+                    }
+                }
+            }
+        }
+
+        // Wait until we've obtained locks on all individual tiles before proceeding
+        tileLockLatch.await();
+
+        // Dispose of meta-tile when all completable futures are done
+        if (!completableFutures.isEmpty()) {
+            runAsyncAfterAllFuturesComplete(completableFutures, metaTile::dispose, executor);
+        } else {
+            // There were no asynchronous tasks, everything was run on the main thread
+            // so we can dispose of the meta-tile right away
+            metaTile.dispose();
+        }
+    }
+
+    private void runAsyncAfterAllFuturesComplete(
+            List<CompletableFuture<?>> futures, Runnable runnable, Executor executor) {
+        CompletableFuture<?>[] futureArray = futures.toArray(new CompletableFuture[0]);
+        CompletableFuture<Void> afterAllFutures = CompletableFuture.allOf(futureArray);
+        afterAllFutures.thenRunAsync(runnable, executor);
+    }
+
+    private Runnable withRasterCleaner(Runnable runnable) {
+        return () -> {
+            try {
+                runnable.run();
+            } finally {
+                // Raster cleaner normally runs as a dispatcher callback but in this case
+                // there is no dispatcher request on this thread. Neglecting to cleanup
+                // the images from the various RenderedImageMapResponse implementations
+                // would cause a severe memory leak.
+                RasterCleaner.cleanup();
+            }
+        };
+    }
+
+    /**
+     * Locks a tile before running the runnable and releases the lock at the end.
+     *
+     * <p>Also counts down the latch to track how many locks have been acquired.
+     */
+    private Runnable withTileLock(
+            ConveyorTile conveyorTile,
+            CountDownLatch tileLockLatch,
+            long[] gridPosition,
+            Runnable runnable) {
+        return () -> {
+            try {
+                Lock tileLock = getLock(buildTileLockKey(conveyorTile, gridPosition));
+                try {
+                    tileLockLatch.countDown();
+                    runnable.run();
+                } finally {
+                    tileLock.release();
+                }
+            } catch (GeoWebCacheException ex) {
+                throw new RuntimeException(ex);
+            }
+        };
+    }
+
+    /** Creates a task for encoding a single tile */
+    private Supplier<Resource> encodeTileTask(GeoServerMetaTile metaTile, int tileIndex) {
+        return () -> {
+            ByteArrayResource resource = new ByteArrayResource(16 * 1024);
+
+            boolean completed;
+            try {
+                completed = metaTile.writeTileToStream(tileIndex, resource);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Unable to write image tile to ByteArrayOutputStream", e);
+                throw new RuntimeException(e);
+            }
+
+            if (!completed) {
+                LOGGER.severe("metaTile.writeTileToStream returned false, no tiles saved");
+            }
+            return resource;
+        };
+    }
+
+    /** Creates a task for saving a single tile to the cache. */
+    private Runnable saveTileTask(
+            GeoServerMetaTile metaTile,
+            int tileIndex,
+            ConveyorTile tileProto,
+            Resource resource,
+            long requestTime) {
+        return () -> {
+            try {
+                final long[][] gridPositions = metaTile.getTilesGridPositions();
+                long[] gridPosition = gridPositions[tileIndex];
+                long[] idx = {gridPosition[0], gridPosition[1], gridPosition[2]};
+
+                TileObject tile =
+                        TileObject.createCompleteTileObject(
+                                this.getName(),
+                                idx,
+                                tileProto.getGridSetId(),
+                                tileProto.getMimeType().getFormat(),
+                                tileProto.getParameters(),
+                                resource);
+                tile.setCreated(requestTime);
+
+                // Save tile to storage
+                StorageBroker storageBroker = tileProto.getStorageBroker();
+                if (tileProto.isMetaTileCacheOnly()) {
+                    storageBroker.putTransient(tile);
+                } else {
+                    storageBroker.put(tile);
+                }
+                tileProto.getStorageObject().setCreated(tile.getCreated());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        };
     }
 
     /**
@@ -655,30 +924,45 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
     }
 
-    private String buildLockKey(ConveyorTile tile, GeoServerMetaTile metaTile) {
-        StringBuilder metaKey = new StringBuilder();
+    /**
+     * Builds a unique string for a given metatile.
+     *
+     * @param tilePrototype A ConveyorTile that has all the metadata we require.
+     * @param metaTile The actual metatile we are generating a unique key for.
+     */
+    private String buildMetaTileLockKey(ConveyorTile tilePrototype, GeoServerMetaTile metaTile) {
+        return buildLockKey(tilePrototype, "gwc_metatile_", metaTile.getMetaGridPos());
+    }
 
-        final long[] tileIndex;
-        if (metaTile != null) {
-            tileIndex = metaTile.getMetaGridPos();
-            metaKey.append("gsmeta_");
-        } else {
-            tileIndex = tile.getTileIndex();
-            metaKey.append("tile_");
+    /**
+     * Builds a unique string for a given tile.
+     *
+     * @param tilePrototype A ConveyorTile that has all the metadata we require by may not be the
+     *     actual tile we need a key for.
+     * @param gridPosition The grid position of the ACTUAL tile we need a key for.
+     */
+    private String buildTileLockKey(ConveyorTile tilePrototype, long[] gridPosition) {
+        return buildLockKey(tilePrototype, "gwc_tile_", gridPosition);
+    }
+
+    private String buildLockKey(ConveyorTile tilePrototype, String prefix, long[] position) {
+        StringBuilder lockKey = new StringBuilder();
+
+        lockKey.append(prefix);
+
+        long x = position[0];
+        long y = position[1];
+        long z = position[2];
+
+        lockKey.append(tilePrototype.getLayerId());
+        lockKey.append("_").append(tilePrototype.getGridSetId());
+        lockKey.append("_").append(x).append("_").append(y).append("_").append(z);
+        if (tilePrototype.getParametersId() != null) {
+            lockKey.append("_").append(tilePrototype.getParametersId());
         }
-        long x = tileIndex[0];
-        long y = tileIndex[1];
-        long z = tileIndex[2];
+        lockKey.append(".").append(tilePrototype.getMimeType().getFileExtension());
 
-        metaKey.append(tile.getLayerId());
-        metaKey.append("_").append(tile.getGridSetId());
-        metaKey.append("_").append(x).append("_").append(y).append("_").append(z);
-        if (tile.getParametersId() != null) {
-            metaKey.append("_").append(tile.getParametersId());
-        }
-        metaKey.append(".").append(tile.getMimeType().getFileExtension());
-
-        return metaKey.toString();
+        return lockKey.toString();
     }
 
     private WebMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
@@ -825,7 +1109,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     @Override
     public ConveyorTile getNoncachedTile(ConveyorTile tile) throws GeoWebCacheException {
         try {
-            return getMetatilingReponse(tile, false, 1, 1);
+            return getMetatilingResponse(tile, false, 1, 1);
         } catch (IOException e) {
             throw new GeoWebCacheException(e);
         }
@@ -834,7 +1118,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     @Override
     public ConveyorTile doNonMetatilingRequest(ConveyorTile tile) throws GeoWebCacheException {
         try {
-            return getMetatilingReponse(tile, true, 1, 1);
+            return getMetatilingResponse(tile, true, 1, 1);
         } catch (IOException e) {
             throw new GeoWebCacheException(e);
         }
@@ -862,7 +1146,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         if (!tile.getMimeType().supportsTiling()) {
             metaX = metaY = 1;
         }
-        getMetatilingReponse(tile, tryCache, metaX, metaY);
+        getMetatilingResponse(tile, tryCache, metaX, metaY);
     }
 
     /** @see org.geowebcache.layer.TileLayer#getGridSubsets() */
@@ -1181,9 +1465,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
      * underlying {@link LayerInfo} or {@link LayerGroupInfo} This calculation can be overridden by
      * setting {@link GeoServerTileLayerInfo#setExpireClients(int)}
      *
-     * @see org.geowebcache.layer.TileLayer#getExpireClients(int)
      * @param zoomLevel ignored
      * @return the expiration time
+     * @see org.geowebcache.layer.TileLayer#getExpireClients(int)
      */
     @Override
     public int getExpireClients(int zoomLevel) {
@@ -1268,9 +1552,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
      * GeoServerTileLayerInfo#getExpireCacheList()}. If no matching rules are found, defaults to
      * {@link GeoServerTileLayerInfo#getExpireCache()}
      *
-     * @see org.geowebcache.layer.TileLayer#getExpireCache(int)
      * @param zoomLevel the zoom level used to filter expiration rules
      * @return the expiration time for tiles at the given zoom level
+     * @see org.geowebcache.layer.TileLayer#getExpireCache(int)
      */
     @Override
     public int getExpireCache(int zoomLevel) {

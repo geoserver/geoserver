@@ -34,6 +34,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
+import org.geoserver.geofence.containers.ContainerAccessResolver;
+import org.geoserver.geofence.containers.ContainerLimitResolver;
 import org.geoserver.geofence.core.model.LayerAttribute;
 import org.geoserver.geofence.core.model.enums.AccessType;
 import org.geoserver.geofence.core.model.enums.GrantType;
@@ -119,6 +121,7 @@ public class GeofenceAccessManager
     Catalog catalog;
 
     private final GeoFenceConfigurationManager configurationManager;
+    private ContainerAccessResolver containerAccessResolver;
 
     private LayerGroupContainmentCache groupsCache;
 
@@ -128,12 +131,14 @@ public class GeofenceAccessManager
             RuleReaderService rulesService,
             Catalog catalog,
             GeoFenceConfigurationManager configurationManager,
+            ContainerAccessResolver containerAccessResolver,
             WPSHelper wpsHelper) {
 
         this.rulesService = rulesService;
         this.catalog = new LocalWorkspaceCatalog(catalog);
         this.configurationManager = configurationManager;
         this.groupsCache = new LayerGroupContainmentCache(catalog);
+        this.containerAccessResolver = containerAccessResolver;
         this.wpsHelper = wpsHelper;
     }
 
@@ -285,6 +290,7 @@ public class GeofenceAccessManager
 
     @Override
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerInfo) {
+        LOGGER.log(Level.FINE, "Getting access limits for LayerGroup {0}", layerInfo.getName());
         return getAccessLimits(user, layerInfo, Collections.emptyList());
     }
 
@@ -307,6 +313,7 @@ public class GeofenceAccessManager
     @Override
     public DataAccessLimits getAccessLimits(
             Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+        LOGGER.log(Level.FINE, "Getting access limits for Layer {0} + containers", layer.getName());
         String workspace = layer.getResource().getStore().getWorkspace().getName();
         String layerName = layer.getName();
         return (DataAccessLimits) getAccessLimits(user, layer, layerName, workspace, containers);
@@ -315,6 +322,10 @@ public class GeofenceAccessManager
     @Override
     public LayerGroupAccessLimits getAccessLimits(
             Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
+        LOGGER.log(
+                Level.FINE,
+                "Getting access limits for Layer {0} + containers",
+                layerGroup.getName());
         WorkspaceInfo ws = layerGroup.getWorkspace();
         String workspace = ws != null ? ws.getName() : null;
         String layer = layerGroup.getName();
@@ -369,7 +380,7 @@ public class GeofenceAccessManager
                 // if a single group is present we don't apply any limit from containers.
                 if (!anySingle && !allOpaque)
                     processingResult =
-                            getContainerResolverResult(
+                            this.containerAccessResolver.getContainerResolverResult(
                                     info,
                                     layer,
                                     workspace,
@@ -383,7 +394,7 @@ public class GeofenceAccessManager
             // layer is requested in context of a layer group.
             // we need to process the containers limits.
             processingResult =
-                    getContainerResolverResult(
+                    this.containerAccessResolver.getContainerResolverResult(
                             info,
                             layer,
                             workspace,
@@ -518,7 +529,7 @@ public class GeofenceAccessManager
                 for (GrantedAuthority authority : user.getAuthorities()) {
                     String authRole = authority.getAuthority();
                     boolean addRole = getAllRoles || config.getRoles().contains(authRole);
-                    addRole = addRole && !(excluded.contains(authRole));
+                    addRole = addRole && !excluded.contains(authRole);
 
                     if (addRole) {
                         roles.add(authRole);
@@ -665,53 +676,6 @@ public class GeofenceAccessManager
         else return new LayerGroupAccessLimits(convert(accessInfo.getCatalogMode()));
     }
 
-    private ContainerLimitResolver.ProcessingResult getContainerResolverResult(
-            CatalogInfo resourceInfo,
-            String layer,
-            String workspace,
-            GeoFenceConfiguration configuration,
-            String callerIp,
-            Authentication user,
-            List<LayerGroupInfo> containers,
-            Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries) {
-        ContainerLimitResolver resolver;
-        if (summaries != null)
-            resolver =
-                    new ContainerLimitResolver(
-                            summaries,
-                            rulesService,
-                            user,
-                            layer,
-                            workspace,
-                            callerIp,
-                            configuration);
-        else
-            resolver =
-                    new ContainerLimitResolver(
-                            containers,
-                            rulesService,
-                            user,
-                            layer,
-                            workspace,
-                            callerIp,
-                            configuration);
-
-        ContainerLimitResolver.ProcessingResult result = resolver.resolveResourceInGroupLimits();
-        Geometry intersect = result.getIntersectArea();
-        Geometry clip = result.getClipArea();
-        // areas might be in a srid different from the one of the resource
-        // being requested.
-        CoordinateReferenceSystem crs = GeomHelper.getCRSFromInfo(resourceInfo);
-        if (intersect != null) {
-            intersect = GeomHelper.reprojectGeometry(intersect, crs);
-            result.setIntersectArea(intersect);
-        }
-        if (clip != null) {
-            clip = GeomHelper.reprojectGeometry(clip, crs);
-            result.setClipArea(clip);
-        }
-        return result;
-    }
     // get the catalogMode for the resource privileging the container one if passed
     private CatalogMode getCatalogMode(
             AccessInfo accessInfo, ContainerLimitResolver.ProcessingResult resultLimits) {
@@ -1000,7 +964,7 @@ public class GeofenceAccessManager
             // if default use geofence default
             if (styleName != null) {
                 checkStyleAllowed(rule, styleName);
-            } else if ((rule.getDefaultStyle() != null)) {
+            } else if (rule.getDefaultStyle() != null) {
                 try {
                     StyleInfo si = catalog.getStyleByName(rule.getDefaultStyle());
                     if (si == null) {

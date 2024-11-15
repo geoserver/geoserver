@@ -15,8 +15,9 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.util.logging.Logging;
 
 /**
- * Factory for rHealPix DGGS instances. TODO: for now it always returns a TB16-Pix instance, but it
- * should be easy to extend it to allow any parametrization.
+ * Factory for rHealPix DGGS instances. TODO: for now it always returns a rHEALPix instance based on
+ * WGS84 ellipsoid with a lon0 of 131.25 degrees east, but it should be easy to extend it to allow
+ * any parametrization.
  */
 public class RHealPixDGGSFactory implements DGGSFactory {
 
@@ -46,21 +47,25 @@ public class RHealPixDGGSFactory implements DGGSFactory {
 
     @Override
     public DGGSInstance createInstance(Map<String, ?> params) throws IOException {
-        return new RHealPixDGGSInstance(new JEPWebRuntime(INITIALIZER), "TB16-Pix");
+        return new RHealPixDGGSInstance(new JEPWebRuntime(INITIALIZER), "rHEALPix");
     }
 
     @Override
     public boolean isAvailable() {
         JEPWebRuntime runtime = new JEPWebRuntime(INITIALIZER);
+        boolean interpreterFound = false;
         try {
             runtime.getInterpreter();
+            interpreterFound = true;
             return true;
-        } catch (Exception | UnsatisfiedLinkError e) {
+            // JEP throws an UnsatisfiedLinkError if the native library is not found the first time,
+            // but from the second time over, it throws a generic Error instead
+        } catch (Exception | Error e) {
             LOGGER.log(Level.FINE, "Could not instantiate a rHEALPix DGGS", e);
             return false;
         } finally {
             try {
-                JEPWebRuntime.closeThreadIntepreter();
+                if (interpreterFound) JEPWebRuntime.closeThreadIntepreter();
             } catch (JepException e) {
                 LOGGER.log(Level.FINE, "Could not clean up the JEP runtime", e);
             }

@@ -5,6 +5,8 @@
  */
 package org.geoserver.web.wicket;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +15,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -34,9 +34,6 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.ClientProperties;
-import org.apache.wicket.protocol.http.WebSession;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
@@ -45,6 +42,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  *
  * @author Andrea Aime
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class CodeMirrorEditor extends FormComponentPanel<String> {
 
@@ -95,41 +93,30 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         super(id, model);
         this.mode = mode;
 
-        // figure out if we're running against a browser supported by CodeMirror
-        boolean enableCodeMirror = isCodeMirrorSupported();
-
         container = new WebMarkupContainer("editorContainer");
         container.setOutputMarkupId(true);
         add(container);
 
         WebMarkupContainer toolbar = new WebMarkupContainer("toolbar");
-        toolbar.setVisible(enableCodeMirror);
+        toolbar.setVisible(true);
         container.add(toolbar);
 
         customButtons = new RepeatingView("custom-buttons");
         toolbar.add(customButtons);
 
         WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
-        if (enableCodeMirror) {
-            editorParent.add(
-                    AttributeModifier.replace(
-                            "style", "border: 1px solid black; padding-bottom: 3px"));
-        }
+        editorParent.add(AttributeModifier.replace("class", "codemirror"));
         container.add(editorParent);
         editor = new TextArea<>("editor", model);
         editorParent.add(editor);
         editor.setOutputMarkupId(true);
 
-        if (enableCodeMirror) {
-            editor.add(new CodeMirrorBehavior());
-        } else {
-            editor.add(AttributeModifier.replace("style", "width:100%"));
-        }
+        editor.add(new CodeMirrorBehavior());
     }
 
     public void addCustomButton(String title, String cssClass, CustomButtonAction action) {
         customButtons.add(
-                new AjaxLink<Object>(customButtons.newChildId()) {
+                new AjaxLink<>(customButtons.newChildId()) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         action.onClick(target);
@@ -144,107 +131,6 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                     }
                 }.add(new AttributeAppender("class", cssClass, " "))
                         .add(new AttributeAppender("title", title, " ")));
-    }
-
-    private boolean isCodeMirrorSupported() {
-        boolean enableCodeMirror = true;
-        WebClientInfo clientInfo = WebSession.get().getClientInfo();
-        ClientProperties clientProperties = clientInfo.getProperties();
-        if (clientProperties.isBrowserInternetExplorer()) {
-            ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 8
-                            || props.getBrowserVersionMajor() >= 8;
-        } else if (clientProperties.isBrowserMozillaFirefox()) {
-            ClientProperties props =
-                    extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 3
-                            || props.getBrowserVersionMajor() >= 3;
-        } else if (clientProperties.isBrowserSafari()) {
-            ClientProperties props =
-                    extractSafariVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() > 5
-                            || (clientProperties.getBrowserVersionMajor() == 5
-                                    && clientProperties.getBrowserVersionMinor() >= 2)
-                            || props.getBrowserVersionMajor() > 5
-                            || (props.getBrowserVersionMajor() == 5
-                                    && props.getBrowserVersionMinor() >= 2);
-        } else if (clientProperties.isBrowserOpera()) {
-            ClientProperties props = extractOperaVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 9
-                            || props.getBrowserVersionMajor() >= 9;
-        }
-        return enableCodeMirror;
-    }
-
-    private ClientProperties extractIEVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            String pattern;
-            if (userAgencyLc.contains("like gecko")) {
-                pattern = "rv:(\\d+)\\.(\\d+)";
-            } else {
-                pattern = "msie (\\d+)\\.(\\d+)";
-            }
-            setMajorMinorVersionByPattern(userAgencyLc, pattern, props);
-        }
-        return props;
-    }
-
-    private ClientProperties extractFirefoxVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            props.setBrowserVersionMajor(-1);
-            props.setBrowserVersionMinor(-1);
-            setMajorMinorVersionByPattern(userAgencyLc, "firefox/(\\d+)\\.(\\d+)", props);
-        }
-        return props;
-    }
-
-    private ClientProperties extractOperaVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            if (userAgencyLc.startsWith("opera/") && userAgencyLc.contains("version/")) {
-                setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
-            } else if (userAgencyLc.startsWith("opera/") && !userAgencyLc.contains("version/")) {
-                setMajorMinorVersionByPattern(userAgencyLc, "opera/(\\d+)\\.(\\d+)", props);
-            } else {
-                setMajorMinorVersionByPattern(userAgencyLc, "opera (\\d+)\\.(\\d+)", props);
-            }
-        }
-        return props;
-    }
-
-    private ClientProperties extractSafariVersion(String userAgent) {
-        ClientProperties props = new ClientProperties();
-        props.setBrowserVersionMajor(-1);
-        props.setBrowserVersionMinor(-1);
-        if (userAgent != null) {
-            String userAgencyLc = userAgent.toLowerCase();
-            setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
-        }
-        return props;
-    }
-
-    private void setMajorMinorVersionByPattern(
-            String userAgent, String patternString, ClientProperties properties) {
-        Matcher matcher = Pattern.compile(patternString).matcher(userAgent);
-        if (matcher.find()) {
-            properties.setBrowserVersionMajor(Integer.parseInt(matcher.group(1)));
-            properties.setBrowserVersionMinor(Integer.parseInt(matcher.group(2)));
-        }
     }
 
     public CodeMirrorEditor(String id, IModel<String> model) {
@@ -262,6 +148,17 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return editor.getInput();
     }
 
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // Make the line numbers look good
+        response.render(
+                CssHeaderItem.forReference(
+                        new PackageResourceReference(
+                                CodeMirrorEditor.class,
+                                "js/codemirror/css/codemirrorlinenos.css")));
+    }
+
     public void setTextAreaMarkupId(String id) {
         editor.setMarkupId(id);
     }
@@ -272,28 +169,30 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     public void setMode(String mode) {
         this.mode = mode;
-        AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
-        if (requestTarget != null) {
+        Optional<AjaxRequestTarget> requestTarget =
+                RequestCycle.get().find(AjaxRequestTarget.class);
+        if (requestTarget.isPresent()) {
             String javascript =
                     "document.gsEditors."
                             + editor.getMarkupId()
                             + ".setOption('mode', '"
                             + mode
                             + "');";
-            requestTarget.appendJavaScript(javascript);
+            requestTarget.get().appendJavaScript(javascript);
         }
     }
 
     public void setModeAndSubMode(String mode, String subMode) {
         this.mode = mode;
-        AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
-        if (requestTarget != null) {
+        Optional<AjaxRequestTarget> requestTarget =
+                RequestCycle.get().find(AjaxRequestTarget.class);
+        if (requestTarget.isPresent()) {
             String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode',";
             String modeObj = "{name: \"" + mode + "\", " + subMode + ": true}";
             javascript += modeObj + ");";
-            requestTarget.appendJavaScript(javascript);
+            requestTarget.get().appendJavaScript(javascript);
             editor.modelChanged();
-            requestTarget.add(editor);
+            requestTarget.get().add(editor);
         }
     }
 
@@ -353,6 +252,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             }
         }
 
+        @SuppressWarnings("PMD.UseTryWithResources")
         public String convertStreamToString(InputStream is) {
             /*
              * To convert the InputStream to String we use the Reader.read(char[] buffer) method. We
@@ -361,21 +261,18 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
              */
             try {
                 if (is != null) {
-                    Writer writer = new StringWriter();
+                    try (Writer writer = new StringWriter();
+                            Reader reader = new BufferedReader(new InputStreamReader(is, UTF_8))) {
 
-                    char[] buffer = new char[1024];
-                    try {
-                        Reader reader =
-                                new BufferedReader(
-                                        new InputStreamReader(is, StandardCharsets.UTF_8));
+                        char[] buffer = new char[1024];
                         int n;
                         while ((n = reader.read(buffer)) != -1) {
                             writer.write(buffer, 0, n);
                         }
+                        return writer.toString();
                     } finally {
                         is.close();
                     }
-                    return writer.toString();
                 } else {
                     return "";
                 }

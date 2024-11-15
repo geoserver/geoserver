@@ -46,7 +46,7 @@ public class MapMLMessageConverter extends BaseMessageConverter<Object> {
      */
     @Override
     public boolean canWrite(Class<?> clazz, @Nullable MediaType mediaType) {
-        return (canWrite(mediaType) && mapmlMarshaller.supports(clazz));
+        return canWrite(mediaType) && mapmlMarshaller.supports(clazz);
     }
 
     /**

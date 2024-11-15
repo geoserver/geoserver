@@ -40,7 +40,7 @@ public class AuthFilterChainPalette extends Palette<String> {
                 id,
                 model,
                 choicesModel,
-                new ChoiceRenderer<String>() {
+                new ChoiceRenderer<>() {
                     @Override
                     public String getIdValue(String object, int index) {
                         return (String) getDisplayValue(object);
@@ -76,11 +76,6 @@ public class AuthFilterChainPalette extends Palette<String> {
                 throw new WicketRuntimeException(e);
             }
             return result;
-        }
-
-        @Override
-        public void detach() {
-            // do nothing
         }
 
         @Override

@@ -78,6 +78,20 @@ Using tiles to access the layer can increase the performance of your web map. Th
 **Use Tiles**
   If the "Use Tiles" checkbox is checked, by default the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.  If one or more of the MapML-defined GridSets is referenced by the layer or layer group in its "Tile Caching" profile, GeoServer will generate tile references instead of generating WMS GetMap URLs in the MapML document body.
 
+Client Requests
+^^^^^^^^^^^^^^^
+
+When configuring a cascaded WMS or WMTS remote layers, a new "Client Requests" setting is available.
+
+**Remote**
+  If the "Remote" checkbox is checked, the link templates embedded in MapML will refer to the remote WMS/WMTS.
+  The MapML viewer will directly contact the remote server if certain criteria are met:
+
+- No restricting DataAccessLimit security is associated to the layer (e.g. with GeoFence integration) that will do filtering, clipping or similar operations. In that case, the MapML will point to the local GeoServer so that the param is honored.
+- No vendor parameters are used in the incoming request. If vendor parameters are used (e.g., request clipping with geometric mask) the MapML is pointing to the local GeoServer so that the vendor parameter is honored
+- The remote Server is supporting the requested CoordinateReferenceSystem for that layer.
+- GetTile requests will be sent to the remote server if there is a compatible gridset for that layer (same origin, same CRS, same tile sizes, same levels and same resolutions)
+
 Vector Settings
 ^^^^^^^^^^^^^^^
 
@@ -198,7 +212,7 @@ WMS GetMap considerations
 
 By default, each layer/style pair that is requested via the GetMap parameters is composed into a single <map-extent>...<map-link tref="...">...</map-extent> structure as exemplified above.  
 
-If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <layer-> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
+If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <map-layer> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
 
 .. figure:: images/mapml_wms_multi_extent.png
 
@@ -290,7 +304,7 @@ You can add layers to the map as you like, by dragging the URL bar value generat
 
 If all goes well, you should see the layers stacked on the map and in the layer control.
 
-MapML visualization is supported by the Web-Map-Custom-Element project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about the Web-Map-Custom-Element at the project `website <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <layer-> elements: 
+MapML visualization is supported by the MapML.js project. The MapML viewer is built into the GeoServer layer and layer group preview facility.  You can find out more about MapML.js at the project `website <https://maps4html.org/web-map-doc/>`. Here is a simple, self-contained example of an HTML page that uses the <mapml-viewer> and <map-layer> elements: 
 
 .. code-block:: html
 
@@ -305,12 +319,12 @@ MapML visualization is supported by the Web-Map-Custom-Element project. The MapM
           html, body { height: 100%; }
           * { margin: 0; padding: 0; }
           mapml-viewer:defined { max-width: 100%; width: 100%; height: 100%; }
-          mapml-viewer:not(:defined) > * { display: none; } layer- { display: none; }
+          mapml-viewer:not(:defined) > * { display: none; } map-layer { display: none; }
         </style>
       </head>
       <body>
         <mapml-viewer projection="osmtile" zoom="2" lat="61.209125" lon="-90.850837" controls>
-          <layer- label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></layer->
+          <map-layer label="US States" src="http://localhost:8080/geoserver/mapml/topp:states/osmtile?style=population" checked></map-layer>
         </mapml-viewer>
       </body>
     </html>

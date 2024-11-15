@@ -20,7 +20,7 @@ public class ChangeSet {
         high,
         medium,
         low
-    };
+    }
 
     public static class ChangedItem {
         Priority priority;

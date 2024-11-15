@@ -239,14 +239,14 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
             if (temporalSubset != null
                     && temporalSubset.getTimePosition() != null
-                    && temporalSubset.getTimePosition().size() > 0) {
+                    && !temporalSubset.getTimePosition().isEmpty()) {
                 for (Object o : temporalSubset.getTimePosition()) {
                     Date tp = (Date) o;
                     timeValues.add(tp);
                 }
             } else if (temporalSubset != null
                     && temporalSubset.getTimePeriod() != null
-                    && temporalSubset.getTimePeriod().size() > 0) {
+                    && !temporalSubset.getTimePeriod().isEmpty()) {
                 for (Object o : temporalSubset.getTimePeriod()) {
                     TimePeriodType tp = (TimePeriodType) o;
                     Date beginning = (Date) tp.getBeginPosition();
@@ -989,7 +989,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     "Multi axis coverages are not supported yet",
                     InvalidParameterValue,
                     "RangeSubset");
-        } else if (field.getAxisSubset().size() == 0) return;
+        } else if (field.getAxisSubset().isEmpty()) return;
 
         AxisSubsetType axisSubset = (AxisSubsetType) field.getAxisSubset().get(0);
         final String axisId = axisSubset.getIdentifier();

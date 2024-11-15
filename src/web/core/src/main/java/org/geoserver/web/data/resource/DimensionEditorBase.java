@@ -265,12 +265,10 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
                         boolean listSelected =
                                 presentation.getModelObject() == DimensionPresentation.LIST;
-                        String containerVisible = listSelected ? "none" : "initial";
+                        String containerVisible = listSelected ? "hidden" : "";
                         startField
                                 .getParent()
-                                .add(
-                                        new AttributeModifier(
-                                                "style", "display:" + containerVisible + ";"));
+                                .add(AttributeModifier.replace("class", containerVisible));
                         if (listSelected) {
                             startField.setModelValue(new String[0]);
                             startField.setRequired(false);
@@ -470,9 +468,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         final WebMarkupContainer startEndContainer = new WebMarkupContainer("startEndContainer");
         startEndContainer.setOutputMarkupId(true);
         String containerVisibility =
-                presentation.getModelObject() == DimensionPresentation.LIST ? "none" : "initial";
-        startEndContainer.add(
-                new AttributeModifier("style", "display:" + containerVisibility + ";"));
+                presentation.getModelObject() == DimensionPresentation.LIST ? "hidden" : "";
+        startEndContainer.add(AttributeModifier.replace("class", containerVisibility));
         configs.add(startEndContainer);
 
         IModel<String> sfModel = new PropertyModel<>(model, "startValue");

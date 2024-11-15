@@ -15,6 +15,7 @@ import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.LineSymbolizer;
 import org.geotools.api.style.NamedLayer;
 import org.geotools.api.style.PolygonSymbolizer;
+import org.geotools.api.style.Rule;
 import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.SLD;
 import org.hamcrest.Matchers;
@@ -83,5 +84,35 @@ public class CssHandlerTest extends GeoServerSystemTestSupport {
         NodeList featuresWithCssStyle =
                 responseWithCssStyle.getElementsByTagName("gml:featureMember");
         assertEquals(1, featuresWithCssStyle.getLength());
+    }
+
+    @Test
+    public void testZoomLevelEquals() throws Exception {
+        String css = "[@z = 10] {stroke: black}";
+        StyledLayerDescriptor sld = Styles.handler(CssHandler.FORMAT).parse(css, null, null, null);
+        Rule rule =
+                ((NamedLayer) sld.getStyledLayers()[0])
+                        .getStyles()[0]
+                        .featureTypeStyles()
+                        .get(0)
+                        .rules()
+                        .get(0);
+        assertEquals(543262, rule.getMinScaleDenominator(), 1d);
+        assertEquals(1086524, rule.getMaxScaleDenominator(), 1d);
+    }
+
+    @Test
+    public void testZoomLevelEqualsUTM32N() throws Exception {
+        String css = "@tileMatrixSet 'UTM32WGS84Quad'; [@z = 10] {stroke: black}";
+        StyledLayerDescriptor sld = Styles.handler(CssHandler.FORMAT).parse(css, null, null, null);
+        Rule rule =
+                ((NamedLayer) sld.getStyledLayers()[0])
+                        .getStyles()[0]
+                        .featureTypeStyles()
+                        .get(0)
+                        .rules()
+                        .get(0);
+        assertEquals(271176, rule.getMinScaleDenominator(), 1d);
+        assertEquals(542352, rule.getMaxScaleDenominator(), 1d);
     }
 }

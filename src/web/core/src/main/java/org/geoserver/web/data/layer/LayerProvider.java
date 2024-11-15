@@ -8,11 +8,11 @@ package org.geoserver.web.data.layer;
 import static org.geoserver.catalog.Predicates.sortBy;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
@@ -46,7 +46,6 @@ import org.geotools.api.filter.sort.SortBy;
  *
  * @author Andrea Aime - OpenGeo
  */
-@SuppressWarnings("serial")
 public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     static final Property<LayerInfo> TYPE = new BeanProperty<>("type", "type");
 
@@ -67,16 +66,16 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
      * for disabled resource/store
      */
     static final Property<LayerInfo> ENABLED =
-            new AbstractProperty<LayerInfo>("enabled") {
+            new AbstractProperty<>("enabled") {
 
                 @Override
                 public Boolean getPropertyValue(LayerInfo item) {
-                    return Boolean.valueOf(item.enabled());
+                    return item.enabled();
                 }
             };
 
     static final Property<LayerInfo> SRS =
-            new BeanProperty<LayerInfo>("SRS", "resource.SRS") {
+            new BeanProperty<>("SRS", "resource.SRS") {
 
                 /**
                  * We roll a custom comparator that treats the numeric part of the code as a number
@@ -120,8 +119,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     @Override
     protected List<Property<LayerInfo>> getProperties() {
-        List<Property<LayerInfo>> modifiedPropertiesList =
-                PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
+        List<Property<LayerInfo>> modifiedPropertiesList = new ArrayList<>(PROPERTIES);
         // check geoserver properties
         if (GeoServerApplication.get()
                 .getGeoServer()

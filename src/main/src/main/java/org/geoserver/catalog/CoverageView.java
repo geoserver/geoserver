@@ -37,13 +37,13 @@ public class CoverageView implements Serializable {
     /** Type of Envelope Composition, used to expose the bounding box of the CoverageView */
     public static enum EnvelopeCompositionType {
         UNION,
-        INTERSECTION;
+        INTERSECTION
     }
 
     /** Which Resolution to be used in composition */
     public static enum SelectedResolution {
         BEST,
-        WORST;
+        WORST
     }
 
     /**

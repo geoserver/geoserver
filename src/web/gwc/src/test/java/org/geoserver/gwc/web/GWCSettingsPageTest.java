@@ -15,8 +15,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.Result;
 import org.geoserver.catalog.PublishedType;
@@ -206,13 +208,22 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         final List<String> groupFormats =
                 new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
 
-        tester.assertListView(
+        tester.assertComponent(
+                "form:cachingOptionsPanel:container:configs:vectorFormatsGroup:vectorFromats",
+                ListView.class);
+        tester.assertModelValue(
                 "form:cachingOptionsPanel:container:configs:vectorFormatsGroup:vectorFromats",
                 vectorFormats);
-        tester.assertListView(
+        tester.assertComponent(
+                "form:cachingOptionsPanel:container:configs:rasterFormatsGroup:rasterFromats",
+                ListView.class);
+        tester.assertModelValue(
                 "form:cachingOptionsPanel:container:configs:rasterFormatsGroup:rasterFromats",
                 rasterFormats);
-        tester.assertListView(
+        tester.assertComponent(
+                "form:cachingOptionsPanel:container:configs:otherFormatsGroup:otherFromats",
+                ListView.class);
+        tester.assertModelValue(
                 "form:cachingOptionsPanel:container:configs:otherFormatsGroup:otherFromats",
                 groupFormats);
 
@@ -563,5 +574,38 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertThat(
                 gwcConfig.getCacheWarningSkips(),
                 Matchers.containsInAnyOrder(WarningType.Default, WarningType.FailedNearest));
+    }
+
+    @Test
+    public void testEditMetatilingThreads() {
+        GWC gwc = GWC.get();
+
+        // set it to a fixed value
+        testEditMetatilingThreads("3");
+        tester.assertNoErrorMessage();
+        assertEquals(3, ((ThreadPoolExecutor) gwc.getMetaTilingExecutor()).getCorePoolSize());
+
+        // set it an invalid value, error message and no change
+        testEditMetatilingThreads("-1");
+        tester.assertErrorMessages(
+                "The value of 'Metatiling threads count (unset for automatic detection)' must be at least 0.");
+        assertEquals(3, ((ThreadPoolExecutor) gwc.getMetaTilingExecutor()).getCorePoolSize());
+
+        // default is 2 * cores
+        testEditMetatilingThreads("");
+        tester.assertNoErrorMessage();
+        int cores = Runtime.getRuntime().availableProcessors();
+        assertEquals(
+                cores * 2, ((ThreadPoolExecutor) gwc.getMetaTilingExecutor()).getCorePoolSize());
+    }
+
+    private void testEditMetatilingThreads(String threadCount) {
+        tester.startPage(GWCSettingsPage.class);
+        // print(page, true, true);
+        tester.assertRenderedPage(GWCSettingsPage.class);
+
+        FormTester form = tester.newFormTester("form");
+        form.setValue("gwcServicesPanel:metaTilingThreads", threadCount);
+        form.submit("submit");
     }
 }

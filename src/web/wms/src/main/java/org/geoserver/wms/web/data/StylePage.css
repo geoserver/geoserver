@@ -1,0 +1,34 @@
+/* CSS for the StyleAdminPanel. */
+
+.style-data-span {
+    width: 45%;
+    margin-right: 5%;
+    margin-bottom: 0px;
+}
+
+.style-legend-span {
+    width: 45%;
+    margin-right: 5%;
+}
+
+.w-27-em {
+    width: 27em;
+}
+
+.display-inline-block {
+    display: inline-block;
+}
+
+.bottom-margin-0em {
+    margin-bottom: 0em
+}
+
+.style-button-group {
+    margin-top: 0.5em;
+    margin-left: -1px;
+    clear: left;
+}
+
+.top-padding-2em {
+    padding-top: 2em;
+}

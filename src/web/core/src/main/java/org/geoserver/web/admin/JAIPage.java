@@ -30,6 +30,7 @@ import org.geoserver.web.wicket.PercentageTextField;
 import org.geotools.image.ImageWorker;
 
 /** Edits the JAI configuration parameters */
+// TODO WICKET8 - Verify this page works OK
 public class JAIPage extends ServerAdminPage {
     private static final long serialVersionUID = -1184717232184497578L;
     private final IModel<GeoServer> geoServerModel;
@@ -122,18 +123,18 @@ public class JAIPage extends ServerAdminPage {
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     save(false);
                 } catch (IllegalArgumentException e) {
-                    form.error(e.getMessage());
-                    target.add(form);
+                    getForm().error(e.getMessage());
+                    target.add(getForm());
                 }
             }
         };
@@ -151,7 +152,7 @@ public class JAIPage extends ServerAdminPage {
                 new DropDownChoice<>(
                         "pngEncoderType",
                         encoders,
-                        new ChoiceRenderer<JAIInfo.PngEncoderType>() {
+                        new ChoiceRenderer<>() {
                             private static final long serialVersionUID = 1L;
 
                             @Override

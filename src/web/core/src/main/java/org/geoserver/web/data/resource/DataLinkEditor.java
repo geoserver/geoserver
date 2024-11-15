@@ -11,7 +11,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -33,6 +32,7 @@ import org.geoserver.catalog.impl.DataLinkInfoImpl;
  *
  * @author Marcus Sen - British Geological Survey
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class DataLinkEditor extends Panel {
 
@@ -54,8 +54,7 @@ public class DataLinkEditor extends Panel {
         table.setOutputMarkupId(true);
         container.add(table);
         links =
-                new ListView<DataLinkInfo>(
-                        "links", new PropertyModel<>(resourceModel, "dataLinks")) {
+                new ListView<>("links", new PropertyModel<>(resourceModel, "dataLinks")) {
 
                     @Override
                     protected void populateItem(ListItem<DataLinkInfo> item) {
@@ -84,7 +83,7 @@ public class DataLinkEditor extends Panel {
 
                         // remove link
                         AjaxLink<DataLinkInfo> link =
-                                new AjaxLink<DataLinkInfo>("removeLink", item.getModel()) {
+                                new AjaxLink<>("removeLink", item.getModel()) {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
@@ -111,7 +110,7 @@ public class DataLinkEditor extends Panel {
                 new AjaxButton("addlink") {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         ResourceInfo ri = resourceModel.getObject();
                         DataLinkInfo link = ri.getCatalog().getFactory().createDataLink();
                         link.setType("text/plain");
@@ -126,7 +125,7 @@ public class DataLinkEditor extends Panel {
 
     private void updateLinksVisibility() {
         ResourceInfo ri = (ResourceInfo) getDefaultModelObject();
-        boolean anyLink = ri.getDataLinks().size() > 0;
+        boolean anyLink = !ri.getDataLinks().isEmpty();
         table.setVisible(anyLink);
         noData.setVisible(!anyLink);
     }

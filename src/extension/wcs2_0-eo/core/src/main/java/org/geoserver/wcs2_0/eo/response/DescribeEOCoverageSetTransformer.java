@@ -411,7 +411,7 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
                 String coverageName)
                 throws IOException {
             // no selection, get all
-            if (dcs.getDimensionTrim() == null || dcs.getDimensionTrim().size() == 0) {
+            if (dcs.getDimensionTrim() == null || dcs.getDimensionTrim().isEmpty()) {
                 return Query.ALL;
             }
 
@@ -646,18 +646,15 @@ public class DescribeEOCoverageSetTransformer extends TransformerBase {
 
         SimpleFeatureCollection granules;
 
-        private String name;
-
-        private List<DimensionDescriptor> dimensionDescriptors;
+        private final List<DimensionDescriptor> dimensionDescriptors;
 
         public CoverageGranules(
                 CoverageInfo coverage,
-                String name,
+                String unUsedName, // NOPMD
                 StructuredGridCoverage2DReader reader,
                 SimpleFeatureCollection granules,
                 List<DimensionDescriptor> dimensionDescriptors) {
             this.coverage = coverage;
-            this.name = name;
             this.reader = reader;
             this.granules = granules;
             this.dimensionDescriptors = dimensionDescriptors;

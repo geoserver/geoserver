@@ -58,6 +58,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
 /** Allows setting the data for using an ExternalImage */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
     private static final long serialVersionUID = 5098470683723890874L;
@@ -151,12 +152,12 @@ public class ExternalGraphicPanel extends Panel {
         height.setOutputMarkupId(true);
         table.add(height);
 
-        table.add(new AttributeModifier("style", showhideStyleModel));
+        table.add(AttributeModifier.replace("class", showhideStyleModel));
 
         container.add(table);
 
         showhideForm =
-                new Form<StyleInfo>("showhide") {
+                new Form<>("showhide") {
                     @Override
                     protected void onSubmit() {
                         super.onSubmit();
@@ -171,7 +172,7 @@ public class ExternalGraphicPanel extends Panel {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         updateVisibility(true);
                         target.add(ExternalGraphicPanel.this);
                     }
@@ -184,7 +185,7 @@ public class ExternalGraphicPanel extends Panel {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         onlineResource.setModelObject("");
                         onlineResource.clearInput();
                         format.setModelObject("");
@@ -278,12 +279,7 @@ public class ExternalGraphicPanel extends Panel {
     }
 
     private void updateVisibility(boolean b) {
-        if (b) {
-            showhideStyleModel.setObject("");
-        } else {
-            showhideStyleModel.setObject("display:none");
-        }
-        // table.setVisible(b);
+        showhideStyleModel.setObject(b ? "" : "hidden");
         autoFill.setVisible(b);
         hide.setVisible(b);
         show.setVisible(!b);
@@ -430,7 +426,6 @@ public class ExternalGraphicPanel extends Panel {
                         error.setMessage("Unable to access image");
                         error.addKey("imageUnavailable");
                         input.error(error);
-                        return; // error message back!
                     }
                 } catch (IOException e) {
                     ValidationError error = new ValidationError();
@@ -438,7 +433,6 @@ public class ExternalGraphicPanel extends Panel {
                     error.addKey("imageUnavailable");
                     input.error(error);
                 }
-                return; // no further checks possible
             } else {
                 try {
 

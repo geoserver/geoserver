@@ -69,6 +69,7 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
+// TODO WICKET8 - Verify this page (and derived pages?) work OK
 public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoServerSecuredPage {
 
     protected GeoServerDialog dialog;
@@ -111,7 +112,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                         "service.enabled",
                         new StringResourceModel("service.enabled", this)
                                 .setParameters(getServiceName())));
-        form.add(new TextField("maintainer"));
+        form.add(new TextField<>("maintainer"));
         TextField<String> onlineResource = new TextField<>("onlineResource");
 
         final GeoServerEnvironment gsEnvironment =
@@ -136,8 +137,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 new KeywordsEditor(
                         "keywords",
                         LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
-        form.add(new TextField("fees"));
-        form.add(new TextField("accessConstraints"));
+        form.add(new TextField<>("fees"));
+        form.add(new TextField<>("accessConstraints"));
 
         build(infoModel, form);
 
@@ -190,18 +191,18 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         return new GeoserverAjaxSubmitLink("apply", form, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
                     onSave(infoModel, false);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.add(form);
+                    target.add(getForm());
                 }
             }
         };
@@ -217,7 +218,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         }
 
-        return new ListView<AdminPagePanelInfo>(id, panels) {
+        return new ListView<>(id, panels) {
 
             @Override
             protected void populateItem(ListItem<AdminPagePanelInfo> item) {
@@ -387,7 +388,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         public LocalWorkspacePanel(String id, T service) {
             super(id);
 
-            add(new Label("workspace", new PropertyModel(service, "workspace.name")));
+            add(new Label("workspace", new PropertyModel<>(service, "workspace.name")));
         }
     }
 
@@ -409,8 +410,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                             "titleAndAbstract", infoModel, "titleMsg", "abstract", this));
         } else {
             fragment = new Fragment(id, "stringFragment", this);
-            fragment.add(new TextField<String>("title"));
-            fragment.add(new TextArea<String>("abstract"));
+            fragment.add(new TextField<>("title"));
+            fragment.add(new TextArea<>("abstract"));
         }
         return fragment;
     }

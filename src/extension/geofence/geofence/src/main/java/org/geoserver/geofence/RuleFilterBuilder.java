@@ -19,7 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /** Builder class for a {@link RuleFilter}. */
-class RuleFilterBuilder {
+public class RuleFilterBuilder {
 
     private Request owsRequest;
     private String ipAddress;
@@ -30,7 +30,7 @@ class RuleFilterBuilder {
 
     private static final Logger LOGGER = Logging.getLogger(RuleFilterBuilder.class);
 
-    RuleFilterBuilder(GeoFenceConfiguration configuration) {
+    public RuleFilterBuilder(GeoFenceConfiguration configuration) {
         this.config = configuration;
     }
 
@@ -40,7 +40,7 @@ class RuleFilterBuilder {
      * @param request the OWS Request.
      * @return this builder.
      */
-    RuleFilterBuilder withRequest(Request request) {
+    public RuleFilterBuilder withRequest(Request request) {
         this.owsRequest = request;
         return this;
     }
@@ -51,7 +51,7 @@ class RuleFilterBuilder {
      * @param ipAddress the ipAddress.
      * @return this builder.
      */
-    RuleFilterBuilder withIpAddress(String ipAddress) {
+    public RuleFilterBuilder withIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
         return this;
     }
@@ -62,7 +62,7 @@ class RuleFilterBuilder {
      * @param workspace the workspace name.
      * @return this builder.
      */
-    RuleFilterBuilder withWorkspace(String workspace) {
+    public RuleFilterBuilder withWorkspace(String workspace) {
         this.workspace = workspace;
         return this;
     }
@@ -73,7 +73,7 @@ class RuleFilterBuilder {
      * @param layer the layer name.
      * @return this builder.
      */
-    RuleFilterBuilder withLayer(String layer) {
+    public RuleFilterBuilder withLayer(String layer) {
         this.layer = layer;
         return this;
     }
@@ -84,7 +84,7 @@ class RuleFilterBuilder {
      * @param authentication the authentication object.
      * @return this builder.
      */
-    RuleFilterBuilder withUser(Authentication authentication) {
+    public RuleFilterBuilder withUser(Authentication authentication) {
         this.user = authentication;
         return this;
     }
@@ -94,7 +94,7 @@ class RuleFilterBuilder {
      *
      * @return a {@link RuleFilter} instance.
      */
-    RuleFilter build() {
+    public RuleFilter build() {
         RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
         setRuleFilterUserAndRole(ruleFilter);
         ruleFilter.setInstance(config.getInstanceName());
@@ -196,7 +196,7 @@ class RuleFilterBuilder {
         }
     }
 
-    List<String> getFilteredRoles() {
+    public List<String> getFilteredRoles() {
         boolean getAllRoles = config.getRoles().contains("*");
         Set<String> excluded =
                 config.getRoles().stream()
@@ -220,6 +220,6 @@ class RuleFilterBuilder {
 
     private boolean addRole(String role, Set<String> excluded, boolean getAllRoles) {
         boolean addRole = getAllRoles || config.getRoles().contains(role);
-        return addRole && !(excluded.contains(role));
+        return addRole && !excluded.contains(role);
     }
 }

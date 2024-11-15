@@ -138,7 +138,7 @@ public class DirectDownload {
 
         // Extract namespace, layername from the resourceId
         String[] identifiers = resourceId.split(":");
-        assert (identifiers.length == 2);
+        assert identifiers.length == 2;
         String nameSpace = identifiers[0];
         String layerName = identifiers[1];
 

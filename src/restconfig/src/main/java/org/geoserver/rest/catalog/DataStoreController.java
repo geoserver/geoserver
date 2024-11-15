@@ -146,14 +146,16 @@ public class DataStoreController extends AbstractCatalogController {
         }
 
         // attempt to set the datastore type
-        try {
-            DataAccessFactory factory =
-                    DataStoreUtils.aquireFactory(dataStore.getConnectionParameters());
-            dataStore.setType(factory.getDisplayName());
-        } catch (Exception e) {
-            LOGGER.warning("Unable to determine datastore type from connection parameters");
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "", e);
+        if (dataStore.getType() == null) {
+            try {
+                DataAccessFactory factory =
+                        DataStoreUtils.aquireFactory(dataStore.getConnectionParameters());
+                dataStore.setType(factory.getDisplayName());
+            } catch (Exception e) {
+                LOGGER.warning("Unable to determine datastore type from connection parameters");
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "", e);
+                }
             }
         }
 
@@ -298,7 +300,7 @@ public class DataStoreController extends AbstractCatalogController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<DataStoreInfo>(DataStoreInfo.class) {
+        return new ObjectToMapWrapper<>(DataStoreInfo.class) {
 
             @Override
             protected void wrapInternal(

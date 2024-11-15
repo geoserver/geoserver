@@ -118,7 +118,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
                 new PropertyModel<>(model, "connectionParameters");
 
         ListView<String> paramsList =
-                new ListView<String>("parameters", keys) {
+                new ListView<>("parameters", keys) {
                     private static final long serialVersionUID = 1L;
 
                     @Override

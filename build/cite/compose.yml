@@ -1,0 +1,43 @@
+volumes:
+  gs_logs:
+  gs_gwc_cache_dir:
+
+services:
+  geoserver:
+    image: ogccite/geoserver:${GEOSERVER_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./geoserver/Dockerfile
+      args:
+        SOURCE_FILE: "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
+        # override as appropriate (e.g. ./wfs11/citewfs-1.1)
+        GEOSERVER_DATA_DIR_SRC:
+    ports:
+      - 18090:8080
+    env_file:
+      - ./.env
+      - ./geoserver/geoserver.env
+    environment:
+      JAVA_OPTS: >-
+        -Xms${HEAP_SIZE_MIN:-1024m}
+        -Xmx${HEAP_SIZE_MAX:-1024m}
+    volumes:
+    - gs_logs:/opt/geoserver_data/logs:rw
+    - gs_gwc_cache_dir:/opt/geowebcache_data:rw
+
+  teamengine:
+    # see https://github.com/opengeospatial/teamengine-docker
+    # there's ogccite/teamengine-production and ogccite/teamengine-beta
+    image: geoserver-docker.osgeo.org/geoserver-cite:${TEAMENGINE_TAG:-teamengine_latest}
+    hostname: teamengine.local
+    ports:
+      - 18080:8080
+    depends_on:
+      - geoserver
+    volumes:
+      - ./logs:/logs:rw
+      # old teamengine location
+      - ./logs:/home/teamengine/te_base/users/teamengine:rw
+      # location used by new teamengine running tests through REST API
+      - ./logs:/usr/local/tomcat/te_base/users/ogctest/rest:rw
+      - ./run-test.sh:/run-test.sh

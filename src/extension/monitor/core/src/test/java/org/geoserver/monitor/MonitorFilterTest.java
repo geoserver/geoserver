@@ -163,7 +163,7 @@ public class MonitorFilterTest {
                 new MockFilterChain(
                         new HttpServlet() {
                             @Override
-                            @SuppressWarnings("PMD.EmptyWhileStmt")
+                            @SuppressWarnings("PMD.EmptyControlStatement")
                             public void service(ServletRequest req, ServletResponse res)
                                     throws ServletException, IOException {
                                 while (req.getInputStream().read() != -1)

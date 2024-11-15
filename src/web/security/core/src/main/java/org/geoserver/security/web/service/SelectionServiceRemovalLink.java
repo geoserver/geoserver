@@ -21,7 +21,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
-public class SelectionServiceRemovalLink extends AjaxLink {
+public class SelectionServiceRemovalLink extends AjaxLink<Object> {
     static final Logger LOGGER = Logging.getLogger(SelectionServiceRemovalLink.class);
     GeoServerTablePanel<ServiceAccessRule> services;
     GeoServerDialog.DialogDelegate delegate;
@@ -86,7 +86,7 @@ public class SelectionServiceRemovalLink extends AjaxLink {
                             public void onClose(AjaxRequestTarget target) {
                                 // if the selection has been cleared out it's sign a deletion
                                 // occurred, so refresh the table
-                                if (services.getSelection().size() == 0) {
+                                if (services.getSelection().isEmpty()) {
                                     setEnabled(false);
                                     target.add(SelectionServiceRemovalLink.this);
                                     target.add(services);

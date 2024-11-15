@@ -28,7 +28,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.PatternValidator;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -47,6 +46,7 @@ import org.geotools.referencing.CRS;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 /** A generic configuration panel for all basic ResourceInfo properties */
+// TODO WICKET8 - Verify this page works OK
 public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     private static final long serialVersionUID = -552158739086379566L;
@@ -72,8 +72,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(
                 new KeywordsEditor(
                         "keywords",
-                        LiveCollectionModel.list(
-                                new PropertyModel<List<KeywordInfo>>(model, "keywords"))));
+                        LiveCollectionModel.list(new PropertyModel<>(model, "keywords"))));
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 
@@ -148,9 +147,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             private static final long serialVersionUID = 3106345307476297622L;
 
             @Override
-            public void onSubmit(final AjaxRequestTarget target, Form form) {
+            public void onSubmit(final AjaxRequestTarget target) {
                 // perform manual processing otherwise the component contents won't be updated
-                form.process(null);
+                getForm().process(null);
                 ResourceInfo resource =
                         (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
                 try {
@@ -185,7 +184,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             private static final long serialVersionUID = 9211250161114770325L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 LOGGER.log(Level.FINE, "Computing bounds from native CRS");
                 ResourceInfo resource =
                         (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
@@ -213,10 +212,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             private static final long serialVersionUID = -5981662004745936762L;
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 // perform manual processing of the required fields
-                form.process(null);
-                form.visitFormComponents(new FeedbackMessageCleaner<>(FeedbackMessage.UNDEFINED));
+                getForm().process(null);
+                getForm()
+                        .visitFormComponents(
+                                new FeedbackMessageCleaner<>(FeedbackMessage.UNDEFINED));
 
                 ReferencedEnvelope nativeBounds = nativeBBox.getModelObject();
                 try {

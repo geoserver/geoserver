@@ -616,9 +616,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * @param source description of source from which file name(s) obtained
      */
     static void requireFile(String files, String source) {
-        if (files == null || files.isEmpty()) {
-            return;
-        } else {
+        if (files != null && !files.isEmpty()) {
             for (String file : files.split(File.pathSeparator)) {
                 if (!(new File(file)).exists()) {
                     throw new IllegalArgumentException(

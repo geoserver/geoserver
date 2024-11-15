@@ -7,7 +7,6 @@ package org.geoserver.backuprestore.web;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.or;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +57,7 @@ import org.springframework.batch.core.launch.NoSuchJobExecutionException;
  * @author Andrea Aime - OpenGeo
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoServerUnlockablePage {
 
@@ -256,12 +256,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
 
                         // update status to indicate we are working
                         statusLabel.add(AttributeModifier.replace("class", "working-link"));
@@ -347,17 +347,11 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                     };
 
                                     @Override
-                                    public boolean canCallListenerInterface(
-                                            Component component, Method method) {
-                                        if (self.equals(component)
-                                                && method.getDeclaringClass()
-                                                        .equals(
-                                                                org.apache.wicket.behavior
-                                                                        .IBehaviorListener.class)
-                                                && method.getName().equals("onRequest")) {
+                                    public boolean canCallListener(Component component) {
+                                        if (self.equals(component)) {
                                             return true;
                                         }
-                                        return super.canCallListenerInterface(component, method);
+                                        return super.canCallListener(component);
                                     }
                                 });
                     }
@@ -497,12 +491,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                     }
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    protected void onError(AjaxRequestTarget target) {
                         addFeedbackPanels(target);
                     }
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
 
                         // update status to indicate we are working
                         statusLabel.add(AttributeModifier.replace("class", "working-link"));
@@ -588,17 +582,11 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                     };
 
                                     @Override
-                                    public boolean canCallListenerInterface(
-                                            Component component, Method method) {
-                                        if (self.equals(component)
-                                                && method.getDeclaringClass()
-                                                        .equals(
-                                                                org.apache.wicket.behavior
-                                                                        .IBehaviorListener.class)
-                                                && method.getName().equals("onRequest")) {
+                                    public boolean canCallListener(Component component) {
+                                        if (self.equals(component)) {
                                             return true;
                                         }
-                                        return super.canCallListenerInterface(component, method);
+                                        return super.canCallListener(component);
                                     }
                                 });
                     }

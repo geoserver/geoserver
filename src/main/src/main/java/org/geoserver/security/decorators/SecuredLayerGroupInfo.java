@@ -48,7 +48,7 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
     @Override
     public List<PublishedInfo> getLayers() {
-        return new FilteredList<PublishedInfo>(layers, delegate.getLayers()) {
+        return new FilteredList<>(layers, delegate.getLayers()) {
             @Override
             protected PublishedInfo unwrap(PublishedInfo element) {
                 return SecuredLayerGroupInfo.unwrap(element);

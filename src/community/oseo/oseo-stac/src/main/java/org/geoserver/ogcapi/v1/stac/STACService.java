@@ -175,6 +175,11 @@ public class STACService {
         return geoServer.getService(OSEOInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public OSEOInfo getServiceInfo() {
+        return getService();
+    }
+
     private Catalog getCatalog() {
         return geoServer.getCatalog();
     }
@@ -497,6 +502,7 @@ public class STACService {
                 .startIndex(sq.getStartIndexAsInt())
                 .requestedLimit(sq.getLimitAsInt())
                 .bbox(sq.getBbox())
+                .sortby(sq.getSortBy())
                 .datetime(sq.getDatetime())
                 .filter(sq.getFilter())
                 .filterLanguage(sq.getFilterLang())

@@ -111,7 +111,7 @@ public class ReaderUtils {
         }
 
         if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer(new StringBuffer("File is valid: ").append(file).toString());
+            LOGGER.finer("File is valid: " + file);
         }
 
         return file;
@@ -237,7 +237,7 @@ public class ReaderUtils {
      * @param defaultValue a default value to return incase the attribute was not found. mutually
      *     exclusive with the Exception thrown.
      * @return The int value if the attribute was found, the default otherwise.
-     * @throws Exception When a attribute element is required and not found.
+     * @throws Exception When an attribute element is required and not found.
      */
     public static int getIntAttribute(
             Element elem, String attName, boolean mandatory, int defaultValue) throws Exception {
@@ -415,7 +415,7 @@ public class ReaderUtils {
         String value = null;
 
         if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer(new StringBuffer("getting element text for ").append(elem).toString());
+            LOGGER.finer("getting element text for " + elem);
         }
 
         if (elem != null) {
@@ -479,7 +479,7 @@ public class ReaderUtils {
         Object[] s = keywords.toArray();
 
         if (s == null) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
         List<Object> ss = new ArrayList<>(s.length);
@@ -522,7 +522,7 @@ public class ReaderUtils {
      * @param mandatory true when an exception should be thrown if the attribute element does not
      *     exist.
      * @return The double value if the attribute was found, the NaN otherwise.
-     * @throws Exception When a attribute element is required and not found.
+     * @throws Exception When an attribute element is required and not found.
      */
     public static double getDoubleAttribute(Element elem, String attName, boolean mandatory)
             throws Exception {
@@ -663,9 +663,9 @@ public class ReaderUtils {
         //
         /////
         if (keywords == null
-                || keywords.length() == 0
+                || keywords.isEmpty()
                 || delimiter == null
-                || delimiter.length() == 0
+                || delimiter.isEmpty()
                 || keywords.indexOf(delimiter) < 0) return Collections.emptyList();
 
         ////
@@ -680,7 +680,7 @@ public class ReaderUtils {
             if (index > 0) elements.add(keywords.substring(0, index));
             keywords = keywords.substring(index);
         }
-        if (keywords.length() > 0) elements.add(keywords);
+        if (!keywords.isEmpty()) elements.add(keywords);
         return elements;
     }
 }

@@ -20,8 +20,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptContentHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -49,6 +51,7 @@ import org.geotools.util.logging.Logging;
  * @since 1.8.x
  * @version $Id$
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class DemoRequestsPage extends GeoServerBasePage {
 
@@ -61,6 +64,13 @@ public class DemoRequestsPage extends GeoServerBasePage {
      * <p>See static block, below.
      */
     public static String demoRequestsJavascript;
+
+    /**
+     * Style sheet (Content-Security-Policy does not allow inline-styles)
+     *
+     * <p>See static block, below.
+     */
+    public static String demoRequestsCSS;
 
     static {
         try {
@@ -78,6 +88,14 @@ public class DemoRequestsPage extends GeoServerBasePage {
                                     Charsets.UTF_8));
             var js = demo_request_js + "\n" + xml_pretty_print_js;
             demoRequestsJavascript = js;
+
+            demoRequestsCSS =
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    DemoRequestsPage.class.getResourceAsStream(
+                                            "/org/geoserver/web/demo/demo-requests.css"),
+                                    Charsets.UTF_8));
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "error occurred reading demoRequestsJavascript", e);
         }
@@ -115,6 +133,18 @@ public class DemoRequestsPage extends GeoServerBasePage {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         response.render(JavaScriptContentHeaderItem.forScript(demoRequestsJavascript, null));
+        response.render(CssHeaderItem.forCSS(demoRequestsCSS, "demoRequestsCSS"));
+
+        // setup onClick events (Content-security-policy doesn't allow onClick events in the HTML)
+        String script = "\n";
+
+        script +=
+                "$('#linkSubmit').on('click',function() {\ndocument.getElementById('openNewWindow').checked = false; \nsubmitRequest();\n} \n);\n\n";
+        script +=
+                "$('#linkSubmitNewWin').on('click',function() {\ndocument.getElementById('openNewWindow').checked = true;\nsubmitRequest();\n} );\n\n";
+
+        script += "\n";
+        response.render(OnDomReadyHeaderItem.forScript(script));
     }
 
     public void setup() {
@@ -195,7 +225,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
                         "demoRequestsList",
                         reqFileNameModel,
                         demoList,
-                        new ChoiceRenderer<String>() {
+                        new ChoiceRenderer<>() {
                             @Override
                             public String getIdValue(String obj, int index) {
                                 return obj;

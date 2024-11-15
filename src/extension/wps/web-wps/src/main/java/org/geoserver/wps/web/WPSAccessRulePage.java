@@ -92,7 +92,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         settings.setMaxHeightInPx(100);
 
         GeoServerTablePanel<ProcessGroupInfo> processFilterEditor =
-                new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
+                new GeoServerTablePanel<>("processFilterTable", provider) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -121,7 +121,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                             @SuppressWarnings("unchecked")
                             IModel<String> pm = (IModel<String>) property.getModel(itemModel);
                             TextArea<String> roles =
-                                    new TextArea<String>("roles", pm) {
+                                    new TextArea<>("roles", pm) {
                                         @Override
                                         @SuppressWarnings("unchecked")
                                         public <C extends Object> IConverter<C> getConverter(
@@ -144,7 +144,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                                     new Fragment(id, "linkFragment", WPSAccessRulePage.this);
                             // we use a submit link to avoid losing the other edits in the form
                             Link link =
-                                    new Link("link") {
+                                    new Link<>("link") {
                                         @Override
                                         public void onClick() {
                                             ProcessGroupInfo pfi = itemModel.getObject();
@@ -167,7 +167,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         form.add(processFilterEditor);
 
         form.add(
-                new AjaxLink("processAccessModeHelp") {
+                new AjaxLink<>("processAccessModeHelp") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         dialog.showInfo(

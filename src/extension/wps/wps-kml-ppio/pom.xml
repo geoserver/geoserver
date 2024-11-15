@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-wps</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -39,7 +39,6 @@
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-kml</artifactId>
-      <version>${gt.version}</version>
     </dependency>
   </dependencies>
   <build>

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ class AttributeTypeInfoEditor extends Panel {
     // to avoid serialization issues seen in GEOS-8273
     private static final LoadableDetachableModel<List<Property<AttributeTypeInfo>>>
             propertiesModel =
-                    new LoadableDetachableModel<List<Property<AttributeTypeInfo>>>() {
+                    new LoadableDetachableModel<>() {
                         @Override
                         protected List<Property<AttributeTypeInfo>> load() {
                             return Arrays.asList(
@@ -176,7 +177,7 @@ class AttributeTypeInfoEditor extends Panel {
             if (property == NAME) {
                 Fragment f = new Fragment(id, "text", getParent());
                 TextField<String> nameField = new TextField<>("text", model);
-                nameField.add(new UpdateModelBehavior());
+                nameField.add(new SourceUpdateBehavior(itemModel));
                 f.add(nameField);
                 return f;
             } else if (property == BINDING) {
@@ -209,11 +210,11 @@ class AttributeTypeInfoEditor extends Panel {
                 f.add(check);
                 return f;
             } else if (property == REMOVE) {
-                final AttributeTypeInfo entry = (AttributeTypeInfo) itemModel.getObject();
+                final AttributeTypeInfo entry = itemModel.getObject();
                 PackageResourceReference icon =
                         new PackageResourceReference(getClass(), "../../img/icons/silk/delete.png");
                 ImageAjaxLink<Object> link =
-                        new ImageAjaxLink<Object>(id, icon) {
+                        new ImageAjaxLink<>(id, icon) {
 
                             @Override
                             protected void onClick(AjaxRequestTarget target) {
@@ -238,6 +239,44 @@ class AttributeTypeInfoEditor extends Panel {
         protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
             // nothing to do, the mere presence is enough to update the server side model
             // before up/down/drag actions are performed
+        }
+    }
+
+    /**
+     * Behavior that updates the source of an {@link AttributeTypeInfo} when the associated form
+     * component loses focus. This behavior ensures that if the raw source is null and the name of
+     * the attribute has changed, the source is set to the previous name (the original name of the
+     * attribute).
+     */
+    private class SourceUpdateBehavior extends AjaxFormComponentUpdatingBehavior {
+
+        private final IModel<AttributeTypeInfo> itemModel;
+        private final String previousName;
+
+        /**
+         * Constructs a new SourceUpdateBehavior.
+         *
+         * @param itemModel the model of the {@link AttributeTypeInfo} being edited
+         */
+        public SourceUpdateBehavior(IModel<AttributeTypeInfo> itemModel) {
+            super("blur");
+            this.itemModel = itemModel;
+            this.previousName = itemModel.getObject().getName();
+        }
+
+        /**
+         * Called when the form component loses focus and updates the source of the attribute if
+         * necessary.
+         *
+         * @param ajaxRequestTarget the AJAX request target
+         */
+        @Override
+        protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+            AttributeTypeInfo attribute = itemModel.getObject();
+            if (attribute.getRawSource() == null
+                    && !Objects.equals(attribute.getName(), previousName)) {
+                attribute.setSource(previousName);
+            }
         }
     }
 

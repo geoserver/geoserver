@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -162,8 +163,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
         container.add(
                 calculatedRoles =
-                        new ListView<GeoServerRole>(
-                                "calculatedRoles", new CalculatedRoleModel(user)) {
+                        new ListView<>("calculatedRoles", new CalculatedRoleModel(user)) {
                             @Override
                             @SuppressWarnings("unchecked")
                             protected void populateItem(ListItem<GeoServerRole> item) {
@@ -234,7 +234,8 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         if (form == null) {
             return false;
         }
-        return form.findSubmittingButton() == form.get("save");
+        IFormSubmittingComponent submitter = form.findSubmitter();
+        return submitter != null && submitter.getInputName().equals("save");
     }
 
     void updateCalculatedRoles(AjaxRequestTarget target) {

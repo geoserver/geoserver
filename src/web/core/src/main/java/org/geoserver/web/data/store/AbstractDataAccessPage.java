@@ -49,6 +49,7 @@ import org.geotools.util.logging.Logging;
  * @see DataAccessNewPage
  * @see DataAccessEditPage
  */
+// TODO WICKET8 - Verify this page works OK
 abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
     protected static final Logger LOGGER = Logging.getLogger("org.geoserver.web.data.store");
@@ -113,7 +114,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         paramsForm.add(dataStoreNamePanel);
 
         paramsForm.add(
-                new TextParamPanel<String>(
+                new TextParamPanel<>(
                         "dataStoreDescriptionPanel",
                         new PropertyModel<>(model, "description"),
                         new ResourceModel("AbstractDataAccessPage.description", "Description"),
@@ -164,15 +165,15 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onError(AjaxRequestTarget target, Form form) {
-                        super.onError(target, form);
+                    protected void onError(AjaxRequestTarget target) {
+                        super.onError(target);
                         target.add(paramsForm);
                     }
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
-                            DataStoreInfo dataStore = (DataStoreInfo) form.getModelObject();
+                            DataStoreInfo dataStore = (DataStoreInfo) getForm().getModelObject();
                             onSaveDataStore(dataStore, target, true);
                         } catch (IllegalArgumentException e) {
                             paramsForm.error(e.getMessage());
@@ -191,15 +192,15 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         return new GeoserverAjaxSubmitLink("apply", paramsForm, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(paramsForm);
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
-                    DataStoreInfo info = (DataStoreInfo) form.getModelObject();
+                    DataStoreInfo info = (DataStoreInfo) getForm().getModelObject();
                     onSaveDataStore(info, target, false);
                 } catch (IllegalArgumentException e) {
                     paramsForm.error(e.getMessage());

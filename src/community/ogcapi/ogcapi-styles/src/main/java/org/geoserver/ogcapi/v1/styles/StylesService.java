@@ -151,6 +151,12 @@ public class StylesService {
         return geoServer.getService(StylesServiceInfo.class);
     }
 
+    @SuppressWarnings("unused")
+    public StylesServiceInfo getServiceInfo() {
+        // required for DisabledServiceCheck class
+        return getService();
+    }
+
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
@@ -329,7 +335,7 @@ public class StylesService {
         // validation
         if (validate == only || validate == yes) {
             validate(mimeType, content, handler);
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             String styleId = getStyleId(mimeType, handler, content);
             StyleInfo styleInfo = getStyleInfo(styleId, false);

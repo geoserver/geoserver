@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
@@ -35,12 +35,12 @@ public class LayerAttributePanel extends StyleEditTabPanel {
         PropertyModel<String> layerNameModel =
                 new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
-                new SimpleAjaxLink<String>("changeLayer", layerNameModel) {
+                new SimpleAjaxLink<>("changeLayer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        ModalWindow popup = parent.getPopup();
+                        GSModalWindow popup = parent.getPopup();
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);

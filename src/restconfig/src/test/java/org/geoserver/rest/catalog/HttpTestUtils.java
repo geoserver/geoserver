@@ -21,7 +21,7 @@ public class HttpTestUtils {
     }
 
     public static Matcher<HttpServletResponse> hasStatus(HttpStatus expectedStatus) {
-        return new BaseMatcher<HttpServletResponse>() {
+        return new BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {
@@ -60,7 +60,7 @@ public class HttpTestUtils {
 
     public static Matcher<HttpServletResponse> hasHeader(
             String name, Matcher<String> valueMatcher) {
-        return new BaseMatcher<HttpServletResponse>() {
+        return new BaseMatcher<>() {
 
             @Override
             public boolean matches(Object item) {

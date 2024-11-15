@@ -34,7 +34,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
 
         public LDAPAuthenticationPanel(String id) {
             super(id, new Model<>());
-            add(new TextField<String>("user"));
+            add(new TextField<>("user"));
 
             PasswordTextField pwdField = new PasswordTextField("password");
             // avoid reseting the password which results in an
@@ -51,12 +51,12 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
 
     public LDAPRoleServicePanel(String id, IModel<LDAPRoleServiceConfig> model) {
         super(id, model);
-        add(new TextField<String>("serverURL").setRequired(true));
+        add(new TextField<>("serverURL").setRequired(true));
         add(new CheckBox("useTLS"));
-        add(new TextField<String>("groupSearchBase").setRequired(true));
-        add(new TextField<String>("groupSearchFilter"));
-        add(new TextField<String>("allGroupsSearchFilter"));
-        add(new TextField<String>("userFilter"));
+        add(new TextField<>("groupSearchBase").setRequired(true));
+        add(new TextField<>("groupSearchFilter"));
+        add(new TextField<>("allGroupsSearchFilter"));
+        add(new TextField<>("userFilter"));
         TextField<String> rolePrefixField = new TextField<>("rolePrefix");
         rolePrefixField.setConvertEmptyInputStringToNull(
                 false); // empty string is a legitimate prefix value
@@ -119,7 +119,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
                     }
                 };
         add(useNestedCheckbox);
-        nestedSearchFieldsContainer.add(new TextField<String>(MAX_GROUP_SEARCH_LEVEL));
-        nestedSearchFieldsContainer.add(new TextField<String>(NESTED_GROUP_SEARCH_FILTER));
+        nestedSearchFieldsContainer.add(new TextField<>(MAX_GROUP_SEARCH_LEVEL));
+        nestedSearchFieldsContainer.add(new TextField<>(NESTED_GROUP_SEARCH_FILTER));
     }
 }

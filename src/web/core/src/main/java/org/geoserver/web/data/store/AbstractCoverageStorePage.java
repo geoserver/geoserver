@@ -31,6 +31,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
  * @author Andrea Aime
  * @see StoreEditPanel
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
 
@@ -72,7 +73,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
 
         // description and enabled
         paramsForm.add(
-                new TextParamPanel<String>(
+                new TextParamPanel<>(
                         "descriptionPanel",
                         new PropertyModel<>(model, "description"),
                         new ResourceModel("AbstractCoverageStorePage.description", "Description"),
@@ -115,7 +116,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         paramsForm.add(storeEditPanel);
 
         // cancel/submit buttons
-        paramsForm.add(new BookmarkablePageLink<StorePage>("cancel", StorePage.class));
+        paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
         paramsForm.add(saveLink());
         paramsForm.add(applyLink());
         paramsForm.setDefaultButton(saveLink());
@@ -135,14 +136,14 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         return new AjaxSubmitLink("save", paramsForm) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(paramsForm);
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
-                CoverageStoreInfo info = (CoverageStoreInfo) form.getModelObject();
+            protected void onSubmit(AjaxRequestTarget target) {
+                CoverageStoreInfo info = (CoverageStoreInfo) getForm().getModelObject();
                 try {
                     onSave(info, target, true);
                 } catch (IllegalArgumentException e) {
@@ -157,15 +158,15 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         return new GeoserverAjaxSubmitLink("apply", paramsForm, this) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(paramsForm);
             }
 
             @Override
-            protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmitInternal(AjaxRequestTarget target) {
                 try {
-                    CoverageStoreInfo info = (CoverageStoreInfo) form.getModelObject();
+                    CoverageStoreInfo info = (CoverageStoreInfo) getForm().getModelObject();
                     onSave(info, target, false);
                 } catch (IllegalArgumentException e) {
                     paramsForm.error(e.getMessage());

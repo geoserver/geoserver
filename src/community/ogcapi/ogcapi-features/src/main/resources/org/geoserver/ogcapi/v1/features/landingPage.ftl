@@ -28,6 +28,16 @@
         </div>
       </div>
     </div>
+
+    <div class="col-6 col-xl-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2>Functions</h2>
+          <p>The <a id="functionsLink" href="${model.getLinkUrl('functions', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service.
+          <br/>
+        </div>
+      </div>
+    </div>
     
     ${htmlExtensions('landing')?no_esc}
 

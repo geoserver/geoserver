@@ -104,11 +104,13 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // paste in new directory
         tester.clickLink("paste");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", PanelPaste.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", PanelPaste.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.setValue("userPanel:directory", "temp/new_dir");
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES)));
         assertTrue(Resources.exists(resourceBrowser.store().get("temp/new_dir")));
         assertTrue(Resources.exists(resourceBrowser.store().get("temp/new_dir/dir/something")));
@@ -163,10 +165,12 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // paste in same directory
         tester.clickLink("paste");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", PanelPaste.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", PanelPaste.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
 
         tester.assertComponent(
                 "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something.1",
@@ -225,10 +229,12 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // delete resource
         tester.clickLink("delete");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", Label.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", Label.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
 
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES)));
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES2)));
@@ -248,11 +254,13 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // rename resource
         tester.clickLink("rename");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", PanelRename.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", PanelRename.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.setValue("userPanel:name", "anotherthing");
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
 
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES)));
         tester.assertContainsNot(
@@ -312,12 +320,14 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // upload file
         tester.clickLink("upload");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", PanelUpload.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", PanelUpload.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.setFile(
                 "userPanel:file", new org.apache.wicket.util.file.File(file), "text/plain");
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
 
         tester.assertComponent(
                 "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/anewthing",
@@ -350,12 +360,14 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // new file
         tester.clickLink("new");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", PanelEdit.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", PanelEdit.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         formTester.setValue("userPanel:resource", "temp/dir/anewthing");
         formTester.setValue("userPanel:contents", DATA2);
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
 
         tester.assertComponent(
                 "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/anewthing",
@@ -389,12 +401,14 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // new file
         tester.clickLink("edit");
-        tester.assertComponent("dialog:dialog:content:form:userPanel", PanelEdit.class);
-        formTester = tester.newFormTester("dialog:dialog:content:form");
+        tester.assertComponent("dialog:dialog:modal:content:form:userPanel", PanelEdit.class);
+        formTester = tester.newFormTester("dialog:dialog:modal:content:form");
         assertEquals(DATA, formTester.getTextComponentValue("userPanel:contents"));
         formTester.setValue("userPanel:contents", DATA2);
         formTester.submit("submit");
-        assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
+        assertNull(
+                tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:content:form:userPanel"));
 
         try (InputStream is = resourceBrowser.store().get(PATH_RES).in()) {
             assertEquals(

@@ -130,7 +130,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return "DataInputs".equalsIgnoreCase(kvp)
                 || "responseDocument".equalsIgnoreCase(kvp)
                 || "rawDataOutput".equalsIgnoreCase(kvp);
-    };
+    }
 
     List<InputType> parseDataInputs(Map<String, Parameter<?>> inputParams, String inputString) {
         List<IOParam> params = parseIOParameters(inputString);

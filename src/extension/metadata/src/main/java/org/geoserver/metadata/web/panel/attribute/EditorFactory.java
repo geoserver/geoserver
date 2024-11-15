@@ -65,7 +65,7 @@ public class EditorFactory {
                 configuration,
                 id,
                 model,
-                new ComplexMetadataMapImpl(new HashMap<String, Serializable>()),
+                new ComplexMetadataMapImpl(new HashMap<>()),
                 selection,
                 rInfo);
     }
@@ -121,7 +121,7 @@ public class EditorFactory {
                 return new AttributesTablePanel(
                         id,
                         new AttributeDataProvider(configuration.getTypename(), rInfo),
-                        new Model<ComplexMetadataMap>(submap),
+                        new Model<>(submap),
                         null,
                         rInfo);
             default:

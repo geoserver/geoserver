@@ -8,6 +8,7 @@ package org.geoserver;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -271,7 +272,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 while (it.hasNext()) {
                     Entry<String, String> entry = it.next();
                     // the propertyKey should NOT be present
-                    assertFalse(propertyKey.equals(entry.getKey()));
+                    assertNotEquals(propertyKey, entry.getKey());
                 }
             }
         }

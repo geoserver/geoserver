@@ -11,6 +11,7 @@ import java.util.Set;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -65,7 +66,7 @@ public class GWCTestHelpers {
         layer.setDefaultStyle(defaultStyle);
 
         if (extraStyles != null) {
-            Set styles = new HashSet();
+            Set<StyleInfo> styles = new HashSet<>();
             for (String name : extraStyles) {
                 StyleInfoImpl extra = new StyleInfoImpl(null);
                 extra.setName(name);

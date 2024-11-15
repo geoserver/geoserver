@@ -58,11 +58,6 @@ public class MasterPasswordProviderChoice extends DropDownChoice<String> {
         }
 
         @Override
-        public void detach() {
-            // do nothing
-        }
-
-        @Override
         public void setObject(List<String> object) {
             throw new UnsupportedOperationException();
         }

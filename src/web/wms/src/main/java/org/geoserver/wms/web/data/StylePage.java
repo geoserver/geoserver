@@ -40,7 +40,7 @@ public class StylePage extends GeoServerSecuredPage {
         StyleProvider provider = new StyleProvider();
         add(
                 table =
-                        new GeoServerTablePanel<StyleInfo>("table", provider, true) {
+                        new GeoServerTablePanel<>("table", provider, true) {
 
                             @Override
                             protected Component getComponentForProperty(
@@ -75,7 +75,7 @@ public class StylePage extends GeoServerSecuredPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(table.getSelection().size() > 0);
+                                removal.setEnabled(!table.getSelection().isEmpty());
                                 target.add(removal);
                             }
                         });
@@ -90,7 +90,7 @@ public class StylePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<StyleNewPage>("addNew", StyleNewPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", StyleNewPage.class));
 
         // the removal button
         header.add(

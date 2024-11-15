@@ -41,6 +41,7 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +78,8 @@ import org.geoserver.test.SystemTest;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.DataStore;
+import org.geotools.api.data.DataStoreFactorySpi;
+import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureLocking;
@@ -102,6 +105,8 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.util.CoverageUtilities;
+import org.geotools.data.directory.DirectoryDataStore;
+import org.geotools.data.shapefile.ShapefileDirectoryFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.CommonFactoryFinder;
@@ -121,13 +126,18 @@ import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
 import org.geotools.util.Version;
+import org.geotools.util.factory.FactoryRegistry;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
+import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.locationtech.jts.geom.Point;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -146,6 +156,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     private static final String HUMANS = "humans";
 
     private static final String BAD_CONN_DATASTORE = "bad_conn_data_store";
+    public static final DataStoreFactorySpi TEST_DIRECTORY_STORE_FACTORY_SPI =
+            new TestDirectoryStoreFactorySpi();
 
     static {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
@@ -157,6 +169,17 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
     private static final String EXTERNAL_ENTITIES = "externalEntities";
+
+    @BeforeClass
+    public static void registerTestDirectoryStore() {
+        // a "catch-all" datastore that will use any File without requiring a filetype/dbtype
+        DataStoreFinder.registerFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+    }
+
+    @AfterClass
+    public static void deregisterTestDirectoryStore() {
+        DataStoreFinder.deregisterFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -199,6 +222,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         }
         CatalogBuilder cb = new CatalogBuilder(catalog);
         DataStoreInfo dataStoreInfo = cb.buildDataStore("mini-states");
+        dataStoreInfo.setType("Shapefile");
         dataStoreInfo.getConnectionParameters().put("url", "file:data/mini-states/mini-states.shp");
         catalog.add(dataStoreInfo);
         DataStore ds = (DataStore) dataStoreInfo.getDataStore(null);
@@ -743,6 +767,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
      * @throws IOException
      */
     @Test(expected = FileNotFoundException.class)
+    @SuppressWarnings("PMD.UnusedLocalVariable")
     public void testMissingStyleThrowsException() throws IOException {
         Catalog catalog = getCatalog();
         StyleInfo missing = catalog.getFactory().createStyle();
@@ -750,7 +775,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         missing.setFilename("missing.sld");
 
         ResourcePool pool = new ResourcePool(catalog);
-        try (BufferedReader reader = pool.readStyle(missing)) {
+        try (BufferedReader ignored = pool.readStyle(missing)) {
             fail("FileNotFoundException expected for missing style files");
         }
     }
@@ -884,7 +909,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;
-                    };
+                    }
                 };
 
         // setup all the mocks
@@ -1376,6 +1401,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ds.setWorkspace(ws);
         ds.setEnabled(true);
         ds.setDisableOnConnFailure(true);
+        ds.setType("H2");
         Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", "");
@@ -1526,5 +1552,45 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         SimpleFeatureType schema = (SimpleFeatureType) fti.getFeatureType();
         CoordinateReferenceSystem crs = schema.getCoordinateReferenceSystem();
         assertEquals(CRS.decode("EPSG:4326", true), crs);
+    }
+
+    @Test
+    public void testAcceptAllStore() throws Exception {
+        // check we have both the shapefile directory and test store accepting URL without a dbtype
+        ShapefileDirectoryFactory shapeDirectorFactory = null;
+        TestDirectoryStoreFactorySpi testDirectoryFactory = null;
+        Iterator<DataStoreFactorySpi> factoryIterator = DataStoreFinder.getAllDataStores();
+        while (factoryIterator.hasNext()) {
+            DataStoreFactorySpi spi = factoryIterator.next();
+            if (spi instanceof TestDirectoryStoreFactorySpi)
+                testDirectoryFactory = (TestDirectoryStoreFactorySpi) spi;
+            else if (spi instanceof ShapefileDirectoryFactory)
+                shapeDirectorFactory = (ShapefileDirectoryFactory) spi;
+        }
+        assertNotNull(shapeDirectorFactory);
+        assertNotNull(testDirectoryFactory);
+
+        // Using reflection to grab the registry. The synchronization is there because the method
+        // is using assertions to check it's being called in a synchronized block (assertions
+        // are enabled when running tests with Maven)
+        FactoryRegistry registry;
+        synchronized (DataStoreFinder.class) {
+            registry =
+                    ReflectionTestUtils.invokeMethod(DataStoreFinder.class, "getServiceRegistry");
+        }
+        registry.setOrdering(DataStoreFactorySpi.class, testDirectoryFactory, shapeDirectorFactory);
+
+        // now create a store that would be caught by the test factory, if it wasn't for the type
+        // being used to lookup the shape factory
+        Catalog catalog = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        DataStoreInfo dataStoreInfo = cb.buildDataStore("mini-states-dir");
+        dataStoreInfo.setType("Directory of spatial files (shapefiles)");
+        dataStoreInfo.getConnectionParameters().put("url", "file:data/mini-states");
+        catalog.add(dataStoreInfo);
+
+        // check this is the right type of store
+        DataStore ds = (DataStore) dataStoreInfo.getDataStore(null);
+        assertThat(ds, Matchers.instanceOf(DirectoryDataStore.class));
     }
 }

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
@@ -38,10 +37,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.w3c.dom.Document;
 
 public class CollectionTest extends FeaturesTestSupport {
 
@@ -63,14 +60,11 @@ public class CollectionTest extends FeaturesTestSupport {
     }
 
     @Before
-    public void enableWFS() throws Exception {
-        setWFSEnabled(true);
-    }
-
-    private void setWFSEnabled(boolean enabled) {
+    public void resetWFS() throws Exception {
         GeoServer gs = getGeoServer();
         WFSInfo wfs = gs.getService(WFSInfo.class);
-        wfs.setEnabled(enabled);
+        wfs.getSRS().clear();
+        wfs.setEnabled(true);
         gs.save(wfs);
     }
 
@@ -157,6 +151,31 @@ public class CollectionTest extends FeaturesTestSupport {
                         "http://www.opengis.net/def/crs/EPSG/0/32632"));
     }
 
+    @Test
+    public void testCustomizeGlobalCRSList() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.getSRS().addAll(Arrays.asList("EPSG:4326", "EPSG:3857"));
+        gs.save(wfs);
+
+        String polygons = getLayerId(MockData.POLYGONS);
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections/" + polygons, 200);
+
+        assertEquals("cgf:Polygons", json.read("$.id", String.class));
+        String storageCrs = json.read("storageCrs");
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/32615", storageCrs);
+        // make sure the storage CRS is in the crs list, even if it was not declared globally
+        List<String> crs = json.read("crs");
+        assertEquals(4, crs.size());
+        assertThat(
+                crs,
+                hasItems(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/4326",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857",
+                        "http://www.opengis.net/def/crs/EPSG/0/32615"));
+    }
+
     private List<MediaType> getFeaturesResponseFormats() {
         return GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
                 .getProducibleMediaTypes(FeaturesResponse.class, true);
@@ -185,26 +204,6 @@ public class CollectionTest extends FeaturesTestSupport {
         }
         // the ogc/features specific GML3.2 output format is available
         readSingle(json, "$.links[?(@.type=='application/gml+xml;version=3.2')]");
-    }
-
-    @Test
-    @Ignore // ignoring XML output for the moment, we need to migrated it to use JAXB2 to be of any
-    // usefulness
-    public void testCollectionXML() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "ogc/features/v1/collections/"
-                                + getLayerId(ROAD_SEGMENTS)
-                                + "?f=application/xml");
-        print(dom);
-        String expected =
-                "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments"
-                        + "/items?f=application%2Fjson";
-        XMLAssert.assertXpathEvaluatesTo(
-                expected,
-                "//wfs:Collection[wfs:id='cite:RoadSegments']/atom:link[@atom:type='application"
-                        + "/json']/@atom:href",
-                dom);
     }
 
     @Test
@@ -238,28 +237,6 @@ public class CollectionTest extends FeaturesTestSupport {
         assertThat(html, containsString("form-select-open-basic"));
         assertThat(html, containsString("form-select-open-limit"));
         assertThat(html, not(containsString("onchange")));
-    }
-
-    @Test
-    public void testQueryables() throws Exception {
-        String roadSegments = ROAD_SEGMENTS.getLocalPart();
-        DocumentContext json =
-                getAsJSONPath(
-                        "cite/ogc/features/v1/collections/" + roadSegments + "/queryables", 200);
-        assertThat(
-                json.read("properties.the_geom.$ref"),
-                equalTo("https://geojson.org/schema/MultiLineString.json"));
-        assertThat(json.read("properties.FID.type"), equalTo("string"));
-        assertThat(json.read("properties.NAME.type"), equalTo("string"));
-    }
-
-    @Test
-    public void testQueryablesHTML() throws Exception {
-        String roadSegments = ROAD_SEGMENTS.getLocalPart();
-        org.jsoup.nodes.Document document =
-                getAsJSoup(
-                        "cite/ogc/features/v1/collections/" + roadSegments + "/queryables?f=html");
-        assertEquals("the_geom: MultiLineString", document.select("#queryables li:eq(0)").text());
     }
 
     @Test

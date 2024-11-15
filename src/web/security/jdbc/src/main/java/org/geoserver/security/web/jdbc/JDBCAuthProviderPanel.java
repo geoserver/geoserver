@@ -10,7 +10,6 @@ import java.sql.DriverManager;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -28,6 +27,7 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+// TODO WICKET8 - Verify this page works OK
 public class JDBCAuthProviderPanel
         extends AuthenticationProviderPanel<JDBCConnectAuthProviderConfig> {
 
@@ -40,7 +40,7 @@ public class JDBCAuthProviderPanel
 
         add(new UserGroupServiceChoice("userGroupServiceName"));
         add(new JDBCDriverChoice("driverClassName"));
-        add(new TextField<String>("connectURL"));
+        add(new TextField<>("connectURL"));
 
         TextField<String> userNameField = new TextField<>("username");
         userNameField.setModel(new PropertyModel<>(this, "username"));
@@ -56,7 +56,7 @@ public class JDBCAuthProviderPanel
         add(
                 new AjaxSubmitLink("cxTest") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             test();
                             info(
@@ -78,6 +78,7 @@ public class JDBCAuthProviderPanel
         feedbackPanel.setOutputMarkupId(true);
     }
 
+    @SuppressWarnings({"PMD.EmptyControlStatement", "PMD.UnusedLocalVariable"})
     public void test() throws Exception {
         // since this wasn't a regular form submission, we need to manually update component
         // models
@@ -88,7 +89,7 @@ public class JDBCAuthProviderPanel
 
         // do the test
         Class.forName(get("driverClassName").getDefaultModelObjectAsString());
-        try (Connection cx =
+        try (Connection fx =
                 DriverManager.getConnection(
                         get("connectURL").getDefaultModelObjectAsString(),
                         get("username").getDefaultModelObjectAsString(),

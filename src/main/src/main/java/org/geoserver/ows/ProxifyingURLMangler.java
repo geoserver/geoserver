@@ -137,7 +137,7 @@ public class ProxifyingURLMangler implements URLMangler {
 
         // perform the replacement if the proxy base is set,
         // otherwise return the baseURL unchanged
-        if (proxyBase != null && proxyBase.trim().length() > 0) {
+        if (proxyBase != null && !proxyBase.trim().isEmpty()) {
             baseURL.setLength(0);
             baseURL.append(proxyBase);
         }

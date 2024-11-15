@@ -11,16 +11,17 @@ import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
+import org.geoserver.config.GeoServer;
+import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
 
 public class LandingPageTest extends FeaturesTestSupport {
 
@@ -69,14 +70,6 @@ public class LandingPageTest extends FeaturesTestSupport {
     public void testLandingPageWorkspaceSpecific() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/v1", 200);
         checkJSONLandingPage(json);
-    }
-
-    @Test
-    @Ignore
-    public void testLandingPageXML() throws Exception {
-        Document dom = getAsDOM("ogc/features/v1?f=application/xml");
-        print(dom);
-        // TODO: add actual tests in here
     }
 
     @Test
@@ -168,6 +161,15 @@ public class LandingPageTest extends FeaturesTestSupport {
                 Link.REL_DATA,
                 Link.REL_DATA,
                 Link.REL_DATA);
+
+        // check collection links
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*ogc\\/features\\/v1\\/functions.*/)].rel",
+                FunctionsDocument.REL,
+                FunctionsDocument.REL,
+                FunctionsDocument.REL);
+
         // check title
         assertEquals("Features 1.0 server", json.read("title"));
         // check description
@@ -183,5 +185,21 @@ public class LandingPageTest extends FeaturesTestSupport {
                 hasItems(
                         "<http://localhost:8080/geoserver/ogc/features/v1/?f=application%2Fx-yaml>; rel=\"alternate\"; type=\"application/x-yaml\"; title=\"This document as application/x-yaml\"",
                         "<http://localhost:8080/geoserver/ogc/features/v1/?f=application%2Fjson>; rel=\"self\"; type=\"application/json\"; title=\"This document\""));
+    }
+
+    @Test
+    public void testDisabledService() throws Exception {
+        GeoServer gs = getGeoServer();
+        WFSInfo service = gs.getService(WFSInfo.class);
+        service.setEnabled(false);
+        gs.save(service);
+        try {
+            MockHttpServletResponse httpServletResponse =
+                    getAsMockHttpServletResponse("ogc/features/v1", 404);
+            assertEquals("Service Features is disabled", httpServletResponse.getErrorMessage());
+        } finally {
+            service.setEnabled(true);
+            gs.save(service);
+        }
     }
 }

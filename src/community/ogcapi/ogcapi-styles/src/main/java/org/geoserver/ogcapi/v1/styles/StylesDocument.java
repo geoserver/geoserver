@@ -29,7 +29,7 @@ public class StylesDocument extends AbstractDocument {
     public Iterator<StyleDocument> getStyles() {
         // full scan (we might add paging/filtering later)
         CloseableIterator<StyleInfo> styles = catalog.list(StyleInfo.class, Filter.INCLUDE);
-        return new Iterator<StyleDocument>() {
+        return new Iterator<>() {
 
             StyleDocument next;
 

@@ -105,7 +105,7 @@ public class APIBBoxParser {
             return FF.bbox(FF.property(""), bboxes[0]);
         } else if (bboxes instanceof ReferencedEnvelope[]) {
             List<Filter> filters =
-                    Stream.of((ReferencedEnvelope[]) bboxes)
+                    Stream.of(bboxes)
                             .map(e -> FF.bbox(FF.property(""), e))
                             .collect(Collectors.toList());
             return FF.or(filters);

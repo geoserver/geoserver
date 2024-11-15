@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import static org.geoserver.gwc.wmts.MultiDimensionalExtension.SIDECAR_STORE;
 import static org.geoserver.gwc.wmts.MultiDimensionalExtension.SIDECAR_TYPE;
 
 import java.io.IOException;
@@ -360,7 +361,7 @@ public final class DimensionsUtils {
         // we set the other right?
         if (start == null) start = end;
         else if (end == null) end = start;
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "PMD.UseDiamondOperator"})
         ComparableRange result =
                 new ComparableRange(Comparable.class, (Comparable) start, (Comparable) end);
         return result;
@@ -422,7 +423,7 @@ public final class DimensionsUtils {
         return getValuesWithDuplicates(attributeName, null, featureCollection);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.UseDiamondOperator"})
     static List<Comparable> getValuesWithDuplicates(
             String attributeName, String endAttributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
@@ -468,15 +469,44 @@ public final class DimensionsUtils {
      * feature type for fast dimensional queries
      */
     public static FeatureSource getFeatures(ResourceInfo resource) throws IOException {
-        String sidecar = resource.getMetadata().get(SIDECAR_TYPE, String.class);
+        String sidecarType = resource.getMetadata().get(SIDECAR_TYPE, String.class);
         // sidecar table available?
-        if (sidecar != null) {
-            DataStoreInfo dsi = (DataStoreInfo) resource.getStore();
-            Name name = getFullName(sidecar, dsi);
+        if (sidecarType != null) {
+            DataStoreInfo dsi = getSidecarStore(resource);
+            Name name = getFullName(sidecarType, dsi);
             return dsi.getDataStore(null).getFeatureSource(name);
         }
         // simple case
         return ((FeatureTypeInfo) resource).getFeatureSource(null, GeoTools.getDefaultHints());
+    }
+
+    /**
+     * Returns the data store configured in SIDECAR_STORE, or the resource store if no sidecar is
+     * configured
+     */
+    private static DataStoreInfo getSidecarStore(ResourceInfo resource) {
+        String sidecarStore = resource.getMetadata().get(SIDECAR_STORE, String.class);
+        if (sidecarStore != null) {
+            return getStoreByName(resource, sidecarStore);
+        }
+        return (DataStoreInfo) resource.getStore();
+    }
+
+    /**
+     * Returns the data store with the given name, taking into account the workspace prefix if
+     * present, otherwise assuming the same workspace as the resource
+     */
+    public static DataStoreInfo getStoreByName(ResourceInfo resource, String fullStoreName) {
+        String workspace, storeName;
+        int separatorIdx = fullStoreName.indexOf(":");
+        if (separatorIdx != -1) {
+            storeName = fullStoreName.substring(separatorIdx + 1);
+            workspace = fullStoreName.substring(0, separatorIdx);
+        } else {
+            storeName = fullStoreName;
+            workspace = resource.getStore().getWorkspace().getName();
+        }
+        return resource.getCatalog().getDataStoreByName(workspace, storeName);
     }
 
     /** Compute the resource bounds based on the provided filter */

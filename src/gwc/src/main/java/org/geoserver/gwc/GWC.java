@@ -19,6 +19,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -38,6 +39,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
@@ -220,6 +225,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private BlobStoreAggregator blobStoreAggregator;
 
+    private ExecutorService metaTilingExecutor;
+
     /**
      * Constructor for the GWC mediator
      *
@@ -273,6 +280,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.jdbcConfigurationStorage = jdbcConfigurationStorage;
         this.blobStoreAggregator = blobStoreAggregator;
         this.gwcSynchEnv = gwcSynchEnv;
+
+        this.metaTilingExecutor = buildMetaTilingExecutor(getConfig().getMetaTilingThreads());
     }
 
     /** Updates the configurable lock provider to use the specified bean */
@@ -298,6 +307,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
 
         lockProvider.setDelegate(delegate);
+    }
+
+    private ExecutorService buildMetaTilingExecutor(Integer metaTilingThreads) {
+        ThreadFactory threadFactory =
+                new ThreadFactoryBuilder().setNameFormat("GWC MetaTiling Thread-%d").build();
+
+        if (metaTilingThreads == null) {
+            metaTilingThreads = Runtime.getRuntime().availableProcessors() * 2;
+        }
+
+        if (metaTilingThreads == 0) {
+            return null;
+        }
+        return Executors.newFixedThreadPool(metaTilingThreads, threadFactory);
     }
 
     /**
@@ -350,6 +373,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
         if (this.catalogStyleChangeListener != null) {
             catalog.removeListener(this.catalogStyleChangeListener);
+        }
+        if (this.metaTilingExecutor != null) {
+            this.metaTilingExecutor.shutdownNow();
         }
         GWC.set(null, null);
     }
@@ -578,7 +604,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             }
             for (String style : styleNames) {
                 Map<String, String> parameters;
-                if (style.length() == 0 || style.equals(defaultStyle)) {
+                if (style.isEmpty() || style.equals(defaultStyle)) {
                     log.finer(
                             "'"
                                     + style
@@ -1235,6 +1261,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // make sure we switch to the lock provider just configured
         updateLockProvider(gwcConfig.getLockProviderName());
+
+        // Reconfigure the metatiling executor because the thread count might have changed
+        ExecutorService current = this.metaTilingExecutor;
+        this.metaTilingExecutor = buildMetaTilingExecutor(gwcConfig.getMetaTilingThreads());
+        if (current != null) current.shutdown();
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig)
@@ -1300,7 +1331,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                         quota.add(used);
                     } catch (InterruptedException e) {
                         log.fine(e.getMessage());
-                        return;
                     }
                 };
         monitor.getQuotaStore().accept(visitor);
@@ -1367,14 +1397,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         try {
             owsDispatcher.handleRequest(req, resp);
         } finally {
-            // reset the old request
+            // reset thread locals
+            tx.apply();
+
+            // reset the old request (after all other thread locals to ensure
+            // it won't get overriden by the ThreadLocalsTransfer).
             if (request != null) {
                 Dispatcher.REQUEST.set(request);
             } else {
                 Dispatcher.REQUEST.remove();
             }
-            // reset thread locals
-            tx.apply();
         }
         return new ByteArrayResource(resp.getBytes());
     }
@@ -2191,9 +2223,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (source instanceof ResourceInfo) {
             name = ((ResourceInfo) source).prefixedName();
         } else if (source instanceof LayerInfo) {
-            name = tileLayerName(((LayerInfo) source));
+            name = tileLayerName((LayerInfo) source);
         } else if (source instanceof LayerGroupInfo) {
-            name = tileLayerName(((LayerGroupInfo) source));
+            name = tileLayerName((LayerGroupInfo) source);
         } else {
             return null;
         }
@@ -2372,6 +2404,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     public LockProvider getLockProvider() {
         return lockProvider;
+    }
+
+    public Executor getMetaTilingExecutor() {
+        return metaTilingExecutor;
     }
 
     public JDBCConfiguration getJDBCDiskQuotaConfig()
@@ -2671,7 +2707,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         map.put("Last-Modified", lastModified);
 
         final Date ifModifiedSince;
-        if (ifModSinceHeader != null && ifModSinceHeader.length() > 0) {
+        if (ifModSinceHeader != null && !ifModSinceHeader.isEmpty()) {
             ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
             if (ifModifiedSince != null) {
                 // the HTTP header has second precision
@@ -2736,7 +2772,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             int c2 = 0xFF & hash[i + 1];
             int c3 = 0xFF & hash[i + 2];
             int c4 = 0xFF & hash[i + 3];
-            int integer = ((c1 << 24) + (c2 << 16) + (c3 << 8) + (c4 << 0));
+            int integer = (c1 << 24) + (c2 << 16) + (c3 << 8) + (c4 << 0);
             sb.append(Integer.toHexString(integer));
         }
         return sb.toString();

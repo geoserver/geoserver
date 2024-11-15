@@ -175,7 +175,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
                         onFormSubmit(rule);
                     }
                 });
-        form.add(new BookmarkablePageLink<DataAccessRule>("cancel", DataSecurityPage.class));
+        form.add(new BookmarkablePageLink<>("cancel", DataSecurityPage.class));
     }
 
     /** Implements the actual save action */
@@ -235,7 +235,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
         @Override
         public void validate(Form<?> form) {
             // only validate on final submit
-            if (form.findSubmittingButton() != form.get("save")) {
+            if (!form.findSubmitter().getInputName().equals("save")) {
                 return;
             }
 

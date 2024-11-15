@@ -22,7 +22,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -70,7 +69,7 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
 
         provider = new RowProvider(dataset, bands.get(0));
         table =
-                new GeoServerTablePanel<Row>("rat", provider, true) {
+                new GeoServerTablePanel<>("rat", provider, true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -93,7 +92,7 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
         Button create =
                 new AjaxButton("createStyles") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         createStyle();
                         target.add(styleToolbar);
                         Page page = getPage();
@@ -111,10 +110,9 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
         create.setEnabled(false);
 
         bandsSelector =
-                new DropDownChoice<>(
-                        "bands", new Model<Integer>(bands.get(0)), bands, new BandRenderer());
+                new DropDownChoice<>("bands", new Model<>(bands.get(0)), bands, new BandRenderer());
         bandsSelector.add(
-                new AjaxFormComponentUpdatingBehavior("onchange") {
+                new AjaxFormComponentUpdatingBehavior("change") {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         Integer band = bandsSelector.getModelObject();
@@ -135,9 +133,9 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
                 new ArrayList<>(rats.getRasterAttributeTable(bands.get(0)).getClassifications());
         Collections.sort(classificationList);
         this.classifications =
-                new DropDownChoice<>("classifications", new Model<String>(), classificationList);
+                new DropDownChoice<>("classifications", new Model<>(), classificationList);
         classifications.add(
-                new AjaxFormComponentUpdatingBehavior("onchange") {
+                new AjaxFormComponentUpdatingBehavior("change") {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {

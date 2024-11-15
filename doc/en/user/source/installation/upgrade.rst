@@ -103,6 +103,16 @@ If the above did not help, then a full cleanup of the GeoServer configuration is
 
 #. Recreate the stores and layers using the known procedures.
 
+Disk Quota validation query (GeoServer 2.25.4 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using the JDBC Disk Quota:
+
+* Validation query for ``H2`` is limited to ``SELECT 1``.
+* Validation query for ``Oracle`` is limited to ``SELECT 1 FROM DUAL``.
+* Validation query for other JDBC formats receive a warning in the logs if is not one of the common examples above.
+
+.. note:: If you find your JDBC Disk Quota is no longer loaded on startup: check the logs for message about validation query, edit the configuration, and restart.
 
 External Entity Allow List default (GeoServer 2.25 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

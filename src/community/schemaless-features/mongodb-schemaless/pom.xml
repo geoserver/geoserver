@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-schemaless-features</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -24,7 +24,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-mongodb</artifactId>
-      <version>${gt.version}</version>
     </dependency>
 
     <!--   Third-party dependencies   -->
@@ -49,13 +48,11 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-sample-data</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-referencing</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

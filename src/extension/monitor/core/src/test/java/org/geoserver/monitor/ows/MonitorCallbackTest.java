@@ -34,6 +34,7 @@ import net.opengis.wfs.QueryType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
+import net.opengis.wfs20.Wfs20Factory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -201,6 +202,34 @@ public class MonitorCallbackTest {
         q.setFilter(f2);
 
         Operation op = op("GetFeature", "WFS", "1.0.0", gf);
+        callback.operationDispatched(new Request(), op);
+
+        assertEquals("acme:foo", data.getResources().get(0));
+        assertEquals("acme:bar", data.getResources().get(1));
+        BoundingBox expected =
+                new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
+        // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73
+        BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked") // EMF mode without generics
+    public void testWFSGetFeature20() throws Exception {
+        net.opengis.wfs20.GetFeatureType gf = Wfs20Factory.eINSTANCE.createGetFeatureType();
+        org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
+        org.geotools.api.filter.Filter f2 =
+                parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
+        net.opengis.wfs20.QueryType q = Wfs20Factory.eINSTANCE.createQueryType();
+        q.getTypeNames().addAll(Arrays.asList(new QName("http://acme.org", "foo", "acme")));
+        q.setFilter(f1);
+        gf.getAbstractQueryExpression().add(q);
+
+        q = Wfs20Factory.eINSTANCE.createQueryType();
+        q.getTypeNames().addAll(Arrays.asList(new QName("http://acme.org", "bar", "acme")));
+        gf.getAbstractQueryExpression().add(q);
+        q.setFilter(f2);
+
+        Operation op = op("GetFeature", "WFS", "2.0.0", gf);
         callback.operationDispatched(new Request(), op);
 
         assertEquals("acme:foo", data.getResources().get(0));

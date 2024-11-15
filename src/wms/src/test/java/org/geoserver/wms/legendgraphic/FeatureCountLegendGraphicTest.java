@@ -461,7 +461,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                                 .put(
                                         FeatureTypeStyle.KEY_EVALUATION_MODE,
                                         FeatureTypeStyle.VALUE_EVALUATION_MODE_FIRST);
-                    };
+                    }
                 };
         style.accept(matchFirstCloner);
         legend.setStyle((Style) matchFirstCloner.getCopy());

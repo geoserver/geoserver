@@ -48,7 +48,6 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
  * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways
  * to bulk delete layers and to add new ones
  */
-@SuppressWarnings("serial")
 public class LayerPage extends GeoServerSecuredPage {
     LayerProvider provider = new LayerProvider();
     GeoServerTablePanel<LayerInfo> table;
@@ -58,7 +57,7 @@ public class LayerPage extends GeoServerSecuredPage {
     public LayerPage() {
         final CatalogIconFactory icons = CatalogIconFactory.get();
         table =
-                new GeoServerTablePanel<LayerInfo>("table", provider, true) {
+                new GeoServerTablePanel<>("table", provider, true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -99,7 +98,7 @@ public class LayerPage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        removal.setEnabled(table.getSelection().size() > 0);
+                        removal.setEnabled(!table.getSelection().isEmpty());
                         target.add(removal);
                     }
                 };
@@ -140,7 +139,7 @@ public class LayerPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
 
         // the add button
-        header.add(new BookmarkablePageLink<Void>("addNew", NewLayerPage.class));
+        header.add(new BookmarkablePageLink<>("addNew", NewLayerPage.class));
 
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));

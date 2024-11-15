@@ -13,11 +13,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.Locale;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
+import org.geotools.api.util.InternationalString;
 import org.junit.Test;
 
 public class WFSAdminPageTest extends GeoServerWicketTestSupport {
@@ -178,7 +181,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         // start WFS service administration page
         tester.startPage(new WFSAdminPage());
         FormTester form = tester.newFormTester("form");
-        // enable i18n for title
+        // enable i18n for title and add two entries
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
                 true);
@@ -188,27 +191,11 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
-
-        form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
-                10);
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
-        form.select(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
-                20);
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
-                "another international title");
-        tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
-                "click");
 
-        // enable i18n for abstract
+        // enable i18n for abstract and add two entries
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
                 true);
@@ -218,27 +205,58 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
                 "click");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
+        // figure out the locales used in the test (might not be stable across JVMs)
+        @SuppressWarnings("unchecked")
+        DropDownChoice<Locale> select =
+                (DropDownChoice)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+        Locale l10 = select.getChoices().get(10);
+        Locale l20 = select.getChoices().get(20);
+
+        // fill the form (don't do this in between ajax calls)
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title for WFS");
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title for WFS");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
-                "an international title");
-        tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "an international abstract for WFS");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
-                "another international title");
-        tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
-                "click");
-        form = tester.newFormTester("form");
+                "another international abstract for WFS");
+
+        // mandatory fields
+        form.setValue("maxFeatures", "999");
+        form.select("encodeFeatureMember", 0);
+
         form.submit("submit");
         tester.assertNoErrorMessage();
+
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        InternationalString internationalTitle = wfsInfo.getInternationalTitle();
+        assertEquals("an international title for WFS", internationalTitle.toString(l10));
+        assertEquals("another international title for WFS", internationalTitle.toString(l20));
+        InternationalString internationalAbstract = wfsInfo.getInternationalAbstract();
+        assertEquals("an international abstract for WFS", internationalAbstract.toString(l10));
+        assertEquals("another international abstract for WFS", internationalAbstract.toString(l20));
     }
 
     @Test

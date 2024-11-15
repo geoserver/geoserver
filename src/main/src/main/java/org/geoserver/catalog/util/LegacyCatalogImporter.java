@@ -325,6 +325,12 @@ public class LegacyCatalogImporter {
             dataStore.getConnectionParameters().put("namespace", ns.getURI());
 
             dataStore.setEnabled((Boolean) map.get("enabled"));
+
+            // some tolerance for legacy app-schema tests
+            if ("app-schema".equals(connectionParams.get("dbtype"))) {
+                dataStore.setType("Application Schema DataAccess");
+            }
+
             catalog.add(dataStore);
 
             if (dataStore.isEnabled()) {
@@ -623,11 +629,13 @@ public class LegacyCatalogImporter {
         }
 
         for (Map<String, Object> stringObjectMap : cInfoReader.coverageDimensions()) {
-            Map map = (Map) stringObjectMap;
             CoverageDimensionInfo cd = factory.createCoverageDimension();
-            cd.setName((String) map.get("name"));
-            cd.setDescription((String) map.get("description"));
-            cd.setRange(NumberRange.create((Double) map.get("min"), (Double) map.get("max")));
+            cd.setName((String) stringObjectMap.get("name"));
+            cd.setDescription((String) stringObjectMap.get("description"));
+            cd.setRange(
+                    NumberRange.create(
+                            (Double) stringObjectMap.get("min"),
+                            (Double) stringObjectMap.get("max")));
             coverage.getDimensions().add(cd);
         }
 

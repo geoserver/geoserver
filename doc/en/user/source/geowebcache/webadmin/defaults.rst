@@ -77,6 +77,20 @@ Enable Data Security
 
 Enables the :ref:`gwc_data_security` in the embedded GeoWebCache.
 
+Metatiling threads count
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This setting determines the number of threads that will be used to encode and save metatiles.
+By default, a user requested tile will be encoded on main request thread and immediately returned,
+but the remaining tiles will be encoded and saved on asynchronous threads to decrease latency
+experienced by the user.
+
+Possible values for this setting:
+
+* **unset**, which will use a default thread pool size, equal to 2 times the number of cores
+* **0**, which will disable concurrency and all tiles belonging to the metatile will be encoded/saved on the main request thread
+* **a positive integer**, which will set the number of threads to the specified value
+
 Default Caching Options for GeoServer Layers
 --------------------------------------------
 
@@ -106,6 +120,15 @@ Moreover, with metatiling, the overall time it takes to seed the cache is reduce
 The disadvantage of metatiling is that at large sizes, memory consumption can be an issue.
 
 The size of the default metatile can be adjusted here. By default, GeoServer sets a metatile size of **4x4**, which strikes a balance between performance, memory usage, and rendering accuracy.
+
+Metatiling threads
+~~~~~~~~~~~~~~~~~~
+
+After a metatile (see above) is produced, it is then split into a total of 16 individual tiles to be encoded and saved to the cache. By default, a user requested tile will be encoded and saved on the main request thread but the remaining tiles will be encoded and saved on asynchronous threads to decrease  latency experienced by the user.
+
+Leaving this value blank will use a default thread pool size, equal to 2 times the number of cores. Setting to 0 will disable concurrency and all tiles belonging to the metatile will be encoded/saved on the main request thread.
+
+This setting only affects user requests and is not used when seeding (seeding will encode an entire metatile on each seeding thread).
 
 Default gutter size
 ~~~~~~~~~~~~~~~~~~~

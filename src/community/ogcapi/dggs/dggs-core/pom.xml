@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-dggs</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -30,12 +30,10 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-main</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-render</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <!-- Tracking dependency numbers here, they will likely move to GeoTools in the future, 
         nothing else is using them -->
@@ -47,18 +45,16 @@
     <dependency>
       <groupId>black.ninia</groupId>
       <artifactId>jep</artifactId>
-      <version>3.9.0</version>
+      <version>4.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-shapefile</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

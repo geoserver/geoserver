@@ -5,6 +5,7 @@
 package org.geoserver.web.system.status;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.system.status.MetricValue;
 import org.geoserver.system.status.Metrics;
@@ -68,7 +68,7 @@ public class RefreshedPanel extends Panel {
         add(time);
 
         ListView<MetricValue> list =
-                new ListView<MetricValue>("metrics", metricMdl) {
+                new ListView<>("metrics", metricMdl) {
                     private static final long serialVersionUID = -5654700538264617274L;
 
                     private int counter;
@@ -84,14 +84,13 @@ public class RefreshedPanel extends Panel {
                         item.add(
                                 new Label(
                                         "info",
-                                        new PropertyModel<MetricValue>(
+                                        new PropertyModel<>(
                                                 new MetricValueI18nDescriptionWrapper(
                                                         item.getModel().getObject(), this),
                                                 "description")),
                                 new Label(
                                         "value",
-                                        new PropertyModel<MetricValue>(
-                                                item.getModel(), "valueUnit")));
+                                        new PropertyModel<>(item.getModel(), "valueUnit")));
                         if (counter % 2 == 0) {
                             item.add(new AttributeModifier("class", "odd"));
                         } else {
@@ -108,17 +107,18 @@ public class RefreshedPanel extends Panel {
         systemInfoCollector.retrieveAllSystemInfo();
         long complete = System.currentTimeMillis();
         long sampleTime = complete - start;
-        Duration updateInternval = Duration.milliseconds(Math.max(5000, sampleTime * 5));
+        Duration updateInterval = Duration.ofMillis(Math.max(5000, sampleTime * 5));
 
         /*
          * Refresh every seconds
          */
         this.add(
-                new AjaxSelfUpdatingTimerBehavior(updateInternval) {
+                new AjaxSelfUpdatingTimerBehavior(updateInterval) {
                     private static final long serialVersionUID = -7009847252782601466L;
 
                     @Override
                     public void onConfigure(Component component) {
+                        super.onConfigure(component);
                         Metrics metrics = systemInfoCollector.retrieveAllSystemInfo();
                         metricMdl.setObject(metrics.getMetrics());
                         time.setDefaultModel(Model.of(new Date()));

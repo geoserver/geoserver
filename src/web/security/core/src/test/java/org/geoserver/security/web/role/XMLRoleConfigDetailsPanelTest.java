@@ -80,7 +80,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
                         .getForm()
                         .get("details:config.checkInterval")
                         .getDefaultModelObjectAsString();
-        if (temp == null || temp.length() == 0) return 0;
+        if (temp == null || temp.isEmpty()) return 0;
         return Integer.valueOf(temp);
     }
 

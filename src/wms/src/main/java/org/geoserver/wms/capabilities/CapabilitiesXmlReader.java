@@ -61,7 +61,7 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
             adapter.parse(new InputSource(reader));
         } catch (SAXException e) {
             throw new ServiceException(
-                    cleanSaxException((SAXException) e),
+                    cleanSaxException(e),
                     "XML capabilities request parsing error",
                     getClass().getName());
         } catch (IOException e) {

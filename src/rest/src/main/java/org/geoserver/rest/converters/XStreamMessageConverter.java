@@ -45,7 +45,7 @@ public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T>
         final RequestInfo pg = RequestInfo.get();
         String ext = getExtension();
 
-        if (ext != null && ext.length() > 0) link = link + "." + ext;
+        if (ext != null && !ext.isEmpty()) link = link + "." + ext;
 
         // encode as relative or absolute depending on the link type
         if (link.startsWith("/")) {

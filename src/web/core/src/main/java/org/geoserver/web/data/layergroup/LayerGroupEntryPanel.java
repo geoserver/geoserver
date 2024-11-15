@@ -13,7 +13,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -29,6 +28,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -59,7 +59,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
     static final List<Property<LayerGroupEntry>> PROPERTIES =
             Arrays.asList(LAYER_TYPE, LAYER, DEFAULT_STYLE, STYLE, REMOVE);
 
-    ModalWindow popupWindow;
+    GSModalWindow popupWindow;
     GeoServerTablePanel<LayerGroupEntry> layerTable;
     List<LayerGroupEntry> items;
     GeoServerDialog dialog;
@@ -141,13 +141,13 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
             items.add(new LayerGroupEntry(layer, style));
         }
 
-        add(popupWindow = new ModalWindow("popup"));
+        add(popupWindow = new GSModalWindow("popup"));
         add(dialog = new GeoServerDialog("dialog"));
         add(panelTitle(bigLegendTitle));
         // make sure we don't end up serializing the list, but get it fresh from the dataProvider,
         // to avoid serialization issues seen in GEOS-8273
         LoadableDetachableModel<List<Property<LayerGroupEntry>>> propertiesModel =
-                new LoadableDetachableModel<List<Property<LayerGroupEntry>>>() {
+                new LoadableDetachableModel<>() {
                     @Override
                     protected List<Property<LayerGroupEntry>> load() {
                         return PROPERTIES;
@@ -156,7 +156,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         // layers
         add(
                 layerTable =
-                        new ReorderableTablePanel<LayerGroupEntry>(
+                        new ReorderableTablePanel<>(
                                 "layers", LayerGroupEntry.class, items, propertiesModel) {
 
                             private static final long serialVersionUID = -3270471094618284639L;
@@ -202,7 +202,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
     }
 
     private AjaxLink<LayerInfo> addLayer(IModel<WorkspaceInfo> groupWorkspace) {
-        return new AjaxLink<LayerInfo>("addLayer") {
+        return new AjaxLink<>("addLayer") {
             private static final long serialVersionUID = -6143440041597461787L;
 
             @Override
@@ -231,7 +231,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
     }
 
     private AjaxLink<LayerGroupInfo> addLayerGroup(IModel<WorkspaceInfo> groupWorkspace) {
-        return new AjaxLink<LayerGroupInfo>("addLayerGroup") {
+        return new AjaxLink<>("addLayerGroup") {
             private static final long serialVersionUID = -6600366636542152188L;
 
             @Override
@@ -262,7 +262,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private AjaxLink<LayerGroupInfo> addStyleGroup() {
 
-        return new AjaxLink<LayerGroupInfo>("addStyleGroup") {
+        return new AjaxLink<>("addStyleGroup") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -347,7 +347,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
         // build and returns the link, but disable it if the style is the default
         SimpleAjaxLink<String> link =
-                new SimpleAjaxLink<String>(id, new Model<>(styleName)) {
+                new SimpleAjaxLink<>(id, new Model<>(styleName)) {
 
                     private static final long serialVersionUID = 4677068931971673637L;
 
@@ -385,7 +385,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
     Component removeLink(String id, IModel<LayerGroupEntry> itemModel) {
         final LayerGroupEntry entry = itemModel.getObject();
         ImageAjaxLink<Object> link =
-                new ImageAjaxLink<Object>(
+                new ImageAjaxLink<>(
                         id,
                         new PackageResourceReference(
                                 getClass(), "../../img/icons/silk/delete.png")) {

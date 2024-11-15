@@ -53,7 +53,7 @@ public class CollectionsDocument extends AbstractDocument {
     public Iterator<CollectionDocument> getCollections() {
         CloseableIterator<FeatureTypeInfo> featureTypes =
                 geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<CollectionDocument>() {
+        return new Iterator<>() {
 
             CollectionDocument next;
 
@@ -74,7 +74,8 @@ public class CollectionsDocument extends AbstractDocument {
                                 FeatureService.getFeatureTypeCRS(
                                         featureType, Collections.singletonList("#/crs"));
                         CollectionDocument collection =
-                                new CollectionDocument(geoServer, featureType, crs);
+                                new CollectionDocument(
+                                        geoServer, featureType, crs, CollectionsDocument.this.crs);
                         for (Consumer<CollectionDocument> collectionDecorator :
                                 collectionDecorators) {
                             collectionDecorator.accept(collection);

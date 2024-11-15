@@ -5,9 +5,16 @@
  */
 package org.geoserver.web;
 
-import org.apache.wicket.behavior.AttributeAppender;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.model.Model;
 import org.geoserver.GeoServerNodeData;
 import org.geoserver.web.spring.security.GeoServerSession;
 
@@ -21,7 +28,9 @@ import org.geoserver.web.spring.security.GeoServerSession;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
+public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo, Serializable {
+
+    private static final long serialVersionUID = -8731277645321595181L;
 
     static final String GEOSERVER_NODE_OPTS = GeoServerNodeData.GEOSERVER_NODE_OPTS;
 
@@ -38,8 +47,33 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
 
     @Override
     public void customize(WebMarkupContainer container) {
-        container.add(new AttributeAppender("style", new Model<>(NODE_DATA.getIdStyle()), ";"));
+        container.add(AttributeModifier.replace("class", "default-node-info"));
+        Map<String, String> properties = NODE_DATA.getIdStyle();
+        if (properties != null && !properties.isEmpty()) {
+            container.add(
+                    new Behavior() {
+                        private static final long serialVersionUID = -7945010069411202354L;
+
+                        @Override
+                        public void renderHead(Component component, IHeaderResponse response) {
+                            String script = toJavaScript(properties);
+                            response.render(OnLoadHeaderItem.forScript(script));
+                        }
+                    });
+        }
         container.setVisible(isNodeIdVisible(container));
+    }
+
+    private static String toJavaScript(Map<String, String> properties) {
+        StringBuilder builder = new StringBuilder();
+        for (Entry<String, String> entry : properties.entrySet()) {
+            builder.append("document.getElementsByClassName('default-node-info')[0].style.");
+            builder.append(StringEscapeUtils.escapeEcmaScript(entry.getKey()));
+            builder.append(" = '");
+            builder.append(StringEscapeUtils.escapeEcmaScript(entry.getValue()));
+            builder.append("';\n");
+        }
+        return builder.toString().trim();
     }
 
     protected static void initializeFromEnviroment() {

@@ -10,6 +10,7 @@ import static org.geoserver.importer.web.ImporterWebUtils.importer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +35,6 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.BasicImportFilter;
 import org.geoserver.importer.Database;
@@ -70,7 +70,7 @@ public class ImportPage extends GeoServerSecuredPage {
     }
 
     void initComponents(final IModel<ImportContext> model) {
-        add(new Label("id", new PropertyModel(model, "id")));
+        add(new Label("id", new PropertyModel<>(model, "id")));
 
         ImportContextProvider provider =
                 new ImportContextProvider() {
@@ -141,7 +141,7 @@ public class ImportPage extends GeoServerSecuredPage {
         add(taskTable);
 
         final AjaxLink<Long> importLink =
-                new AjaxLink<Long>("import", new Model<>()) {
+                new AjaxLink<>("import", new Model<>()) {
                     @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
@@ -169,7 +169,7 @@ public class ImportPage extends GeoServerSecuredPage {
                         // create a timer to update the table and reload the page when
                         // necessary
                         taskTable.add(
-                                new AbstractAjaxTimerBehavior(Duration.milliseconds(500)) {
+                                new AbstractAjaxTimerBehavior(Duration.ofMillis(500)) {
                                     @Override
                                     protected void onTimer(AjaxRequestTarget target) {
                                         Task<ImportContext> job = importer().getTask(jobid);
@@ -257,7 +257,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
         WebMarkupContainer selectPanel = new WebMarkupContainer("select");
         selectPanel.add(
-                new AjaxLink<ImportContext>("select-all", model) {
+                new AjaxLink<>("select-all", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         taskTable.selectAll();
@@ -266,7 +266,7 @@ public class ImportPage extends GeoServerSecuredPage {
                     }
                 });
         selectPanel.add(
-                new AjaxLink<ImportContext>("select-none", model) {
+                new AjaxLink<>("select-none", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         taskTable.clearSelection();
@@ -275,7 +275,7 @@ public class ImportPage extends GeoServerSecuredPage {
                     }
                 });
         selectPanel.add(
-                new AjaxLink<ImportContext>("select-ready", model) {
+                new AjaxLink<>("select-ready", model) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         doSelectReady(getModelObject(), taskTable, target);

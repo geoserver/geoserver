@@ -124,7 +124,11 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
     public void testDataStoreParametersAreCreated() {
         startPage();
         List parametersListViewValues = Arrays.asList(new Object[] {"directory", "namespace"});
-        tester.assertListView("dataStoreForm:parametersPanel:parameters", parametersListViewValues);
+        tester.assertComponent(
+                "dataStoreForm:parametersPanel:parameters",
+                org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue(
+                "dataStoreForm:parametersPanel:parameters", parametersListViewValues);
     }
 
     /**

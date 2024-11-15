@@ -32,6 +32,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  * @author Andrea Aime
  * @see StoreEditPanel
  */
+// TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
 
@@ -227,20 +228,20 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
         return new AjaxSubmitLink("save", form) {
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.add(form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(getForm());
             }
 
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 form.process(this);
-                WMSStoreInfo info = (WMSStoreInfo) form.getModelObject();
+                WMSStoreInfo info = (WMSStoreInfo) getForm().getModelObject();
                 try {
                     onSave(info, target);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.add(form);
+                    target.add(getForm());
                 }
             }
         };

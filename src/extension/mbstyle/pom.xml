@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
@@ -22,7 +22,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-mbstyle</artifactId>
-      <version>${gt.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -66,6 +65,11 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-wms</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

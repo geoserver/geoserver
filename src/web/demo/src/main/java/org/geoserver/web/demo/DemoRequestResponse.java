@@ -6,6 +6,8 @@
 package org.geoserver.web.demo;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
@@ -42,15 +44,15 @@ public class DemoRequestResponse extends WebPage {
         // super(PageMap.forName("demoRequestResponse"));
         super(model);
 
-        Form form = new Form("form");
+        Form form = new Form<>("form");
         add(form);
-        form.add(new HiddenField<String>("url", new PropertyModel<>(model, "requestUrl")));
+        form.add(new HiddenField<>("url", new PropertyModel<>(model, "requestUrl")));
         form.add(new TextArea<>("body", new PropertyModel<>(model, "requestBody")));
-        form.add(new HiddenField<String>("username", new PropertyModel<>(model, "userName")));
+        form.add(new HiddenField<>("username", new PropertyModel<>(model, "userName")));
         // [WICKET-6211] Wicket clears the password after submission, so we need to save as a string
         // now.
         HiddenField<String> passwordField =
-                new HiddenField<String>(
+                new HiddenField<>(
                         "password", new Model<>(((DemoRequest) model.getObject()).getPassword())) {
                     @Override
                     protected void onDetach() {
@@ -73,5 +75,13 @@ public class DemoRequestResponse extends WebPage {
         // element
         // finds out the form by id
         form.setMarkupId("form");
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(
+                OnLoadHeaderItem.forScript(
+                        "document.getElementById('form').submit();return false;"));
     }
 }

@@ -15,5 +15,5 @@ public enum InterpolationMethod {
     linear,
     quadratic,
     cubic,
-    none;
+    none
 }

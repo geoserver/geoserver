@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.link.Link;
 public class GeoServerExpiredPage extends GeoServerBasePage {
     public GeoServerExpiredPage() {
         add(
-                new Link("homeLink") {
+                new Link<>("homeLink") {
                     @Override
                     public void onClick() {
                         setResponsePage(GeoServerHomePage.class);

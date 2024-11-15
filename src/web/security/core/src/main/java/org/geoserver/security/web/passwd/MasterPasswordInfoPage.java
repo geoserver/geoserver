@@ -31,7 +31,7 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
 
         Form form = new Form<>("form", new CompoundPropertyModel<>(this));
         add(form);
-        form.add(new TextField<String>("fileName"));
+        form.add(new TextField<>("fileName"));
 
         form.add(
                 new SubmitLink("save", form) {
@@ -57,7 +57,7 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
                     }
                 });
         form.add(
-                new AjaxLink("back") {
+                new AjaxLink<>("back") {
                     private static final long serialVersionUID = 1L;
 
                     @Override

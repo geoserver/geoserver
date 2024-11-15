@@ -23,7 +23,7 @@ public class UUIDFieldPanel extends Panel {
         add(textfield);
 
         add(
-                new AjaxLink<Object>("generateUUID") {
+                new AjaxLink<>("generateUUID") {
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override

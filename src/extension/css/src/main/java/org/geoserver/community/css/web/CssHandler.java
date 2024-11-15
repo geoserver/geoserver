@@ -15,7 +15,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleType;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
@@ -34,6 +34,7 @@ import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.styling.css.CssParser;
 import org.geotools.styling.css.CssTranslator;
 import org.geotools.styling.css.Stylesheet;
+import org.geotools.styling.zoom.ZoomContextFinder;
 import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.xml.sax.EntityResolver;
@@ -74,11 +75,14 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
         }
     }
 
+    private final List<ZoomContextFinder> zoomContextFinders;
+
     private SLDHandler sldHandler;
 
-    protected CssHandler(SLDHandler sldHandler) {
+    protected CssHandler(GeoServerExtensions extensions, SLDHandler sldHandler) {
         super("CSS", FORMAT);
         this.sldHandler = sldHandler;
+        this.zoomContextFinders = extensions.extensions(ZoomContextFinder.class);
     }
 
     @Override
@@ -138,9 +142,8 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
         }
 
         // in this case, just do a plain on the fly conversion
-        try (Reader reader = toReader(input)) {
-            StyledLayerDescriptor sld = convertToSLD(toReader(input));
-            return sld;
+        try (Reader unusedReader = toReader(input)) { // NOPMD
+            return convertToSLD(toReader(input));
         }
     }
 
@@ -150,7 +153,9 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     private StyledLayerDescriptor convertToSLD(Reader cssReader) throws IOException {
         Stylesheet styleSheet = CssParser.parse(IOUtils.toString(cssReader));
-        StyledLayerDescriptor sld = new CssTranslator().translateMultilayer(styleSheet);
+        CssTranslator translator = new CssTranslator();
+        translator.setZoomContextFinders(zoomContextFinders);
+        StyledLayerDescriptor sld = translator.translateMultilayer(styleSheet);
         return sld;
     }
 
@@ -164,12 +169,12 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
             throws IOException {
-        try (Reader reader = toReader(input)) {
+        try (Reader unusedReader = toReader(input)) { // NOPMD
             // full parse to perform the validation
             convertToSLD(toReader(input));
             return Collections.emptyList();
         } catch (Exception e) {
-            return Arrays.asList(e);
+            return List.of(e);
         }
     }
 

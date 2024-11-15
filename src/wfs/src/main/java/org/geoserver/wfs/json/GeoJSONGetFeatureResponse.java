@@ -389,7 +389,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
                     if (id_option == null) {
                         // no specific attribute nominated, use the simple feature id
                         jsonWriter.key("id").value(simpleFeature.getID());
-                    } else if (id_option.length() != 0) {
+                    } else if (!id_option.isEmpty()) {
                         // a specific attribute was nominated to be used as id
                         Object value = simpleFeature.getAttribute(id_option);
                         jsonWriter.key("id").value(value);

@@ -317,8 +317,8 @@ public class FeatureWrapper extends BeansWrapper {
         dummy.put("title", "Layer: " + f.getType().getName().getLocalPart());
         dummy.put("abstract", "[No Abstract Provided]");
         dummy.put("description", "[No Description Provided]");
-        dummy.put("keywords", new ArrayList<String>());
-        dummy.put("metadataLinks", new ArrayList<String>());
+        dummy.put("keywords", new ArrayList<>());
+        dummy.put("metadataLinks", new ArrayList<>());
         dummy.put("SRS", "[SRS]");
         if (f instanceof Feature) {
             final GeometryDescriptor gd = ((Feature) f).getType().getGeometryDescriptor();
@@ -339,6 +339,7 @@ public class FeatureWrapper extends BeansWrapper {
      * @author Gabriel Roldan
      * @see AttributeMap
      */
+    @SuppressWarnings("PMD.UseDiamondOperator")
     private class FeatureAttributesMap extends AbstractMap {
         private Set<MapEntry> entrySet;
 
@@ -395,6 +396,7 @@ public class FeatureWrapper extends BeansWrapper {
      *   <li>isGeometry: Boolean indicating whether the attribute is of a geometric type
      * </ul>
      */
+    @SuppressWarnings("PMD.UseDiamondOperator")
     private class AttributeMap extends AbstractMap {
 
         private final Name attributeName;
@@ -496,8 +498,7 @@ public class FeatureWrapper extends BeansWrapper {
                 Object rawValue = value == null ? "" : value;
                 boolean isGeometry =
                         Geometry.class.isAssignableFrom(attributeDescr.getType().getBinding());
-                entrySet.add(
-                        new MapEntry<Object, Object>("isGeometry", Boolean.valueOf(isGeometry)));
+                entrySet.add(new MapEntry<Object, Object>("isGeometry", isGeometry));
                 entrySet.add(new MapEntry<Object, Object>("rawValue", rawValue));
             }
             return entrySet;

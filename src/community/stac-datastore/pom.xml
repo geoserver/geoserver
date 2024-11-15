@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-stac-datastore</artifactId>
@@ -24,7 +24,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-stac-store</artifactId>
-      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 </project>

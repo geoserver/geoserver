@@ -40,6 +40,7 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CRSPanel;
 
+// TODO WICKET8 - Verify this page works OK
 public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
     CheckBox reprojectCheckBox;
@@ -50,7 +51,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         ImportTask item = model.getObject();
         // item.getTransform().get
 
-        Form form = new Form("form");
+        Form<Object> form = new Form<>("form");
         add(form);
 
         ReprojectTransform reprojectTx = item.getTransform().get(ReprojectTransform.class);
@@ -82,7 +83,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         form.add(
                 new AjaxSubmitLink("save") {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         ImportTask task = model.getObject();
                         TransformChain<? extends ImportTransform> txChain = task.getTransform();
 
@@ -162,7 +163,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
             remaps = itemModel.getObject().getTransform().getAll(AttributeRemapTransform.class);
             remapList =
-                    new ListView<AttributeRemapTransform>("remaps", remaps) {
+                    new ListView<>("remaps", remaps) {
 
                         @Override
                         protected void populateItem(final ListItem<AttributeRemapTransform> item) {
@@ -179,7 +180,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                             "type",
                                             new PropertyModel<>(item.getModel(), "type"),
                                             types,
-                                            new ChoiceRenderer<Class<?>>() {
+                                            new ChoiceRenderer<>() {
 
                                                 @Override
                                                 public Object getDisplayValue(Class<?> object) {
@@ -207,8 +208,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                             item.add(
                                     new AjaxButton("apply") {
                                         @Override
-                                        protected void onSubmit(
-                                                AjaxRequestTarget target, Form<?> form) {
+                                        protected void onSubmit(AjaxRequestTarget target) {
                                             attChoice.processInput();
                                             typeChoice.processInput();
                                             dateFormatTextField.processInput();
@@ -242,8 +242,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                             item.add(
                                     new AjaxButton("cancel") {
                                         @Override
-                                        protected void onSubmit(
-                                                AjaxRequestTarget target, Form<?> form) {
+                                        protected void onSubmit(AjaxRequestTarget target) {
                                             remaps.remove(item.getModelObject());
                                             target.add(remapContainer);
                                         }
@@ -254,7 +253,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
             remapContainer.add(remapList);
 
             add(
-                    new AjaxLink<ImportTask>("add", itemModel) {
+                    new AjaxLink<>("add", itemModel) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             remaps.add(new AttributeRemapTransform(null, null));

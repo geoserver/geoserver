@@ -75,60 +75,75 @@ public class VFSWorker {
         return extension;
     }
 
-    /** */
+    /**
+     * List contents of archiveFile according to provided filter.
+     *
+     * @param archiveFile
+     * @param filter
+     */
+    @SuppressWarnings({"PMD.UseTryWithResources", "PMD.ForLoopCanBeForeach"})
     public List<String> listFiles(final File archiveFile, final FilenameFilter filter) {
         FileSystemManager fsManager;
         try {
             fsManager = VFS.getManager();
             String absolutePath = resolveArchiveURI(archiveFile);
-            FileObject resolvedFile = fsManager.resolveFile(absolutePath);
+            try (FileObject resolvedFile = fsManager.resolveFile(absolutePath)) {
 
-            FileSelector fileSelector =
-                    new FileSelector() {
-                        /**
-                         * @see
-                         *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
-                         */
-                        @Override
-                        public boolean traverseDescendents(FileSelectInfo folderInfo)
-                                throws Exception {
-                            return true;
+                FileSelector fileSelector =
+                        new FileSelector() {
+                            /**
+                             * @see
+                             *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
+                             */
+                            @Override
+                            public boolean traverseDescendents(FileSelectInfo folderInfo)
+                                    throws Exception {
+                                return true;
+                            }
+
+                            /**
+                             * @see
+                             *     org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
+                             */
+                            @Override
+                            public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
+                                File folder = archiveFile.getParentFile();
+                                String name = fileInfo.getFile().getName().getFriendlyURI();
+                                return filter.accept(folder, name);
+                            }
+                        };
+
+                FileObject fileSystem = null;
+                try {
+                    if (fsManager.canCreateFileSystem(resolvedFile)) {
+                        fileSystem = fsManager.createFileSystem(resolvedFile);
+                    } else {
+                        fileSystem = resolvedFile;
+                    }
+                    LOGGER.fine("Listing spatial data files archived in " + archiveFile.getName());
+                    FileObject[] containedFiles = fileSystem.findFiles(fileSelector);
+                    List<String> names = new ArrayList<>(containedFiles.length);
+                    for (int i = 0; i < containedFiles.length; i++) {
+                        try (FileObject childFileObject = containedFiles[i]) {
+                            // path relative to its filesystem (ie, to the archive file)
+                            String pathDecoded = childFileObject.getName().getPathDecoded();
+                            names.add(pathDecoded);
                         }
-
-                        /**
-                         * @see
-                         *     org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
-                         */
-                        @Override
-                        public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
-                            File folder = archiveFile.getParentFile();
-                            String name = fileInfo.getFile().getName().getFriendlyURI();
-                            return filter.accept(folder, name);
-                        }
-                    };
-
-            FileObject fileSystem;
-            if (fsManager.canCreateFileSystem(resolvedFile)) {
-                fileSystem = fsManager.createFileSystem(resolvedFile);
-            } else {
-                fileSystem = resolvedFile;
+                    }
+                    LOGGER.fine(
+                            "Found "
+                                    + names.size()
+                                    + " spatial data files in "
+                                    + archiveFile.getName()
+                                    + ": "
+                                    + names);
+                    return names;
+                } finally {
+                    if (fileSystem != null) {
+                        fileSystem.close();
+                    }
+                }
             }
-            LOGGER.fine("Listing spatial data files archived in " + archiveFile.getName());
-            FileObject[] containedFiles = fileSystem.findFiles(fileSelector);
-            List<String> names = new ArrayList<>(containedFiles.length);
-            for (FileObject fo : containedFiles) {
-                // path relative to its filesystem (ie, to the archive file)
-                String pathDecoded = fo.getName().getPathDecoded();
-                names.add(pathDecoded);
-            }
-            LOGGER.fine(
-                    "Found "
-                            + names.size()
-                            + " spatial data files in "
-                            + archiveFile.getName()
-                            + ": "
-                            + names);
-            return names;
         } catch (FileSystemException e) {
             LOGGER.log(Level.SEVERE, "", e);
         }
@@ -174,20 +189,12 @@ public class VFSWorker {
      * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously
      * exist.
      */
+    @SuppressWarnings("PMD.CloseResource")
     public void extractTo(File archiveFile, File targetFolder) throws IOException {
 
         FileSystemManager manager = VFS.getManager();
         String sourceURI = resolveArchiveURI(archiveFile);
-        // String targetURI = resolveArchiveURI(targetFolder);
-        FileObject source = manager.resolveFile(sourceURI);
-        if (manager.canCreateFileSystem(source)) {
-            source = manager.createFileSystem(source);
-        }
-        FileObject target =
-                manager.createVirtualFileSystem(
-                        manager.resolveFile(targetFolder.getAbsolutePath()));
-
-        FileSelector selector =
+        FileSelector allFiles =
                 new AllFileSelector() {
                     @Override
                     public boolean includeFile(FileSelectInfo fileInfo) {
@@ -196,10 +203,19 @@ public class VFSWorker {
                         return true;
                     }
                 };
-        target.copyFrom(source, selector);
-        source.close();
-        target.close();
-        manager.closeFileSystem(source.getFileSystem());
+
+        try (FileObject source = manager.resolveFile(sourceURI);
+                FileObject target = manager.resolveFile(targetFolder.getAbsolutePath());
+                FileObject targetFileSystem = manager.createVirtualFileSystem(target)) {
+            if (manager.canCreateFileSystem(source)) {
+                try (FileObject sourceFileSystem = manager.createFileSystem(source)) {
+                    targetFileSystem.copyFrom(sourceFileSystem, allFiles);
+                    manager.closeFileSystem(sourceFileSystem.getFileSystem());
+                }
+            } else {
+                target.copyFrom(source, allFiles);
+            }
+        }
     }
 
     public Collection<File> listFilesInFolder(

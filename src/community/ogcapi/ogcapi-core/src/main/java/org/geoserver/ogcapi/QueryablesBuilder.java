@@ -8,13 +8,16 @@ import static org.geotools.data.complex.util.ComplexFeatureConstants.FEATURE_CHA
 
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.api.feature.type.FeatureType;
-import org.geotools.api.feature.type.PropertyType;
+import org.geotools.api.feature.type.PropertyDescriptor;
+import org.geotools.feature.FeatureTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
@@ -25,23 +28,13 @@ import org.locationtech.jts.geom.Polygon;
 
 public class QueryablesBuilder {
 
-    public static final String POINT_SCHEMA_REF = "https://geojson.org/schema/Point.json";
-    public static final String MULTIPOINT_SCHEMA_REF = "https://geojson.org/schema/MultiPoint.json";
-    public static final String LINESTRING_SCHEMA_REF = "https://geojson.org/schema/LineString.json";
-    public static final String MULTILINESTRING_SCHEMA_REF =
-            "https://geojson.org/schema/MultiLineString.json";
-    public static final String POLYGON_SCHEMA_REF = "https://geojson.org/schema/Polygon.json";
-    public static final String MULTIPOLYGON_SCHEMA_REF =
-            "https://geojson.org/schema/MultiPolygon.json";
-    public static final String GEOMETRY_SCHEMA_REF = "https://geojson.org/schema/Geometry.json";
-
     public static final String POINT = "Point";
     public static final String MULTIPOINT = "MultiPoint";
     public static final String LINESTRING = "LineString";
     public static final String MULTILINESTRING = "MultiLineString";
     public static final String POLYGON = "Polygon";
     public static final String MULTIPOLYGON = "MultiPolygon";
-    public static final String GENERIC_GEOMETRY = "Generic geometry";
+    public static final String GENERIC_GEOMETRY = "Any geometry";
     public static final String DATE = "Date";
     public static final String DATE_TIME = "DateTime";
     public static final String TIME = "Time";
@@ -68,7 +61,7 @@ public class QueryablesBuilder {
                         .collect(
                                 Collectors.toMap(
                                         ad -> ad.getName().getLocalPart(),
-                                        ad -> getSchema(ad.getType()),
+                                        ad -> getSchema(ad),
                                         (u, v) -> {
                                             throw new IllegalStateException(
                                                     String.format("Duplicate key %s", u));
@@ -78,9 +71,14 @@ public class QueryablesBuilder {
         return this;
     }
 
-    private Schema<?> getSchema(PropertyType type) {
-        Class<?> binding = type.getBinding();
-        return getSchema(binding);
+    private Schema<?> getSchema(PropertyDescriptor descriptor) {
+        Class<?> binding = descriptor.getType().getBinding();
+        Schema schema = getSchema(binding);
+        int fieldLength = FeatureTypes.getFieldLength(descriptor);
+        if (fieldLength != FeatureTypes.ANY_LENGTH) {
+            schema.setMaxLength(fieldLength);
+        }
+        return schema;
     }
 
     /** Returns the schema for a given data type */
@@ -90,34 +88,31 @@ public class QueryablesBuilder {
     }
 
     private static Schema<?> getGeometrySchema(Class<?> binding) {
-        Schema schema = new Schema();
-        String ref;
-        String description;
+        Schema schema = new Schema<>();
+        String title;
         if (Point.class.isAssignableFrom(binding)) {
-            ref = POINT_SCHEMA_REF;
-            description = POINT;
+            title = POINT;
         } else if (MultiPoint.class.isAssignableFrom(binding)) {
-            ref = MULTIPOINT_SCHEMA_REF;
-            description = MULTIPOINT;
+            title = MULTIPOINT;
         } else if (LineString.class.isAssignableFrom(binding)) {
-            ref = LINESTRING_SCHEMA_REF;
-            description = LINESTRING;
+            title = LINESTRING;
         } else if (MultiLineString.class.isAssignableFrom(binding)) {
-            ref = MULTILINESTRING_SCHEMA_REF;
-            description = MULTILINESTRING;
+            title = MULTILINESTRING;
         } else if (Polygon.class.isAssignableFrom(binding)) {
-            ref = POLYGON_SCHEMA_REF;
-            description = POLYGON;
+            title = POLYGON;
         } else if (MultiPolygon.class.isAssignableFrom(binding)) {
-            ref = MULTIPOLYGON_SCHEMA_REF;
-            description = MULTIPOLYGON;
+            title = MULTIPOLYGON;
         } else {
-            ref = GEOMETRY_SCHEMA_REF;
-            description = GENERIC_GEOMETRY;
+            title = GENERIC_GEOMETRY;
         }
 
-        schema.set$ref(ref);
-        schema.setDescription(description);
+        schema.setTitle(title);
+        if (title.equals(GENERIC_GEOMETRY)) {
+            schema.setFormat("geometry-any");
+        } else {
+            schema.setFormat("geometry-" + title.toLowerCase());
+        }
+
         return schema;
     }
 
@@ -131,16 +126,20 @@ public class QueryablesBuilder {
         Schema<?> schema = new Schema<>();
 
         schema.setType(org.geoserver.ogcapi.AttributeType.fromClass(binding).getType());
-        schema.setDescription(schema.getType());
+        schema.setTitle(schema.getType());
         if (java.sql.Date.class.isAssignableFrom(binding)) {
             schema.setFormat("date");
-            schema.setDescription(DATE);
+            schema.setTitle(DATE);
         } else if (java.sql.Time.class.isAssignableFrom(binding)) {
             schema.setFormat("time");
-            schema.setDescription(TIME);
+            schema.setTitle(TIME);
         } else if (java.util.Date.class.isAssignableFrom(binding)) {
             schema.setFormat("date-time");
-            schema.setDescription(DATE_TIME);
+            schema.setTitle(DATE_TIME);
+        } else if (UUID.class.isAssignableFrom(binding)) {
+            schema.setFormat("uuid");
+        } else if (URL.class.isAssignableFrom(binding)) {
+            schema.setTitle("uri");
         }
         return schema;
     }

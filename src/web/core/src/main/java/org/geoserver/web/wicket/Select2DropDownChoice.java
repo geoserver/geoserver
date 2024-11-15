@@ -5,8 +5,11 @@
 package org.geoserver.web.wicket;
 
 import java.util.List;
+import java.util.Optional;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
@@ -73,6 +76,15 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
     private void initBehaviors() {
         add(new Select2Behavior());
         add(new KeyboardBehavior());
+    }
+
+    @Override
+    protected void onComponentTag(ComponentTag tag) {
+        super.onComponentTag(tag);
+        Optional<AjaxRequestTarget> target = getRequestCycle().find(AjaxRequestTarget.class);
+        // Unbind select2 before ajax update, or the dropdown will be duplicated
+        target.ifPresent(
+                t -> t.prependJavaScript("$('#" + getMarkupId() + "').select2('destroy');"));
     }
 
     /** Mimics keyboard behavior of native drop down choices */

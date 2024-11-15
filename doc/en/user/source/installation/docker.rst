@@ -59,6 +59,8 @@ This will run the container, with the data directory included with the container
       
 #. This setup is a quick test to ensure the software is working, but is difficult to use as file data can only be transferred to the data directory included with the container via the REST API.
 
+.. _installation_docker_data:
+
 Using your own Data Directory
 -----------------------------
 

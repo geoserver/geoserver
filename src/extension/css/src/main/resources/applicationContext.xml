@@ -8,6 +8,7 @@
 
 <beans>
   <bean id="cssStyleHandler" class="org.geoserver.community.css.web.CssHandler">
+    <constructor-arg ref="extensions"/>
     <constructor-arg ref="sldHandler"/>
   </bean>
 </beans>

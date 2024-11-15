@@ -64,9 +64,9 @@ public class UpDownPanel<T extends Object> extends Panel {
                     protected void onComponentTag(ComponentTag tag) {
                         tag.put("title", upTitle.getString());
                         if (items.indexOf(entry) == 0) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };
@@ -96,9 +96,9 @@ public class UpDownPanel<T extends Object> extends Panel {
                     protected void onComponentTag(ComponentTag tag) {
                         tag.put("title", downTitle.getString());
                         if (items.indexOf(entry) == items.size() - 1) {
-                            tag.put("style", "visibility:hidden");
+                            tag.put("class", "visibility-hidden");
                         } else {
-                            tag.put("style", "visibility:visible");
+                            tag.put("class", "visibility-visible");
                         }
                     }
                 };

@@ -13,7 +13,6 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -37,6 +36,7 @@ import org.springframework.util.Assert;
  *
  * @author groldan
  */
+// TODO WICKET8 - Verify this page works OK
 public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURLInfo>> {
 
     private static final long serialVersionUID = 5098470663723800345L;
@@ -66,7 +66,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         table.setOutputMarkupId(true);
         container.add(table);
         authorityURLs =
-                new ListView<AuthorityURLInfo>("authorities", new ArrayList<>(list.getObject())) {
+                new ListView<>("authorities", new ArrayList<>(list.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -102,7 +102,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
                         // remove link
                         AjaxLink<Integer> link =
-                                new AjaxLink<Integer>("removeLink", new Model<>(item.getIndex())) {
+                                new AjaxLink<>("removeLink", new Model<>(item.getIndex())) {
 
                                     private static final long serialVersionUID = 1L;
 
@@ -135,7 +135,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         List<AuthorityURLInfo> list = authorityURLs.getModelObject();
                         AuthorityURLInfo authorityURL = new AuthorityURL();
                         list.add(authorityURL);

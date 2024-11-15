@@ -37,7 +37,10 @@ public class DatabaseUtil {
      * @return list of SQL statements
      */
     public List<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
-
+        if (inputStream == null) {
+            throw new IllegalArgumentException(
+                    "PostGIS SQL Script is null, check resource reference");
+        }
         StringBuilder contents = new StringBuilder();
 
         ArrayList<String> statements = new ArrayList<>();

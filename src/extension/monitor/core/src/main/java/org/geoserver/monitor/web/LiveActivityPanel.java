@@ -18,7 +18,6 @@ import org.geoserver.monitor.Query.Comparison;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
@@ -30,7 +29,7 @@ public class LiveActivityPanel extends Panel {
         super(id);
 
         GeoServerTablePanel<RequestData> requests =
-                new GeoServerTablePanel<RequestData>("requests", new LiveRequestDataProvider()) {
+                new GeoServerTablePanel<>("requests", new LiveRequestDataProvider()) {
                     private static final long serialVersionUID = -431473636413825153L;
 
                     @Override

@@ -17,7 +17,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
@@ -42,6 +41,7 @@ import org.geoserver.metadata.web.panel.ProgressPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -52,6 +52,7 @@ import org.geotools.util.logging.Logging;
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
  */
+// TODO WICKET8 - Verify this page works OK
 public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private static final Logger LOGGER = Logging.getLogger(MetadataTemplatePage.class);
@@ -89,7 +90,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialHeight(100);
-        ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
+        ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         IModel<ComplexMetadataMap> metadataModel =
                 new Model<>(
@@ -119,8 +120,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
         TextField<String> desicription =
                 new TextField<>(
-                        "description",
-                        new PropertyModel<String>(metadataTemplateModel, "description"));
+                        "description", new PropertyModel<>(metadataTemplateModel, "description"));
         form.add(desicription);
 
         List<ITab> tabs = new ArrayList<>();
@@ -142,7 +142,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                         return new LinkedLayersPanel(panelId, metadataTemplateModel);
                     }
                 });
-        form.add(new TabbedPanel<ITab>("metadataTabs", tabs));
+        form.add(new TabbedPanel<>("metadataTabs", tabs));
 
         this.add(form);
     }
@@ -153,13 +153,12 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
     }
 
     private TextField<String> createNameField(final Form<?> form, final AjaxSubmitLink saveButton) {
-        return new TextField<String>(
-                "name", new PropertyModel<String>(metadataTemplateModel, "name")) {
+        return new TextField<>("name", new PropertyModel<>(metadataTemplateModel, "name")) {
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
             public boolean isRequired() {
-                return form.findSubmittingButton() == saveButton;
+                return form.findSubmitter() == saveButton;
             }
         };
     }
@@ -169,8 +168,8 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 8749672113664556346L;
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                if (metadataTemplateModel.getObject().getLinkedLayers().size() > 0) {
+            public void onSubmit(AjaxRequestTarget target) {
+                if (!metadataTemplateModel.getObject().getLinkedLayers().isEmpty()) {
                     dialog.showOkCancel(
                             target,
                             new GeoServerDialog.DialogDelegate() {
@@ -197,7 +196,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                                 @Override
                                 public void onClose(AjaxRequestTarget target) {
                                     if (ok) {
-                                        save(form, target);
+                                        save(getForm(), target);
                                     }
                                 }
 
@@ -209,19 +208,19 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                                 }
                             });
                 } else {
-                    save(form, target);
+                    save(getForm(), target);
                 }
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
+            protected void onError(AjaxRequestTarget target) {
                 addFeedbackPanels(target);
             }
         };
     }
 
     private AjaxLink<Object> createCancelButton() {
-        return new AjaxLink<Object>("cancel") {
+        return new AjaxLink<>("cancel") {
             private static final long serialVersionUID = -6892944747517089296L;
 
             @Override

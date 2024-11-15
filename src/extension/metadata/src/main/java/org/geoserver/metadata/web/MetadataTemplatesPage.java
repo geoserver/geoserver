@@ -17,7 +17,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.model.IModel;
@@ -36,6 +35,7 @@ import org.geoserver.metadata.web.panel.TemplatesPositionPanel;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
@@ -77,7 +77,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         GeoServerDialog dialog;
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialHeight(150);
-        ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
+        ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
         add(
                 progressPanel =
@@ -86,7 +86,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                                 new ResourceModel("MetadataTemplatesPage.updatingMetadata")));
 
         add(
-                new AjaxLink<Object>("addNew") {
+                new AjaxLink<>("addNew") {
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -99,7 +99,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
         // the removal button
         AjaxLink<Object> remove =
-                new AjaxLink<Object>("removeSelected") {
+                new AjaxLink<>("removeSelected") {
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -163,7 +163,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
         // the copy button
         AjaxLink<Object> copy =
-                new AjaxLink<Object>("copySelected") {
+                new AjaxLink<>("copySelected") {
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
@@ -183,14 +183,14 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
         // the panel
         templatesPanel =
-                new GeoServerTablePanel<MetadataTemplate>(
+                new GeoServerTablePanel<>(
                         "templatesPanel", new MetadataTemplateDataProvider(templates), true) {
 
                     private static final long serialVersionUID = -8943273843044917552L;
 
                     @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        remove.setEnabled(templatesPanel.getSelection().size() > 0);
+                        remove.setEnabled(!templatesPanel.getSelection().isEmpty());
                         copy.setEnabled(templatesPanel.getSelection().size() == 1);
                         target.add(remove);
                         target.add(copy);
@@ -203,7 +203,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                             IModel<MetadataTemplate> itemModel,
                             GeoServerDataProvider.Property<MetadataTemplate> property) {
                         if (property.equals(MetadataTemplateDataProvider.NAME)) {
-                            return new SimpleAjaxLink<String>(
+                            return new SimpleAjaxLink<>(
                                     id, (IModel<String>) property.getModel(itemModel)) {
                                 private static final long serialVersionUID = -9184383036056499856L;
 
@@ -233,7 +233,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         add(templatesPanel);
 
         add(
-                new AjaxLink<Object>("save") {
+                new AjaxLink<>("save") {
                     private static final long serialVersionUID = 6152685206300932774L;
 
                     @Override
@@ -249,7 +249,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                     }
                 });
         add(
-                new AjaxLink<Object>("cancel") {
+                new AjaxLink<>("cancel") {
                     private static final long serialVersionUID = -2023310159199302483L;
 
                     @Override

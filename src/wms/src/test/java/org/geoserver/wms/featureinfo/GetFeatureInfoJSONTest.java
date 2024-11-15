@@ -352,7 +352,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
         JSONObject json = (JSONObject) getAsJSON(request);
         JSONArray features = json.getJSONArray("features");
-        assertTrue(features.size() > 0);
+        assertFalse(features.isEmpty());
 
         // Add CQL filter
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(layer);

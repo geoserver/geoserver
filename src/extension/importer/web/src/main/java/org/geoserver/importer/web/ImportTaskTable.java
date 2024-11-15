@@ -19,7 +19,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -32,7 +31,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.IChainingModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -47,6 +45,7 @@ import org.geoserver.importer.web.ImportPage.DataIconModel;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.demo.PreviewLayer;
 import org.geoserver.web.wicket.CRSPanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -61,6 +60,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 
+// TODO WICKET8 - Verify this page works OK
 public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
 
     static Logger LOGGER = Logging.getLogger(Importer.class);
@@ -69,7 +69,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         return CRS.decode("EPSG:3857");
     }
 
-    ModalWindow popupWindow;
+    GSModalWindow popupWindow;
     GeoServerDialog dialog;
     FeedbackPanel feedbackPanel;
 
@@ -77,7 +77,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             String id, GeoServerDataProvider<ImportTask> dataProvider, boolean selectable) {
         super(id, dataProvider, selectable);
         add(dialog = new GeoServerDialog("dialog"));
-        add(popupWindow = new ModalWindow("popup"));
+        add(popupWindow = new GSModalWindow("popup"));
         ((DataView) get("listContainer:items"))
                 .setItemReuseStrategy(DefaultItemReuseStrategy.getInstance());
     }
@@ -99,7 +99,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             Component c = null;
             if (state == ImportTask.State.ERROR) {
                 c =
-                        new SimpleAjaxLink<ImportTask>(
+                        new SimpleAjaxLink<>(
                                 id,
                                 itemModel,
                                 new StatusDescriptionModel(property.getModel(itemModel))) {
@@ -147,9 +147,8 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    SimpleAjaxLink createFixCRSLink(String id, final IModel<ImportTask> itemModel) {
-        return new SimpleAjaxLink(id, new Model("Fix...")) {
+    SimpleAjaxLink<?> createFixCRSLink(String id, final IModel<ImportTask> itemModel) {
+        return new SimpleAjaxLink<>(id, new Model<>("Fix...")) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 dialog.showOkCancel(
@@ -184,7 +183,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         onSelectionUpdate(target);
     }
 
-    abstract static class StatusModel<T> implements IChainingModel<T> {
+    abstract static class StatusModel<T> implements IModel<T> {
 
         IModel chained;
 
@@ -200,12 +199,10 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             chained.detach();
         }
 
-        @Override
         public void setChainedModel(IModel<?> model) {
             this.chained = model;
         }
 
-        @Override
         public IModel<?> getChainedModel() {
             return chained;
         }
@@ -351,7 +348,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         public NoCRSPanel(String id, final IModel<ImportTask> model) {
             super(id, model);
 
-            Form form = new Form("form");
+            Form<Object> form = new Form<>("form");
             add(form);
 
             form.add(
@@ -372,12 +369,12 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             form.add(
                     new AjaxSubmitLink("apply") {
                         @Override
-                        protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        protected void onError(AjaxRequestTarget target) {
                             target.add(feedbackPanel);
                         }
 
                         @Override
-                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        protected void onSubmit(AjaxRequestTarget target) {
                             target.add(feedbackPanel);
                             ImportTask item = model.getObject();
                             try {
@@ -399,7 +396,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             super(id);
 
             add(
-                    new Link<ImportTask>("link", model) {
+                    new Link<>("link", model) {
                         @Override
                         public void onClick() {
                             ImportTask task = getModelObject();
@@ -420,10 +417,10 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                                             } catch (IOException e) {
                                                 error(e);
                                             }
-                                        };
+                                        }
                                     });
                         }
-                    }.add(new Label("name", new PropertyModel(model, "layer.name")))
+                    }.add(new Label("name", new PropertyModel<>(model, "layer.name")))
                             .add(new Icon("icon", new DataIconModel(model.getObject().getData()))));
         }
     }
@@ -488,7 +485,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             super(id);
 
             add(
-                    new Link<ImportTask>("link", model) {
+                    new Link<>("link", model) {
                         @Override
                         public void onClick() {
                             setResponsePage(new ImportTaskAdvancedPage(getModel()));
@@ -498,14 +495,14 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     static class ErrorPanel extends Panel {
-        ModalWindow popupWindow;
+        GSModalWindow popupWindow;
 
         public ErrorPanel(String id, IModel<ImportTask> model) {
             super(id);
 
-            add(popupWindow = new ModalWindow("popup"));
+            add(popupWindow = new GSModalWindow("popup"));
             add(
-                    new AjaxLink<ImportTask>("link", model) {
+                    new AjaxLink<>("link", model) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             popupWindow.setContent(

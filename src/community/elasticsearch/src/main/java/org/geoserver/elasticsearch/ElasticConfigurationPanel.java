@@ -14,7 +14,6 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -30,6 +29,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPanel;
+import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.feature.type.Name;
 import org.geotools.data.elasticsearch.ElasticAttribute;
@@ -52,8 +52,6 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
     private ElasticLayerConfiguration _layerConfig;
 
-    protected ModalWindow modal;
-
     /**
      * Adds Elasticsearch configuration panel link, configure modal dialog and implements modal
      * callback.
@@ -64,7 +62,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         super(panelId, model);
         final FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject();
 
-        modal = new ModalWindow("modal");
+        final GSModalWindow modal = new GSModalWindow("modal");
         modal.setInitialWidth(800);
         modal.setTitle(new ParamResourceModel("modalTitle", this));
 
@@ -75,8 +73,8 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         modal.setContent(getElasticConfigurationPage(modal.getContentId(), model, modal, false));
         add(modal);
 
-        AjaxLink<?> findLink =
-                new AjaxLink("edit") {
+        AjaxLink<Void> findLink =
+                new AjaxLink<>("edit") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         modal.show(target);
@@ -91,10 +89,10 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     protected ElasticConfigurationPage getElasticConfigurationPage(
             final String panelId,
             final IModel<?> model,
-            final ModalWindow modal,
+            final GSModalWindow modal,
             boolean isRefresh) {
         modal.setWindowClosedCallback(
-                new ModalWindow.WindowClosedCallback() {
+                new GSModalWindow.WindowClosedCallback() {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -148,7 +146,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         };
     }
 
-    private Optional<ListView> getEditTabPanel(ModalWindow modal) {
+    private Optional<ListView> getEditTabPanel(GSModalWindow modal) {
         Component c = modal;
         for (int i = 0; i < 5; i++) { // The parent should be within 5 levels
             c = c.getParent();
@@ -178,7 +176,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     private class OpenWindowOnLoadBehavior extends AbstractDefaultAjaxBehavior {
         @Override
         protected void respond(AjaxRequestTarget target) {
-            ModalWindow window = (ModalWindow) getComponent();
+            GSModalWindow window = (GSModalWindow) getComponent();
             window.show(target);
         }
 

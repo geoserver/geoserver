@@ -21,9 +21,6 @@ public class GlobalModel<T> implements IModel<T> {
         setObject(value);
     }
 
-    @Override
-    public void detach() {}
-
     @SuppressWarnings("unchecked")
     @Override
     public T getObject() {

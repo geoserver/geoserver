@@ -14,7 +14,6 @@ import org.geoserver.metadata.data.dto.AttributeConfiguration;
 import org.geoserver.metadata.data.dto.AttributeTypeConfiguration;
 import org.geoserver.metadata.data.dto.GeonetworkMappingConfiguration;
 import org.geoserver.metadata.data.dto.MetadataConfiguration;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,31 +29,31 @@ public class ConfigurationServiceTest extends AbstractMetadataTest {
     @Test
     public void testFileRegistry() throws IOException {
         MetadataConfiguration configuration = yamlService.getMetadataConfiguration();
-        Assert.assertNotNull(configuration);
-        Assert.assertEquals(16, configuration.getAttributes().size());
-        Assert.assertEquals(3, configuration.getGeonetworks().size());
-        Assert.assertEquals(5, configuration.getTypes().size());
+        assertNotNull(configuration);
+        assertEquals(16, configuration.getAttributes().size());
+        assertEquals(3, configuration.getGeonetworks().size());
+        assertEquals(5, configuration.getTypes().size());
 
         // test csv's were imported
-        Assert.assertEquals(3, configuration.findAttribute("source").getValues().size());
-        Assert.assertEquals(3, configuration.findAttribute("target").getValues().size());
+        assertEquals(3, configuration.findAttribute("source").getValues().size());
+        assertEquals(3, configuration.findAttribute("target").getValues().size());
 
-        Assert.assertEquals(
+        assertEquals(
                 "identifier-single",
                 findAttribute(configuration.getAttributes(), "identifier-single").getLabel());
-        Assert.assertEquals(
+        assertEquals(
                 "identifier-single",
                 findAttribute(configuration.getAttributes(), "identifier-single").getLabel());
-        Assert.assertEquals(
+        assertEquals(
                 "dropdown-field",
                 findAttribute(configuration.getAttributes(), "dropdown-field").getLabel());
-        Assert.assertEquals(
+        assertEquals(
                 "refsystem as list",
                 findAttribute(configuration.getAttributes(), "refsystem-as-list").getLabel());
 
         List<AttributeConfiguration> complexAttributes =
                 configuration.findType("referencesystem").getAttributes();
-        Assert.assertEquals("Code", findAttribute(complexAttributes, "code").getLabel());
+        assertEquals("Code", findAttribute(complexAttributes, "code").getLabel());
     }
 
     @Test
@@ -71,9 +70,9 @@ public class ConfigurationServiceTest extends AbstractMetadataTest {
     public void testGeonetworkMappingRegistry() throws IOException {
         GeonetworkMappingConfiguration configuration =
                 yamlService.getGeonetworkMappingConfiguration();
-        Assert.assertNotNull(configuration);
-        Assert.assertEquals(10, configuration.getGeonetworkmapping().size());
-        Assert.assertEquals(2, configuration.getObjectmapping().size());
+        assertNotNull(configuration);
+        assertEquals(10, configuration.getGeonetworkmapping().size());
+        assertEquals(2, configuration.getObjectmapping().size());
     }
 
     private AttributeConfiguration findAttribute(

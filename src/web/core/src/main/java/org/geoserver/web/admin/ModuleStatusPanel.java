@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -25,6 +24,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 import org.geoserver.web.CatalogIconFactory;
+import org.geoserver.web.wicket.GSModalWindow;
 
 public class ModuleStatusPanel extends Panel {
 
@@ -32,7 +32,7 @@ public class ModuleStatusPanel extends Panel {
 
     final CatalogIconFactory icons = CatalogIconFactory.get();
 
-    ModalWindow popup;
+    GSModalWindow popup;
 
     AjaxLink msgLink;
 
@@ -47,7 +47,7 @@ public class ModuleStatusPanel extends Panel {
         wmc.setOutputMarkupId(true);
         this.add(wmc);
 
-        popup = new ModalWindow("popup");
+        popup = new GSModalWindow("popup");
         add(popup);
 
         // get the list of ModuleStatuses
@@ -58,12 +58,14 @@ public class ModuleStatusPanel extends Panel {
                         .collect(Collectors.toList());
 
         final ListView<ModuleStatus> moduleView =
-                new ListView<ModuleStatus>("modules", applicationStatus) {
+                new ListView<>("modules", applicationStatus) {
                     private static final long serialVersionUID = 235576083712961710L;
 
                     @Override
                     protected void populateItem(ListItem<ModuleStatus> item) {
-                        item.add(new Label("module", new PropertyModel(item.getModel(), "module")));
+                        item.add(
+                                new Label(
+                                        "module", new PropertyModel<>(item.getModel(), "module")));
                         item.add(getIcons("available", item.getModelObject().isAvailable()));
                         item.add(getIcons("enabled", item.getModelObject().isEnabled()));
                         item.add(
@@ -77,7 +79,7 @@ public class ModuleStatusPanel extends Panel {
                                         new Model<>(
                                                 item.getModelObject().getVersion().orElse(""))));
                         msgLink =
-                                new AjaxLink("msg") {
+                                new AjaxLink<>("msg") {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         popup.setInitialHeight(325);
@@ -90,7 +92,8 @@ public class ModuleStatusPanel extends Panel {
                                 };
                         msgLink.setEnabled(true);
                         msgLink.add(
-                                new Label("nameLink", new PropertyModel(item.getModel(), "name")));
+                                new Label(
+                                        "nameLink", new PropertyModel<>(item.getModel(), "name")));
                         item.add(msgLink);
                     }
                 };
@@ -102,7 +105,7 @@ public class ModuleStatusPanel extends Panel {
         Fragment f = new Fragment(id, "iconFragment", this);
         f.add(new Image("statusIcon", icon));
         return f;
-    };
+    }
 
     class MessagePanel extends Panel {
 
@@ -111,8 +114,8 @@ public class ModuleStatusPanel extends Panel {
         public MessagePanel(String id, ListItem<ModuleStatus> item) {
             super(id);
 
-            Label name = new Label("name", new PropertyModel(item.getModel(), "name"));
-            Label module = new Label("module", new PropertyModel(item.getModel(), "module"));
+            Label name = new Label("name", new PropertyModel<>(item.getModel(), "name"));
+            Label module = new Label("module", new PropertyModel<>(item.getModel(), "module"));
             Label component =
                     new Label(
                             "component",

@@ -88,7 +88,6 @@ class LoggingUtilsDelegate {
         List<Appender> savedAppenders = new ArrayList<>();
         {
             @SuppressWarnings({
-                "resource",
                 "PMD.CloseResource"
             }) // current context, no need to enforce AutoClosable
             LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
@@ -418,7 +417,7 @@ class LoggingUtilsDelegate {
             List<String> removeAppender =
                     lprops.keySet().stream()
                             .map(k -> (String) k)
-                            .filter(k -> ((String) k).startsWith("log4j.appender.stdout"))
+                            .filter(k -> k.startsWith("log4j.appender.stdout"))
                             .collect(Collectors.toList());
 
             lprops.keySet().removeAll(removeAppender);
@@ -428,7 +427,7 @@ class LoggingUtilsDelegate {
             List<String> removeAppender =
                     lprops.keySet().stream()
                             .map(k -> (String) k)
-                            .filter(k -> ((String) k).startsWith("log4j.appender.geoserverlogfile"))
+                            .filter(k -> k.startsWith("log4j.appender.geoserverlogfile"))
                             .collect(Collectors.toList());
 
             lprops.keySet().removeAll(removeAppender);

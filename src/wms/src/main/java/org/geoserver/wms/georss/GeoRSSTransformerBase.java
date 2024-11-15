@@ -177,7 +177,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                             throw new RuntimeException(
                                     "Cannot transform the specified geometry in GML", e);
                         }
-                    };
+                    }
                 };
 
         /**
@@ -205,7 +205,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                         t.element("geo:long", "" + p.getX());
                     }
                 };
-    };
+    }
 
     /** Geometry encoding to use. */
     protected GeometryEncoding geometryEncoding = GeometryEncoding.LATLONG;
@@ -263,7 +263,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                 throw (IOException) (new IOException("Unable to decode WGS84...").initCause(e));
             }
 
-            List featureCollections = new ArrayList();
+            List featureCollections = new ArrayList<>();
             for (Layer layer : map.layers()) {
                 Query query = layer.getQuery();
 

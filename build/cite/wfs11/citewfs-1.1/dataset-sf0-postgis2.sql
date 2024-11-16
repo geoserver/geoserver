@@ -3,7 +3,9 @@
 --     psql -U <database owner> <database> < dataset-sf0.sql
 SET client_encoding = 'UTF8';
 
-drop table "PrimitiveGeoFeature";
+\connect cite cite
+
+--drop table "PrimitiveGeoFeature";
 create table "PrimitiveGeoFeature" ( 
     description varchar, 
     name varchar, 
@@ -26,7 +28,7 @@ INSERT INTO "PrimitiveGeoFeature" VALUES ('description-f008', 'name-f008',  ST_G
 INSERT INTO "PrimitiveGeoFeature" VALUES (NULL, 'name-f015',  NULL, ST_GeomFromText('POINT(-10.52 34.94)',4326), NULL, -900, NULL, 2.4, NULL, NULL, 7.90, 'f015');
 
 
-drop table "AggregateGeoFeature";
+--drop table "AggregateGeoFeature";
 create table "AggregateGeoFeature" ( 
     description varchar, 
     name varchar,
@@ -46,7 +48,7 @@ INSERT INTO "AggregateGeoFeature" VALUES ('description-f010','name-f010',NULL,NU
 INSERT INTO "AggregateGeoFeature" VALUES (NULL,'name-f016',NULL,NULL,ST_GeomFromText('MULTIPOLYGON(((6.0 57.5, 8.0 57.5, 8.0 60.0, 9.0 62.5, 5.0 62.5,6.0 60.0,6.0 57.5),(6.5 58.0,6.5 59.0,7.0 59.0,6.5 58.0)))',4326),-182.9,NULL,'In rhoncus nisl sit amet sem.','EE010','f016');
 
 
-drop table "EntitéGénérique";
+--drop table "EntitéGénérique";
 create table "EntitéGénérique" ( 
     description varchar, 
     name varchar,

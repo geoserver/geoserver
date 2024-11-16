@@ -228,9 +228,9 @@ pull: $(suite)
 
 .PHONY: build-war
 build-war:
-	@mvn -Prelease,ogcapi-features \
+	@mvn -Pogcapi-features \
 	clean package -f ../../src/pom.xml \
-	-DskipTests  -B -ntp -U -T3 -fae
+	-DskipTests  -B -ntp -U -T1C -fae -pl :gs-web-app -am
 
 .PHONY: copy-war
 copy-war:

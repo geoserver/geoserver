@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,9 +65,16 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         this.id = collectionId;
         this.title = featureType.getTitle();
         this.description = featureType.getAbstract();
-        ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
         DateRange timeExtent = TimeExtentCalculator.getTimeExtent(featureType);
-        setExtent(new CollectionExtents(bbox, timeExtent));
+
+        // Prepare a lat/lon bounding box adhering to the GeoServer configured number of decimal
+        // places for text output
+        ReferencedEnvelope bbox = featureType.getLatLonBoundingBox();
+        int numDecimals = geoServer.getSettings().getNumDecimals();
+        ReferencedEnvelope roundedOutBounds = roundLonLatBbox(bbox, numDecimals);
+
+        setExtent(new CollectionExtents(roundedOutBounds, timeExtent));
+
         this.featureType = featureType;
         this.storageCrs = lookupStorageCrs();
 
@@ -132,6 +141,37 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             this.mapPreviewURL =
                     ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
         }
+    }
+
+    /**
+     * @param bbox a FeatureType's WGS84 bounds with east-north axis order
+     * @param numDecimals precision to round coordinates to
+     * @return an envelope rounded to the specified number of decimaps and expanded as necessary to
+     *     the west-east and south-north directions. Zero width and height are preserved.
+     */
+    private ReferencedEnvelope roundLonLatBbox(ReferencedEnvelope bbox, int numDecimals) {
+        // if(true)return bbox;
+        double minX = Math.max(-180d, round(bbox.getMinX(), numDecimals, RoundingMode.FLOOR));
+        double minY = Math.max(-90d, round(bbox.getMinY(), numDecimals, RoundingMode.FLOOR));
+        double maxX = Math.min(180d, round(bbox.getMaxX(), numDecimals, RoundingMode.CEILING));
+        double maxY = Math.min(90d, round(bbox.getMaxY(), numDecimals, RoundingMode.CEILING));
+
+        if (bbox.getWidth() == 0d) {
+            maxX = minX;
+        }
+        if (bbox.getHeight() == 0d) {
+            maxY = minY;
+        }
+
+        return new ReferencedEnvelope(minX, maxX, minY, maxY, bbox.getCoordinateReferenceSystem());
+    }
+
+    /** Round a value to the specified number of decimal places with a provided rounding strategy */
+    double round(double value, int places, RoundingMode mode) {
+        if (places < 0) throw new IllegalArgumentException("Decimal places must be non-negative");
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, mode);
+        return bd.doubleValue();
     }
 
     private boolean crsListContains(

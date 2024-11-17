@@ -1311,13 +1311,15 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.20</version>
+        <version>1.4.21</version>
+        <!-- this is marked as optional in the xstream 1.4.21 pom file so I don't think it is needed anymore
         <exclusions>
           <exclusion>
             <artifactId>xpp3</artifactId>
             <groupId>xpp3_min</groupId>
           </exclusion>
         </exclusions>
+        -->
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>

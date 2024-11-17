@@ -14,7 +14,7 @@
       <welcome>Designed for interoperability, GeoServer publishes data from any major spatial data source using open standards.</welcome>
     </contact>
     <charset>UTF-8</charset>
-    <numDecimals>8</numDecimals>
+    <numDecimals>7</numDecimals>
     <onlineResource>http://geoserver.org</onlineResource>
     <verbose>false</verbose>
     <verboseExceptions>false</verboseExceptions>

@@ -350,6 +350,25 @@ public class KMLTest extends WMSTestSupport {
     }
 
     @Test
+    public void testLayerLookAt() throws Exception {
+        Document doc =
+                getAsDOM(
+                        "wms?request=getmap&service=wms&version=1.1.1"
+                                + "&format="
+                                + KMLMapOutputFormat.MIME_TYPE
+                                + "&layers="
+                                + getLayerId(MockData.BASIC_POLYGONS)
+                                + "&styles=&height=1024&width=1024&bbox=-1.5,2,1.5,4&srs=EPSG:4326");
+
+        assertXpathEvaluatesTo(
+                "-0.004885780703602904", "//kml:Folder/kml:LookAt/kml:longitude", doc);
+        assertXpathEvaluatesTo(
+                "4.00243024094668", "//kml:Folder/kml:LookAt/kml:latitude", doc);
+        assertXpathEvaluatesTo(
+                "777088.7971299331", "//kml:Folder/kml:LookAt/kml:altitude", doc);
+    }
+
+    @Test
     public void testNoAttributes() throws Exception {
         Document doc =
                 getAsDOM(

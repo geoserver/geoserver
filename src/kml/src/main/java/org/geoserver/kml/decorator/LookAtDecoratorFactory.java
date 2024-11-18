@@ -61,7 +61,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
-            Envelope bounds = context.getCurrentLayer().getBounds();
+            Envelope bounds = context.getCurrentFeatureCollection().getBounds();
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), false);
             feature.setAbstractView(lookAt);
 

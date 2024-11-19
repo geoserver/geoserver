@@ -4,8 +4,9 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.APIConformance.Status.APPROVED;
-import static org.geoserver.ogcapi.APIConformance.Status.INFORMAL;
+import static org.geoserver.ogcapi.APIConformance.Level.DRAFT_STANDARD;
+import static org.geoserver.ogcapi.APIConformance.Level.COMMUNITY_STANDARD;
+import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 
@@ -98,16 +99,19 @@ public class FeatureService {
 
     public static final APIConformance CORE = new APIConformance("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core");
 
-    // required
+    // required resource formats
     public static final APIConformance HTML = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html");
     public static final APIConformance GEOJSON = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson");
 
+    // optional resource formats
     public static final APIConformance GMLSF0 = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0");
     public static final APIConformance GMLSF2 = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2)");
     public static final APIConformance OAS30 = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30");
 
+    // optional
     public static final APIConformance CRS_BY_REFERENCE = CORE.extend("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs");
 
+    // CQL is optional
     public static final APIConformance CQL2_ADVANCED = new APIConformance(ConformanceClass.CQL2_ADVANCED);
     public static final APIConformance CQL2_ARITHMETIC = new APIConformance(ConformanceClass.CQL2_ADVANCED);
     public static final APIConformance CQL2_BASIC = new APIConformance(ConformanceClass.CQL2_BASIC);
@@ -117,20 +121,19 @@ public class FeatureService {
     public static final APIConformance CQL2_SPATIAL = new APIConformance(ConformanceClass.CQL2_SPATIAL);
     public static final APIConformance CQL2_TEXT = new APIConformance(ConformanceClass.CQL2_TEXT);
 
-    // informal
-    public static final APIConformance ECQL = new APIConformance(ConformanceClass.ECQL, INFORMAL);
-    public static final APIConformance ECQL_TEXT = new APIConformance(ConformanceClass.ECQL_TEXT, INFORMAL);
-
+    // optional
     public static final APIConformance FEATURES_FILTER = CORE.extend(ConformanceClass.FEATURES_FILTER);
-    public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER,APPROVED);
+    public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER);
     public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES,APPROVED);
 
-    public static final APIConformance IDS = new APIConformance(ConformanceClass.IDS);
-    public static final APIConformance SEARCH = new APIConformance(ConformanceClass.SEARCH);
-    public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY);
+    // informal
+    public static final APIConformance ECQL = new APIConformance(ConformanceClass.ECQL, COMMUNITY_STANDARD);
+    public static final APIConformance ECQL_TEXT = new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
 
-    public static final String CRS_BY_REFERENCE =
-            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs";
+    public static final APIConformance IDS = new APIConformance(ConformanceClass.IDS, DRAFT_STANDARD);
+    public static final APIConformance SEARCH = new APIConformance(ConformanceClass.SEARCH, DRAFT_STANDARD);
+    public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD);
+
 
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";

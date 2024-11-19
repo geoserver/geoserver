@@ -74,10 +74,14 @@ public class ConformanceInfo<S extends ServiceInfo> {
         }
 
         if (!serviceInfo.getMetadata().containsKey(conformance) || serviceInfo.getMetadata().get(conformance) == null) {
-            return conformance.getStatus() == APIConformance.Status.APPROVED;
+            if (serviceInfo.isCiteCompliant()) {
+                return conformance.getLevel().isEndorsed() && conformance.getLevel().isStable();
+            }
+            else {
+                return conformance.getLevel().isStable();
+            }
         }
         Object conformanceInfo = serviceInfo.getMetadata().get(conformance);
-
         return conformanceInfo != null && !Boolean.FALSE.equals(conformanceInfo);
     }
 

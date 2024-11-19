@@ -22,7 +22,10 @@ public class SimpleThreadBlocker implements ThreadBlocker {
      */
     BlockingQueue<Request> queue;
 
+    private final int queueSize;
+
     public SimpleThreadBlocker(int queueSize) {
+        this.queueSize = queueSize;
         queue = new ArrayBlockingQueue<>(queueSize, true);
     }
 
@@ -47,5 +50,10 @@ public class SimpleThreadBlocker implements ThreadBlocker {
             queue.put(request);
             return true;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleBlocker(" + queueSize + ")";
     }
 }

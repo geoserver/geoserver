@@ -19,10 +19,10 @@ asking a volunteer to perform the release.
 * `GeoTools Release Guide <https://docs.geotools.org/latest/developer/procedures/release.html>`_
 * `GeoWebCache Release repo README.md <https://github.com/GeoWebCache/gwc-release>`_
 
-Notify developer list
-^^^^^^^^^^^^^^^^^^^^^
+Notify developer group
+^^^^^^^^^^^^^^^^^^^^^^
 
-Send an email to the `GeoServer developer list <https://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_ a few days in advance, even though the release date has been agreed upon before hand. It is a good idea to remind developers to get any fixes 24 hours prior to release day, and to start a team discussion to identify any known blockers.
+Post a message on the `GeoServer developer group <https://discourse.osgeo.org/c/geoserver/developer/63>`_ a few days in advance, even though the release date has been agreed upon before hand. It is a good idea to remind developers to get any fixes 24 hours prior to release day, and to start a team discussion to identify any known blockers.
 
 Prerequisites
 -------------
@@ -64,6 +64,8 @@ Release in JIRA
 2. Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.  Enter the current date as the Start Date and use the date from the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`_ for the Release Date.
 
 3. Click in the Actions column for the version you are releasing and select Release. Update the Release Date to the current date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2 above.
+
+4. Check all the issues in this release for any that do not have a component and rectify (before running the announcement.py utility below.)
 
 If you are cutting the first RC of a series, create the stable branch
 ---------------------------------------------------------------------
@@ -158,7 +160,7 @@ When creating the first release candidate of a series, there are some extra step
   * disable the maintenance jobs, and remove them from the geoserver view
   * create new jobs, copying from the existing main development branch jobs, editing the branch in the build command.
 
-* Announce on the developer mailing list that the new stable branch has been created.
+* Announce on the developer group that the new stable branch has been created.
 
 * Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.12.x`` (for example):
    
@@ -211,7 +213,7 @@ Test the Artifacts
 
 Download and try out some of the artifacts from the above location and do a
 quick smoke test that there are no issues. Engage other developers to help
-test on the developer list.
+test on the developer group.
 
 It is important to test the artifacts using the minimum supported version of Java (currently Java 11 in September 2023).
 
@@ -310,7 +312,7 @@ Mailing lists
 
 .. note:: This announcement should be made for all releases, including release candidates.
 
-Send both an email to the Developers list and post an announcement on the Discourse Users group announcing the
+Post an announcement on both the Discourse User and Developer groups announcing the
 release. The message should be relatively short. You can base it on the blog post.
 The following is an example::
 

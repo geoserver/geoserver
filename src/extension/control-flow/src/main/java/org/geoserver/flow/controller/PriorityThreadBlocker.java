@@ -174,4 +174,9 @@ public class PriorityThreadBlocker implements ThreadBlocker {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "PriorityBlocker(" + maxRunningRequests + ", " + priorityProvider + ")";
+    }
 }

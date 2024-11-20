@@ -7,6 +7,7 @@ package org.geoserver.mapml.tcrs;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,52 @@ import org.xml.sax.SAXException;
 /** @author prushforth */
 public class TiledCRSConstants {
 
+    /**
+     * Represents the type of level naming used in a {@link GridSet}.
+     *
+     * <p>This class encapsulates properties of the level naming scheme, which can either be
+     * numeric, prefixed, or both. It includes methods to query the type and retrieve additional
+     * details about the prefix if applicable.
+     */
+    public static class GridSetLevelType {
+        boolean numeric = true;
+
+        boolean prefixed;
+
+        String prefix;
+
+        /** Returns whether the level names are numeric. */
+        public boolean isNumeric() {
+            return numeric;
+        }
+
+        /**
+         * Returns whether the level names are prefixed, e.g.: (EPSG:4326:0, EPSG:4326:1,
+         * EPSG:4326:2, ...).
+         */
+        public boolean isPrefixed() {
+            return prefixed;
+        }
+
+        /** Retrieves the prefix used in level names, if applicable (null otherwise) */
+        public String getPrefix() {
+            return prefix;
+        }
+
+        @Override
+        public String toString() {
+            return "GridSetLevelType{"
+                    + "numeric="
+                    + numeric
+                    + ", prefixed="
+                    + prefixed
+                    + ", prefix='"
+                    + prefix
+                    + '\''
+                    + '}';
+        }
+    }
+
     private static final Logger LOGGER = Logging.getLogger(TiledCRSConstants.class);
 
     private static final HashMap<String, TiledCRSParams> BUILT_IN_TILED_CRS_DEFINITIONS =
@@ -56,11 +103,18 @@ public class TiledCRSConstants {
     private static final HashMap<String, TiledCRSParams> BUILT_IN_TILED_CRS_BY_SRS_NAME =
             new HashMap<>();
 
+    private static final String NUMERIC_PATTERN = "-?\\d+(\\.\\d+)?";
+
+    private static final String ONLY_NUMBERS_PATTERN = "\\d+";
+
     public static final HashMap<String, TiledCRSParams> tiledCRSDefinitions = new HashMap<>();
 
     public static final HashMap<String, TiledCRSParams> tiledCRSBySrsName = new HashMap<>();
 
     public static final HashMap<String, TiledCRS> BUILT_IN_TILED_CRS = new HashMap<>();
+
+    public static final List<String> FIXED_NAMES =
+            Arrays.asList("APSTILE", "CBMTILE", "OSMTILE", "WGS84");
 
     /**
      * This map contains TiledCRS definitions in any variation (EPSG:CODE, MAPML:NAME, NAME,
@@ -72,6 +126,8 @@ public class TiledCRSConstants {
     private static final Set<CRSMapper> CRS_MAPPERS = new HashSet<>();
 
     private static final Set<CRSMapper> BUILT_IN_CRS_MAPPERS = new HashSet<>();
+
+    private static final XPath XPATH = XPathFactory.newInstance().newXPath();
 
     static class CRSMapper {
 
@@ -427,10 +483,113 @@ public class TiledCRSConstants {
         }
         List<GridSet> gwcGridsets = readGWCGridSets();
         for (GridSet gs : gwcGridsets) {
-            addGridSet(additionalTiledCRS, gs);
+            if (canBeSupportedAsTiledCRS(gs)) {
+                addGridSet(additionalTiledCRS, gs);
+            }
         }
 
         loadGridSets(additionalTiledCRS);
+    }
+
+    /**
+     * Determines whether the specified {@link GridSet} can be supported as a TiledCRS.
+     *
+     * <p>This method checks the {@code GridSet} against specific criteria to evaluate its
+     * compatibility:
+     *
+     * <ul>
+     *   <li>If the grid set's name contains a colon (":"), it is not supported.
+     *   <li>Analyzes the type of level names in the grid set (numeric or with a common prefix) to
+     *       determine compatibility.
+     * </ul>
+     *
+     * @param gridSet the {@link GridSet} to evaluate.
+     * @return {@code true} if the grid set can be supported as a tiled CRS, {@code false}
+     *     otherwise.
+     */
+    public static boolean canBeSupportedAsTiledCRS(GridSet gridSet) {
+        String name = gridSet.getName();
+        if (FIXED_NAMES.contains(name) || name.contains(":")) {
+            return false;
+        }
+        TiledCRSConstants.GridSetLevelType levelType =
+                getLevelType(getLevelNamesFromGridSet(gridSet));
+        return levelType.isNumeric() || levelType.isPrefixed();
+    }
+
+    private static List<String> getLevelNamesFromGridSet(GridSet gridSet) {
+        List<String> levelNames = new ArrayList<>();
+        for (int i = 0; i < gridSet.getNumLevels(); i++) {
+            Grid grid = gridSet.getGrid(i);
+            levelNames.add(grid.getName());
+        }
+
+        return levelNames;
+    }
+
+    /**
+     * Determines the type of levels from a given list of level strings.
+     *
+     * <p>If the levels are all numeric, it returns a {@link GridSetLevelType} with the {@code
+     * numeric} flag set to {@code true}. If a common prefix exists, it sets the {@code prefixed}
+     * flag to {@code true} and assigns the common prefix to the {@code prefix} field.
+     *
+     * @param levels a list of level identifiers to process; can be {@code null} or empty.
+     * @return a {@link GridSetLevelType} object indicating the level type:
+     *     <ul>
+     *       <li>{@code numeric = true} if all levels are numeric.
+     *       <li>{@code prefixed = true} with a {@code prefix} value if levels share a common
+     *           prefix.
+     *     </ul>
+     *     Returns {@code null} if the input list is {@code null} or empty.
+     */
+    public static GridSetLevelType getLevelType(List<String> levels) {
+        if (levels == null || levels.isEmpty()) {
+            return null;
+        }
+        // First check: levels are simple numbers:
+        GridSetLevelType levelType = new GridSetLevelType();
+        for (String level : levels) {
+            // Check if the level name matches the numeric pattern
+            if (!level.matches(NUMERIC_PATTERN)) {
+                levelType.numeric = false;
+                break;
+            }
+        }
+        if (levelType.numeric) {
+            return levelType;
+        }
+        // Second check: levels having a common prefix, e.g.:
+        // EPSG:4326:0
+        // EPSG:4326:1
+        // EPSG:4326:2
+        // EPSG:4326:3
+
+        // Since TileMatrix is a {z} level in MapML client, we will
+        // prefix the value with the common prefix if available
+
+        // Start with the first level as the prefix candidate
+        String prefix = levels.get(0);
+
+        // Iterate over the rest of the levels and trim the prefix
+        for (int i = 1; i < levels.size(); i++) {
+            while (levels.get(i).indexOf(prefix) != 0) {
+                // Trim the last character from the prefix until it matches
+                prefix = prefix.substring(0, prefix.length() - 1);
+                if (prefix.isEmpty()) {
+                    levelType.prefixed = false;
+                    return levelType; // No common prefix found
+                }
+            }
+        }
+
+        // Check if the remaining prefix is actually a valid common prefix (not just a number)
+        if (prefix.matches(ONLY_NUMBERS_PATTERN)) {
+            return null; // A prefix consisting of only numbers is not valid
+        }
+        levelType.prefix = prefix;
+        levelType.prefixed = true;
+        return levelType;
     }
 
     private static void addGridSet(
@@ -496,88 +655,15 @@ public class TiledCRSConstants {
 
             doc.getDocumentElement().normalize();
 
-            // Create XPath for querying the XML
-            XPathFactory xpathFactory = XPathFactory.newInstance();
-            XPath xpath = xpathFactory.newXPath();
-
             // Find all <gridSet> nodes
             NodeList gridSetNodes = doc.getElementsByTagName("gridSet");
 
             // Iterate over each <gridSet> node
             for (int i = 0; i < gridSetNodes.getLength(); i++) {
                 Element gridSetElement = (Element) gridSetNodes.item(i);
-
-                // Extract each field from the XML
-                String name = xpath.evaluate("name", gridSetElement);
+                String name = XPATH.evaluate("name", gridSetElement);
                 if (BUILT_IN_TILED_CRS.containsKey(name)) continue;
-                int srsNumber = Integer.parseInt(xpath.evaluate("srs/number", gridSetElement));
-
-                // Parse <extent>/<coords>/<double> values
-                NodeList extentCoordsNodes =
-                        (NodeList)
-                                xpath.evaluate(
-                                        "extent/coords/double",
-                                        gridSetElement,
-                                        XPathConstants.NODESET);
-                double[] coords = new double[extentCoordsNodes.getLength()];
-                for (int j = 0; j < extentCoordsNodes.getLength(); j++) {
-                    coords[j] = Double.parseDouble(extentCoordsNodes.item(j).getTextContent());
-                }
-
-                BoundingBox bbox = new BoundingBox(coords[0], coords[1], coords[2], coords[3]);
-                // Parse <resolutions>/<double> values
-                NodeList resolutionsNodes =
-                        (NodeList)
-                                xpath.evaluate(
-                                        "resolutions/double",
-                                        gridSetElement,
-                                        XPathConstants.NODESET);
-                double[] resolutions = new double[resolutionsNodes.getLength()];
-                double[] scaleDenoms = null;
-                for (int j = 0; j < resolutionsNodes.getLength(); j++) {
-                    double res = Double.parseDouble(resolutionsNodes.item(j).getTextContent());
-                    resolutions[j] = res;
-                }
-
-                // Parse <scaleNames>/<string> values
-                NodeList scaleNamesNodes =
-                        (NodeList)
-                                xpath.evaluate(
-                                        "scaleNames/string",
-                                        gridSetElement,
-                                        XPathConstants.NODESET);
-                String[] scaleNames = new String[scaleNamesNodes.getLength()];
-                for (int j = 0; j < scaleNamesNodes.getLength(); j++) {
-                    scaleNames[j] = scaleNamesNodes.item(j).getTextContent();
-                }
-
-                // Extract remaining fields
-                boolean alignTopLeft =
-                        Boolean.parseBoolean(xpath.evaluate("alignTopLeft", gridSetElement));
-                double metersPerUnit =
-                        Double.parseDouble(xpath.evaluate("metersPerUnit", gridSetElement));
-                double pixelSize = Double.parseDouble(xpath.evaluate("pixelSize", gridSetElement));
-                int tileHeight = Integer.parseInt(xpath.evaluate("tileHeight", gridSetElement));
-                int tileWidth = Integer.parseInt(xpath.evaluate("tileWidth", gridSetElement));
-                boolean yCoordinateFirst =
-                        Boolean.parseBoolean(xpath.evaluate("yCoordinateFirst", gridSetElement));
-
-                // Create a GridSet instance and add it to the list
-                GridSet gridSet =
-                        GridSetFactory.createGridSet(
-                                name,
-                                SRS.getSRS(srsNumber),
-                                bbox,
-                                alignTopLeft,
-                                resolutions,
-                                scaleDenoms,
-                                metersPerUnit,
-                                pixelSize,
-                                scaleNames,
-                                tileWidth,
-                                tileHeight,
-                                yCoordinateFirst);
-                gridSets.add(gridSet);
+                gridSets.add(parseGridSetElement(gridSetElement));
             }
         } catch (ParserConfigurationException
                 | IOException
@@ -586,6 +672,123 @@ public class TiledCRSConstants {
             throw new RuntimeException(e);
         }
         return gridSets;
+    }
+
+    /**
+     * Parses an XML {@link org.w3c.dom.Element} representing a GridSet and constructs a {@link
+     * GridSet} object.
+     *
+     * <p>The provided {@code gridSetElement} should conform to the expected XML structure for a
+     * GridSet, containing elements such as:
+     *
+     * <ul>
+     *   <li><code>name</code>: The name of the GridSet.
+     *   <li><code>srs/number</code>: The spatial reference system identifier (e.g., EPSG code).
+     *   <li><code>extent/coords</code>: Bounding box coordinates (minX, minY, maxX, maxY).
+     *   <li><code>alignTopLeft</code>: Boolean indicating if the grid aligns with the top-left
+     *       corner.
+     *   <li><code>scaleDenominators</code>: An optional list of double values representing scale
+     *       denominators.
+     *   <li><code>resolutions</code>: An optional list of double values representing resolutions.
+     *   <li><code>metersPerUnit</code>: Conversion factor from grid units to meters.
+     *   <li><code>pixelSize</code>: Pixel size for the grid.
+     *   <li><code>scaleNames</code>: An optional list of string identifiers for each scale level.
+     *   <li><code>tileHeight</code> and <code>tileWidth</code>: Tile dimensions in pixels.
+     *   <li><code>yCoordinateFirst</code>: Boolean indicating the coordinate order for tiles.
+     * </ul>
+     *
+     * <p>The method uses XPath expressions to extract values from the XML structure and map them to
+     * the corresponding properties of the {@link GridSet} object.
+     *
+     * @param gridSetElement the {@link org.w3c.dom.Element} representing the GridSet in XML format.
+     * @return a {@link GridSet} object constructed from the provided XML element.
+     * @throws XPathExpressionException if there is an error evaluating an XPath expression while
+     *     parsing the XML.
+     */
+    public static GridSet parseGridSetElement(Element gridSetElement)
+            throws XPathExpressionException {
+
+        // Extract each field from the XML
+        int srsNumber = Integer.parseInt(XPATH.evaluate("srs/number", gridSetElement));
+        String name = XPATH.evaluate("name", gridSetElement);
+
+        // Parse <extent>/<coords>/<double> values
+        NodeList extentCoordsNodes =
+                (NodeList)
+                        XPATH.evaluate(
+                                "extent/coords/double", gridSetElement, XPathConstants.NODESET);
+        double[] coords = new double[extentCoordsNodes.getLength()];
+        for (int j = 0; j < extentCoordsNodes.getLength(); j++) {
+            coords[j] = Double.parseDouble(extentCoordsNodes.item(j).getTextContent());
+        }
+
+        BoundingBox bbox = new BoundingBox(coords[0], coords[1], coords[2], coords[3]);
+        // Parse <resolutions>/<scaleDenominators> double values
+        double[] resolutions = null;
+        double[] scaleDenoms = null;
+        String[] scaleNames = null;
+        NodeList resolutionsNodes =
+                (NodeList)
+                        XPATH.evaluate(
+                                "resolutions/double", gridSetElement, XPathConstants.NODESET);
+        int resolutionsLevels = resolutionsNodes.getLength();
+        if (resolutionsLevels > 0) {
+            resolutions = new double[resolutionsNodes.getLength()];
+            for (int j = 0; j < resolutionsNodes.getLength(); j++) {
+                double res = Double.parseDouble(resolutionsNodes.item(j).getTextContent());
+                resolutions[j] = res;
+            }
+        } else {
+            NodeList scaleNodes =
+                    (NodeList)
+                            XPATH.evaluate(
+                                    "scaleDenominators/double",
+                                    gridSetElement,
+                                    XPathConstants.NODESET);
+            int scaleLevels = scaleNodes.getLength();
+            if (scaleLevels > 0) {
+                scaleDenoms = new double[scaleLevels];
+                for (int j = 0; j < scaleNodes.getLength(); j++) {
+                    double scaleDenominator =
+                            Double.parseDouble(scaleNodes.item(j).getTextContent());
+                    scaleDenoms[j] = scaleDenominator;
+                }
+            }
+        }
+
+        // Parse <scaleNames> values
+        NodeList scaleNamesNodes =
+                (NodeList)
+                        XPATH.evaluate("scaleNames/string", gridSetElement, XPathConstants.NODESET);
+        int scaleNamesLength = scaleNamesNodes.getLength();
+        if (scaleNamesLength > 0) {
+            scaleNames = new String[scaleNamesLength];
+            for (int j = 0; j < scaleNamesNodes.getLength(); j++) {
+                scaleNames[j] = scaleNamesNodes.item(j).getTextContent();
+            }
+        }
+
+        boolean alignTopLeft = Boolean.parseBoolean(XPATH.evaluate("alignTopLeft", gridSetElement));
+        double metersPerUnit = Double.parseDouble(XPATH.evaluate("metersPerUnit", gridSetElement));
+        double pixelSize = Double.parseDouble(XPATH.evaluate("pixelSize", gridSetElement));
+        int tileHeight = Integer.parseInt(XPATH.evaluate("tileHeight", gridSetElement));
+        int tileWidth = Integer.parseInt(XPATH.evaluate("tileWidth", gridSetElement));
+        boolean yCoordinateFirst =
+                Boolean.parseBoolean(XPATH.evaluate("yCoordinateFirst", gridSetElement));
+
+        return GridSetFactory.createGridSet(
+                name,
+                SRS.getSRS(srsNumber),
+                bbox,
+                alignTopLeft,
+                resolutions,
+                scaleDenoms,
+                metersPerUnit,
+                pixelSize,
+                scaleNames,
+                tileWidth,
+                tileHeight,
+                yCoordinateFirst);
     }
 
     private static void loadGridSets(Map<String, TiledCRSParams> additionalTiledCRS) {

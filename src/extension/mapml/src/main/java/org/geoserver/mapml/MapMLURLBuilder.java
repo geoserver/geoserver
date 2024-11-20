@@ -4,8 +4,6 @@
  */
 package org.geoserver.mapml;
 
-import static org.geoserver.mapml.gwc.gridset.MapMLGridsets.getLevelType;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -627,8 +625,9 @@ public class MapMLURLBuilder {
             if (!sameResolutions) {
                 continue;
             }
-            MapMLGridsets.GridSetLevelType levelType =
-                    getLevelType(MapMLGridsets.getLevelNamesFromTileMatrixList(tileMatrices));
+            TiledCRSConstants.GridSetLevelType levelType =
+                    TiledCRSConstants.getLevelType(
+                            MapMLGridsets.getLevelNamesFromTileMatrixList(tileMatrices));
             if (levelType.isPrefixed()) {
                 tileMatrixSetName += (";" + levelType.getPrefix());
             }

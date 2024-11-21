@@ -373,7 +373,9 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
             // no messages and save worked
             tester.assertNoErrorMessage();
             DataStoreInfo store = getCatalog().getDataStoreByName(MockData.CITE_PREFIX);
-            assertEquals("file://" + citePath, store.getConnectionParameters().get("directory"));
+            assertEquals(
+                    "file://" + citePath.replace("\\", "/"),
+                    store.getConnectionParameters().get("directory"));
         } finally {
             layerSecurity.delete();
             fam.reload();

@@ -57,6 +57,7 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.GeoTools;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -858,10 +859,13 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         try {
             uploadUSAWorldImage();
 
-            // check the coverage has been uploaded indide the system sandbox
+            // check the coverage has been uploaded inside the system sandbox
             CoverageStoreInfo cs = getCatalog().getCoverageStoreByName("sf", "usa");
             assertNotNull(cs);
-            assertEquals("file:" + new File(systemSandbox, "/sf/usa/usa.png"), cs.getURL());
+            // compute a OS independent test string (replacement is for Windows)
+            String expected =
+                    new File(systemSandbox, "/sf/usa/usa.png").getAbsolutePath().replace("\\", "/");
+            assertThat(cs.getURL(), Matchers.containsString(expected));
         } finally {
             System.clearProperty(GEOSERVER_DATA_SANDBOX);
             fam.reload();

@@ -19,7 +19,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.impl.FileSandboxEnforcer.SandboxException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +39,14 @@ public abstract class AbstractSandboxEnforcerTest extends AbstractFileAccessTest
         // force creation of the FileSanboxEnforcer (beans are lazy loaded in tests, and this
         // one registers itself on the catalog on creation)
         GeoServerExtensions.bean(FileSandboxEnforcer.class, applicationContext);
+    }
+
+    @After
+    public void clearFileAccessManagerConfiguration() {
+        System.clearProperty(GEOSERVER_DATA_SANDBOX);
+        Resource layerSecurity = getDataDirectory().get("security/layers.properties");
+        layerSecurity.delete();
+        fileAccessManager.reload();
     }
 
     @Before

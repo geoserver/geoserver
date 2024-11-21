@@ -5,6 +5,7 @@
 package org.geoserver.security.impl;
 
 import static org.geoserver.security.impl.DefaultFileAccessManager.GEOSERVER_DATA_SANDBOX;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,9 +69,9 @@ public class AbstractFileAccessTest extends GeoServerSystemTestSupport {
         cgfFolder = new File(sandbox, MockData.CGF_PREFIX);
         cdfFolder = new File(sandbox, MockData.CDF_PREFIX);
         missingFolder = new File(sandbox, MISSING);
-        citeFolder.mkdirs();
-        cgfFolder.mkdirs();
-        cdfFolder.mkdirs();
+        if (!citeFolder.exists()) assertTrue(citeFolder.mkdirs());
+        if (!cgfFolder.exists()) assertTrue(cgfFolder.mkdirs());
+        if (!cdfFolder.exists()) assertTrue(cdfFolder.mkdirs());
     }
 
     @Before
@@ -104,6 +105,7 @@ public class AbstractFileAccessTest extends GeoServerSystemTestSupport {
         properties.put("missing.*.a", ROLE_MISSING);
         try (OutputStream os = layerSecurity.out()) {
             properties.store(os, "sandbox");
+            os.flush();
         }
 
         // force reloading definitions
@@ -118,6 +120,7 @@ public class AbstractFileAccessTest extends GeoServerSystemTestSupport {
         properties.put("cite.*.a", ROLE_CITE);
         try (OutputStream os = layerSecurity.out()) {
             properties.store(os, "sandbox");
+            os.flush();
         }
 
         // force reloading definitions

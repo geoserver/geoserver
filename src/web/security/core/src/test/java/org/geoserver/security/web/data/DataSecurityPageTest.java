@@ -158,6 +158,6 @@ public class DataSecurityPageTest extends AbstractListPageTest<DataAccessRule> {
 
         DataAccessRuleDAO dao =
                 GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
-        assertEquals(sandbox.getAbsolutePath(), dao.getFilesystemSandbox());
+        assertEquals(sandbox.getAbsolutePath().replace("\\", "/"), dao.getFilesystemSandbox());
     }
 }

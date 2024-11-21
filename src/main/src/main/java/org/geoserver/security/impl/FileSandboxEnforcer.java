@@ -10,6 +10,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -173,7 +176,16 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
                             uri);
                 }
             } catch (URISyntaxException e) {
-                LOGGER.log(Level.FINEST, "Not a valid URI in coverage store, not validating it", e);
+                // not a valid URI, but it may still be a Windows path
+                try {
+                    Path path = Paths.get(url);
+                    checkAccess(path.toFile());
+                } catch (InvalidPathException ex) {
+                    LOGGER.log(
+                            Level.FINEST,
+                            "Not a valid URI/Path in coverage store, not validating it",
+                            ex);
+                }
             }
         }
     }

@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -17,9 +19,11 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.FileAccessManager;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.ResourceAccessManagerWrapper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geotools.api.filter.Filter;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -32,6 +36,8 @@ import org.springframework.security.core.Authentication;
  * workspace administrators will be limited to their own workspace directories.
  */
 public class DefaultFileAccessManager implements FileAccessManager {
+
+    private static final Logger LOGGER = Logging.getLogger(DefaultFileAccessManager.class);
 
     public static String GEOSERVER_DATA_SANDBOX = "GEOSERVER_FILESYSTEM_SANDBOX";
 
@@ -58,7 +64,7 @@ public class DefaultFileAccessManager implements FileAccessManager {
         if (sandboxPath == null) return null;
 
         // the full administrator is either locked into the sandbox, if that was set
-        // by the OS asysadmin, or can see the whole file system
+        // by the OS sysadmin, or can see the whole file system
         Authentication auth = user();
         boolean fullAdmin = securityManager.checkAuthenticationForAdminRole(auth);
         if (fullAdmin) {
@@ -102,6 +108,7 @@ public class DefaultFileAccessManager implements FileAccessManager {
     public boolean checkAccess(File file) {
         // Convert File to Path
         String sandboxPath = systemSandbox != null ? systemSandbox : dao.getFilesystemSandbox();
+        LOGGER.log(Level.FINE, () -> "Filesystem sandbox: " + sandboxPath);
         if (sandboxPath == null) return true;
         Path sandbox = canonical(sandboxPath);
         Path path = canonical(file);
@@ -110,8 +117,15 @@ public class DefaultFileAccessManager implements FileAccessManager {
         Authentication auth = user();
         boolean fullAdmin = securityManager.checkAuthenticationForAdminRole();
         if (fullAdmin) {
-            if (systemSandbox != null) return path.startsWith(sandbox);
-            else return true;
+            if (systemSandbox != null) {
+                if (!path.startsWith(sandbox)) {
+                    LOGGER.log(
+                            Level.FINE,
+                            () -> "Checked path " + path + " does not start with " + sandbox);
+                    return false;
+                }
+            }
+            return true;
         }
 
         // Check if the file is within the sandbox
@@ -120,15 +134,34 @@ public class DefaultFileAccessManager implements FileAccessManager {
         // Check if the workspace is accessible
         String workspace = sandbox.relativize(path).getName(0).toString();
         WorkspaceInfo wi = catalog.getWorkspaceByName(workspace);
-        if (wi == null) return false;
+        if (wi == null) {
+            LOGGER.log(Level.FINE, () -> "Sandbox check, workspace not authorized " + workspace);
+            return false;
+        }
         WorkspaceAccessLimits accessLimits = resourceAccessManager.getAccessLimits(auth, wi);
+        LOGGER.log(
+                Level.FINE,
+                () ->
+                        "Sandbox auth check, workspace "
+                                + workspace
+                                + " access limits "
+                                + accessLimits);
         return accessLimits != null && accessLimits.isAdminable();
     }
 
     /** Forces reloading the DAO and the system sandbox definitions */
     public void reload() {
         this.systemSandbox = GeoServerExtensions.getProperty(GEOSERVER_DATA_SANDBOX);
+        if (systemSandbox != null)
+            LOGGER.log(Level.FINE, () -> "System sandbox property found: " + systemSandbox);
         dao.reload();
+        ResourceAccessManager ram = this.resourceAccessManager;
+        while (ram instanceof ResourceAccessManagerWrapper) {
+            ram = ((ResourceAccessManagerWrapper) ram).unwrap();
+        }
+        if (ram instanceof DefaultResourceAccessManager) {
+            ((DefaultResourceAccessManager) ram).reload();
+        }
     }
 
     private static Path canonical(String fileName) {

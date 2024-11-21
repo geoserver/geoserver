@@ -260,7 +260,9 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
             tester.assertRenderedPage(CoverageStoreEditPage.class);
             CoverageStoreInfo store = getCatalog().getCoverageStoreByName("tazbm4");
             assertNotNull(store);
-            assertEquals("file://" + tazbmInside.getAbsolutePath(), store.getURL());
+            // replace is for Windows
+            assertEquals(
+                    "file://" + tazbmInside.getAbsolutePath().replace("\\", "/"), store.getURL());
         } finally {
             System.clearProperty(GEOSERVER_DATA_SANDBOX);
             GeoServerExtensions.bean(DefaultFileAccessManager.class).reload();

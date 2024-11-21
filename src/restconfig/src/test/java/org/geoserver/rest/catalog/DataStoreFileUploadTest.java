@@ -7,6 +7,7 @@ package org.geoserver.rest.catalog;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.geoserver.security.impl.DefaultFileAccessManager.GEOSERVER_DATA_SANDBOX;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -508,10 +509,14 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         try {
             DataStoreInfo ds = uploadSanAndreas();
 
-            // the files have been stored in the system sandbox
-            assertEquals(
-                    "file:" + new File(systemSandbox, "gs/san_andres_y_providencia") + "/",
-                    String.valueOf(ds.getConnectionParameters().get("url")));
+            // the files have been stored in the system sandbox (replace is for Windows)
+            String expected =
+                    new File(systemSandbox, "gs/san_andres_y_providencia")
+                            .getAbsolutePath()
+                            .replace("\\", "/");
+            assertThat(
+                    String.valueOf(ds.getConnectionParameters().get("url")),
+                    containsString(expected));
         } finally {
             System.clearProperty(GEOSERVER_DATA_SANDBOX);
             fam.reload();

@@ -5,7 +5,12 @@
 package org.geoserver.security.oauth2;
 
 import com.jayway.jsonpath.JsonPath;
+import com.nimbusds.jose.JOSEObject;
+import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -13,13 +18,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.json.JSONObject;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -34,8 +39,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
-import org.springframework.security.jwt.Jwt;
-import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultRequestEnhancer;
@@ -127,20 +130,45 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
                         "OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
             }
             // we must validate
-            String accessToken =
-                    (String) req.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
-            Map userinfoMap = (Map) req.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
-            Jwt decodedAccessToken = JwtHelper.decode(accessToken);
-            Map accessTokenClaims = JSONObject.fromObject(decodedAccessToken.getClaims());
+
             try {
-                bearerTokenValidator.verifyToken(
-                        (OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
+                validateBearerToken(req);
             } catch (Exception e) {
                 throw new IOException("Attached Bearer Token is invalid", e);
             }
         }
 
         return result;
+    }
+
+    private void validateBearerToken(HttpServletRequest req) throws Exception {
+        String accessToken =
+                (String) req.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
+        Map userinfoMap = (Map) req.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
+
+        JWT jwt = JWTParser.parse(accessToken);
+
+        if (jwt.getJWTClaimsSet() != null) {
+            Map accessTokenClaims =
+                    Optional.ofNullable(jwt.getJWTClaimsSet())
+                            .map(cs -> cs.getClaims())
+                            .orElse(Collections.emptyMap());
+            bearerTokenValidator.verifyToken(
+                    (OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
+        } else if (jwt instanceof JWEObject) {
+            if (tokenServices instanceof OpenIdConnectTokenServices) {
+                OpenIdConnectTokenServices ots = (OpenIdConnectTokenServices) tokenServices;
+                Map<String, Object> result = ots.introspectToken(accessToken);
+                if (!Boolean.TRUE.equals(result.get("active"))) {
+                    throw new Exception("Bearer token is not active");
+                }
+            } else {
+                throw new Exception(
+                        "Cannot verify bearer token, please setup an introspection endpoint");
+            }
+        } else {
+            throw new Exception("Bearer token validation not supported for this configuration");
+        }
     }
 
     @Override
@@ -309,14 +337,18 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             LOGGER.warning("Token not found, cannot perform role extraction");
             return new ArrayList<>();
         }
-        Jwt decoded = JwtHelper.decode(token);
-        String claims = decoded.getClaims();
-        String rolesAttributePath =
-                ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
-        Object o = extractFromJSON(claims, rolesAttributePath);
-        List<GeoServerRole> result = getGeoServerRoles(rolesAttributePath, o);
+        try {
+            JOSEObject jo = JOSEObject.parse(token);
+            String claims = jo.getPayload().toString();
+            String rolesAttributePath =
+                    ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+            Object o = extractFromJSON(claims, rolesAttributePath);
+            List<GeoServerRole> result = getGeoServerRoles(rolesAttributePath, o);
 
-        return result;
+            return result;
+        } catch (ParseException e) {
+            throw new IOException("Error parsing token", e);
+        }
     }
 
     private void enrichWithRoleCalculator(List<GeoServerRole> roles) throws IOException {

@@ -9,7 +9,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL;
 import java.text.ParseException;
-import org.springframework.security.jwt.crypto.sign.InvalidSignatureException;
 
 public class TokenSignatureValidator {
 
@@ -32,10 +31,9 @@ public class TokenSignatureValidator {
                         "Could not verify signature of the JWT with the given RSA Public Key");
             }
         } catch (JOSEException unableToValidate) {
-            throw (InvalidSignatureException)
-                    new InvalidSignatureException(
-                                    "Could not verify signature of the JWT with the given RSA Public Key")
-                            .initCause(unableToValidate);
+            throw new InvalidSignatureException(
+                    "Could not verify signature of the JWT with the given RSA Public Key",
+                    unableToValidate);
         }
     }
 

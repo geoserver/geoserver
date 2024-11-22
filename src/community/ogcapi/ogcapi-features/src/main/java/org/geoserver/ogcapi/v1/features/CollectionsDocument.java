@@ -7,18 +7,23 @@ package org.geoserver.ogcapi.v1.features;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
+import org.geotools.util.logging.Logging;
 
 /**
  * A class representing the OGC API for Features server "collections" in a way that Jackson can
@@ -27,10 +32,11 @@ import org.geotools.api.filter.Filter;
 @JacksonXmlRootElement(localName = "Collections", namespace = "http://www.opengis.net/wfs/3.0")
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
-
+    static final Logger LOGGER = Logging.getLogger(CollectionsDocument.class);
     private final GeoServer geoServer;
     private final List<String> crs;
     private final List<Consumer<CollectionDocument>> collectionDecorators = new ArrayList<>();
+    private final boolean skipInvalid;
 
     public CollectionsDocument(GeoServer geoServer, List<String> crsList) {
         this.geoServer = geoServer;
@@ -40,6 +46,9 @@ public class CollectionsDocument extends AbstractDocument {
         // build the self links
         String path = "ogc/features/v1/collections/";
         addSelfLinks(path);
+        skipInvalid =
+                geoServer.getGlobal().getResourceErrorHandling()
+                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
     @Override
@@ -53,7 +62,7 @@ public class CollectionsDocument extends AbstractDocument {
     public Iterator<CollectionDocument> getCollections() {
         CloseableIterator<FeatureTypeInfo> featureTypes =
                 geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<CollectionDocument>() {
+        return new Iterator<>() {
 
             CollectionDocument next;
 
@@ -62,32 +71,22 @@ public class CollectionsDocument extends AbstractDocument {
                 if (next != null) {
                     return true;
                 }
-
-                boolean hasNext = featureTypes.hasNext();
-                if (!hasNext) {
-                    featureTypes.close();
-                    return false;
-                } else {
+                while (featureTypes.hasNext()) {
+                    FeatureTypeInfo featureType = featureTypes.next();
                     try {
-                        FeatureTypeInfo featureType = featureTypes.next();
-                        List<String> crs =
-                                FeatureService.getFeatureTypeCRS(
-                                        featureType, Collections.singletonList("#/crs"));
-                        CollectionDocument collection =
-                                new CollectionDocument(geoServer, featureType, crs);
-                        for (Consumer<CollectionDocument> collectionDecorator :
-                                collectionDecorators) {
-                            collectionDecorator.accept(collection);
-                        }
-
-                        next = collection;
+                        next = getCollectionDocument(featureType, featureTypes);
                         return true;
                     } catch (Exception e) {
-                        featureTypes.close();
-                        throw new ServiceException(
-                                "Failed to iterate over the feature types in the catalog", e);
+                        if (skipInvalid) {
+                            LOGGER.log(Level.WARNING, "Skipping feature type " + featureType);
+                        } else {
+                            featureTypes.close();
+                            throw new ServiceException(
+                                    "Failed to iterate over the feature types in the catalog", e);
+                        }
                     }
                 }
+                return next != null;
             }
 
             @Override
@@ -97,6 +96,19 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+    }
+
+    private CollectionDocument getCollectionDocument(
+            FeatureTypeInfo featureType, CloseableIterator<FeatureTypeInfo> featureTypes)
+            throws IOException {
+        List<String> crs =
+                FeatureService.getFeatureTypeCRS(featureType, Collections.singletonList("#/crs"));
+        CollectionDocument collection =
+                new CollectionDocument(geoServer, featureType, crs, CollectionsDocument.this.crs);
+        for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
+            collectionDecorator.accept(collection);
+        }
+        return collection;
     }
 
     public List<String> getCrs() {

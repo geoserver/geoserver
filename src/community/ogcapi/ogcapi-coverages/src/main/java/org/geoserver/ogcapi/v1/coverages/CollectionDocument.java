@@ -50,6 +50,9 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
         this.title = coverage.getTitle();
         this.description = coverage.getAbstract();
         ReferencedEnvelope bbox = coverage.getLatLonBoundingBox();
+        if (bbox == null) {
+            throw new RuntimeException("Coverage has no bounding box: " + coverage.getName());
+        }
         DateRange timeExtent = TimeExtentCalculator.getTimeExtent(coverage);
         setExtent(new CollectionExtents(bbox, timeExtent));
         this.coverage = coverage;

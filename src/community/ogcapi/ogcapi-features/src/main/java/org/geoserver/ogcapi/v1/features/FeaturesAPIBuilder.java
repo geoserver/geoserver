@@ -39,6 +39,9 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
     @SuppressWarnings("unchecked")
     public OpenAPI build(WFSInfo wfs) throws IOException {
         OpenAPI api = super.build(wfs);
+        FeatureConformance features = new FeatureConformance(wfs);
+        CQL2Conformance cql2 = new CQL2Conformance(wfs);
+        ECQLConformance ecql = new ECQLConformance(wfs);
 
         // the external documentation
         api.externalDocs(
@@ -68,7 +71,17 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
 
         // list of valid filter-lang values
         Parameter filterLang = parameters.get("filter-lang");
-        filterLang.getSchema().setEnum(new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS));
+        ArrayList<String> filterLangValues = new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS);
+        if (!cql2.isEnabled()) {
+            filterLangValues.remove(APIFilterParser.CQL2_TEXT);
+        }
+        if (!cql2.isJSON()) {
+            filterLangValues.remove(APIFilterParser.CQL2_JSON);
+        }
+        if (!ecql.isText() || !ecql.isEnabled()) {
+            filterLangValues.remove(APIFilterParser.ECQL_TEXT);
+        }
+        filterLang.getSchema().setEnum(filterLangValues);
 
         // provide actual values for limit
         Parameter limit = parameters.get("limit");

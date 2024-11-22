@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import static org.geoserver.ogcapi.APIConformance.Level.DRAFT_STANDARD;
+import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 
 /**
  * FeatureService configuration.
  */
 public class FeatureConformance extends ConformanceInfo<WFSInfo> {
 
-    public static final APIConformance CORE = new APIConformance("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core");
+    public static final APIConformance CORE = new APIConformance("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",STANDARD);
 
     // required resource formats
     public static final APIConformance HTML = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html");
@@ -27,7 +28,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
 
     // optional resource formats
     public static final APIConformance GMLSF0 = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0");
-    public static final APIConformance GMLSF2 = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2)");
+    public static final APIConformance GMLSF2 = CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2");
 
     // optional
     public static final APIConformance CRS_BY_REFERENCE = CORE.extend("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs");
@@ -46,7 +47,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
      * @param serviceInfo
      */
     public FeatureConformance(WFSInfo serviceInfo) {
-        super(CORE, serviceInfo);
+        super("ogcapi-features",CORE, serviceInfo);
     }
 
     List<APIConformance> getConformances() {
@@ -91,61 +92,74 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
         return conformances;
     }
 
+    public boolean isCore() {
+        return isEnabled(CORE);
+    }
+    public void setCore(boolean enabled) {
+        setEnabled(CORE, enabled);
+    }
+
     public boolean isGMLSFO() {
-        return isEnabled("gml_sf0", GMLSF0);
+        return isEnabled(GMLSF0);
     }
     public void setGMLSF0(boolean enabled) {
-        setEnabled("gml_sf0", enabled);
+        setEnabled(GMLSF0, enabled);
     }
 
     public boolean isGMLSF2() {
-        return isEnabled("gml_sf2", GMLSF2);
+        return isEnabled(GMLSF2);
     }
     public void setGMLSF2(boolean enabled) {
-        setEnabled("gml_sf2", enabled);
+        setEnabled(GMLSF2, enabled);
     }
 
     public boolean isCRSByReference() {
-        return isEnabled("crs_by_reference", CRS_BY_REFERENCE);
+        return isEnabled(CRS_BY_REFERENCE);
     }
     public void setCRSByReference(boolean enabled) {
-        setEnabled("crs_by_reference", enabled);
+        setEnabled(CRS_BY_REFERENCE, enabled);
     }
 
     public boolean isFeaturesFilter() {
-        return isEnabled("features_filter", FEATURES_FILTER);
+        return isEnabled(FEATURES_FILTER);
     }
     public void setFeaturesFilter(boolean enabled) {
-        setEnabled("features_filter", enabled);
+        setEnabled(FEATURES_FILTER, enabled);
     }
 
     public boolean isFilter() {
-        return isEnabled("filter", FILTER);
+        return isEnabled(FILTER);
     }
 
     public void setFilter(boolean enabled) {
-        setEnabled("filter", enabled);
+        setEnabled(FILTER, enabled);
     }
 
     public boolean isSearch() {
-        return isEnabled("search", SEARCH);
+        return isEnabled(SEARCH);
     }
     public void setSearch(boolean enabled) {
         setEnabled("search", enabled);
     }
 
+    public boolean isQueryables() {
+        return isEnabled(QUERYABLES);
+    }
+    public void setQueryables(boolean enabled) {
+        setEnabled(QUERYABLES, enabled);
+    }
     public boolean isIDs() {
-        return isEnabled("ids", IDS);
+        return isEnabled(IDS);
     }
     public void setIDs(boolean enabled) {
         setEnabled("ids", enabled);
     }
 
     public boolean isSortBy() {
-        return isEnabled("sortby", SORTBY);
+        return isEnabled(SORTBY);
     }
     public void setSortBy(boolean enabled) {
-        setEnabled("sortby", enabled);
+        setEnabled(SORTBY, enabled);
     }
 }
 

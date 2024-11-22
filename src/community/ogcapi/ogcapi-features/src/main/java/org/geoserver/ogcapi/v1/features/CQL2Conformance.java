@@ -47,12 +47,37 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance CQL2_SPATIAL = new APIConformance(ConformanceClass.CQL2_SPATIAL);
 
     public CQL2Conformance(WFSInfo service) {
-        super(CQL2_TEXT,service);
+        super("cql2",CQL2_TEXT,service);
+    }
+
+    /**
+     * Enable for either CQL2_TEXT or CQL2_JSON enabled.
+     *
+     * @return Enable for either CQL2_TEXT or CQL2_JSON
+     */
+    @Override
+    public boolean isEnabled() {
+        if (getServiceInfo().getMetadata().containsKey(getMetadataKey())) {
+            Boolean isText = get(CQL2_TEXT.getKey(), Boolean.class);
+            Boolean isJSON = get(CQL2_JSON.getKey(), Boolean.class);
+            if (Boolean.TRUE.equals(isText) || Boolean.TRUE.equals(isJSON)) {
+                return true;
+            }
+        }
+        return super.isEnabled();
     }
 
     List<APIConformance> getConformances() {
         List<APIConformance> conformances = new ArrayList<>();
         if (isEnabled()) {
+
+            if (isText()){
+                conformances.add(CQL2_TEXT);
+            }
+            if (isJSON()) {
+                conformances.add(CQL2_JSON);
+            }
+
             if (isBasic()) {
                 conformances.add(CQL2_BASIC);
             }
@@ -74,12 +99,15 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
             if (isFunctions()) {
                 conformances.add(CQL2_FUNCTIONS);
             }
-            conformances.add(CQL2_TEXT);
-            if (isJSON()) {
-                conformances.add(CQL2_JSON);
-            }
         }
         return conformances;
+    }
+
+    public boolean isText() {
+        return isEnabled("text", CQL2_TEXT);
+    }
+    public void setText(boolean enabled) {
+        setEnabled("text", enabled);
     }
 
     public boolean isJSON() {

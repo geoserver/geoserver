@@ -17,7 +17,14 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance ECQL_TEXT = new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
 
     public ECQLConformance(WFSInfo service) {
-        super(ECQL,service);
+        super("ecql",ECQL,service);
+    }
+
+    public boolean isECQL() {
+        return isEnabled(ECQL);
+    }
+    public void setECQL(boolean enabled) {
+        setEnabled(ECQL, enabled);
     }
 
     public boolean isText() {

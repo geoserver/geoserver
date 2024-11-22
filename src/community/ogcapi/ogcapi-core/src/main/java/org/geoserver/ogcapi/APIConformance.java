@@ -109,6 +109,11 @@ public class APIConformance {
     private final Type type;
 
     /**
+     * Storage key.
+     */
+    private final String key;
+
+    /**
      * Conformance class declaration, defaulting to APPROVED.
      *
      * @param id conformance class
@@ -126,19 +131,45 @@ public class APIConformance {
     public APIConformance(String id, Level level) {
         this( id, level, Type.EXTENSION, null );
     }
+    /**
+     * Conformance class declaration.
+     *
+     * @param id conformance class
+     * @param level standard approval status
+     * @param key storage key
+     */
+    public APIConformance(String id, Level level,String key) {
+        this( id, level, Type.EXTENSION, null, key );
+    }
 
     /**
      * Conformance class declaration.
      *
      * @param id conformance class
-     * @param status standard approval status
+     * @param level standard approval status
+     * @param type conformance class type
+     * @param parent parent conformance class (if this is an extension)
      */
     public APIConformance(String id, Level level, Type type, APIConformance parent) {
+        this(id, level, type, parent, id.substring(id.lastIndexOf('/') + 1));
+    }
+    /**
+     * Conformance class declaration.
+     *
+     * @param id conformance class
+     * @param level standard approval status
+     * @param type conformance class type
+     * @param parent parent conformance class (if this is an extension)
+     * @param key storage key
+     */
+    public APIConformance(String id, Level level, Type type, APIConformance parent, String key) {
         this.id = id;
         this.level = level;
         this.type = type;
         this.parent = parent;
+        this.key = key;
     }
+
 
     public APIConformance extend(String id) {
         return new APIConformance(id, Level.STANDARD, Type.EXTENSION, this);
@@ -155,6 +186,18 @@ public class APIConformance {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * Recommended storage key.
+     *
+     * To avoid confusion the recommended storage key is derived from the conformance class identifier.
+     * This may be overriden by the constructor.
+     *
+     * @return recommended storage key.
+     */
+    public String getKey() {
+        return key;
     }
 
     /**
@@ -181,6 +224,6 @@ public class APIConformance {
 
     @Override
     public String toString() {
-        return "APIConformance ( " + id + " " + level + " )";
+        return "APIConformance " + key + " ( " + id + " " + level + " )";
     }
 }

@@ -23,20 +23,26 @@ import java.util.Map;
 public class ConformanceInfo<S extends ServiceInfo> {
     private static String ENABLED = "enabled";
 
-    final APIConformance conformance;
     final S serviceInfo;
+    final String metadataKey;
+    final APIConformance defaultConformance;
 
     /**
      * Enable and configure service functionality by conformance class.
      *
-     * @param serviceInfo
-     * @param conformance
+     * The default configuration is used to determine if this conformance should
+     * enable automaticly (if no configuration has been provided by the user).
+     *
+     * @param metadataKey Storage key for metadata map
+     * @param defaultConformance Conformance class used to determine default enabled status
+     * @param serviceInfo Service being configured
      */
-    public ConformanceInfo(APIConformance conformance, S serviceInfo){
-        if (conformance == null){
-            throw new NullPointerException("conformance is null");
+    public ConformanceInfo(String metadataKey, APIConformance defaultConformance, S serviceInfo){
+        if (metadataKey == null){
+            throw new NullPointerException("metadata key is null");
         }
-        this.conformance = conformance;
+        this.metadataKey = metadataKey;
+        this.defaultConformance = defaultConformance;
         if (serviceInfo == null){
             throw new NullPointerException("serviceInfo is null");
         }
@@ -44,21 +50,12 @@ public class ConformanceInfo<S extends ServiceInfo> {
     }
 
     /**
-     * Conformance class identifier.
+     * Storage key.
      *
      * @return conformance class identifier.
      */
-    public String getId() {
-        return conformance.getId();
-    }
-
-    /**
-     * Conformance class declaration.
-     *
-     * @return conformance class declaration.
-     */
-    public APIConformance getConformance() {
-        return conformance;
+    public String getMetadataKey() {
+        return metadataKey;
     }
 
     /**
@@ -81,10 +78,10 @@ public class ConformanceInfo<S extends ServiceInfo> {
     protected Map<String,Object> configuration() {
         MetadataMap metadata = serviceInfo.getMetadata();
         synchronized ( metadata ) {
-            HashMap<String, Object> configuration = serviceInfo.getMetadata().get(conformance.getId(),HashMap.class);
+            HashMap<String, Object> configuration = serviceInfo.getMetadata().get(metadataKey,HashMap.class);
             if (configuration == null) {
                 configuration = new HashMap<>();
-                serviceInfo.getMetadata().put(conformance.getId(), configuration);
+                serviceInfo.getMetadata().put(metadataKey, configuration);
             }
             return configuration;
         }
@@ -113,6 +110,20 @@ public class ConformanceInfo<S extends ServiceInfo> {
     /**
      * Checks conformance configuration, to see if key is enabled.
      *
+     * If they key is not set, the default value is based on the conformance level information.
+     *
+     * @param conformance APIConformance to check
+     * @return {@code true} if conformance is enabled
+     */
+    protected boolean isEnabled(APIConformance conformance) {
+        return isEnabled(conformance.getKey(),conformance);
+    }
+
+    /**
+     * Checks conformance configuration, to see if key is enabled.
+     *
+     * @param key configuration key
+     * @param conformance APIConformance used to determine default value
      * @return if conformance
      */
     protected boolean isEnabled(String key, APIConformance conformance) {
@@ -131,7 +142,19 @@ public class ConformanceInfo<S extends ServiceInfo> {
     }
 
     /**
+     * Set conformance enabled, using the conformance key.
+     *
+     * @param conformance APIConformance
+     * @param enabled Enable status
+     */
+    protected void setEnabled(APIConformance conformance, boolean enabled) {
+        put(conformance.getKey(),enabled);
+    }
+    /**
      * Set conformance metadata configuration.
+     *
+     * @param key Configuration key
+     * @param enabled Enable status
      */
     protected void setEnabled(String key, boolean enabled) {
         put(key,enabled);
@@ -147,6 +170,9 @@ public class ConformanceInfo<S extends ServiceInfo> {
      * @return {@code true} if conformance is enabled based on service info settings.
      */
     protected boolean enabledDefault(APIConformance conformance) {
+        if (conformance == null) {
+            return false;
+        }
         // default enabled based on conformance level
         if (serviceInfo.isCiteCompliant()) {
             return conformance.getLevel().isEndorsed() && conformance.getLevel().isStable();
@@ -156,37 +182,28 @@ public class ConformanceInfo<S extends ServiceInfo> {
         }
     }
     /**
-     * Checks {@code enabled} value to determine if conformance has been enabled by user or by default.
-     * <p>
-     * If not set, value will be based on {@link #getId()} level information, and serviceInfo settings.
+     * Checks {@link #defaultConformance} to determine if configuration is enabled.
      *
-     * @return {@code true} if conformance is enabled by user, or by default.
+     * If no configuration is set, the default value is based on the conformance level information.
+     *
+     * @return {@code true} if conformance is enabled.
      */
     public boolean isEnabled() {
-        if (serviceInfo.getMetadata().containsKey(getConformance().getId())) {
-            Boolean enabled = get(ENABLED, Boolean.class);
+        if (serviceInfo.getMetadata().containsKey(metadataKey)) {
+            Boolean enabled = get(defaultConformance.getKey(), Boolean.class);
             if (enabled != null) {
                 return enabled;
             }
         }
-        return enabledDefault(getConformance());
-    }
-
-    /**
-     * Enable or disable conformance for {@link #getId()}.
-     *
-     * @param enabled Enable conformance
-     */
-    public void setEnabled(boolean enabled) {
-        setEnabled(ENABLED, enabled);
+        return enabledDefault(this.defaultConformance);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName());
         sb.append(" ");
-        sb.append(conformance.getId());
-        Object config = serviceInfo.getMetadata().get(conformance.getId());
+        sb.append(this.metadataKey);
+        Object config = serviceInfo.getMetadata().get(metadataKey);
         if (config != null && config instanceof Map) {
             Map<String,Object> storage = (Map<String,Object>) config;
             sb.append("= [ ");

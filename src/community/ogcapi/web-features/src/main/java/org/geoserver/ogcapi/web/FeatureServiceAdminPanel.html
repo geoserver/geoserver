@@ -45,6 +45,24 @@
 
                     <li class="conformanceItem">
                         <div>
+                            <label><wicket:message key="gmlsf0">GML Simple Features Level 0</wicket:message></label>
+                        </div>
+                        <label wicket:id="gmlsf0Level" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="gmlsf0" type="checkbox"></input>
+                        <label wicket:id="gmlsf0Label" for="gmlsf0" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="gmlsf2">GML Simple Features Level 2</wicket:message></label>
+                        </div>
+                        <label wicket:id="gmlsf2Level" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="gmlsf2" type="checkbox"></input>
+                        <label wicket:id="gmlsf2Label" for="gmlsf2" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
                             <label><wicket:message key="crsByReference">CRS by Reference</wicket:message></label>
                         </div>
                         <label wicket:id="crsByReferenceLevel" class="level">IMPLEMENTED</label>
@@ -54,11 +72,56 @@
 
                     <li class="conformanceItem">
                         <div>
+                            <label><wicket:message key="filter">Filter</wicket:message></label>
+                        </div>
+                        <label wicket:id="filterLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="filter" type="checkbox"></input>
+                        <label wicket:id="filterLabel" for="filter" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
                             <label><wicket:message key="featuresFilter">Feature Filter</wicket:message></label>
                         </div>
                         <label wicket:id="featuresFilterLevel" class="level">IMPLEMENTED</label>
                         <input wicket:id="featuresFilter" type="checkbox"></input>
                         <label wicket:id="featuresFilterLabel" for="featureFilter" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="queryables">Queyables</wicket:message></label>
+                        </div>
+                        <label wicket:id="queryablesLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="queryables" type="checkbox"></input>
+                        <label wicket:id="queryablesLabel" for="queryables" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="ids">Identifiers</wicket:message></label>
+                        </div>
+                        <label wicket:id="idsLevel" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="ids" type="checkbox"></input>
+                        <label wicket:id="idsLabel" for="ids" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="search">Search</wicket:message></label>
+                        </div>
+                        <label wicket:id="searchLevel" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="search" type="checkbox"></input>
+                        <label wicket:id="searchLabel" for="search" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="sortBy">Sort By</wicket:message></label>
+                        </div>
+                        <label wicket:id="sortByLevel" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="sortBy" type="checkbox"></input>
+                        <label wicket:id="sortByLabel" for="sortBy" class="conformance"></label>
                     </li>
                 </ul>
             </fieldset>

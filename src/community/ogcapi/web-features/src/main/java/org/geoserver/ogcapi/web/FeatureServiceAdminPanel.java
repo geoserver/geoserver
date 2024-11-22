@@ -14,8 +14,6 @@ import org.geoserver.wfs.WFSInfo;
 
 public class FeatureServiceAdminPanel extends AdminPagePanel {
 
-
-
     public FeatureServiceAdminPanel(String id, final IModel<?> info) {
         super(id, info);
 
@@ -26,6 +24,22 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         ecqlSettings(info);
     }
 
+    public void onMainFormSubmit() {
+        WFSInfo wfsInfo = (WFSInfo) getDefaultModel().getObject();
+        FeatureConformance features = new FeatureConformance(wfsInfo);
+        CQL2Conformance cql2 = new CQL2Conformance(wfsInfo);
+        ECQLConformance ecql = new ECQLConformance(wfsInfo);
+
+        if (!features.isEnabled()) {
+            wfsInfo.getMetadata().remove(features.getMetadataKey());
+        }
+        if (!cql2.isEnabled()) {
+            wfsInfo.getMetadata().remove(cql2.getMetadataKey());
+        }
+        if (!ecql.isEnabled()) {
+            wfsInfo.getMetadata().remove(ecql.getMetadataKey());
+        }
+    }
     /**
      * Insert a disabled conformance checkbox indicating of functionality is built-in, or simply not implemented.
      * @param key
@@ -95,28 +109,58 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
     }
 
     private void featureServiceSettings(IModel<?> info) {
+        FeatureConformance conformance = new FeatureConformance((WFSInfo) info.getObject());
+
+
         // Enable/Disable service
-        IModel<Boolean> serviceModel = new IModel<>() {
+        addConformance("core", FeatureConformance.CORE, new IModel<>() {
             @Override
             public Boolean getObject() {
                 FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
-                return features.isEnabled();
+                return features.isCore();
             }
 
             @Override
             public void setObject(Boolean object) {
                 FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
-                features.setEnabled(object);
+                features.setCore(object);
             }
-        };
-        addConformance("core", FeatureConformance.CORE, serviceModel );
+        });
 
         IModel<Boolean> builtInModel = () -> true;
 
         // Required built-in conformance
         addConformance("oas30", FeatureConformance.OAS30, true);
         addConformance("html", FeatureConformance.HTML,true);
-        CheckBox geojson = addConformance("geojson", FeatureConformance.GEOJSON,true);
+        addConformance("geojson", FeatureConformance.GEOJSON,true);
+
+        // optional formats
+        addConformance("gmlsf0", FeatureConformance.GMLSF0, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isGMLSFO();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                features.setGMLSF0(object);
+            }
+        });
+        addConformance("gmlsf2", FeatureConformance.GMLSF2, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isGMLSF2();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                IModel.super.setObject(object);features.setGMLSF2(object);
+            }
+        });
 
         // Optional Functionality
         addConformance("crsByReference", FeatureConformance.CRS_BY_REFERENCE,  new IModel<Boolean>() {
@@ -132,6 +176,19 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
                 features.setCRSByReference(object);
             }
         });
+        addConformance("filter", FeatureConformance.FILTER, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isFilter();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                features.setFilter(object);
+            }
+        });
         addConformance("featuresFilter", FeatureConformance.FEATURES_FILTER, new IModel<Boolean>() {
             @Override
             public Boolean getObject() {
@@ -145,6 +202,59 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
                 features.setFeaturesFilter(object);
             }
         });
+
+        addConformance("queryables",FeatureConformance.QUERYABLES, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isQueryables();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                features.setQueryables(object);
+            }
+        });
+        addConformance("ids", FeatureConformance.IDS, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isIDs();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                features.setIDs(object);
+            }
+        });
+        addConformance("search", FeatureConformance.SEARCH, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isSearch();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                features.setSearch(object);
+            }
+        });
+        addConformance("sortBy", FeatureConformance.SORTBY, new IModel<Boolean>() {
+            @Override
+            public Boolean getObject() {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                return features.isSortBy();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                FeatureConformance features = new FeatureConformance((WFSInfo) info.getObject());
+                features.setSortBy(object);
+            }
+        });
     }
 
     private void ecqlSettings(IModel<?> info) {
@@ -153,13 +263,13 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
             @Override
             public Boolean getObject() {
                 ECQLConformance ecql = new ECQLConformance((WFSInfo) info.getObject());
-                return ecql.isEnabled();
+                return ecql.isECQL();
             }
 
             @Override
             public void setObject(Boolean object) {
                 ECQLConformance ecql = new ECQLConformance((WFSInfo) info.getObject());
-                ecql.setEnabled(object);
+                ecql.setECQL(object);
             }
         });
         addConformance("ecqlText", ECQLConformance.ECQL_TEXT, new IModel<Boolean>() {
@@ -183,13 +293,13 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
             @Override
             public Boolean getObject() {
                 CQL2Conformance cql2 = new CQL2Conformance((WFSInfo) info.getObject());
-                return cql2.isEnabled();
+                return cql2.isText();
             }
 
             @Override
             public void setObject(Boolean object) {
                 CQL2Conformance cql2 = new CQL2Conformance((WFSInfo) info.getObject());
-                cql2.setEnabled(object);
+                cql2.setText(object);
             }
         });
         addConformance("cql2JSON", CQL2Conformance.CQL2_JSON, new IModel<Boolean>() {

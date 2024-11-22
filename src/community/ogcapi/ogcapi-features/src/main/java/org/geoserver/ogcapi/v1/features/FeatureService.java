@@ -185,9 +185,9 @@ public class FeatureService {
     }
 
     /**
-     * List conformance implementations available for this service.
+     * List conformance implementations implemented for FeatureService.
      *
-     * @return List of available conformance for use.
+     * @return List of implemented conformance available for use
      */
     public List<APIConformance> getConformances() {
         List<APIConformance> conformances =
@@ -196,27 +196,29 @@ public class FeatureService {
                         FeatureConformance.OAS30,
                         FeatureConformance.HTML,
                         FeatureConformance.GEOJSON,
-                        /* GMLSF0, GS does not use the gmlsf namespace */
+                        FeatureConformance.GMLSF2,
                         FeatureConformance.CRS_BY_REFERENCE,
                         FeatureConformance.FEATURES_FILTER,
                         FeatureConformance.FILTER,
                         FeatureConformance.QUERYABLES,
+                        FeatureConformance.IDS,
                         FeatureConformance.SEARCH,
+                        FeatureConformance.SORTBY,
                         ECQLConformance.ECQL,
                         ECQLConformance.ECQL_TEXT,
-                        CQL2Conformance.CQL2_BASIC,
+                        CQL2Conformance.CQL2_TEXT,
                         CQL2Conformance.CQL2_ADVANCED,
                         CQL2Conformance.CQL2_ARITHMETIC,
-                        CQL2Conformance.CQL2_PROPERTY_PROPERTY,
+                        CQL2Conformance.CQL2_BASIC,
                         CQL2Conformance.CQL2_BASIC_SPATIAL,
-                        CQL2Conformance.CQL2_SPATIAL,
                         CQL2Conformance.CQL2_FUNCTIONS,
-                        /* CQL2Conformance.CQL2_TEMPORAL excluded for now, no support for all operators */
-                        /* CQL2Conformance.CQL2_ARRAY excluded, no support for array operations now */
-                        CQL2Conformance.CQL2_TEXT,
-                        /* CQL2Conformance.CQL2_JSON very different from the binding we have */
-                        FeatureConformance.SORTBY,
-                        FeatureConformance.IDS);
+                        CQL2Conformance.CQL2_PROPERTY_PROPERTY,
+                        CQL2Conformance.CQL2_SPATIAL
+                );
+        // FeatureConformance.GMLSF0, // does not use the gmlsf namespace
+        // CQL2Conformance.CQL2_JSON, // Very different from the binding we have
+        // CQL2Conformance.CQL2_ARRAY, // excluded, no support for array operations now
+        // CQL2Conformance.CQL2_TEMPORAL, // excluded for now, no support for all operators
         return conformances;
     }
 
@@ -343,6 +345,10 @@ public class FeatureService {
             CQL2Conformance cql2Conformance = new CQL2Conformance(wfsInfo);
             conformances.addAll(cql2Conformance.getConformances());
         }
+
+        // only advertise what is actually implemented
+        conformances.retainAll(getConformances());
+
         List<String> classes = conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
 
         return new ConformanceDocument(DISPLAY_NAME, classes);

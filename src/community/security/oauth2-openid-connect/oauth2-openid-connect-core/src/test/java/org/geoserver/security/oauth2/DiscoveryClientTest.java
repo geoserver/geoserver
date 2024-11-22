@@ -58,5 +58,8 @@ public class DiscoveryClientTest {
                 "https://server.example.com/connect/authorize", config.getUserAuthorizationUri());
         assertEquals("https://server.example.com/connect/token", config.getAccessTokenUri());
         assertEquals("openid profile email address phone offline_access", config.getScopes());
+        assertEquals(
+                "https://server.example.com/connect/introspect",
+                config.getIntrospectionEndpointUrl());
     }
 }

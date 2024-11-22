@@ -181,6 +181,21 @@ To make the OpenIdConnect filter to work properly with an Azure AD or ADFS serve
       :align: center
 
 
+Opaque tokens supports
+^^^^^^^^^^^^^^^^^^^^^^
+
+The OpenID Connect plugin allows the use of opaque tokens. These tokens have a payload that cannot be read
+by the client, and are validated by the authorization server.
+
+When the UI login path is used, the token is provided by the authorisation server and it's not subject to
+extra validation.
+Roles cannot be read from it, due to its opaque nature the payload cannot be decrypted, but
+roles can be read using the userinfo endpoint instead (if the authorization server supports it, and it's configured).
+
+When the Bearer Token path is used, the opaque token is provided by the client gets validated against
+the authorization server on the `introspection endpoint <https://datatracker.ietf.org/doc/html/rfc7662#page-4>`_,
+which must be configured. The roles are again read from the userinfo endpoint.
+
 SSL Trusted Certificates
 ------------------------
 

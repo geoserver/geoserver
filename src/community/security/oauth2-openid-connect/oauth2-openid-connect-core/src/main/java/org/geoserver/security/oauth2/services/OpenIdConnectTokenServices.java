@@ -18,11 +18,11 @@ import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.geoserver.security.oauth2.GeoServerUserAuthenticationConverter;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
+import org.geotools.util.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.jwt.crypto.sign.InvalidSignatureException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -72,6 +72,32 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
                 .exchange(
                         checkTokenEndpoint,
                         HttpMethod.GET,
+                        new HttpEntity<>(formData, headers),
+                        Map.class)
+                .getBody();
+    }
+
+    /**
+     * Runs the introspection endpoint against an opaque token for validation and check. See
+     * https://datatracker.ietf.org/doc/html/rfc7662
+     */
+    public Map<String, Object> introspectToken(String accessToken) {
+        if (introspectionEndpointUrl == null)
+            throw new RuntimeException(
+                    "Cannot introspect JWE token, the introspection endpoint URL is not set");
+
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("token", accessToken);
+        formData.add("token_type_hint", "access_token");
+        HttpHeaders headers = new HttpHeaders();
+        // set client id and secret, url encoded, as the Authorization header
+        headers.set(
+                "Authorization",
+                "Basic " + Base64.encodeBytes((clientId + ":" + clientSecret).getBytes()));
+        return restTemplate
+                .exchange(
+                        introspectionEndpointUrl,
+                        HttpMethod.POST,
                         new HttpEntity<>(formData, headers),
                         Map.class)
                 .getBody();
@@ -153,5 +179,10 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
         setAccessTokenConverter(
                 new GeoServerAccessTokenConverter(
                         new GeoServerUserAuthenticationConverter(config.getPrincipalKey())));
+    }
+
+    @Override
+    public OAuth2AccessToken readAccessToken(String accessToken) {
+        return store.readAccessToken(accessToken);
     }
 }

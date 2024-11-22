@@ -113,6 +113,16 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
             throw createFilterException(
                     OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
         }
+
+        // introspection endpoint is optional, used only to validate opaque tokens
+        if (filterConfig.getIntrospectionEndpointUrl() != null) {
+            try {
+                new URL(filterConfig.getIntrospectionEndpointUrl());
+            } catch (MalformedURLException ex) {
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED);
+            }
+        }
     }
 
     /**

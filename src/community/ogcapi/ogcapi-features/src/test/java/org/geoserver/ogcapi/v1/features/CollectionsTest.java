@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -37,6 +39,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -63,10 +66,36 @@ public class CollectionsTest extends FeaturesTestSupport {
         getCatalog().save(basicPolygons);
     }
 
+    @Before
+    public void revertChanges() throws IOException {
+        revertLayer(MockData.BUILDINGS);
+    }
+
     @Test
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/v1/collections", 200);
         testCollectionsJson(json);
+    }
+
+    @Test
+    public void testSkipMisconfigured() throws Exception {
+        // enable skipping of misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+        // not misconfigured yet
+        FeatureTypeInfo misconfigured =
+                getCatalog().getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
+
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections", 200);
+        int expected = getCatalog().getFeatureTypes().size();
+        assertEquals(expected, (int) json.read("collections.length()", Integer.class));
+        // now misconfigure
+        misconfigured.setLatLonBoundingBox(null);
+        getCatalog().save(misconfigured);
+        DocumentContext json2 = getAsJSONPath("ogc/features/v1/collections", 200);
+        // expect one fewer layers due to skipping
+        assertEquals(expected - 1, (int) json2.read("collections.length()", Integer.class));
     }
 
     @SuppressWarnings("unchecked") // generic varargs in matcher

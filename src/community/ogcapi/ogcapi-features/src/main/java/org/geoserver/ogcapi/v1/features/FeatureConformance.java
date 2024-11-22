@@ -33,6 +33,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance CRS_BY_REFERENCE = CORE.extend("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs");
     public static final APIConformance FEATURES_FILTER = CORE.extend(ConformanceClass.FEATURES_FILTER);
     public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER);
+    public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES);
 
     // draft
     public static final APIConformance IDS = new APIConformance(ConformanceClass.IDS, DRAFT_STANDARD);

@@ -62,6 +62,12 @@ public interface OAuth2FilterConfig {
     /** @param checkTokenEndpointUrl the checkTokenEndpointUrl to set */
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl);
 
+    /** @return the introspectionEndpointUrl */
+    String getIntrospectionEndpointUrl();
+
+    /** @param introspectionEndpointUrl the introspectionEndpointUrl to set */
+    void setIntrospectionEndpointUrl(String introspectionEndpointUrl);
+
     /** @return the logoutUri */
     public String getLogoutUri();
 

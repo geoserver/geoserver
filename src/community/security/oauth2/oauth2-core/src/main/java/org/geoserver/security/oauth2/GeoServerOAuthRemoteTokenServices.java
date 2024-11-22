@@ -41,6 +41,8 @@ public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServi
 
     protected String checkTokenEndpointUrl;
 
+    protected String introspectionEndpointUrl;
+
     protected String clientId;
 
     protected String clientSecret;
@@ -76,6 +78,11 @@ public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServi
     @Override
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
         this.checkTokenEndpointUrl = checkTokenEndpointUrl;
+    }
+
+    /** Sets the introspection endpoint used to validate opaque access tokens */
+    public void setIntrospectionEndpointUrl(String introspectionEndpointUrl) {
+        this.introspectionEndpointUrl = introspectionEndpointUrl;
     }
 
     @Override

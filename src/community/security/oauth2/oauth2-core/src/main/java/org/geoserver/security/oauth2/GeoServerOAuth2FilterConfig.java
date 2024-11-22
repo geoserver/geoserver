@@ -31,6 +31,8 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
 
     protected String checkTokenEndpointUrl;
 
+    protected String introspectionEndpointUrl;
+
     protected String logoutUri;
 
     protected String scopes;
@@ -136,6 +138,18 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
     @Override
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
         this.checkTokenEndpointUrl = checkTokenEndpointUrl;
+    }
+
+    /** @return the introspectionEndpointUrl */
+    @Override
+    public String getIntrospectionEndpointUrl() {
+        return introspectionEndpointUrl;
+    }
+
+    /** @param introspectionEndpointUrl the introspectionEndpointUrl to set */
+    @Override
+    public void setIntrospectionEndpointUrl(String introspectionEndpointUrl) {
+        this.introspectionEndpointUrl = introspectionEndpointUrl;
     }
 
     /** @return the logoutUri */

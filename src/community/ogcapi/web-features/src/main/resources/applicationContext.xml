@@ -18,8 +18,8 @@
 	     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 >
 
-   <bean id="wfsConformance" class="org.geoserver.web.services.AdminPagePanelInfo">
-      <property name="id" value="wfsConformanceAdminPanel"/>
+   <bean id="featuresConformanceAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <property name="id" value="featuresConformanceAdminPanel"/>
       <property name="titleKey" value="features"/>
       <property name="componentClass" value="org.geoserver.ogcapi.web.ConformanceAdminPanel"/>
       <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>

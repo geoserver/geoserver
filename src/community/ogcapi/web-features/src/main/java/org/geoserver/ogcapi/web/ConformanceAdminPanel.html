@@ -5,8 +5,44 @@
     <ul>
         <li>
             <fieldset>
-                <legend><span><wicket:message key="conformance">conformance</wicket:message></span></legend>
+                <legend><span><wicket:message key="ConformanceAdminPanel.ogcapi">OGCAPI</wicket:message></span></legend>
             </fieldset>
+            <ul>
+                <li class="choiceItem">
+                    <input wicket:id="core" type="checkbox"></input>
+                    <label for="core"><wicket:message key="ConformanceAdminPanel.core">CORE</wicket:message></label>
+                </li>
+            </ul>
+            <ul>
+                <li class="choiceItem">
+                    <input wicket:id="oas30" type="checkbox"></input>
+                    <label for="oas30"><wicket:message key="ConformanceAdminPanel.oas30">OpenAPI</wicket:message></label>
+                </li>
+            </ul>
+            <ul>
+                <li class="choiceItem">
+                    <input wicket:id="html" type="checkbox"></input>
+                    <label for="html"><wicket:message key="ConformanceAdminPanel.html">HTML</wicket:message></label>
+                </li>
+            </ul>
+            <ul>
+                <li class="choiceItem">
+                    <input wicket:id="geojson" type="checkbox"></input>
+                    <label for="geojson"><wicket:message key="ConformanceAdminPanel.geojson">GeoJSON</wicket:message></label>
+                </li>
+            </ul>
+            <ul>
+                <li class="choiceItem">
+                    <input wicket:id="crsByReference" type="checkbox"></input>
+                    <label for="crsByReference"><wicket:message key="ConformanceAdminPanel.crsByReference">CRS by Reference</wicket:message></label>
+                </li>
+            </ul>
+            <ul>
+                <li class="choiceItem">
+                    <input wicket:id="featuresFilter" type="checkbox"></input>
+                    <label for="featuresFilter"><wicket:message key="ConformanceAdminPanel.featuresFilter">Features Filter</wicket:message></label>
+                </li>
+            </ul>
         </li>
     </ul>
 </wicket:panel>

@@ -8,7 +8,7 @@ import java.util.Objects;
  * OGCAPI Web Services are defined with core functionality, strictly extended with additional, optional, functionality
  * identified by "conformance class".
  *
- * By comparision OGC Open Web Services can be extended using application profiles with additional, optional, functionality.
+ * By comparison OGC Open Web Services can be extended using application profiles with additional, optional, functionality.
  */
 public class APIConformance {
 
@@ -16,6 +16,12 @@ public class APIConformance {
      * There are three levels of standard.
      */
     public enum Level {
+        /**
+         * Draft developed by communities external to the OGC or other official organization.
+         *
+         * GeoServer community modules are community draft standards under development.
+         */
+        COMMUNITY_DRAFT(false,false),
         /**
          * Developed by communities external to the OGC or other official organization.
          *
@@ -88,17 +94,17 @@ public class APIConformance {
 
     public enum Type { CORE, EXTENSION }
 
-    final APIConformance parent;
+    final private APIConformance parent;
 
     /**
      * Conformance class identifier.
      */
-    final String id;
+    final private String id;
 
     /**
      * Indicates standard approval level.
      */
-    final Level level;
+    final private Level level;
 
     private final Type type;
 

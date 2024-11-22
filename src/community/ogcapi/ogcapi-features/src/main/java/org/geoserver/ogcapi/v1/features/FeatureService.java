@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -228,31 +230,31 @@ public class FeatureService {
     public List<APIConformance> getConformances() {
         List<APIConformance> conformances =
                 Arrays.asList(
-                        CORE,
-                        OAS30,
-                        HTML,
-                        GEOJSON,
+                        FeatureConformance.CORE,
+                        FeatureConformance.OAS30,
+                        FeatureConformance.HTML,
+                        FeatureConformance.GEOJSON,
                         /* GMLSF0, GS does not use the gmlsf namespace */
-                        CRS_BY_REFERENCE,
-                        FEATURES_FILTER,
-                        FILTER,
-                        QUERYABLES,
-                        SEARCH,
-                        ECQL,
-                        ECQL_TEXT,
-                        CQL2_BASIC,
-                        CQL2_ADVANCED,
-                        CQL2_ARITHMETIC,
-                        CQL2_PROPERTY_PROPERTY,
-                        CQL2_BASIC_SPATIAL,
-                        CQL2_SPATIAL,
-                        CQL2_FUNCTIONS,
-                        /* CQL2_TEMPORAL excluded for now, no support for all operators */
-                        /* CQL2_ARRAY excluded, no support for array operations now */
-                        CQL2_TEXT,
-                        /* CQL2_JSON very different from the binding we have */
-                        SORTBY,
-                        IDS);
+                        FeatureConformance.CRS_BY_REFERENCE,
+                        FeatureConformance.FEATURES_FILTER,
+                        FeatureConformance.FILTER,
+                        FeatureConformance.QUERYABLES,
+                        FeatureConformance.SEARCH,
+                        ECQLConformance.ECQL,
+                        ECQLConformance.ECQL_TEXT,
+                        CQL2Conformance.CQL2_BASIC,
+                        CQL2Conformance.CQL2_ADVANCED,
+                        CQL2Conformance.CQL2_ARITHMETIC,
+                        CQL2Conformance.CQL2_PROPERTY_PROPERTY,
+                        CQL2Conformance.CQL2_BASIC_SPATIAL,
+                        CQL2Conformance.CQL2_SPATIAL,
+                        CQL2Conformance.CQL2_FUNCTIONS,
+                        /* CQL2Conformance.CQL2_TEMPORAL excluded for now, no support for all operators */
+                        /* CQL2Conformance.CQL2_ARRAY excluded, no support for array operations now */
+                        CQL2Conformance.CQL2_TEXT,
+                        /* CQL2Conformance.CQL2_JSON very different from the binding we have */
+                        FeatureConformance.SORTBY,
+                        FeatureConformance.IDS);
         return conformances;
     }
 
@@ -363,13 +365,24 @@ public class FeatureService {
     public ConformanceDocument conformance() {
         WFSInfo wfsInfo = getServiceInfo();
 
-        List<String> classes = new ArrayList();
-        for (APIConformance conformance : getConformances()) {
-            ConformanceInfo info = new ConformanceInfo( conformance, wfsInfo );
-            if (info.isEnabled()) {
-                classes.add(conformance.getId());
+        List<APIConformance> conformances = new ArrayList<>();
+
+        FeatureConformance featuresConformance = new FeatureConformance(wfsInfo);
+        if (featuresConformance.isEnabled()) {
+            conformances.addAll(featuresConformance.getConformances());
+
+            ECQLConformance ecqlConformance = new ECQLConformance(wfsInfo);
+            if (ecqlConformance.isEnabled()) {
+                conformances.add(ECQLConformance.ECQL);
+                if (ecqlConformance.isText()) {
+                    conformances.add(ECQLConformance.ECQL_TEXT);
+                }
             }
+            CQL2Conformance cql2Conformance = new CQL2Conformance(wfsInfo);
+            conformances.addAll(cql2Conformance.getConformances());
         }
+        List<String> classes = conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
+
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 

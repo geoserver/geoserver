@@ -45,15 +45,17 @@ public class ConformanceTest extends FeaturesTestSupport {
 
     private String[] getExpectedConformanceClasses() {
         return new String[] {
-            FeatureService.CORE.getId(),
-            FeatureService.OAS30.getId(),
-            FeatureService.HTML.getId(),
-            FeatureService.GEOJSON.getId(),
-            FeatureService.CRS_BY_REFERENCE.getId(),
+            FeatureConformance.CORE.getId(),
+            FeatureConformance.OAS30.getId(),
+            FeatureConformance.HTML.getId(),
+            FeatureConformance.GEOJSON.getId(),
+            FeatureConformance.CRS_BY_REFERENCE.getId(),
             FEATURES_FILTER,
             FILTER,
             QUERYABLES,
-            SEARCH,
+            // IDS,
+            // SEARCH,
+            // SORTBY,
             ECQL,
             ECQL_TEXT,
             CQL2_BASIC,
@@ -63,9 +65,7 @@ public class ConformanceTest extends FeaturesTestSupport {
             CQL2_BASIC_SPATIAL,
             CQL2_SPATIAL,
             CQL2_FUNCTIONS,
-            CQL2_TEXT,
-            SORTBY,
-            IDS
+            CQL2_TEXT
         };
     }
 

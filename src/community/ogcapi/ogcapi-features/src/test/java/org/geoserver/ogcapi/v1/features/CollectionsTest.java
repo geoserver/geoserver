@@ -27,6 +27,7 @@ import net.minidev.json.JSONArray;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -46,6 +47,8 @@ public class CollectionsTest extends FeaturesTestSupport {
 
     public static final String BASIC_POLYGONS_TITLE = "Basic polygons";
     public static final String BASIC_POLYGONS_DESCRIPTION = "I love basic polygons!";
+    public static final String MISCONFIGURED_TITLE = "Misconfigured";
+    public static final String MISCONFIGURED_DESCRIPTION = "I am misconfigured";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -65,6 +68,27 @@ public class CollectionsTest extends FeaturesTestSupport {
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/v1/collections", 200);
         testCollectionsJson(json);
+    }
+
+    @Test
+    public void testSkipMisconfigured() throws Exception {
+        // enable skipping of misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+        // not misconfigured yet
+        FeatureTypeInfo misconfigured =
+                getCatalog().getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
+
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections", 200);
+        int expected = getCatalog().getFeatureTypes().size();
+        assertEquals(expected, (int) json.read("collections.length()", Integer.class));
+        // now misconfigure
+        misconfigured.setLatLonBoundingBox(null);
+        getCatalog().save(misconfigured);
+        DocumentContext json2 = getAsJSONPath("ogc/features/v1/collections", 200);
+        // expect one fewer layers due to skipping
+        assertEquals(expected - 1, (int) json2.read("collections.length()", Integer.class));
     }
 
     @SuppressWarnings("unchecked") // generic varargs in matcher

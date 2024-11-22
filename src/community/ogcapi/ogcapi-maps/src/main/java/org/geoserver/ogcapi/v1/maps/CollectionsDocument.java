@@ -6,17 +6,22 @@ package org.geoserver.ogcapi.v1.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
+import org.geotools.util.logging.Logging;
 
 /**
  * A class representing the Maps service "collections" in a way that Jackson can easily translate to
@@ -24,9 +29,10 @@ import org.geotools.api.filter.Filter;
  */
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
-
+    static final Logger LOGGER = Logging.getLogger(CollectionsDocument.class);
     private final GeoServer geoServer;
     private final List<Consumer<CollectionDocument>> collectionDecorators = new ArrayList<>();
+    private final boolean skipInvalid;
 
     public CollectionsDocument(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -34,6 +40,9 @@ public class CollectionsDocument extends AbstractDocument {
         // build the self links
         String path = "ogc/maps/v1/collections/";
         addSelfLinks(path);
+        skipInvalid =
+                geoServer.getGlobal().getResourceErrorHandling()
+                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
     @JacksonXmlProperty(localName = "Links")
@@ -56,29 +65,23 @@ public class CollectionsDocument extends AbstractDocument {
                 if (next != null) {
                     return true;
                 }
-
-                boolean hasNext = publisheds.hasNext();
-                if (!hasNext) {
-                    publisheds.close();
-                    return false;
-                } else {
+                while (publisheds.hasNext()) {
+                    PublishedInfo published = publisheds.next();
                     try {
-                        PublishedInfo published = publisheds.next();
-                        CollectionDocument collection =
-                                new CollectionDocument(geoServer, published);
-                        for (Consumer<CollectionDocument> collectionDecorator :
-                                collectionDecorators) {
-                            collectionDecorator.accept(collection);
-                        }
-
-                        next = collection;
+                        next = getCollectionDocument(published, publisheds);
                         return true;
                     } catch (Exception e) {
-                        publisheds.close();
-                        throw new ServiceException(
-                                "Failed to iterate over the published info in the catalog", e);
+                        if (skipInvalid) {
+                            LOGGER.log(
+                                    Level.WARNING, "Skipping map type " + published.prefixedName());
+                        } else {
+                            publisheds.close();
+                            throw new ServiceException(
+                                    "Failed to iterate over the map types in the catalog", e);
+                        }
                     }
                 }
+                return next != null;
             }
 
             @Override
@@ -88,6 +91,16 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+    }
+
+    private CollectionDocument getCollectionDocument(
+            PublishedInfo published, CloseableIterator<PublishedInfo> publisheds)
+            throws IOException {
+        CollectionDocument collection = new CollectionDocument(geoServer, published);
+        for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
+            collectionDecorator.accept(collection);
+        }
+        return collection;
     }
 
     public void addCollectionDecorator(Consumer<CollectionDocument> decorator) {

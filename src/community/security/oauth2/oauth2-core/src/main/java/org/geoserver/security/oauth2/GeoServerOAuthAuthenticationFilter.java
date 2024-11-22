@@ -552,6 +552,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
         details.setPreEstablishedRedirectUri(filterConfig.getRedirectUri());
         ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
                 .setCheckTokenEndpointUrl(filterConfig.getCheckTokenEndpointUrl());
+        ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
+                .setIntrospectionEndpointUrl(filterConfig.getIntrospectionEndpointUrl());
 
         details.setScope(parseScopes(filterConfig.getScopes()));
     }

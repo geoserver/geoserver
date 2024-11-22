@@ -49,6 +49,14 @@ public class OpenIdConnectFilterConfigValidator extends OAuth2FilterConfigValida
                         OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
             }
         }
+        if (StringUtils.hasLength(filterConfig.getIntrospectionEndpointUrl()) != false) {
+            try {
+                new URL(filterConfig.getIntrospectionEndpointUrl());
+            } catch (MalformedURLException ex) {
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED);
+            }
+        }
     }
 
     /** Only require {@code client_secret} when not using PKCE. */

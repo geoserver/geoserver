@@ -9,8 +9,8 @@ import java.util.List;
 import org.geotools.util.Version;
 
 /**
- * A service descriptor which provides metadata, primarily service {@code id}, and {@code version} allowing
- * {@code Dispatcher} to execute requests to the correct operation.
+ * A service descriptor which provides metadata, primarily service {@code id}, and {@code version}
+ * allowing {@code Dispatcher} to execute requests to the correct operation.
  *
  * <p>A Service is identified by an {@link #id}, {@link #version} pair. Two service descriptors are
  * considered equal if they have the same {@code id}, and {@code version}.
@@ -23,7 +23,6 @@ import org.geotools.util.Version;
  *
  * <p>Services may be composed of several {@link #operations}.
  *
- *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public final class Service {
@@ -31,25 +30,26 @@ public final class Service {
     /**
      * Service type identifying the service.
      *
-     * This is used by the dispatcher for open web services, where several services may implement
+     * <p>This is used by the dispatcher for open web services, where several services may implement
      * different versions of a protocol.
      *
-     * This is used to obtain a service info configuring the service.
+     * <p>This is used to obtain a service info configuring the service.
      */
     final String id;
 
     /**
      * Namespace for the web service specification.
      *
-     * As an example the {@code wfs} standard {@code http://www.opengis.net/wfs},
-     * and {@code http://www.opengis.net/wfs/2.0} depending on version.
+     * <p>As an example the {@code wfs} standard {@code http://www.opengis.net/wfs}, and {@code
+     * http://www.opengis.net/wfs/2.0} depending on version.
      */
     final String namespace;
 
     /**
      * The service implementation.
      *
-     * The service is configured using matching ServiceInfo matching, implicitly matching {@link #id}
+     * <p>The service is configured using matching ServiceInfo matching, implicitly matching {@link
+     * #id}
      */
     final Object service;
 
@@ -94,8 +94,6 @@ public final class Service {
         }
     }
 
-
-
     /**
      * Service type used to identify the service.
      *
@@ -112,6 +110,7 @@ public final class Service {
 
     /**
      * Namespace of the web service specification.
+     *
      * @return XML namespace of the XML web service.
      */
     public String getNamespace() {

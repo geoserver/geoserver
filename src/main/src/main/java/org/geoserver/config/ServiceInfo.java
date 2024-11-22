@@ -47,9 +47,8 @@ public interface ServiceInfo extends Info {
      * Name of the service, unique within all instances of ServiceInfo within global services (or
      * within workspace services).
      *
-     * <p>The name is used in GetCapabilities output and may user supplied (do not
-     * assume this to be {@code WMS}, {@code WFS}, {@code WCS} - an example may be {@code GeoServer
-     * WMS}.
+     * <p>The name is used in GetCapabilities output and may user supplied (do not assume this to be
+     * {@code WMS}, {@code WFS}, {@code WCS} - an example may be {@code GeoServer WMS}.
      *
      * @return Name of service
      * @uml.property name="name"

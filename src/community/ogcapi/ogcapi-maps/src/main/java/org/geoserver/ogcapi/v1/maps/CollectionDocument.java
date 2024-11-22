@@ -60,6 +60,9 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
     private ReferencedEnvelope getSpatialExtents(PublishedInfo published) {
         try {
             if (published instanceof LayerInfo) {
+                if (((LayerInfo) published).getResource().getLatLonBoundingBox() == null) {
+                    throw new RuntimeException("Layer has no bounding box: " + published);
+                }
                 return ((LayerInfo) published).getResource().getLatLonBoundingBox();
             } else if (published instanceof LayerGroupInfo) {
                 ReferencedEnvelope bounds = ((LayerGroupInfo) published).getBounds();

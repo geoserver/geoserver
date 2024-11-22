@@ -8,17 +8,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsTest extends MapsTestSupport {
+
+    @Before
+    public void revertChanges() throws IOException {
+        revertLayer(MockData.BUILDINGS);
+    }
 
     @Test
     public void testCollectionsJsonDefault() throws Exception {
@@ -37,6 +48,29 @@ public class CollectionsTest extends MapsTestSupport {
         String yaml = getAsString("ogc/maps/v1/collections/?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testCollectionsJson(json, MediaType.parseMediaType("application/x-yaml"));
+    }
+
+    @Test
+    public void testSkipMisconfigured() throws Exception {
+        // enable skipping of misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+        // not misconfigured yet
+        FeatureTypeInfo misconfigured =
+                getCatalog().getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
+
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections", 200);
+
+        assertEquals(37, (int) json.read("collections.length()", Integer.class));
+
+        // make it misconfigured
+        misconfigured.setLatLonBoundingBox(null);
+        getCatalog().save(misconfigured);
+
+        DocumentContext json2 = getAsJSONPath("ogc/maps/v1/collections", 200);
+        // expect one fewer layers due to skipping
+        assertEquals(36, (int) json2.read("collections.length()", Integer.class));
     }
 
     private void testCollectionsJson(DocumentContext json, MediaType defaultFormat)

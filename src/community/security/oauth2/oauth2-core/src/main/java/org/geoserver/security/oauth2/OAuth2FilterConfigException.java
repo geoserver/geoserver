@@ -29,6 +29,9 @@ public class OAuth2FilterConfigException extends FilterConfigException {
     public static final String OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED =
             "OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED";
 
+    public static final String OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED =
+            "OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED";
+
     public static final String OAUTH2_URL_IN_LOGOUT_URI_MALFORMED =
             "OAUTH2_URL_IN_LOGOUT_URI_MALFORMED";
 

@@ -15,6 +15,7 @@
   "end_session_endpoint": "https://server.example.com/connect/end_session",
   "jwks_uri": "https://server.example.com/jwks.json",
   "registration_endpoint": "https://server.example.com/connect/register",
+  "introspection_endpoint": "https://server.example.com/connect/introspect",
   "scopes_supported": [
     "openid",
     "profile",

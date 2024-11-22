@@ -47,6 +47,7 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
         add(new HelpLink("userAuthorizationUriHelp", this).setDialog(dialog));
         add(new HelpLink("redirectUriHelp", this).setDialog(dialog));
         add(new HelpLink("checkTokenEndpointUrlHelp", this).setDialog(dialog));
+        add(new HelpLink("introspectionEndpointUrlHelp", this).setDialog(dialog));
         add(new HelpLink("logoutUriHelp", this).setDialog(dialog));
         add(new HelpLink("scopesHelp", this).setDialog(dialog));
         add(new HelpLink("cliendIdHelp", this).setDialog(dialog));
@@ -61,6 +62,7 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
         add(new TextField<String>("userAuthorizationUri"));
         add(new TextField<String>("redirectUri"));
         add(new TextField<String>("checkTokenEndpointUrl"));
+        add(new TextField<String>("introspectionEndpointUrl"));
         add(new TextField<String>("logoutUri"));
         add(new TextField<String>("scopes"));
         add(new TextField<String>("cliendId"));

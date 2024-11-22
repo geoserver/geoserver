@@ -24,6 +24,7 @@ import net.minidev.json.JSONArray;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
@@ -41,6 +42,25 @@ public class CollectionsTest extends CoveragesTestSupport {
     public void testCollectionsJson() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/coverages/v1/collections", 200);
         testCollectionsJson(json);
+    }
+
+    @Test
+    public void testSkipMisconfigured() throws Exception {
+        // enable skipping of misconfigured layers
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+
+        CoverageInfo c = getCatalog().getCoverageByName("rs", "BlueMarble");
+        int expected = getCatalog().getCoverages().size();
+        DocumentContext json = getAsJSONPath("ogc/coverages/v1/collections", 200);
+        assertEquals(expected, (int) json.read("collections.length()", Integer.class));
+        // manually misconfigure one layer
+        c.setLatLonBoundingBox(null);
+        getCatalog().save(c);
+        DocumentContext json2 = getAsJSONPath("ogc/coverages/v1/collections", 200);
+        // expect one fewer layers due to skipping
+        assertEquals(expected - 1, (int) json2.read("collections.length()", Integer.class));
     }
 
     @SuppressWarnings("unchecked") // generics varargs creation by hamcrest

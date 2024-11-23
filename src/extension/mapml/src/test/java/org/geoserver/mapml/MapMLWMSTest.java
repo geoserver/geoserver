@@ -984,9 +984,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     public void testNonExistentProjection() throws Exception {
         String response = new MapMLWMSRequest().name("Polgons").srs("EPSG:9999").getAsString();
 
-        assertTrue(
-                response.contains(
-                        "<ServiceException code=\"InvalidParameterValue\" locator=\"crs\">"));
+        assertTrue(response.contains("<ServiceException code=\"InvalidCRS\" locator=\"crs\">"));
     }
 
     @Test

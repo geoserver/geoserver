@@ -255,6 +255,26 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testInvalidCRS() throws Exception {
+        String baseRequest =
+                "wms?service=wms&version=1.3.0&bbox="
+                        + bbox
+                        + "&styles=&layers="
+                        + layers
+                        + "&format=image/png"
+                        + "&request=GetMap"
+                        + "&width=550"
+                        + "&height=250"
+                        + "&crs=NotACRS";
+
+        // parameter repeated, but with the same value, should work
+        MockHttpServletResponse response = getAsServletResponse(baseRequest);
+        assertEquals("text/xml", getBaseMimeType(response.getContentType()));
+        Document dom = dom(response, true);
+        checkLegacyException(dom, "InvalidCRS", "crs");
+    }
+
+    @Test
     public void testSldBody10() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse(

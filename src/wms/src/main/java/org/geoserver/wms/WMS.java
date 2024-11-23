@@ -1030,10 +1030,7 @@ public class WMS implements ApplicationContextAware {
                 }
             } catch (FactoryException e) {
                 throw new ServiceException(
-                        "Could not decode CRS: " + srs,
-                        e,
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        "crs");
+                        "Could not decode CRS: " + srs, e, ServiceException.InvalidCRS, "crs");
             }
         }
 

@@ -7,4 +7,6 @@
  <value key="basic">basic</value>
  <value key="queryable">queryable</value>
  <value key="recommended">recommended</value>
+ <value key="submit">yes</value>
+ <value key="answer">yes</value>
 </values>

@@ -16,7 +16,7 @@ builds, pick the zip file form ``main/community-latest``).
 The module is provided as four different packages, depending on the connection type:
 
 * ``cog-http`` for HTTP connections without a particular cloud target
-* ``cog-aws`` for AWS S3 connections
+* ``cog-s3`` for AWS S3 connections
 * ``cog-google`` for Google Cloud Storage connections
 * ``cog-azure`` for Azure Blob Storage connections
 

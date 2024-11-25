@@ -331,19 +331,15 @@ public class FeatureService {
 
         List<APIConformance> conformances = new ArrayList<>();
 
-        FeatureConformance featuresConformance = new FeatureConformance(wfsInfo);
-        if (featuresConformance.isEnabled()) {
-            conformances.addAll(featuresConformance.getConformances());
+        FeatureConformance featuresConformance = FeatureConformance.configuration(wfsInfo);
+        if (featuresConformance.isEnabled(wfsInfo)) {
+            conformances.addAll(featuresConformance.conformances(wfsInfo));
 
-            ECQLConformance ecqlConformance = new ECQLConformance(wfsInfo);
-            if (ecqlConformance.isEnabled()) {
-                conformances.add(ECQLConformance.ECQL);
-                if (ecqlConformance.isText()) {
-                    conformances.add(ECQLConformance.ECQL_TEXT);
-                }
-            }
-            CQL2Conformance cql2Conformance = new CQL2Conformance(wfsInfo);
-            conformances.addAll(cql2Conformance.getConformances());
+            ECQLConformance ecqlConformance = ECQLConformance.configuration(wfsInfo);
+            conformances.addAll( ecqlConformance.conformances(wfsInfo));
+
+            CQL2Conformance cql2Conformance = CQL2Conformance.configuration(wfsInfo);
+            conformances.addAll(cql2Conformance.conformances(wfsInfo));
         }
 
         // only advertise what is actually implemented

@@ -1,11 +1,14 @@
 package org.geoserver.ogcapi;
 
+import org.apiguardian.api.API;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
 import org.geotools.util.Converters;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,12 +23,9 @@ import java.util.Map;
  *
  * Generic / abstract conformance configuration, stored in ServiceInfo.
  */
-public class ConformanceInfo<S extends ServiceInfo> {
-    private static String ENABLED = "enabled";
-
-    final S serviceInfo;
+public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
     final String metadataKey;
-    final APIConformance defaultConformance;
+    final APIConformance[] defaultConformance;
 
     /**
      * Enable and configure service functionality by conformance class.
@@ -34,19 +34,14 @@ public class ConformanceInfo<S extends ServiceInfo> {
      * enable automaticly (if no configuration has been provided by the user).
      *
      * @param metadataKey Storage key for metadata map
-     * @param defaultConformance Conformance class used to determine default enabled status
-     * @param serviceInfo Service being configured
+     * @param defaultConformance Conformance classs used to determine default enabled status
      */
-    public ConformanceInfo(String metadataKey, APIConformance defaultConformance, S serviceInfo){
+    public ConformanceInfo(String metadataKey, APIConformance ... defaultConformance){
         if (metadataKey == null){
             throw new NullPointerException("metadata key is null");
         }
         this.metadataKey = metadataKey;
         this.defaultConformance = defaultConformance;
-        if (serviceInfo == null){
-            throw new NullPointerException("serviceInfo is null");
-        }
-        this.serviceInfo = serviceInfo;
     }
 
     /**
@@ -59,75 +54,13 @@ public class ConformanceInfo<S extends ServiceInfo> {
     }
 
     /**
-     * ServiceInfo configuration.
+     * Checks conformance configuration, to see if enabled.
      *
-     * @return Service being configured.
+     * @param enabled Enabled status, if {@code null} conformance default used
+     * @param conformance APIConformance used to determine default enabled status
+     * @return enabled status
      */
-    public S getServiceInfo() {
-        return serviceInfo;
-    }
-
-
-    /**
-     * Map used for conformance configuration in metadata map.
-     *
-     * This map is maintained in the {@link ServiceInfo#getMetadata()} map for backwards compatibility.
-     *
-     * @return map used for conformance configuration
-     */
-    protected Map<String,Object> configuration() {
-        MetadataMap metadata = serviceInfo.getMetadata();
-        synchronized ( metadata ) {
-            HashMap<String, Object> configuration = serviceInfo.getMetadata().get(metadataKey,HashMap.class);
-            if (configuration == null) {
-                configuration = new HashMap<>();
-                serviceInfo.getMetadata().put(metadataKey, configuration);
-            }
-            return configuration;
-        }
-    }
-
-    /**
-     * Get configuration value for key.
-     *
-     * @param key
-     * @param clazz Cast value to this class.
-     * @return value for key, or null if not set (or cannot be converted to requested type).
-     * @param <T>
-     */
-    protected <T> T get(String key, Class<T> clazz) {
-        Object obj = configuration().get(key);
-        if (obj == null) {
-            return null;
-        }
-        return Converters.convert(obj, clazz);
-    }
-
-    protected void put(String key, Object value) {
-        configuration().put(key,value);
-    }
-
-    /**
-     * Checks conformance configuration, to see if key is enabled.
-     *
-     * If they key is not set, the default value is based on the conformance level information.
-     *
-     * @param conformance APIConformance to check
-     * @return {@code true} if conformance is enabled
-     */
-    protected boolean isEnabled(APIConformance conformance) {
-        return isEnabled(conformance.getKey(),conformance);
-    }
-
-    /**
-     * Checks conformance configuration, to see if key is enabled.
-     *
-     * @param key configuration key
-     * @param conformance APIConformance used to determine default value
-     * @return if conformance
-     */
-    protected boolean isEnabled(String key, APIConformance conformance) {
-        Boolean enabled = get(key,Boolean.class);
+    protected boolean isEnabled(S serviceInfo, Boolean enabled, APIConformance conformance) {
         if (enabled == null) {
             if (serviceInfo.isCiteCompliant()) {
                 return conformance.getLevel().isEndorsed() && conformance.getLevel().isStable();
@@ -142,25 +75,6 @@ public class ConformanceInfo<S extends ServiceInfo> {
     }
 
     /**
-     * Set conformance enabled, using the conformance key.
-     *
-     * @param conformance APIConformance
-     * @param enabled Enable status
-     */
-    protected void setEnabled(APIConformance conformance, boolean enabled) {
-        put(conformance.getKey(),enabled);
-    }
-    /**
-     * Set conformance metadata configuration.
-     *
-     * @param key Configuration key
-     * @param enabled Enable status
-     */
-    protected void setEnabled(String key, boolean enabled) {
-        put(key,enabled);
-    }
-
-    /**
      * Enabled is based on conformance level information and serviceInfo settings.
      * <ul>
      *     <li>If cite compliance {@code true}, conformance must be endorsed and stable.</li>
@@ -169,7 +83,7 @@ public class ConformanceInfo<S extends ServiceInfo> {
      * @param conformance APIConformance
      * @return {@code true} if conformance is enabled based on service info settings.
      */
-    protected boolean enabledDefault(APIConformance conformance) {
+    protected boolean enabledDefault(S serviceInfo, APIConformance conformance) {
         if (conformance == null) {
             return false;
         }
@@ -182,20 +96,36 @@ public class ConformanceInfo<S extends ServiceInfo> {
         }
     }
     /**
-     * Checks {@link #defaultConformance} to determine if configuration is enabled.
+     * Override to check if configuration as a whole is enabled, or may be skipped.
      *
-     * If no configuration is set, the default value is based on the conformance level information.
+     * The default implementation uses {@link #defaultConformance} to determine if configuration is enabled.
      *
      * @return {@code true} if conformance is enabled.
      */
-    public boolean isEnabled() {
-        if (serviceInfo.getMetadata().containsKey(metadataKey)) {
-            Boolean enabled = get(defaultConformance.getKey(), Boolean.class);
-            if (enabled != null) {
-                return enabled;
+    public boolean isEnabled(S serviceInfo) {
+        for (APIConformance conformance : defaultConformance) {
+            if (enabledDefault(serviceInfo, conformance)) {
+                return true;
             }
         }
-        return enabledDefault(this.defaultConformance);
+        return false;
+    }
+
+    /**
+     * Configuration for ServiceInfo.
+     *
+     * Default implemenation will use {@link #isEnabled(ServiceInfo)} to determine
+     * if {@link #defaultConformance} should be returned. Subclasses should override
+     * to provide more specific behavior.
+     *
+     * @param serviceInfo WFSService configuration
+     * @return List of enabled conformance
+     */
+    public List<APIConformance> conformances(S serviceInfo) {
+        if (isEnabled(serviceInfo)) {
+            return List.of(defaultConformance);
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -203,19 +133,6 @@ public class ConformanceInfo<S extends ServiceInfo> {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName());
         sb.append(" ");
         sb.append(this.metadataKey);
-        Object config = serviceInfo.getMetadata().get(metadataKey);
-        if (config != null && config instanceof Map) {
-            Map<String,Object> storage = (Map<String,Object>) config;
-            sb.append("= [ ");
-            storage.forEach((k,v) -> {
-                sb.append(k);
-                sb.append("=");
-                sb.append(v);
-                sb.append(" ");
-            });
-            sb.append("]");
-        }
         return sb.toString();
     }
 }
-

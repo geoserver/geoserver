@@ -15,7 +15,7 @@ import static org.geoserver.ogcapi.APIConformance.Level.DRAFT_STANDARD;
  * CQL2 Configuration for FeatureService.
  */
 public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
-
+    public static final String METADATA_KEY = "cql2";
     /**
      * CQL Text conformance.
      */
@@ -46,8 +46,42 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance CQL2_PROPERTY_PROPERTY = new APIConformance(ConformanceClass.CQL2_PROPERTY_PROPERTY);
     public static final APIConformance CQL2_SPATIAL = new APIConformance(ConformanceClass.CQL2_SPATIAL);
 
-    public CQL2Conformance(WFSInfo service) {
-        super("cql2",CQL2_TEXT,service);
+    // CQL2 formats
+    private Boolean json;
+    private Boolean text;
+
+    // CQL functionality
+    private Boolean advanced;
+    private Boolean arithmetic;
+    private Boolean basic;
+    private Boolean basicSpatial;
+    private Boolean functions;
+    private Boolean propertyProperty;
+    private Boolean spatial;
+
+    public CQL2Conformance() {
+        super(METADATA_KEY,CQL2_TEXT);
+    }
+
+    /**
+     * Obtain CQL2Conformance configuration for WFSInfo.
+     *
+     * Uses configuration stored in metadata map, or creates default if needed.
+     *
+     * @param wfsInfo WFSService configuration
+     * @return CQL2 configuration
+     */
+    public static CQL2Conformance configuration(WFSInfo wfsInfo) {
+        synchronized (wfsInfo) {
+            if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
+                return (CQL2Conformance) wfsInfo.getMetadata().get(METADATA_KEY);
+            }
+            else {
+                CQL2Conformance conf = new CQL2Conformance();
+                wfsInfo.getMetadata().put(METADATA_KEY,conf);
+                return conf;
+            }
+        }
     }
 
     /**
@@ -56,113 +90,134 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
      * @return Enable for either CQL2_TEXT or CQL2_JSON
      */
     @Override
-    public boolean isEnabled() {
-        if (getServiceInfo().getMetadata().containsKey(getMetadataKey())) {
-            Boolean isText = get(CQL2_TEXT.getKey(), Boolean.class);
-            Boolean isJSON = get(CQL2_JSON.getKey(), Boolean.class);
-            if (Boolean.TRUE.equals(isText) || Boolean.TRUE.equals(isJSON)) {
-                return true;
+    public boolean isEnabled(WFSInfo info) {
+        return text(info) || json(info);
+    }
+
+    @Override
+    public List<APIConformance> conformances(WFSInfo wfsInfo) {
+        List<APIConformance> conformanceList = new ArrayList<>();
+        if (isEnabled(wfsInfo)) {
+            if (text(wfsInfo)){
+                conformanceList.add(CQL2_TEXT);
+            }
+            if (json(wfsInfo)) {
+                conformanceList.add(CQL2_JSON);
+            }
+
+            if (basic(wfsInfo)) {
+                conformanceList.add(CQL2_BASIC);
+            }
+            if (advanced(wfsInfo)) {
+                conformanceList.add(CQL2_ADVANCED);
+            }
+            if (arithmetic(wfsInfo)) {
+                conformanceList.add(CQL2_ARITHMETIC);
+            }
+            if (propertyProperty(wfsInfo)) {
+                conformanceList.add(CQL2_PROPERTY_PROPERTY);
+            }
+            if (basicSpatial(wfsInfo)) {
+                conformanceList.add(CQL2_BASIC_SPATIAL);
+            }
+            if (spatial(wfsInfo)) {
+                conformanceList.add(CQL2_SPATIAL);
+            }
+            if (functions(wfsInfo)) {
+                conformanceList.add(CQL2_FUNCTIONS);
             }
         }
-        return super.isEnabled();
+        return conformanceList;
     }
 
-    List<APIConformance> getConformances() {
-        List<APIConformance> conformances = new ArrayList<>();
-        if (isEnabled()) {
-
-            if (isText()){
-                conformances.add(CQL2_TEXT);
-            }
-            if (isJSON()) {
-                conformances.add(CQL2_JSON);
-            }
-
-            if (isBasic()) {
-                conformances.add(CQL2_BASIC);
-            }
-            if (isAdvanced()) {
-                conformances.add(CQL2_ADVANCED);
-            }
-            if (isArithmetic()) {
-                conformances.add(CQL2_ARITHMETIC);
-            }
-            if (isPropertyProperty()) {
-                conformances.add(CQL2_PROPERTY_PROPERTY);
-            }
-            if (isBasicSpatial()) {
-                conformances.add(CQL2_BASIC_SPATIAL);
-            }
-            if (isSpatial()) {
-                conformances.add(CQL2_SPATIAL);
-            }
-            if (isFunctions()) {
-                conformances.add(CQL2_FUNCTIONS);
-            }
-        }
-        return conformances;
+    public Boolean isText() {
+        return text;
+    }
+    public void setText(Boolean enabled) {
+        text = enabled;
+    }
+    public boolean text(WFSInfo info) {
+        return isEnabled(info, text, CQL2_TEXT);
     }
 
-    public boolean isText() {
-        return isEnabled("text", CQL2_TEXT);
+    public Boolean isJSON() {
+        return json;
     }
-    public void setText(boolean enabled) {
-        setEnabled("text", enabled);
+    public void setJSON(Boolean enabled) {
+        json = enabled;
     }
-
-    public boolean isJSON() {
-        return isEnabled("json", CQL2_JSON);
-    }
-    public void setJSON(boolean enabled) {
-        setEnabled("json", enabled);
+    public boolean json(WFSInfo info) {
+        return isEnabled(info, json, CQL2_JSON);
     }
 
     public boolean isAdvanced() {
-        return isEnabled("advanced", CQL2_ADVANCED);
+        return advanced;
     }
     public void setCql2Advanced(boolean enabled) {
-        setEnabled("advanced", enabled);
+        advanced = enabled;
+    }
+    public boolean advanced(WFSInfo info) {
+        return isEnabled(info, advanced, CQL2_ADVANCED);
     }
 
-    public boolean isArithmetic() {
-        return isEnabled("arithmetic", CQL2_ARITHMETIC);
+    public Boolean isArithmetic() {
+        return arithmetic;
     }
-    public void setArtihmetic(boolean enabled) {
-        setEnabled("arithmetic", enabled);
+    public void setArtihmetic(Boolean enabled) {
+        arithmetic = enabled;
     }
-
-    public boolean isBasic() {
-        return isEnabled("basic", CQL2_BASIC);
-    }
-    public void setBasic(boolean enabled) {
-        setEnabled("basic", enabled);
+    public boolean arithmetic(WFSInfo info) {
+        return isEnabled(info, arithmetic, CQL2_ARITHMETIC);
     }
 
-    public boolean isBasicSpatial() {
-        return isEnabled("basic_spatial", CQL2_BASIC_SPATIAL);
+    public Boolean isBasic() {
+        return basic;
     }
-    public void setBasicSpatial(boolean enabled) {
-        setEnabled("basic_spatial", enabled);
+    public void setBasic(Boolean enabled) {
+        basic = enabled;
+    }
+    public boolean basic(WFSInfo info) {
+        return isEnabled(info, basic, CQL2_BASIC);
+    }
+    public Boolean isBasicSpatial() {
+        return basicSpatial;
+    }
+    public void setBasicSpatial(Boolean enabled) {
+        basicSpatial = enabled;
+    }
+    public boolean basicSpatial(WFSInfo info) {
+        return isEnabled(info, basicSpatial, CQL2_BASIC_SPATIAL);
     }
 
-    public boolean isFunctions() {
-        return isEnabled("functions", CQL2_FUNCTIONS);
+    public Boolean isFunctions() {
+        return functions;
     }
 
-    public void setFunctions(boolean enabled) {
-        setEnabled("functions", enabled);
+    public void setFunctions(Boolean enabled) {
+        functions = enabled;
+    }
+    public boolean functions(WFSInfo info) {
+        return isEnabled(info, functions, CQL2_FUNCTIONS);
     }
 
-    public boolean isPropertyProperty() {
-        return isEnabled("property_property", CQL2_PROPERTY_PROPERTY);
+    public Boolean isPropertyProperty() {
+        return propertyProperty;
     }
-    public void setPropertyProperty(boolean enabled) {
-        setEnabled("property_property", enabled);
+    public void setPropertyProperty(Boolean enabled) {
+        propertyProperty = enabled;
     }
-    public boolean isSpatial() {
-        return isEnabled("spatial", CQL2_SPATIAL);
+
+    public boolean propertyProperty(WFSInfo info) {
+        return isEnabled(info, propertyProperty, CQL2_PROPERTY_PROPERTY);
     }
-    public void setSpatial(boolean enabled) {
-        setEnabled("spatial", enabled);
+
+    public Boolean isSpatial() {
+        return spatial;
+    }
+    public void setSpatial(Boolean enabled) {
+        spatial = enabled;
+    }
+    public boolean spatial(WFSInfo info) {
+        return isEnabled(info, spatial, CQL2_SPATIAL);
     }
 }

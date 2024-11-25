@@ -1,6 +1,7 @@
 package org.geoserver.ogcapi.v1.features;
 
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceInfo;
@@ -18,6 +19,7 @@ import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
  * FeatureService configuration.
  */
 public class FeatureConformance extends ConformanceInfo<WFSInfo> {
+    public static String METADATA_KEY = "ogcapi-features";
 
     public static final APIConformance CORE = new APIConformance("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",STANDARD);
 
@@ -41,125 +43,370 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance SEARCH = new APIConformance(ConformanceClass.SEARCH, DRAFT_STANDARD);
     public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD);
 
+    private Boolean core = null;
+    private Boolean gmlSF0 = null;
+    private Boolean gmlSF2 = null;
+    private Boolean featuresFilter = null;
+    private Boolean crsByReference = null;
+    private Boolean filter = null;
+    private Boolean search = null;
+    private Boolean queryables = null;
+    private Boolean ids = null;
+    private Boolean sortBy = null;
+
     /**
      * Configuration for OGCAPI Features.
-     *
-     * @param serviceInfo
      */
-    public FeatureConformance(WFSInfo serviceInfo) {
-        super("ogcapi-features",CORE, serviceInfo);
+    public FeatureConformance() {
+        super(METADATA_KEY,CORE);
     }
 
-    List<APIConformance> getConformances() {
-        List<APIConformance> conformances = new ArrayList<>();
-        if (isEnabled()) {
+    /**
+     * Requires CORE to be enabled.
+     * 
+     * @param serviceInfo
+     * @return requires core to be enabled.
+     */
+    @Override
+    public boolean isEnabled(WFSInfo wfsInfo) {
+        return core(wfsInfo);
+    }
+
+    /**
+     * Obtain FeatureService configuration for WFSInfo.
+     *
+     * Uses configuration stored in metadata map, or creates default if needed.
+     *
+     * @param wfsInfo WFSService configuration
+     * @return Feature Service configuration
+     */
+    public static FeatureConformance configuration(WFSInfo wfsInfo) {
+        synchronized (wfsInfo) {
+            if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
+                return (FeatureConformance) wfsInfo.getMetadata().get(METADATA_KEY);
+            }
+            else {
+                FeatureConformance conf = new FeatureConformance();
+                wfsInfo.getMetadata().put(METADATA_KEY,conf);
+                return conf;
+            }
+        }
+    }
+
+    /**
+     * Configuration for FeatureService CORE functionality and extensions.
+     *
+     * @param serviceInfo WFSService configuration
+     * @return List of enabled conformance
+     */
+    @Override
+    public List<APIConformance> conformances(WFSInfo serviceInfo) {
+        List<APIConformance> conformance = new ArrayList<>();
+        if (isEnabled(serviceInfo)) {
             // built-in rquired conformance classes
-            conformances.add(FeatureConformance.CORE);
-            conformances.add(FeatureConformance.OAS30);
-            conformances.add(FeatureConformance.HTML);
-            conformances.add(FeatureConformance.GEOJSON);
+            conformance.add(FeatureConformance.CORE);
+            conformance.add(FeatureConformance.OAS30);
+            conformance.add(FeatureConformance.HTML);
+            conformance.add(FeatureConformance.GEOJSON);
 
             // optional functionality
-            if (isCRSByReference()) {
-                conformances.add(FeatureConformance.CRS_BY_REFERENCE);
+            if (crsByReference(serviceInfo)) {
+                conformance.add(FeatureConformance.CRS_BY_REFERENCE);
             }
-            if (isFeaturesFilter()) {
-                conformances.add(FeatureConformance.FEATURES_FILTER);
+            if (featuresFilter(serviceInfo)) {
+                conformance.add(FeatureConformance.FEATURES_FILTER);
             }
-            if (isFilter()) {
-                conformances.add(FeatureConformance.FILTER);
+            if (filter(serviceInfo)) {
+                conformance.add(FeatureConformance.FILTER);
             }
 
             // optional output formats
-            if (isGMLSFO()) {
-                conformances.add(FeatureConformance.GMLSF0);
+            if (gmlSF0(serviceInfo)) {
+                conformance.add(FeatureConformance.GMLSF0);
             }
-            if (isGMLSF2()) {
-                conformances.add(FeatureConformance.GMLSF2);
+            if (gmlSF2(serviceInfo)) {
+                conformance.add(FeatureConformance.GMLSF2);
             }
 
             // draft functionality
-            if (isIDs()) {
-                conformances.add(FeatureConformance.IDS);
+            if (ids(serviceInfo)) {
+                conformance.add(FeatureConformance.IDS);
             }
-            if (isSearch()) {
-                conformances.add(FeatureConformance.SEARCH);
+            if (search(serviceInfo)) {
+                conformance.add(FeatureConformance.SEARCH);
             }
-            if (isSortBy()) {
-                conformances.add(FeatureConformance.SORTBY);
+            if (sortBy(serviceInfo)) {
+                conformance.add(FeatureConformance.SORTBY);
             }
         }
-        return conformances;
+        return conformance;
+    }
+    /**
+     * Configuration for FeatureService CORE functionality and extensions.
+     *
+     * @return CORE conformance enabled, or @{code null} for default.
+     */
+    public Boolean isCore() {
+        return core;
+    }
+    /**
+     * Configuration for FeatureService CORE functionality and extensions.
+     *
+     * @param serviceInfo WFSService configuration
+     * @return {@true} if CORE conformance enabled
+     */
+    public boolean core(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,core,CORE);
+    }
+    /**
+     * Configuration for FeatureService CORE functionality and extensions.
+     *
+     * @param enabled Enable CORE conformance, or @{code null} for default.
+     */
+    public void setCore(Boolean enabled) {
+        core = enabled;
+    }
+    /**
+     * GMlSF0 conformance enabled by configuration.
+     *
+     * @return GMlSF0 conformance enabled, or @{code null} for default.
+     */
+    public Boolean isGMLSFO() {
+        return gmlSF0;
+    }
+    /**
+     * GMlSF0 conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if GMlSF0 conformance enabled
+     */
+    public boolean gmlSF0(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,gmlSF0,GMLSF0);
     }
 
-    public boolean isCore() {
-        return isEnabled(CORE);
-    }
-    public void setCore(boolean enabled) {
-        setEnabled(CORE, enabled);
-    }
-
-    public boolean isGMLSFO() {
-        return isEnabled(GMLSF0);
-    }
-    public void setGMLSF0(boolean enabled) {
-        setEnabled(GMLSF0, enabled);
+    /**
+     * GMlSF0 conformance enablement.
+     *
+     * @param enabled GMlSF0 conformance enabled, or @{code null} for default.
+     */
+    public void setGMLSF0(Boolean enabled) {
+        this.gmlSF0 = enabled;
     }
 
-    public boolean isGMLSF2() {
-        return isEnabled(GMLSF2);
-    }
-    public void setGMLSF2(boolean enabled) {
-        setEnabled(GMLSF2, enabled);
-    }
-
-    public boolean isCRSByReference() {
-        return isEnabled(CRS_BY_REFERENCE);
-    }
-    public void setCRSByReference(boolean enabled) {
-        setEnabled(CRS_BY_REFERENCE, enabled);
+    /**
+     * GMlSF2 conformance enabled by configuration.
+     *
+     * @return GMlSF2 conformance enabled, or @{code null} for default.
+     */
+    public Boolean isGMLSF2() {
+        return gmlSF2;
     }
 
-    public boolean isFeaturesFilter() {
-        return isEnabled(FEATURES_FILTER);
-    }
-    public void setFeaturesFilter(boolean enabled) {
-        setEnabled(FEATURES_FILTER, enabled);
-    }
-
-    public boolean isFilter() {
-        return isEnabled(FILTER);
-    }
-
-    public void setFilter(boolean enabled) {
-        setEnabled(FILTER, enabled);
+    /**
+     * GMlSF2 conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if GMlSF2 conformance enabled
+     */
+    public boolean gmlSF2(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,gmlSF2,GMLSF2);
     }
 
-    public boolean isSearch() {
-        return isEnabled(SEARCH);
-    }
-    public void setSearch(boolean enabled) {
-        setEnabled("search", enabled);
-    }
-
-    public boolean isQueryables() {
-        return isEnabled(QUERYABLES);
-    }
-    public void setQueryables(boolean enabled) {
-        setEnabled(QUERYABLES, enabled);
-    }
-    public boolean isIDs() {
-        return isEnabled(IDS);
-    }
-    public void setIDs(boolean enabled) {
-        setEnabled("ids", enabled);
+    /**
+     * GMlSF2 conformance enablement.
+     *
+     * @param enabled GMlSF2 conformance enabled, or @{code null} for default.
+     */
+    public void setGMLSF2(Boolean enabled) {
+        this.gmlSF2 = enabled;
     }
 
-    public boolean isSortBy() {
-        return isEnabled(SORTBY);
+    /**
+     * CRS_BY_REFERENCE conformance enabled by configuration.
+     *
+     * @return CRSByReference conformance enabled, or @{code null} for default.
+     */
+    public Boolean isCRSByReference() {
+        return crsByReference;
     }
-    public void setSortBy(boolean enabled) {
-        setEnabled(SORTBY, enabled);
+    public boolean crsByReference(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,crsByReference,CRS_BY_REFERENCE);
+    }
+    /**
+     * CRS_BY_REFERENCE conformance enablement.
+     *
+     * @param enabled CRS_BY_REFERENCE conformance enabled, or @{code null} for default.
+     */
+    public void setCRSByReference(Boolean enabled) {
+        crsByReference = enabled;
+    }
+
+    /**
+     * FeaturesFilter conformance enabled by configuration.
+     *
+     * @return FeaturesFilter conformance enabled, or @{code null} for default.
+     */
+    public Boolean isFeaturesFilter() {
+        return featuresFilter;
+    }
+    /**
+     * FEATURES_FILTER conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if FEATURES_FILTER conformance enabled
+     */
+    public boolean featuresFilter(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,featuresFilter,FEATURES_FILTER);
+    }
+    /**
+     * FeaturesFilter conformance enablement.
+     *
+     * @param enabled FeaturesFilter conformance enabled, or @{code null} for default.
+     */
+    public void setFeaturesFilter(Boolean enabled) {
+        featuresFilter = enabled;
+    }
+    /**
+     * FILTER conformance enabled by configuration.
+     *
+     * @return FILTER conformance enabled, or @{code null} for default.
+     */
+    public Boolean isFilter() {
+        return filter;
+    }
+    /**
+     * FILTER conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if Filter conformance enabled
+     */
+    public boolean filter(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,filter,FILTER);
+    }
+    /**
+     * FILTER conformance enablement.
+     *
+     * @param enabled Filter conformance enabled, or @{code null} for default.
+     */
+    public void setFilter(Boolean enabled) {
+        filter = enabled;;
+    }
+    /**
+     * SEARCH conformance enabled by configuration.
+     *
+     * @return Search conformance enabled, or @{code null} for default.
+     */
+    public Boolean isSearch() {
+        return search;
+    }
+    /**
+     * SEARCH conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if Search conformance enabled
+     */
+    public boolean search(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,search,SEARCH);
+    }
+    /**
+     * SEARCH conformance enablement.
+     *
+     * @param enabled Search conformance enabled, or @{code null} for default.
+     */
+    public void setSearch(Boolean enabled) {
+        search = enabled;
+    }
+
+    /**
+     * QUERYABLES conformance enabled by configuration.
+     * @return QUERYABLES conformance enabled, or @{code null} for default.
+     */
+    public Boolean isQueryables() {
+        return queryables;
+    }
+    /**
+     * QUERYABLES conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if Queryables conformance enabled
+     */
+    public boolean queryables(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,queryables,QUERYABLES);
+    }
+    /**
+     * QUERYABLES conformance enablement.
+     *
+     * @param enabled Queryables conformance enabled, or @{code null} for default.
+     */
+    public void setQueryables(Boolean enabled) {
+        queryables = enabled;
+    }
+    /**
+     * IDS conformance enabled by configuration.
+     *
+     * @return IDS conformance enabled, or @{code null} for default.
+     */
+    public Boolean isIDs() {
+        return ids;
+    }
+    /**
+     * IDS conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if IDS conformance enabled
+     */
+    public boolean ids(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,ids,IDS);
+    }
+    /**
+     * IDS conformance enablement.
+     *
+     * @param enabled IDS conformance enabled, or @{code null} for default.
+     */
+    public void setIDs(Boolean enabled) {
+        ids = enabled;;
+    }
+    /**
+     * SORTBY conformance enabled by configuration.
+     *
+     * @return SORTBY conformance enabled, or @{code null} for default.
+     */
+    public Boolean isSortBy() {
+        return sortBy;
+    }
+    /**
+     * SORTBY conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if SORTBY conformance enabled
+     */
+    public boolean sortBy(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo,sortBy,SORTBY);
+    }
+    /**
+     * SORTBY conformance enablement.
+     *
+     * @param enabled SORTBY conformance enabled, or @{code null} for default.
+     */
+    public void setSortBy(Boolean enabled) {
+        sortBy = enabled;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder( super.toString());
+        sb.append(" { core=").append(core);
+        sb.append(", gmlSF0=").append(gmlSF0);
+        sb.append(", gmlSF2=").append(gmlSF2);
+        sb.append(", featuresFilter=").append(featuresFilter);
+        sb.append(", crsByReference=").append(crsByReference);
+        sb.append(", filter=").append(filter);
+        sb.append(", search=").append(search);
+        sb.append(", queryables=").append(queryables);
+        sb.append(", ids=").append(ids);
+        sb.append(", sortBy=").append(sortBy);
+        sb.append('}');
+        return sb.toString();
     }
 }
 

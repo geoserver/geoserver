@@ -362,10 +362,8 @@ public class KMLTest extends WMSTestSupport {
 
         assertXpathEvaluatesTo(
                 "-0.004885780703602904", "//kml:Folder/kml:LookAt/kml:longitude", doc);
-        assertXpathEvaluatesTo(
-                "4.00243024094668", "//kml:Folder/kml:LookAt/kml:latitude", doc);
-        assertXpathEvaluatesTo(
-                "777088.7971299331", "//kml:Folder/kml:LookAt/kml:altitude", doc);
+        assertXpathEvaluatesTo("4.00243024094668", "//kml:Folder/kml:LookAt/kml:latitude", doc);
+        assertXpathEvaluatesTo("777088.7971299331", "//kml:Folder/kml:LookAt/kml:altitude", doc);
     }
 
     @Test

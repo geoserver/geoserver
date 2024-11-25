@@ -16,6 +16,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.coverage.grid.GridCoverageReader;
@@ -130,7 +131,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
                                 + " validated. Got a "
                                 + reader.getClass().getName()
                                 + ". Saving store");
-                doSaveStore(info);
+                if (!doSaveStore(info)) return;
                 if (doReturn) {
                     doReturn(StorePage.class);
                 }
@@ -139,7 +140,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             }
         } else {
             // store's disabled, no need to check for availability
-            doSaveStore(info);
+            if (!doSaveStore(info)) return;
             if (doReturn) {
                 doReturn(StorePage.class);
             }
@@ -191,7 +192,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
      *
      * <p>This method may be subclasses to provide custom save functionality.
      */
-    protected void doSaveStore(final CoverageStoreInfo info) {
+    protected boolean doSaveStore(final CoverageStoreInfo info) {
         try {
             Catalog catalog = getCatalog();
 
@@ -218,9 +219,16 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
                 catalog.save(coverage);
             }
             LOGGER.finer("Saved store " + info.getName());
+        } catch (FileSandboxEnforcer.SandboxException e) {
+            // this one is non recoverable, give up and inform the user
+            error(
+                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
+                            .getString());
+            return false;
         } catch (RuntimeException e) {
             LOGGER.log(Level.WARNING, "Saving the store for " + info.getURL(), e);
             throw new IllegalArgumentException("Unable to save the store: " + e.getMessage());
         }
+        return true;
     }
 }

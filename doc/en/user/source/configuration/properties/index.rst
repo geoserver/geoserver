@@ -314,6 +314,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_FILESYSTEM_SANDBOX
+
+       :doc:`/security/sandbox`
+     - x
+     - x
+     - x
      
 Setting Application property
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

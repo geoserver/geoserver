@@ -33,6 +33,7 @@ import org.geotools.util.logging.Logging;
  */
 public class FileInput extends Panel {
     private static final Logger LOGGER = Logging.getLogger(FileInput.class);
+    private final FileRootsFinder rootsFinder;
     protected TextField<String> textField;
     protected ModalWindow dialog;
     protected IModel<? extends FileFilter> fileFilter;
@@ -55,7 +56,7 @@ public class FileInput extends Panel {
         add(dialog = new ModalWindow("dialog"));
 
         // the text field, with a decorator for validations
-        FileRootsFinder rootsFinder = new FileRootsFinder(false);
+        this.rootsFinder = new FileRootsFinder(false);
         textField =
                 new AutoCompleteTextField<String>("paramValue", getFileModel(paramValue)) {
                     @Override
@@ -156,5 +157,13 @@ public class FileInput extends Panel {
     /** Sets the filter that will act in the file chooser dialog */
     public void setFileFilter(IModel<? extends FileFilter> fileFilter) {
         this.fileFilter = fileFilter;
+    }
+
+    /**
+     * When set to true, will prefix the paths with the file scheme, e.g. <code>
+     * file:///the/full/path</code>
+     */
+    public void setPrefixPaths(boolean prefixPaths) {
+        rootsFinder.setPrefixPaths(prefixPaths);
     }
 }

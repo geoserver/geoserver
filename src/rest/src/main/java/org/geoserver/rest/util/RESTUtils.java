@@ -36,6 +36,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
+import org.geoserver.security.FileAccessManager;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
@@ -391,7 +392,14 @@ public class RESTUtils {
     }
 
     public static String getRootDirectory(String workspaceName, String storeName, Catalog catalog) {
-        String rootDir = getItem(workspaceName, storeName, catalog, ROOT_KEY);
+        String rootDir;
+        FileAccessManager fam = FileAccessManager.lookupFileAccessManager();
+        if (fam.getSandbox() != null) {
+            File root = fam.getSandbox();
+            rootDir = root.getAbsolutePath();
+        } else {
+            rootDir = getItem(workspaceName, storeName, catalog, ROOT_KEY);
+        }
         if (rootDir != null) {
             // Check if it already exists
             File rootFile = new File(rootDir);

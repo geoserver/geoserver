@@ -1690,7 +1690,8 @@ public class ResourcePool {
                         // /////////////////////////////////////////////////////////
                         final String urlString = expandedStore.getURL();
                         Object readObject =
-                                getObjectToRead(urlString, coverageInfo, expandedStore, hints);
+                                getCoverageStoreSource(
+                                        urlString, coverageInfo, expandedStore, hints);
 
                         // readers might change the provided hints, pass down a defensive copy
                         reader = gridFormat.getReader(readObject, hints);
@@ -1763,13 +1764,13 @@ public class ResourcePool {
     }
 
     /**
-     * Attempted to convert the URL-ish string to a parseable input object, otherwise just returns
-     * the string itself
+     * Attempted to convert the URL-ish string to a parseable input object for coverage reading
+     * purposes, otherwise just returns the string itself
      *
      * @param urlString the url string to parse, which may actually be a path
      * @return an object appropriate for passing to a grid coverage reader
      */
-    private Object getObjectToRead(
+    public static Object getCoverageStoreSource(
             String urlString,
             CoverageInfo coverageInfo,
             CoverageStoreInfo coverageStoreInfo,

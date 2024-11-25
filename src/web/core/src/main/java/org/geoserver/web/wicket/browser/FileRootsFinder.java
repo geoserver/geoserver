@@ -10,11 +10,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.FileAccessManager;
 
 /**
  * Support class to locate the file system roots the file chooser uses to locate files, along with
@@ -26,7 +28,7 @@ public class FileRootsFinder implements Serializable {
      * Utility so split and rebuild paths accounting for ResourceStore little own illusion of
      * working on a *nix file system regardless of the actual file system
      */
-    static class PathSplitter {
+    class PathSplitter {
 
         String separator;
         boolean dataDirectoryPath;
@@ -39,8 +41,7 @@ public class FileRootsFinder implements Serializable {
             this.dataDirectoryPath = dataDirectoryPath;
 
             // remove protocol part if needed (we have messy inputs stored that do not always start
-            // with
-            // file:// but sometimes with file:/ and sometimes with file: (no / at all)
+            // with file:// but sometimes with file:/ and sometimes with file: (no / at all)
             if (input.startsWith("file:")) {
                 if (input.startsWith("file:/")) {
                     if (input.startsWith("file://")) {
@@ -72,7 +73,7 @@ public class FileRootsFinder implements Serializable {
         private String buildPath(String name) {
             // Data dir relative path weirdness, the protocol has to be
             // file:/ instead of file:// or it won't work.
-            String prefix = dataDirectoryPath ? "file:" : "file://";
+            String prefix = prefixPaths ? (dataDirectoryPath ? "file:" : "file://") : "";
             // make data dir relative paths actually relative despite user's input
             String localBase = base;
             if (dataDirectoryPath && localBase.startsWith(separator)) {
@@ -88,20 +89,34 @@ public class FileRootsFinder implements Serializable {
 
     private ArrayList<File> roots;
     private File dataDirectory;
+    private boolean prefixPaths = true;
 
     public FileRootsFinder(boolean includeDataDir) {
         this(GeoServerFileChooser.HIDE_FS, includeDataDir);
     }
 
     public FileRootsFinder(boolean hideFileSystem, boolean includeDataDir) {
-        // build the roots
+        // set up for file access restrictions
+        FileAccessManager fam = FileAccessManager.lookupFileAccessManager();
+
+        //  get the roots from the restrictions manager
+        List<File> famRoots = fam.getAvailableRoots();
+        if (famRoots != null) {
+            this.roots = new ArrayList<>(famRoots);
+            // if restrictions are in place, we are done, sort and return
+            Collections.sort(roots);
+            return;
+        }
+
+        // if no restrictions are in place, build the roots from the file system
         roots = new ArrayList<>();
         if (!hideFileSystem) {
             roots.addAll(Arrays.asList(File.listRoots()));
         }
+
         Collections.sort(roots);
 
-        // TODO: find a better way to deal with the data dir
+        // the data directory is always the first root, if it's not hidden
         GeoServerResourceLoader loader = getLoader();
         dataDirectory = loader.getBaseDirectory();
 
@@ -113,6 +128,14 @@ public class FileRootsFinder implements Serializable {
         if (!hideFileSystem && GeoServerFileChooser.USER_HOME != null) {
             roots.add(1, GeoServerFileChooser.USER_HOME);
         }
+    }
+
+    public boolean isPrefixPaths() {
+        return prefixPaths;
+    }
+
+    public void setPrefixPaths(boolean prefixPaths) {
+        this.prefixPaths = prefixPaths;
     }
 
     public ArrayList<File> getRoots() {
@@ -140,22 +163,31 @@ public class FileRootsFinder implements Serializable {
      */
     @SuppressWarnings("PMD.CloseResource")
     public Stream<String> getMatches(String input, FileFilter fileFilter) {
-        // check the data directory (which lives in its own *nix dream, so paths need conversion)
-        PathSplitter ddSplitter = new PathSplitter(input, true);
-        GeoServerResourceLoader loader = getLoader();
-        Resource resource = loader.get(ddSplitter.base);
-        File dataDirectoryRoot = loader.get("/").dir();
-        Stream<String> result =
-                resource.list().stream()
-                        .filter(r -> r.name().toLowerCase().contains(ddSplitter.name))
-                        .filter(
-                                r ->
-                                        fileFilter == null
-                                                || fileFilter.accept(
-                                                        new File(dataDirectoryRoot, r.path())))
-                        .map(r -> ddSplitter.buildPath(r.name()));
+        // null safe, simplify code
+        FileFilter ff = fileFilter == null ? f -> true : fileFilter;
 
-        // check all the roots
+        FileAccessManager fam = FileAccessManager.lookupFileAccessManager();
+        List<File> famRoots = fam.getAvailableRoots();
+
+        // if there are no sandbox restrictions, start by checking the data directory
+        Stream<String> result;
+        if (famRoots == null) {
+            // check the data directory (which lives in its own *nix dream, so paths need
+            // conversion)
+            PathSplitter ddSplitter = new PathSplitter(input, true);
+            GeoServerResourceLoader loader = getLoader();
+            Resource resource = loader.get(ddSplitter.base);
+            File dataDirectoryRoot = loader.get("/").dir();
+            result =
+                    resource.list().stream()
+                            .filter(r -> r.name().toLowerCase().contains(ddSplitter.name))
+                            .filter(r -> ff.accept(new File(dataDirectoryRoot, r.path())))
+                            .map(r -> ddSplitter.buildPath(r.name()));
+        } else {
+            result = Stream.empty();
+        }
+
+        // check all the roots as well
         PathSplitter fsSplitter = new PathSplitter(input, false);
         for (File root : getRoots()) {
             String pathInRoot = fsSplitter.base;
@@ -175,15 +207,20 @@ public class FileRootsFinder implements Serializable {
             if (names != null) {
                 Stream<String> rootPaths =
                         Arrays.stream(names)
-                                .filter(
-                                        name ->
-                                                fileFilter == null
-                                                        || fileFilter.accept(
-                                                                new File(fsSplitter.base, name)))
+                                .filter(name -> ff.accept(new File(fsSplitter.base, name)))
                                 .map(fileName -> fsSplitter.buildPath(fileName));
                 result = Stream.concat(result, rootPaths);
             }
         }
+
+        // the above won't work for roots that are full paths (e.g., sandboxing)
+        // so we need to check the input against the roots themselves
+        String prefix = prefixPaths ? "file://" : "";
+        Stream<String> rootMatches =
+                getRoots().stream()
+                        .filter(root -> root.getPath().contains(input))
+                        .map(r -> prefix + r.getPath());
+        result = Stream.concat(result, rootMatches);
 
         return result.distinct().sorted();
     }

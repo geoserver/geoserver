@@ -18,6 +18,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.data.DataAccess;
@@ -130,7 +131,8 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
                                 + info.getName()
                                 + ". Got a "
                                 + dataStore.getClass().getName());
-                doSaveStore(info);
+                if (!doSaveStore(info)) return;
+
                 if (doReturn) {
                     doReturn(StorePage.class);
                 }
@@ -140,7 +142,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             }
         } else {
             // store's disabled, no need to check the connection parameters
-            doSaveStore(info);
+            if (!doSaveStore(info)) return;
             if (doReturn) {
                 doReturn(StorePage.class);
             }
@@ -202,7 +204,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
      *
      * <p>This method may be subclasses to provide custom save functionality.
      */
-    protected void doSaveStore(final DataStoreInfo info) {
+    protected boolean doSaveStore(final DataStoreInfo info) {
         try {
             final Catalog catalog = getCatalog();
 
@@ -228,9 +230,17 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
                 catalog.save(alreadyConfigured);
             }
             LOGGER.finer("Saved store " + info.getName());
+        } catch (FileSandboxEnforcer.SandboxException e) {
+            // this one is non recoverable, give up and inform the user
+            error(
+                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
+                            .getString());
+            return false;
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving data store to catalog", e);
-            throw new IllegalArgumentException("Error saving data store:" + e.getMessage());
+            throw new IllegalArgumentException("Error saving data store:" + e.getMessage(), e);
         }
+
+        return true;
     }
 }

@@ -12,4 +12,8 @@
   <!-- <mvc:annotation-driven/> -->
   <context:component-scan base-package="org.geoserver.rest"/>
 
+  <bean id="defaultPathMapper" class="org.geoserver.rest.util.RESTUploadExternalPathMapper">
+    <constructor-arg ref="catalog"/>
+  </bean>
+
 </beans>

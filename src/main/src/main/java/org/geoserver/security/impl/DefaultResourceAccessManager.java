@@ -335,6 +335,14 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         rebuildAuthorizationTree(false);
     }
 
+    /**
+     * Forcefully reloads the configuration from the file system. Mostly used for testing (Windows
+     * notifications for file changes are sometimes too slow)
+     */
+    public void reload() {
+        rebuildAuthorizationTree(true);
+    }
+
     private void rebuildAuthorizationTree(boolean force) {
         long daoLastModified = dao.getLastModified();
         if (lastLoaded < daoLastModified || force) {

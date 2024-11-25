@@ -143,6 +143,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -837,15 +838,17 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param password The password.
      * @param roles Roles to assign.
      */
-    protected void login(String username, String password, String... roles) {
+    protected Authentication login(String username, String password, String... roles) {
         SecurityContextHolder.setContext(new SecurityContextImpl());
         List<GrantedAuthority> l = new ArrayList<>();
         for (String role : roles) {
             l.add(new SimpleGrantedAuthority(role));
         }
 
-        SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken(username, password, l));
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(username, password, l);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
     }
 
     protected void addUser(

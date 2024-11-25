@@ -33,7 +33,7 @@
     
     <div wicket:id="table"></div>
 
-  <form wicket:id="catalogModeForm" class="pt-5">
+  <form wicket:id="otherSettingsForm" class="pt-5">
 
     <fieldset>
       <legend>
@@ -42,6 +42,13 @@
       </legend>
       <span id="catalogMode" wicket:id="catalogMode">
         <input type="radio"/>mode 1</span>
+    </fieldset>
+
+    <fieldset wicket:id="sandboxContainer">
+        <legend>
+            <span>Filesystem sandbox</span>
+        </legend>
+        <span wicket:id="sandbox"/>
     </fieldset>
 
     <div class="button-group toolbar-sticky selfclear">

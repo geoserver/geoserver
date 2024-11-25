@@ -11,7 +11,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.data.layer.NewLayerPage;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.coverage.grid.Format;
 
 /**
@@ -62,6 +64,12 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
             savedStore = catalog.getResourcePool().clone(info, false);
             // ... and save
             catalog.save(savedStore);
+        } catch (FileSandboxEnforcer.SandboxException e) {
+            // this one is non recoverable, give up and inform the user
+            error(
+                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
+                            .getString());
+            return; // do not call onSuccessfulSave
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Adding the store for " + info.getURL(), e);
             throw new IllegalArgumentException(

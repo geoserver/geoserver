@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.data.store;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -12,8 +15,10 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Properties;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.feedback.FeedbackMessage;
@@ -27,6 +32,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.impl.DefaultFileAccessManager;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
@@ -37,7 +47,17 @@ import org.postgresql.jdbc.SslMode;
 
 public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
 
+    private static final String ROLE_CITE = "ROLE_CITE";
     private DataStoreInfo store;
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // force creation of the FileSanboxEnforcer (beans are lazy loaded in tests, and this
+        // one registers itself on the catalog on creation)
+        GeoServerExtensions.bean(FileSandboxEnforcer.class, applicationContext);
+    }
 
     @Before
     public void init() {
@@ -294,5 +314,71 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
             }
         }
         assertNotNull(dropDown);
+    }
+
+    @Test
+    public void testDataStoreEditSandbox() throws Exception {
+        // setup sandbox on file system
+        java.io.File sandbox = new java.io.File("./target/sandbox").getCanonicalFile();
+        java.io.File citeFolder = new java.io.File(sandbox, MockData.CITE_PREFIX);
+        java.io.File toppFolder = new java.io.File(sandbox, "topp"); // this won't be allowed
+        citeFolder.mkdirs();
+        toppFolder.mkdirs();
+
+        // no need to have test data, the property data store can use an empty folder
+
+        // setup a sandbox by security config
+        Resource layerSecurity = getDataDirectory().get("security/layers.properties");
+        Properties properties = new Properties();
+        properties.put("filesystemSandbox", sandbox.getAbsolutePath());
+        properties.put("cite.*.a", ROLE_CITE);
+        try (OutputStream os = layerSecurity.out()) {
+            properties.store(os, "sandbox");
+        }
+        DefaultFileAccessManager fam =
+                GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        fam.reload();
+
+        // login as workspace admin (logout happens as @After in base class)
+        login("cite", "pwd", ROLE_CITE);
+        try {
+            tester.startPage(new DataAccessEditPage(store.getId()));
+
+            // cannot save, the current location is outside of the sanbox
+            FormTester form = tester.newFormTester("dataStoreForm");
+            String toppPath = toppFolder.getAbsolutePath();
+            String fileInputPath =
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue";
+            form.setValue(fileInputPath, toppPath);
+            form.submit();
+            tester.clickLink("dataStoreForm:save", true);
+
+            List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
+            assertEquals(1, messages.size());
+            assertThat(
+                    messages.get(0).toString(),
+                    allOf(
+                            containsString("Access to "),
+                            containsString(toppPath),
+                            containsString(" denied by file sandboxing")));
+            tester.clearFeedbackMessages();
+
+            // now try within the sandbox
+            form = tester.newFormTester("dataStoreForm");
+            String citePath = citeFolder.getAbsolutePath();
+            form.setValue(fileInputPath, citePath);
+            form.submit();
+            tester.clickLink("dataStoreForm:save", true);
+
+            // no messages and save worked
+            tester.assertNoErrorMessage();
+            DataStoreInfo store = getCatalog().getDataStoreByName(MockData.CITE_PREFIX);
+            assertEquals(
+                    "file://" + citePath.replace("\\", "/"),
+                    store.getConnectionParameters().get("directory"));
+        } finally {
+            layerSecurity.delete();
+            fam.reload();
+        }
     }
 }

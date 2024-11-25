@@ -183,4 +183,14 @@
     <constructor-arg ref="dataDirectory"/>
   </bean>
 
+  <bean id="defaultFileAdminAccessManager" class="org.geoserver.security.impl.DefaultFileAccessManager">
+    <constructor-arg ref="accessRulesDao"/>
+    <constructor-arg ref="secureCatalog"/>
+    <constructor-arg ref="geoServerSecurityManager"/>
+  </bean>
+
+  <bean id="fileSandboxEnforcer" class="org.geoserver.security.impl.FileSandboxEnforcer">
+    <constructor-arg ref="catalog"/>
+  </bean>
+
 </beans>

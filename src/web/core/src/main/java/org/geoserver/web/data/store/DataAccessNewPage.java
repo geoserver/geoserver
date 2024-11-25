@@ -13,7 +13,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.data.layer.NewLayerPage;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
@@ -45,17 +47,6 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         if (defaultNs == null) {
             throw new IllegalStateException("No default Namespace configured");
         }
-
-        // Param[] parametersInfo = dsFact.getParametersInfo();
-        // for (int i = 0; i < parametersInfo.length; i++) {
-        // Serializable value;
-        // final Param param = parametersInfo[i];
-        // if (param.sample == null || param.sample instanceof Serializable) {
-        // value = (Serializable) param.sample;
-        // } else {
-        // value = String.valueOf(param.sample);
-        // }
-        // }
 
         DataStoreInfo info = getCatalog().getFactory().createDataStore();
         info.setWorkspace(defaultWs);
@@ -111,6 +102,12 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
             savedStore = catalog.getResourcePool().clone(info, false);
             // ...and save
             catalog.add(savedStore);
+        } catch (FileSandboxEnforcer.SandboxException e) {
+            // this one is non recoverable, give up and inform the user
+            error(
+                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
+                            .getString());
+            return; // do not exit
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error adding data store to catalog", e);
             String message = e.getMessage();

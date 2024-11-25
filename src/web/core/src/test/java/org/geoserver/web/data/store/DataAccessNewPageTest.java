@@ -7,20 +7,33 @@ package org.geoserver.web.data.store;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import org.apache.wicket.Component;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.impl.DefaultFileAccessManager;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geoserver.web.data.store.panel.FileParamPanel;
@@ -38,6 +51,17 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
     /** print page structure? */
     private static final boolean debugMode = false;
+
+    private static final String ROLE_CITE = "ROLE_CITE";
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // force creation of the FileSanboxEnforcer (beans are lazy loaded in tests, and this
+        // one registers itself on the catalog on creation)
+        GeoServerExtensions.bean(FileSandboxEnforcer.class, applicationContext);
+    }
 
     private AbstractDataAccessPage startPage() {
         login();
@@ -224,5 +248,90 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         DataStoreInfo store = getCatalog().getDataStoreByName(name);
         assertNotNull(store);
         assertTrue(store.isDisableOnConnFailure());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testDataStoreNewSandbox() throws Exception {
+        // setup sandbox on file system
+        java.io.File sandbox = new java.io.File("./target/sandbox").getCanonicalFile();
+        java.io.File citeFolder = new java.io.File(sandbox, MockData.CITE_PREFIX);
+        java.io.File toppFolder = new java.io.File(sandbox, "topp"); // this won't be allowed
+        citeFolder.mkdirs();
+        toppFolder.mkdirs();
+
+        // no need to have test data, the property data store can use an empty folder
+
+        // setup a sandbox by security config
+        Resource layerSecurity = getDataDirectory().get("security/layers.properties");
+        Properties properties = new Properties();
+        properties.put("filesystemSandbox", sandbox.getAbsolutePath());
+        properties.put("cite.*.a", ROLE_CITE);
+        try (OutputStream os = layerSecurity.out()) {
+            properties.store(os, "sandbox");
+        }
+        DefaultFileAccessManager fam =
+                GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        fam.reload();
+
+        // login as workspace admin (logout happens as @After in base class)
+        startPage();
+        try {
+            login("cite", "pwd", ROLE_CITE);
+            FormTester ft = tester.newFormTester("dataStoreForm");
+
+            DropDownChoice<WorkspaceInfo> select =
+                    (DropDownChoice<WorkspaceInfo>)
+                            tester.getComponentFromLastRenderedPage(
+                                    "dataStoreForm:workspacePanel:border:border_body:paramValue");
+            List<? extends WorkspaceInfo> workspaces = select.getChoices();
+            int citeIdx = -1;
+            for (int i = 0; i < workspaces.size(); i++) {
+                if (MockData.CITE_PREFIX.equals(workspaces.get(i).getName())) {
+                    citeIdx = i;
+                    break;
+                }
+            }
+
+            // cannot save, the current location is outside of the sandbox
+            String storeName = "cite2";
+            String toppPath = toppFolder.getAbsolutePath();
+            ft.setValue("dataStoreNamePanel:border:border_body:paramValue", storeName);
+            ft.select("workspacePanel:border:border_body:paramValue", citeIdx);
+            ft.setValue(
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
+                    toppPath);
+            ft.submit("save");
+
+            List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
+            assertEquals(1, messages.size());
+            assertThat(
+                    messages.get(0).toString(),
+                    allOf(
+                            containsString("Access to "),
+                            containsString(toppPath),
+                            containsString(" denied by file sandboxing")));
+            tester.clearFeedbackMessages();
+
+            // now try within the sandbox
+            String citePath = citeFolder.getAbsolutePath();
+            ft = tester.newFormTester("dataStoreForm");
+            ft.setValue("dataStoreNamePanel:border:border_body:paramValue", storeName);
+            ft.select("workspacePanel:border:border_body:paramValue", citeIdx);
+            ft.setValue(
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
+                    citePath);
+            ft.submit("save");
+
+            // no messages and save worked
+            tester.assertNoErrorMessage();
+            DataStoreInfo store = getCatalog().getDataStoreByName(storeName);
+            assertEquals(
+                    "file://" + citePath.replace("\\", "/"),
+                    store.getConnectionParameters().get("directory"));
+        } finally {
+            layerSecurity.delete();
+            fam.reload();
+        }
     }
 }

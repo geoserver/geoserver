@@ -99,38 +99,36 @@ public class WFSPPIO extends XMLPPIO {
             net.opengis.wfs.FeatureCollectionType fct =
                     (net.opengis.wfs.FeatureCollectionType) input;
             fc = (SimpleFeatureCollection) fct.getFeature().get(0);
-            // Axis flipping issue, we should determine if the collection needs flipping
-            if (fc.getSchema().getGeometryDescriptor() != null) {
-                CoordinateReferenceSystem crs = getCollectionCRS(fc);
-                if (crs != null) {
-                    // do we need to force the crs onto the collection?
-                    CoordinateReferenceSystem nativeCrs =
-                            fc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem();
-                    if (nativeCrs == null) {
-                        // we need crs forcing
-                        fc = new ForceCoordinateSystemFeatureResults(fc, crs, false);
-                    }
-
-                    // we assume the crs has a valid identity
-                    String identifier = ResourcePool.lookupIdentifier(crs, false);
-                    if (identifier != null) {
-                        String eastNorthId = SrsSyntax.AUTH_CODE.getSRS(identifier);
-                        CoordinateReferenceSystem lonLatCrs = CRS.decode(eastNorthId, true);
-                        if (!CRS.equalsIgnoreMetadata(crs, lonLatCrs)) {
-                            // we need axis flipping
-                            fc = new ReprojectingFeatureCollection(fc, lonLatCrs);
-                        }
-                    }
-                }
-            }
-
         } else {
             // WFS 2.0.0
             net.opengis.wfs20.FeatureCollectionType fct =
                     (net.opengis.wfs20.FeatureCollectionType) input;
             fc = (SimpleFeatureCollection) fct.getMember().get(0);
         }
+        // Axis flipping issue, we should determine if the collection needs flipping
+        if (fc.getSchema().getGeometryDescriptor() != null) {
+            CoordinateReferenceSystem crs = getCollectionCRS(fc);
+            if (crs != null) {
+                // do we need to force the crs onto the collection?
+                CoordinateReferenceSystem nativeCrs =
+                        fc.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem();
+                if (nativeCrs == null) {
+                    // we need crs forcing
+                    fc = new ForceCoordinateSystemFeatureResults(fc, crs, false);
+                }
 
+                // we assume the crs has a valid identity
+                String identifier = ResourcePool.lookupIdentifier(crs, false);
+                if (identifier != null) {
+                    String eastNorthId = SrsSyntax.AUTH_CODE.getSRS(identifier);
+                    CoordinateReferenceSystem lonLatCrs = CRS.decode(eastNorthId, true);
+                    if (!CRS.equalsIgnoreMetadata(crs, lonLatCrs)) {
+                        // we need axis flipping
+                        fc = new ReprojectingFeatureCollection(fc, lonLatCrs);
+                    }
+                }
+            }
+        }
         return eliminateFeatureBounds(fc);
     }
 

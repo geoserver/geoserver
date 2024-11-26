@@ -134,7 +134,8 @@ public class MapMLDocumentBuilder {
     public static final String DEFAULT_MIME_TYPE = "image/png";
 
     private final WMS wms;
-
+    private static final String BBOX_PARAMS = "{xmin},{ymin},{xmax},{ymax}";
+    private static final String BBOX_PARAMS_YX = "{ymin},{xmin},{ymax},{xmax}";
     private final GeoServer geoServer;
 
     private final WMSMapContent mapContent;
@@ -185,6 +186,7 @@ public class MapMLDocumentBuilder {
 
     private Boolean isMultiExtent = MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
     private MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
+    private boolean forceYX = false;
 
     /**
      * Constructor
@@ -220,7 +222,7 @@ public class MapMLDocumentBuilder {
                         cqlCommadDelimited.isEmpty()
                                 ? null
                                 : Arrays.asList(cqlCommadDelimited.split(";", -1)));
-        this.proj = getMapRequest.getSRS();
+        this.proj = extractCRS(getMapRequest.getRawKvp());
         this.height = getMapRequest.getHeight();
         this.width = getMapRequest.getWidth();
         this.bbox = toCommaDelimitedBbox(getMapRequest.getBbox());
@@ -235,6 +237,19 @@ public class MapMLDocumentBuilder {
                 layers.stream().map(RawLayer::getName).collect(Collectors.joining(","));
         this.layerTitlesCommaDelimited =
                 layers.stream().map(RawLayer::getTitle).collect(Collectors.joining(","));
+    }
+
+    private String extractCRS(Map<String, String> rawKvp) {
+        String srs = null;
+        String version = rawKvp.get("VERSION");
+        if ("1.3.0".equalsIgnoreCase(version)) {
+            srs = rawKvp.get("CRS");
+        }
+        if (srs == null) {
+            // Fallback on SRS, just in case.
+            srs = rawKvp.get("SRS");
+        }
+        return srs;
     }
 
     /**
@@ -357,7 +372,23 @@ public class MapMLDocumentBuilder {
             imageFormat = (String) format.orElse(mapMLLayerMetadata.getDefaultMimeType());
             baseUrl = ResponseUtils.baseURL(request);
             baseUrlPattern = baseUrl;
+            forceYX = isYX();
         }
+    }
+
+    private boolean isYX() {
+        if (!projType.isBuiltIn()) {
+            String code = projType.getCRSCode();
+            code = WMS.toInternalSRS(code, WMS.version("1.3.0"));
+            CoordinateReferenceSystem crs13;
+            try {
+                crs13 = CRS.decode(code);
+                return CRS.getAxisOrder(crs13) == CRS.AxisOrder.NORTH_EAST;
+            } catch (FactoryException e) {
+                throw new ServiceException(e);
+            }
+        }
+        return false;
     }
 
     /**
@@ -1583,7 +1614,7 @@ public class MapMLDocumentBuilder {
         setTimeParam(mapMLLayerMetadata, params, null);
         setElevationParam(mapMLLayerMetadata, params, null);
         setCustomDimensionParam(mapMLLayerMetadata, params, null);
-        params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
+        params.put("bbox", forceYX ? BBOX_PARAMS_YX : BBOX_PARAMS);
         if (mapMLLayerMetadata.isUseFeatures()) {
             params.put("format", MAPML_MIME_TYPE);
             params.put("format_options", MAPML_FEATURE_FO + ":true");
@@ -1720,7 +1751,7 @@ public class MapMLDocumentBuilder {
             params.put("width", "256");
             params.put("height", "256");
         } else {
-            params.put("bbox", "{xmin},{ymin},{xmax},{ymax}");
+            params.put("bbox", forceYX ? BBOX_PARAMS_YX : BBOX_PARAMS);
             params.put("width", "{w}");
             params.put("height", "{h}");
         }

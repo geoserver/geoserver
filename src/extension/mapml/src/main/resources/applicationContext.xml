@@ -92,5 +92,15 @@
         <property name="componentClass" value="org.geoserver.mapml.web.MapMLAdminPanel"/>
         <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
     </bean>
+
+    <bean id="mapMLTCRSSettingsPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="mapMLTCRSSettings"/>
+        <property name="titleKey" value="MapMLTCRSSettingsPage.title"/>
+        <property name="descriptionKey" value="MapMLTCRSSettingsPage.description"/>
+        <property name="componentClass" value="org.geoserver.mapml.web.MapMLTCRSSettingsPage" />
+        <property name="category" ref="settingsCategory" />
+        <property name="icon" value="img/icons/crs.png"/>
+        <property name="order" value="20"/>
+    </bean>
     <bean id="charArrayWriterPool" class="org.geoserver.mapml.template.CharArrayWriterPool"/>
 </beans>

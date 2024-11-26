@@ -33,7 +33,7 @@
       <div class="card h-100">
         <div class="card-body">
           <h2>Functions</h2>
-          <p>The <a id="functionsLink" href="${model.getLinkUrl('functions', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service.
+          <p>The <a id="functionsLink" href="${model.getLinkUrl('functions', 'text/html')!}"> functions page</a> provides a list of all the functions available to build filters.
           <br/>
         </div>
       </div>

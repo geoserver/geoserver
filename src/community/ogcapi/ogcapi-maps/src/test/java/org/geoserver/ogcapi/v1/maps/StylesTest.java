@@ -43,9 +43,9 @@ public class StylesTest extends MapsTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/maps/v1/collections/BlueMarble/styles?f=application/x-yaml");
+        String yaml = getAsString("ogc/maps/v1/collections/BlueMarble/styles?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
-        testStylesJson(json, MediaType.parseMediaType("application/x-yaml"));
+        testStylesJson(json, MediaType.parseMediaType("application/yaml"));
     }
 
     private void testStylesJson(DocumentContext json, MediaType defaultFormat) {

@@ -103,6 +103,26 @@ public class GetFeatureTest extends WFSTestSupport {
             }
         }
         assertEquals(features.getLength(), count);
+
+        // Same test but this time there is a slash before the question mark
+        Document docSlashBeforeQuestion =
+                getAsDOM(
+                        "wfs/?request=GetFeature&typename=cite:Ponds&version=1.1.0&cql_filter=TYPE%3D%27Stock%20Pond%27&propertyname=TYPE");
+        features = docSlashBeforeQuestion.getElementsByTagName("cite:Ponds");
+        assertNotEquals(0, features.getLength());
+        count = 0;
+        for (int i = 0; i < features.getLength(); i++) {
+            Element feature = (Element) features.item(i);
+            for (int j = 0; j < feature.getChildNodes().getLength(); j++) {
+                if (feature.getChildNodes().item(j).getNodeName().equals("cite:TYPE")) {
+                    count++;
+                }
+                if (feature.getChildNodes().item(j).getNodeName().equals("cite:NAME")) {
+                    fail("Unexpected property found");
+                }
+            }
+        }
+        assertEquals(features.getLength(), count);
     }
 
     private void testGetFifteenAll(String request) throws Exception {

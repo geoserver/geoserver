@@ -13,7 +13,6 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_REMOTE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
-import static org.geoserver.mapml.MapMLHTMLOutput.PREVIEW_TCRS_MAP;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
 import static org.geoserver.wms.capabilities.DimensionHelper.getDataType;
@@ -65,6 +64,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.tcrs.Bounds;
+import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.mapml.tcrs.TiledCRS;
 import org.geoserver.mapml.template.MapMLMapTemplate;
 import org.geoserver.mapml.xml.AxisType;
@@ -157,7 +157,7 @@ public class MapMLDocumentBuilder {
     private String imageFormat = DEFAULT_MIME_TYPE;
     private String baseUrl;
     private String baseUrlPattern;
-    private ProjType projType;
+    private MapMLProjection projType;
     private MetadataMap layerMeta;
     private int height;
     private int width;
@@ -408,7 +408,7 @@ public class MapMLDocumentBuilder {
         mapMLLayerMetadata.setTimeEnabled(false);
         mapMLLayerMetadata.setElevationEnabled(false);
         mapMLLayerMetadata.setTransparent(transparent.orElse(false));
-        ProjType projType = parseProjType();
+        MapMLProjection projType = parseProjType();
         mapMLLayerMetadata.setBbbox(layersToBBBox(layers, projType));
         mapMLLayerMetadata.setQueryable(layersToQueryable(layers));
         mapMLLayerMetadata.setLayerLabel(layersToLabel(layers));
@@ -422,9 +422,9 @@ public class MapMLDocumentBuilder {
      * Parses the projection into a ProjType, or throws a proper service exception indicating the
      * unsupported CRS
      */
-    private ProjType parseProjType() {
+    private MapMLProjection parseProjType() {
         try {
-            return ProjType.fromValue(proj.toUpperCase());
+            return new MapMLProjection(proj.toUpperCase());
         } catch (IllegalArgumentException | FactoryException iae) {
             // figure out the parameter name (version dependent) and the actual original
             // string value for the srs/crs parameter
@@ -488,10 +488,9 @@ public class MapMLDocumentBuilder {
      * @param projType ProjType object
      * @return ReferencedEnvelope object
      */
-    private ReferencedEnvelope layersToBBBox(List<RawLayer> layers, ProjType projType) {
-
+    private ReferencedEnvelope layersToBBBox(List<RawLayer> layers, MapMLProjection projType) {
         ReferencedEnvelope bbbox;
-        bbbox = new ReferencedEnvelope(PREVIEW_TCRS_MAP.get(projType.value()).getCRS());
+        bbbox = new ReferencedEnvelope(projType.getCRS());
         for (int i = 0; i < layers.size(); i++) {
             RawLayer layer = layers.get(i);
             try {
@@ -502,26 +501,20 @@ public class MapMLDocumentBuilder {
                                         .getResource()
                                         .boundingBox();
                 if (i == 0) {
-                    bbbox =
-                            layerBbbox.transform(
-                                    PREVIEW_TCRS_MAP.get(projType.value()).getCRS(), true);
+                    bbbox = layerBbbox.transform(projType.getCRS(), true);
                 } else {
-                    bbbox.expandToInclude(
-                            layerBbbox.transform(
-                                    PREVIEW_TCRS_MAP.get(projType.value()).getCRS(), true));
+                    bbbox.expandToInclude(layerBbbox.transform(projType.getCRS(), true));
                 }
             } catch (Exception e) {
                 // get the default max/min of the pcrs from the TCRS
-                Bounds defaultBounds = PREVIEW_TCRS_MAP.get(projType.value()).getBounds();
+                Bounds defaultBounds = projType.getTiledCRS().getBounds();
                 double x1, x2, y1, y2;
                 x1 = defaultBounds.getMin().x;
                 x2 = defaultBounds.getMax().x;
                 y1 = defaultBounds.getMin().y;
                 y2 = defaultBounds.getMax().y;
                 // use the bounds of the TCRS as the default bounds for this layer
-                bbbox =
-                        new ReferencedEnvelope(
-                                x1, x2, y1, y2, PREVIEW_TCRS_MAP.get(projType.value()).getCRS());
+                bbbox = new ReferencedEnvelope(x1, x2, y1, y2, projType.getCRS());
             }
         }
 
@@ -595,7 +588,7 @@ public class MapMLDocumentBuilder {
                             .orElse(DEFAULT_MIME_TYPE)
                             .toString();
         }
-        ProjType projType = parseProjType();
+        MapMLProjection projType = parseProjType();
         cqlFilter = cql != null ? cql : "";
         tileLayerExists =
                 gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
@@ -843,15 +836,18 @@ public class MapMLDocumentBuilder {
         selfStyleLink.setHref(selfStyleURL);
         links.add(selfStyleLink);
         // alternate projection links
+        ProjType builtInProj = projType.unwrap();
         for (ProjType pt : ProjType.values()) {
             // skip the current proj
-            if (pt.equals(projType)) continue;
+
+            if (pt.equals(builtInProj)) continue;
             try {
                 Link projectionLink = new Link();
                 projectionLink.setRel(RelType.ALTERNATE);
-                projectionLink.setProjection(pt);
+                projectionLink.setProjection(pt.value());
                 // reproject the bounds
-                ReferencedEnvelope reprojectedBounds = reproject(projectedBox, pt);
+                ReferencedEnvelope reprojectedBounds =
+                        reproject(projectedBox, new MapMLProjection(pt));
                 // Copy the base params to create one for self style
                 Map<String, String> projParams = new HashMap<>(wmsParams);
                 projParams.put("crs", pt.getCRSCode());
@@ -972,9 +968,9 @@ public class MapMLDocumentBuilder {
      * @throws FactoryException In the event of a factory error.
      * @throws TransformException In the event of a transform error.
      */
-    private ReferencedEnvelope reproject(ReferencedEnvelope bounds, ProjType pt)
+    private ReferencedEnvelope reproject(ReferencedEnvelope bounds, MapMLProjection pt)
             throws FactoryException, TransformException {
-        CoordinateReferenceSystem targetCRS = PREVIEW_TCRS_MAP.get(pt.value()).getCRS();
+        CoordinateReferenceSystem targetCRS = pt.getCRS();
         // leverage the rendering ProjectionHandlers to build a set of envelopes
         // inside the valid area of the target CRS, and fuse them
         ProjectionHandler ph = ProjectionHandlerFinder.getHandler(bounds, targetCRS, true);
@@ -1019,7 +1015,8 @@ public class MapMLDocumentBuilder {
         List<Extent> extents = new ArrayList<>();
         for (MapMLLayerMetadata mapMLLayerMetadata : mapMLLayerMetadataList) {
             Extent extent = new Extent();
-            extent.setUnits(projType);
+            TiledCRS tiledCRS = projType.getTiledCRS();
+            extent.setUnits(tiledCRS.getName());
             extentList = extent.getInputOrDatalistOrLink();
 
             // zoom
@@ -1036,7 +1033,6 @@ public class MapMLDocumentBuilder {
             }
 
             Input extentZoomInput = new Input();
-            TiledCRS tiledCRS = PREVIEW_TCRS_MAP.get(projType.value());
             extentZoomInput.setName("z");
             extentZoomInput.setType(InputType.ZOOM);
             // passing in max sld denominator to get min zoom
@@ -1046,7 +1042,7 @@ public class MapMLDocumentBuilder {
                                     tiledCRS.getMinZoomForDenominator(
                                             scaleDenominators.getMaxValue().intValue()))
                             : "0");
-            int mxz = PREVIEW_TCRS_MAP.get(projType.value()).getScales().length - 1;
+            int mxz = tiledCRS.getScales().length - 1;
             // passing in min sld denominator to get max zoom
             String maxZoom =
                     scaleDenominators != null
@@ -1362,7 +1358,7 @@ public class MapMLDocumentBuilder {
             // of WGS84 is a cartesian cs per the table on this page:
             // https://docs.geotools.org/stable/javadocs/org/opengis/referencing/cs/package-summary.html#AxisNames
             // input.setAxis(previewTcrsMap.get(projType.value()).getCRS(UnitType.PCRS).getAxisByDirection(AxisDirection.DISPLAY_RIGHT));
-            bbbox = new ReferencedEnvelope(PREVIEW_TCRS_MAP.get(projType.value()).getCRS());
+            bbbox = new ReferencedEnvelope(projType.getCRS());
             LayerInfo layerInfo = mapMLLayerMetadata.getLayerInfo();
 
             try {
@@ -1370,12 +1366,12 @@ public class MapMLDocumentBuilder {
                         mapMLLayerMetadata.isLayerGroup()
                                 ? mapMLLayerMetadata.getLayerGroupInfo().getBounds()
                                 : layerInfo.getResource().boundingBox();
-                bbbox = bbbox.transform(PREVIEW_TCRS_MAP.get(projType.value()).getCRS(), true);
+                bbbox = bbbox.transform(projType.getCRS(), true);
             } catch (Exception e) {
                 // sometimes, when the geographicBox is right to 90N or 90S, in epsg:3857,
                 // the transform method will throw. In that case, use the
                 // bounds of the TCRS to define the geographicBox for the layer
-                TiledCRS t = PREVIEW_TCRS_MAP.get(projType.value());
+                TiledCRS t = projType.getTiledCRS();
                 double x1 = t.getBounds().getMax().x;
                 double y1 = t.getBounds().getMax().y;
                 double x2 = t.getBounds().getMin().x;
@@ -1392,7 +1388,7 @@ public class MapMLDocumentBuilder {
         input.setUnits(UnitType.TILEMATRIX);
         input.setPosition(PositionType.TOP_LEFT);
         input.setRel(InputRelType.TILE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LONGITUDE : AxisType.EASTING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LONGITUDE : AxisType.EASTING);
         input.setMin(Double.toString(bbbox.getMinX()));
         input.setMax(Double.toString(bbbox.getMaxX()));
         extentList.add(input);
@@ -1404,7 +1400,7 @@ public class MapMLDocumentBuilder {
         input.setUnits(UnitType.TILEMATRIX);
         input.setPosition(PositionType.BOTTOM_LEFT);
         input.setRel(InputRelType.TILE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LATITUDE : AxisType.NORTHING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LATITUDE : AxisType.NORTHING);
         input.setMin(Double.toString(bbbox.getMinY()));
         input.setMax(Double.toString(bbbox.getMaxY()));
         extentList.add(input);
@@ -1416,7 +1412,7 @@ public class MapMLDocumentBuilder {
         input.setUnits(UnitType.TILEMATRIX);
         input.setPosition(PositionType.TOP_RIGHT);
         input.setRel(InputRelType.TILE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LONGITUDE : AxisType.EASTING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LONGITUDE : AxisType.EASTING);
         input.setMin(Double.toString(bbbox.getMinX()));
         input.setMax(Double.toString(bbbox.getMaxX()));
         extentList.add(input);
@@ -1428,7 +1424,7 @@ public class MapMLDocumentBuilder {
         input.setUnits(UnitType.TILEMATRIX);
         input.setPosition(PositionType.TOP_LEFT);
         input.setRel(InputRelType.TILE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LATITUDE : AxisType.NORTHING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LATITUDE : AxisType.NORTHING);
         input.setMin(Double.toString(bbbox.getMinY()));
         input.setMax(Double.toString(bbbox.getMaxY()));
         extentList.add(input);
@@ -1490,7 +1486,7 @@ public class MapMLDocumentBuilder {
             try {
                 // initialization is necessary so as to set the PCRS to which
                 // the resource's geographicBox will be transformed, below.
-                bbbox = new ReferencedEnvelope(PREVIEW_TCRS_MAP.get(projType.value()).getCRS());
+                bbbox = new ReferencedEnvelope(projType.getCRS());
                 bbbox =
                         mapMLLayerMetadata.isLayerGroup
                                 ? mapMLLayerMetadata.getLayerGroupInfo().getBounds()
@@ -1503,19 +1499,17 @@ public class MapMLDocumentBuilder {
                 // the projectedBox.transform will leave the CRS set to that of whatever
                 // was returned by layerInfo.getResource().boundingBox() or
                 // layerGroupInfo.getBounds(), above.
-                bbbox = bbbox.transform(PREVIEW_TCRS_MAP.get(projType.value()).getCRS(), true);
+                bbbox = bbbox.transform(projType.getCRS(), true);
             } catch (Exception e) {
                 // get the default max/min of the pcrs from the TCRS
-                Bounds defaultBounds = PREVIEW_TCRS_MAP.get(projType.value()).getBounds();
+                Bounds defaultBounds = projType.getTiledCRS().getBounds();
                 double x1, x2, y1, y2;
                 x1 = defaultBounds.getMin().x;
                 x2 = defaultBounds.getMax().x;
                 y1 = defaultBounds.getMin().y;
                 y2 = defaultBounds.getMax().y;
                 // use the bounds of the TCRS as the default bounds for this layer
-                bbbox =
-                        new ReferencedEnvelope(
-                                x1, x2, y1, y2, PREVIEW_TCRS_MAP.get(projType.value()).getCRS());
+                bbbox = new ReferencedEnvelope(x1, x2, y1, y2, projType.getCRS());
             }
         }
 
@@ -1524,10 +1518,10 @@ public class MapMLDocumentBuilder {
         Input input = new Input();
         input.setName("xmin");
         input.setType(InputType.LOCATION);
-        input.setUnits(projType == projType.WGS_84 ? UnitType.GCRS : UnitType.PCRS);
+        input.setUnits(ProjType.WGS_84 == projType.unwrap() ? UnitType.GCRS : UnitType.PCRS);
         input.setPosition(PositionType.TOP_LEFT);
         input.setRel(InputRelType.IMAGE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LONGITUDE : AxisType.EASTING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LONGITUDE : AxisType.EASTING);
         input.setMin(Double.toString(bbbox.getMinX()));
         input.setMax(Double.toString(bbbox.getMaxX()));
         extentList.add(input);
@@ -1536,10 +1530,10 @@ public class MapMLDocumentBuilder {
         input = new Input();
         input.setName("ymin");
         input.setType(InputType.LOCATION);
-        input.setUnits(projType == projType.WGS_84 ? UnitType.GCRS : UnitType.PCRS);
+        input.setUnits(ProjType.WGS_84 == projType.unwrap() ? UnitType.GCRS : UnitType.PCRS);
         input.setPosition(PositionType.BOTTOM_LEFT);
         input.setRel(InputRelType.IMAGE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LATITUDE : AxisType.NORTHING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LATITUDE : AxisType.NORTHING);
         input.setMin(Double.toString(bbbox.getMinY()));
         input.setMax(Double.toString(bbbox.getMaxY()));
         extentList.add(input);
@@ -1548,10 +1542,10 @@ public class MapMLDocumentBuilder {
         input = new Input();
         input.setName("xmax");
         input.setType(InputType.LOCATION);
-        input.setUnits(projType == projType.WGS_84 ? UnitType.GCRS : UnitType.PCRS);
+        input.setUnits(ProjType.WGS_84 == projType.unwrap() ? UnitType.GCRS : UnitType.PCRS);
         input.setPosition(PositionType.TOP_RIGHT);
         input.setRel(InputRelType.IMAGE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LONGITUDE : AxisType.EASTING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LONGITUDE : AxisType.EASTING);
         input.setMin(Double.toString(bbbox.getMinX()));
         input.setMax(Double.toString(bbbox.getMaxX()));
         extentList.add(input);
@@ -1560,10 +1554,10 @@ public class MapMLDocumentBuilder {
         input = new Input();
         input.setName("ymax");
         input.setType(InputType.LOCATION);
-        input.setUnits(projType == projType.WGS_84 ? UnitType.GCRS : UnitType.PCRS);
+        input.setUnits(ProjType.WGS_84 == projType.unwrap() ? UnitType.GCRS : UnitType.PCRS);
         input.setPosition(PositionType.TOP_LEFT);
         input.setRel(InputRelType.IMAGE);
-        input.setAxis(projType == projType.WGS_84 ? AxisType.LATITUDE : AxisType.NORTHING);
+        input.setAxis(ProjType.WGS_84 == projType.unwrap() ? AxisType.LATITUDE : AxisType.NORTHING);
         input.setMin(Double.toString(bbbox.getMinY()));
         input.setMax(Double.toString(bbbox.getMaxY()));
         extentList.add(input);
@@ -2314,7 +2308,7 @@ public class MapMLDocumentBuilder {
         private boolean isTransparent;
         private String layerName;
         private String layerTitle;
-        private ProjType projType;
+        private MapMLProjection projType;
         private String styleName;
         private boolean tileLayerExists;
 
@@ -2361,7 +2355,7 @@ public class MapMLDocumentBuilder {
          * @param isTransparent boolean
          * @param layerName String
          * @param layerTitle String
-         * @param projType ProjType object
+         * @param projType ProjType
          * @param styleName String
          * @param tileLayerExists boolean
          * @param useTiles boolean
@@ -2378,7 +2372,7 @@ public class MapMLDocumentBuilder {
                 boolean isTransparent,
                 String layerName,
                 String layerTitle,
-                ProjType projType,
+                MapMLProjection projType,
                 String styleName,
                 boolean tileLayerExists,
                 boolean useTiles,
@@ -2678,7 +2672,7 @@ public class MapMLDocumentBuilder {
          *
          * @return ProjType
          */
-        public ProjType getProjType() {
+        public MapMLProjection getProjType() {
             return projType;
         }
 
@@ -2687,7 +2681,7 @@ public class MapMLDocumentBuilder {
          *
          * @param projType ProjType
          */
-        public void setProjType(ProjType projType) {
+        public void setProjType(MapMLProjection projType) {
             this.projType = projType;
         }
 

@@ -32,6 +32,8 @@ war:	## 					Build the geoserver.war file to use for testing and place it in ./g
 	@$(MAKE) build-war
 	@$(MAKE) copy-war
 
+# calls build-ets-image and build-geoserver-image
+# the CI job may call them independently for the sake of using separate job steps
 .PHONY: build
 build: ##	suite=<suite>				Build the GeoServer Docker Image for the Environment.
 ifndef suite
@@ -39,9 +41,32 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
+	@$(MAKE) build-ets-image
+	@$(MAKE) build-geoserver-image
+
+# preparing the geoserver image is performed with docker-compose build including $suite/compose-override.yml
+.PHONY: build-geoserver-image
+build-geoserver-image:
+ifndef suite
+	@echo "Error: suite is not specified. Please specify the suite to build the GeoServer Docker image for."
+	@exit 1
+endif
 	@echo Building the GeoServer Docker Image for the $(suite) test suite
 	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
 	  build --no-cache --build-arg SOURCE_FILE=${war_url} geoserver
+
+# If there's a $suite/build-ets.sh file calls it, otherwise exists silently
+.PHONY: build-ets-image
+build-ets-image:
+ifndef suite
+	@echo "Error: suite is not specified. Please specify the suite to build the GeoServer Docker image for."
+	@exit 1
+endif
+	@if [ -f "$(suite)/build-ets.sh" ]; then \
+		(cd $(suite) && ./build-ets.sh); \
+	else \
+		echo "$(suite) has no special script to build the ETS docker image."; \
+	fi
 
 .PHONY: test
 test: ##	suite=<suite>				Run the Test Suite with teamengine and GeoServer on docker compose.
@@ -137,7 +162,7 @@ endif
 
 .PHONY: ogcapi-features10-localhost
 ogcapi-features10-localhost: ###			Shortcut for make test-localhost suite=ogcapi-features10
-	@$(MAKE) test-external suite=ogcapi-features10 iut="http://172.17.0.1:8080/geoserver/ogc/features/v1"
+	@$(MAKE) test-localhost suite=ogcapi-features10
 
 
 .PHONY: cleanlogs
@@ -228,9 +253,9 @@ pull: $(suite)
 
 .PHONY: build-war
 build-war:
-	@mvn -Prelease,ogcapi-features \
+	@mvn -Pogcapi-features \
 	clean package -f ../../src/pom.xml \
-	-DskipTests  -B -ntp -U -T3 -fae
+	-DskipTests  -B -ntp -U -T1C -fae -pl :gs-web-app -am
 
 .PHONY: copy-war
 copy-war:
@@ -282,7 +307,7 @@ print-logs:
 
 # Used in CI/CD to print which services and images are going to be run
 # Requires `jq`, comes pre-installed in github actions `ubuntu-latest`
-.PHONY: print-docker-compose-services
+.PHONY: print-services
 print-services: ### suite=<suite>			Print the service names and docker images used for a given suite
 ifndef suite
 	@echo "Error: suite is not specified."

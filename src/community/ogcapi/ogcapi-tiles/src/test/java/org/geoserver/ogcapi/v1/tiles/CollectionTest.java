@@ -102,15 +102,16 @@ public class CollectionTest extends TilesTestSupport {
         // queryables
         String queryablesLink =
                 readSingle(
-                        json, "$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
+                        json,
+                        "$.links[?(@.rel=='queryables' && @.type=='application/schema+json')].href");
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:RoadSegments/queryables?f=application%2Fjson",
+                "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:RoadSegments/queryables?f=application%2Fschema%2Bjson",
                 queryablesLink);
         String queryablesTitle =
                 readSingle(
                         json,
-                        "$.links[?(@.rel=='queryables' && @.type=='application/json')].title");
-        assertEquals("Collection queryables as application/json", queryablesTitle);
+                        "$.links[?(@.rel=='queryables' && @.type=='application/schema+json')].title");
+        assertEquals("Collection queryables as application/schema+json", queryablesTitle);
     }
 
     @Test
@@ -119,7 +120,7 @@ public class CollectionTest extends TilesTestSupport {
                 getAsString(
                         "ogc/tiles/v1/collections/"
                                 + getLayerId(MockData.ROAD_SEGMENTS)
-                                + "?f=application/x-yaml");
+                                + "?f=application/yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testRoadsCollectionJson(json);
     }

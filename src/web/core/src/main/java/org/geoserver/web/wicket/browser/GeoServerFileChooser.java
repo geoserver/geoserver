@@ -82,7 +82,6 @@ public class GeoServerFileChooser extends Panel {
         FileRootsFinder fileRootsFinder = new FileRootsFinder(hideFileSystem, true);
         ArrayList<File> roots = fileRootsFinder.getRoots();
         GeoServerResourceLoader loader = fileRootsFinder.getLoader();
-        File dataDirectory = fileRootsFinder.getDataDirectory();
 
         // find under which root the selection should be placed
         File selection = file.getObject();
@@ -100,7 +99,8 @@ public class GeoServerFileChooser extends Panel {
             }
         }
 
-        // select the proper root
+        // select the proper root (the first one is the data directory, unless
+        // there is file system sandboxing in place, in that case it will be the sandbox)
         File selectionRoot = null;
         if (selection != null && selection.exists()) {
             for (File root : roots) {
@@ -111,9 +111,9 @@ public class GeoServerFileChooser extends Panel {
             }
 
             // if the file is not part of the known search paths, give up
-            // and switch back to the data directory
+            // and switch back to the first root
             if (selectionRoot == null) {
-                selectionRoot = dataDirectory;
+                selectionRoot = roots.get(0);
                 file = new Model<>(selectionRoot);
             } else {
                 if (!selection.isDirectory()) {
@@ -123,7 +123,8 @@ public class GeoServerFileChooser extends Panel {
                 }
             }
         } else {
-            selectionRoot = dataDirectory;
+            // the first root is the data directory
+            selectionRoot = roots.get(0);
             file = new Model<>(selectionRoot);
         }
         this.file = file;

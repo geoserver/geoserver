@@ -42,6 +42,9 @@ public class ServiceException extends RuntimeException {
      */
     public static final String MAX_MEMORY_EXCEEDED = "MaxMemoryExceeded";
 
+    /** WMS 1.3 invalid CRS exception code */
+    public static String InvalidCRS = "InvalidCRS";
+
     /** Application specfic code. */
     protected String code;
 

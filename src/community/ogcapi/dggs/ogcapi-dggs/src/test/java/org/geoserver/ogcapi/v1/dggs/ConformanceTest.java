@@ -31,7 +31,7 @@ public class ConformanceTest extends DGGSTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/dggs/v1/conformance?f=application/x-yaml");
+        String yaml = getAsString("ogc/dggs/v1/conformance?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

@@ -17,6 +17,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.flow.config.DefaultControlFlowConfigurator;
+import org.geoserver.flow.controller.SingleQueueFlowController;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
@@ -45,6 +46,9 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
      * the flow controllers
      */
     static final String X_RATELIMIT_DELAY = "X-Control-flow-delay-ms";
+
+    public static final String X_CONCURRENT_LIMIT = "X-Concurrent-Limit";
+    public static final String X_CONCURRENT_REQUESTS = "X-Concurrent-Requests";
 
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
@@ -148,30 +152,23 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                         new CallbackContext(requestWithOperation, controllers, timeout);
                 REQUEST_CONTROLLERS.set(context);
                 long maxTime = timeout > 0 ? System.currentTimeMillis() + timeout : -1;
-                for (FlowController flowController : controllers) {
+                for (FlowController controller : controllers) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine(getControllerEnterMessage(controller, requestWithOperation));
+                    }
                     if (timeout > 0) {
                         long maxWait = maxTime - System.currentTimeMillis();
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine(
-                                    "Request ["
-                                            + requestWithOperation
-                                            + "] checking flow controller "
-                                            + flowController);
-                        }
-                        if (!flowController.requestIncoming(requestWithOperation, maxWait)) {
+                        if (!controller.requestIncoming(requestWithOperation, maxWait)) {
                             throw new HttpErrorCodeException(
                                     503,
                                     "Requested timeout out while waiting to be executed, please lower your request rate");
                         }
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine(
-                                    "Request ["
-                                            + requestWithOperation
-                                            + "] passed flow controller "
-                                            + flowController);
-                        }
                     } else {
-                        flowController.requestIncoming(requestWithOperation, -1);
+                        controller.requestIncoming(requestWithOperation, -1);
+                    }
+
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine(getControllerExitMessage(controller, requestWithOperation));
                     }
                 }
             }
@@ -199,6 +196,26 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
             }
         }
         return operation;
+    }
+
+    private static String getControllerEnterMessage(
+            FlowController controller, Request requestWithOperation) {
+        String message = "Request [" + requestWithOperation + "] enter " + controller;
+        if (controller instanceof SingleQueueFlowController) {
+            int requests = ((SingleQueueFlowController) controller).getRequestsInQueue();
+            message += "/" + requests;
+        }
+        return message;
+    }
+
+    private static String getControllerExitMessage(
+            FlowController controller, Request requestWithOperation) {
+        String message = "Request [" + requestWithOperation + "] exit  " + controller;
+        if (controller instanceof SingleQueueFlowController) {
+            int requests = ((SingleQueueFlowController) controller).getRequestsInQueue();
+            message += "/" + requests;
+        }
+        return message;
     }
 
     @Override

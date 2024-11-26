@@ -58,3 +58,34 @@ This mode configures how GeoServer will advertise secured layers and behave when
    :align: center
 
    *Catalog mode*
+
+File sandbox
+------------
+
+The sandbox allows a GeoServer full administrator to limit file system access to workspace administrators.
+In particular, both GUI and REST API will sandbox workspace administrators to ``<sandbox>/<workspace>``,
+and prevent them from accessing files outside of it.
+
+.. figure:: images/fs_sandbox.png
+   :align: center
+
+   *Filesystem sandbox*
+
+This part of the page is not visible if the operating system administrator has established
+a sandbox for the whole GeoServer instance, in which case even the GeoServer full administrators
+will be limited in the configured sandbox and won't be able to change it.
+
+When the sandbox is configured, the file system chooser will show the accessible directories as
+the file system roots. E.g., if a sandbox has been set to `/var/lib/geoserver`, and the current
+workspace administrator has access to both the `sf` and `ne` workspaces, the file system
+chooser will look as follows:
+
+.. figure:: images/fs_sandbox_chooser.png
+   :align: center
+
+   *File system chooser*
+
+Any attempt to manually set a path outside of the sandbox will result in a validation error
+and prevent the store from being saved (both from the UI and the REST API).
+
+For more information please refer to :ref:`security_sandbox` for more details.

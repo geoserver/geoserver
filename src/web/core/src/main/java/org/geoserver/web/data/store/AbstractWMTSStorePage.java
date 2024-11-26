@@ -17,6 +17,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.security.impl.FileSandboxEnforcer;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -235,6 +236,13 @@ abstract class AbstractWMTSStorePage extends GeoServerSecuredPage {
                 WMTSStoreInfo info = (WMTSStoreInfo) getForm().getModelObject();
                 try {
                     onSave(info, target);
+                } catch (FileSandboxEnforcer.SandboxException e) {
+                    // this one is non recoverable, give up and inform the user
+                    error(
+                            new ParamResourceModel(
+                                            "sandboxError", this, e.getFile().getAbsolutePath())
+                                    .getString());
+                    target.add(form);
                 } catch (IllegalArgumentException e) {
                     getForm().error(e.getMessage());
                     target.add(getForm());

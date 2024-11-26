@@ -237,7 +237,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 assertXpathEvaluatesTo(
                         "1", "count(//html:map-meta[@name='cs'][@content='" + cs + "'])", doc);
                 assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='projection'])", doc);
-                TiledCRSParams tcrs = TiledCRSConstants.lookupTCRS(code);
+                TiledCRSParams tcrs = TiledCRSConstants.lookupTCRSParams(code);
                 CoordinateReferenceSystem crs = CRS.decode(code);
                 String cite = (crs instanceof GeodeticCRS) ? "MapML:" : "";
                 String proj = tcrs == null ? cite + code : tcrs.getName();

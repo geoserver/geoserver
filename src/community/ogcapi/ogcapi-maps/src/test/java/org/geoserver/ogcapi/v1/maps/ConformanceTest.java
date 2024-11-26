@@ -32,7 +32,7 @@ public class ConformanceTest extends MapsTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/maps/v1/conformance/?f=application/x-yaml");
+        String yaml = getAsString("ogc/maps/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

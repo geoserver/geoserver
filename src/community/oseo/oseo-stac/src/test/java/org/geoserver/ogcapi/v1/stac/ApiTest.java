@@ -87,7 +87,7 @@ public class ApiTest extends STACTestSupport {
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/stac/v1/openapi?f=application/x-yaml");
+        String yaml = getAsString("ogc/stac/v1/openapi?f=application/yaml");
         LOGGER.log(Level.INFO, yaml);
 
         ObjectMapper mapper = Yaml.mapper();
@@ -100,10 +100,10 @@ public class ApiTest extends STACTestSupport {
         MockHttpServletRequest request = createRequest("ogc/stac/v1/openapi");
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/x-yaml, text/html");
+        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
-        assertThat(response.getContentType(), CoreMatchers.startsWith("application/x-yaml"));
+        assertThat(response.getContentType(), CoreMatchers.startsWith("application/yaml"));
         String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();

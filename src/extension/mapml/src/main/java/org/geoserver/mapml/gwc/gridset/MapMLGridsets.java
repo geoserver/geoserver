@@ -8,11 +8,16 @@ package org.geoserver.mapml.gwc.gridset;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.gwc.GWC;
 import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
+import org.geotools.ows.wmts.model.TileMatrix;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.SimpleGridSetConfiguration;
@@ -24,13 +29,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /** @author prushforth */
 public class MapMLGridsets extends SimpleGridSetConfiguration {
+
+    @Autowired private GWC gwc = GWC.get();
+
     private static final Logger log = Logging.getLogger(MapMLGridsets.class);
 
     private final GridSet WGS84;
     private final GridSet OSMTILE;
     private final GridSet CBMTILE;
     private final GridSet APSTILE;
-    @Autowired private GWC gwc = GWC.get();
 
     /** */
     public MapMLGridsets() {
@@ -153,10 +160,13 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
                         getGridSets().stream().map(g -> g.getName()).collect(toSet()));
         try {
             gwc.saveConfig(gwc.getConfig());
+            // Trigger the TCRS loading
+            TiledCRSConstants.reloadDefinitions();
         } catch (IOException ioe) {
-            log.log(Level.INFO, "Error occured saving MapMLGridsets config.", ioe);
+            log.log(Level.INFO, "Error occurred saving MapMLGridsets config.", ioe);
         }
     }
+
     /** @return array of resolutions m/px */
     private double[] CBMTILEResolutions() {
         double[] CBMTILEResolutions = {
@@ -280,5 +290,43 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
     @Override
     public String getLocation() {
         return "Default";
+    }
+
+    /**
+     * Returns a list of GridSet names that share a common prefix or that are simple numbers (i.e.
+     * 0,1,2,3...)
+     *
+     * @return A list of GridSet names filtered and sorted as required.
+     */
+    public List<String> getCandidateGridSets() {
+        // Filter GridSets
+        List<String> filteredNames =
+                gwc.getGridSetBroker().getGridSets().stream()
+                        .filter(gridSet -> TiledCRSConstants.canBeSupportedAsTiledCRS(gridSet))
+                        .map(GridSet::getName) // Map to the name of the GridSet
+                        .collect(Collectors.toList());
+
+        Collections.sort(filteredNames);
+        return filteredNames;
+    }
+
+    /**
+     * Extracts the level names from a list of {@link TileMatrix} objects.
+     *
+     * @param tileMatrices the list of {@link TileMatrix} objects to process; must not be {@code
+     *     null}.
+     * @return a list of level names (identifiers) as {@link String} objects, one for each {@link
+     *     TileMatrix} in the input list. Returns an empty list if {@code tileMatrices} is empty.
+     * @throws NullPointerException if {@code tileMatrices} or any of its elements are {@code null}.
+     */
+    public static List<String> getLevelNamesFromTileMatrixList(List<TileMatrix> tileMatrices) {
+        List<String> levelNames = new ArrayList<>();
+
+        // Iterate over each TileMatrix and add its identifier to the list
+        for (TileMatrix tileMatrix : tileMatrices) {
+            levelNames.add(tileMatrix.getIdentifier().toString());
+        }
+
+        return levelNames;
     }
 }

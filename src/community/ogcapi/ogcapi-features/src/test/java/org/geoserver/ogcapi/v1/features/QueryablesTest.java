@@ -6,6 +6,7 @@
 package org.geoserver.ogcapi.v1.features;
 
 import static org.geoserver.data.test.CiteTestData.ROAD_SEGMENTS;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import com.github.erosb.jsonsKema.JsonParser;
@@ -15,6 +16,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.io.UnsupportedEncodingException;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.Queryables;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -68,6 +70,18 @@ public class QueryablesTest extends FeaturesTestSupport {
                 "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments/queryables",
                 readSingle(json, ".$id"));
         assertEquals("object", json.read("type"));
+
+        // JSON schema can be represented only by the schema encoder, the YAML one, and HTML one.
+        assertEquals(Integer.valueOf(3), json.read("$..links.length()", Integer.class));
+        DocumentContext selfLink = readSingleContext(json, "links[?(@.rel=='self')]");
+        assertEquals("application/schema+json", selfLink.read("type"));
+        DocumentContext htmlLink =
+                readSingleContext(json, "links[?(@.rel=='alternate' && @.type=='text/html')]");
+        assertThat(htmlLink.read("href"), Matchers.endsWith("queryables?f=text%2Fhtml"));
+        DocumentContext yamlLink =
+                readSingleContext(
+                        json, "links[?(@.rel=='alternate' && @.type=='application/yaml')]");
+        assertThat(yamlLink.read("href"), Matchers.endsWith("queryables?f=application%2Fyaml"));
     }
 
     @Test

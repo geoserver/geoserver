@@ -1,0 +1,21 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:extend>
+    <form wicket:id="form">
+    <fieldset>
+        <ul>
+            <li>
+                <div wicket:id="mapMLTCRS"></div>
+            </li>
+        </ul>
+        <div class="button-group toolbar-sticky selfclear">
+            <button type="submit" class="form-button-save" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
+            <!--a href="#a" class="form-button-apply" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a-->
+            <button type="submit" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+        </div>
+    </fieldset>
+    </form>
+</wicket:extend>
+</body>
+</html>

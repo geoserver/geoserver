@@ -194,8 +194,8 @@ As of GeoServer 2.24, H2 DB support will be replaced with HSQL DB for Tile Cachi
 * Important: Existing installations with external H2 database selection will not be migrated automatically. You will get an error message at startup and disk quota will be disabled, unless you use a plugin/extension with H2 dependency. But other features of GeoServer will keep working. You can go to Disk Quota page and configure an external HSQL database or switch to in-process HSQL. In case you want to keep using H2 as an in-process/external database, you can add H2 store plugin or any other extension or plugin that has H2 dependency.
 * GeoServer installations with extensions/plugins having H2 dependency will still have H2 option under "Disk quota store type" and "Target database type".
 
-Remote requests control (GeoServer 2.24 and newer)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+URL Checks for remote requests control (GeoServer 2.24 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As of GeoServer 2.24, remote requests control has been added, and enabled by default, in GeoServer. This feature allows administrators to control which remote requests are allowed to be made to GeoServer. By default, no authorizations are included, thus GeoServer will deny remote requests originating from user interaction. In particular, the following use cases are affected:
 

@@ -67,7 +67,7 @@ public class ConformanceTest extends STACTestSupport {
 
     @Test
     public void testCollectionsYaml() throws Exception {
-        String yaml = getAsString("ogc/stac/v1/conformance/?f=application/x-yaml");
+        String yaml = getAsString("ogc/stac/v1/conformance/?f=application/yaml");
         checkConformance(convertYamlToJsonPath(yaml));
     }
 

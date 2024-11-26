@@ -5,6 +5,9 @@
  */
 package org.geoserver.flow.controller;
 
+import static org.geoserver.flow.ControlFlowCallback.X_CONCURRENT_LIMIT;
+import static org.geoserver.flow.ControlFlowCallback.X_CONCURRENT_REQUESTS;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -35,15 +38,6 @@ public class UserConcurrentFlowController extends QueueController {
 
     CookieKeyGenerator keyGenerator = new CookieKeyGenerator();
 
-    /** Last time we've performed a queue cleanup */
-    long lastCleanup = System.currentTimeMillis();
-
-    /** Number of queues at which we start looking for purging stale ones */
-    int maxQueues = 100;
-
-    /** Time it takes for an inactive queue to be considered stale */
-    int maxAge = 10000;
-
     /**
      * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
      * been accumulated and
@@ -62,7 +56,7 @@ public class UserConcurrentFlowController extends QueueController {
      * @param maxAge the max quiet time for an empty queue to be considered stale and removed
      */
     public UserConcurrentFlowController(int queueSize, int maxQueues, int maxAge) {
-        this.queueSize = queueSize;
+        this.queueMaxSize = queueSize;
         this.maxQueues = maxQueues;
         this.maxAge = maxAge;
     }
@@ -88,7 +82,7 @@ public class UserConcurrentFlowController extends QueueController {
         // see if we have that queue already, otherwise generate it
         TimedBlockingQueue queue = queues.get(queueId);
         if (queue == null) {
-            queue = new TimedBlockingQueue(queueSize, true);
+            queue = new TimedBlockingQueue(queueMaxSize, true);
             queues.put(queueId, queue);
         }
 
@@ -99,6 +93,11 @@ public class UserConcurrentFlowController extends QueueController {
             } else {
                 queue.put(request);
             }
+
+            request.getHttpResponse()
+                    .addHeader(X_CONCURRENT_LIMIT + "-user", String.valueOf(queueMaxSize));
+            request.getHttpResponse()
+                    .addHeader(X_CONCURRENT_REQUESTS + "-user", String.valueOf(queue.size()));
         } catch (InterruptedException e) {
             LOGGER.log(
                     Level.WARNING,
@@ -107,44 +106,21 @@ public class UserConcurrentFlowController extends QueueController {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(
                     "UserFlowController("
-                            + queueSize
+                            + queueMaxSize
                             + ","
                             + queueId
                             + ") queue size "
                             + queue.size());
-            LOGGER.fine(
-                    "UserFlowController("
-                            + queueSize
-                            + ","
-                            + queueId
-                            + ") total queues "
-                            + queues.size());
         }
 
         // cleanup stale queues if necessary
-        if ((queues.size() > maxQueues && (now - lastCleanup) > (maxAge / 10))
-                || (now - lastCleanup) > maxAge) {
-            int cleanupCount = 0;
-            synchronized (this) {
-                for (String key : queues.keySet()) {
-                    TimedBlockingQueue tbq = queues.get(key);
-                    if (now - tbq.lastModified > maxAge && tbq.isEmpty()) {
-                        queues.remove(key);
-                        cleanupCount++;
-                    }
-                }
-                lastCleanup = now;
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "UserFlowController("
-                                    + queueSize
-                                    + ") purged "
-                                    + cleanupCount
-                                    + " stale queues");
-                }
-            }
-        }
+        cleanUpQueues(now);
 
         return retval;
+    }
+
+    @Override
+    public String toString() {
+        return "UserConcurrentFlowController{" + "queueMaxSize=" + queueMaxSize + '}';
     }
 }

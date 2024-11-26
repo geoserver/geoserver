@@ -7,6 +7,7 @@ package org.geoserver.ogcapi;
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 import java.lang.reflect.Type;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.http.MediaType;
@@ -51,6 +52,7 @@ public class MappingJackson2HttpMessageConverter
     static boolean canJacksonHandle(Class<?> clazz) {
         return clazz.getAnnotation(JsonIgnoreType.class) == null
                 && !RestWrapper.class.isAssignableFrom(clazz)
-                && !OpenAPI.class.isAssignableFrom(clazz);
+                && !OpenAPI.class.isAssignableFrom(clazz)
+                && !Schema.class.isAssignableFrom(clazz);
     }
 }

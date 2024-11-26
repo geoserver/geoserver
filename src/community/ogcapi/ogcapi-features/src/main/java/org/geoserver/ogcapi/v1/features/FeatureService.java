@@ -275,7 +275,7 @@ public class FeatureService {
                         null,
                         URLMangler.URLType.RESOURCE);
         Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
-        queryables.addSelfLinks("collections/" + collectionId + "/queryables");
+        queryables.addSelfLinks("ogc/features/v1/collections/" + collectionId + "/queryables");
         return queryables;
     }
 

@@ -4,6 +4,9 @@
  */
 package org.geoserver.mapml.tcrs;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /** @author prushforth */
 public class TiledCRSParams {
 
@@ -12,6 +15,7 @@ public class TiledCRSParams {
     private final Bounds bounds;
     private final int TILE_SIZE;
     private final double[] scales;
+    private final double[] resolutions;
     private final Point origin;
 
     /**
@@ -30,6 +34,10 @@ public class TiledCRSParams {
         this.TILE_SIZE = tileSize;
         this.origin = origin;
         this.scales = scales;
+        this.resolutions = new double[scales.length];
+        for (int i = 0; i < scales.length; i++) {
+            resolutions[i] = 1d / scales[i];
+        }
     }
 
     /** @return */
@@ -57,6 +65,10 @@ public class TiledCRSParams {
         return scales;
     }
 
+    public double[] getResolutions() {
+        return resolutions;
+    }
+
     /** @return */
     public Point getOrigin() {
         return origin;
@@ -69,5 +81,23 @@ public class TiledCRSParams {
      */
     public String getSRSName() {
         return TiledCRSFactory.AUTHORITY + ":" + name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TiledCRSParams that = (TiledCRSParams) o;
+        return TILE_SIZE == that.TILE_SIZE
+                && Objects.equals(name, that.name)
+                && Objects.equals(code, that.code)
+                && Objects.equals(bounds, that.bounds)
+                && Objects.deepEquals(scales, that.scales)
+                && Objects.equals(origin, that.origin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, code, bounds, TILE_SIZE, Arrays.hashCode(scales), origin);
     }
 }

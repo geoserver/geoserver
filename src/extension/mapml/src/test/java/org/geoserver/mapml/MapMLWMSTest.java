@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
+import static org.geoserver.mapml.tcrs.TiledCRSConstants.BUILT_IN_TILED_CRS;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_PREVIEW_HEAD_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_XML_HEAD_FTL;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
@@ -115,7 +116,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
     @Before
     public void setup() throws IOException {
         xpath = XMLUnit.newXpathEngine();
-
         Catalog catalog = getCatalog();
         // restore data set up default
         ResourceInfo layerMeta =
@@ -196,9 +196,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         LayerGroupInfo lgi = catalog.getLayerGroupByName(NATURE_GROUP);
         lgi.setInternationalTitle(title);
-        CoordinateReferenceSystem webMerc =
-                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS();
-        Bounds webMercBounds = MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getBounds();
+        CoordinateReferenceSystem webMerc = BUILT_IN_TILED_CRS.get("OSMTILE").getCRS();
+        Bounds webMercBounds = BUILT_IN_TILED_CRS.get("OSMTILE").getBounds();
         double x1 = webMercBounds.getMin().x;
         double x2 = webMercBounds.getMax().x;
         double y1 = webMercBounds.getMin().y;
@@ -270,7 +269,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
         assertSame(
-                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
+                BUILT_IN_TILED_CRS.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
         m = testLayersAndGroupsMapML(lgi, null);
         title = m.getHead().getTitle();
@@ -282,7 +281,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         lgi.getMetadata().put("mapml.useTiles", true);
         cat.save(lgi);
         assertSame(
-                MapMLHTMLOutput.PREVIEW_TCRS_MAP.get("OSMTILE").getCRS(),
+                BUILT_IN_TILED_CRS.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
         m = testLayersAndGroupsMapML(lgi, Locale.CANADA_FRENCH);
         title = m.getHead().getTitle();
@@ -656,7 +655,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 getLinkByRelType(mapmlSingleExtent.getHead().getLinks(), RelType.ALTERNATE);
         String alternateHref =
                 alternateLinksForSingle.stream()
-                        .filter(l -> l.getProjection() == ProjType.WGS_84)
+                        .filter(l -> l.getProjection().equalsIgnoreCase(ProjType.WGS_84.value()))
                         .findFirst()
                         .get()
                         .getHref();
@@ -985,9 +984,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     public void testNonExistentProjection() throws Exception {
         String response = new MapMLWMSRequest().name("Polgons").srs("EPSG:9999").getAsString();
 
-        assertTrue(
-                response.contains(
-                        "<ServiceException code=\"InvalidParameterValue\" locator=\"crs\">"));
+        assertTrue(response.contains("<ServiceException code=\"InvalidCRS\" locator=\"crs\">"));
     }
 
     @Test
@@ -1040,7 +1037,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     @Test
     public void testDefaultConfiguredMapMLLayerEPSG() throws Exception {
-        // works with a standard EPSG code, as found in the capabiltied document
+        // works with a standard EPSG code, as found in the capabilities document
         testDefaultConfiguredMapMLLayer("EPSG:3857");
     }
 
@@ -1794,7 +1791,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
             List<Link> alternateLinks, ProjType projType, Envelope bounds, double tolerance) {
         Link osmLink =
                 alternateLinks.stream()
-                        .filter(l -> l.getProjection() == projType)
+                        .filter(l -> l.getProjection().equalsIgnoreCase(projType.value()))
                         .findFirst()
                         .orElseThrow();
         Map<String, Object> parsedOSM = KvpUtils.parseQueryString(osmLink.getHref());
@@ -1919,8 +1916,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String label = e.getLabel();
         assertNull(label);
 
-        ProjType projType = e.getUnits();
-        assertSame(ProjType.OSMTILE, projType);
+        String projType = e.getUnits();
+        assertEquals(ProjType.OSMTILE.value(), projType);
 
         List<Object> lo = e.getInputOrDatalistOrLink();
         for (Object o : lo) {

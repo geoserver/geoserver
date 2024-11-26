@@ -195,12 +195,18 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         addConformance("html", FeatureConformance.HTML, true);
         addConformance("geojson", FeatureConformance.GEOJSON, true);
 
-        // these formats are not implemented
-        addConformance("gmlsf0", FeatureConformance.GMLSF0, false);
+        // formats - optional
+        addConformance(
+                "gml321",
+                FeatureConformance.GML321,
+                new PropertyModel<>(featuresInfo, "gml321"),
+                () -> features(info).gml321((WFSInfo) info.getObject()));
 
+        // formats - not implemented
+        addConformance("gmlsf0", FeatureConformance.GMLSF0, false);
         addConformance("gmlsf2", FeatureConformance.GMLSF2, false);
 
-        // Optional Functionality
+        // optional
         addConformance(
                 "crsByReference",
                 FeatureConformance.CRS_BY_REFERENCE,
@@ -212,6 +218,7 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
                 FeatureConformance.FILTER,
                 new PropertyModel<>(featuresInfo, "filter"),
                 () -> features(info).filter((WFSInfo) info.getObject()));
+
         addConformance(
                 "featuresFilter",
                 FeatureConformance.FEATURES_FILTER,

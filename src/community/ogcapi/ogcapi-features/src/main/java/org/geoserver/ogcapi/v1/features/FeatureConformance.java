@@ -26,7 +26,11 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance OAS30 =
             CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30");
 
-    // optional resource formats
+    // optional output format from WFS
+    public static final APIConformance GML321 =
+            new APIConformance("http://schemas.opengis.net/gml/3.2.1/gml.xsd", STANDARD);
+
+    // not-implemented resource formats
     public static final APIConformance GMLSF0 =
             CORE.extend("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0");
     public static final APIConformance GMLSF2 =
@@ -49,6 +53,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
             new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD);
 
     private Boolean core = null;
+    private Boolean gml321 = null;
     private Boolean gmlSF0 = null;
     private Boolean gmlSF2 = null;
     private Boolean featuresFilter = null;
@@ -123,12 +128,17 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
                 conformance.add(FeatureConformance.QUERYABLES);
             }
 
-            // optional output formats
+            // output formats
+            if (gml321(serviceInfo)) {
+                conformance.add(FeatureConformance.GML321);
+            }
             if (gmlSF0(serviceInfo)) {
-                conformance.add(FeatureConformance.GMLSF0);
+                // not implemented
+                // conformance.add(FeatureConformance.GMLSF0);
             }
             if (gmlSF2(serviceInfo)) {
-                conformance.add(FeatureConformance.GMLSF2);
+                // not implemented
+                // conformance.add(FeatureConformance.GMLSF2);
             }
 
             // draft functionality
@@ -170,6 +180,34 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
      */
     public boolean core(WFSInfo serviceInfo) {
         return isEnabled(serviceInfo, core, CORE);
+    }
+
+    /**
+     * GML321 conformance enabled by configuration.
+     *
+     * @return GML321 conformance enabled, or @{code null} for default.
+     */
+    public Boolean isGML321() {
+        return gml321;
+    }
+
+    /**
+     * GML321 conformance enablement.
+     *
+     * @param enabled GML321 conformance enabled, or @{code null} for default.
+     */
+    public void setGML321(Boolean enabled) {
+        this.gml321 = enabled;
+    }
+
+    /**
+     * GML321 conformance enabled by configuration or default.
+     *
+     * @param serviceInfo WFSService configuration used to determine default
+     * @return {@true} if GML321 conformance enabled
+     */
+    public boolean gml321(WFSInfo serviceInfo) {
+        return isEnabled(serviceInfo, gml321, GML321);
     }
 
     /**

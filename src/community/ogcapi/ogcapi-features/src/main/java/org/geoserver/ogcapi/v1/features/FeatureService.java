@@ -339,7 +339,7 @@ public class FeatureService {
         }
 
         // only advertise what is actually implemented
-        conformances.retainAll(getConformances());
+        // conformances.retainAll(getConformances());
 
         List<String> classes =
                 conformances.stream().map(APIConformance::getId).collect(Collectors.toList());

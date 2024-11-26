@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.features;
 
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -58,6 +59,19 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         declareGetResponseFormats(api, "/collections/{collectionId}/items", FeaturesResponse.class);
         declareGetResponseFormats(
                 api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);
+
+        Content itemsContent =
+                api.getPaths()
+                        .get("/collections/{collectionId}/items/{featureId}")
+                        .getGet()
+                        .getResponses()
+                        .get("200")
+                        .getContent();
+
+        // Check to remove optional formats
+        if (!features.gml321(wfs)) {
+            itemsContent.remove("application/gml+xml;version=3.2");
+        }
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();

@@ -33,6 +33,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -465,80 +466,125 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testSortByWithDefaultSortOrder() throws Exception {
-        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?sortby=name&limit=2",
-                        200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals(null, json.read("features[0].properties.name", String.class));
-        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSortBy(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            DocumentContext json =
+                    getAsJSONPath(
+                            "ogc/features/v1/collections/"
+                                    + collectionName
+                                    + "/items?sortby=name&limit=2",
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals(null, json.read("features[0].properties.name", String.class));
+            assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        } finally {
+            featureServiceInfo.setSortBy(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
     public void testSortByWithAscendingSortOrder() throws Exception {
-        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?sortby=%2Bname&limit=2",
-                        200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals(null, json.read("features[0].properties.name", String.class));
-        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSortBy(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            DocumentContext json =
+                    getAsJSONPath(
+                            "ogc/features/v1/collections/"
+                                    + collectionName
+                                    + "/items?sortby=%2Bname&limit=2",
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals(null, json.read("features[0].properties.name", String.class));
+            assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        } finally {
+            featureServiceInfo.setSortBy(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
     public void testSortByWithDescendingSortOrder() throws Exception {
-        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?sortby=-name&limit=2",
-                        200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals("name-f008", json.read("features[0].properties.name", String.class));
-        assertEquals("name-f003", json.read("features[1].properties.name", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSortBy(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            DocumentContext json =
+                    getAsJSONPath(
+                            "ogc/features/v1/collections/"
+                                    + collectionName
+                                    + "/items?sortby=-name&limit=2",
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals("name-f008", json.read("features[0].properties.name", String.class));
+            assertEquals("name-f003", json.read("features[1].properties.name", String.class));
+        } finally {
+            featureServiceInfo.setSortBy(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
     public void testSortByMultipleProperties() throws Exception {
-        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?sortby=booleanProperty,-intProperty",
-                        200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(5, (int) json.read("features.length()", Integer.class));
-        assertEquals(null, json.read("features[0].properties.name", String.class));
-        assertEquals("name-f002", json.read("features[1].properties.name", String.class));
-        assertEquals("name-f008", json.read("features[2].properties.name", String.class));
-        assertEquals("name-f003", json.read("features[3].properties.name", String.class));
-        assertEquals("name-f001", json.read("features[4].properties.name", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSortBy(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            DocumentContext json =
+                    getAsJSONPath(
+                            "ogc/features/v1/collections/"
+                                    + collectionName
+                                    + "/items?sortby=booleanProperty,-intProperty",
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(5, (int) json.read("features.length()", Integer.class));
+            assertEquals(null, json.read("features[0].properties.name", String.class));
+            assertEquals("name-f002", json.read("features[1].properties.name", String.class));
+            assertEquals("name-f008", json.read("features[2].properties.name", String.class));
+            assertEquals("name-f003", json.read("features[3].properties.name", String.class));
+            assertEquals("name-f001", json.read("features[4].properties.name", String.class));
+        } finally {
+            featureServiceInfo.setSortBy(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
     public void testIdsFilter() throws Exception {
-        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + roadSegments
-                                + "/items?ids=RoadSegments.1107532045088,RoadSegments.1107532045091",
-                        200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
-        assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setIDs(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+            DocumentContext json =
+                    getAsJSONPath(
+                            "ogc/features/v1/collections/"
+                                    + roadSegments
+                                    + "/items?ids=RoadSegments.1107532045088,RoadSegments.1107532045091",
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
+            assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+        } finally {
+            featureServiceInfo.setIDs(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
@@ -683,29 +729,51 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testSearchIdsJsonFilter() throws Exception {
-        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        String request =
-                "{\"ids\":[\"RoadSegments.1107532045088\",\"RoadSegments.1107532045091\"]}";
-        DocumentContext json =
-                postAsJSONPath(
-                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
-        assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setIDs(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+            String request =
+                    "{\"ids\":[\"RoadSegments.1107532045088\",\"RoadSegments.1107532045091\"]}";
+            DocumentContext json =
+                    postAsJSONPath(
+                            "ogc/features/v1/collections/" + roadSegments + "/search",
+                            request,
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
+            assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+        } finally {
+            featureServiceInfo.setIDs(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
     public void testSearchIdsTextFilter() throws Exception {
-        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        String request = "{\"ids\":\"RoadSegments.1107532045088,RoadSegments.1107532045091\"}";
-        DocumentContext json =
-                postAsJSONPath(
-                        "ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
-        assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setIDs(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
+            String request = "{\"ids\":\"RoadSegments.1107532045088,RoadSegments.1107532045091\"}";
+            DocumentContext json =
+                    postAsJSONPath(
+                            "ogc/features/v1/collections/" + roadSegments + "/search",
+                            request,
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
+            assertEquals("RoadSegments.1107532045091", json.read("features[1].id", String.class));
+        } finally {
+            featureServiceInfo.setIDs(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
@@ -724,28 +792,50 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testSearchSortByJson() throws Exception {
-        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        String request = "{\"sortby\":[\"name\"],\"limit\":2}";
-        DocumentContext json =
-                postAsJSONPath(
-                        "ogc/features/v1/collections/" + collectionName + "/search", request, 200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals(null, json.read("features[0].properties.name", String.class));
-        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSortBy(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            String request = "{\"sortby\":[\"name\"],\"limit\":2}";
+            DocumentContext json =
+                    postAsJSONPath(
+                            "ogc/features/v1/collections/" + collectionName + "/search",
+                            request,
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals(null, json.read("features[0].properties.name", String.class));
+            assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        } finally {
+            featureServiceInfo.setSortBy(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test
     public void testSearchSortByText() throws Exception {
-        String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        String request = "{\"sortby\":\"name\",\"limit\":2}";
-        DocumentContext json =
-                postAsJSONPath(
-                        "ogc/features/v1/collections/" + collectionName + "/search", request, 200);
-        assertEquals("FeatureCollection", json.read("type", String.class));
-        assertEquals(2, (int) json.read("features.length()", Integer.class));
-        assertEquals(null, json.read("features[0].properties.name", String.class));
-        assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSortBy(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            String request = "{\"sortby\":\"name\",\"limit\":2}";
+            DocumentContext json =
+                    postAsJSONPath(
+                            "ogc/features/v1/collections/" + collectionName + "/search",
+                            request,
+                            200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(2, (int) json.read("features.length()", Integer.class));
+            assertEquals(null, json.read("features[0].properties.name", String.class));
+            assertEquals("name-f001", json.read("features[1].properties.name", String.class));
+        } finally {
+            featureServiceInfo.setSortBy(null); // default
+            getGeoServer().save(wfsInfo);
+        }
     }
 
     @Test

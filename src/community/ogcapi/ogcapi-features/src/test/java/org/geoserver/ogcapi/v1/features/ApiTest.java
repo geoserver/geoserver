@@ -28,7 +28,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -221,7 +221,8 @@ public class ApiTest extends FeaturesTestSupport {
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
         assertEquals(
-                langs.getSchema().getEnum(), new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS));
+                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT),
+                langs.getSchema().getEnum());
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

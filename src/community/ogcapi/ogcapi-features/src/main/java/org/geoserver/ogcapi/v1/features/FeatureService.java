@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +70,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -89,6 +91,8 @@ import org.springframework.web.context.request.RequestContextHolder;
         serviceClass = WFSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features/v1")
 public class FeatureService {
+
+    private static final Logger LOGGER = Logging.getLogger(FeatureService.class);
 
     static final Pattern INTEGER = Pattern.compile("\\d+");
 
@@ -392,6 +396,10 @@ public class FeatureService {
             @RequestParam(name = "ids", required = false) List<String> ids,
             String itemId)
             throws Exception {
+
+        WFSInfo wfsInfo = getServiceInfo();
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);
         GetFeatureRequest request =
@@ -409,26 +417,92 @@ public class FeatureService {
             filters.add(FF.id(FF.featureId(itemId)));
         }
 
-        // The ids parameter is part of the draft proposal "Query by IDs". The syntax and semantic
-        // of the parameter is subject to change in a future release. Its usage should be carefully
-        // considered.
         if (ids != null && !ids.isEmpty()) {
-            filters.add(buildIdsFilter(ids));
+            // The ids parameter is part of the draft proposal "Query by IDs". The syntax and
+            // semantic
+            // of the parameter is subject to change in a future release. Its usage should be
+            // carefully
+            // considered.
+            if (featureServiceInfo.ids(wfsInfo)) {
+                filters.add(buildIdsFilter(ids));
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The ids parameter is not supported by the service, requires "
+                                        + FeatureConformance.IDS.getId()
+                                        + " conformance to be enabled.");
+            }
         }
-
         if (filter != null) {
-            Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
-            filters.add(parsedFilter);
+            CQL2Conformance cql2Info = CQL2Conformance.configuration(wfsInfo);
+            ECQLConformance ecqlInfo = ECQLConformance.configuration(wfsInfo);
+
+            if (featureServiceInfo.filter(wfsInfo)) {
+                if (filterLanguage == APIFilterParser.ECQL_TEXT && !ecqlInfo.text(wfsInfo)) {
+                    LOGGER.warning(
+                            () ->
+                                    "The filter language '"
+                                            + APIFilterParser.ECQL_TEXT
+                                            + "' is not supported by the service, requires "
+                                            + ECQLConformance.ECQL_TEXT.getId()
+                                            + " conformance to be enabled.");
+                } else if (filterLanguage == APIFilterParser.CQL2_TEXT && !cql2Info.text(wfsInfo)) {
+                    LOGGER.warning(
+                            () ->
+                                    "The filter language '"
+                                            + APIFilterParser.CQL2_TEXT
+                                            + "' is not supported by the service, requires "
+                                            + CQL2Conformance.CQL2_TEXT.getId()
+                                            + " conformance to be enabled.");
+                } else if (filterLanguage == APIFilterParser.CQL2_JSON && !cql2Info.json(wfsInfo)) {
+                    LOGGER.warning(
+                            () ->
+                                    "The filter language '"
+                                            + APIFilterParser.CQL2_JSON
+                                            + "' is not supported by the service, requires "
+                                            + CQL2Conformance.CQL2_JSON.getId()
+                                            + " conformance to be enabled.");
+                } else {
+                    Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
+                    filters.add(parsedFilter);
+                }
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The filter parameter is not supported by the service, requires "
+                                        + FeatureConformance.FILTER.getId()
+                                        + " conformance to be enabled.");
+            }
         }
         query.setFilter(mergeFiltersAnd(filters));
         if (sortBy != null) {
-            query.setSortBy(ImmutableList.copyOf(sortBy));
+            if (featureServiceInfo.sortBy(wfsInfo)) {
+                query.setSortBy(ImmutableList.copyOf(sortBy));
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The sortby parameter is not supported by the service, requires "
+                                        + FeatureConformance.SORTBY.getId()
+                                        + " conformance to be enabled.");
+            }
         }
+
         if (crs != null) {
-            query.setSrsName(new URI(crs));
+            if (featureServiceInfo.crsByReference(wfsInfo)) {
+                query.setSrsName(new URI(crs));
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The crs parameter is not supported by the service, requires "
+                                        + FeatureConformance.CRS_BY_REFERENCE.getId()
+                                        + " conformance to be enabled.");
+
+                query.setSrsName(new URI("EPSG:4326"));
+            }
         } else {
             query.setSrsName(new URI("EPSG:4326"));
         }
+
         request.setStartIndex(startIndex);
         request.setMaxFeatures(limit);
         request.setBaseUrl(APIRequestInfo.get().getBaseURL());

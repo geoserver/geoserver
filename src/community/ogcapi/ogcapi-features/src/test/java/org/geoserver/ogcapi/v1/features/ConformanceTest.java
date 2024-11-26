@@ -40,18 +40,21 @@ public class ConformanceTest extends FeaturesTestSupport {
     }
 
     private String[] getExpectedConformanceClasses() {
+        // The following are not enabled by default:
+        //   IDS
+        //   SEARCH
+        //   SORTBY
+        //   GMLSF0
         return new String[] {
             FeatureConformance.CORE.getId(),
             FeatureConformance.OAS30.getId(),
             FeatureConformance.HTML.getId(),
             FeatureConformance.GEOJSON.getId(),
             FeatureConformance.CRS_BY_REFERENCE.getId(),
+            FeatureConformance.GMLSF2.getId(),
             FEATURES_FILTER,
             FILTER,
             QUERYABLES,
-            // IDS,
-            // SEARCH,
-            // SORTBY,
             ECQL,
             ECQL_TEXT,
             CQL2_BASIC,

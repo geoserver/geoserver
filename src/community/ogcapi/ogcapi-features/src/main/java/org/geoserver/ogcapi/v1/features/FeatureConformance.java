@@ -121,6 +121,9 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> implements Feat
             if (filter(serviceInfo)) {
                 conformance.add(FeatureConformance.FILTER);
             }
+            if (queryables(serviceInfo)) {
+                conformance.add(FeatureConformance.QUERYABLES);
+            }
 
             // optional output formats
             if (gmlSF0(serviceInfo)) {

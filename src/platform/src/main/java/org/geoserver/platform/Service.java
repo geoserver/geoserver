@@ -151,7 +151,7 @@ public final class Service {
     /**
      * Custom landing page, or GetCapabilities document, for the web service.
      *
-     * @return GetCapabilities document or landing page for the web service.
+     * @param customCapabilitiesLink GetCapabilities document or landing page for the web service.
      */
     public void setCustomCapabilitiesLink(String customCapabilitiesLink) {
         this.customCapabilitiesLink = customCapabilitiesLink;

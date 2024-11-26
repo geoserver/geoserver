@@ -4,9 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.APIConformance.Level.DRAFT_STANDARD;
-import static org.geoserver.ogcapi.APIConformance.Level.COMMUNITY_STANDARD;
-import static org.geoserver.ogcapi.APIConformance.Level.STANDARD;
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 
@@ -21,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -43,9 +38,7 @@ import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APISearchQuery;
 import org.geoserver.ogcapi.APIService;
-import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
-import org.geoserver.ogcapi.ConformanceInfo;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
@@ -213,8 +206,7 @@ public class FeatureService {
                         CQL2Conformance.CQL2_BASIC_SPATIAL,
                         CQL2Conformance.CQL2_FUNCTIONS,
                         CQL2Conformance.CQL2_PROPERTY_PROPERTY,
-                        CQL2Conformance.CQL2_SPATIAL
-                );
+                        CQL2Conformance.CQL2_SPATIAL);
         // FeatureConformance.GMLSF0, // does not use the gmlsf namespace
         // CQL2Conformance.CQL2_JSON, // Very different from the binding we have
         // CQL2Conformance.CQL2_ARRAY, // excluded, no support for array operations now
@@ -336,7 +328,7 @@ public class FeatureService {
             conformances.addAll(featuresConformance.conformances(wfsInfo));
 
             ECQLConformance ecqlConformance = ECQLConformance.configuration(wfsInfo);
-            conformances.addAll( ecqlConformance.conformances(wfsInfo));
+            conformances.addAll(ecqlConformance.conformances(wfsInfo));
 
             CQL2Conformance cql2Conformance = CQL2Conformance.configuration(wfsInfo);
             conformances.addAll(cql2Conformance.conformances(wfsInfo));
@@ -345,7 +337,8 @@ public class FeatureService {
         // only advertise what is actually implemented
         conformances.retainAll(getConformances());
 
-        List<String> classes = conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
+        List<String> classes =
+                conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
 
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }

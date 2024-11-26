@@ -6,69 +6,61 @@ import java.util.Objects;
 /**
  * Service capability or feature, identified by conformance class.
  *
- * OGCAPI Web Services are defined with core functionality, strictly extended with additional, optional, functionality
- * identified by "conformance class".
+ * <p>OGCAPI Web Services are defined with core functionality, strictly extended with additional,
+ * optional, functionality identified by "conformance class".
  *
- * By comparison OGC Open Web Services can be extended using application profiles with additional, optional, functionality.
+ * <p>By comparison OGC Open Web Services can be extended using application profiles with
+ * additional, optional, functionality.
  */
 public class APIConformance implements Serializable {
 
-    /**
-     * There are three levels of standard.
-     */
+    /** There are three levels of standard. */
     public enum Level {
         /**
          * Draft developed by communities external to the OGC or other official organization.
          *
-         * GeoServer community modules are community draft standards under development.
+         * <p>GeoServer community modules are community draft standards under development.
          */
-        COMMUNITY_DRAFT(false,false),
+        COMMUNITY_DRAFT(false, false),
         /**
          * Developed by communities external to the OGC or other official organization.
          *
-         * GeoServer vendor extensions are considered community standards.
+         * <p>GeoServer vendor extensions are considered community standards.
          */
-        COMMUNITY_STANDARD(true,false),
+        COMMUNITY_STANDARD(true, false),
 
         /**
          * Draft standard being developed by OGC membership or other official organization.
-         * <p>
-         * This protocol is under active development, often seeking funding and feedback.
+         *
+         * <p>This protocol is under active development, often seeking funding and feedback.
          * GeoSever community modules are used to explore draft standards.
-         * </p>
-         * <p>
-         * This functionality is opt-in and should not be enabled by default.
+         *
+         * <p>This functionality is opt-in and should not be enabled by default.
          */
-        DRAFT_STANDARD(false,true),
+        DRAFT_STANDARD(false, true),
 
         /**
          * Mature standard, stable and ready for use.
-         * <p>
-         * A finalized standard, no longer subject to breaking changes, is required for
-         * a GeoServer extension to be published.
-         * </p>
-         * This functionality is stable and enabled by default.
+         *
+         * <p>A finalized standard, no longer subject to breaking changes, is required for a
+         * GeoServer extension to be published. This functionality is stable and enabled by default.
          */
-        STANDARD(true,true),
+        STANDARD(true, true),
 
         /**
          * Standards are dynamic and are retired when they are no longer in use.
          *
-         * Retired standards are not enabled by default, but may still be enabled if you
-         * made use of them in a previous version of GeoServer.
+         * <p>Retired standards are not enabled by default, but may still be enabled if you made use
+         * of them in a previous version of GeoServer.
          */
         RETIRED_STANDARD(true, false);
 
-        /**
-         * Standard is currently endorsed by the OGC or other official organization.
-         */
+        /** Standard is currently endorsed by the OGC or other official organization. */
         private final boolean endorsed;
-        /**
-         * Standard is stable and no longer subject to change.
-         */
+        /** Standard is stable and no longer subject to change. */
         private final boolean stable;
 
-        Level(boolean stable,boolean endorsed) {
+        Level(boolean stable, boolean endorsed) {
             this.endorsed = endorsed;
             this.stable = stable;
         }
@@ -85,33 +77,30 @@ public class APIConformance implements Serializable {
         /**
          * Standard is stable and no longer subject to change.
          *
-         * @return true if the standard is stable and no longer subject, false if the standard is experimental and not yet finalized.
+         * @return true if the standard is stable and no longer subject, false if the standard is
+         *     experimental and not yet finalized.
          */
         public boolean isStable() {
             return stable;
         }
     }
 
+    public enum Type {
+        CORE,
+        EXTENSION
+    }
 
-    public enum Type { CORE, EXTENSION }
+    private final APIConformance parent;
 
-    final private APIConformance parent;
+    /** Conformance class identifier. */
+    private final String id;
 
-    /**
-     * Conformance class identifier.
-     */
-    final private String id;
-
-    /**
-     * Indicates standard approval level.
-     */
-    final private Level level;
+    /** Indicates standard approval level. */
+    private final Level level;
 
     private final Type type;
 
-    /**
-     * Storage key.
-     */
+    /** Storage key. */
     private final String key;
 
     /**
@@ -130,7 +119,7 @@ public class APIConformance implements Serializable {
      * @param status standard approval status
      */
     public APIConformance(String id, Level level) {
-        this( id, level, Type.EXTENSION, null );
+        this(id, level, Type.EXTENSION, null);
     }
     /**
      * Conformance class declaration.
@@ -139,8 +128,8 @@ public class APIConformance implements Serializable {
      * @param level standard approval status
      * @param key storage key
      */
-    public APIConformance(String id, Level level,String key) {
-        this( id, level, Type.EXTENSION, null, key );
+    public APIConformance(String id, Level level, String key) {
+        this(id, level, Type.EXTENSION, null, key);
     }
 
     /**
@@ -171,7 +160,6 @@ public class APIConformance implements Serializable {
         this.key = key;
     }
 
-
     public APIConformance extend(String id) {
         return new APIConformance(id, Level.STANDARD, Type.EXTENSION, this);
     }
@@ -192,8 +180,8 @@ public class APIConformance implements Serializable {
     /**
      * Recommended storage key.
      *
-     * To avoid confusion the recommended storage key is derived from the conformance class identifier.
-     * This may be overriden by the constructor.
+     * <p>To avoid confusion the recommended storage key is derived from the conformance class
+     * identifier. This may be overriden by the constructor.
      *
      * @return recommended storage key.
      */

@@ -1,23 +1,22 @@
 package org.geoserver.ogcapi.v1.features;
 
+import static org.geoserver.ogcapi.APIConformance.Level.COMMUNITY_STANDARD;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceInfo;
 import org.geoserver.wfs.WFSInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.geoserver.ogcapi.APIConformance.Level.COMMUNITY_STANDARD;
-
-/**
- * ECQL Configuration for FeatureService.
- */
+/** ECQL Configuration for FeatureService. */
 public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     public static final String METADATA_KEY = "ecql";
 
-    public static final APIConformance ECQL = new APIConformance(ConformanceClass.ECQL, COMMUNITY_STANDARD);
-    public static final APIConformance ECQL_TEXT = new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
+    public static final APIConformance ECQL =
+            new APIConformance(ConformanceClass.ECQL, COMMUNITY_STANDARD);
+    public static final APIConformance ECQL_TEXT =
+            new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
 
     private Boolean ecql = null;
     private Boolean text = null;
@@ -34,7 +33,7 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     /**
      * Obtain FeatureService configuration for WFSInfo.
      *
-     * Uses configuration stored in metadata map, or creates default if needed.
+     * <p>Uses configuration stored in metadata map, or creates default if needed.
      *
      * @param wfsInfo WFSService configuration
      * @return Feature Service configuration
@@ -43,10 +42,9 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
         synchronized (wfsInfo) {
             if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
                 return (ECQLConformance) wfsInfo.getMetadata().get(METADATA_KEY);
-            }
-            else {
+            } else {
                 ECQLConformance conf = new ECQLConformance();
-                wfsInfo.getMetadata().put(METADATA_KEY,conf);
+                wfsInfo.getMetadata().put(METADATA_KEY, conf);
                 return conf;
             }
         }
@@ -112,5 +110,4 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     public void setText(Boolean enabled) {
         text = enabled;
     }
-
 }

@@ -1,8 +1,7 @@
 package org.geoserver.ogcapi.v1.features;
 
-import org.geoserver.wfs.WFSInfo;
-
 import java.io.Serializable;
+import org.geoserver.wfs.WFSInfo;
 
 public interface FeatureConformanceInfo extends Serializable {
     /**

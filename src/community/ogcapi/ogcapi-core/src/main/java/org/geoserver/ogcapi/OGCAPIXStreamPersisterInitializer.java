@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi;
 
 import com.thoughtworks.xstream.XStream;
-
 import java.util.HashMap;
 import java.util.List;
 import org.geoserver.config.util.XStreamPersister;

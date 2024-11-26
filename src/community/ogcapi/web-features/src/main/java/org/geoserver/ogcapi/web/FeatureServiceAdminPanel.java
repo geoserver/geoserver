@@ -2,20 +2,17 @@ package org.geoserver.ogcapi.web;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.checkerframework.checker.units.qual.A;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.v1.features.CQL2Conformance;
 import org.geoserver.ogcapi.v1.features.ECQLConformance;
 import org.geoserver.ogcapi.v1.features.FeatureConformance;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.wfs.WFSInfo;
-
-import java.util.function.BooleanSupplier;
 
 public class FeatureServiceAdminPanel extends AdminPagePanel {
 
@@ -32,7 +29,7 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
     /**
      * Obtain FeatureConformance for wicket model.
      *
-     * This is used to reduce boiler-plate code in wicket callbacks and offer some null safety.
+     * <p>This is used to reduce boiler-plate code in wicket callbacks and offer some null safety.
      *
      * @param info WFSInfo model assumed
      * @return FeatureConformance for model
@@ -44,9 +41,9 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         return null;
     }
     /**
-     * Obtain ECQLConformance  for wicket model.
+     * Obtain ECQLConformance for wicket model.
      *
-     * This is used to reduce boiler-plate code in wicket callbacks and offer some null safety.
+     * <p>This is used to reduce boiler-plate code in wicket callbacks and offer some null safety.
      *
      * @param info WFSInfo model assumed
      * @return FeatureConformance for model
@@ -59,9 +56,9 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
     }
 
     /**
-     * Obtain ECQL2Conformance  for wicket model.
+     * Obtain ECQL2Conformance for wicket model.
      *
-     * This is used to reduce boiler-plate code in wicket callbacks and offer some null safety.
+     * <p>This is used to reduce boiler-plate code in wicket callbacks and offer some null safety.
      *
      * @param info WFSInfo model assumed
      * @return FeatureConformance for model
@@ -90,10 +87,13 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         }
     }
     /**
-     * Insert a disabled conformance checkbox indicating of functionality is built-in, or simply not implemented.
+     * Insert a disabled conformance checkbox indicating of functionality is built-in, or simply not
+     * implemented.
+     *
      * @param key
      * @param conformance
-     * @param implemented if true, the conformance is built-in, if false, the conformance is not-implemented.
+     * @param implemented if true, the conformance is built-in, if false, the conformance is
+     *     not-implemented.
      * @return checkbox component to be used if further customization is required
      */
     protected CheckBox addConformance(String key, APIConformance conformance, boolean implemented) {
@@ -113,33 +113,50 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
      * @param enabled Lamnda used to determine in conformance is enabled
      * @return checkbox component to be used if further customization is required
      */
-    protected CheckBox addConformance(String key, APIConformance conformance, IModel<Boolean> booleanModel, final IModel<Boolean> enabled) {
+    protected CheckBox addConformance(
+            String key,
+            final APIConformance conformance,
+            IModel<Boolean> booleanModel,
+            final IModel<Boolean> enabled) {
         WFSInfo info = (WFSInfo) getDefaultModel().getObject();
         boolean stable = conformance.getLevel().isStable();
         boolean endorsed = conformance.getLevel().isEndorsed();
 
-        final Label label = new Label(key+"Label", conformance.getId());
+        final Label label = new Label(key + "Label", conformance.getId());
+        //        {
+        //            @Override
+        //            public boolean isVisible() {
+        //                return Boolean.TRUE.equals(enabled.getObject());
+        //            }
+        //        };
         label.add(new AttributeModifier("title", conformance.getId()));
+        label.setOutputMarkupId(true); // provide an id for ajax show/hide
+        label.setOutputMarkupPlaceholderTag(
+                true); // force div wrapper something always exists to show/hide
         label.setVisible(Boolean.TRUE.equals(enabled.getObject()));
 
-        Label level = new Label(key+"Level", level(conformance.getLevel()));
+        Label level = new Label(key + "Level", level(conformance.getLevel()));
         level.add(new AttributeModifier("title", recommendation(conformance.getLevel())));
-        final CheckBox checkBox = new CheckBox(key, booleanModel);
-        checkBox.add( new AjaxFormComponentUpdatingBehavior("change") {
-            protected void onUpdate(AjaxRequestTarget target) {
-                FeatureServiceAdminPanel.this.get(key+"Level").setVisible(Boolean.TRUE.equals(enabled.getObject()));
-            }
-        });
+        final CheckBox checkBox =
+                new AjaxCheckBox(key, booleanModel) {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        Label uriLabel = (Label) FeatureServiceAdminPanel.this.get(key + "Label");
+                        boolean checked = getModelObject();
+                        uriLabel.setVisible(checked);
+                        uriLabel.setDefaultModelObject(conformance.getId());
+                        target.add(uriLabel);
+                    }
+                };
         checkBox.add(new AttributeModifier("title", conformance.getId()));
 
         if (info.isCiteCompliant()) {
-            level.setEnabled( stable && endorsed);
-            label.setEnabled( stable  && endorsed );
+            level.setEnabled(stable && endorsed);
+            label.setEnabled(stable && endorsed);
 
-            checkBox.setEnabled( stable  && endorsed );
-        }
-        else {
-            level.setEnabled( stable );
+            checkBox.setEnabled(stable && endorsed);
+        } else {
+            level.setEnabled(stable);
         }
         add(level);
         add(checkBox);
@@ -149,15 +166,16 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
     }
 
     private String level(APIConformance.Level level) {
-        return level.toString().replace('_',' ');
+        return level.toString().replace('_', ' ');
     }
+
     private String recommendation(APIConformance.Level level) {
         switch (level) {
             case COMMUNITY_STANDARD:
             case STANDARD:
-                 return "Stable";
+                return "Stable";
             case DRAFT_STANDARD:
-             case COMMUNITY_DRAFT:
+            case COMMUNITY_DRAFT:
                 return "Unstable";
             case RETIRED_STANDARD:
                 return "Deprecated";
@@ -169,90 +187,116 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
     private void featureServiceSettings(IModel<?> info) {
         FeatureConformance featuresInfo = features(info);
         // Enable/Disable service
-        addConformance("core", FeatureConformance.CORE,
-            new PropertyModel<>(featuresInfo, "core"),
-            new IModel<Boolean>() {
-                @Override
-                public Boolean getObject() {
-                    return features(info).core((WFSInfo)info.getObject());
-                }
-            }
-        );
+        addConformance(
+                "core",
+                FeatureConformance.CORE,
+                new PropertyModel<>(featuresInfo, "core"),
+                new IModel<Boolean>() {
+                    @Override
+                    public Boolean getObject() {
+                        return features(info).core((WFSInfo) info.getObject());
+                    }
+                });
 
         IModel<Boolean> builtInModel = () -> true;
 
         // Required built-in conformance
         addConformance("oas30", FeatureConformance.OAS30, true);
-        addConformance("html", FeatureConformance.HTML,true);
-        addConformance("geojson", FeatureConformance.GEOJSON,true);
+        addConformance("html", FeatureConformance.HTML, true);
+        addConformance("geojson", FeatureConformance.GEOJSON, true);
 
         // optional formats
-        addConformance("gmlsf0", FeatureConformance.GMLSF0,
-            new PropertyModel<>(featuresInfo, "gmlSF2"),
-            (IModel<Boolean>) () -> features(info).gmlSF2((WFSInfo)info.getObject()));
+        addConformance(
+                "gmlsf0",
+                FeatureConformance.GMLSF0,
+                new PropertyModel<>(featuresInfo, "gmlSF2"),
+                (IModel<Boolean>) () -> features(info).gmlSF2((WFSInfo) info.getObject()));
 
-        addConformance("gmlsf2", FeatureConformance.GMLSF2,
-            new PropertyModel<>(featuresInfo, "gmlSF2"),
-            (IModel<Boolean>)() -> features(info).gmlSF2((WFSInfo)info.getObject())
-        );
+        addConformance(
+                "gmlsf2",
+                FeatureConformance.GMLSF2,
+                new PropertyModel<>(featuresInfo, "gmlSF2"),
+                (IModel<Boolean>) () -> features(info).gmlSF2((WFSInfo) info.getObject()));
 
         // Optional Functionality
-        addConformance("crsByReference", FeatureConformance.CRS_BY_REFERENCE,
+        addConformance(
+                "crsByReference",
+                FeatureConformance.CRS_BY_REFERENCE,
                 new PropertyModel<>(featuresInfo, "crsByReference"),
-                 () -> features(info).crsByReference((WFSInfo)info.getObject()));
+                () -> features(info).crsByReference((WFSInfo) info.getObject()));
 
-        addConformance("filter", FeatureConformance.FILTER,
+        addConformance(
+                "filter",
+                FeatureConformance.FILTER,
                 new PropertyModel<>(featuresInfo, "featuresFilter"),
-                () -> features(info).filter((WFSInfo)info.getObject()));
-        addConformance("featuresFilter", FeatureConformance.FEATURES_FILTER,
+                () -> features(info).filter((WFSInfo) info.getObject()));
+        addConformance(
+                "featuresFilter",
+                FeatureConformance.FEATURES_FILTER,
                 new PropertyModel<>(featuresInfo, "featuresFilter"),
-                () -> features(info).featuresFilter((WFSInfo)info.getObject()));
+                () -> features(info).featuresFilter((WFSInfo) info.getObject()));
 
-        addConformance("queryables",FeatureConformance.QUERYABLES,
+        addConformance(
+                "queryables",
+                FeatureConformance.QUERYABLES,
                 new PropertyModel<>(featuresInfo, "queryables"),
-                () -> features(info).queryables((WFSInfo)info.getObject()));
-        addConformance("ids", FeatureConformance.IDS,
+                () -> features(info).queryables((WFSInfo) info.getObject()));
+        addConformance(
+                "ids",
+                FeatureConformance.IDS,
                 new PropertyModel<>(featuresInfo, "ids"),
-                () -> features(info).ids((WFSInfo)info.getObject()));
-        addConformance("search", FeatureConformance.SEARCH,
+                () -> features(info).ids((WFSInfo) info.getObject()));
+        addConformance(
+                "search",
+                FeatureConformance.SEARCH,
                 new PropertyModel<>(featuresInfo, "search"),
-                () -> features(info).search((WFSInfo)info.getObject()));
-        addConformance("sortBy", FeatureConformance.SORTBY,
+                () -> features(info).search((WFSInfo) info.getObject()));
+        addConformance(
+                "sortBy",
+                FeatureConformance.SORTBY,
                 new PropertyModel<>(featuresInfo, "sortBy"),
-                () -> features(info).sortBy((WFSInfo)info.getObject()));
+                () -> features(info).sortBy((WFSInfo) info.getObject()));
     }
 
     private void ecqlSettings(IModel<?> info) {
         ECQLConformance ecqlInfo = ecql(info);
         // ECQL
-        addConformance("ecql", ECQLConformance.ECQL,
-                new PropertyModel<>(ecqlInfo, "ECQL"),
-                () -> ecql(info).ecql((WFSInfo)info.getObject()));
-        addConformance("ecqlText", ECQLConformance.ECQL_TEXT,
+        addConformance(
+                "ecql",
+                ECQLConformance.ECQL,
+                new PropertyModel<>(ecqlInfo, "ecql"),
+                () -> ecql(info).ecql((WFSInfo) info.getObject()));
+        addConformance(
+                "ecqlText",
+                ECQLConformance.ECQL_TEXT,
                 new PropertyModel<>(ecqlInfo, "text"),
-                () -> ecql(info).text((WFSInfo)info.getObject()));
+                () -> ecql(info).text((WFSInfo) info.getObject()));
     }
 
     private void cql2Settings(IModel<?> info) {
         CQL2Conformance cql2Info = cql2(info);
 
         // CQL2
-    addConformance("cql2Text", CQL2Conformance.CQL2_TEXT,
+        addConformance(
+                "cql2Text",
+                CQL2Conformance.CQL2_TEXT,
                 new PropertyModel<>(cql2Info, "text"),
-                () -> cql2(info).text((WFSInfo)info.getObject()));
-        addConformance("cql2JSON", CQL2Conformance.CQL2_JSON,
+                () -> cql2(info).text((WFSInfo) info.getObject()));
+        addConformance(
+                "cql2JSON",
+                CQL2Conformance.CQL2_JSON,
                 new PropertyModel<>(cql2Info, "json"),
-                () -> cql2(info).json((WFSInfo)info.getObject()));
+                () -> cql2(info).json((WFSInfo) info.getObject()));
 
         // built-in conformance
-        addConformance("cql2Advanced", CQL2Conformance.CQL2_ADVANCED, true );
-        addConformance("cql2Arithmetic", CQL2Conformance.CQL2_ARITHMETIC, true );
-        addConformance("cql2Array", CQL2Conformance.CQL2_ARITHMETIC, false );
-        addConformance("cql2Basic", CQL2Conformance.CQL2_BASIC, true );
-        addConformance("cql2BasicSpatial", CQL2Conformance.CQL2_BASIC_SPATIAL, true );
-        addConformance("cql2Functions", CQL2Conformance.CQL2_FUNCTIONS, true );
-        addConformance("cql2Temporal", CQL2Conformance.CQL2_TEMPORAL, false ); // not implemented
-        addConformance("cql2PropertyProperty", CQL2Conformance.CQL2_PROPERTY_PROPERTY, true );
-        addConformance("cql2Spatial", CQL2Conformance.CQL2_SPATIAL, true );
+        addConformance("cql2Advanced", CQL2Conformance.CQL2_ADVANCED, true);
+        addConformance("cql2Arithmetic", CQL2Conformance.CQL2_ARITHMETIC, true);
+        addConformance("cql2Array", CQL2Conformance.CQL2_ARITHMETIC, false);
+        addConformance("cql2Basic", CQL2Conformance.CQL2_BASIC, true);
+        addConformance("cql2BasicSpatial", CQL2Conformance.CQL2_BASIC_SPATIAL, true);
+        addConformance("cql2Functions", CQL2Conformance.CQL2_FUNCTIONS, true);
+        addConformance("cql2Temporal", CQL2Conformance.CQL2_TEMPORAL, false); // not implemented
+        addConformance("cql2PropertyProperty", CQL2Conformance.CQL2_PROPERTY_PROPERTY, true);
+        addConformance("cql2Spatial", CQL2Conformance.CQL2_SPATIAL, true);
     }
 }

@@ -54,6 +54,27 @@ Installing the GeoServer OGC API Features module
 
 #. On restart the services are listed at http://localhost:8080/geoserver
 
+
+Docker use of OGC API Features module
+-------------------------------------
+
+#. The nightly Docker image supports the use of OGC API Feature:
+
+   .. parsed-literal::
+      
+      docker pull docker.osgeo.org/geoserver:|release|
+
+#. To run with OGC API Features:
+
+   .. parsed-literal::
+  
+      docker run -it -p8080:8080 \\
+        --env INSTALL_EXTENSIONS=true \\
+        --env COMMUNITY_EXTENSIONS="ogcapi-features" \\
+        docker.osgeo.org/geoserver:|version|.x
+
+#. The services are listed at http://localhost:8080/geoserver
+
 Use of OGC API - Features service
 ---------------------------------
 
@@ -140,16 +161,48 @@ Defined by defined in by :ref:`config_contact`.
 Configuration of OGC API - Features module
 ------------------------------------------
 
-The service does not require any additional configuration to use. The service is configured using:
+The service operates as an additional protocol for sharing vector data along side Web Feature Service.
+
+The service is configured using:
 
 * The existing :ref:`wfs` settings to define title, abstract, and output formats.
   
   This is why the service page is titled ``GeoServer Web Feature Service`` by default.
+
+* Feature Service conformances:
+  
+  The OGC API Feature Service is modular, allowing you to enable/disable the functionality you wish to include.
+  
+  By default stable Standards and Community Standards are enabled. If WFS is strict, only official Standards are enabled and community standards are disabled
+  
+  The OpenAPI service description is manditory and may not be disabled.
+  
+  The HTML and GeoJSON output formats are built-in and may not be disabled.
+  
+  .. figure:: img/feature-service-configuration.png
+     
+     Feature Service Configuration
+  
+* CQL2 Filter conformances.
+  
+  Both the Text and JSON formats for CQL2 are available.
+  
+  The built-in CQL2 functionality may not be disabled, and functionality that is not implemented yet may not be enabled.
+
+  .. figure:: img/cql2-configuration.png
+     
+     CQL2 Filter configuration
+
+* Control of ECQL Filter conformances
+
+  .. figure:: img/ecql-configuration.png
+     
+     ECQL Filter configuration
+
   
 * Built-in templates used for html generation
 
 * Extra links can be added on a per-service or per-collection basis as indicated in :ref:`ogcapi_links`.
-
 
 HTML Templates
 ''''''''''''''

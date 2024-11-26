@@ -6,7 +6,7 @@
 package org.geoserver.security;
 
 import java.io.IOException;
-import java.util.SortedSet;
+import java.util.*;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.validation.PasswordPolicyException;
 import org.springframework.util.StringUtils;
@@ -25,9 +25,8 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
     }
 
     @Override
-    protected void checkProperties() throws IOException {
-        super.checkProperties();
-        if (StringUtils.hasLength(getUserPropertyName()) == false) {
+    protected void checkPropertiesInternal() throws IOException {
+        if (!StringUtils.hasLength(getUserPropertyName())) {
             throw new IOException("User property name is unset");
         }
     }
@@ -38,15 +37,18 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
     }
 
     @Override
-    public GeoServerUser getUser(String key) throws IOException {
-        checkProperties();
+    public Set<String> getAvailableParameters() {
+        return new HashSet<>(List.of("cacheTtlSeconds"));
+    }
 
+    @Override
+    public GeoServerUser getUserInternal(String key) throws IOException {
         SortedSet<GeoServerUser> set =
                 getUserGroupService().getUsersHavingPropertyValue(getUserPropertyName(), key);
         if (set.isEmpty()) return null;
 
         if (set.size() > 1) {
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             for (GeoServerUser user : set) {
                 buff.append(user.getUsername()).append(",");
             }
@@ -59,7 +61,7 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
         }
 
         GeoServerUser user = set.first();
-        if (user.isEnabled() == false) {
+        if (!user.isEnabled()) {
             LOGGER.info(
                     "Found user "
                             + user.getUsername()
@@ -75,15 +77,17 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
     public synchronized int synchronize() throws IOException {
         checkProperties();
         GeoServerUserGroupService service = getUserGroupService();
-        if (service.canCreateStore() == false)
+        if (!service.canCreateStore())
             throw new IOException("Cannot synchronize a read only user group service");
 
+        // Clear the local cache
+        resetUserCache();
         int counter = 0;
         GeoServerUserGroupStore store = service.createStore();
         store.load();
         for (GeoServerUser user : store.getUsers()) {
             String value = user.getProperties().getProperty(getUserPropertyName());
-            if (StringUtils.hasLength(value) == false) {
+            if (!StringUtils.hasLength(value)) {
                 user.getProperties().put(getUserPropertyName(), createAuthKey());
                 try {
                     store.updateUser(user);

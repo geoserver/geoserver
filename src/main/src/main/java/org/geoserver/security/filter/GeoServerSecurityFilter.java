@@ -71,11 +71,20 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
      */
     protected String authenticateFromCache(
             AuthenticationCachingFilter filter, HttpServletRequest request) {
+        return authenticateFromCache(filter, request, false);
+    }
+
+    protected String authenticateFromCache(
+            AuthenticationCachingFilter filter,
+            HttpServletRequest request,
+            boolean allowChallengeAnonymousSessions) {
 
         Authentication authFromCache = null;
         String cacheKey = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+        if (allowChallengeAnonymousSessions
+                || authentication == null
+                || authentication instanceof AnonymousAuthenticationToken) {
             cacheKey = filter.getCacheKey(request);
             if (cacheKey != null) {
                 authFromCache =

@@ -18,10 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -39,7 +37,10 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -277,6 +278,11 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName(authKeyUrlParam);
         config.setAuthKeyMapperName("propertyMapper");
 
+        // Let's make sure the internal user cache is disabled
+        Map<String, String> mapperParams = new HashMap<>();
+        mapperParams.put("cacheTtlSeconds", "0");
+        config.setMapperParameters(mapperParams);
+
         getSecurityManager().saveFilter(config);
 
         GeoServerAuthenticationKeyFilter filter =
@@ -346,6 +352,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         username = testUserName;
         password = username;
         updateUser("ug1", username, false);
+
         request = createRequest("/foo/bar");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
@@ -382,6 +389,11 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         config.setAuthKeyParamName(authKeyUrlParam);
         config.setAuthKeyMapperName("userPropertyMapper");
 
+        // Let's make sure the internal user cache is disabled
+        Map<String, String> mapperParams = new HashMap<>();
+        mapperParams.put("cacheTtlSeconds", "0");
+        config.setMapperParameters(mapperParams);
+
         getSecurityManager().saveFilter(config);
 
         GeoServerAuthenticationKeyFilter filter =
@@ -409,6 +421,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                         getSecurityManager()
                                 .loadUserGroupService("ug1")
                                 .loadUserByUsername(testUserName);
+        // Make sure the cache is cleared
+        mapper.resetUserCache();
         String authKey = user.getProperties().getProperty(mapper.getUserPropertyName());
         assertNotNull(authKey);
 
@@ -418,7 +432,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
+        assertNotEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
@@ -689,6 +703,11 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         ugstore.updateUser(u2);
         ugstore.store();
 
+        // Force cache expiration
+        propMapper.resetUserCache();
+        userpropMapper.resetUserCache();
+
+        // Ensure the users are not present anymore
         assertNull(propMapper.getUser(user2KeyA));
         assertNull(userpropMapper.getUser(user2KeyB));
     }
@@ -768,6 +787,99 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertNotNull(user.getAuthorities());
         assertEquals(1, user.getAuthorities().size());
         assertTrue(user.getAuthorities().contains(new GeoServerRole("ROLE_ANONYMOUS")));
+    }
+
+    @Test
+    public void testAllowChallengeAnonymousSessionsBehavior() throws Exception {
+        String authKeyUrlParam = "myAuthKey";
+        String filterName = "testAllowChallengeAnonymousSessionsBehavior";
+
+        // Configure the filter
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("userPropertyMapper");
+
+        // Save initial filter configuration with allowChallengeAnonymousSessions = true
+        config.setAllowChallengeAnonymousSessions(true);
+        getSecurityManager().saveFilter(config);
+
+        GeoServerAuthenticationKeyFilter filter =
+                (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
+
+        // Configure the mapper to return a user for a specific auth key
+        UserPropertyAuthenticationKeyMapper mapper =
+                (UserPropertyAuthenticationKeyMapper) filter.getMapper();
+        mapper.synchronize();
+
+        // Prepare the filter chain
+        prepareFilterChain(pattern, filterName);
+        modifyChain(pattern, false, false, null);
+
+        // test success
+        GeoServerUser user =
+                (GeoServerUser)
+                        getSecurityManager()
+                                .loadUserGroupService("ug1")
+                                .loadUserByUsername(testUserName);
+        // Make sure the cache is cleared
+        mapper.resetUserCache();
+        String authKey = user.getProperties().getProperty(mapper.getUserPropertyName());
+        assertNotNull(authKey);
+
+        // Test when allowChallengeAnonymousSessions = true (always use authKey for authentication)
+        MockHttpServletRequest request = createRequest("/foo/bar");
+        request.setQueryString(authKeyUrlParam + "=" + authKey);
+        request.addParameter(authKeyUrlParam, authKey);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+
+        // Set a valid existing authentication in the SecurityContext
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
+        SecurityContextHolder.getContext()
+                .setAuthentication(
+                        new AnonymousAuthenticationToken("test", "anonymous", authorities));
+
+        // Perform the request
+        getProxy().doFilter(request, response, chain);
+
+        // Verify that the filter ignored the existing authentication and retrieved the user using
+        // authKey
+        Authentication resultAuth =
+                getSecurityManager().getAuthenticationCache().get(filterName, authKey);
+        assertNotNull(resultAuth);
+        assertEquals(
+                "user1", resultAuth.getPrincipal()); // Assuming "user1" is returned by the mapper
+
+        // Reconfigure the filter with allowChallengeAnonymousSessions = false
+        config.setAllowChallengeAnonymousSessions(false);
+        getSecurityManager().saveFilter(config);
+
+        filter = (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
+
+        // Simulate another request
+        request = createRequest("/foo/bar");
+        request.setQueryString(authKeyUrlParam + "=" + authKey);
+        request.addParameter(authKeyUrlParam, authKey);
+        response = new MockHttpServletResponse();
+        chain = new MockFilterChain();
+
+        // Set an existing valid authentication in the SecurityContext
+        getSecurityManager().getAuthenticationCache().removeAll();
+        SecurityContextHolder.getContext()
+                .setAuthentication(
+                        new AnonymousAuthenticationToken("test", "validUser", authorities));
+
+        // Perform the request
+        getProxy().doFilter(request, response, chain);
+
+        // Verify that the filter used the existing authentication and did not retrieve the user
+        // using authKey
+        resultAuth = getSecurityManager().getAuthenticationCache().get(filterName, authKey);
+        assertNotNull(resultAuth);
+        assertEquals("user1", resultAuth.getPrincipal());
     }
 
     private void loadPropFile(File authKeyFile, Properties props)

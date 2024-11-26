@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
     final String metadataKey;
-    final APIConformance[] defaultConformance;
+    //final APIConformance[] defaultConformance;
 
     /**
      * Enable and configure service functionality by conformance class.
@@ -36,12 +36,12 @@ public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
      * @param metadataKey Storage key for metadata map
      * @param defaultConformance Conformance classs used to determine default enabled status
      */
-    public ConformanceInfo(String metadataKey, APIConformance ... defaultConformance){
+    public ConformanceInfo(String metadataKey){
         if (metadataKey == null){
             throw new NullPointerException("metadata key is null");
         }
         this.metadataKey = metadataKey;
-        this.defaultConformance = defaultConformance;
+        // this.defaultConformance = defaultConformance;
     }
 
     /**
@@ -96,35 +96,24 @@ public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
         }
     }
     /**
-     * Override to check if configuration as a whole is enabled, or may be skipped.
+     * Check if configuration as a whole is enabled, or may be skipped.
      *
-     * The default implementation uses {@link #defaultConformance} to determine if configuration is enabled.
+     * The default implementation uses {@link ServiceInfo#isEnabled()}, override for a
+     * more specific check.
      *
-     * @return {@code true} if conformance is enabled.
+     * @return {@code true} if configuration is enabled for use.
      */
     public boolean isEnabled(S serviceInfo) {
-        for (APIConformance conformance : defaultConformance) {
-            if (enabledDefault(serviceInfo, conformance)) {
-                return true;
-            }
-        }
-        return false;
+        return serviceInfo.isEnabled();
     }
 
     /**
      * Configuration for ServiceInfo.
      *
-     * Default implemenation will use {@link #isEnabled(ServiceInfo)} to determine
-     * if {@link #defaultConformance} should be returned. Subclasses should override
-     * to provide more specific behavior.
-     *
-     * @param serviceInfo WFSService configuration
+     * @param serviceInfo ServiceInfo configuration
      * @return List of enabled conformance
      */
     public List<APIConformance> conformances(S serviceInfo) {
-        if (isEnabled(serviceInfo)) {
-            return List.of(defaultConformance);
-        }
         return Collections.emptyList();
     }
 

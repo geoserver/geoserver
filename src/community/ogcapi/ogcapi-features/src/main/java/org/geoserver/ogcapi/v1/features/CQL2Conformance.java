@@ -60,7 +60,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     private Boolean spatial;
 
     public CQL2Conformance() {
-        super(METADATA_KEY,CQL2_TEXT);
+        super(METADATA_KEY);
     }
 
     /**

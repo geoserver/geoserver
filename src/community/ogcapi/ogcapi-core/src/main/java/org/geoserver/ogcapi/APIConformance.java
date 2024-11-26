@@ -1,5 +1,6 @@
 package org.geoserver.ogcapi;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
  *
  * By comparison OGC Open Web Services can be extended using application profiles with additional, optional, functionality.
  */
-public class APIConformance {
+public class APIConformance implements Serializable {
 
     /**
      * There are three levels of standard.

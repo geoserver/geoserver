@@ -1,9 +1,12 @@
 package org.geoserver.ogcapi.web;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.checkerframework.checker.units.qual.A;
 import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.v1.features.CQL2Conformance;
@@ -11,6 +14,8 @@ import org.geoserver.ogcapi.v1.features.ECQLConformance;
 import org.geoserver.ogcapi.v1.features.FeatureConformance;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.wfs.WFSInfo;
+
+import java.util.function.BooleanSupplier;
 
 public class FeatureServiceAdminPanel extends AdminPagePanel {
 
@@ -93,7 +98,7 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
      */
     protected CheckBox addConformance(String key, APIConformance conformance, boolean implemented) {
 
-        CheckBox checkBox = addConformance(key, conformance, () -> implemented);
+        CheckBox checkBox = addConformance(key, conformance, () -> implemented, () -> implemented);
         checkBox.setEnabled(false);
 
         return checkBox;
@@ -105,21 +110,27 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
      * @param key Wicket id of checkbox, also used to obtained internationalization text
      * @param conformance Conformance class to be represented by the checkbox
      * @param booleanModel Model, often backed by WFSInfo, to store checkbox value.
+     * @param enabled Lamnda used to determine in conformance is enabled
      * @return checkbox component to be used if further customization is required
      */
-    protected CheckBox addConformance(String key, APIConformance conformance, IModel<Boolean> booleanModel) {
+    protected CheckBox addConformance(String key, APIConformance conformance, IModel<Boolean> booleanModel, final IModel<Boolean> enabled) {
         WFSInfo info = (WFSInfo) getDefaultModel().getObject();
         boolean stable = conformance.getLevel().isStable();
         boolean endorsed = conformance.getLevel().isEndorsed();
 
+        final Label label = new Label(key+"Label", conformance.getId());
+        label.add(new AttributeModifier("title", conformance.getId()));
+        label.setVisible(Boolean.TRUE.equals(enabled.getObject()));
+
         Label level = new Label(key+"Level", level(conformance.getLevel()));
         level.add(new AttributeModifier("title", recommendation(conformance.getLevel())));
-
-        CheckBox checkBox = new CheckBox(key, booleanModel);
+        final CheckBox checkBox = new CheckBox(key, booleanModel);
+        checkBox.add( new AjaxFormComponentUpdatingBehavior("change") {
+            protected void onUpdate(AjaxRequestTarget target) {
+                FeatureServiceAdminPanel.this.get(key+"Level").setVisible(Boolean.TRUE.equals(enabled.getObject()));
+            }
+        });
         checkBox.add(new AttributeModifier("title", conformance.getId()));
-
-        Label label = new Label(key+"Label", conformance.getId());
-        label.add(new AttributeModifier("title", conformance.getId()));
 
         if (info.isCiteCompliant()) {
             level.setEnabled( stable && endorsed);
@@ -156,19 +167,17 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
     }
 
     private void featureServiceSettings(IModel<?> info) {
-
+        FeatureConformance featuresInfo = features(info);
         // Enable/Disable service
-        addConformance("core", FeatureConformance.CORE, new IModel<>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isCore();
+        addConformance("core", FeatureConformance.CORE,
+            new PropertyModel<>(featuresInfo, "core"),
+            new IModel<Boolean>() {
+                @Override
+                public Boolean getObject() {
+                    return features(info).core((WFSInfo)info.getObject());
+                }
             }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setCore(object);
-            }
-        });
+        );
 
         IModel<Boolean> builtInModel = () -> true;
 
@@ -178,163 +187,62 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         addConformance("geojson", FeatureConformance.GEOJSON,true);
 
         // optional formats
-        addConformance("gmlsf0", FeatureConformance.GMLSF0, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isGMLSFO();
-            }
+        addConformance("gmlsf0", FeatureConformance.GMLSF0,
+            new PropertyModel<>(featuresInfo, "gmlSF2"),
+            (IModel<Boolean>) () -> features(info).gmlSF2((WFSInfo)info.getObject()));
 
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setGMLSF0(object);
-            }
-        });
-        addConformance("gmlsf2", FeatureConformance.GMLSF2, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isGMLSF2();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setGMLSF2(object);
-            }
-        });
+        addConformance("gmlsf2", FeatureConformance.GMLSF2,
+            new PropertyModel<>(featuresInfo, "gmlSF2"),
+            (IModel<Boolean>)() -> features(info).gmlSF2((WFSInfo)info.getObject())
+        );
 
         // Optional Functionality
-        addConformance("crsByReference", FeatureConformance.CRS_BY_REFERENCE,  new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isCRSByReference();
-            }
+        addConformance("crsByReference", FeatureConformance.CRS_BY_REFERENCE,
+                new PropertyModel<>(featuresInfo, "crsByReference"),
+                 () -> features(info).crsByReference((WFSInfo)info.getObject()));
 
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setCRSByReference(object);
-            }
-        });
-        addConformance("filter", FeatureConformance.FILTER, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isFilter();
-            }
+        addConformance("filter", FeatureConformance.FILTER,
+                new PropertyModel<>(featuresInfo, "featuresFilter"),
+                () -> features(info).filter((WFSInfo)info.getObject()));
+        addConformance("featuresFilter", FeatureConformance.FEATURES_FILTER,
+                new PropertyModel<>(featuresInfo, "featuresFilter"),
+                () -> features(info).featuresFilter((WFSInfo)info.getObject()));
 
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setFilter(object);
-            }
-        });
-        addConformance("featuresFilter", FeatureConformance.FEATURES_FILTER, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isFeaturesFilter();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setFeaturesFilter(object);
-            }
-        });
-
-        addConformance("queryables",FeatureConformance.QUERYABLES, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isQueryables();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setQueryables(object);
-            }
-        });
-        addConformance("ids", FeatureConformance.IDS, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isIDs();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setIDs(object);
-            }
-        });
-        addConformance("search", FeatureConformance.SEARCH, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isSearch();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setSearch(object);
-            }
-        });
-        addConformance("sortBy", FeatureConformance.SORTBY, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return features(info).isSortBy();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                features(info).setSortBy(object);
-            }
-        });
+        addConformance("queryables",FeatureConformance.QUERYABLES,
+                new PropertyModel<>(featuresInfo, "queryables"),
+                () -> features(info).queryables((WFSInfo)info.getObject()));
+        addConformance("ids", FeatureConformance.IDS,
+                new PropertyModel<>(featuresInfo, "ids"),
+                () -> features(info).ids((WFSInfo)info.getObject()));
+        addConformance("search", FeatureConformance.SEARCH,
+                new PropertyModel<>(featuresInfo, "search"),
+                () -> features(info).search((WFSInfo)info.getObject()));
+        addConformance("sortBy", FeatureConformance.SORTBY,
+                new PropertyModel<>(featuresInfo, "sortBy"),
+                () -> features(info).sortBy((WFSInfo)info.getObject()));
     }
 
     private void ecqlSettings(IModel<?> info) {
+        ECQLConformance ecqlInfo = ecql(info);
         // ECQL
-        addConformance("ecql", ECQLConformance.ECQL, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return ecql(info).isECQL();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                ecql(info).setECQL(object);
-            }
-        });
-        addConformance("ecqlText", ECQLConformance.ECQL_TEXT, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return ecql(info).isText();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                ecql(info).setText(object);
-            }
-        });
+        addConformance("ecql", ECQLConformance.ECQL,
+                new PropertyModel<>(ecqlInfo, "ECQL"),
+                () -> ecql(info).ecql((WFSInfo)info.getObject()));
+        addConformance("ecqlText", ECQLConformance.ECQL_TEXT,
+                new PropertyModel<>(ecqlInfo, "text"),
+                () -> ecql(info).text((WFSInfo)info.getObject()));
     }
 
     private void cql2Settings(IModel<?> info) {
+        CQL2Conformance cql2Info = cql2(info);
+
         // CQL2
-        addConformance("cql2Text", CQL2Conformance.CQL2_TEXT, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return cql2(info).isText();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                cql2(info).setText(object);
-            }
-        });
-        addConformance("cql2JSON", CQL2Conformance.CQL2_JSON, new IModel<Boolean>() {
-            @Override
-            public Boolean getObject() {
-                return cql2(info).isJSON();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                cql2(info).setJSON(object);
-            }
-        });
-
-        IModel<Boolean> builtInModel = () -> true;
-        IModel<Boolean> notImplementedModel = () -> false;
+    addConformance("cql2Text", CQL2Conformance.CQL2_TEXT,
+                new PropertyModel<>(cql2Info, "text"),
+                () -> cql2(info).text((WFSInfo)info.getObject()));
+        addConformance("cql2JSON", CQL2Conformance.CQL2_JSON,
+                new PropertyModel<>(cql2Info, "json"),
+                () -> cql2(info).json((WFSInfo)info.getObject()));
 
         // built-in conformance
         addConformance("cql2Advanced", CQL2Conformance.CQL2_ADVANCED, true );

@@ -23,7 +23,12 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     private Boolean text = null;
 
     public ECQLConformance() {
-        super(METADATA_KEY,ECQL);
+        super(METADATA_KEY);
+    }
+
+    @Override
+    public boolean isEnabled(WFSInfo serviceInfo) {
+        return ecql(serviceInfo);
     }
 
     /**

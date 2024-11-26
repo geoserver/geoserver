@@ -4,6 +4,9 @@
  */
 package org.geoserver.mapml.tcrs;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.geoserver.mapml.xml.ProjType;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -11,6 +14,18 @@ import org.geotools.referencing.CRS;
 
 /** Wrap the Projection. In case of a Built-in Projection, it will contain the ProjType enum. */
 public class MapMLProjection {
+
+    Set<String> BUILT_IN_PROJECTION =
+            new HashSet<>(
+                    Arrays.asList(
+                            "EPSG:4326",
+                            "EPSG:3857",
+                            "EPSG:3978",
+                            "EPSG:5936",
+                            "MAPML:OSMTILE",
+                            "MAPML:APSTILE",
+                            "MAPML:CBMTILE",
+                            "MAPML:WGS84"));
 
     private boolean isBuiltIn;
 
@@ -25,19 +40,23 @@ public class MapMLProjection {
     }
 
     public MapMLProjection(String proj) throws FactoryException {
+        String projUC = proj.toUpperCase();
         for (ProjType v : ProjType.values()) {
-            if (v.name().equalsIgnoreCase(proj.toUpperCase())) {
+            if (v.name().equalsIgnoreCase(projUC)) {
                 projType = v;
                 isBuiltIn = true;
                 break;
             }
         }
         int epsg = getEpsgCode(proj);
-        for (ProjType c : ProjType.values()) {
-            if (c.epsgCode == (epsg)) {
-                projType = c;
-                isBuiltIn = true;
-                break;
+
+        if (BUILT_IN_PROJECTION.contains(proj) || !projUC.startsWith("MAPML")) {
+            for (ProjType c : ProjType.values()) {
+                if (c.epsgCode == (epsg)) {
+                    projType = c;
+                    isBuiltIn = true;
+                    break;
+                }
             }
         }
 
@@ -80,8 +99,18 @@ public class MapMLProjection {
         if (isBuiltIn) {
             return projType.getCRSCode();
         }
-        TiledCRSParams tcrs = TiledCRSConstants.lookupTCRSParams(value());
-        return tcrs.getCode();
+        String id = value();
+        String tcrsCode = null;
+        TiledCRSParams tcrs = TiledCRSConstants.lookupTCRSParams(id);
+        if (tcrs == null && id.startsWith("MAPML:")) {
+            id = id.substring(6);
+            // Fallback on id without MAPML prefix
+            tcrs = TiledCRSConstants.lookupTCRSParams(id);
+        }
+        if (tcrs != null) {
+            tcrsCode = tcrs.getCode();
+        }
+        return tcrsCode;
     }
 
     public CoordinateReferenceSystem getCRS() {

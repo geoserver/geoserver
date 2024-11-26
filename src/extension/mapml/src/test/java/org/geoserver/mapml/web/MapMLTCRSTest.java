@@ -44,7 +44,7 @@ public class MapMLTCRSTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
         Catalog catalog = gs.getCatalog();
-        CustomTiledCRSTest.addBuiltinGridSet(gs, catalog, global);
+        CustomTiledCRSTest.addGridSets(gs, catalog, global);
     }
 
     @Test

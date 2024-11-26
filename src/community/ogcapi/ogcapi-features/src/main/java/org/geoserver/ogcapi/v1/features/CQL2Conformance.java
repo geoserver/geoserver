@@ -56,9 +56,7 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     private Boolean propertyProperty;
     private Boolean spatial;
 
-    public CQL2Conformance() {
-        super(METADATA_KEY);
-    }
+    public CQL2Conformance() {}
 
     /**
      * Obtain CQL2Conformance configuration for WFSInfo.
@@ -232,5 +230,15 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
 
     public boolean spatial(WFSInfo info) {
         return isEnabled(info, spatial, CQL2_SPATIAL);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CQL2Conformance");
+        sb.append(" ").append(METADATA_KEY);
+        sb.append("{ text=").append(text);
+        sb.append("{ json=").append(json);
+        sb.append('}');
+        return sb.toString();
     }
 }

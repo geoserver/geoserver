@@ -18,34 +18,6 @@ import org.geoserver.config.ServiceInfo;
  * <p>Generic / abstract conformance configuration, stored in ServiceInfo.
  */
 public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
-    final String metadataKey;
-    // final APIConformance[] defaultConformance;
-
-    /**
-     * Enable and configure service functionality by conformance class.
-     *
-     * <p>The default configuration is used to determine if this conformance should enable
-     * automaticly (if no configuration has been provided by the user).
-     *
-     * @param metadataKey Storage key for metadata map
-     * @param defaultConformance Conformance classs used to determine default enabled status
-     */
-    public ConformanceInfo(String metadataKey) {
-        if (metadataKey == null) {
-            throw new NullPointerException("metadata key is null");
-        }
-        this.metadataKey = metadataKey;
-        // this.defaultConformance = defaultConformance;
-    }
-
-    /**
-     * Storage key.
-     *
-     * @return conformance class identifier.
-     */
-    public String getMetadataKey() {
-        return metadataKey;
-    }
 
     /**
      * Checks conformance configuration, to see if enabled.
@@ -113,8 +85,6 @@ public class ConformanceInfo<S extends ServiceInfo> implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName());
-        sb.append(" ");
-        sb.append(this.metadataKey);
         return sb.toString();
     }
 }

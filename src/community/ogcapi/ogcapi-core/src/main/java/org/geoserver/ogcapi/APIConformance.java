@@ -40,6 +40,13 @@ public class APIConformance implements Serializable {
         DRAFT_STANDARD(false, true),
 
         /**
+         * Mature standard, however the implementation is still under development.
+         *
+         * <p>Does not yet pass CITE certification associated with standard.
+         */
+        IMPLEMENTING(false, true),
+
+        /**
          * Mature standard, stable and ready for use.
          *
          * <p>A finalized standard, no longer subject to breaking changes, is required for a

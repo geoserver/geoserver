@@ -21,9 +21,7 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     private Boolean ecql = null;
     private Boolean text = null;
 
-    public ECQLConformance() {
-        super(METADATA_KEY);
-    }
+    public ECQLConformance() {}
 
     @Override
     public boolean isEnabled(WFSInfo serviceInfo) {
@@ -109,5 +107,15 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
      */
     public void setText(Boolean enabled) {
         text = enabled;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ECQLConformance");
+        sb.append(" ").append(METADATA_KEY);
+        sb.append("{ ecql=").append(ecql);
+        sb.append("{ text=").append(text);
+        sb.append('}');
+        return sb.toString();
     }
 }

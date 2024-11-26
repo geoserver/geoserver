@@ -77,13 +77,13 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         ECQLConformance ecql = ECQLConformance.configuration(wfsInfo);
 
         if (!features.isEnabled(wfsInfo)) {
-            wfsInfo.getMetadata().remove(features.getMetadataKey());
+            wfsInfo.getMetadata().remove(FeatureConformance.METADATA_KEY);
         }
         if (!cql2.isEnabled(wfsInfo)) {
-            wfsInfo.getMetadata().remove(cql2.getMetadataKey());
+            wfsInfo.getMetadata().remove(CQL2Conformance.METADATA_KEY);
         }
         if (!ecql.isEnabled(wfsInfo)) {
-            wfsInfo.getMetadata().remove(ecql.getMetadataKey());
+            wfsInfo.getMetadata().remove(ECQLConformance.METADATA_KEY);
         }
     }
     /**
@@ -186,37 +186,19 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
 
     private void featureServiceSettings(IModel<?> info) {
         FeatureConformance featuresInfo = features(info);
-        // Enable/Disable service
-        addConformance(
-                "core",
-                FeatureConformance.CORE,
-                new PropertyModel<>(featuresInfo, "core"),
-                new IModel<Boolean>() {
-                    @Override
-                    public Boolean getObject() {
-                        return features(info).core((WFSInfo) info.getObject());
-                    }
-                });
 
-        IModel<Boolean> builtInModel = () -> true;
+        // core is required at present
+        addConformance("core", FeatureConformance.CORE, true);
 
         // Required built-in conformance
         addConformance("oas30", FeatureConformance.OAS30, true);
         addConformance("html", FeatureConformance.HTML, true);
         addConformance("geojson", FeatureConformance.GEOJSON, true);
 
-        // optional formats
-        addConformance(
-                "gmlsf0",
-                FeatureConformance.GMLSF0,
-                new PropertyModel<>(featuresInfo, "gmlSF2"),
-                (IModel<Boolean>) () -> features(info).gmlSF2((WFSInfo) info.getObject()));
+        // these formats are not implemented
+        addConformance("gmlsf0", FeatureConformance.GMLSF0, false);
 
-        addConformance(
-                "gmlsf2",
-                FeatureConformance.GMLSF2,
-                new PropertyModel<>(featuresInfo, "gmlSF2"),
-                (IModel<Boolean>) () -> features(info).gmlSF2((WFSInfo) info.getObject()));
+        addConformance("gmlsf2", FeatureConformance.GMLSF2, false);
 
         // Optional Functionality
         addConformance(
@@ -228,7 +210,7 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         addConformance(
                 "filter",
                 FeatureConformance.FILTER,
-                new PropertyModel<>(featuresInfo, "featuresFilter"),
+                new PropertyModel<>(featuresInfo, "filter"),
                 () -> features(info).filter((WFSInfo) info.getObject()));
         addConformance(
                 "featuresFilter",
@@ -241,6 +223,7 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
                 FeatureConformance.QUERYABLES,
                 new PropertyModel<>(featuresInfo, "queryables"),
                 () -> features(info).queryables((WFSInfo) info.getObject()));
+
         addConformance(
                 "ids",
                 FeatureConformance.IDS,

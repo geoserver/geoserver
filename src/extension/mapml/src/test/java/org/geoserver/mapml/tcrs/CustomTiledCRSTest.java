@@ -68,19 +68,21 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
         Catalog catalog = gs.getCatalog();
-        addBuiltinGridSet(gs, catalog, global);
+        addGridSets(gs, catalog, global);
     }
 
-    public static void addBuiltinGridSet(GeoServer gs, Catalog catalog, GeoServerInfo global) {
+    public static void addGridSets(GeoServer gs, Catalog catalog, GeoServerInfo global) {
         // add UTM31 Gridset to GWC
         GridSetBroker broker = GWC.get().getGridSetBroker();
         broker.addGridSet(createUtm31NGridset());
         broker.addGridSet(createWorldCRS84QuadGridset());
+        broker.addGridSet(createCustom3035Gridset());
 
         // Add 2 custom gridsets to TCRS list
         MetadataMap metadata = global.getSettings().getMetadata();
         ArrayList<String> crsList = new ArrayList<>();
         crsList.add("UTM31WGS84Quad");
+        crsList.add("Test3035");
         metadata.put(TiledCRSConstants.TCRS_METADATA_KEY, crsList);
         gs.save(global);
 
@@ -127,6 +129,37 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
                 "UTM31WGS84Quad",
                 32631,
                 new String[] {"166021.44", "0.0", "833978.56", "9329005.18"},
+                null,
+                resolutions,
+                1.0d,
+                0.00028d,
+                null,
+                false);
+    }
+
+    private static GridSet createCustom3035Gridset() {
+        double[] resolutions = {
+            17578.125,
+            8789.0625,
+            4394.53125,
+            2197.265625,
+            1098.6328125,
+            549.31640625,
+            274.658203125,
+            137.3291015625,
+            68.66455078125,
+            34.332275390625,
+            17.1661376953125,
+            8.58306884765625,
+            4.291534423828125,
+            2.1457672119140625,
+            1.0728836059570312,
+            0.5364418029785156
+        };
+        return createGridSet(
+                "Test3035",
+                3035,
+                new String[] {"2000000.00", "1000000.0", "6500000.0", "5500000.0"},
                 null,
                 resolutions,
                 1.0d,
@@ -281,6 +314,27 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
         print(doc);
         String url = xpath.evaluate("//html:map-link[@rel='" + "image" + "']/@tref", doc);
         assertTrue(url.contains("EPSG:32631"));
+    }
+
+    @Test
+    public void testTiledCRSYXOutput() throws Exception {
+        String path =
+                "wms?LAYERS=cite:RoadSegments"
+                        + "&STYLES=&FORMAT="
+                        + MapMLConstants.MAPML_MIME_TYPE
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS=MapML:Test3035"
+                        + "&BBOX=3086656.974771753,-2292253.8117892854,3214455.5231642732,-2192552.9770669416"
+                        + "&WIDTH=150"
+                        + "&HEIGHT=150"
+                        + "&format_options="
+                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                        + ":image/png";
+        Document doc = getMapML(path);
+        print(doc);
+        String url = xpath.evaluate("//html:map-link[@rel='" + "image" + "']/@tref", doc);
+        assertTrue(url.contains("bbox={ymin},{xmin},{ymax},{xmax}"));
     }
 
     @Test

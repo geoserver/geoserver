@@ -173,7 +173,8 @@ public class MapMLHTMLOutput {
         String name = params.getName();
         Point origin = params.getOrigin();
         String indent = " ".repeat(indentChars);
-        String originString = String.format("[%.8f, %.8f]", origin.getX(), origin.getY());
+        String originString =
+                String.format(Locale.ENGLISH, "[%.8f, %.8f]", origin.getX(), origin.getY());
 
         double[] resolutions = params.getResolutions();
         StringBuilder resolutionsString = new StringBuilder("[");

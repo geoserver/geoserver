@@ -6,7 +6,10 @@
 package org.geoserver.security;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
+import java.util.List;
+import java.util.HashSet;
+import java.util.SortedSet;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.validation.PasswordPolicyException;
 import org.springframework.util.StringUtils;

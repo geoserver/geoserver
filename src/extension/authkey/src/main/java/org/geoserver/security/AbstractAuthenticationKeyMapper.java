@@ -177,6 +177,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         this.authenticationFilterName = authenticationFilterName;
     }
 
+    @Override
     public GeoServerUser getUser(String key) throws IOException {
         checkProperties();
 
@@ -208,11 +209,13 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
      *
      * @param ttlSeconds TTL in seconds
      */
+    @Override
     public void setCacheTtlSeconds(long ttlSeconds) {
         this.cacheTtlSeconds = ttlSeconds;
     }
 
     /** Returns the current cache TTL in seconds. */
+    @Override
     public long getCacheTtlSeconds() {
         return cacheTtlSeconds;
     }
@@ -221,7 +224,6 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     private void startCacheCleanupTask() {
         cacheCleanupExecutor.scheduleAtFixedRate(
                 () -> {
-                    long now = System.currentTimeMillis();
                     userCache.entrySet().removeIf(entry -> entry.getValue().isExpired());
                 },
                 cacheTtlSeconds,

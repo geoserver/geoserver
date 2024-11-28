@@ -15,6 +15,7 @@ import org.geoserver.ogcapi.ConformanceInfo;
 import org.geoserver.wfs.WFSInfo;
 
 /** FeatureService configuration. */
+@SuppressWarnings("serial")
 public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static String METADATA_KEY = "ogcapiFeatures";
 

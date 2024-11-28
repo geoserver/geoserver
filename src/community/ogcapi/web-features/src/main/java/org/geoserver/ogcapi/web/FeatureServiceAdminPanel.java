@@ -6,7 +6,6 @@ package org.geoserver.ogcapi.web;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
@@ -18,13 +17,11 @@ import org.geoserver.ogcapi.v1.features.FeatureConformance;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.wfs.WFSInfo;
 
+@SuppressWarnings("serial")
 public class FeatureServiceAdminPanel extends AdminPagePanel {
 
     public FeatureServiceAdminPanel(String id, final IModel<?> info) {
         super(id, info);
-
-        WFSInfo wfsInfo = (WFSInfo) info.getObject();
-
         featureServiceSettings(info);
         cql2Settings(info);
         ecqlSettings(info);
@@ -114,7 +111,7 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
      * @param key Wicket id of checkbox, also used to obtained internationalization text
      * @param conformance Conformance class to be represented by the checkbox
      * @param booleanModel Model, often backed by WFSInfo, to store checkbox value.
-     * @param enabled Lamnda used to determine in conformance is enabled
+     * @param enabled Lambda used to determine in conformance is enanbled (i.e. implemented and configurable)
      * @return checkbox component to be used if further customization is required
      */
     protected CheckBox addConformance(
@@ -136,13 +133,17 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
 
         Label level = new Label(key + "Level", level(conformance.getLevel()));
         level.add(new AttributeModifier("title", recommendation(conformance.getLevel())));
-        final CheckBox checkBox =
-                new AjaxCheckBox(key, booleanModel) {
+        final ThreeStateAjaxCheckBox checkBox =
+                new ThreeStateAjaxCheckBox(key, booleanModel) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
+
                         Label uriLabel = (Label) FeatureServiceAdminPanel.this.get(key + "Label");
-                        boolean checked = getModelObject();
-                        uriLabel.setVisible(checked);
+
+                        Boolean modelValue = getModelObject();
+
+                        boolean visible = modelValue == null || modelValue.booleanValue();
+                        uriLabel.setVisible(visible);
                         uriLabel.setDefaultModelObject(conformance.getId());
                         target.add(uriLabel);
                     }

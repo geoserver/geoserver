@@ -16,6 +16,7 @@ import java.util.Objects;
  * <p>By comparison OGC Open Web Services can be extended using application profiles with
  * additional, optional, functionality.
  */
+@SuppressWarnings("serial")
 public class APIConformance implements Serializable {
 
     /** There are three levels of standard. */

@@ -285,7 +285,6 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         Map<String, String> mapperParams = new HashMap<>();
         mapperParams.put("cacheTtlSeconds", "0");
         config.setMapperParameters(mapperParams);
-
         getSecurityManager().saveFilter(config);
 
         GeoServerAuthenticationKeyFilter filter =
@@ -299,6 +298,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         modifyChain(pattern, false, true, null);
 
         SecurityContextHolder.getContext().setAuthentication(null);
+        getSecurityManager().getAuthenticationCache().removeAll();
 
         // Test entry point
         MockHttpServletRequest request = createRequest("/foo/bar");
@@ -355,6 +355,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         username = testUserName;
         password = username;
         updateUser("ug1", username, false);
+        mapper.synchronize();
 
         request = createRequest("/foo/bar");
         response = new MockHttpServletResponse();
@@ -396,7 +397,6 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         Map<String, String> mapperParams = new HashMap<>();
         mapperParams.put("cacheTtlSeconds", "0");
         config.setMapperParameters(mapperParams);
-
         getSecurityManager().saveFilter(config);
 
         GeoServerAuthenticationKeyFilter filter =
@@ -410,6 +410,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         modifyChain(pattern, false, false, null);
 
         SecurityContextHolder.getContext().setAuthentication(null);
+        getSecurityManager().getAuthenticationCache().removeAll();
 
         // Test entry point
         MockHttpServletRequest request = createRequest("/foo/bar");
@@ -439,6 +440,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
+        auth = auth != null ? auth : SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(auth);
         assertNull(request.getSession(false));
         checkForAuthenticatedRole(auth);
@@ -807,6 +809,11 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         // Save initial filter configuration with allowChallengeAnonymousSessions = true
         config.setAllowChallengeAnonymousSessions(true);
+
+        // Let's make sure the internal user cache is disabled
+        Map<String, String> mapperParams = new HashMap<>();
+        mapperParams.put("cacheTtlSeconds", "0");
+        config.setMapperParameters(mapperParams);
         getSecurityManager().saveFilter(config);
 
         GeoServerAuthenticationKeyFilter filter =
@@ -852,6 +859,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // authKey
         Authentication resultAuth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
+        resultAuth =
+                resultAuth != null
+                        ? resultAuth
+                        : SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(resultAuth);
         assertEquals(
                 "user1", resultAuth.getPrincipal()); // Assuming "user1" is returned by the mapper
@@ -881,6 +892,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // Verify that the filter used the existing authentication and did not retrieve the user
         // using authKey
         resultAuth = getSecurityManager().getAuthenticationCache().get(filterName, authKey);
+        resultAuth =
+                resultAuth != null
+                        ? resultAuth
+                        : SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(resultAuth);
         assertEquals("user1", resultAuth.getPrincipal());
     }

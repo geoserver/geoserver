@@ -6,10 +6,17 @@ import java.util.List;
 import org.geoserver.config.ServiceInfo;
 
 /**
- * Configuration for a service capability or feature, identified by conformance class.
+ * Service configuration for a capability or feature, identified by conformance class.
  *
  * <p>OGC API Web API standards are defined as collection of modules that assembled into a WEB API.
- * GeoServer allows you to select which service modules are enabled, and manage any configuration
+ * The resulting Web API is defined in an {@link io.swagger.v3.oas.models.OpenAPI} document.
+ *
+ * <p>OGC API {@link ConformanceDocument} provides a high level summary listing "conformance
+ * classes" indicating functionality following an official standard, or community standard. This
+ * base can be used to check {@link APIConformance} for a specific ServiceInfo. This allows a
+ * SORT_BY APIConformance for each of FeatureService, STACService, and RecordsService.
+ *
+ * <p>GeoServer allows you to select which service modules are enabled, and manage any configuration
  * associated with their use.
  *
  * <p>Open Web Services can also be extended, using service profiles, which can be managed in the

@@ -284,7 +284,12 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         addConformance("cql2Array", CQL2Conformance.CQL2_ARITHMETIC, false);
         addConformance("cql2Basic", CQL2Conformance.CQL2_BASIC, true);
         addConformance("cql2BasicSpatial", CQL2Conformance.CQL2_BASIC_SPATIAL, true);
-        addConformance("cql2Functions", CQL2Conformance.CQL2_FUNCTIONS, true);
+        addConformance(
+                "cql2Functions",
+                CQL2Conformance.CQL2_FUNCTIONS,
+                new PropertyModel<>(cql2Info, "functions"),
+                () -> cql2(info).functions((WFSInfo) info.getObject()));
+
         addConformance("cql2Temporal", CQL2Conformance.CQL2_TEMPORAL, false); // not implemented
         addConformance("cql2PropertyProperty", CQL2Conformance.CQL2_PROPERTY_PROPERTY, true);
         addConformance("cql2Spatial", CQL2Conformance.CQL2_SPATIAL, true);

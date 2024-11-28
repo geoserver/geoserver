@@ -87,14 +87,12 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
      * @return Feature Service configuration
      */
     public static FeatureConformance configuration(WFSInfo wfsInfo) {
-        synchronized (wfsInfo) {
-            if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
-                return (FeatureConformance) wfsInfo.getMetadata().get(METADATA_KEY);
-            } else {
-                FeatureConformance conf = new FeatureConformance();
-                wfsInfo.getMetadata().put(METADATA_KEY, conf);
-                return conf;
-            }
+        if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
+            return (FeatureConformance) wfsInfo.getMetadata().get(METADATA_KEY);
+        } else {
+            FeatureConformance conf = new FeatureConformance();
+            wfsInfo.getMetadata().put(METADATA_KEY, conf);
+            return conf;
         }
     }
 

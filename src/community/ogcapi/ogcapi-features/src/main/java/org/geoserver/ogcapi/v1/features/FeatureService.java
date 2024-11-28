@@ -254,6 +254,14 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "functions.ftl", fileName = "functions.html")
     public FunctionsDocument getFunctions() {
+        WFSInfo wfs = getServiceInfo();
+        CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
+        if (!cql2.functions(wfs)) {
+            throw new APIException(
+                    APIException.NOT_FOUND,
+                    "Functions not supported by the service.",
+                    HttpStatus.NOT_FOUND);
+        }
         return new FunctionsDocument();
     }
 
@@ -532,7 +540,14 @@ public class FeatureService {
             @PathVariable(name = "collectionId") String collectionId,
             @RequestBody APISearchQuery query)
             throws Exception {
-
+        WFSInfo wfsInfo = getServiceInfo();
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        if (!featureServiceInfo.search(wfsInfo)) {
+            throw new APIException(
+                    APIException.NOT_FOUND,
+                    "Search is not supported by the service.",
+                    HttpStatus.NOT_FOUND);
+        }
         // WARNING:
         // This endpoint is part of the draft proposal "OGC API - Features - Part 5". The syntax and
         // semantic of the endpoint is subject to change in a future release. Its usage should be

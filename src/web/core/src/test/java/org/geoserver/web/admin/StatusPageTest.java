@@ -178,7 +178,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
             index++;
         }
         if (found == -1) {
-            fail("ServiceConformance jvm not found, required for version check");
+            fail("Module jvm not found, required for version check");
         }
         Component version =
                 tester.getComponentFromLastRenderedPage(

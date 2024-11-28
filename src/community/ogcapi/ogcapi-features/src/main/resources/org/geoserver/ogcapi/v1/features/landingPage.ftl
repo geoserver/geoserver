@@ -29,6 +29,7 @@
       </div>
     </div>
 
+    <#if model.getLinkUrl('functions', 'text/html')?? >
     <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">
         <div class="card-body">
@@ -38,7 +39,8 @@
         </div>
       </div>
     </div>
-    
+    </#if>
+
     ${htmlExtensions('landing')?no_esc}
 
     <div class="col-6 col-xl-3 mb-3">

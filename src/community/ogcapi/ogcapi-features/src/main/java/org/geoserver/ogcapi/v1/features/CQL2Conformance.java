@@ -27,6 +27,13 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
     public static final APIConformance CQL2_BASIC = new APIConformance(ConformanceClass.CQL2_BASIC);
     public static final APIConformance CQL2_BASIC_SPATIAL =
             new APIConformance(ConformanceClass.CQL2_BASIC_SPATIAL);
+
+    /**
+     * Indicates CQL2 Functions are supported.
+     *
+     * <p>FeatureService is required to support {@code /functions} endpoint, providing a {@link
+     * org.geoserver.ogcapi.FunctionsDocument}
+     */
     public static final APIConformance CQL2_FUNCTIONS =
             new APIConformance(ConformanceClass.CQL2_FUNCTIONS);
 
@@ -67,14 +74,12 @@ public class CQL2Conformance extends ConformanceInfo<WFSInfo> {
      * @return CQL2 configuration
      */
     public static CQL2Conformance configuration(WFSInfo wfsInfo) {
-        synchronized (wfsInfo) {
-            if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
-                return (CQL2Conformance) wfsInfo.getMetadata().get(METADATA_KEY);
-            } else {
-                CQL2Conformance conf = new CQL2Conformance();
-                wfsInfo.getMetadata().put(METADATA_KEY, conf);
-                return conf;
-            }
+        if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
+            return (CQL2Conformance) wfsInfo.getMetadata().get(METADATA_KEY);
+        } else {
+            CQL2Conformance conf = new CQL2Conformance();
+            wfsInfo.getMetadata().put(METADATA_KEY, conf);
+            return conf;
         }
     }
 

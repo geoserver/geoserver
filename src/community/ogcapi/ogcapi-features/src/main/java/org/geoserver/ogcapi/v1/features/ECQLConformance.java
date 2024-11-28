@@ -37,14 +37,12 @@ public class ECQLConformance extends ConformanceInfo<WFSInfo> {
      * @return Feature Service configuration
      */
     public static ECQLConformance configuration(WFSInfo wfsInfo) {
-        synchronized (wfsInfo) {
-            if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
-                return (ECQLConformance) wfsInfo.getMetadata().get(METADATA_KEY);
-            } else {
-                ECQLConformance conf = new ECQLConformance();
-                wfsInfo.getMetadata().put(METADATA_KEY, conf);
-                return conf;
-            }
+        if (wfsInfo.getMetadata().containsKey(METADATA_KEY)) {
+            return (ECQLConformance) wfsInfo.getMetadata().get(METADATA_KEY);
+        } else {
+            ECQLConformance conf = new ECQLConformance();
+            wfsInfo.getMetadata().put(METADATA_KEY, conf);
+            return conf;
         }
     }
 

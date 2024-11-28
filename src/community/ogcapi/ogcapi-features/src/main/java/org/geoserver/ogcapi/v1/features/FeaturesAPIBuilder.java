@@ -45,6 +45,16 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
         ECQLConformance ecql = ECQLConformance.configuration(wfs);
 
+        if (!features.search(wfs)) {
+            api.getPaths().remove("/collections/{collectionId}/search");
+        }
+        if (!features.queryables(wfs)) {
+            api.getPaths().remove("/collections/{collectionId}/queryables");
+        }
+        if (!cql2.functions(wfs)) {
+            api.getPaths().remove("/functions");
+        }
+
         // the external documentation
         api.externalDocs(
                 new ExternalDocumentation()

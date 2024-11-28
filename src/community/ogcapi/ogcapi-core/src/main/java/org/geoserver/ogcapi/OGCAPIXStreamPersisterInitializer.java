@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi;
 
 import com.thoughtworks.xstream.XStream;
-import java.util.HashMap;
 import java.util.List;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
@@ -21,7 +20,6 @@ public class OGCAPIXStreamPersisterInitializer implements XStreamPersisterInitia
         xs.alias("link", LinkInfo.class);
         xs.addDefaultImplementation(LinkInfoImpl.class, LinkInfo.class);
         persister.registerBreifMapComplexType("list", List.class);
-        persister.registerBreifMapComplexType("map", HashMap.class);
         xs.allowTypes(new Class[] {LinkInfo.class});
     }
 }

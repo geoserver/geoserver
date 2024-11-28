@@ -45,6 +45,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
         ECQLConformance ecql = ECQLConformance.configuration(wfs);
 
+        // adjust paths
         if (!features.search(wfs)) {
             api.getPaths().remove("/collections/{collectionId}/search");
         }
@@ -66,10 +67,29 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         declareGetResponseFormats(api, "/conformance", ConformanceDocument.class);
         declareGetResponseFormats(api, "/collections", CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionsDocument.class);
+
         declareGetResponseFormats(api, "/collections/{collectionId}/items", FeaturesResponse.class);
+        List<Parameter> itemsParameters =
+                api.getPaths().get("/collections/{collectionId}/items").getGet().getParameters();
+        /// Check to remove optional parameters
+        if (!features.filter(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter"));
+            itemsParameters.removeIf(
+                    p -> p.get$ref().equals("#/components/parameters/filter-lang"));
+        }
+        if (!features.crsByReference(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter-crs"));
+        }
+        if (!features.ids(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/ids"));
+        }
+        if (!features.sortBy(wfs)) {
+            itemsParameters.removeIf(
+                    p -> p.get$ref().equals("#/components/parameters/filter-sortby"));
+        }
+
         declareGetResponseFormats(
                 api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);
-
         Content itemsContent =
                 api.getPaths()
                         .get("/collections/{collectionId}/items/{featureId}")
@@ -77,7 +97,6 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
                         .getResponses()
                         .get("200")
                         .getContent();
-
         // Check to remove optional formats
         if (!features.gml321(wfs)) {
             itemsContent.remove("application/gml+xml;version=3.2");

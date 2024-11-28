@@ -123,16 +123,11 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         boolean endorsed = conformance.getLevel().isEndorsed();
 
         final Label label = new Label(key + "Label", conformance.getId());
-        //        {
-        //            @Override
-        //            public boolean isVisible() {
-        //                return Boolean.TRUE.equals(enabled.getObject());
-        //            }
-        //        };
         label.add(new AttributeModifier("title", conformance.getId()));
-        label.setOutputMarkupId(true); // provide an id for ajax show/hide
-        label.setOutputMarkupPlaceholderTag(
-                true); // force div wrapper something always exists to show/hide
+        // provide an id for ajax show/hide
+        label.setOutputMarkupId(true);
+        // force div wrapper something always exists to show/hide
+        label.setOutputMarkupPlaceholderTag(true);
         label.setVisible(Boolean.TRUE.equals(enabled.getObject()));
 
         Label level = new Label(key + "Level", level(conformance.getLevel()));

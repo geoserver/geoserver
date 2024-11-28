@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -405,8 +406,8 @@ public class FeatureService {
             String itemId)
             throws Exception {
 
-        WFSInfo wfsInfo = getServiceInfo();
-        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        WFSInfo wfs = getServiceInfo();
+        FeatureConformance features = FeatureConformance.configuration(wfs);
 
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);
@@ -431,7 +432,7 @@ public class FeatureService {
             // of the parameter is subject to change in a future release. Its usage should be
             // carefully
             // considered.
-            if (featureServiceInfo.ids(wfsInfo)) {
+            if (features.ids(wfs)) {
                 filters.add(buildIdsFilter(ids));
             } else {
                 LOGGER.warning(
@@ -442,34 +443,16 @@ public class FeatureService {
             }
         }
         if (filter != null) {
-            CQL2Conformance cql2Info = CQL2Conformance.configuration(wfsInfo);
-            ECQLConformance ecqlInfo = ECQLConformance.configuration(wfsInfo);
+            CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
+            ECQLConformance ecql = ECQLConformance.configuration(wfs);
 
-            if (featureServiceInfo.filter(wfsInfo)) {
-                if (filterLanguage == APIFilterParser.ECQL_TEXT && !ecqlInfo.text(wfsInfo)) {
-                    LOGGER.warning(
-                            () ->
-                                    "The filter language '"
-                                            + APIFilterParser.ECQL_TEXT
-                                            + "' is not supported by the service, requires "
-                                            + ECQLConformance.ECQL_TEXT.getId()
-                                            + " conformance to be enabled.");
-                } else if (filterLanguage == APIFilterParser.CQL2_TEXT && !cql2Info.text(wfsInfo)) {
-                    LOGGER.warning(
-                            () ->
-                                    "The filter language '"
-                                            + APIFilterParser.CQL2_TEXT
-                                            + "' is not supported by the service, requires "
-                                            + CQL2Conformance.CQL2_TEXT.getId()
-                                            + " conformance to be enabled.");
-                } else if (filterLanguage == APIFilterParser.CQL2_JSON && !cql2Info.json(wfsInfo)) {
-                    LOGGER.warning(
-                            () ->
-                                    "The filter language '"
-                                            + APIFilterParser.CQL2_JSON
-                                            + "' is not supported by the service, requires "
-                                            + CQL2Conformance.CQL2_JSON.getId()
-                                            + " conformance to be enabled.");
+            if (features.filter(wfs)) {
+                if (filterLanguage == APIFilterParser.ECQL_TEXT && !ecql.text(wfs)) {
+                    ignoreFilterLanguage(APIFilterParser.ECQL_TEXT, ECQLConformance.ECQL_TEXT);
+                } else if (filterLanguage == APIFilterParser.CQL2_TEXT && !cql2.text(wfs)) {
+                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_TEXT);
+                } else if (filterLanguage == APIFilterParser.CQL2_JSON && !cql2.json(wfs)) {
+                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_JSON);
                 } else {
                     Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
                     filters.add(parsedFilter);
@@ -484,7 +467,7 @@ public class FeatureService {
         }
         query.setFilter(mergeFiltersAnd(filters));
         if (sortBy != null) {
-            if (featureServiceInfo.sortBy(wfsInfo)) {
+            if (features.sortBy(wfs)) {
                 query.setSortBy(ImmutableList.copyOf(sortBy));
             } else {
                 LOGGER.warning(
@@ -496,7 +479,7 @@ public class FeatureService {
         }
 
         if (crs != null) {
-            if (featureServiceInfo.crsByReference(wfsInfo)) {
+            if (features.crsByReference(wfs)) {
                 query.setSrsName(new URI(crs));
             } else {
                 LOGGER.warning(
@@ -531,6 +514,17 @@ public class FeatureService {
         // build a response tracking both results and request to allow reusing the existing WFS
         // output formats
         return new FeaturesResponse(request.getAdaptee(), response);
+    }
+
+    private static void ignoreFilterLanguage(String filterLanguage, APIConformance conformance) {
+        if (LOGGER.isLoggable(Level.WARNING)) {
+            LOGGER.warning(
+                    "The filter language '"
+                            + filterLanguage
+                            + "' is not supported by the service, requires "
+                            + conformance.getId()
+                            + " conformance to be enabled.");
+        }
     }
 
     @PostMapping(path = "collections/{collectionId}/search", name = "searchFeatures")

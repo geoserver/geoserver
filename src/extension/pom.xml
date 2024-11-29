@@ -400,6 +400,21 @@
         <module>rat</module>
       </modules>
     </profile>
+    <profile>
+      <id>ogcapi</id>
+      <modules>
+        <module>ogcapi</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ogcapi-features</id>
+      <modules>
+        <module>ogcapi/ogcapi-core</module>
+        <module>ogcapi/ogcapi-features</module>
+        <module>ogcapi/web-ogcapi</module>
+        <module>ogcapi/web-features</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -450,6 +465,7 @@
         <module>geopkg-output</module>
         <module>metadata</module>
         <module>rat</module>
+        <module>ogcapi</module>
       </modules>
     </profile>
 
@@ -502,6 +518,7 @@
         <module>geopkg-output</module>
         <module>metadata</module>
         <module>rat</module>
+        <module>ogcapi</module>
       </modules>
     </profile>
   </profiles>

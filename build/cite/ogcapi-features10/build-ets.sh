@@ -16,5 +16,6 @@ rm -rf ets-ogcapi-features10
 git clone https://github.com/opengeospatial/ets-ogcapi-features10.git
 cd ets-ogcapi-features10
 #git checkout geoserver/integration
+git checkout 1.8
 mvn clean install -Pdocker -DskipTests -ntp
 cd ..

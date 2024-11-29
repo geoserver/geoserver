@@ -114,7 +114,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
-        if (LOGGER.isLoggable(Level.INFO)) LOGGER.info("about to encode JSON");
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("about to encode JSON");
 
         // get feature count for request
         BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();

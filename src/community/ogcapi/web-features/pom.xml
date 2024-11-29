@@ -30,7 +30,7 @@
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-features</artifactId>
       <version>${gs.version}</version>
-      <scope>compile</scope>
+      <!--scope>compile</scope-->
     </dependency>
 
     <dependency>

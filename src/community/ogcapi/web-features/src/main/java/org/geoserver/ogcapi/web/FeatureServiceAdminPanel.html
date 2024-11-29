@@ -1,0 +1,263 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <h3><wicket:message key="defaultTitle">Feature Service</wicket:message></h3>
+    <p><wicket:message key="configureInformation">Feature Service is a modular OGC API service with "building blocks" that can be enabled and configured for use.</wicket:message></p>
+    <ul>
+        <li>
+            <fieldset>
+                <legend><span><wicket:message key="features">OGC API - Features</wicket:message></span></legend>
+                <ul class="choiceList">
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="core">CORE</wicket:message></label>
+                        </div>
+                        <label wicket:id="coreLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="core" type="checkbox"></input>
+                        <label wicket:id="coreLabel" for="core" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="oas30">OpenAPI</wicket:message></label>
+                        </div>
+                        <label wicket:id="oas30Level" class="level">IMPLEMENTED</label>
+                        <input wicket:id="oas30" type="checkbox"></input>
+                        <label wicket:id="oas30Label" for="oas30" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="html">HTML</wicket:message></label>
+                        </div>
+                        <label wicket:id="htmlLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="html" type="checkbox"></input>
+                        <label wicket:id="htmlLabel" for="html" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="geojson">GeoJSON</wicket:message></label>
+                        </div>
+                        <label wicket:id="geojsonLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="geojson" type="checkbox"></input>
+                        <label wicket:id="geojsonLabel" for="geojson" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="gml321">GML Simple Features Level 0</wicket:message></label>
+                        </div>
+                        <label wicket:id="gml321Level" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="gml321" type="checkbox"></input>
+                        <label wicket:id="gml321Label" for="gml321" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="gmlsf0">GML Simple Features Level 0</wicket:message></label>
+                        </div>
+                        <label wicket:id="gmlsf0Level" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="gmlsf0" type="checkbox"></input>
+                        <label wicket:id="gmlsf0Label" for="gmlsf0" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="gmlsf2">GML Simple Features Level 2</wicket:message></label>
+                        </div>
+                        <label wicket:id="gmlsf2Level" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="gmlsf2" type="checkbox"></input>
+                        <label wicket:id="gmlsf2Label" for="gmlsf2" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="crsByReference">CRS by Reference</wicket:message></label>
+                        </div>
+                        <label wicket:id="crsByReferenceLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="crsByReference" type="checkbox"></input>
+                        <label wicket:id="crsByReferenceLabel" for="crsByReference" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="filter">Filter</wicket:message></label>
+                        </div>
+                        <label wicket:id="filterLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="filter" type="checkbox"></input>
+                        <label wicket:id="filterLabel" for="filter" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="featuresFilter">Feature Filter</wicket:message></label>
+                        </div>
+                        <label wicket:id="featuresFilterLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="featuresFilter" type="checkbox"></input>
+                        <label wicket:id="featuresFilterLabel" for="featureFilter" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="queryables">Queyables</wicket:message></label>
+                        </div>
+                        <label wicket:id="queryablesLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="queryables" type="checkbox"></input>
+                        <label wicket:id="queryablesLabel" for="queryables" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="ids">Identifiers</wicket:message></label>
+                        </div>
+                        <label wicket:id="idsLevel" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="ids" type="checkbox"></input>
+                        <label wicket:id="idsLabel" for="ids" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="search">Search</wicket:message></label>
+                        </div>
+                        <label wicket:id="searchLevel" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="search" type="checkbox"></input>
+                        <label wicket:id="searchLabel" for="search" class="conformance"></label>
+                    </li>
+
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="sortBy">Sort By</wicket:message></label>
+                        </div>
+                        <label wicket:id="sortByLevel" class="level">NOT IMPLEMENTED</label>
+                        <input wicket:id="sortBy" type="checkbox"></input>
+                        <label wicket:id="sortByLabel" for="sortBy" class="conformance"></label>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <fieldset>
+                <legend><span><wicket:message key="cql2Title">Common Query Language (CQL2)</wicket:message></span></legend>
+                <ul class="choiceList">
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Text">CQL2 Text</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2TextLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Text" type="checkbox"></input>
+                        <label wicket:id="cql2TextLabel" for="cql2Text" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2JSON">CQL2 JSON</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2JSONLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2JSON" type="checkbox"></input>
+                        <label wicket:id="cql2JSONLabel" for="cql2JSON" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Advanced">CQL2 Advanced</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2AdvancedLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Advanced" type="checkbox"></input>
+                        <label wicket:id="cql2AdvancedLabel" for="cql2Advanced" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Arithmetic">CQL2 Arithmatic</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2ArithmeticLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Arithmetic" type="checkbox"></input>
+                        <label wicket:id="cql2ArithmeticLabel" for="cql2Arithmetic" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Array">CQL2 Arrays</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2ArrayLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Array" type="checkbox"></input>
+                        <label wicket:id="cql2ArrayLabel" for="cql2Array" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Basic">CQL2 Basic</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2BasicLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Basic" type="checkbox"></input>
+                        <label wicket:id="cql2BasicLabel" for="cql2Basic" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2BasicSpatial">CQL2 Basic Spatial</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2BasicSpatialLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2BasicSpatial" type="checkbox"></input>
+                        <label wicket:id="cql2BasicSpatialLabel" for="cql2BasicSpatial" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Functions">CQL2 Functions</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2FunctionsLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Functions" type="checkbox"></input>
+                        <label wicket:id="cql2FunctionsLabel" for="cql2Functions" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Temporal">CQL2 Temporal</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2TemporalLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Temporal" type="checkbox"></input>
+                        <label wicket:id="cql2TemporalLabel" for="cql2Temporal" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2PropertyProperty">CQL2 Property Property</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2PropertyPropertyLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2PropertyProperty" type="checkbox"></input>
+                        <label wicket:id="cql2PropertyPropertyLabel" for="cql2PropertyProperty" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="cql2Spatial">CQL2 Spatial</wicket:message></label>
+                        </div>
+                        <label wicket:id="cql2SpatialLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="cql2Spatial" type="checkbox"></input>
+                        <label wicket:id="cql2SpatialLabel" for="cql2Spatial" class="conformance"></label>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <fieldset>
+                <legend><span><wicket:message key="ecqlTitle">Extended Common Query Language</wicket:message></span></legend>
+                <ul class="choiceList">
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="ecql">ECQL</wicket:message></label>
+                        </div>
+                        <label wicket:id="ecqlLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="ecql" type="checkbox"></input>
+                        <label wicket:id="ecqlLabel" for="ecql" class="conformance"></label>
+                    </li>
+                    <li class="conformanceItem">
+                        <div>
+                            <label><wicket:message key="ecqlText">ECQL Text</wicket:message></label>
+                        </div>
+                        <label wicket:id="ecqlTextLevel" class="level">IMPLEMENTED</label>
+                        <input wicket:id="ecqlText" type="checkbox"></input>
+                        <label wicket:id="ecqlTextLabel" for="ecqlText" class="conformance"></label>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

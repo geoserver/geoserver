@@ -111,7 +111,8 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
      * @param key Wicket id of checkbox, also used to obtained internationalization text
      * @param conformance Conformance class to be represented by the checkbox
      * @param booleanModel Model, often backed by WFSInfo, to store checkbox value.
-     * @param enabled Lambda used to determine in conformance is enanbled (i.e. implemented and configurable)
+     * @param enabled Lambda used to determine in conformance is enanbled (i.e. implemented and
+     *     configurable)
      * @return checkbox component to be used if further customization is required
      */
     protected CheckBox addConformance(

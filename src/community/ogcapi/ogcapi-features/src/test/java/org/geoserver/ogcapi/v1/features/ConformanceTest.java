@@ -45,13 +45,14 @@ public class ConformanceTest extends FeaturesTestSupport {
         //   SEARCH
         //   SORTBY
         //   GMLSF0
+        //   GMLSF2
         return new String[] {
             FeatureConformance.CORE.getId(),
             FeatureConformance.OAS30.getId(),
             FeatureConformance.HTML.getId(),
             FeatureConformance.GEOJSON.getId(),
+            FeatureConformance.GML321.getId(),
             FeatureConformance.CRS_BY_REFERENCE.getId(),
-            FeatureConformance.GMLSF2.getId(),
             FEATURES_FILTER,
             FILTER,
             QUERYABLES,

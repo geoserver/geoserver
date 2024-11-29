@@ -10,29 +10,29 @@ import org.geoserver.ogcapi.ConformanceInfo;
 import org.springframework.lang.Nullable;
 
 /**
- * Three-state {@link AjaxCheckBox} preserving the {@code null} initial model
- * value.
+ * Three-state {@link AjaxCheckBox} preserving the {@code null} initial model value.
+ *
  * <p>
+ *
  * <ul>
- * <li>If the initial state is undefined (null), checking and unchecking
- * resolves to undefined.
- * <li>If the initial state is false, checking and unchecking resolves back to
- * false.
+ *   <li>If the initial state is undefined (null), checking and unchecking resolves to undefined.
+ *   <li>If the initial state is false, checking and unchecking resolves back to false.
  * </ul>
- * <p>
- * This prevents the "undefined" states to be persisted as {@code false} when
- * serializing the {@link ConformanceInfo}.
- * <p>
- * <strong>Beware</strong> {@link #getModel()} can hence return {@code null}.
+ *
+ * <p>This prevents the "undefined" states to be persisted as {@code false} when serializing the
+ * {@link ConformanceInfo}.
+ *
+ * <p><strong>Beware</strong> {@link #getModel()} can hence return {@code null}.
  */
 @SuppressWarnings("serial")
 abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
 
     public enum State {
-        TRUE(true), FALSE(false), UNDEFINED(null);
+        TRUE(true),
+        FALSE(false),
+        UNDEFINED(null);
 
-        @Nullable
-        private Boolean value;
+        @Nullable private Boolean value;
 
         private State(Boolean nullableState) {
             this.value = nullableState;
@@ -60,9 +60,8 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
     }
 
     /**
-     * @return {@code null} when the initial state is {@code null} and the final
-     *         state is "unchecked", {@code true} or {@code false} otherwise
-     *         according to the model value.
+     * @return {@code null} when the initial state is {@code null} and the final state is
+     *     "unchecked", {@code true} or {@code false} otherwise according to the model value.
      */
     @Override
     @Nullable
@@ -71,8 +70,8 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
     }
 
     /**
-     * Prevents the null (undefined) state from being replaced by false during form
-     * submission by directly handling the model’s value
+     * Prevents the null (undefined) state from being replaced by false during form submission by
+     * directly handling the model’s value
      */
     @Override
     public void updateModel() {
@@ -87,16 +86,14 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
         setModelObject(state.value());
     }
 
-    /**
-     * Ensure the “checked” attribute is removed when the state is undefined
-     */
+    /** Ensure the “checked” attribute is removed when the state is undefined */
     @Override
     protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
         super.onComponentTag(tag);
 
         if (state == State.TRUE) {
             tag.put("checked", "checked");
-        } else {// holds on for both FALSE and UNDEFINED
+        } else { // holds on for both FALSE and UNDEFINED
             tag.remove("checked");
         }
     }

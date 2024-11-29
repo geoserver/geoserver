@@ -112,8 +112,8 @@ public class APIConformance implements Serializable {
 
     private final Type type;
 
-    /** Storage key. */
-    private final String key;
+    /** Bean property name. */
+    private final String property;
 
     /**
      * Conformance class declaration, defaulting to APPROVED.
@@ -128,7 +128,7 @@ public class APIConformance implements Serializable {
      * Conformance class declaration.
      *
      * @param id conformance class
-     * @param status standard approval status
+     * @param level standard approval status
      */
     public APIConformance(String id, Level level) {
         this(id, level, Type.EXTENSION, null);
@@ -138,10 +138,10 @@ public class APIConformance implements Serializable {
      *
      * @param id conformance class
      * @param level standard approval status
-     * @param key storage key
+     * @param property storage key
      */
-    public APIConformance(String id, Level level, String key) {
-        this(id, level, Type.EXTENSION, null, key);
+    public APIConformance(String id, Level level, String property) {
+        this(id, level, Type.EXTENSION, null, property);
     }
 
     /**
@@ -162,14 +162,15 @@ public class APIConformance implements Serializable {
      * @param level standard approval status
      * @param type conformance class type
      * @param parent parent conformance class (if this is an extension)
-     * @param key storage key
+     * @param property bean property name
      */
-    public APIConformance(String id, Level level, Type type, APIConformance parent, String key) {
+    public APIConformance(
+            String id, Level level, Type type, APIConformance parent, String property) {
         this.id = id;
         this.level = level;
         this.type = type;
         this.parent = parent;
-        this.key = key;
+        this.property = property;
     }
 
     public APIConformance extend(String id) {
@@ -197,8 +198,8 @@ public class APIConformance implements Serializable {
      *
      * @return recommended storage key.
      */
-    public String getKey() {
-        return key;
+    public String getProperty() {
+        return property;
     }
 
     /**
@@ -225,6 +226,6 @@ public class APIConformance implements Serializable {
 
     @Override
     public String toString() {
-        return "APIConformance " + key + " ( " + id + " " + level + " )";
+        return "APIConformance " + property + " ( " + id + " " + level + " )";
     }
 }

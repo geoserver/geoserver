@@ -16,15 +16,7 @@ import static org.geoserver.ogcapi.ConformanceClass.ECQL;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.ConformanceClass.IDS;
 import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
-import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
-import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
-import static org.geoserver.ogcapi.v1.features.FeatureService.CORE;
-import static org.geoserver.ogcapi.v1.features.FeatureService.CRS_BY_REFERENCE;
-import static org.geoserver.ogcapi.v1.features.FeatureService.GEOJSON;
-import static org.geoserver.ogcapi.v1.features.FeatureService.HTML;
-import static org.geoserver.ogcapi.v1.features.FeatureService.OAS30;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
@@ -48,16 +40,22 @@ public class ConformanceTest extends FeaturesTestSupport {
     }
 
     private String[] getExpectedConformanceClasses() {
+        // The following are not enabled by default:
+        //   IDS
+        //   SEARCH
+        //   SORTBY
+        //   GMLSF0
+        //   GMLSF2
         return new String[] {
-            CORE,
-            OAS30,
-            HTML,
-            GEOJSON,
-            CRS_BY_REFERENCE,
+            FeatureConformance.CORE.getId(),
+            FeatureConformance.OAS30.getId(),
+            FeatureConformance.HTML.getId(),
+            FeatureConformance.GEOJSON.getId(),
+            FeatureConformance.GML321.getId(),
+            FeatureConformance.CRS_BY_REFERENCE.getId(),
+            FEATURES_FILTER,
             FILTER,
             QUERYABLES,
-            FEATURES_FILTER,
-            SEARCH,
             ECQL,
             ECQL_TEXT,
             CQL2_BASIC,
@@ -67,9 +65,7 @@ public class ConformanceTest extends FeaturesTestSupport {
             CQL2_BASIC_SPATIAL,
             CQL2_SPATIAL,
             CQL2_FUNCTIONS,
-            CQL2_TEXT,
-            SORTBY,
-            IDS
+            CQL2_TEXT
         };
     }
 

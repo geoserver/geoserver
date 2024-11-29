@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Marks a class as a OGC API service provider. Behaves in a way similar to {@link
- * org.springframework.stereotype.Controller}, the {@link APIDispatcher }assumes the methods are
+ * org.springframework.stereotype.Controller}, the {@link APIDispatcher } assumes the methods are
  * annotated in the same way.
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -41,7 +41,7 @@ public @interface APIService {
     public String landingPage();
 
     /**
-     * GeoServer {@link org.geoserver.config.ServiceInfo} sublass used to locate the service
+     * GeoServer {@link org.geoserver.config.ServiceInfo} subclass used to locate the service
      * configuration
      */
     public Class<? extends ServiceInfo> serviceClass();

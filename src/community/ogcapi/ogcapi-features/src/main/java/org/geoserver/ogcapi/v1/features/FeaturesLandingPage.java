@@ -24,6 +24,8 @@ public class FeaturesLandingPage extends AbstractLandingPageDocumentNoConformanc
                 "ogc/features/v1");
 
         // conformance
+        CQL2Conformance cql = CQL2Conformance.configuration(wfs);
+
         new LinksBuilder(ConformanceDocument.class, featuresBase)
                 .segment("conformance")
                 .title("Conformance declaration as ")
@@ -38,10 +40,12 @@ public class FeaturesLandingPage extends AbstractLandingPageDocumentNoConformanc
                 .add(this);
 
         // filter capabilities
-        new LinksBuilder(FunctionsDocument.class, featuresBase)
-                .segment("/functions")
-                .title("Filter capabilities as ")
-                .rel(FunctionsDocument.REL)
-                .add(this);
+        if (cql.functions(wfs)) {
+            new LinksBuilder(FunctionsDocument.class, featuresBase)
+                    .segment("/functions")
+                    .title("Filter capabilities as ")
+                    .rel(FunctionsDocument.REL)
+                    .add(this);
+        }
     }
 }

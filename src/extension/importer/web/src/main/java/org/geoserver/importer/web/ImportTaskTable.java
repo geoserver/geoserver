@@ -19,6 +19,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -449,11 +451,22 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                             .setNullValid(false)
                             .setOutputMarkupId(true));
 
-            String javascript =
-                    "go(document.getElementById('" + get("links").getMarkupId() + "'));";
-            add(
-                    new ExternalLink("go", "#")
-                            .add(new AttributeModifier("onclick", new Model<>(javascript))));
+            add(new ExternalLink("go", "#").setOutputMarkupId(true));
+        }
+
+        @Override
+        public void renderHead(IHeaderResponse response) {
+            super.renderHead(response);
+            response.render(
+                    OnLoadHeaderItem.forScript(
+                            "document.getElementById('"
+                                    + get("go").getMarkupId()
+                                    + "').addEventListener('click', function(event) {\n"
+                                    + "    var select = document.getElementById('"
+                                    + get("links").getMarkupId()
+                                    + "');\n"
+                                    + "    window.open(select.options[select.selectedIndex].value);\n"
+                                    + "});"));
         }
 
         class PreviewLink implements Serializable {

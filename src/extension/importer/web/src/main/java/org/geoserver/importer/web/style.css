@@ -52,4 +52,31 @@ legend span.no-border {
   border-bottom-style: none;
 }
 
-  
+.fieldset-margins fieldset {
+    margin-top: 3em;
+}
+
+#sources li {
+    margin: 0;
+    padding: 0;
+}
+
+#sources li:first-child {
+    margin: 0.3em 0 0;
+}
+
+.data-icon {
+    float: left;
+    padding-top: 2px;
+    padding-right: 5px;
+}
+
+#crs input {
+    width: 75px;
+}
+
+.refresh-link {
+    background: transparent no-repeat left center;
+    background-image: url(resources/org.geoserver.importer.web.JobQueuePanel/arrow_refresh.png);
+    padding: 2px 0px 2px 20px;
+}

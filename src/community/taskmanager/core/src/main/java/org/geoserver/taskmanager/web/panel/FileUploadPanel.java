@@ -7,12 +7,13 @@ package org.geoserver.taskmanager.web.panel;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -230,9 +231,9 @@ public class FileUploadPanel extends Panel {
                             @Override
                             protected Component getContents(String id) {
                                 panel = new TextFieldPanel(id, new Model<>());
-                                panel.add(new PreventSubmitOnEnterBehavior());
                                 panel.getTextField().setRequired(true);
                                 panel.setOutputMarkupId(true);
+                                panel.add(new PreventSubmitOnEnterBehavior(panel.getMarkupId()));
                                 return panel;
                             }
 
@@ -262,16 +263,24 @@ public class FileUploadPanel extends Panel {
     public class PreventSubmitOnEnterBehavior extends Behavior {
         private static final long serialVersionUID = 1496517082650792177L;
 
-        public PreventSubmitOnEnterBehavior() {}
+        private final String id;
+
+        public PreventSubmitOnEnterBehavior(String id) {
+            this.id = id;
+        }
 
         @Override
-        public void bind(Component component) {
-            super.bind(component);
-
-            component.add(
-                    AttributeModifier.replace(
-                            "onkeydown",
-                            Model.of("if(event.keyCode == 13) {event.preventDefault();}")));
+        public void renderHead(Component component, IHeaderResponse response) {
+            super.renderHead(component, response);
+            response.render(
+                    OnLoadHeaderItem.forScript(
+                            "document.getElementById('"
+                                    + this.id
+                                    + "').addEventListener('keydown', function(event) {\n"
+                                    + "    if (event.keyCode == 13) {\n"
+                                    + "        event.preventDefault();\n"
+                                    + "    }\n"
+                                    + "});"));
         }
     }
 }

@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -164,6 +166,15 @@ public class AuthenticationKeyFilterPanel
         }
 
         public void resetModel() {}
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
+        response.render(
+                CssHeaderItem.forCSS(
+                        css, "org-geoserver-security-web-AuthenticationKeyFilterPanel"));
     }
 
     private ParamsPanel createParamsPanel(

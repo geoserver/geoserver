@@ -18,7 +18,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
-import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -293,12 +295,25 @@ abstract class ElasticConfigurationPage extends Panel {
                         } else if (property == ElasticAttributeProvider.USE) {
                             CheckBox checkBox =
                                     new CheckBox("use", new PropertyModel<>(itemModel, "use"));
-                            final String onclick =
-                                    "document.getElementById(\""
+                            checkBox.setOutputMarkupId(true);
+                            String script =
+                                    "document.getElementById('"
+                                            + checkBox.getMarkupId()
+                                            + "').addEventListener('click', function(event) {\n"
+                                            + "    document.getElementById('"
                                             + useAllMarkupId
-                                            + "\").checked = false;";
+                                            + "').checked = false;\n"
+                                            + "});";
                             checkBox.add(
-                                    new AttributeAppender("onclick", new Model<>(onclick), ";"));
+                                    new Behavior() {
+
+                                        @Override
+                                        public void renderHead(
+                                                Component component, IHeaderResponse response) {
+                                            super.renderHead(component, response);
+                                            response.render(OnLoadHeaderItem.forScript(script));
+                                        }
+                                    });
                             Fragment f =
                                     new Fragment(id, "checkboxUse", ElasticConfigurationPage.this);
                             f.add(checkBox);

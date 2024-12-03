@@ -244,7 +244,7 @@ Challenge Anonymous Session
 
 When enabled, the filter ignores any existing session or SecurityContext principal (e.g., anonymous or previously authenticated sessions created by other filters) and always authenticates the user linked to the provided authkey. This ensures that the authkey is validated independently for every request, regardless of the current session state.
 
-This feature is particularly useful for deployments that require stateless authentication or need to ensure that requests are processed strictly based on the authkey query parameter. By default, this option is disabled to preserve existing behavior.
+This feature is particularly useful for deployments that require stateless authentication or need to ensure that requests are processed strictly based on the authkey query parameter. By default, this option is disabled.
 
 **Internal User Cache**
 

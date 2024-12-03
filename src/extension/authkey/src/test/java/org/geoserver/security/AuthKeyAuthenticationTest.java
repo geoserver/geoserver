@@ -362,20 +362,26 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // Force to reload the property file
         mapper.synchronize();
 
+        SecurityContextHolder.clearContext();
+        getSecurityManager().getAuthenticationCache().removeAll();
+
         request = createRequest("/foo/bar");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
-        // Force to reload the property file
-        mapper.synchronize();
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+
         updateUser("ug1", username, true);
         // Force to reload the property file
         mapper.synchronize();
+
+        SecurityContextHolder.clearContext();
+        getSecurityManager().getAuthenticationCache().removeAll();
+
         insertAnonymousFilter();
         request = createRequest("foo/bar");
         response = new MockHttpServletResponse();
@@ -446,13 +452,18 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.addParameter(authKeyUrlParam, authKey);
         // Force to reload the property file
         mapper.synchronize();
+
+        SecurityContextHolder.clearContext();
+        getSecurityManager().getAuthenticationCache().removeAll();
+
         getProxy().doFilter(request, response, chain);
         assertNotEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
+        assertNull(request.getSession(false));
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
 
-        assertNull(request.getSession(false));
+        assertNotNull(auth);
         checkForAuthenticatedRole(auth);
         assertEquals(testUserName, auth.getPrincipal());
 
@@ -468,6 +479,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+
+        SecurityContextHolder.clearContext();
         getSecurityManager().getAuthenticationCache().removeAll();
 
         // check disabled user

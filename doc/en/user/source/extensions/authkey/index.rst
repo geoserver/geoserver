@@ -248,7 +248,7 @@ This feature is particularly useful for deployments that require stateless authe
 
 **Internal User Cache**
 
-To enhance performance in stateless mode, an internal user cache has been added to the AuthKey filter. The cache prevents unnecessary backend authentication requests for the same authkey by storing the user information locally for a configurable period.
+To enhance performance in stateless mode, the AuthKey filter can use an internal user cache. The cache prevents unnecessary backend authentication requests for the same authkey by storing the user information locally for a configurable period.
 
 The cache offers the following benefits:
 

@@ -240,7 +240,7 @@ After configuring the filter it is necessary to put this filter on the authentic
 Challenge Anonymous Session
 ---------------------------
 
-The AuthKey filter now includes a new option, "Challenge Anonymous Sessions," designed to enforce stricter authorization and stateless behavior.
+"Challenge Anonymous Sessions" is designed to enforce stricter authorization and stateless behavior.
 
 When enabled, the filter will ignore any existing session or SecurityContext principal (e.g., anonymous or previously authenticated sessions created by other filters) and will always authenticate the user linked to the provided authkey. This ensures that the authkey is validated independently for every request, regardless of the current session state.
 

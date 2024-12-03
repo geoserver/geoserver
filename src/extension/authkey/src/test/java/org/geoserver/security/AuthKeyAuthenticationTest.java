@@ -365,19 +365,18 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
 
-        if (HttpServletResponse.SC_FORBIDDEN == response.getStatus()) {
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            updateUser("ug1", username, true);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        updateUser("ug1", username, true);
 
-            insertAnonymousFilter();
-            request = createRequest("foo/bar");
-            response = new MockHttpServletResponse();
-            chain = new MockFilterChain();
-            getProxy().doFilter(request, response, chain);
-            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            // Anonymous context is not stored in http session, no further testing
-            removeAnonymousFilter();
-        }
+        insertAnonymousFilter();
+        request = createRequest("foo/bar");
+        response = new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        // Anonymous context is not stored in http session, no further testing
+        removeAnonymousFilter();
     }
 
     @Test
@@ -440,54 +439,50 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
-        auth = auth != null ? auth : SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            assertNull(request.getSession(false));
-            checkForAuthenticatedRole(auth);
-            assertEquals(testUserName, auth.getPrincipal());
+        assertNotNull(auth);
+        assertNull(request.getSession(false));
+        checkForAuthenticatedRole(auth);
+        assertEquals(testUserName, auth.getPrincipal());
 
-            // check unknown user
-            username = "unknown";
-            password = username;
-            request = createRequest("/foo/bar");
-            response = new MockHttpServletResponse();
-            chain = new MockFilterChain();
+        // check unknown user
+        username = "unknown";
+        password = username;
+        request = createRequest("/foo/bar");
+        response = new MockHttpServletResponse();
+        chain = new MockFilterChain();
 
-            request.setQueryString(authKeyUrlParam + "=abc");
-            request.addParameter(authKeyUrlParam, "abc");
-            getProxy().doFilter(request, response, chain);
-            assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+        request.setQueryString(authKeyUrlParam + "=abc");
+        request.addParameter(authKeyUrlParam, "abc");
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        getSecurityManager().getAuthenticationCache().removeAll();
 
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
+        // check disabled user
+        username = testUserName;
+        password = username;
+        updateUser("ug1", username, false);
+        request = createRequest("/foo/bar");
+        response = new MockHttpServletResponse();
+        chain = new MockFilterChain();
 
-            getSecurityManager().getAuthenticationCache().removeAll();
+        request.setQueryString(authKeyUrlParam + "=" + authKey);
+        request.addParameter(authKeyUrlParam, authKey);
+        getProxy().doFilter(request, response, chain);
 
-            // check disabled user
-            username = testUserName;
-            password = username;
-            updateUser("ug1", username, false);
-            request = createRequest("/foo/bar");
-            response = new MockHttpServletResponse();
-            chain = new MockFilterChain();
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+        assertNull(getSecurityManager().getAuthenticationCache().get(filterName, authKey));
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        updateUser("ug1", username, true);
 
-            request.setQueryString(authKeyUrlParam + "=" + authKey);
-            request.addParameter(authKeyUrlParam, authKey);
-            getProxy().doFilter(request, response, chain);
-
-            assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-            assertNull(getSecurityManager().getAuthenticationCache().get(filterName, authKey));
-            assertNull(SecurityContextHolder.getContext().getAuthentication());
-            updateUser("ug1", username, true);
-
-            insertAnonymousFilter();
-            request = createRequest("foo/bar");
-            response = new MockHttpServletResponse();
-            chain = new MockFilterChain();
-            getProxy().doFilter(request, response, chain);
-            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            // Anonymous context is not stored in http session, no further testing
-            removeAnonymousFilter();
-        }
+        insertAnonymousFilter();
+        request = createRequest("foo/bar");
+        response = new MockHttpServletResponse();
+        chain = new MockFilterChain();
+        getProxy().doFilter(request, response, chain);
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        // Anonymous context is not stored in http session, no further testing
+        removeAnonymousFilter();
     }
 
     @Test
@@ -908,5 +903,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         try (FileInputStream propFile = new FileInputStream(authKeyFile)) {
             props.load(propFile);
         }
+    }
+
+    @Override
+    protected GeoServerSecurityManager getSecurityManager() {
+        return getProxy().securityManager;
     }
 }

@@ -89,7 +89,8 @@ public class Extent {
     protected List<Object> inputOrDatalistOrLink;
 
     @XmlAttribute(name = "units")
-    protected ProjType units;
+    @XmlSchemaType(name = "anySimpleType")
+    protected String units;
 
     @XmlAttribute(name = "label")
     @XmlSchemaType(name = "anySimpleType")
@@ -129,18 +130,18 @@ public class Extent {
     /**
      * Gets the value of the units property.
      *
-     * @return possible object is {@link ProjType }
+     * @return possible object is {@link String }
      */
-    public ProjType getUnits() {
+    public String getUnits() {
         return units;
     }
 
     /**
      * Sets the value of the units property.
      *
-     * @param value allowed object is {@link ProjType }
+     * @param value allowed object is {@link String }
      */
-    public void setUnits(ProjType value) {
+    public void setUnits(String value) {
         this.units = value;
     }
 

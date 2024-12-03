@@ -15,11 +15,12 @@ public class DataStoreEditPage extends DataAccessEditPage {
     }
 
     @Override
-    protected void doSaveStore(DataStoreInfo info) {
+    protected boolean doSaveStore(DataStoreInfo info) {
         if (info.getId() != null) {
-            super.doSaveStore(info);
+            return super.doSaveStore(info);
         }
 
         // do nothing, not part of catalog yet
+        return true;
     }
 }

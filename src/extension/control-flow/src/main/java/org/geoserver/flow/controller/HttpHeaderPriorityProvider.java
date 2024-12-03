@@ -77,4 +77,9 @@ public class HttpHeaderPriorityProvider implements PriorityProvider {
     public int getDefaultPriority() {
         return defaultPriority;
     }
+
+    @Override
+    public String toString() {
+        return "HttpHeaderPriorityProvider(" + headerName + "," + defaultPriority + ")";
+    }
 }

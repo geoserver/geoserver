@@ -88,7 +88,8 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
             int mapLayerOrder = context.getMapContent().layers().indexOf(layer);
 
             GroundOverlay go = folder.createAndAddGroundOverlay();
-            go.setName(layer.getTitle());
+            go.setName(
+                    context.getMapContent().getRequest().getLayers().get(mapLayerOrder).getLabel());
             go.setDrawOrder(mapLayerOrder);
             Icon icon = go.createAndSetIcon();
             icon.setHref(getGroundOverlayHRef(layer));

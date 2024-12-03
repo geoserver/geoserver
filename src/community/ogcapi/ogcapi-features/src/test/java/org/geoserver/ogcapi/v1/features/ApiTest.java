@@ -28,7 +28,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -49,16 +49,34 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
-        validateJSONAPI(response);
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setIDs(true); // enable
+        getGeoServer().save(wfs);
+        try {
+            MockHttpServletResponse response =
+                    getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
+            validateJSONAPI(response);
+        } finally {
+            features.setIDs(null); // default
+            getGeoServer().save(wfs);
+        }
     }
 
     @Test
     public void testApiJsonExtension() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/v1/openapi.json", 200);
-        validateJSONAPI(response);
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setIDs(true); // enable
+        getGeoServer().save(wfs);
+        try {
+            MockHttpServletResponse response =
+                    getAsMockHttpServletResponse("ogc/features/v1/openapi.json", 200);
+            validateJSONAPI(response);
+        } finally {
+            features.setIDs(null); // default
+            getGeoServer().save(wfs);
+        }
     }
 
     private void validateJSONAPI(MockHttpServletResponse response)
@@ -126,14 +144,32 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiYaml() throws Exception {
-        String yaml = getAsString("ogc/features/v1/openapi?f=application/yaml");
-        validateYAMLApi(yaml);
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setIDs(true); // enable
+        getGeoServer().save(wfs);
+        try {
+            String yaml = getAsString("ogc/features/v1/openapi?f=application/yaml");
+            validateYAMLApi(yaml);
+        } finally {
+            features.setIDs(null); // default
+            getGeoServer().save(wfs);
+        }
     }
 
     @Test
     public void testApiYamlExtension() throws Exception {
-        String yaml = getAsString("ogc/features/v1/openapi?f=application/yaml");
-        validateYAMLApi(yaml);
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setIDs(true); // enable
+        getGeoServer().save(wfs);
+        try {
+            String yaml = getAsString("ogc/features/v1/openapi?f=application/yaml");
+            validateYAMLApi(yaml);
+        } finally {
+            features.setIDs(null); // default
+            getGeoServer().save(wfs);
+        }
     }
 
     private void validateYAMLApi(String yaml) throws JsonProcessingException {
@@ -146,18 +182,28 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testYamlAsAcceptsHeader() throws Exception {
-        MockHttpServletRequest request = createRequest("ogc/features/v1/openapi");
-        request.setMethod("GET");
-        request.setContent(new byte[] {});
-        request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
-        MockHttpServletResponse response = dispatch(request);
-        assertEquals(200, response.getStatus());
-        assertThat(response.getContentType(), CoreMatchers.startsWith("application/yaml"));
-        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setIDs(true); // enable
+        getGeoServer().save(wfs);
+        try {
+            MockHttpServletRequest request = createRequest("ogc/features/v1/openapi");
+            request.setMethod("GET");
+            request.setContent(new byte[] {});
+            request.addHeader(HttpHeaders.ACCEPT, "foo/bar, application/yaml, text/html");
+            MockHttpServletResponse response = dispatch(request);
+            assertEquals(200, response.getStatus());
+            assertThat(response.getContentType(), CoreMatchers.startsWith("application/yaml"));
+            String yaml =
+                    string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
-        ObjectMapper mapper = Yaml.mapper();
-        OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
-        validateApi(api);
+            ObjectMapper mapper = Yaml.mapper();
+            OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
+            validateApi(api);
+        } finally {
+            features.setIDs(null); // default
+            getGeoServer().save(wfs);
+        }
     }
 
     private void validateApi(OpenAPI api) {
@@ -221,7 +267,8 @@ public class ApiTest extends FeaturesTestSupport {
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
         assertEquals(
-                langs.getSchema().getEnum(), new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS));
+                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT),
+                langs.getSchema().getEnum());
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

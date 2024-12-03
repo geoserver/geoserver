@@ -17,6 +17,7 @@ The first page discusses configuration options in the web administration interfa
    root
    service
    layer
+   sandbox
    rest
    urlchecks
    disable

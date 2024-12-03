@@ -147,4 +147,9 @@ public class Point implements Cloneable {
     public double getY() {
         return this.y;
     }
+
+    @Override
+    public String toString() {
+        return "Point{" + "x=" + x + ", y=" + y + '}';
+    }
 }

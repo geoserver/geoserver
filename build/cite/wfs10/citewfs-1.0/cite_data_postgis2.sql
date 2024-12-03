@@ -11,27 +11,27 @@
 
 -- Uncomment and change this to the user who has permissions to drop and
 -- create tables in this db.
--- \connect - cite
+\connect cite cite
 
-create extension postgis;
+--create extension postgis;
 
 
 --uncomment these if you want to reset everything.
-drop table "Nulls";
-drop table "Points";
-drop table "Other";
-drop table "Lines";
-drop table "Polygons";
-drop table "MLines";
-drop table "MPolygons";
-drop table "MPoints";
-drop table "Seven";
-drop table "Fifteen";
-drop table "Updates";
-drop table "Inserts";
-drop table "Deletes";
-drop table "Locks";
-delete from "geometry_columns" where srid=32615;
+--drop table "Nulls";
+--drop table "Points";
+--drop table "Other";
+--drop table "Lines";
+--drop table "Polygons";
+--drop table "MLines";
+--drop table "MPolygons";
+--drop table "MPoints";
+--drop table "Seven";
+--drop table "Fifteen";
+--drop table "Updates";
+--drop table "Inserts";
+--drop table "Deletes";
+--drop table "Locks";
+--delete from "geometry_columns" where srid=32615;
 
 
 
@@ -142,7 +142,7 @@ CREATE TABLE "Polygons" (
 CREATE TABLE "MPoints" (
 	"id" character varying,
 	"multiPointProperty" geometry('MULTIPOINT', 32615)
-) WITH OIDS;
+);
 
 --
 -- TOC Entry ID 32 (OID 312341)
@@ -449,57 +449,44 @@ A Single Feature used to test returning of properties	singleFeature	SRID=32615;P
 --
 alter table "Deletes" add column pkey serial;
 alter table "Deletes" add primary key (pkey);
-alter table "Deletes" set without oids;
 
 alter table "Fifteen" add column pkey serial;
 alter table "Fifteen" add primary key (pkey);
-alter table "Fifteen" set without oids;
 
 alter table "Inserts" add column pkey serial;
 alter table "Inserts" add primary key (pkey);
-alter table "Inserts" set without oids;
 
 alter table "Lines" add column pkey serial;
 alter table "Lines" add primary key (pkey);
-alter table "Lines" set without oids;
 
 alter table "Locks" add column pkey serial;
 alter table "Locks" add primary key (pkey);
-alter table "Locks" set without oids;
 
 alter table "MLines" add column pkey serial;
 alter table "MLines" add primary key (pkey);
-alter table "MLines" set without oids;
 
 alter table "MPoints" add column pkey serial;
 alter table "MPoints" add primary key (pkey);
-alter table "MPoints" set without oids;
 
 alter table "MPolygons" add column pkey serial;
 alter table "MPolygons" add primary key (pkey);
-alter table "MPolygons" set without oids;
 
 alter table "Nulls" add column pkey serial;
 alter table "Nulls" add primary key (pkey);
-alter table "Nulls" set without oids;
 
 alter table "Other" add column pkey serial;
 alter table "Other" add primary key (pkey);
-alter table "Other" set without oids;
 
 alter table "Points" add column pkey serial;
 alter table "Points" add primary key (pkey);
-alter table "Points" set without oids;
 
 alter table "Polygons" add column pkey serial;
 alter table "Polygons" add primary key (pkey);
-alter table "Polygons" set without oids;
 
 alter table "Seven" add column pkey serial;
 alter table "Seven" add primary key (pkey);
-alter table "Seven" set without oids;
 
 alter table "Updates" add column pkey serial;
 alter table "Updates" add primary key (pkey);
-alter table "Updates" set without oids;
+
 

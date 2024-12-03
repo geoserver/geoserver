@@ -13,20 +13,16 @@ services:
     command: /run-test.sh wfs11
 
   postgres:
-    image: ogccite/postgres:wfs11
-    build:
-      context: .
-      dockerfile: ./postgres/Dockerfile
+    image: postgis/postgis:15-3.5-alpine
     ports:
-      - 5432
-    env_file:
-      - ./.env
-      - ./postgres/postgres.env
+      - 15432:5432
+    environment:
+      POSTGRES_DB: geoserver
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
-    - pg_data:${PGDATA:-/var/lib/postgresql/data}:rw
     - ./wfs11/01-init-user.sh:/docker-entrypoint-initdb.d/01-init-user.sh
-    - ./wfs11/02-init-db.sql.gz:/docker-entrypoint-initdb.d/02-init-db.sql.gz
-    - ./wfs11/postgresql.conf:/etc/postgresql/postgresql.conf
+    - ./wfs11/citewfs-1.1/dataset-sf0-postgis2.sql:/docker-entrypoint-initdb.d/02-init-db.sql
 
 volumes:
   pg_data:

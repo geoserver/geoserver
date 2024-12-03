@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
@@ -33,7 +34,13 @@ public class LockingCatalogFacade implements InvocationHandler, WrappingProxy {
         if (lockType == LockType.READ && isWriteMethod(method)) {
             configurationLock.tryUpgradeLock();
         }
-        return method.invoke(delegate, args);
+        try {
+            return method.invoke(delegate, args);
+        } catch (InvocationTargetException e) {
+            // preserve the original exception
+            Throwable cause = e.getCause();
+            throw cause;
+        }
     }
 
     private boolean isWriteMethod(Method method) {

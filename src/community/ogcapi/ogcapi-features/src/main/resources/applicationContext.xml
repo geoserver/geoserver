@@ -24,6 +24,7 @@
     <!-- <mvc:annotation-driven/> -->
     <context:component-scan base-package="org.geoserver.ogcapi.v1.features"/>
 
+    <bean id="featureServiceXStreamInitializer" class="org.geoserver.ogcapi.v1.features.FeatureServiceXStreamPersisterInitializer"/>
 
     <!-- Bridges to have OGC services show up as OWS services too -->
     <bean id="featuresServiceFactory" class="org.geoserver.ogcapi.APIServiceFactoryBean">

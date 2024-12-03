@@ -77,6 +77,21 @@ public class Queryables extends Schema<Object> {
     }
 
     public void addSelfLinks(String path) {
-        linksHolder.addSelfLinks(path);
+        APIRequestInfo requestInfo = APIRequestInfo.get();
+        List<Link> links =
+                new LinksBuilder(getClass(), path)
+                        .rel(Link.REL_ALTERNATE)
+                        .title("This document as ")
+                        .updater(
+                                (mt, l) -> {
+                                    if (requestInfo.isFormatRequested(
+                                            mt, JSONSchemaMessageConverter.SCHEMA_TYPE)) {
+                                        l.setRel(Link.REL_SELF);
+                                        l.setClassification(Link.REL_SELF);
+                                        l.setTitle("This document");
+                                    }
+                                })
+                        .build();
+        linksHolder.getLinks().addAll(links);
     }
 }

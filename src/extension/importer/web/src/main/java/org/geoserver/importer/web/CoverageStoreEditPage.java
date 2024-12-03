@@ -14,10 +14,11 @@ public class CoverageStoreEditPage extends org.geoserver.web.data.store.Coverage
     }
 
     @Override
-    protected void doSaveStore(CoverageStoreInfo info) {
+    protected boolean doSaveStore(CoverageStoreInfo info) {
         if (info.getId() != null) {
-            super.doSaveStore(info);
+            return super.doSaveStore(info);
         }
         // do nothing, not part of catalog yet
+        return true;
     }
 }

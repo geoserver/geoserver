@@ -623,6 +623,15 @@ ul.choiceList>li span.fieldname:dir(rtl), *.choiceItem span.fieldname:dir(rtl) {
 ul.choiceList>li label,*.choiceItem label{
   display: inline;
 }
+li.conformanceItem > label.conformance {
+  display: inline;
+  margin-right: 0.5em;
+}
+li.conformanceItem > label.level {
+  display: block;
+  float: right;
+}
+
 textarea.cql {
   height: 1.2em;
   width: 95%;

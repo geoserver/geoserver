@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.features;
 
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -40,6 +41,21 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
     public OpenAPI build(WFSInfo wfs) throws IOException {
         OpenAPI api = super.build(wfs);
 
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
+        ECQLConformance ecql = ECQLConformance.configuration(wfs);
+
+        // adjust paths
+        if (!features.search(wfs)) {
+            api.getPaths().remove("/collections/{collectionId}/search");
+        }
+        if (!features.queryables(wfs)) {
+            api.getPaths().remove("/collections/{collectionId}/queryables");
+        }
+        if (!cql2.functions(wfs)) {
+            api.getPaths().remove("/functions");
+        }
+
         // the external documentation
         api.externalDocs(
                 new ExternalDocumentation()
@@ -51,9 +67,40 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         declareGetResponseFormats(api, "/conformance", ConformanceDocument.class);
         declareGetResponseFormats(api, "/collections", CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionsDocument.class);
+
         declareGetResponseFormats(api, "/collections/{collectionId}/items", FeaturesResponse.class);
+        List<Parameter> itemsParameters =
+                api.getPaths().get("/collections/{collectionId}/items").getGet().getParameters();
+        /// Check to remove optional parameters
+        if (!features.filter(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter"));
+            itemsParameters.removeIf(
+                    p -> p.get$ref().equals("#/components/parameters/filter-lang"));
+        }
+        if (!features.crsByReference(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter-crs"));
+        }
+        if (!features.ids(wfs)) {
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/ids"));
+        }
+        if (!features.sortBy(wfs)) {
+            itemsParameters.removeIf(
+                    p -> p.get$ref().equals("#/components/parameters/filter-sortby"));
+        }
+
         declareGetResponseFormats(
                 api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);
+        Content itemsContent =
+                api.getPaths()
+                        .get("/collections/{collectionId}/items/{featureId}")
+                        .getGet()
+                        .getResponses()
+                        .get("200")
+                        .getContent();
+        // Check to remove optional formats
+        if (!features.gml321(wfs)) {
+            itemsContent.remove("application/gml+xml;version=3.2");
+        }
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
@@ -68,7 +115,17 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
 
         // list of valid filter-lang values
         Parameter filterLang = parameters.get("filter-lang");
-        filterLang.getSchema().setEnum(new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS));
+        ArrayList<String> filterLangValues = new ArrayList<>(APIFilterParser.SUPPORTED_ENCODINGS);
+        if (!cql2.text(wfs)) {
+            filterLangValues.remove(APIFilterParser.CQL2_TEXT);
+        }
+        if (!cql2.json(wfs)) {
+            filterLangValues.remove(APIFilterParser.CQL2_JSON);
+        }
+        if (!ecql.isEnabled(wfs)) {
+            filterLangValues.remove(APIFilterParser.ECQL_TEXT);
+        }
+        filterLang.getSchema().setEnum(filterLangValues);
 
         // provide actual values for limit
         Parameter limit = parameters.get("limit");

@@ -29,16 +29,18 @@
       </div>
     </div>
 
+    <#if model.getLinkUrl('functions', 'text/html')?? >
     <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">
         <div class="card-body">
           <h2>Functions</h2>
-          <p>The <a id="functionsLink" href="${model.getLinkUrl('functions', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service.
+          <p>The <a id="functionsLink" href="${model.getLinkUrl('functions', 'text/html')!}"> functions page</a> provides a list of all the functions available to build filters.
           <br/>
         </div>
       </div>
     </div>
-    
+    </#if>
+
     ${htmlExtensions('landing')?no_esc}
 
     <div class="col-6 col-xl-3 mb-3">

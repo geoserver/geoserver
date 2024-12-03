@@ -105,7 +105,14 @@ Where ``<count>`` is the maximum number of requests the ip specified in ``<ip_ad
 To reject requests from a list of ip addresses::
 
   ip.blacklist=<ip_addr1>,<ip_addr2>,...
-  
+
+When a count is set to limit parallel requests, the HTTP response will include a header informing the user of the limit::
+
+    X-Concurrent-Limit-<ctx>: 10
+    X-Concurrent-Requests-<ctx>: 9
+
+where ``<ctx>`` can be either ``user`` or ``ip`` depending on the rule that triggered the limit.
+
 Per user rate control
 .....................
 
@@ -179,3 +186,48 @@ Assuming the server we want to protect has 4 cores a sample configuration could 
 .. literalinclude:: controlflow.properties
    :language: properties
 
+Debugging control flow
+----------------------
+
+The control flow module logs its activity to the GeoServer log file, with a few logs per request
+at INFO level, and more logs at FINE level, for each flow controller.
+The following logging configuration file enables both levels, specifically for control-flow:
+
+.. literalinclude:: CONTROL_FLOW_LOGGING.xml
+   :language: xml
+
+An example output, filtered on a the single thread ``http-nio-8080-exec-8`` and a single WFS 1.0.0 GetFeature request follows::
+
+    19 018 15:18:31 'http-nio-8080-exec-8' INFO   [geoserver.flow] - Request [WFS 1.0.0 GetFeature] starting, processing through flow controllers
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter RateFlowController [wps, action=Delay excess requests 10000ms]
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  RateFlowController [wps, action=Delay excess requests 10000ms]
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter RateFlowController [wms, action=Delay excess requests 1000ms]
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  RateFlowController [wms, action=Delay excess requests 1000ms]
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter BasicOWSController(wcs.getcoverage,SimpleBlocker(1))/0
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  BasicOWSController(wcs.getcoverage,SimpleBlocker(1))/0
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter IpFlowController(3)
+    19 018 15:18:31 'http-nio-8080-exec-8' DEBUG  [flow.controller] - X-Forwarded-For: 185.230.235.34, 10.12.81.32 -> 185.230.235.34
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [flow.controller] - IpFlowController(3) 185.230.235.34, concurrent requests: 3
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [flow.controller] - IpFlowController(3,185.230.235.34) queue size 3
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  IpFlowController(3)
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter BasicOWSController(wps.execute,SimpleBlocker(4))/0
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  BasicOWSController(wps.execute,SimpleBlocker(4))/0
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter BasicOWSController(wms.getmap,SimpleBlocker(6))/0
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  BasicOWSController(wms.getmap,SimpleBlocker(6))/0
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter BasicOWSController(wfs.getfeature,SimpleBlocker(8))/2
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  BasicOWSController(wfs.getfeature,SimpleBlocker(8))/3
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] enter GlobalFlowController(SimpleBlocker(50))/2
+    19 018 15:18:44 'http-nio-8080-exec-8' DEBUG  [geoserver.flow] - Request [WFS 1.0.0 GetFeature] exit  GlobalFlowController(SimpleBlocker(50))/3
+    19 018 15:18:44 'http-nio-8080-exec-8' INFO   [geoserver.flow] - Request control-flow performed, running requests: 3, blocked requests: 12
+
+In this example:
+
+* A RateFlowController imposes a delay of 10 seconds on WPS, and 1 second on WMS requests, when the configured limit is exceeded.
+* A WCS concurrency control has a limit of 1, but there are 0 WCS request executing.
+* A concurrency limit by IP address is set to 3, and there are 3 requests executing from a single IP (with details on how the IP address has been extracted from the X-Forwarded-For header).
+* A concurrency control on wps.execute with 4 requests is in place, with none executing.
+* A concurrency control on wms.getmap with 6 requests is in place, with none executing.
+* A concurrency control on wfs.getfeature with 8 requests is in place, with 3 executing.
+* A global concurrency control with 50 requests is in place, with 3 executing.
+* In summary, 3 requests are executing, and 12 are blocked. From this situation, they are queued on the single IP flow controller.
+* Looking at the timings, this request has been delayed for about 13 seconds on the single IP flow controller.

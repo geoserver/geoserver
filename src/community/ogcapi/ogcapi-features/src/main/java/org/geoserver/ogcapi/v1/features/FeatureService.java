@@ -4,22 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_ADVANCED;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_ARITHMETIC;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC_SPATIAL;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_FUNCTIONS;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_PROPERTY_PROPERTY;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_SPATIAL;
-import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.ECQL;
-import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.ConformanceClass.IDS;
-import static org.geoserver.ogcapi.ConformanceClass.QUERYABLES;
-import static org.geoserver.ogcapi.ConformanceClass.SEARCH;
-import static org.geoserver.ogcapi.ConformanceClass.SORTBY;
 import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 
@@ -35,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +33,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.crs.CapabilitiesCRSProvider;
 import org.geoserver.ogcapi.APIBBoxParser;
+import org.geoserver.ogcapi.APIConformance;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
@@ -84,6 +71,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -105,21 +93,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features/v1")
 public class FeatureService {
 
+    private static final Logger LOGGER = Logging.getLogger(FeatureService.class);
+
     static final Pattern INTEGER = Pattern.compile("\\d+");
-
-    public static final String CORE = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
-    public static final String HTML = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
-    public static final String GEOJSON =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
-    public static final String GMLSF0 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0";
-    public static final String GMLSF2 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2";
-    public static final String OAS30 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-
-    public static final String CRS_BY_REFERENCE =
-            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs";
 
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
@@ -206,6 +182,43 @@ public class FeatureService {
         return getService();
     }
 
+    /**
+     * List conformance implementations implemented for FeatureService.
+     *
+     * @return List of implemented conformance available for use
+     */
+    public List<APIConformance> getConformances() {
+        List<APIConformance> conformances =
+                Arrays.asList(
+                        FeatureConformance.CORE,
+                        FeatureConformance.OAS30,
+                        FeatureConformance.HTML,
+                        FeatureConformance.GEOJSON,
+                        FeatureConformance.GMLSF2,
+                        FeatureConformance.CRS_BY_REFERENCE,
+                        FeatureConformance.FEATURES_FILTER,
+                        FeatureConformance.FILTER,
+                        FeatureConformance.QUERYABLES,
+                        FeatureConformance.IDS,
+                        FeatureConformance.SEARCH,
+                        FeatureConformance.SORTBY,
+                        ECQLConformance.ECQL,
+                        ECQLConformance.ECQL_TEXT,
+                        CQL2Conformance.CQL2_TEXT,
+                        CQL2Conformance.CQL2_ADVANCED,
+                        CQL2Conformance.CQL2_ARITHMETIC,
+                        CQL2Conformance.CQL2_BASIC,
+                        CQL2Conformance.CQL2_BASIC_SPATIAL,
+                        CQL2Conformance.CQL2_FUNCTIONS,
+                        CQL2Conformance.CQL2_PROPERTY_PROPERTY,
+                        CQL2Conformance.CQL2_SPATIAL);
+        // FeatureConformance.GMLSF0, // does not use the gmlsf namespace
+        // CQL2Conformance.CQL2_JSON, // Very different from the binding we have
+        // CQL2Conformance.CQL2_ARRAY, // excluded, no support for array operations now
+        // CQL2Conformance.CQL2_TEMPORAL, // excluded for now, no support for all operators
+        return conformances;
+    }
+
     private Catalog getCatalog() {
         return geoServer.getCatalog();
     }
@@ -242,6 +255,14 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "functions.ftl", fileName = "functions.html")
     public FunctionsDocument getFunctions() {
+        WFSInfo wfs = getServiceInfo();
+        CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
+        if (!cql2.functions(wfs)) {
+            throw new APIException(
+                    APIException.NOT_FOUND,
+                    "Functions not supported by the service.",
+                    HttpStatus.NOT_FOUND);
+        }
         return new FunctionsDocument();
     }
 
@@ -275,7 +296,7 @@ public class FeatureService {
                         null,
                         URLMangler.URLType.RESOURCE);
         Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
-        queryables.addSelfLinks("collections/" + collectionId + "/queryables");
+        queryables.addSelfLinks("ogc/features/v1/collections/" + collectionId + "/queryables");
         return queryables;
     }
 
@@ -311,33 +332,27 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
+        WFSInfo wfsInfo = getServiceInfo();
+
+        List<APIConformance> conformances = new ArrayList<>();
+
+        FeatureConformance featuresConformance = FeatureConformance.configuration(wfsInfo);
+        if (featuresConformance.isEnabled(wfsInfo)) {
+            conformances.addAll(featuresConformance.conformances(wfsInfo));
+
+            ECQLConformance ecqlConformance = ECQLConformance.configuration(wfsInfo);
+            conformances.addAll(ecqlConformance.conformances(wfsInfo));
+
+            CQL2Conformance cql2Conformance = CQL2Conformance.configuration(wfsInfo);
+            conformances.addAll(cql2Conformance.conformances(wfsInfo));
+        }
+
+        // only advertise what is actually implemented
+        // conformances.retainAll(getConformances());
+
         List<String> classes =
-                Arrays.asList(
-                        CORE,
-                        OAS30,
-                        HTML,
-                        GEOJSON,
-                        /* GMLSF0, GS does not use the gmlsf namespace */
-                        CRS_BY_REFERENCE,
-                        FILTER,
-                        QUERYABLES,
-                        FEATURES_FILTER,
-                        SEARCH,
-                        ECQL,
-                        ECQL_TEXT,
-                        CQL2_BASIC,
-                        CQL2_ADVANCED,
-                        CQL2_ARITHMETIC,
-                        CQL2_PROPERTY_PROPERTY,
-                        CQL2_BASIC_SPATIAL,
-                        CQL2_SPATIAL,
-                        CQL2_FUNCTIONS,
-                        /* CQL2_TEMPORAL excluded for now, no support for all operators */
-                        /* CQL2_ARRAY excluded, no support for array operations now */
-                        CQL2_TEXT,
-                        /* CQL2_JSON very different from the binding we have */
-                        SORTBY,
-                        IDS);
+                conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
+
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -390,6 +405,10 @@ public class FeatureService {
             @RequestParam(name = "ids", required = false) List<String> ids,
             String itemId)
             throws Exception {
+
+        WFSInfo wfs = getServiceInfo();
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);
         GetFeatureRequest request =
@@ -407,26 +426,74 @@ public class FeatureService {
             filters.add(FF.id(FF.featureId(itemId)));
         }
 
-        // The ids parameter is part of the draft proposal "Query by IDs". The syntax and semantic
-        // of the parameter is subject to change in a future release. Its usage should be carefully
-        // considered.
         if (ids != null && !ids.isEmpty()) {
-            filters.add(buildIdsFilter(ids));
+            // The ids parameter is part of the draft proposal "Query by IDs". The syntax and
+            // semantic
+            // of the parameter is subject to change in a future release. Its usage should be
+            // carefully
+            // considered.
+            if (features.ids(wfs)) {
+                filters.add(buildIdsFilter(ids));
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The ids parameter is not supported by the service, requires "
+                                        + FeatureConformance.IDS.getId()
+                                        + " conformance to be enabled.");
+            }
         }
-
         if (filter != null) {
-            Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
-            filters.add(parsedFilter);
+            CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
+            ECQLConformance ecql = ECQLConformance.configuration(wfs);
+
+            if (features.filter(wfs)) {
+                if (filterLanguage == APIFilterParser.ECQL_TEXT && !ecql.text(wfs)) {
+                    ignoreFilterLanguage(APIFilterParser.ECQL_TEXT, ECQLConformance.ECQL_TEXT);
+                } else if (filterLanguage == APIFilterParser.CQL2_TEXT && !cql2.text(wfs)) {
+                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_TEXT);
+                } else if (filterLanguage == APIFilterParser.CQL2_JSON && !cql2.json(wfs)) {
+                    ignoreFilterLanguage(APIFilterParser.CQL2_TEXT, CQL2Conformance.CQL2_JSON);
+                } else {
+                    Filter parsedFilter = filterParser.parse(filter, filterLanguage, filterCRS);
+                    filters.add(parsedFilter);
+                }
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The filter parameter is not supported by the service, requires "
+                                        + FeatureConformance.FILTER.getId()
+                                        + " conformance to be enabled.");
+            }
         }
         query.setFilter(mergeFiltersAnd(filters));
         if (sortBy != null) {
-            query.setSortBy(ImmutableList.copyOf(sortBy));
+            if (features.sortBy(wfs)) {
+                query.setSortBy(ImmutableList.copyOf(sortBy));
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The sortby parameter is not supported by the service, requires "
+                                        + FeatureConformance.SORTBY.getId()
+                                        + " conformance to be enabled.");
+            }
         }
+
         if (crs != null) {
-            query.setSrsName(new URI(crs));
+            if (features.crsByReference(wfs)) {
+                query.setSrsName(new URI(crs));
+            } else {
+                LOGGER.warning(
+                        () ->
+                                "The crs parameter is not supported by the service, requires "
+                                        + FeatureConformance.CRS_BY_REFERENCE.getId()
+                                        + " conformance to be enabled.");
+
+                query.setSrsName(new URI("EPSG:4326"));
+            }
         } else {
             query.setSrsName(new URI("EPSG:4326"));
         }
+
         request.setStartIndex(startIndex);
         request.setMaxFeatures(limit);
         request.setBaseUrl(APIRequestInfo.get().getBaseURL());
@@ -449,6 +516,17 @@ public class FeatureService {
         return new FeaturesResponse(request.getAdaptee(), response);
     }
 
+    private static void ignoreFilterLanguage(String filterLanguage, APIConformance conformance) {
+        if (LOGGER.isLoggable(Level.WARNING)) {
+            LOGGER.warning(
+                    "The filter language '"
+                            + filterLanguage
+                            + "' is not supported by the service, requires "
+                            + conformance.getId()
+                            + " conformance to be enabled.");
+        }
+    }
+
     @PostMapping(path = "collections/{collectionId}/search", name = "searchFeatures")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
@@ -456,7 +534,14 @@ public class FeatureService {
             @PathVariable(name = "collectionId") String collectionId,
             @RequestBody APISearchQuery query)
             throws Exception {
-
+        WFSInfo wfsInfo = getServiceInfo();
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        if (!featureServiceInfo.search(wfsInfo)) {
+            throw new APIException(
+                    APIException.NOT_FOUND,
+                    "Search is not supported by the service.",
+                    HttpStatus.NOT_FOUND);
+        }
         // WARNING:
         // This endpoint is part of the draft proposal "OGC API - Features - Part 5". The syntax and
         // semantic of the endpoint is subject to change in a future release. Its usage should be

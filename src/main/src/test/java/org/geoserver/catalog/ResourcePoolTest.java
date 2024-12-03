@@ -77,6 +77,7 @@ import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.DataAccessFinder;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.api.data.DataStoreFinder;
@@ -173,12 +174,12 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     @BeforeClass
     public static void registerTestDirectoryStore() {
         // a "catch-all" datastore that will use any File without requiring a filetype/dbtype
-        DataStoreFinder.registerFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+        DataStoreFinder.registerFactory(TEST_DIRECTORY_STORE_FACTORY_SPI);
     }
 
     @AfterClass
     public static void deregisterTestDirectoryStore() {
-        DataStoreFinder.deregisterFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+        DataStoreFinder.deregisterFactory(TEST_DIRECTORY_STORE_FACTORY_SPI);
     }
 
     @Override
@@ -1574,7 +1575,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         // is using assertions to check it's being called in a synchronized block (assertions
         // are enabled when running tests with Maven)
         FactoryRegistry registry;
-        synchronized (DataStoreFinder.class) {
+        synchronized (DataAccessFinder.class) {
             registry =
                     ReflectionTestUtils.invokeMethod(DataStoreFinder.class, "getServiceRegistry");
         }

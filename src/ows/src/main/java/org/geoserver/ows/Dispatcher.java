@@ -1624,19 +1624,24 @@ public class Dispatcher extends AbstractController {
     }
 
     private static String extractServiceFromHttpRequest(String servletPath) {
-        int startIndex = servletPath.lastIndexOf("/") + 1;
-        int endIndex = servletPath.indexOf("?");
-
-        if (startIndex == 0) {
-            return ""; // No forward slash found
+        // Find the last "/"
+        int lastSlashIndex = servletPath.lastIndexOf('/');
+        if (lastSlashIndex == -1) {
+            // If there is no "/", return a blank string
+            return "";
         }
-
-        if (endIndex == -1) {
-            return servletPath.substring(startIndex); // No question mark found
+        // If there are at least two "/"
+        int secondLastSlashIndex = servletPath.lastIndexOf('/', lastSlashIndex - 1);
+        // second slash is the last character
+        if (secondLastSlashIndex != -1 && lastSlashIndex == servletPath.length() - 1) {
+            // Extract the characters between the second-to-last and the last "/"
+            return servletPath.substring(secondLastSlashIndex + 1, lastSlashIndex);
+        } else {
+            // Does not end with a "/", return everything after the last "/"
+            return servletPath.substring(lastSlashIndex + 1);
         }
-
-        return servletPath.substring(startIndex, endIndex);
     }
+
     /**
      * To be called once determined the incoming request is an HTTP POST request
      * with a request body, and the request's {@link Request#getInput() input

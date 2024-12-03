@@ -304,6 +304,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         MockHttpServletRequest request = createRequest("/foo/bar");
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
+        // Force to reload the property file
+        mapper.synchronize();
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
 
@@ -346,6 +348,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         request.setQueryString(authKeyUrlParam + "=abc");
         request.addParameter(authKeyUrlParam, "abc");
+        // Force to reload the property file
+        mapper.synchronize();
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
 
@@ -440,6 +444,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         chain = new MockFilterChain();
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
+        // Force to reload the property file
+        mapper.synchronize();
         getProxy().doFilter(request, response, chain);
         assertNotEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
 

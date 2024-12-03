@@ -355,6 +355,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         username = testUserName;
         password = username;
         updateUser("ug1", username, false);
+        // Force to reload the property file
         mapper.synchronize();
 
         request = createRequest("/foo/bar");
@@ -363,12 +364,14 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);
+        // Force to reload the property file
+        mapper.synchronize();
         getProxy().doFilter(request, response, chain);
-
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         updateUser("ug1", username, true);
-
+        // Force to reload the property file
+        mapper.synchronize();
         insertAnonymousFilter();
         request = createRequest("foo/bar");
         response = new MockHttpServletResponse();
@@ -403,6 +406,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         UserPropertyAuthenticationKeyMapper mapper =
                 (UserPropertyAuthenticationKeyMapper) filter.getMapper();
+        // Force to reload the property file
         mapper.synchronize();
 
         prepareFilterChain(pattern, filterName);
@@ -424,6 +428,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                         getSecurityManager()
                                 .loadUserGroupService("ug1")
                                 .loadUserByUsername(testUserName);
+        // Force to reload the property file
+        mapper.synchronize();
         // Make sure the cache is cleared
         mapper.resetUserCache();
         String authKey = user.getProperties().getProperty(mapper.getUserPropertyName());
@@ -439,7 +445,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         Authentication auth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
-        assertNotNull(auth);
+
         assertNull(request.getSession(false));
         checkForAuthenticatedRole(auth);
         assertEquals(testUserName, auth.getPrincipal());

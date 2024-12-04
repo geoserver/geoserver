@@ -53,12 +53,12 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     @BeforeClass
     public static void registerTestDirectoryStore() {
         // a "catch-all" datastore that will use any File without requiring a filetype/dbtype
-        DataStoreFinder.registerFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+        DataStoreFinder.registerFactory(TEST_DIRECTORY_STORE_FACTORY_SPI);
     }
 
     @AfterClass
     public static void deregisterTestDirectoryStore() {
-        DataStoreFinder.deregisterFactrory(TEST_DIRECTORY_STORE_FACTORY_SPI);
+        DataStoreFinder.deregisterFactory(TEST_DIRECTORY_STORE_FACTORY_SPI);
     }
 
     @Before

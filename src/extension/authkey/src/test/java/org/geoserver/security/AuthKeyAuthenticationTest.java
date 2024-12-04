@@ -269,10 +269,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
-    public void testFileBasedWithSession() throws Exception {
+    public void testFileBasedWithSessionEnabled() throws Exception {
 
         String authKeyUrlParam = "myAuthKey";
-        String filterName = "testAuthKeyFilter1";
+        String filterName = "testAuthKeyFilter1Enabled";
 
         AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
         config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
@@ -354,21 +354,60 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
 
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    public void testFileBasedWithSessionDisabled() throws Exception {
+
+        String authKeyUrlParam = "myAuthKey";
+        String filterName = "testAuthKeyFilter1Disabled";
+
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("propertyMapper");
+
+        // Let's make sure the internal user cache is disabled
+        Map<String, String> mapperParams = new HashMap<>();
+        mapperParams.put("cacheTtlSeconds", "0");
+        config.setMapperParameters(mapperParams);
+        getSecurityManager().saveFilter(config);
+
+        GeoServerAuthenticationKeyFilter filter =
+                (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
+
+        PropertyAuthenticationKeyMapper mapper =
+                (PropertyAuthenticationKeyMapper) filter.getMapper();
+        mapper.synchronize();
+
+        prepareFilterChain(pattern, filterName);
+        modifyChain(pattern, false, true, null);
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+        getSecurityManager().getAuthenticationCache().removeAll();
+
+        // Test entry point
+        MockHttpServletRequest request = createRequest("/foo/bar");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        // Force to reload the property file
+        mapper.synchronize();
+
+        // test success
+        String authKey = null;
+        for (Entry<Object, Object> entry : mapper.authKeyProps.entrySet()) {
+            if (testUserName.equals(entry.getValue())) {
+                authKey = (String) entry.getKey();
+                break;
+            }
+        }
 
         // check disabled user
         username = testUserName;
         password = username;
         updateUser("ug1", username, false);
-
-        ctx.setAuthentication(null);
-        SecurityContextHolder.clearContext();
-        getSecurityManager().getAuthenticationCache().removeAll();
-
-        // Force to reload the property file
-        mapper.synchronize();
-
-        // Give Windows the time to reload the file...
-        Thread.sleep(100);
 
         request = createRequest("/foo/bar");
         response = new MockHttpServletResponse();

@@ -359,12 +359,16 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         username = testUserName;
         password = username;
         updateUser("ug1", username, false);
-        // Force to reload the property file
-        mapper.synchronize();
 
         ctx.setAuthentication(null);
         SecurityContextHolder.clearContext();
         getSecurityManager().getAuthenticationCache().removeAll();
+
+        // Force to reload the property file
+        mapper.synchronize();
+
+        // Give Windows the time to reload the file...
+        Thread.sleep(100);
 
         request = createRequest("/foo/bar");
         response = new MockHttpServletResponse();

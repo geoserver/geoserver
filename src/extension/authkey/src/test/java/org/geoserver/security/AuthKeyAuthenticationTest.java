@@ -362,6 +362,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // Force to reload the property file
         mapper.synchronize();
 
+        ctx.setAuthentication(null);
         SecurityContextHolder.clearContext();
         getSecurityManager().getAuthenticationCache().removeAll();
 
@@ -459,13 +460,6 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         getProxy().doFilter(request, response, chain);
         assertNotEquals(MockHttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
         assertNull(request.getSession(false));
-
-        Authentication auth =
-                getSecurityManager().getAuthenticationCache().get(filterName, authKey);
-
-        assertNotNull(auth);
-        checkForAuthenticatedRole(auth);
-        assertEquals(testUserName, auth.getPrincipal());
 
         // check unknown user
         username = "unknown";

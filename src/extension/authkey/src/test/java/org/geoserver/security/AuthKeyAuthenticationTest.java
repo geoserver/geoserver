@@ -437,10 +437,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
     }
 
     @Test
-    public void testUserPropertyWithCache() throws Exception {
+    public void testUserPropertyWithCacheEnabled() throws Exception {
 
         String authKeyUrlParam = "myAuthKey";
-        String filterName = "testAuthKeyFilter2";
+        String filterName = "testAuthKeyFilter2Enabled";
 
         AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
         config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
@@ -516,17 +516,67 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
 
-        SecurityContextHolder.clearContext();
+    @Test
+    public void testUserPropertyWithCacheDisabled() throws Exception {
+
+        String authKeyUrlParam = "myAuthKey";
+        String filterName = "testAuthKeyFilter2Disabled";
+
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());
+        config.setName(filterName);
+        config.setUserGroupServiceName("ug1");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("userPropertyMapper");
+
+        // Let's make sure the internal user cache is disabled
+        Map<String, String> mapperParams = new HashMap<>();
+        mapperParams.put("cacheTtlSeconds", "0");
+        config.setMapperParameters(mapperParams);
+        getSecurityManager().saveFilter(config);
+
+        GeoServerAuthenticationKeyFilter filter =
+                (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
+
+        UserPropertyAuthenticationKeyMapper mapper =
+                (UserPropertyAuthenticationKeyMapper) filter.getMapper();
+        // Force to reload the property file
+        mapper.synchronize();
+
+        prepareFilterChain(pattern, filterName);
+        modifyChain(pattern, false, false, null);
+
+        SecurityContextHolder.getContext().setAuthentication(null);
         getSecurityManager().getAuthenticationCache().removeAll();
 
         // check disabled user
         username = testUserName;
         password = username;
         updateUser("ug1", username, false);
-        request = createRequest("/foo/bar");
-        response = new MockHttpServletResponse();
-        chain = new MockFilterChain();
+
+        // Force to reload the property file
+        mapper.synchronize();
+        // Make sure the cache is cleared
+        mapper.resetUserCache();
+
+        // test success
+        GeoServerUser user =
+                (GeoServerUser)
+                        getSecurityManager()
+                                .loadUserGroupService("ug1")
+                                .loadUserByUsername(testUserName);
+
+        String authKey = user.getProperties().getProperty(mapper.getUserPropertyName());
+        assertNotNull(authKey);
+
+        SecurityContextHolder.clearContext();
+        getSecurityManager().getAuthenticationCache().removeAll();
+
+        MockHttpServletRequest request = createRequest("/foo/bar");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
 
         request.setQueryString(authKeyUrlParam + "=" + authKey);
         request.addParameter(authKeyUrlParam, authKey);

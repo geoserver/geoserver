@@ -286,7 +286,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
      */
     public void setFilesystemSandbox(String filesystemSandbox) {
         // sanitize in case a store-like path has ben provided
-        if (filesystemSandbox.startsWith("file://"))
+        if (filesystemSandbox != null && filesystemSandbox.startsWith("file://"))
             filesystemSandbox = filesystemSandbox.substring("file://".length());
         this.filesystemSandbox = filesystemSandbox;
     }

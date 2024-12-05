@@ -9,15 +9,20 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.security.AccessMode;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,52 +57,52 @@ public class DataAccessRuleDAOTest {
     @Test
     public void testRulesForRole() {
 
-        Assert.assertEquals(0, dao.getRulesAssociatedWithRole("CHALLENGE").size());
-        Assert.assertEquals(0, dao.getRulesAssociatedWithRole("NOTEXISTEND").size());
-        Assert.assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_TSW").size());
-        Assert.assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_TW").size());
-        Assert.assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_GROUP").size());
+        assertEquals(0, dao.getRulesAssociatedWithRole("CHALLENGE").size());
+        assertEquals(0, dao.getRulesAssociatedWithRole("NOTEXISTEND").size());
+        assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_TSW").size());
+        assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_TW").size());
+        assertEquals(1, dao.getRulesAssociatedWithRole("ROLE_GROUP").size());
     }
 
     @Test
     public void testParseGlobalLayerGroupRule() {
         DataAccessRule r = dao.parseDataAccessRule("group.r", "ROLE_GROUP_OWNER");
-        Assert.assertEquals(r.getRoot(), "group");
-        Assert.assertNull(r.getLayer());
-        Assert.assertTrue(r.isGlobalGroupRule());
-        Assert.assertEquals(AccessMode.READ, r.getAccessMode());
+        assertEquals(r.getRoot(), "group");
+        assertNull(r.getLayer());
+        assertTrue(r.isGlobalGroupRule());
+        assertEquals(AccessMode.READ, r.getAccessMode());
     }
 
     @Test
     public void testParse() {
-        Assert.assertEquals(4, dao.getRules().size());
+        assertEquals(4, dao.getRules().size());
 
         // check the first rule
         DataAccessRule rule = dao.getRules().get(0);
-        Assert.assertEquals("*.*.r", rule.getKey());
-        Assert.assertEquals(1, rule.getRoles().size());
-        Assert.assertEquals("*", rule.getRoles().iterator().next());
+        assertEquals("*.*.r", rule.getKey());
+        assertEquals(1, rule.getRoles().size());
+        assertEquals("*", rule.getRoles().iterator().next());
     }
 
     @Test
     public void testAdd() {
-        Assert.assertEquals(4, dao.getRules().size());
+        assertEquals(4, dao.getRules().size());
         DataAccessRule newRule = dao.parseDataAccessRule("*.*.w", "ROLE_GENERIC_W");
-        Assert.assertTrue(dao.addRule(newRule));
-        Assert.assertEquals(5, dao.getRules().size());
-        Assert.assertEquals(newRule, dao.getRules().get(1));
-        Assert.assertFalse(dao.addRule(newRule));
+        assertTrue(dao.addRule(newRule));
+        assertEquals(5, dao.getRules().size());
+        assertEquals(newRule, dao.getRules().get(1));
+        assertFalse(dao.addRule(newRule));
     }
 
     @Test
     public void testRemove() {
-        Assert.assertEquals(4, dao.getRules().size());
+        assertEquals(4, dao.getRules().size());
         DataAccessRule newRule = dao.parseDataAccessRule("*.*.w", "ROLE_GENERIC_W");
-        Assert.assertFalse(dao.removeRule(newRule));
+        assertFalse(dao.removeRule(newRule));
         DataAccessRule first = dao.getRules().get(0);
-        Assert.assertTrue(dao.removeRule(first));
-        Assert.assertFalse(dao.removeRule(first));
-        Assert.assertEquals(3, dao.getRules().size());
+        assertTrue(dao.removeRule(first));
+        assertFalse(dao.removeRule(first));
+        assertEquals(3, dao.getRules().size());
     }
 
     @Test
@@ -105,39 +110,39 @@ public class DataAccessRuleDAOTest {
         Properties newProps = dao.toProperties();
 
         // properties equality does not seem to work...
-        Assert.assertEquals(newProps.size(), props.size());
+        assertEquals(newProps.size(), props.size());
         for (Object key : newProps.keySet()) {
             Object newValue = newProps.get(key);
             Object oldValue = newProps.get(key);
-            Assert.assertEquals(newValue, oldValue);
+            assertEquals(newValue, oldValue);
         }
     }
 
     @Test
     public void testParsePlain() {
         DataAccessRule rule = dao.parseDataAccessRule("a.b.r", "ROLE_WHO_CARES");
-        Assert.assertEquals("a", rule.getRoot());
-        Assert.assertEquals("b", rule.getLayer());
-        Assert.assertFalse(rule.isGlobalGroupRule());
-        Assert.assertEquals(AccessMode.READ, rule.getAccessMode());
+        assertEquals("a", rule.getRoot());
+        assertEquals("b", rule.getLayer());
+        assertFalse(rule.isGlobalGroupRule());
+        assertEquals(AccessMode.READ, rule.getAccessMode());
     }
 
     @Test
     public void testParseSpaces() {
         DataAccessRule rule = dao.parseDataAccessRule(" a  . b . r ", "ROLE_WHO_CARES");
-        Assert.assertEquals("a", rule.getRoot());
-        Assert.assertEquals("b", rule.getLayer());
-        Assert.assertFalse(rule.isGlobalGroupRule());
-        Assert.assertEquals(AccessMode.READ, rule.getAccessMode());
+        assertEquals("a", rule.getRoot());
+        assertEquals("b", rule.getLayer());
+        assertFalse(rule.isGlobalGroupRule());
+        assertEquals(AccessMode.READ, rule.getAccessMode());
     }
 
     @Test
     public void testParseEscapedDots() {
         DataAccessRule rule = dao.parseDataAccessRule("w. a\\.b . r ", "ROLE_WHO_CARES");
-        Assert.assertEquals("w", rule.getRoot());
-        Assert.assertEquals("a.b", rule.getLayer());
-        Assert.assertFalse(rule.isGlobalGroupRule());
-        Assert.assertEquals(AccessMode.READ, rule.getAccessMode());
+        assertEquals("w", rule.getRoot());
+        assertEquals("a.b", rule.getLayer());
+        assertFalse(rule.isGlobalGroupRule());
+        assertEquals(AccessMode.READ, rule.getAccessMode());
     }
 
     @Test
@@ -151,9 +156,23 @@ public class DataAccessRuleDAOTest {
                         Collections.singleton("ROLE_ABC")));
         Properties ps = dao.toProperties();
 
-        Assert.assertEquals(2, ps.size());
-        Assert.assertEquals("ROLE_ABC", ps.getProperty("it\\.geosolutions.layer\\.dots.r"));
+        assertEquals(2, ps.size());
+        assertEquals("ROLE_ABC", ps.getProperty("it\\.geosolutions.layer\\.dots.r"));
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ps.store(bos, null);
+    }
+
+    @Test
+    public void testFileSystemSandbox() throws IOException {
+        File sandbox = new File("./target/sandbox").getCanonicalFile();
+        String path = sandbox.getAbsolutePath();
+        dao.setFilesystemSandbox(path);
+        // properly stored and retrieved
+        dao.reload();
+        assertEquals(path, dao.getFilesystemSandbox());
+        // can reset too
+        dao.setFilesystemSandbox(null);
+        dao.reload();
+        assertNull(dao.getFilesystemSandbox());
     }
 }

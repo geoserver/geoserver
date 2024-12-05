@@ -10,6 +10,8 @@ import static org.geoserver.platform.GeoServerExtensions.bean;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
@@ -109,9 +111,10 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         @Override
         public AuthorizationDecision check(
                 Supplier<Authentication> authentication, HttpServletRequest request) {
-            Collection<ConfigAttribute> attributes = metadata.getAttributes(request);
-            AuthorizationDecision vote = vote(authentication.get(), request, attributes);
-            return vote;
+            Collection<ConfigAttribute> attributes =
+                    Optional.ofNullable(metadata.getAttributes(request))
+                            .orElse(Collections.emptySet());
+            return vote(authentication.get(), request, attributes);
         }
     }
 
@@ -159,9 +162,10 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         @Override
         public AuthorizationDecision check(
                 Supplier<Authentication> authentication, HttpServletRequest request) {
-            Collection<ConfigAttribute> attributes = metadata.getAttributes(request);
-            AuthorizationDecision vote = vote(authentication.get(), request, attributes);
-            return vote;
+            Collection<ConfigAttribute> attributes =
+                    Optional.ofNullable(metadata.getAttributes(request))
+                            .orElse(Collections.emptySet());
+            return vote(authentication.get(), request, attributes);
         }
     }
 
@@ -210,14 +214,12 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
     }
 
-    @Override
-    public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
+    public void initializeFromConfig(
+            SecurityNamedServiceConfig config, SecurityMetadataSource source) throws IOException {
         super.initializeFromConfig(config);
 
         SecurityInterceptorFilterConfig siConfig = (SecurityInterceptorFilterConfig) config;
         boolean allowIfAllAbstainDecisions = siConfig.isAllowIfAllAbstainDecisions();
-        String sourceName = siConfig.getSecurityMetadataSource();
-        SecurityMetadataSource source = (SecurityMetadataSource) bean(sourceName);
 
         AuthenticatedAuthorizationManager aam = new AuthenticatedAuthorizationManager(source);
         RoleAuthorizationManager ram = new RoleAuthorizationManager(source);
@@ -226,5 +228,13 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         AuthorizationFilter filter = new AuthorizationFilter(am);
 
         getNestedFilters().add(filter);
+    }
+
+    @Override
+    public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
+        SecurityInterceptorFilterConfig siConfig = (SecurityInterceptorFilterConfig) config;
+        String sourceName = siConfig.getSecurityMetadataSource();
+        SecurityMetadataSource source = (SecurityMetadataSource) bean(sourceName);
+        initializeFromConfig(config, source);
     }
 }

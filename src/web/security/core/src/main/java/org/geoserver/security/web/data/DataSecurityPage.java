@@ -123,7 +123,8 @@ public class DataSecurityPage extends AbstractSecurityPage {
                     @Override
                     public void onSubmit() {
                         try {
-                            DataAccessRuleDAO dao = dataAccessRuleDAO;
+                            // not serializable, so we cannot use the variable in the outer class
+                            DataAccessRuleDAO dao = DataAccessRuleDAO.get();
                             CatalogMode newMode = dao.getByAlias(catalogModeChoice.getValue());
                             dao.setCatalogMode(newMode);
                             dao.setFilesystemSandbox(sandboxModel.getObject());

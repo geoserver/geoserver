@@ -65,8 +65,9 @@ public class FunctionsTest extends FeaturesTestSupport {
         MockHttpServletResponse response = getAsServletResponse("ogc/features/v1/functions?f=html");
         assertEquals("text/html", response.getContentType());
         // the table is hard to look up, so let's check the representation for a given function
+        String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
         assertThat(
-                response.getContentAsString(),
+                normalizedResponse,
                 Matchers.containsString(
                         "<h3>Area</h3>\n"
                                 + "         <ul>\n"

@@ -459,7 +459,9 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
                         + "  <p><a class=\"wmsCapabilities\" href=\"http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS\">Capabilities URL</a></p>\n"
                         + "</body>\n"
                         + "</html>";
-        assertEquals(expected, response.getContentAsString());
+        // windows line endings are normalized to unix
+        String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
+        assertEquals(expected, normalizedResponse);
     }
 
     @Test

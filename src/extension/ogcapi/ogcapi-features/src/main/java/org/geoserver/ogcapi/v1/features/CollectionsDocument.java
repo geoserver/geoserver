@@ -104,7 +104,7 @@ public class CollectionsDocument extends AbstractDocument {
         List<String> crs =
                 FeatureService.getFeatureTypeCRS(featureType, Collections.singletonList("#/crs"));
         CollectionDocument collection =
-                new CollectionDocument(geoServer, featureType, crs, CollectionsDocument.this.crs);
+                new CollectionDocument(geoServer, featureType, crs, this.crs);
         for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
             collectionDecorator.accept(collection);
         }

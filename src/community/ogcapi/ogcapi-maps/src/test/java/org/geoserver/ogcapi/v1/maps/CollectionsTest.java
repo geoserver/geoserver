@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,16 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsTest extends MapsTestSupport {
+    @Before
+    public void revertChanges() throws IOException {
+        revertLayer(MockData.BUILDINGS);
+    }
 
     @Test
     public void testCollectionsJsonDefault() throws Exception {

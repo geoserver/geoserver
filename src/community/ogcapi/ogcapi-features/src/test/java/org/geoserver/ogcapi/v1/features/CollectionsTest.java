@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSInfo;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -62,6 +64,11 @@ public class CollectionsTest extends FeaturesTestSupport {
         basicPolygons.setOverridingServiceSRS(true);
         basicPolygons.getResponseSRS().addAll(Arrays.asList("3857", "32632"));
         getCatalog().save(basicPolygons);
+    }
+
+    @Before
+    public void revertChanges() throws IOException {
+        revertLayer(MockData.BUILDINGS);
     }
 
     @Test

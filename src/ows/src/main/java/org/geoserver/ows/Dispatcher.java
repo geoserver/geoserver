@@ -1843,18 +1843,13 @@ public class Dispatcher extends AbstractController {
         // find an exception handler
         ServiceExceptionHandler handler = null;
 
-        if (service != null) {
-            // look up the service exception handler
-            Collection handlers = GeoServerExtensions.extensions(ServiceExceptionHandler.class);
-            for (Object o : handlers) {
-                ServiceExceptionHandler seh = (ServiceExceptionHandler) o;
-
-                if (seh.getServices().contains(service)) {
-                    // found one,
-                    handler = seh;
-
-                    break;
-                }
+        // look up the service exception handler
+        List<ServiceExceptionHandler> handlers =
+                GeoServerExtensions.extensions(ServiceExceptionHandler.class);
+        for (ServiceExceptionHandler seh : handlers) {
+            if (seh.canHandle(service, request)) {
+                handler = seh;
+                break;
             }
         }
 

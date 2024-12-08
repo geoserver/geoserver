@@ -142,14 +142,9 @@
 
 
   <!-- Exception handler, we need to output ows 2.0 exceptions -->
-  <!-- <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS20ServiceExceptionHandler"> -->
   <bean id="wcs20ExceptionHandler"
-    class="org.geoserver.wcs2_0.exception.OWS20ServiceExceptionHandler"> <!-- to be moved into ows package -->
-    <constructor-arg index="0">
-      <list>
-        <ref bean="wcsService-2.0" />
-      </list>
-    </constructor-arg>
+    class="org.geoserver.wcs2_0.exception.WCS20ServiceExceptionHandler"> <!-- to be moved into ows package -->
+    <constructor-arg index="0" ref="wcsService-2.0"/>
   </bean>
 
   <!-- Envelope dimensions mapper util class -->

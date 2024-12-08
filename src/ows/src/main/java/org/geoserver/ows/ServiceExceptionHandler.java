@@ -72,4 +72,17 @@ public abstract class ServiceExceptionHandler {
      * @param request The informations collected by the dispatcher about the request
      */
     public abstract void handleServiceException(ServiceException exception, Request request);
+
+    /**
+     * Determines if the handler can handle the exception. The default implementation checks if the
+     * service is not null, and in the list of services returned by {@link #getServices()}.
+     * Subclasses can override this method to provide more complex logic.
+     *
+     * @param service
+     * @param request
+     * @return
+     */
+    public boolean canHandle(Service service, Request request) {
+        return service != null && getServices().contains(service);
+    }
 }

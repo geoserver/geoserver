@@ -104,16 +104,18 @@ wcs11 () {
   _run
 }
 
-ogcapi-features10() {
+wcs20() {
     echo $0
     
     teamenginehost=$(hostname)
-    apiurl="http://$teamenginehost:8080/teamengine/rest/suites/ogcapi-features-1.0/run"
-    iut="http://geoserver:8080/geoserver/ogc/features/v1"
-    testurl="$apiurl?noofcollections=-1&iut=$iut"
+    apiurl="http://$teamenginehost:8080/teamengine/rest/suites/wcs/run"
+    url="http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwcs%3Fservice%3DWCS%26request%3DGetCapabilities"
+    testurl="$apiurl?url=$url&core=core&ext_post=post&ext_scal=scaling&ext_int=interpolation&ext_rsub=range_subsetting&ext_crs=crs"
     credentials="ogctest:ogctest"
-    targetfile="/logs/testng-results.xml"
+    targetfile="/logs/xml-results.xml"
     
+    set +x
+
     echo
     echo Running tests
     echo api URL: $apiurl
@@ -125,6 +127,7 @@ ogcapi-features10() {
     
     # requesting application/xml as it's the one we can parse to fail the build if there are test failures
     curl -v -s -u "$credentials" "$testurl" -H "Accept: application/xml" > $targetfile
+
     # Check if the first curl command failed
     if [ $? -ne 0 ]; then
         echo "Error: Failed to run tests"
@@ -152,6 +155,8 @@ ogcapi-features10() {
 # - suitename: name of the test suite to run (e.g. 'ogcapi-features-1.0')
 # - iut: URL of the Instance Under Test's landing page or GetCapabilities document
 run_rest_test() {
+
+    set +x
 
     local suitename="${1}"
     local iut="${2}"    

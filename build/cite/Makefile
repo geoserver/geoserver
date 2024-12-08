@@ -75,7 +75,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifeq ($(suite), ogcapi-features10)
+ifneq (,$(filter $(suite),ogcapi-features10 wcs20))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -188,7 +188,7 @@ else
 	@$(MAKE) start suite=$(suite)
 	@$(MAKE) run suite=$(suite)
 endif
-	@$(MAKE) validate-testng-results
+	@$(MAKE) validate-rest-results
 
 # Starts service containers
 # Usage: make start suite=<suite> [services=<services>]
@@ -231,18 +231,24 @@ endif
 # first prints out a human readable report of test failures, if xmlstarlet is installed,
 # and then a summary of passed and failed test counts. This last step will result in a
 # non zero exit code if there are test failures.
-.PHONY: validate-testng-results
-validate-testng-results: $(suite)
-	@./testng-results-report.sh logs/testng-results.xml
-	@./testng-results-validate.sh logs/testng-results.xml
-
+.PHONY: validate-rest-results
+validate-rest-results: $(suite)
+	@if [ -f "logs/testng-results.xml" ]; then \
+		./testng-results-report.sh logs/testng-results.xml; \
+       	./testng-results-validate.sh logs/testng-results.xml; \
+    elif [ -f "logs/xml-results.xml" ]; then \
+    	./xml-results-report.sh logs/xml-results.xml; \
+		./xml-results-validate.sh logs/xml-results.xml; \
+    fi
 
 .PHONY: print-full-failures
 print-full-failures:
 	@if [ -f "logs/testng-results.xml" ]; then \
 		./testng-results-full-error-report.sh logs/testng-results.xml; \
+    elif [ -f "logs/xml-results.xml" ]; then \
+      	./xml-results-full-error-report.sh logs/xml-results.xml; \
 	else \
-		echo "The file logs/testng-results.xml does not exist. Skipping the report generation."; \
+		echo "The files logs/testng-results.xml and logs/xml-results.xml  do not exist. Skipping the report generation."; \
 	fi
 
 .PHONY: pull

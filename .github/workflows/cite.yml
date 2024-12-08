@@ -55,7 +55,7 @@ jobs:
       fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
       matrix:
         #suite: [ogcapi-features10, wcs10, wcs11, wfs10, wfs11, wms10, wms11, wms13]
-        suite: [ogcapi-features10, wms11, wms13, wfs10, wfs11, wcs11]
+        suite: [ogcapi-features10, wms11, wms13, wfs10, wfs11, wcs11, wcs20]
 
     steps:
       - name: Checkout repository (shallow clone)

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script reads a testNG results XML file with a root element like:
-# <testng-results skipped="96" failed="17" total="2228" passed="2115">
+# This script reads a Teamengine XML results file
 # It extracts the number of passed, failed, and skipped tests, and prints
 # the results with ANSI colors: green for passed, red for failed, and no color for skipped.
 # If there are any failed tests (failed > 0), the script exits with a status code of 1.
@@ -9,7 +8,7 @@
 # This script is used in the Makefile to fail the test run if there are failures, since
 # when using the teamengine REST API to produce the xml report, it will always return a 200 HTTP status code.
 #
-# Contrary to testng-results-report.sh, this script does not require xmlstarlet to be installed,
+# Contrary to xml-results-report.sh, this script does not require xmlstarlet to be installed,
 # and can be used to fail the build if there are test failures regardless of whether a detailed
 # report can be printed out.
 
@@ -28,9 +27,9 @@ if [ ! -f "$file" ]; then
 fi
 
 # Extract the values using sed
-skipped=$(sed -n 's/.*skipped="\([0-9]*\)".*/\1/p' "$file")
-failed=$(sed -n 's/.*failed="\([0-9]*\)".*/\1/p' "$file")
-passed=$(sed -n 's/.*passed="\([0-9]*\)".*/\1/p' "$file")
+skipped=$(grep "endtest result=\"3\"" "$file" | wc -l)
+failed=$(grep "endtest result=\"6\"" "$file" | wc -l)
+passed=$(grep "endtest result=\"1\"" "$file" | wc -l)
 
 # ANSI escape sequences for colors
 RED='\033[0;31m'

@@ -7,9 +7,8 @@ services:
         GEOSERVER_DATA_DIR_SRC: "./wcs11/citewcs-1.1"
 
   teamengine:
-    image: ogccite/teamengine-production
-    volumes:
-      - ./wcs20/wcs-2.0.1.xml:/home/teamengine/te_base/forms/wcs-2.0.1.xml
+    # Use the latest build to get the CITE test suite fixes from GeoServer
+    image: ogccite/ets-wcs20:latest
     healthcheck:
       test: "curl -f http://localhost:8080/teamengine/ || exit 1"
       interval: 15s

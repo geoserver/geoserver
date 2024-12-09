@@ -10,9 +10,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerUser;
@@ -47,9 +50,12 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
     }
 
     @Override
-    public synchronized GeoServerUser getUser(String key) throws IOException {
-        checkProperties();
+    public Set<String> getAvailableParameters() {
+        return new HashSet<>(List.of("cacheTtlSeconds"));
+    }
 
+    @Override
+    public synchronized GeoServerUser getUserInternal(String key) throws IOException {
         if (authKeyProps == null) {
             synchronize();
         }
@@ -58,7 +64,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
         authKeyProps = fileWatcher.getProperties();
 
         String userName = authKeyProps.getProperty(key);
-        if (StringUtils.hasLength(userName) == false) {
+        if (!StringUtils.hasLength(userName)) {
             LOGGER.warning("Cannot find user for auth key: " + key);
             return null;
         }
@@ -74,7 +80,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
             return null;
         }
 
-        if (theUser.isEnabled() == false) {
+        if (!theUser.isEnabled()) {
             LOGGER.info(
                     "Found user "
                             + theUser.getUsername()
@@ -88,9 +94,7 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
     }
 
     @Override
-    protected void checkProperties() throws IOException {
-        super.checkProperties();
-    }
+    protected void checkPropertiesInternal() throws IOException {}
 
     @Override
     public synchronized int synchronize() throws IOException {
@@ -103,15 +107,17 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
                 new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         backupFile = new File(backupFile, AUTHKEYS_FILE + ".backup");
 
-        // check if the previous synchronize failed
+        // check if the previous synchronizing failed
         if (backupFile.exists())
             throw new IOException(
                     "The file: " + backupFile.getCanonicalPath() + " has to be removed first");
 
+        // Clear the local cache
+        resetUserCache();
         authKeyProps = new Properties();
         Properties oldProps = new Properties();
 
-        // check if property file exists and reload
+        // check if a property file exists and reload
         if (propFile.exists()) {
             FileUtils.copyFile(propFile, backupFile);
             try (FileInputStream inputFile = new FileInputStream(backupFile)) {

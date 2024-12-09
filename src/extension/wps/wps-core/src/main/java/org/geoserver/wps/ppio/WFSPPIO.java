@@ -93,9 +93,18 @@ public class WFSPPIO extends XMLPPIO {
             input = p.parse(new StringReader((String) input));
         }
 
+        SimpleFeatureCollection fc;
         // cast and handle the axis flipping
-        FeatureCollectionType fct = (FeatureCollectionType) input;
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) fct.getFeature().get(0);
+        if (input instanceof net.opengis.wfs.FeatureCollectionType) {
+            net.opengis.wfs.FeatureCollectionType fct =
+                    (net.opengis.wfs.FeatureCollectionType) input;
+            fc = (SimpleFeatureCollection) fct.getFeature().get(0);
+        } else {
+            // WFS 2.0.0
+            net.opengis.wfs20.FeatureCollectionType fct =
+                    (net.opengis.wfs20.FeatureCollectionType) input;
+            fc = (SimpleFeatureCollection) fct.getMember().get(0);
+        }
         // Axis flipping issue, we should determine if the collection needs flipping
         if (fc.getSchema().getGeometryDescriptor() != null) {
             CoordinateReferenceSystem crs = getCollectionCRS(fc);
@@ -120,7 +129,6 @@ public class WFSPPIO extends XMLPPIO {
                 }
             }
         }
-
         return eliminateFeatureBounds(fc);
     }
 
@@ -256,6 +264,16 @@ public class WFSPPIO extends XMLPPIO {
                     new org.geotools.wfs.v1_1.WFSConfiguration(),
                     "application/wfs-collection-1.1",
                     org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION);
+        }
+    }
+
+    public static class WFS20 extends WFSPPIO {
+
+        public WFS20() {
+            super(
+                    new org.geoserver.wfs.xml.v2_0.WFSConfiguration(),
+                    "text/xml",
+                    org.geotools.wfs.v2_0.WFS.FeatureCollection);
         }
     }
 }

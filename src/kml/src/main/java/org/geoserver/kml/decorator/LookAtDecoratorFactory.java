@@ -14,6 +14,8 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.Layer;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
@@ -61,7 +63,13 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
-            Envelope bounds = context.getCurrentLayer().getBounds();
+            Layer currentLayer = context.getCurrentLayer();
+            Envelope bounds;
+            if (currentLayer instanceof FeatureLayer) {
+                bounds = context.getCurrentFeatureCollection().getBounds();
+            } else {
+                bounds = currentLayer.getBounds();
+            }
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), false);
             feature.setAbstractView(lookAt);
 

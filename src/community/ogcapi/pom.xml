@@ -18,9 +18,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>ogcapi-core</module>
-    <module>ogcapi-features</module>
-    <module>ogcapi-features-assembly</module>
     <module>ogcapi-maps</module>
     <module>ogcapi-maps-assembly</module>
     <module>ogcapi-styles</module>
@@ -35,10 +32,8 @@
     <module>dggs</module>
     <module>ogcapi-coverages</module>
     <module>ogcapi-coverages-assembly</module>
-    <module>web-ogcapi</module>
 
     <module>web-coverages</module>
-    <module>web-features</module>
     <module>web-images</module>
     <module>web-maps</module>
     <module>web-styles</module>

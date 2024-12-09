@@ -34,7 +34,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-features</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -45,7 +45,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
@@ -66,7 +66,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-features</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>

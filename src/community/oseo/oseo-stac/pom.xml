@@ -17,7 +17,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
       <version>${gs.version}</version>
     </dependency>
@@ -65,7 +65,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.community</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
       <version>${gs.version}</version>
       <classifier>tests</classifier>

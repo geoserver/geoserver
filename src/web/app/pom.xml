@@ -1542,7 +1542,7 @@
       <id>ogcapi</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ogcapi-features</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1597,7 +1597,7 @@
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-web-ogcapi</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1608,7 +1608,7 @@
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-web-features</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1639,12 +1639,12 @@
       <id>ogcapi-features</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ogcapi-features</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-web-features</artifactId>
           <version>${project.version}</version>
         </dependency>

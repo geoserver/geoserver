@@ -62,6 +62,8 @@ public class AuthenticationKeyFilterPanel
 
         add(new CheckBox("allowMapperKeysAutoSync"));
 
+        add(new CheckBox("allowChallengeAnonymousSessions"));
+
         Map<String, String> parameters = model.getObject().getMapperParameters();
         final ParamsPanel paramsPanel =
                 createParamsPanel(

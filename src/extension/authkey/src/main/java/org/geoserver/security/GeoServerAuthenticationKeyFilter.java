@@ -24,6 +24,7 @@ import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +35,7 @@ import org.springframework.util.StringUtils;
 /**
  * Filter extending {@link GeoServerSecurityFilter}.
  *
- * <p>The encoded user name is passed as an URL parameter named {@link #authKeyParamName}.
+ * <p>The encoded user name is passed as a URL parameter named {@link #authKeyParamName}.
  *
  * <p>The real user name is retrieved by querying an {@link AuthenticationKeyMapper} object stored
  * in {@link #authKeyMapperName}
@@ -52,6 +53,8 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
 
     private String userGroupServiceName;
 
+    private boolean allowChallengeAnonymousSessions;
+
     protected AuthenticationEntryPoint aep;
 
     @Override
@@ -68,26 +71,27 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         mapper.setUserGroupServiceName(userGroupServiceName);
         mapper.setSecurityManager(getSecurityManager());
         mapper.configureMapper(authConfig.getMapperParameters());
+        allowChallengeAnonymousSessions = authConfig.isAllowChallengeAnonymousSessions();
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        // String authKey = getAuthKey((HttpServletRequest) request);
-        // if (authKey==null) { // nothing to do
-        // chain.doFilter(request, response);
-        // return;
-        // }
+        String cacheKey =
+                authenticateFromCache(
+                        this, (HttpServletRequest) request, allowChallengeAnonymousSessions);
 
-        String cacheKey = authenticateFromCache(this, (HttpServletRequest) request);
-
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (allowChallengeAnonymousSessions
+                || authentication == null
+                || authentication instanceof AnonymousAuthenticationToken) {
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response, cacheKey);
-
             Authentication postAuthentication =
                     SecurityContextHolder.getContext().getAuthentication();
-            if (postAuthentication != null && cacheKey != null) {
+            if (postAuthentication != null
+                    && !(postAuthentication instanceof AnonymousAuthenticationToken)
+                    && cacheKey != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
                     getSecurityManager()
                             .getAuthenticationCache()
@@ -151,7 +155,7 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
         for (GrantedAuthority auth : user.getAuthorities()) {
             roles.add((GeoServerRole) auth);
         }
-        if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
+        if (!roles.contains(GeoServerRole.AUTHENTICATED_ROLE))
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 
         KeyAuthenticationToken result =
@@ -162,7 +166,7 @@ public class GeoServerAuthenticationKeyFilter extends GeoServerSecurityFilter
 
     public String getAuthKey(HttpServletRequest req) {
         String authKey = getAuthKeyParamValue(req);
-        if (StringUtils.hasLength(authKey) == false) return null;
+        if (!StringUtils.hasLength(authKey)) return null;
         return authKey;
     }
 

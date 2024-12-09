@@ -37,6 +37,8 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
 
     private boolean allowMapperKeysAutoSync = false;
 
+    private boolean allowChallengeAnonymousSessions = false;
+
     @Override
     public boolean providesAuthenticationEntryPoint() {
         return true;
@@ -91,6 +93,16 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     /** @param allowMapperKeysAutoSync true if the mapper keys auto sync is allowed */
     public void setAllowMapperKeysAutoSync(boolean allowMapperKeysAutoSync) {
         this.allowMapperKeysAutoSync = allowMapperKeysAutoSync;
+    }
+
+    /** @return true if the stateless mode is enabled */
+    public boolean isAllowChallengeAnonymousSessions() {
+        return allowChallengeAnonymousSessions;
+    }
+
+    /** @param allowChallengeAnonymousSessions true if the stateless mode is enabled */
+    public void setAllowChallengeAnonymousSessions(boolean allowChallengeAnonymousSessions) {
+        this.allowChallengeAnonymousSessions = allowChallengeAnonymousSessions;
     }
 
     @Override

@@ -59,7 +59,7 @@ public class MapMLBaseProxyTest extends MapMLTestSupport {
 
     @AfterClass
     public static void afterClass() throws Exception {
-        mockService.shutdown();
+        mockService.stop();
     }
 
     protected static final String BASE_REQUEST =

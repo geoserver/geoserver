@@ -147,7 +147,7 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
 
     @AfterClass
     public static void afterClass() throws Exception {
-        service.shutdown();
+        service.stop();
     }
 
     @Before

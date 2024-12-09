@@ -29,6 +29,7 @@ import org.geoserver.security.auth.web.WebServiceAuthenticationProvider;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -96,6 +97,11 @@ public class WebAuthProviderTest extends AbstractAuthenticationProviderTest {
                                         .withStatus(401)
                                         .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
                                         .withBody(NO_AUTH_RESPONSE)));
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        externalHTTPService.stop();
     }
 
     @Override

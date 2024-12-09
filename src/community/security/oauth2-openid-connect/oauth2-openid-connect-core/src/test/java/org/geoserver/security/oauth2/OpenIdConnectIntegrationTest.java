@@ -119,7 +119,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
 
     @AfterClass
     public static void afterClass() throws Exception {
-        openIdService.shutdown();
+        openIdService.stop();
     }
 
     @Override

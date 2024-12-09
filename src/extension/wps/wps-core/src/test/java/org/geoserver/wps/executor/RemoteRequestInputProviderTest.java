@@ -11,7 +11,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -29,11 +28,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.ssl.SSLContextBuilder;
 import com.github.tomakehurst.wiremock.http.ssl.TrustEverythingStrategy;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,9 +64,11 @@ import org.junit.Test;
 
 public class RemoteRequestInputProviderTest {
 
-    @ClassRule @Rule
-    public static WireMockRule service =
-            new WireMockRule(WireMockConfiguration.options().dynamicPort().dynamicHttpsPort());
+    @ClassRule
+    public static WireMockClassRule classRule =
+            new WireMockClassRule(WireMockConfiguration.options().dynamicPort().dynamicHttpsPort());
+
+    @Rule public WireMockClassRule service = classRule;
 
     private ProgressListener listener;
 
@@ -819,7 +819,7 @@ public class RemoteRequestInputProviderTest {
         // or that no hidden exception was thrown if none was expected
         verify(listener).exceptionOccurred(any(firstNonNull(hidden, Exception.class)));
         verify(listener).exceptionOccurred(any(WPSException.class));
-        Arrays.stream(requests).filter(Objects::nonNull).forEach(WireMock::verify);
+        Arrays.stream(requests).filter(Objects::nonNull).forEach(service::verify);
     }
 
     private void assertValue(
@@ -831,7 +831,7 @@ public class RemoteRequestInputProviderTest {
             RequestPatternBuilder... requests)
             throws Exception {
         assertEquals(expected, getValue(input, ppio, timeout, maxSize));
-        Arrays.stream(requests).filter(Objects::nonNull).forEach(WireMock::verify);
+        Arrays.stream(requests).filter(Objects::nonNull).forEach(service::verify);
     }
 
     private Object getValue(InputType input, ComplexPPIO ppio, int timeout, long maxSize)
@@ -852,23 +852,23 @@ public class RemoteRequestInputProviderTest {
         return new URL("jar:" + file(name + ".zip") + "!/" + name + ".txt");
     }
 
-    private static URL http(String name) throws Exception {
+    private URL http(String name) throws Exception {
         return new URL("http://localhost:" + service.port() + "/" + name);
     }
 
-    private static URL https(String name) throws Exception {
+    private URL https(String name) throws Exception {
         return new URL("https://localhost:" + service.httpsPort() + "/" + name);
     }
 
-    private static void stub(
+    private void stub(
             ResponseDefinitionBuilder response,
             URL bodyUrl,
             ResponseDefinitionBuilder bodyResponse) {
         // stub for the main reference HTTP(S) URL
-        stubFor(any(urlEqualTo("/test")).willReturn(response));
+        service.stubFor(any(urlEqualTo("/test")).willReturn(response));
         if (bodyUrl != null && bodyUrl.getProtocol().startsWith("http")) {
             // stub for the body reference HTTP(S) URL
-            stubFor(get(urlEqualTo("/foo")).willReturn(bodyResponse));
+            service.stubFor(get(urlEqualTo("/foo")).willReturn(bodyResponse));
         }
     }
 

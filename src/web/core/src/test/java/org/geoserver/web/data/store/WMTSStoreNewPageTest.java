@@ -70,7 +70,7 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
 
     @AfterClass
     public static void afterClass() throws Exception {
-        wmtsService.shutdown();
+        wmtsService.stop();
     }
 
     @Before

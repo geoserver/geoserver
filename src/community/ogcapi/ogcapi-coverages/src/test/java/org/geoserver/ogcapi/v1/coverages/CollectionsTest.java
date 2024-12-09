@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -29,8 +30,10 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -61,6 +64,20 @@ public class CollectionsTest extends CoveragesTestSupport {
         DocumentContext json2 = getAsJSONPath("ogc/coverages/v1/collections", 200);
         // expect one fewer layers due to skipping
         assertEquals(expected - 1, (int) json2.read("collections.length()", Integer.class));
+    }
+
+    @Before
+    public void revertChanges() throws IOException {
+        CoverageInfo c = getCatalog().getCoverageByName("rs", "BlueMarble");
+        ReferencedEnvelope blueMarbleExtent =
+                new ReferencedEnvelope(
+                        146.49999999999477,
+                        147.99999999999474,
+                        -44.49999999999785,
+                        -42.99999999999787,
+                        c.getCRS());
+        c.setLatLonBoundingBox(blueMarbleExtent);
+        getCatalog().save(c);
     }
 
     @SuppressWarnings("unchecked") // generics varargs creation by hamcrest

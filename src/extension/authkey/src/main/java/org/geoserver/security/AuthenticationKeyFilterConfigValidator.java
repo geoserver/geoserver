@@ -36,11 +36,11 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
 
         checkExistingUGService(config.getUserGroupServiceName());
 
-        if (isNotEmpty(config.getAuthKeyParamName()) == false) {
+        if (!isNotEmpty(config.getAuthKeyParamName())) {
             throw createFilterException(
                     AuthenticationKeyFilterConfigException.AUTH_KEY_PARAM_NAME_REQUIRED);
         }
-        if (isNotEmpty(config.getAuthKeyMapperName()) == false) {
+        if (!isNotEmpty(config.getAuthKeyMapperName())) {
             throw createFilterException(
                     AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NAME_REQUIRED);
         }

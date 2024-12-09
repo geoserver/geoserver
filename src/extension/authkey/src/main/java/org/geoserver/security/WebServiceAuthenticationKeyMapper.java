@@ -54,7 +54,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     // web service url (must contain the {key} placeholder for the authkey parameter)
     private String webServiceUrl;
 
-    // regular expression, used to extract the user name from the webservice response
+    // regular expression, used to extract the username from the webservice response
     private String searchUser;
 
     // compiled regex
@@ -122,15 +122,13 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
         this.webServiceUrl = webServiceUrl;
     }
 
-    /**
-     * Returns the regular expression used to extract the user name from the webservice response.
-     */
+    /** Returns the regular expression used to extract the username from the webservice response. */
     public String getSearchUser() {
         return searchUser;
     }
 
     /**
-     * Sets the regular expression used to extract the user name from the webservice response.
+     * Sets the regular expression used to extract the username from the webservice response.
      *
      * @param searchUser search user
      */
@@ -145,9 +143,8 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     }
 
     @Override
-    protected void checkProperties() throws IOException {
-        super.checkProperties();
-        if (StringUtils.hasLength(webServiceUrl) == false) {
+    protected void checkPropertiesInternal() throws IOException {
+        if (!StringUtils.hasLength(webServiceUrl)) {
             throw new IOException("Web service url is unset");
         }
         if (StringUtils.hasLength(searchUser)) {
@@ -165,8 +162,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     }
 
     @Override
-    public GeoServerUser getUser(String key) throws IOException {
-        checkProperties();
+    protected GeoServerUser getUserInternal(String key) throws IOException {
         final String responseBody = callWebService(key);
         if (responseBody == null) {
             LOGGER.log(
@@ -289,7 +285,12 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     @Override
     public Set<String> getAvailableParameters() {
         return new HashSet<>(
-                Arrays.asList("webServiceUrl", "searchUser", "connectTimeout", "readTimeout"));
+                Arrays.asList(
+                        "webServiceUrl",
+                        "searchUser",
+                        "connectTimeout",
+                        "readTimeout",
+                        "cacheTtlSeconds"));
     }
 
     @Override
@@ -346,6 +347,8 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     public synchronized int synchronize() throws IOException {
         // synchronization purges the cached keys for the current WebService Mapper
         getSecurityManager().getAuthenticationCache().removeAll(getAuthenticationFilterName());
+        // Clear the local cache
+        resetUserCache();
         return 0;
     }
 }

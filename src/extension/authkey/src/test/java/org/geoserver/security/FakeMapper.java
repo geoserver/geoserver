@@ -18,7 +18,7 @@ import org.geoserver.security.impl.GeoServerUser;
 public class FakeMapper extends AbstractAuthenticationKeyMapper {
 
     @Override
-    public GeoServerUser getUser(String key) throws IOException {
+    public GeoServerUser getUserInternal(String key) throws IOException {
         return new GeoServerUser("fakeuser");
     }
 
@@ -37,7 +37,10 @@ public class FakeMapper extends AbstractAuthenticationKeyMapper {
     }
 
     @Override
+    protected void checkPropertiesInternal() throws IOException {}
+
+    @Override
     public Set<String> getAvailableParameters() {
-        return new HashSet<>(Arrays.asList("param1", "param2"));
+        return new HashSet<>(Arrays.asList("param1", "param2", "cacheTtlSeconds"));
     }
 }

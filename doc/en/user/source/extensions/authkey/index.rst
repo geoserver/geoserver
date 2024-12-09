@@ -237,6 +237,31 @@ After configuring the filter it is necessary to put this filter on the authentic
    saves the current configuration and triggers a synchronize. If users are added/removed from 
    the backing user/group service, the synchronize logic should be triggered.
 
+Challenge Anonymous Session
+---------------------------
+
+"Challenge Anonymous Sessions" is designed to enforce stricter authorization and stateless behavior.
+
+When enabled, the filter ignores any existing session or SecurityContext principal (e.g., anonymous or previously authenticated sessions created by other filters) and always authenticates the user linked to the provided authkey. This ensures that the authkey is validated independently for every request, regardless of the current session state.
+
+This feature is particularly useful for deployments that require stateless authentication or need to ensure that requests are processed strictly based on the authkey query parameter. By default, this option is disabled.
+
+**Internal User Cache**
+
+To enhance performance in stateless mode, the AuthKey filter can use an internal user cache. The cache prevents unnecessary backend authentication requests for the same authkey by storing the user information locally for a configurable period.
+
+The cache offers the following benefits:
+
+1. Reduces backend service load for frequently used authkeys.
+
+2. Allows administrators to configure the cache's expiration policy to balance performance and data freshness.
+
+Both the "Challenge Anonymous Sessions" option and the internal user cache settings can be configured through the filter's settings panel in GeoServer. For step-by-step instructions and examples, refer to the screenshots below.
+
+    .. figure:: images/001_stateless.png
+       :align: center
+
+
 Enabling Mappers' Auto-Synchronization
 --------------------------------------
 

@@ -11,7 +11,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.validation.FilterConfigException;
 import org.springframework.util.StringUtils;
 
@@ -32,9 +37,20 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
 
     private Map<String, String> parameters = new HashMap<>();
 
+    // Cache map with expiration tracking
+    private final ConcurrentHashMap<String, CacheEntry> userCache = new ConcurrentHashMap<>();
+
+    // Default TTL for cache entries (in seconds)
+    private long cacheTtlSeconds = 300; // Default: 5 minutes
+
+    // Executor for cleaning up expired cache entries
+    private final ScheduledExecutorService cacheCleanupExecutor =
+            Executors.newSingleThreadScheduledExecutor();
+
     public AbstractAuthenticationKeyMapper() {
         super();
         fillDefaultParameters();
+        startCacheCleanupTask();
     }
 
     @Override
@@ -71,19 +87,22 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         GeoServerUserGroupService service =
                 getSecurityManager().loadUserGroupService(getUserGroupServiceName());
         if (service == null) {
-            throw new IOException("Unkown user/group service: " + getUserGroupServiceName());
+            throw new IOException("Unknown user/group service: " + getUserGroupServiceName());
         }
         return service;
     }
 
     protected void checkProperties() throws IOException {
-        if (StringUtils.hasLength(getUserGroupServiceName()) == false) {
+        if (!StringUtils.hasLength(getUserGroupServiceName())) {
             throw new IOException("User/Group Service Name is unset");
         }
         if (getSecurityManager() == null) {
             throw new IOException("Security manager is unset");
         }
+        this.checkPropertiesInternal();
     }
+
+    protected abstract void checkPropertiesInternal() throws IOException;
 
     protected String createAuthKey() {
         return UUID.randomUUID().toString();
@@ -104,6 +123,15 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     public void configureMapper(Map<String, String> parameters) {
         this.parameters = parameters;
         fillDefaultParameters();
+
+        // Configure cache TTL if specified
+        if (parameters.containsKey("cacheTtlSeconds")) {
+            try {
+                cacheTtlSeconds = Long.parseLong(parameters.get("cacheTtlSeconds"));
+            } catch (NumberFormatException e) {
+                LOGGER.warning("Invalid cacheTtlSeconds value. Using default.");
+            }
+        }
     }
 
     /** Fills parameters with default values (if defined by the mapper. */
@@ -116,7 +144,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     }
 
     /**
-     * Gets the default value for the given parameter. Default implementation always returns an
+     * Gets the default value for the given parameter. The Default implementation always returns an
      * empty string.
      */
     protected String getDefaultParamValue(String paramName) {
@@ -147,5 +175,83 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     @Override
     public void setAuthenticationFilterName(String authenticationFilterName) {
         this.authenticationFilterName = authenticationFilterName;
+    }
+
+    @Override
+    public GeoServerUser getUser(String key) throws IOException {
+        checkProperties();
+
+        // Check if the user is already in the cache and not expired
+        CacheEntry entry = userCache.get(key);
+        if (entry != null && !entry.isExpired()) {
+            return entry.getUser();
+        }
+
+        // Proceed to call the web service if user not in the cache or expired
+        GeoServerUser user = this.getUserInternal(key);
+        if (key != null && user != null) {
+            // Cache the user for future requests
+            userCache.put(
+                    key, new CacheEntry(user, System.currentTimeMillis() + cacheTtlSeconds * 1000));
+        }
+        return user;
+    }
+
+    protected abstract GeoServerUser getUserInternal(String key) throws IOException;
+
+    /** Clears the cache entries, forcing a reset. */
+    public void resetUserCache() {
+        userCache.clear();
+    }
+
+    /**
+     * Sets the cache TTL in seconds.
+     *
+     * @param ttlSeconds TTL in seconds
+     */
+    @Override
+    public void setCacheTtlSeconds(long ttlSeconds) {
+        this.cacheTtlSeconds = ttlSeconds;
+    }
+
+    /** Returns the current cache TTL in seconds. */
+    @Override
+    public long getCacheTtlSeconds() {
+        return cacheTtlSeconds;
+    }
+
+    /** Starts a periodic task to clean up expired cache entries. */
+    private void startCacheCleanupTask() {
+        cacheCleanupExecutor.scheduleAtFixedRate(
+                () -> {
+                    userCache.entrySet().removeIf(entry -> entry.getValue().isExpired());
+                },
+                cacheTtlSeconds,
+                cacheTtlSeconds,
+                TimeUnit.SECONDS);
+    }
+
+    /** Shuts down the cache cleanup executor. */
+    public void shutdown() {
+        cacheCleanupExecutor.shutdownNow();
+    }
+
+    /** Inner class to represent a cache entry with a TTL. */
+    private static class CacheEntry {
+        private final GeoServerUser user;
+        private final long expiryTime;
+
+        CacheEntry(GeoServerUser user, long expiryTime) {
+            this.user = user;
+            this.expiryTime = expiryTime;
+        }
+
+        public GeoServerUser getUser() {
+            return user;
+        }
+
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expiryTime;
+        }
     }
 }

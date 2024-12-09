@@ -65,4 +65,14 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
      * Set the belonging Auth Filter Name in order to allow the Mapper accessing the auth cache *
      */
     public void setAuthenticationFilterName(String authenticationFilterName);
+
+    /**
+     * Sets the cache TTL in seconds.
+     *
+     * @param ttlSeconds TTL in seconds
+     */
+    public void setCacheTtlSeconds(long ttlSeconds);
+
+    /** Returns the current cache TTL in seconds. */
+    public long getCacheTtlSeconds();
 }

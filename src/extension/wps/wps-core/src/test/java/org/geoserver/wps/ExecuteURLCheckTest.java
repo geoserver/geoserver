@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.security.urlchecks.GeoServerURLChecker;
 import org.geoserver.security.urlchecks.RegexURLCheck;
 import org.geoserver.security.urlchecks.URLCheckDAO;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,6 +65,11 @@ public class ExecuteURLCheckTest extends WPSTestSupport {
         try (InputStream is = ExecuteURLCheckTest.class.getResourceAsStream(resource)) {
             return IOUtils.toString(is, StandardCharsets.UTF_8);
         }
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        service.stop();
     }
 
     @Before

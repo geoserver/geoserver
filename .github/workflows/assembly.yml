@@ -46,7 +46,7 @@ jobs:
         mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
     - name: Build and package community modules (without tests)
       run: |
-        mvn -B -ntp -U -T3 -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+        mvn -B -ntp -nsu -U -T3 -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
     - name: Remove SNAPSHOT jars from repository
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

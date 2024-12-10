@@ -50,7 +50,9 @@ public class TokenSignatureValidator {
 
     public static JWKSet loadJWKSet(String urlStr) throws Exception {
         URL url = new URL(urlStr);
-        return JWKSet.load(url);
+        try (var stream = url.openStream()) {
+            return JWKSet.load(stream);
+        }
     }
 
     public TokenSignatureValidator(JwtConfiguration config) {

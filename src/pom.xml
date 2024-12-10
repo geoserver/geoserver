@@ -144,7 +144,7 @@
     <postgresql.jdbc.version>42.7.3</postgresql.jdbc.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <oracle.jdbc.version>19.18.0.0</oracle.jdbc.version>
-    <mysql.jdbc.version>8.0.28</mysql.jdbc.version>
+    <mysql.jdbc.version>9.1.0</mysql.jdbc.version>
     <solrj.version>7.2.1</solrj.version>
     <mockito.version>5.6.0</mockito.version>
     <jacoco.version>0.8.6</jacoco.version>
@@ -711,9 +711,16 @@
         <version>${hibernate-generic-dao-version}</version>
       </dependency>
       <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
         <version>${mysql.jdbc.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>protobuf-java</artifactId>
+            <!-- only required for using X DevAPI -->
+            <groupId>com.google.protobuf</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>

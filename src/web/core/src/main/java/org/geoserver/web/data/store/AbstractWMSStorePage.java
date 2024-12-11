@@ -231,6 +231,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
                 target.add(form);
+                addFeedbackPanels(target);
             }
 
             @Override
@@ -250,6 +251,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
                     form.error(e.getMessage());
                     target.add(form);
                 }
+                addFeedbackPanels(target);
             }
         };
     }

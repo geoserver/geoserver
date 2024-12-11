@@ -301,13 +301,11 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
             List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
             assertEquals(1, messages.size());
-            assertThat(
-                    messages.get(0).toString(),
-                    allOf(
-                            containsString("Access to "),
-                            containsString(toppPath),
-                            containsString(" denied by file sandboxing")));
+            checkSandboxDeniedMessage(messages.get(0).toString(), toppPath);
             tester.clearFeedbackMessages();
+
+            // the error got actually rendered
+            checkSandboxDeniedMessage(tester.getLastResponseAsString(), toppPath);
 
             // now try within the sandbox
             String citePath = citeFolder.getAbsolutePath();
@@ -329,5 +327,14 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
             layerSecurity.delete();
             fam.reload();
         }
+    }
+
+    private static void checkSandboxDeniedMessage(String message, String toppPath) {
+        assertThat(
+                message,
+                allOf(
+                        containsString("Access to "),
+                        containsString(toppPath),
+                        containsString(" denied by file sandboxing")));
     }
 }

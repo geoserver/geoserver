@@ -42,7 +42,7 @@ jobs:
         run: make war
 
       - name: Upload geoserver.war as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: geoserver-war
           path: build/cite/geoserver/geoserver.war
@@ -64,7 +64,7 @@ jobs:
           fetch-depth: 1
 
       - name: Download geoserver.war artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: geoserver-war
           path: build/cite/geoserver/
@@ -121,7 +121,7 @@ jobs:
 
       - name: Upload logs folder
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cite-${{ matrix.suite }}-logs
           path: build/cite/logs/

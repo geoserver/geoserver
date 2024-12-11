@@ -138,6 +138,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
                 target.add(paramsForm);
+                addFeedbackPanels(target);
             }
 
             @Override
@@ -149,6 +150,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
                     paramsForm.error(e.getMessage());
                     target.add(paramsForm);
                 }
+                addFeedbackPanels(target);
             }
         };
     }
@@ -160,6 +162,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
                 target.add(paramsForm);
+                addFeedbackPanels(target);
             }
 
             @Override
@@ -171,6 +174,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
                     paramsForm.error(e.getMessage());
                     target.add(paramsForm);
                 }
+                addFeedbackPanels(target);
             }
         };
     }

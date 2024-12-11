@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,9 +26,11 @@ import org.apache.wicket.DefaultExceptionMapper;
 import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.csp.CSPDirective;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
@@ -45,6 +48,7 @@ import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.settings.RequestCycleSettings.RenderStrategy;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ValidationException;
 import org.geoserver.config.GeoServer;
@@ -84,6 +88,7 @@ public class GeoServerApplication extends WebApplication
 
     /** Name of the cookie used to remember the chosen language across sessions */
     public static final String LANGUAGE_COOKIE_NAME = "GeoServerUILanguage";
+
     /** Default cookie expiration date (one year) */
     public static final int LANGUAGE_COOKIE_AGE = 365 * 24 * 60 * 60;
 
@@ -308,6 +313,8 @@ public class GeoServerApplication extends WebApplication
             }
             getRequestCycleListeners().add(csrfListener);
         }
+
+        getRequestCycleListeners().add(new FeedbackPanelAjaxListener());
 
         WebUIMode webUIMode = getGeoServer().getGlobal().getWebUIMode();
         if (webUIMode == null) {
@@ -541,6 +548,28 @@ public class GeoServerApplication extends WebApplication
             if (Session.exists()) {
                 WebSession.get().replaceSession();
             }
+        }
+    }
+
+    /**
+     * Automatically adds the feedback panels to the Ajax request target, so that they are updated
+     * when the target is processed and would show the messages, without the need to manually add
+     * them to the target.
+     */
+    private static class FeedbackPanelAjaxListener implements IRequestCycleListener {
+        @Override
+        public void onRequestHandlerResolved(RequestCycle cycle, IRequestHandler handler) {
+            if (!(handler instanceof AjaxRequestTarget)) return;
+
+            AjaxRequestTarget target = (AjaxRequestTarget) handler;
+            IVisitor<Component, Object> targetAdder =
+                    (component, visit) -> {
+                        // make sure the component has an ajax id (allows to be updated via ajax)
+                        if (component.getOutputMarkupId() && component.getMarkup() != null)
+                            target.add(component);
+                    };
+            Optional.ofNullable(target.getPage())
+                    .ifPresent(page -> page.visitChildren(FeedbackPanel.class, targetAdder));
         }
     }
 }

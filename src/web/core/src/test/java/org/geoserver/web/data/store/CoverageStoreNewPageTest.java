@@ -241,12 +241,10 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
 
             List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
             assertEquals(1, messages.size());
-            assertThat(
-                    messages.get(0).toString(),
-                    allOf(
-                            containsString("Access to "),
-                            containsString(tazbmOutside.getAbsolutePath()),
-                            containsString(" denied by file sandboxing")));
+            checkSandboxDeniedMessage(messages.get(0).toString(), tazbmOutside);
+
+            // the error got actually rendered
+            checkSandboxDeniedMessage(tester.getLastResponseAsString(), tazbmOutside);
 
             // now save within the sandbox instead
             tester.clearFeedbackMessages();
@@ -267,5 +265,14 @@ public class CoverageStoreNewPageTest extends GeoServerWicketTestSupport {
             System.clearProperty(GEOSERVER_DATA_SANDBOX);
             GeoServerExtensions.bean(DefaultFileAccessManager.class).reload();
         }
+    }
+
+    private static void checkSandboxDeniedMessage(String message, File tazbmOutside) {
+        assertThat(
+                message,
+                allOf(
+                        containsString("Access to "),
+                        containsString(tazbmOutside.getAbsolutePath()),
+                        containsString(" denied by file sandboxing")));
     }
 }

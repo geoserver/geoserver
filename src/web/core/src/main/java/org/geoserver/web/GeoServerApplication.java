@@ -84,6 +84,7 @@ public class GeoServerApplication extends WebApplication
 
     /** Name of the cookie used to remember the chosen language across sessions */
     public static final String LANGUAGE_COOKIE_NAME = "GeoServerUILanguage";
+
     /** Default cookie expiration date (one year) */
     public static final int LANGUAGE_COOKIE_AGE = 365 * 24 * 60 * 60;
 

@@ -81,6 +81,21 @@ public class DGGSResolutionCalculatorTest {
         assertEquals(5, resolution);
     }
 
+    /** When the minimim resolution comes from the GeoServer configuration, it might be a string */
+    @Test
+    public void testGetResolutionMinString() {
+        Query query = new Query("testLayer");
+        Hints hints = new Hints();
+        hints.put(Hints.GEOMETRY_DISTANCE, 10d); // 10 degrees
+        hints.put(
+                DGGSResolutionCalculator.MINRES_HINTS_KEY,
+                String.valueOf("5")); // min resolution is 5
+        query.setHints(hints);
+
+        int resolution = calculator.getTargetResolution(query, 1);
+        assertEquals(5, resolution);
+    }
+
     @Test
     public void testGetTargetResolutionDistanceSmall() {
         Query query = new Query("testLayer");
@@ -105,6 +120,18 @@ public class DGGSResolutionCalculatorTest {
     }
 
     @Test
+    public void testGetResolutionMaxString() {
+        Query query = new Query("testLayer");
+        Hints hints = new Hints();
+        hints.put(Hints.GEOMETRY_DISTANCE, 0.001); // in degrees
+        hints.put(DGGSResolutionCalculator.MAXRES_HINTS_KEY, String.valueOf(2));
+        query.setHints(hints);
+
+        int resolution = calculator.getTargetResolution(query, 1);
+        assertEquals(2, resolution);
+    }
+
+    @Test
     public void testGetTargetResolutionDistanceOffset() {
         Query query = new Query("testLayer");
         Hints hints = new Hints();
@@ -117,10 +144,23 @@ public class DGGSResolutionCalculatorTest {
     }
 
     @Test
-    public void testGetTargetResolutionExplicit() {
+    public void testGetTargetResolutionDistanceOffsetString() {
         Query query = new Query("testLayer");
         Hints hints = new Hints();
-        hints.put(Hints.VIRTUAL_TABLE_PARAMETERS, Map.of(DGGSStore.VP_RESOLUTION, 5));
+        hints.put(Hints.GEOMETRY_DISTANCE, 10d); // 10 degrees
+        hints.put(DGGSResolutionCalculator.OFFSET_HINTS_KEY, String.valueOf("1"));
+        query.setHints(hints);
+
+        int resolution = calculator.getTargetResolution(query, 1);
+        assertEquals(1, resolution);
+    }
+
+    @Test
+    public void testGetTargetResolutionString() {
+        Query query = new Query("testLayer");
+        Hints hints = new Hints();
+        hints.put(
+                Hints.VIRTUAL_TABLE_PARAMETERS, Map.of(DGGSStore.VP_RESOLUTION, String.valueOf(5)));
         query.setHints(hints);
 
         int resolution = calculator.getTargetResolution(query, 1);
@@ -131,6 +171,23 @@ public class DGGSResolutionCalculatorTest {
     public void testGetTargetResolutionWMSScale() {
         EnvFunction.setLocalValues(
                 Map.of(DGGSResolutionCalculator.WMS_SCALE_DENOMINATOR, 10_000_000));
+        try {
+            Query query = new Query("testLayer");
+            int resolution = calculator.getTargetResolution(query, 1);
+            assertEquals(2, resolution);
+        } finally {
+            EnvFunction.clearLocalValues();
+        }
+    }
+
+    /**
+     * This one should not actually happen, but just to be on the safe side, make sure code works
+     * even if the scale denominator is a string
+     */
+    @Test
+    public void testGetTargetResolutionWMSScaleString() {
+        EnvFunction.setLocalValues(
+                Map.of(DGGSResolutionCalculator.WMS_SCALE_DENOMINATOR, String.valueOf(10_000_000)));
         try {
             Query query = new Query("testLayer");
             int resolution = calculator.getTargetResolution(query, 1);

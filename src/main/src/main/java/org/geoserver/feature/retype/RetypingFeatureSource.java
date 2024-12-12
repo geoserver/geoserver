@@ -26,12 +26,13 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.decorate.Wrapper;
 
 /**
  * Renaming wrapper for a {@link FeatureSource} instance, to be used along with {@link
  * RetypingDataStore}
  */
-public class RetypingFeatureSource implements SimpleFeatureSource {
+public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
 
     SimpleFeatureSource wrapped;
 
@@ -215,5 +216,25 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
     @Override
     public QueryCapabilities getQueryCapabilities() {
         return wrapped.getQueryCapabilities();
+    }
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) {
+        // first drill down to the latest wrapper, then check if the last delegate actually
+        // implements the required interface
+        if (wrapped instanceof Wrapper) return ((Wrapper) wrapped).isWrapperFor(iface);
+        else if (iface.isInstance(wrapped)) return true;
+        else return false;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
+        // first drill down to the latest wrapper, then check if the last delegate actually
+        // implements the required interface and return it
+        if (wrapped instanceof Wrapper) return ((Wrapper) wrapped).unwrap(iface);
+        else if (iface.isInstance(wrapped)) return (T) wrapped;
+        else
+            throw new IllegalArgumentException("Cannot unwrap to the requested interface " + iface);
     }
 }

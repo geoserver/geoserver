@@ -103,11 +103,7 @@ public class DGGSResolutionCalculator {
         if (sd != null) {
             distance = Optional.of(scaleToDistance(DefaultGeographicCRS.WGS84, sd));
         } else {
-            distance =
-                    Optional.ofNullable(hints.get(Hints.GEOMETRY_DISTANCE))
-                            .filter(Number.class::isInstance)
-                            .map(Number.class::cast)
-                            .map(n -> n.doubleValue());
+            distance = getDoubleHint(hints, Hints.GEOMETRY_DISTANCE);
         }
 
         // do we have a resoution delta?
@@ -139,8 +135,15 @@ public class DGGSResolutionCalculator {
      * Optional}.
      */
     private Optional<Integer> getIntegerHint(Hints hints, Object key) {
-        return Optional.ofNullable((Integer) hints.get(key))
-                .map(n -> safeConvert(n, Integer.class));
+        return Optional.ofNullable(hints.get(key)).map(n -> safeConvert(n, Integer.class));
+    }
+
+    /**
+     * Given the hints and a key, returns the double value associated with the key, as an {@link
+     * Optional}.
+     */
+    private Optional<Double> getDoubleHint(Hints hints, Object key) {
+        return Optional.ofNullable(hints.get(key)).map(n -> safeConvert(n, Double.class));
     }
 
     /**

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs;
 
+import static org.vfny.geoserver.util.WCSUtils.checkInputLimits;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.awt.geom.AffineTransform;
@@ -328,7 +329,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
             // Check we're not being requested to read too much data from input (first check,
             // guesses the grid size using the information contained in CoverageInfo)
-            WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);
+            checkInputLimits(wcs, meta, reader, requestedGridGeometry);
 
             //
             // Check if we have a filter among the params
@@ -356,17 +357,22 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 throw new IOException("The requested coverage could not be found.");
             }
 
-            // now that we have read the coverage double check the input size
-            WCSUtils.checkInputLimits(wcs, coverage);
-
-            // some raster sources do not really read less data (arcgrid for example), we may need
-            // to crop
-            if (!intersectionEnvelopeInSourceCRS.contains(coverage.getEnvelope2D(), true)) {
+            // do we have more than requested? Some readers return more than requested,
+            // but they do so with deferred loading. We need to understand if deferred loading
+            // is used, and if so, crop before checking the input limits, otherwise,
+            // check the input limits before cropping
+            if (WCSUtils.isDeferredLoaded(coverage)) {
+                // crop to the requested area before checking limits
                 coverage = WCSUtils.crop(coverage, intersectionEnvelopeInSourceCRS);
-                if (coverage == null)
-                    throw new ServiceException(
-                            "Requested area incompatible with raster space, less than a pixel would be read");
+                checkInputLimits(wcs, coverage);
+            } else {
+                checkInputLimits(wcs, coverage);
+                coverage = WCSUtils.crop(coverage, intersectionEnvelopeInSourceCRS);
             }
+
+            if (coverage == null)
+                throw new ServiceException(
+                        "Requested area incompatible with raster space, less than a pixel would be read");
 
             /** Band Select (works on just one field) */
             GridCoverage2D bandSelectedCoverage = coverage;

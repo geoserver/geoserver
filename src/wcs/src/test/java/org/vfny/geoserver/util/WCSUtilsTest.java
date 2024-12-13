@@ -11,8 +11,10 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -179,5 +181,47 @@ public class WCSUtilsTest extends GeoServerSystemTestSupport {
         // (WCSUtils uses the full coverage extent so we need a sizeable tolerance)
         assertEquals(points[2] - points[0], fg2w.getScaleX(), 20d);
         assertEquals(points[3] - points[1], -fg2w.getScaleY(), 20d);
+    }
+
+    @Test
+    public void testGridSize() throws IOException {
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(SystemTestData.TASMANIA_DEM));
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        GridCoverage2D coverage = reader.read(null);
+        try {
+            long size = WCSUtils.getReadCoverageSize(coverage);
+            long expected = 120 * 240 * 2; // w * h * pixel size
+            assertEquals(expected, size);
+        } finally {
+            CoverageCleanerCallback.disposeCoverage(coverage);
+        }
+    }
+
+    @Test
+    public void testGridSizeCropped() throws IOException {
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(SystemTestData.TASMANIA_DEM));
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        GridCoverage2D coverage = reader.read(null);
+        ReferencedEnvelope envelope = coverage.getEnvelope2D();
+        double cropWidth = envelope.getWidth() / 4;
+        // image is 120x240, with tiles that are 120x34. Crop so that we get part of the tile width
+        // and one full tile height, plus a residual that forces loading a second tile
+        GridCoverage2D cropped =
+                WCSUtils.crop(
+                        coverage,
+                        new ReferencedEnvelope(
+                                envelope.getCenterX() - cropWidth,
+                                envelope.getCenterX() + cropWidth,
+                                envelope.getMaxY(), // from the top, raster start there
+                                envelope.getMaxY() - envelope.getHeight() * 50d / 240d,
+                                ci.getCRS()));
+        try {
+            long size = WCSUtils.getReadCoverageSize(cropped);
+            long expected = 120 * (34 * 2) * 2; // w * h * pixel size
+            assertEquals(expected, size);
+        } finally {
+            CoverageCleanerCallback.disposeCoverage(cropped);
+            CoverageCleanerCallback.disposeCoverage(coverage);
+        }
     }
 }

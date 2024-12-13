@@ -63,6 +63,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.PreventLocalEntityResolver;
 import org.geotools.wcs.WCSConfiguration;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -372,6 +373,35 @@ public class GetCoverageTest extends WCSTestSupport {
             assertTrue(error.matches(".*read too much data.*"));
         } finally {
             setInputLimit(0);
+        }
+    }
+
+    @Test
+    public void testInputLimitsBounds() throws Exception {
+        try {
+            // request at roughly the native resolution
+            String url =
+                    "wcs/BlueMarble/wcs?sourcecoverage="
+                            + getLayerId(TASMANIA_BM)
+                            + "&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=0,-43.3,180,-43.29"
+                            + "&crs=EPSG:4326&resx=0.00417&resy=0.00417";
+
+            // the suggested tile size is 512x512. This makes the reader get the whole file in a
+            // single tile, even if the cropped image is around 25KB. The request should thus fail
+            setInputLimit(30);
+            MockHttpServletResponse response = getAsServletResponse(url);
+            assertThat(
+                    response.getContentType(),
+                    CoreMatchers.startsWith("application/vnd.ogc.se_xml"));
+
+            // now set it to a larger amount, 400kb is enough to read 360x360x3 bytes
+            // (but not to read 512x512x3, the limit machinery accounts for actual file size)
+            setInputLimit(400);
+            response = getAsServletResponse(url);
+            assertThat(response.getContentType(), containsString("image/tiff"));
+        } finally {
+            // reset imits
+            setInputLimit(-1);
         }
     }
 

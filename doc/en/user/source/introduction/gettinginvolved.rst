@@ -73,7 +73,7 @@ Everyone is encouraged to submit pull-requests and, if possible, fix issues as w
 
 .. note::
    
-   As a popular program GeoServer often excheeds the number of accounts available to open source projects. So if you cannot get in please let us know and we will review unused accounts.
+   As a popular program GeoServer often exceeds the number of accounts available to open source projects. So if you cannot get in please let us know and we will review unused accounts.
 
 .. warning:: Coordinated Vulnerability Disclosure
 

@@ -420,6 +420,32 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
     }
 
     @Test
+    public void testInputLimitsBounds() throws Exception {
+        try {
+            String url =
+                    "wcs/BlueMarble/wcs?identifier="
+                            + getLayerId(TASMANIA_BM)
+                            + "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                            + "&BoundingBox=-43.3,0,-43.29,180,urn:ogc:def:crs:EPSG:6.6:4326";
+
+            // the suggested tile size is 512x512. This makes the reader get the whole file in a
+            // single tile, even if the cropped image is around 25KB. The request should thus fail
+            setInputLimit(30);
+            MockHttpServletResponse response = getAsServletResponse(url);
+            assertEquals("application/xml", response.getContentType());
+
+            // now set it to a larger amount, 400kb is enough to read 360x360x3 bytes
+            // (but not to read 512x512x3, the limit machinery accounts for actual file size)
+            setInputLimit(400);
+            response = getAsServletResponse(url);
+            assertThat(response.getContentType(), containsString("multipart/related"));
+        } finally {
+            // reset imits
+            setInputLimit(-1);
+        }
+    }
+
+    @Test
     public void testTimeInputLimitsDefault() throws Exception {
         String queryString =
                 "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"

@@ -384,6 +384,29 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    public void testInputLimitsBounds() throws Exception {
+        try {
+            // single slice
+            final File xml = new File("./src/test/resources/requestGetCoverageSlice.xml");
+            final String request = FileUtils.readFileToString(xml, "UTF-8");
+            // the suggested tile size is 512x512. This makes the reader get the whole file in a
+            // single tile, even if the cropped image is around 25KB. The request should thus fail
+            setInputLimit(30);
+            MockHttpServletResponse response = postAsServletResponse("wcs", request);
+            assertEquals("application/xml", response.getContentType());
+
+            // now set it to a larger amount, 400kb is enough to read 360x360x3 bytes
+            // (but not to read 512x512x3, the limit machinery accounts for actual file size)
+            setInputLimit(400);
+            response = postAsServletResponse("wcs", request);
+            assertEquals("image/tiff", response.getContentType());
+        } finally {
+            // reset imits
+            setInputLimit(-1);
+        }
+    }
+
+    @Test
     public void testOutputLimits() throws Exception {
         final File xml = new File("./src/test/resources/requestGetFullCoverage.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8"); // set limits

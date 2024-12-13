@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs;
 
+import static org.vfny.geoserver.util.WCSUtils.checkInputLimits;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.awt.Rectangle;
@@ -432,6 +433,27 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                 + "match no portions of it.");
             }
 
+            // compute intersection envelope to be used
+            GeneralBounds destinationEnvelope =
+                    getDestinationEnvelope(requestedEnvelope, nativeEnvelope, targetCRS);
+            GeneralBounds destinationEnvelopeNativeCRS = destinationEnvelope;
+            if (!CRS.isEquivalent(nativeCRS, targetCRS)) {
+                destinationEnvelopeNativeCRS = CRS.transform(destinationEnvelope, nativeCRS);
+            }
+
+            // do we have more than requested? Some readers return more than requested,
+            // but they do so with deferred loading. We need to understand if deferred loading
+            // is used, and if so, crop before checking the input limits, otherwise,
+            // check the input limits before cropping
+            if (WCSUtils.isDeferredLoaded(coverage)) {
+                // crop to the requested area before checking limits
+                coverage = WCSUtils.crop(coverage, destinationEnvelopeNativeCRS);
+                checkInputLimits(wcs, coverage);
+            } else {
+                checkInputLimits(wcs, coverage);
+                coverage = WCSUtils.crop(coverage, destinationEnvelopeNativeCRS);
+            }
+
             // double check what we have loaded
             WCSUtils.checkInputLimits(wcs, coverage);
 
@@ -442,13 +464,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (request.getRangeSubset() != null) {
                 bandSelectedCoverage = bandSelection(request, coverage);
             }
-
-            //
-            // final step for the requested coverage
-            //
-            // compute intersection envelope to be used
-            GeneralBounds destinationEnvelope =
-                    getDestinationEnvelope(requestedEnvelope, nativeEnvelope, targetCRS);
 
             final GridGeometry2D destinationGridGeometry =
                     getGridGeometry(destinationSize, destinationG2W, destinationEnvelope);

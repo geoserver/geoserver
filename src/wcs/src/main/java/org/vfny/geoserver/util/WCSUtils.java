@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.util;
 
+import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.text.DecimalFormat;
@@ -363,6 +364,9 @@ public class WCSUtils {
      * extra memory usage, just makes it happen sooner)
      */
     public static void checkInputLimits(WCSInfo info, GridCoverage2D coverage) {
+        // null safety, and read/crop might return null
+        if (coverage == null) return;
+
         // do we have to check a limit at all?
         long limit = info.getMaxInputMemory() * 1024;
         if (limit <= 0) {
@@ -370,10 +374,7 @@ public class WCSUtils {
         }
 
         // compute the coverage memory usage and compare with limit
-        long actual =
-                getCoverageSize(
-                        coverage.getGridGeometry().getGridRange2D(),
-                        coverage.getRenderedImage().getSampleModel());
+        long actual = getReadCoverageSize(coverage);
         if (actual > limit) {
             throw new WcsException(
                     "This request is trying to read too much data, "
@@ -383,6 +384,69 @@ public class WCSUtils {
                             + "bytes to be read is "
                             + formatBytes(actual));
         }
+    }
+
+    /**
+     * If the image is deferred loaded, and cropped, consider that full tiles need to be read before
+     * cropping can happen. This is important for images that are tiled but whose form factor is
+     * very much streatched, so that the tiles are read in full, even if only a small portion of
+     * them is actually used. This is adopting a simplistic approach, assuming the crop is the last
+     * operation in the chain, while in general other operations might be involved (but if they are,
+     * and rescaling/warping is in the mix, then computing the actual read size is going to be
+     * pretty complicated).
+     */
+    static long getReadCoverageSize(GridCoverage2D coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+
+        GridEnvelope2D gridEnvelope = coverage.getGridGeometry().getGridRange2D();
+        // deferred crop? we are just going to read the tiles covering the crop area
+        if (isDeferredLoaded(ri)) {
+            RenderedOp op = (RenderedOp) ri;
+            String operationName = op.getOperationName();
+            // "crop" can be implemented both as actual crop, or mosaic
+            if ("Crop".equals(operationName)
+                    || ("Mosaic".equals(operationName) && op.getNumSources() == 1)) {
+                gridEnvelope = getCropTilesEnvelope(op);
+            }
+        }
+        return getCoverageSize(gridEnvelope, ri.getSampleModel());
+    }
+
+    /**
+     * Returns the envelope of the tiles covering the image. This helps computing the actual size of
+     * the image that will be read from the disk, in case the image is tiled and the crop operation
+     * is the last one in the chain.
+     */
+    private static GridEnvelope2D getCropTilesEnvelope(RenderedOp crop) {
+        RenderedImage source = (RenderedImage) crop.getSources().get(0);
+        Rectangle bounds = crop.getBounds();
+        int tileXOffset = source.getTileGridXOffset();
+        int tileYOffset = source.getTileGridYOffset();
+        int tileWidth = source.getTileWidth();
+        int tileHeight = source.getTileHeight();
+        int tileMinX = snapToTileGrid(bounds.x, tileXOffset, tileWidth);
+        int tileMinY = snapToTileGrid(bounds.y, tileYOffset, tileHeight);
+        int tileMaxX = snapToTileGrid(bounds.x + bounds.width, tileXOffset, tileWidth);
+        int tileMaxY = snapToTileGrid(bounds.y + bounds.height, tileYOffset, tileHeight);
+        // account the size of the source image, could be smaller than the suggested tile size
+        int minReadX = Math.max(tileXOffset + tileMinX * tileWidth, source.getMinX());
+        int minReadY = Math.max(tileYOffset + tileMinY * tileHeight, source.getMinY());
+        int maxReadX =
+                Math.min(
+                        tileXOffset + (tileMaxX + 1) * tileWidth,
+                        source.getMinX() + source.getWidth());
+        int maxReadY =
+                Math.min(
+                        tileYOffset + (tileMaxY + 1) * tileHeight,
+                        source.getMinY() + source.getHeight());
+        GridEnvelope2D gridEnvelope =
+                new GridEnvelope2D(
+                        minReadX, minReadY, (maxReadX - minReadX), (maxReadY - minReadY));
+        return gridEnvelope;
+    }
+
+    private static int snapToTileGrid(int position, int offset, int tileSize) {
+        return (position - offset) / tileSize;
     }
 
     /**
@@ -877,5 +941,37 @@ public class WCSUtils {
         } catch (TransformException e) {
             throw new RuntimeException("Failed to invert grid to world", e);
         }
+    }
+
+    /**
+     * Checks if the coverage rendered image is deferred loaded, that is, if it's a JAI chain
+     * originating in a ImageRead operation
+     */
+    public static boolean isDeferredLoaded(GridCoverage2D coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+        return isDeferredLoaded(ri);
+    }
+
+    /**
+     * Checks if the rendered image is based on a ImageRead operation, or if the potential JAI chain
+     * backing it results in a deferred loading. The method recursively calls itself and check the
+     * sources of the rendered image. Naively assumes that if one source is using ImageRead, then
+     * the whole chain is deferred loaded (which is true in all existing GeoTools readers)
+     */
+    private static boolean isDeferredLoaded(RenderedImage ri) {
+        if (ri instanceof RenderedOp) {
+            RenderedOp rop = (RenderedOp) ri;
+            if ("ImageRead".equals(rop.getOperationName())) {
+                return true;
+            }
+            for (Object source : rop.getSources()) {
+                if (source instanceof RenderedImage) {
+                    if (isDeferredLoaded((RenderedImage) source)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

@@ -1086,21 +1086,12 @@ public class GetCoverage {
                 }
                 readCoverages.add(cov);
             }
-            // do we have more than requested?
-            ReferencedEnvelope covEnvelope = cov.getEnvelope2D();
-            GridCoverage2D cropped = cov;
-            if (covEnvelope.contains(readBoundingBox)
-                    && (covEnvelope.getWidth() > readBoundingBox.getWidth()
-                            || covEnvelope.getHeight() > readBoundingBox.getHeight())) {
-                cropped = cropOnEnvelope(cov, readEnvelope);
-                if (cropped == null) continue;
-            }
 
             // do we have less than expected?
-            GridCoverage2D padded = cropped;
-            Bounds croppedEnvelope = cropped.getEnvelope();
+            GridCoverage2D padded = cov;
+            Bounds croppedEnvelope = cov.getEnvelope();
             if (!new GeneralBounds(croppedEnvelope).contains(padEnvelope, true)) {
-                padded = padOnEnvelope(cropped, padEnvelope);
+                padded = padOnEnvelope(cov, padEnvelope);
             }
 
             if (padded != null) result.add(padded);
@@ -1350,14 +1341,17 @@ public class GetCoverage {
                         request.getOverviewPolicy(),
                         readHints);
         if (coverage != null) {
-            // check limits again
-            if (incrementalInputSize == null) {
-                WCSUtils.checkInputLimits(wcs, coverage);
+            // do we have more than requested? Some readers return more than requested,
+            // but they do so with deferred loading. We need to understand if deferred loading
+            // is used, and if so, crop before checking the input limits, otherwise,
+            // check the input limits before cropping
+            if (WCSUtils.isDeferredLoaded(coverage)) {
+                // crop to the requested area before checking limits
+                coverage = cropCoverage(coverage, subset);
+                checkInputLimits(incrementalInputSize, coverage);
             } else {
-                // Check for each coverage added if the total coverage dimension exceeds the maximum
-                // limit
-                // If the size is exceeded an exception is thrown
-                incrementalInputSize.addSize(coverage);
+                checkInputLimits(incrementalInputSize, coverage);
+                coverage = cropCoverage(coverage, subset);
             }
 
             // see what scaling factors the reader actually applied
@@ -1381,6 +1375,29 @@ public class GetCoverage {
 
         // return
         return coverage;
+    }
+
+    private void checkInputLimits(ImageSizeRecorder incrementalInputSize, GridCoverage2D coverage) {
+        // check limits again
+        if (incrementalInputSize == null) {
+            WCSUtils.checkInputLimits(wcs, coverage);
+        } else {
+            // Check for each coverage added if the total coverage dimension exceeds the maximum
+            // limit if the size is exceeded an exception is thrown
+            incrementalInputSize.addSize(coverage);
+        }
+    }
+
+    private GridCoverage2D cropCoverage(GridCoverage2D coverage, Bounds subset) {
+        ReferencedEnvelope readBoundingBox = ReferencedEnvelope.reference(subset);
+        ReferencedEnvelope covEnvelope = coverage.getEnvelope2D();
+        GridCoverage2D cropped = coverage;
+        if (covEnvelope.contains(readBoundingBox)
+                && (covEnvelope.getWidth() > readBoundingBox.getWidth()
+                        || covEnvelope.getHeight() > readBoundingBox.getHeight())) {
+            cropped = cropOnEnvelope(coverage, subset);
+        }
+        return cropped;
     }
 
     MathTransform getMathTransform(

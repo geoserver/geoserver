@@ -39,7 +39,6 @@ officially part of the GeoServer releases. They are however built along with the
    graticules/index
    gsr/index
    gwc-azure-blob/index
-   gwc-distributed/index
    gwc-mbtiles/index
    gwc-sqlite/index
    hana/index

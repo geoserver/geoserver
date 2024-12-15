@@ -100,18 +100,6 @@
       </modules>
     </profile>
     <profile>
-      <id>webservice</id>
-      <modules>
-        <module>app-schema</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>app-schema</id>
-      <modules>
-        <module>app-schema</module>
-      </modules>
-    </profile>
-    <profile>
       <id>programming-guide</id>
       <modules>
         <module>programming-guide</module>

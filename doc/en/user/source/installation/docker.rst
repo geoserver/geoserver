@@ -207,10 +207,11 @@ Working with a Nightly build is a good way to test community modules and provide
     gpx                        ogcapi-images              vector-mosaic
     gsr                        ogcapi-maps                vsi
     gwc-azure-blobstore        ogcapi-styles              webp
-    gwc-distributed            ogcapi-tiled-features      wps-remote
-    gwc-mbtiles                ogcapi-tiles               rat
-    gwc-sqlite                 ogr-datastore
-    hz-cluster                 opensearch-eo
-    importer-jdbc
+    gwc-mbtiles                ogcapi-tiled-features      wps-remote
+    gwc-sqlite                 ogcapi-tiles
+    hz-cluster                 ogr-datastore
+    importer-jdbc              opensearch-eo
     jdbc-metrics
+
+
     

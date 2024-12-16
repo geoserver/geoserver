@@ -57,13 +57,11 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
  */
 public class FeatureTemplate {
     /** The template configuration used for placemark descriptions */
-    static Configuration templateConfig;
+    static final Configuration templateConfig = TemplateUtils.getSafeConfiguration(new FeatureWrapper(), null, null);
 
     static {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
-        templateConfig = TemplateUtils.getSafeConfiguration();
-        templateConfig.setObjectWrapper(new FeatureWrapper());
 
         // set the default output formats for dates
         templateConfig.setDateFormat("MM/dd/yyyy");
@@ -74,9 +72,6 @@ public class FeatureTemplate {
         // TODO: this may be somethign we want to configure/change
         templateConfig.setLocale(Locale.US);
         templateConfig.setNumberFormat("0.###########");
-
-        // encoding
-        templateConfig.setDefaultEncoding("UTF-8");
     }
 
     /** The pattern used by DATETIME_FORMAT */

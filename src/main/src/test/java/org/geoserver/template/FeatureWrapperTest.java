@@ -58,9 +58,8 @@ public class FeatureWrapperTest {
                 featureType,
                 new Object[] {"three", Integer.valueOf(3), Double.valueOf(3.3), gf.createPoint(new Coordinate(3, 3))},
                 "fid.3"));
-        cfg = TemplateUtils.getSafeConfiguration();
+        cfg = TemplateUtils.getSafeConfiguration(createWrapper(), null, null);
         cfg.setClassForTemplateLoading(getClass(), "");
-        cfg.setObjectWrapper(createWrapper());
     }
 
     public FeatureWrapper createWrapper() {

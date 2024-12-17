@@ -56,6 +56,10 @@ public class RESTUtils {
 
     public static final String ROOT_KEY = "root";
 
+    /**
+     * Key used to store the boolean in the {@link GeoServerInfo#getSettings() global settings}
+     * metadata map
+     */
     public static final String QUIET_ON_NOT_FOUND_KEY = "quietOnNotFound";
 
     /**

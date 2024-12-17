@@ -8,12 +8,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.rest.util.RESTUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -76,12 +81,12 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
             throws IOException {
         notifyExceptionToCallbacks(request, response, e);
 
-        String quietOnNotFound =
-                request.getParameter("quietOnNotFound"); // yes this is seriously a thing
-        String message = message(e);
-        if (Boolean.parseBoolean(quietOnNotFound)) {
+        boolean quietOnNotFound = isQuietOnNotFound(request);
+        String message;
+        if (quietOnNotFound) {
             message = "";
         } else {
+            message = message(e);
             LOGGER.log(Level.SEVERE, message, e);
         }
         response.setStatus(404);
@@ -139,5 +144,27 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         } else {
             return "";
         }
+    }
+
+    private boolean isQuietOnNotFound(WebRequest request) {
+        return Boolean.parseBoolean(
+                        request.getParameter("quietOnNotFound")) // yes this is seriously a thing
+                || quietOnNotFoundEnabled();
+    }
+
+    /**
+     * Checks if the {@link RESTUtils#QUIET_ON_NOT_FOUND_KEY} is set in the {@link
+     * GeoServerInfo#getSettings() global settings} metadata map.
+     *
+     * @return {@code false} if not configured, the configured value otherwise.
+     */
+    private boolean quietOnNotFoundEnabled() {
+
+        return Optional.ofNullable(GeoServerExtensions.bean(GeoServer.class))
+                .map(GeoServer::getGlobal)
+                .map(GeoServerInfo::getSettings)
+                .map(SettingsInfo::getMetadata)
+                .map(md -> md.get(RESTUtils.QUIET_ON_NOT_FOUND_KEY, Boolean.class))
+                .orElse(Boolean.FALSE);
     }
 }

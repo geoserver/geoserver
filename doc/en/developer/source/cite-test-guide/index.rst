@@ -529,7 +529,7 @@ Run WCS 1.1 tests
    .. code-block:: shell
 
     cd <root of GeoServer install>
-    export GEOSERVER_DATA_DIR=<root of GeoServer sources>/build/cite/wcs11/citewcs-1.1
+    export GEOSERVER_DATA_DIR=<path of GeoServer repository>/build/cite/wcs11/citewcs-1.1
     ./bin/startup.sh
 
 
@@ -564,7 +564,7 @@ Run WMS 1.3 tests
    .. code-block:: shell
 
     cd <root of GeoServer install>
-    export GEOSERVER_DATA_DIR=<root of GeoServer sources>/build/cite/wms13/citewms-1.3
+    export GEOSERVER_DATA_DIR=<path of GeoServer repository>/build/cite/wms13/citewms-1.3
     ./bin/startup.sh
 
 

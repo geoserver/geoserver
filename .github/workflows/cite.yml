@@ -1,4 +1,4 @@
-name: Run CITE Tests
+name: Run CITE Tests - in fork
 
 on:
   pull_request:

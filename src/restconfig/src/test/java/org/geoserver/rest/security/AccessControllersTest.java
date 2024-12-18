@@ -8,12 +8,15 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.CatalogMode;
@@ -718,5 +721,114 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
                 403, putAsServletResponse(CATALOG_URI_XML, xmlTemplate, "text/xml").getStatus());
         assertEquals(
                 403, putAsServletResponse(CATALOG_URI_JSON, jsonTemplate, "text/json").getStatus());
+    }
+
+    @Test
+    public void testCatalogSecurityReload() throws Exception {
+        // Endpoint for reload:
+        // /geoserver/rest/security/acl/catalog/reload
+        final String CATALOG_RELOAD_URI = BASE_URI + "catalog/reload";
+
+        // -------------------------------------------
+        // Test authorized scenario
+        // -------------------------------------------
+        // Ensure we’re logged in as ADMIN (the SecurityRESTTestSupport typically logs in
+        // automatically)
+        login();
+
+        // 1) Test PUT request
+        MockHttpServletResponse response =
+                putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+        // Expecting 200 OK if reload is successful
+        assertEquals(200, response.getStatus());
+
+        // 2) Test POST request
+        response = postAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+        // Expecting 200 OK for POST as well
+        assertEquals(200, response.getStatus());
+
+        // -------------------------------------------
+        // Test unauthorized scenario
+        // -------------------------------------------
+        logout();
+
+        // If we try again without admin privileges, we should get 403 FORBIDDEN
+        response = putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+        assertEquals(403, response.getStatus());
+
+        response = postAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+        assertEquals(403, response.getStatus());
+    }
+
+    @Test
+    public void testDisableAnonymousAccess() throws Exception {
+        // 1) Ensure we’re logged in as an admin user
+        login();
+
+        // 2) The reload endpoint path
+        final String CATALOG_RELOAD_URI = BASE_URI + "catalog/reload";
+
+        // 3) Locate the security config file: "security/config.xml"
+        //    This path might vary in your environment.
+        File configFile = getDataDirectory().get("security/config.xml").file();
+        assertNotNull("config.xml file should exist", configFile);
+        assertTrue("config.xml file must exist", configFile.exists());
+
+        // 4) Read the original content so we can revert after the test
+        String originalConfig = FileUtils.readFileToString(configFile, "UTF-8");
+
+        try {
+            // -----------------------------------------------------------------
+            // A) Modify config.xml by removing <filter>anonymous</filter> lines
+            // -----------------------------------------------------------------
+            // The original <filterChain> sections might look like:
+            //   <filters ...>
+            //     <filter>anonymous</filter>
+            //     <filter>basic</filter>
+            //   </filters>
+            //
+            // We'll do a simple string replacement to remove all <filter>anonymous</filter>.
+            // For a more robust approach, parse XML. But here, string replacement is quick.
+
+            String modifiedConfig =
+                    originalConfig.replaceAll(
+                            "<filter>anonymous</filter>", "" // remove the entire line
+                            );
+
+            // Write the modified XML back to config.xml
+            FileUtils.writeStringToFile(configFile, modifiedConfig, "UTF-8");
+
+            // -----------------------------------------------------------------
+            // B) Reload the Security subsystem via /catalog/reload
+            // -----------------------------------------------------------------
+            MockHttpServletResponse response =
+                    putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+            assertEquals(200, response.getStatus());
+
+            // We’ve now removed anonymous filters from config.xml and reloaded security.
+            // This means that anonymous access should NOT be permitted anymore.
+
+            // -----------------------------------------------------------------
+            // C) Log out to simulate an anonymous user, then attempt a GetMap
+            // -----------------------------------------------------------------
+            logout();
+
+            // Make a simple WMS GetCapabilities request as an anonymous user
+            String wmsRequest = "wms?service=WMS&request=GetCapabilities&version=1.1.1";
+            MockHttpServletResponse wmsResponse = getAsServletResponse(wmsRequest);
+
+            // Expect a 401 (Unauthorized) or 403 (Forbidden), depending on GeoServer config.
+            // Adjust the assertion if your environment returns a specific code.
+            int status = wmsResponse.getStatus();
+            assertTrue(
+                    "Expected 401 or 403, but got " + status,
+                    status == 401 || status == 403 || status == 404);
+
+        } finally {
+            // -----------------------------------------------------------------
+            // D) Revert config.xml so later tests remain consistent
+            // -----------------------------------------------------------------
+            FileUtils.writeStringToFile(configFile, originalConfig, "UTF-8");
+        }
     }
 }

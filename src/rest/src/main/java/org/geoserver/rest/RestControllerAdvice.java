@@ -147,9 +147,8 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     private boolean isQuietOnNotFound(WebRequest request) {
-        return Boolean.parseBoolean(
-                        request.getParameter("quietOnNotFound")) // yes this is seriously a thing
-                || quietOnNotFoundEnabled();
+        String parameter = request.getParameter("quietOnNotFound"); // yes this is seriously a thing
+        return Boolean.parseBoolean(parameter) || quietOnNotFoundEnabled();
     }
 
     /**

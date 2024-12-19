@@ -8,8 +8,12 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
+import org.geoserver.security.config.SecurityConfig;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -253,5 +257,48 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
     @Override
     public void setLogoutEndpoint(String logoutEndpoint) {
         this.logoutEndpoint = logoutEndpoint;
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        GeoServerOAuth2FilterConfig target =
+                (GeoServerOAuth2FilterConfig) SerializationUtils.clone(this);
+
+        if (target != null) {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment =
+                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+            if (allowEnvParametrization) {
+                parametrizedConfiguration(target, gsEnvironment);
+            }
+        }
+        return target;
+    }
+
+    protected void parametrizedConfiguration(
+            GeoServerOAuth2FilterConfig target, GeoServerEnvironment gsEnvironment) {
+        target.setAccessTokenUri(resolveValueFromEnv(gsEnvironment, target.getAccessTokenUri()));
+        target.setUserAuthorizationUri(
+                resolveValueFromEnv(gsEnvironment, target.getUserAuthorizationUri()));
+        target.setRedirectUri(resolveValueFromEnv(gsEnvironment, target.getRedirectUri()));
+        target.setCheckTokenEndpointUrl(
+                resolveValueFromEnv(gsEnvironment, target.getCheckTokenEndpointUrl()));
+        target.setIntrospectionEndpointUrl(
+                resolveValueFromEnv(gsEnvironment, target.getIntrospectionEndpointUrl()));
+        target.setLogoutUri(resolveValueFromEnv(gsEnvironment, target.getLogoutUri()));
+        target.setScopes(resolveValueFromEnv(gsEnvironment, target.getScopes()));
+        target.setCliendId(resolveValueFromEnv(gsEnvironment, target.getCliendId()));
+        target.setClientSecret(resolveValueFromEnv(gsEnvironment, target.getClientSecret()));
+    }
+
+    protected String resolveValueFromEnv(GeoServerEnvironment gsEnvironment, String key) {
+        if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
+            Object resolvedValue = gsEnvironment.resolveValue(key);
+            if (resolvedValue != null) {
+                return (String) resolvedValue;
+            }
+        }
+
+        return key;
     }
 }

@@ -61,7 +61,7 @@
           <groupId>org.bouncycastle</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>bcprov-jdk15on</artifactId>
+          <artifactId>bcprov-jdk18on</artifactId>
           <groupId>org.bouncycastle</groupId>
         </exclusion>
       </exclusions>

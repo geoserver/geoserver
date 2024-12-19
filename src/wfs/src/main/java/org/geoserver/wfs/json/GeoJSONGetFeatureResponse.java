@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.TemporalUtils;
@@ -461,7 +462,12 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
                                     || value instanceof Float
                                             && ((Float) value) == Float.NEGATIVE_INFINITY) {
                                 jsonWriter.value("-Infinity");
-                            } else {
+                            }
+                            else if (value instanceof String && isJsonString((String) value)) {
+                                // If the value is a JSON string, parse and write it properly
+                                jsonWriter.value(JSONObject.fromObject(value));
+                            }
+                            else {
                                 jsonWriter.value(value);
                             }
                         }
@@ -482,6 +488,15 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             }
         }
         return new FeaturesInfo(crs, hasGeom, featureCount);
+    }
+
+    private boolean isJsonString(String value) {
+        try {
+            JSONObject.fromObject(value);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**

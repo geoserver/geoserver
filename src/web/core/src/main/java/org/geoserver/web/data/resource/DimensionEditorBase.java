@@ -947,12 +947,12 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         public void validate(IValidatable<String> value) {
             boolean valid = false;
             String errorKey = "invalidStartOrEndDate";
-            DateTimeParser dateTimeParser = new DateTimeParser();
-            Date date = null;
+            DateTimeParser dateTimeParser = new DateTimeParser(-1, 1);
+            Object date = null; // could be either Date or DateRange
             if (dimension.equals("time")) {
                 String timeValue = value.getValue();
                 try {
-                    date = (Date) ((List) dateTimeParser.parse(timeValue)).get(0);
+                    date = ((List) dateTimeParser.parse(timeValue)).get(0);
                 } catch (ParseException e) {
                     LOGGER.log(
                             Level.WARNING,
@@ -979,7 +979,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                 String customValue = value.getValue();
                 errorKey = "invalidStartOrEndCustom";
                 try {
-                    date = (Date) ((List) dateTimeParser.parse(customValue)).get(0);
+                    date = ((List) dateTimeParser.parse(customValue)).get(0);
                 } catch (ParseException e) {
                     LOGGER.log(Level.WARNING, "Failed to parse the custom value as a date", e);
                     try {

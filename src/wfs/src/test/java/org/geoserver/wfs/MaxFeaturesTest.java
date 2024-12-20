@@ -145,8 +145,8 @@ public class MaxFeaturesTest extends WFSTestSupport {
 
         Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&srsName=EPSG:4326&typename=cdf:Fifteen,cite:BasicPolygon"
-                                + "s&version=1.0.0&service=wfs&maxFeatures=4");
+                        "wfs?request=GetFeature&srsName=EPSG:4326&typename=cdf:Fifteen,cite:BasicPolygons"
+                                + "&version=1.0.0&service=wfs&maxFeatures=4");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertEquals(4, doc.getElementsByTagName("gml:featureMember").getLength());
@@ -167,8 +167,8 @@ public class MaxFeaturesTest extends WFSTestSupport {
 
         Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&typename=cdf:Fifteen,cite:BasicPolygon"
-                                + "s&version=1.0.0&service=wfs&maxFeatures=3");
+                        "wfs?request=GetFeature&typename=cdf:Fifteen,cite:BasicPolygons"
+                                + "&version=1.0.0&service=wfs&maxFeatures=3");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertEquals(3, doc.getElementsByTagName("gml:featureMember").getLength());

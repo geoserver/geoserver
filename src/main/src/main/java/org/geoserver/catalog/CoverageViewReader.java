@@ -658,7 +658,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     cs, nBits, true, false, Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
         } else {
             throw new IllegalArgumentException(
-                    "Cannot create a color model with alpha"
+                    "Cannot create a color model with alpha "
                             + "support starting with "
                             + currentBandCount
                             + " bands");

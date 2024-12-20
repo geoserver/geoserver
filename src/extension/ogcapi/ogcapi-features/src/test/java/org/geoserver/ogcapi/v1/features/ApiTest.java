@@ -327,7 +327,7 @@ public class ApiTest extends FeaturesTestSupport {
     public void testFilterCRS() throws Exception {
         fail(
                 "We should to enumerate all supported filter-crs values, but they are likely too many, "
-                        + "and we'd have to inspect all the collections to find an exhaustive list for the"
+                        + "and we'd have to inspect all the collections to find an exhaustive list for the "
                         + "test. The ATS does not seem to check it either, so taking a not but not "
                         + "implementing for the time being.");
     }

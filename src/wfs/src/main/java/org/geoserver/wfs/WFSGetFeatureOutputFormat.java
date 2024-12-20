@@ -125,7 +125,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
             LOGGER.severe(
                     "ERROR IN "
                             + this.getClass()
-                            + " IMPLEMENTATION.  getCapabilitiesElementName() should return a"
+                            + " IMPLEMENTATION.  getCapabilitiesElementName() should return a "
                             + "valid XML element name string for use in the WFS 1.0.0 capabilities document.");
             String name = this.getClass().getName();
             if (name.indexOf('.') != -1) {

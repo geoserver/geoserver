@@ -532,7 +532,7 @@ class RasterDownload {
 
             if (cropped == null || cropped.getRenderedImage() == null) {
                 throw new WPSException(
-                        "The reader did not return anything"
+                        "The reader did not return anything. "
                                 + "It normally means there is nothing there, or the data got filtered out by the ROI or filter");
             }
             return cropped;

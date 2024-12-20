@@ -283,8 +283,6 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         target.setRedirectUri(resolveValueFromEnv(gsEnvironment, target.getRedirectUri()));
         target.setCheckTokenEndpointUrl(
                 resolveValueFromEnv(gsEnvironment, target.getCheckTokenEndpointUrl()));
-        target.setIntrospectionEndpointUrl(
-                resolveValueFromEnv(gsEnvironment, target.getIntrospectionEndpointUrl()));
         target.setLogoutUri(resolveValueFromEnv(gsEnvironment, target.getLogoutUri()));
         target.setScopes(resolveValueFromEnv(gsEnvironment, target.getScopes()));
         target.setCliendId(resolveValueFromEnv(gsEnvironment, target.getCliendId()));

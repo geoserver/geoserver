@@ -52,6 +52,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.util.DateRange;
 import org.geotools.util.DateTimeParser;
 import org.geotools.util.Range;
 import org.geotools.util.logging.Logging;
@@ -944,12 +945,16 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         public void validate(IValidatable<String> value) {
             boolean valid = false;
             String errorKey = "invalidStartOrEndDate";
-            DateTimeParser dateTimeParser = new DateTimeParser();
+            DateTimeParser dateTimeParser = new DateTimeParser(-1, 1);
             Date date = null;
             if (dimension.equals("time")) {
                 String timeValue = value.getValue();
                 try {
-                    date = (Date) ((List) dateTimeParser.parse(timeValue)).get(0);
+                    Object dateObject = ((List) dateTimeParser.parse(timeValue)).get(0);
+                    if (dateObject instanceof DateRange) {
+                        throw new ParseException("Invalid date: " + dateObject, 0);
+                    }
+                    date = (Date) dateObject;
                 } catch (ParseException e) {
                     LOGGER.log(
                             Level.WARNING,

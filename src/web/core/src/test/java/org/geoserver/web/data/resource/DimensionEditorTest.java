@@ -120,4 +120,27 @@ public class DimensionEditorTest extends GeoServerWicketTestSupport {
         // should not be visible
         tester.assertInvisible(prefix + "nearestMatchContainer");
     }
+
+    @Test
+    public void testStartValueErrorMessageWithDateRange() throws Exception {
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(getLayerId(V_TIME_ELEVATION));
+        DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        Model<DimensionInfo> timeModel = new Model<>(time);
+
+        tester.startPage(
+                new FormTestPage(
+                        id -> new DimensionEditor(id, timeModel, ft, Date.class, true, false)));
+        print(tester.getLastRenderedPage(), true, true);
+
+        FormTester form = tester.newFormTester("form");
+        String formPrefix = "panel:configContainer:configs:";
+
+        // Set an invalid value for startValue (for example, an incorrect date format)
+        form.setValue(formPrefix + "startEndContainer:startValue", "invalid-date-format");
+        form.submit();
+
+        // Check if an error message is displayed for startValue
+        tester.assertErrorMessages(
+                "Start data range value must be an ISO8601 DateTime or a construct like 'PRESENT'");
+    }
 }

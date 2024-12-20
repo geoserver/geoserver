@@ -5,9 +5,12 @@
 package org.geoserver.security.oauth2;
 
 import java.util.Optional;
+import org.apache.commons.lang.SerializationUtils;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
+import org.geoserver.security.config.SecurityConfig;
 import org.geoserver.security.oauth2.pkce.PKCEAuthenticationEntryPoint;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.StringUtils;
@@ -192,5 +195,32 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         } else {
             return super.getAuthenticationEntryPoint();
         }
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        OpenIdConnectFilterConfig target =
+                (OpenIdConnectFilterConfig) SerializationUtils.clone(this);
+
+        if (target != null) {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment =
+                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+            if (allowEnvParametrization) {
+                super.parametrizedConfiguration(target, gsEnvironment);
+                parametrizedConfiguration(target, gsEnvironment);
+            }
+        }
+        return target;
+    }
+
+    protected void parametrizedConfiguration(
+            OpenIdConnectFilterConfig target, GeoServerEnvironment gsEnvironment) {
+        target.setPrincipalKey(resolveValueFromEnv(gsEnvironment, target.getPrincipalKey()));
+        target.setJwkURI(resolveValueFromEnv(gsEnvironment, target.getJwkURI()));
+        target.setTokenRolesClaim(resolveValueFromEnv(gsEnvironment, target.getTokenRolesClaim()));
+        target.setResponseMode(resolveValueFromEnv(gsEnvironment, target.getResponseMode()));
+        target.setPostLogoutRedirectUri(
+                resolveValueFromEnv(gsEnvironment, target.getPostLogoutRedirectUri()));
     }
 }

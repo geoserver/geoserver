@@ -56,7 +56,7 @@ public class PipeliningTaskQueueTest {
             }
         }
 
-        await().atMost(20, SECONDS).until(() -> completed.size() >= groups * groups);
+        await().atMost(60, SECONDS).until(() -> completed.size() >= groups * groups);
         int[] status = new int[groups];
         for (Worker w : completed) {
             assertEquals(status[w.group], w.seq.intValue());

@@ -145,9 +145,7 @@ public class APIBBoxParser {
         // check to make sure that the bounding box has 4 coordinates
         if (unparsed.size() < 4) {
             throw new IllegalArgumentException(
-                    "Requested bounding box contains wrong "
-                            + "number of coordinates (should have "
-                            + "4): "
+                    "Requested bounding box contains wrong number of coordinates (should have 4): "
                             + unparsed.size());
         }
 

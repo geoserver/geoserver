@@ -90,8 +90,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             }
         } catch (Throwable ex) {
             throw new RuntimeException(
-                    "Unable to evaluate template path against "
-                            + "the template. Cause: "
+                    "Unable to evaluate template path against the template. Cause: "
                             + ex.getMessage());
         }
         return null;

@@ -32,8 +32,7 @@ public class BBoxKvpParser extends Wcs10KvpParser {
         // check to make sure that the bounding box has 4 coordinates
         if (unparsed.size() != 4) {
             throw new WcsException(
-                    "Requested bounding box contains wrong "
-                            + "number of coordinates: "
+                    "Requested bounding box contains wrong number of coordinates: "
                             + unparsed.size(),
                     InvalidParameterValue,
                     "bbox");

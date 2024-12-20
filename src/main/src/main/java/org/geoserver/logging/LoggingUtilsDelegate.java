@@ -142,7 +142,7 @@ class LoggingUtilsDelegate {
                             "Could setup Log4J using configuration file '"
                                     + configResource.name()
                                     + "'."
-                                    + "Both Log4J 2 and Log4j 1.2 configuration formats were attempted. To troubleshoot"
+                                    + "Both Log4J 2 and Log4j 1.2 configuration formats were attempted. To troubleshoot "
                                     + "configuration setup use ");
             return;
         }

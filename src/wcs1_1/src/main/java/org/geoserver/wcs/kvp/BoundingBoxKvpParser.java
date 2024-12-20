@@ -36,8 +36,7 @@ public class BoundingBoxKvpParser extends KvpParser {
         // check to make sure that the bounding box has 4 coordinates
         if (unparsed.size() < 4) {
             throw new WcsException(
-                    "Requested bounding box contains wrong"
-                            + "number of coordinates (should have at least 4): "
+                    "Requested bounding box contains wrong number of coordinates (should have at least 4): "
                             + unparsed.size(),
                     WcsExceptionCode.InvalidParameterValue,
                     "BoundingBox");

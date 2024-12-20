@@ -1486,7 +1486,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(
                         Level.FINE,
-                        "Found a GeoServerTileLayer that is not base on either"
+                        "Found a GeoServerTileLayer that is not base on either "
                                 + "LayerInfo or LayerGroupInfo, setting its max age to 0");
             }
             return 0;

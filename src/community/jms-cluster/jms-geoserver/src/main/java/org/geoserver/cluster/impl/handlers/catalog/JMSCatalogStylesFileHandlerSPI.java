@@ -21,7 +21,8 @@ public class JMSCatalogStylesFileHandlerSPI extends DocumentFileHandlerSPI {
     final XStream xstream;
     private final GeoServerResourceLoader loader;
 
-    @Autowired public JMSConfiguration config;
+    @Autowired
+    public JMSConfiguration config;
 
     public JMSCatalogStylesFileHandlerSPI(
             final int priority, Catalog cat, XStream xstream, GeoServerResourceLoader loader) {
@@ -40,8 +41,7 @@ public class JMSCatalogStylesFileHandlerSPI extends DocumentFileHandlerSPI {
     @Override
     public JMSEventHandler<String, DocumentFile> createHandler() {
         JMSCatalogStylesFileHandler styleHandler =
-                new JMSCatalogStylesFileHandler(
-                        catalog, xstream, JMSCatalogStylesFileHandlerSPI.class, loader);
+                new JMSCatalogStylesFileHandler(catalog, xstream, JMSCatalogStylesFileHandlerSPI.class, loader);
         styleHandler.setConfig(config);
         return styleHandler;
     }

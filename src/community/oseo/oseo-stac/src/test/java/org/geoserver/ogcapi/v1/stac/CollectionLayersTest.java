@@ -97,9 +97,7 @@ public class CollectionLayersTest extends STACTestSupport {
         assertEquals("raster", doc.read("$.layers[0].styles[0].name"));
         assertEquals("Raster", doc.read("$.layers[0].styles[0].title"));
         assertEquals(true, doc.read("$.layers[0].services.wms.enabled"));
-        assertThat(
-                doc.read("$.layers[0].services.wms.formats"),
-                CoreMatchers.hasItems("image/png", "image/jpeg"));
+        assertThat(doc.read("$.layers[0].services.wms.formats"), CoreMatchers.hasItems("image/png", "image/jpeg"));
         assertEquals(true, doc.read("$.layers[0].services.wcs.enabled"));
         assertThat(
                 doc.read("$.layers[0].services.wcs.formats"),
@@ -115,8 +113,7 @@ public class CollectionLayersTest extends STACTestSupport {
 
     @Test
     public void testItemsJSON() throws Exception {
-        DocumentContext doc =
-                getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items/LS8_TEST.02", 200);
+        DocumentContext doc = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/items/LS8_TEST.02", 200);
         DocumentContext wmsLink = readSingleContext(doc, "$.links[?(@.rel=='wms')]");
         assertEquals("http://localhost:8080/geoserver/wms", wmsLink.read("$.href"));
         assertEquals(List.of("landsat8-SINGLE", "landsat8-SEPARATE"), wmsLink.read("wms:layers"));

@@ -16,8 +16,8 @@ import java.util.List;
  * &lt;bean id="myExtensionProvider" class="com.xyz.MyExtensionProvider"/&gt;
  * </pre>
  *
- * <p>After which the extension lookup methods in {@link GeoServerExtensions} will use any instances
- * of this interface as a supplementary lookup to the initial spring context lookup.
+ * <p>After which the extension lookup methods in {@link GeoServerExtensions} will use any instances of this interface
+ * as a supplementary lookup to the initial spring context lookup.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -30,8 +30,8 @@ public interface ExtensionProvider<T> {
      * Returns a list of extensions that implement the specified class.
      *
      * @param extensionPoint The class for which implementations are being looked up.
-     * @return A list of objects implementing <tt>extensionPoint</tt>, or an empty list if no such
-     *     objects are available.
+     * @return A list of objects implementing <tt>extensionPoint</tt>, or an empty list if no such objects are
+     *     available.
      */
     List<? extends T> getExtensions(Class<T> extensionPoint);
 }

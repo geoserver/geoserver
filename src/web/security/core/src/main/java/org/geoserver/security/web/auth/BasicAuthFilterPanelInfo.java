@@ -14,8 +14,7 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
  * @author Justin Deoliveira, OpenGeo
  */
 public class BasicAuthFilterPanelInfo
-        extends AuthenticationFilterPanelInfo<
-                BasicAuthenticationFilterConfig, BasicAuthFilterPanel> {
+        extends AuthenticationFilterPanelInfo<BasicAuthenticationFilterConfig, BasicAuthFilterPanel> {
 
     public BasicAuthFilterPanelInfo() {
         setServiceClass(GeoServerBasicAuthenticationFilter.class);

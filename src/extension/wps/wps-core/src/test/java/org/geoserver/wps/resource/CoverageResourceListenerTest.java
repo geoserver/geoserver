@@ -36,11 +36,9 @@ public class CoverageResourceListenerTest {
     @Before
     public void setUp() {
         this.resourceManager = createMock(WPSResourceManager.class);
-        this.listener =
-                new CoverageResourceListener(this.resourceManager, new CoverageCleanerCallback());
-        this.status =
-                new ExecutionStatus(
-                        new NameImpl("gs", "TestProcess"), UUID.randomUUID().toString(), false);
+        this.listener = new CoverageResourceListener(this.resourceManager, new CoverageCleanerCallback());
+        this.status = new ExecutionStatus(
+                new NameImpl("gs", "TestProcess"), UUID.randomUUID().toString(), false);
         this.status.setPhase(ProcessState.RUNNING);
         this.inputs = new HashMap<>();
         this.inputs.put("coverageA", null);

@@ -17,16 +17,14 @@ import org.geotools.util.Converters;
 /**
  * Creates a request bean from a kvp set.
  *
- * <p>A request bean is an object which captures the parameters of an operation being requested to a
- * service.
+ * <p>A request bean is an object which captures the parameters of an operation being requested to a service.
  *
- * <p>This class is intended to be subclassed in cases when the creation and initilization of a
- * request bean cannot be created reflectivley.
+ * <p>This class is intended to be subclassed in cases when the creation and initilization of a request bean cannot be
+ * created reflectivley.
  *
- * <p>The class assumes each key is to be provided just once in the request, and will throw
- * exceptions if multiple values are found for it. For services/requests where having the same key
- * repeated multiple times is valid (e.g., CSW) call {@link #setRepeatedParameters(boolean)} to
- * enable support for repeated params
+ * <p>The class assumes each key is to be provided just once in the request, and will throw exceptions if multiple
+ * values are found for it. For services/requests where having the same key repeated multiple times is valid (e.g., CSW)
+ * call {@link #setRepeatedParameters(boolean)} to enable support for repeated params
  *
  * <p>The type of the request bean must be declared by the class. See {@link #getRequestBean()}.
  *
@@ -61,8 +59,7 @@ import org.geotools.util.Converters;
  */
 public class KvpRequestReader {
     /** logging instance */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
     /** The class of the request bean */
     private Class<?> requestBean;
@@ -94,8 +91,8 @@ public class KvpRequestReader {
     /**
      * Sets a list of kvp's to filter by.
      *
-     * <p>This value usually does not need to be set. The only case is when a kvp matches a property
-     * of a request object, but is not intended to be mapped to that property.
+     * <p>This value usually does not need to be set. The only case is when a kvp matches a property of a request
+     * object, but is not intended to be mapped to that property.
      *
      * @param filter A list of names to filter, null to set no filter.
      */
@@ -117,8 +114,8 @@ public class KvpRequestReader {
     /**
      * Creats a new instance of the request object.
      *
-     * <p>Subclasses may with to override this method. The default implementation attempts to
-     * reflectivley create an instance of the request bean.
+     * <p>Subclasses may with to override this method. The default implementation attempts to reflectivley create an
+     * instance of the request bean.
      *
      * @return A new instance of the request.
      */
@@ -129,8 +126,8 @@ public class KvpRequestReader {
     /**
      * Reads the request from the set of kvp parameters.
      *
-     * <p>Subclasses may wish to override this method. The default implementation uses java bean
-     * reflection to populate the request bean with parameters taken from the kvp map.
+     * <p>Subclasses may wish to override this method. The default implementation uses java bean reflection to populate
+     * the request bean with parameters taken from the kvp map.
      *
      * <p>The "raw" (unparsed) kvp map is also made available.
      *
@@ -141,8 +138,7 @@ public class KvpRequestReader {
      * @param rawKvp The raw kvp set (unparsed), map of String,String
      * @return A new request object, or the original
      */
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         for (Map.Entry<String, Object> entry : kvp.entrySet()) {
             String property = entry.getKey();
             Object value = entry.getValue();

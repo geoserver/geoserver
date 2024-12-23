@@ -12,11 +12,8 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 public class PropertyPathFunction extends FunctionExpressionImpl implements PropertyName {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "propertyPath",
-                    parameter("result", Object.class),
-                    parameter("domainProperty", String.class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "propertyPath", parameter("result", Object.class), parameter("domainProperty", String.class));
 
     protected String propertyPath;
 
@@ -34,8 +31,7 @@ public class PropertyPathFunction extends FunctionExpressionImpl implements Prop
     @Override
     public Object evaluate(Object object) {
         String strPropertyPath = (String) getParameters().get(0).evaluate(object);
-        AttributeExpressionImpl attributeExpression =
-                new AttributeExpressionImpl(strPropertyPath, namespaceSupport);
+        AttributeExpressionImpl attributeExpression = new AttributeExpressionImpl(strPropertyPath, namespaceSupport);
         return attributeExpression.evaluate(object);
     }
 

@@ -12,9 +12,6 @@ package org.geoserver.gsr.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 
-/**
- * Marker interface for classes that can/should be written by {@link
- * GeoServicesJacksonJsonConverter}
- */
+/** Marker interface for classes that can/should be written by {@link GeoServicesJacksonJsonConverter} */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface GSRModel {}

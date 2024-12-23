@@ -38,49 +38,41 @@ public class ControlFlowCallbackProxyTest {
     @Test
     public void test() throws Exception {
         final RequestData data = monitor.start();
-        DispatcherCallback callback =
-                new DispatcherCallback() {
+        DispatcherCallback callback = new DispatcherCallback() {
 
-                    @Override
-                    public Service serviceDispatched(Request request, Service service)
-                            throws ServiceException {
-                        return null;
-                    }
+            @Override
+            public Service serviceDispatched(Request request, Service service) throws ServiceException {
+                return null;
+            }
 
-                    @Override
-                    public Response responseDispatched(
-                            Request request,
-                            Operation operation,
-                            Object result,
-                            Response response) {
-                        return null;
-                    }
+            @Override
+            public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
+                return null;
+            }
 
-                    @Override
-                    public Object operationExecuted(
-                            Request request, Operation operation, Object result) {
-                        return null;
-                    }
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                return null;
+            }
 
-                    @Override
-                    public Operation operationDispatched(Request request, Operation operation) {
-                        assertEquals(Status.WAITING, data.getStatus());
-                        return operation;
-                    }
+            @Override
+            public Operation operationDispatched(Request request, Operation operation) {
+                assertEquals(Status.WAITING, data.getStatus());
+                return operation;
+            }
 
-                    @Override
-                    public Request init(Request request) {
-                        return null;
-                    }
+            @Override
+            public Request init(Request request) {
+                return null;
+            }
 
-                    @Override
-                    public void finished(Request request) {}
-                };
+            @Override
+            public void finished(Request request) {}
+        };
 
         callback = createProxy(callback);
         callback.operationDispatched(
-                new Request(),
-                new Operation("foo", new Service("bar", null, null, null), null, null));
+                new Request(), new Operation("foo", new Service("bar", null, null, null), null, null));
 
         assertEquals(Status.RUNNING, data.getStatus());
     }
@@ -89,8 +81,7 @@ public class ControlFlowCallbackProxyTest {
     public void testGetRunningAndBlockedRequests() throws Exception {
         DispatcherCallback callback = new MyDispatcherCallback();
         callback = createProxy(callback);
-        ControlFlowCallbackProxy proxy =
-                (ControlFlowCallbackProxy) Proxy.getInvocationHandler(callback);
+        ControlFlowCallbackProxy proxy = (ControlFlowCallbackProxy) Proxy.getInvocationHandler(callback);
         assertNotNull(proxy);
         assertEquals(10l, proxy.getRunningRequests());
         assertEquals(2l, proxy.getBlockedRequests());
@@ -99,8 +90,7 @@ public class ControlFlowCallbackProxyTest {
     DispatcherCallback createProxy(DispatcherCallback callback) {
         ControlFlowCallbackProxy proxy = new ControlFlowCallbackProxy(monitor, callback);
         return (DispatcherCallback)
-                Proxy.newProxyInstance(
-                        getClass().getClassLoader(), new Class[] {DispatcherCallback.class}, proxy);
+                Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {DispatcherCallback.class}, proxy);
     }
 
     public static class MyDispatcherCallback implements DispatcherCallback {
@@ -119,8 +109,7 @@ public class ControlFlowCallbackProxyTest {
         }
 
         @Override
-        public Response responseDispatched(
-                Request request, Operation operation, Object result, Response response) {
+        public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
             return null;
         }
 

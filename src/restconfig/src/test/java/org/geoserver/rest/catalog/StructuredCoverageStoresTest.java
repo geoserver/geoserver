@@ -61,10 +61,8 @@ import org.w3c.dom.Document;
 public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
     private static final String WATER_VIEW = "waterView";
-    protected static QName WATTEMP =
-            new QName(MockData.WCS_PREFIX, "watertemp", MockData.WCS_PREFIX);
-    protected static QName BBOXTEST =
-            new QName(MockData.WCS_PREFIX, "bboxtest", MockData.WCS_PREFIX);
+    protected static QName WATTEMP = new QName(MockData.WCS_PREFIX, "watertemp", MockData.WCS_PREFIX);
+    protected static QName BBOXTEST = new QName(MockData.WCS_PREFIX, "bboxtest", MockData.WCS_PREFIX);
     protected static QName S2_OVR = new QName(MockData.WCS_PREFIX, "s2_ovr", MockData.WCS_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
     private static final String RGB_IR_VIEW = "RgbIrView";
@@ -99,16 +97,13 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         if (waterView != null) {
             cat.remove(waterView);
         }
-        getTestData()
-                .addRasterLayer(
-                        WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
+        getTestData().addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
 
         // drop the store caches
         getGeoServer().reset();
 
         mosaic = new File(testData.getDataDirectoryRoot(), WATTEMP.getLocalPart());
-        for (File file :
-                FileUtils.listFiles(mosaic, new RegexFileFilter("NCOM_.*100_.*tiff"), null)) {
+        for (File file : FileUtils.listFiles(mosaic, new RegexFileFilter("NCOM_.*100_.*tiff"), null)) {
             File target = new File(file.getParentFile().getParentFile(), file.getName());
             movedFiles.add(target);
             if (target.exists()) {
@@ -125,18 +120,12 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
         final InputCoverageBand band = new InputCoverageBand("watertemp", "0");
         final CoverageBand outputBand =
-                new CoverageBand(
-                        Collections.singletonList(band),
-                        "watertemp@0",
-                        0,
-                        CompositionType.BAND_SELECT);
-        final CoverageView coverageView =
-                new CoverageView(WATER_VIEW, Collections.singletonList(outputBand));
+                new CoverageBand(Collections.singletonList(band), "watertemp@0", 0, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView(WATER_VIEW, Collections.singletonList(outputBand));
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(WATER_VIEW, storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(WATER_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
 
@@ -144,12 +133,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         getDataDirectory().getRoot("s2_ovr").delete();
         getTestData()
                 .addRasterLayer(
-                        S2_OVR,
-                        "hetero_s2_ovr.zip",
-                        null,
-                        null,
-                        StructuredCoverageStoresTest.class,
-                        getCatalog());
+                        S2_OVR, "hetero_s2_ovr.zip", null, null, StructuredCoverageStoresTest.class, getCatalog());
     }
 
     @Before
@@ -170,32 +154,15 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         getTestData().addRasterLayer(IR_RGB, "ir-rgb.zip", null, null, SystemTestData.class, cat);
 
         // build the view
-        final CoverageBand rBand =
-                new CoverageBand(
-                        Arrays.asList(new InputCoverageBand("rgb", "0")),
-                        "rband",
-                        0,
-                        CompositionType.BAND_SELECT);
-        final CoverageBand gBand =
-                new CoverageBand(
-                        Arrays.asList(new InputCoverageBand("rgb", "1")),
-                        "gband",
-                        1,
-                        CompositionType.BAND_SELECT);
-        final CoverageBand bBand =
-                new CoverageBand(
-                        Arrays.asList(new InputCoverageBand("rgb", "2")),
-                        "bband",
-                        2,
-                        CompositionType.BAND_SELECT);
-        final CoverageBand irBand =
-                new CoverageBand(
-                        Collections.singletonList(new InputCoverageBand("ir", "0")),
-                        "irband",
-                        3,
-                        CompositionType.BAND_SELECT);
-        final CoverageView coverageView =
-                new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
+        final CoverageBand rBand = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "0")), "rband", 0, CompositionType.BAND_SELECT);
+        final CoverageBand gBand = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "1")), "gband", 1, CompositionType.BAND_SELECT);
+        final CoverageBand bBand = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "2")), "bband", 2, CompositionType.BAND_SELECT);
+        final CoverageBand irBand = new CoverageBand(
+                Collections.singletonList(new InputCoverageBand("ir", "0")), "irband", 3, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
         coverageView.setEnvelopeCompositionType(null);
         coverageView.setSelectedResolution(null);
 
@@ -204,8 +171,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
     }
@@ -232,46 +198,30 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
     @Test
     public void testIndexResourcesXML() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp.xml",
-                        200);
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp.xml", 200);
         // print(dom);
         assertXpathEvaluatesTo("watertemp", "/coverageStore/name", dom);
 
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp.xml",
-                        200);
+        dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp.xml", 200);
         // print(dom);
         assertXpathEvaluatesTo("watertemp", "/coverage/name", dom);
         assertXpathEvaluatesTo("watertemp", "/coverage/nativeName", dom);
         // todo: check there is a link to the index
 
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.xml",
-                        200);
+        dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.xml",
+                200);
         // print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "org.locationtech.jts.geom.MultiPolygon",
-                "/Schema/attributes/Attribute[name='the_geom']/binding",
-                dom);
-        assertXpathEvaluatesTo(
-                "java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
-        assertXpathEvaluatesTo(
-                "java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
-        assertXpathEvaluatesTo(
-                "java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
+                "org.locationtech.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
+        assertXpathEvaluatesTo("java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
 
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
         assertXpathEvaluatesTo("2", "count(//gf:watertemp)", dom);
         assertXpathEvaluatesTo(
@@ -279,49 +229,35 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:elevation", dom);
         assertXpathEvaluatesTo(
                 "2008-11-01T00:00:00Z",
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation", dom);
 
         // get the granules ids
         String octoberId =
-                xpath.evaluate(
-                        "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid",
-                        dom);
+                xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid", dom);
         String novemberId =
-                xpath.evaluate(
-                        "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/@fid",
-                        dom);
+                xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/@fid", dom);
 
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
-                                + octoberId
-                                + ".xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
+                + octoberId
+                + ".xml");
         // print(dom);
         assertXpathEvaluatesTo(octoberId, "//gf:watertemp/@fid", dom);
-        assertXpathEvaluatesTo(
-                "NCOM_wattemp_000_20081031T0000000_12.tiff", "//gf:watertemp/gf:location", dom);
+        assertXpathEvaluatesTo("NCOM_wattemp_000_20081031T0000000_12.tiff", "//gf:watertemp/gf:location", dom);
         assertXpathEvaluatesTo("0", "//gf:watertemp/gf:elevation", dom);
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
-                                + novemberId
-                                + ".xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
+                + novemberId
+                + ".xml");
         // print(dom);
         assertXpathEvaluatesTo(novemberId, "//gf:watertemp/@fid", dom);
-        assertXpathEvaluatesTo(
-                "NCOM_wattemp_000_20081101T0000000_12.tiff", "//gf:watertemp/gf:location", dom);
+        assertXpathEvaluatesTo("NCOM_wattemp_000_20081101T0000000_12.tiff", "//gf:watertemp/gf:location", dom);
         assertXpathEvaluatesTo("0", "//gf:watertemp/gf:elevation", dom);
     }
 
@@ -333,32 +269,22 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         coverage.setName("renamed");
         catalog.save(coverage);
 
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/renamed/index.xml",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/renamed/index.xml",
+                200);
         // print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "org.locationtech.jts.geom.MultiPolygon",
-                "/Schema/attributes/Attribute[name='the_geom']/binding",
-                dom);
-        assertXpathEvaluatesTo(
-                "java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
-        assertXpathEvaluatesTo(
-                "java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
-        assertXpathEvaluatesTo(
-                "java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
+                "org.locationtech.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
+        assertXpathEvaluatesTo("java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
     }
 
     @Test
     public void testIndexResourcesJSON() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.json");
 
         // print(json);
         JSONObject schema = json.getJSONObject("Schema");
@@ -369,11 +295,8 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                 "org.locationtech.jts.geom.MultiPolygon",
                 attributes.getJSONObject(0).get("binding"));
 
-        json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.json");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.json");
         // print(json);
         JSONArray features = json.getJSONArray("features");
         String octoberId = null;
@@ -385,14 +308,12 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
             }
         }
 
-        json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
-                                        + octoberId
-                                        + ".json",
-                                200);
+        json = (JSONObject) getAsJSON(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
+                        + octoberId
+                        + ".json",
+                200);
         // print(json);
         features = json.getJSONArray("features");
         assertEquals(1, features.size());
@@ -405,10 +326,8 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
     @Test
     public void testMissingGranule() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/notThere.xml");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/notThere.xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -419,16 +338,15 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         String cs = "watertemp";
         String g = "notThere";
         // Request path
-        String requestPath =
-                RestBaseController.ROOT_PATH
-                        + "/workspaces/"
-                        + ws
-                        + "/coveragestores/"
-                        + cs
-                        + "/coverages/"
-                        + cs
-                        + "/index/granules/"
-                        + g;
+        String requestPath = RestBaseController.ROOT_PATH
+                + "/workspaces/"
+                + ws
+                + "/coveragestores/"
+                + cs
+                + "/coverages/"
+                + cs
+                + "/index/granules/"
+                + g;
         // Exception path
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
@@ -443,136 +361,101 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDeleteSingleGranule() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
 
         // get the granule ids
         String octoberId =
-                xpath.evaluate(
-                        "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid",
-                        dom);
+                xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid", dom);
         assertNotNull(octoberId);
 
         // delete it
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
-                                + octoberId);
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
+                + octoberId);
         assertEquals(200, response.getStatus());
 
         // check it's gone from the index
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         assertXpathEvaluatesTo("1", "count(//gf:watertemp)", dom);
         assertXpathEvaluatesTo(
-                "0",
-                "count(//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff'])",
-                dom);
+                "0", "count(//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff'])", dom);
         assertXpathEvaluatesTo(
                 "2008-11-01T00:00:00Z",
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation", dom);
     }
 
     @Test
     public void testDeleteSingleGranuleGsConfigStyle() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
 
         // get the granule ids
         String octoberId =
-                xpath.evaluate(
-                        "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid",
-                        dom);
+                xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid", dom);
         assertNotNull(octoberId);
 
         // delete it like gsconfig does (yes, it really appens "./json" at the end)
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
-                                + octoberId
-                                + "/.json");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/"
+                + octoberId
+                + "/.json");
         assertEquals(200, response.getStatus());
 
         // check it's gone from the index
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         assertXpathEvaluatesTo("1", "count(//gf:watertemp)", dom);
         assertXpathEvaluatesTo(
-                "0",
-                "count(//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff'])",
-                dom);
+                "0", "count(//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff'])", dom);
         assertXpathEvaluatesTo(
                 "2008-11-01T00:00:00Z",
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation", dom);
     }
 
     @Test
     public void testDeleteAllGranules() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml",
+                200);
         assertXpathEvaluatesTo("2", "count(//gf:watertemp)", dom);
         // print(dom);
 
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules");
         assertEquals(200, response.getStatus());
 
         // check it's gone from the index
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         assertXpathEvaluatesTo("0", "count(//gf:watertemp)", dom);
     }
 
     @Test
     public void testDeleteByFilter() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         assertXpathEvaluatesTo("2", "count(//gf:watertemp)", dom);
         // print(dom);
 
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages"
-                                + "/watertemp/index/granules?filter=ingestion=2008-11-01T00:00:00Z");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages"
+                + "/watertemp/index/granules?filter=ingestion=2008-11-01T00:00:00Z");
         assertEquals(200, response.getStatus());
 
         // check it's gone from the index
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//gf:watertemp)", dom);
         assertXpathEvaluatesTo(
@@ -580,9 +463,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:elevation", dom);
     }
 
     @Test
@@ -593,22 +474,17 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
         URL url = URLs.fileToUrl(target.getCanonicalFile());
         String body = url.toExternalForm();
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
-                        body,
-                        "text/plain");
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
+                body,
+                "text/plain");
         assertEquals(202, response.getStatus());
 
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
         assertXpathEvaluatesTo("3", "count(//gf:watertemp)", dom);
-        assertXpathEvaluatesTo(
-                "1", "count(//gf:watertemp[gf:location = '" + file.getName() + "'])", dom);
+        assertXpathEvaluatesTo("1", "count(//gf:watertemp[gf:location = '" + file.getName() + "'])", dom);
     }
 
     @Test
@@ -618,22 +494,17 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertTrue(file.renameTo(target));
 
         String body = target.getCanonicalPath();
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
-                        body,
-                        "text/plain");
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
+                body,
+                "text/plain");
         assertEquals(202, response.getStatus());
 
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
         assertXpathEvaluatesTo("3", "count(//gf:watertemp)", dom);
-        assertXpathEvaluatesTo(
-                "1", "count(//gf:watertemp[gf:location = '" + file.getName() + "'])", dom);
+        assertXpathEvaluatesTo("1", "count(//gf:watertemp[gf:location = '" + file.getName() + "'])", dom);
     }
 
     @Test
@@ -646,18 +517,14 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // re-harvest the entire mosaic (two files refreshed, two files added)
         URL url = URLs.fileToUrl(mosaic.getCanonicalFile());
         String body = url.toExternalForm();
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
-                        body,
-                        "text/plain");
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/external.imagemosaic",
+                body,
+                "text/plain");
         assertEquals(202, response.getStatus());
 
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
         // print(dom);
         assertXpathEvaluatesTo("4", "count(//gf:watertemp)", dom);
         assertXpathEvaluatesTo(
@@ -665,63 +532,47 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/gf:elevation", dom);
         assertXpathEvaluatesTo(
                 "2008-11-01T00:00:00Z",
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "0",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation",
-                dom);
+                "0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation", dom);
         assertXpathEvaluatesTo(
                 "2008-10-31T00:00:00Z",
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_100_20081031T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "100",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_100_20081031T0000000_12.tiff']/gf:elevation",
-                dom);
+                "100", "//gf:watertemp[gf:location = 'NCOM_wattemp_100_20081031T0000000_12.tiff']/gf:elevation", dom);
         assertXpathEvaluatesTo(
                 "2008-11-01T00:00:00Z",
                 "//gf:watertemp[gf:location = 'NCOM_wattemp_100_20081101T0000000_12.tiff']/gf:ingestion",
                 dom);
         assertXpathEvaluatesTo(
-                "100",
-                "//gf:watertemp[gf:location = 'NCOM_wattemp_100_20081101T0000000_12.tiff']/gf:elevation",
-                dom);
+                "100", "//gf:watertemp[gf:location = 'NCOM_wattemp_100_20081101T0000000_12.tiff']/gf:elevation", dom);
     }
 
     @Test
     public void testGetIndexAndGranulesOnView() throws Exception {
         // get and test the index
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index.xml",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index.xml",
+                200);
         // print(dom);
 
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "org.locationtech.jts.geom.MultiPolygon",
-                "/Schema/attributes/Attribute[name='the_geom']/binding",
-                dom);
-        assertXpathEvaluatesTo(
-                "java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
-        assertXpathEvaluatesTo(
-                "java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
-        assertXpathEvaluatesTo(
-                "java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
+                "org.locationtech.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
+        assertXpathEvaluatesTo("java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
 
         // get and test the granules
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules.xml",
-                        200);
+        dom = getAsDOM(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules.xml",
+                200);
         print(dom);
         assertXpathEvaluatesTo("2", "count(//gf:waterView)", dom);
     }
@@ -729,27 +580,21 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     @Test
     public void testGetIndexAndGranulesOnMultiCoverageView() throws Exception {
         // get and test the index
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index.xml",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index.xml",
+                200);
         // print(dom);
 
         assertXpathEvaluatesTo("2", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo(
-                "org.locationtech.jts.geom.Polygon",
-                "/Schema/attributes/Attribute[name='the_geom']/binding",
-                dom);
-        assertXpathEvaluatesTo(
-                "java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
+                "org.locationtech.jts.geom.Polygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
 
         // get and test the granules
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules.xml",
-                        200);
+        dom = getAsDOM(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules.xml",
+                200);
         print(dom);
         assertXpathEvaluatesTo("2", "count(//gf:RgbIrView)", dom);
         assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.rgb.1']", dom);
@@ -759,21 +604,19 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     @Test
     public void testGetGranuleInMultiCoverageView() throws Exception {
         // get a single granule
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1",
+                200);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//gf:RgbIrView)", dom);
         assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.rgb.1']", dom);
 
         // and get the other
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.ir.1",
-                        200);
+        dom = getAsDOM(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.ir.1",
+                200);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//gf:RgbIrView)", dom);
         assertXpathExists("//gf:RgbIrView[@fid='RgbIrView.ir.1']", dom);
@@ -782,27 +625,22 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     @Test
     public void testDeleteGranuleInMultiCoverageView() throws Exception {
         // delete granule
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
         assertEquals(200, response.getStatus());
         // try to get it, it should provide a 404 now
-        response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
+        response = getAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/sf/coveragestores/ir-rgb/coverages/RgbIrView/index/granules/RgbIrView.rgb.1");
         assertEquals(404, response.getStatus());
     }
 
     @Test
     public void testGetGranuleInSingleCoverageView() throws Exception {
         // get a single granule
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1",
+                200);
         print(dom);
         assertXpathEvaluatesTo("1", "count(//gf:waterView)", dom);
         assertXpathExists("//gf:waterView[@fid='waterView.watertemp.1']", dom);
@@ -811,17 +649,13 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     @Test
     public void testDeleteGranuleInSingleCoverageView() throws Exception {
         // delete granule
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
         assertEquals(200, response.getStatus());
 
         // try to get it, it should provide a 404 now
-        response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
+        response = getAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/waterView/index/granules/waterView.watertemp.1");
         assertEquals(404, response.getStatus());
     }
 
@@ -842,26 +676,20 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     }
 
     private List<String> removeWithPurge(String purgeSpec) throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/s2_ovr/coverages/s2_ovr/index/granules.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/s2_ovr/coverages/s2_ovr/index/granules.xml");
         assertXpathEvaluatesTo("4", "count(//gf:s2_ovr)", dom);
         // print(dom);
 
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/s2_ovr/coverages"
-                                + "/s2_ovr/index/granules?filter=location LIKE 'g3%25'"
-                                + purgeSpec);
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/s2_ovr/coverages"
+                + "/s2_ovr/index/granules?filter=location LIKE 'g3%25'"
+                + purgeSpec);
         assertEquals(200, response.getStatus());
 
         // check it's gone from the index
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/s2_ovr/coverages/s2_ovr/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/s2_ovr/coverages/s2_ovr/index/granules.xml");
         // print(dom);
         assertXpathEvaluatesTo("3", "count(//gf:s2_ovr)", dom);
         assertXpathExists("//gf:s2_ovr[gf:location = 'g1.tif']", dom);
@@ -869,8 +697,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertXpathExists("//gf:s2_ovr[gf:location = 'g4.tif']", dom);
 
         Resource mosaicContents = getDataDirectory().getRoot("s2_ovr");
-        List<String> files =
-                mosaicContents.list().stream().map(r -> r.name()).collect(Collectors.toList());
+        List<String> files = mosaicContents.list().stream().map(r -> r.name()).collect(Collectors.toList());
         return files;
     }
 
@@ -878,54 +705,43 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     public void testDefaultBehaviourUpdateBBoxSingleGranuleDelete() throws Exception {
         CoverageStoreInfo storeInfo = setUpBBoxTest();
 
-        MockHttpServletResponse responseDel =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/bboxtest/coverages/bboxtest/index/granules/bboxtest.2.xml");
+        MockHttpServletResponse responseDel = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/bboxtest/coverages/bboxtest/index/granules/bboxtest.2.xml");
         assertEquals(200, responseDel.getStatus());
         // no updatebbox param, native bbox will not be updated, thus asserting for no equality
-        testBBoxLayerConfiguration(
-                storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
+        testBBoxLayerConfiguration(storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
     }
 
     @Test
     public void testUpdateBBoxTrueParameterSingleGranuleDelete() throws Exception {
         CoverageStoreInfo storeInfo = setUpBBoxTest();
 
-        MockHttpServletResponse responseDel =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/bboxtest/coverages/bboxtest/index/granules/bboxtest.2.xml?updateBBox=true");
+        MockHttpServletResponse responseDel = deleteAsServletResponse(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/wcs/coveragestores/bboxtest/coverages/bboxtest/index/granules/bboxtest.2.xml?updateBBox=true");
         assertEquals(200, responseDel.getStatus());
-        testBBoxLayerConfiguration(
-                storeInfo, (current, old) -> assertEquals(current, old), catalog);
+        testBBoxLayerConfiguration(storeInfo, (current, old) -> assertEquals(current, old), catalog);
     }
 
     @Test
     public void testUpdateBBoxWithDeleteByFilterDefaultBeahaviour() throws Exception {
         CoverageStoreInfo storeInfo = setUpBBoxTest();
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/bboxtest/coverages"
-                                + "/bboxtest/index/granules?filter=location = 'test_bbox_raster2.tiff'");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/bboxtest/coverages"
+                + "/bboxtest/index/granules?filter=location = 'test_bbox_raster2.tiff'");
         assertEquals(200, response.getStatus());
         // no updatebbox param, native bbox will not be updated, thus asserting for no equality
-        testBBoxLayerConfiguration(
-                storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
+        testBBoxLayerConfiguration(storeInfo, (current, old) -> assertNotEquals(current, old), catalog);
     }
 
     @Test
     public void testUpdateBBoxWithDeleteByFilter() throws Exception {
         CoverageStoreInfo storeInfo = setUpBBoxTest();
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/bboxtest/coverages"
-                                + "/bboxtest/index/granules?filter=location = 'test_bbox_raster2.tiff'&updateBBox=true");
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/wcs/coveragestores/bboxtest/coverages"
+                + "/bboxtest/index/granules?filter=location = 'test_bbox_raster2.tiff'&updateBBox=true");
         assertEquals(200, response.getStatus());
-        testBBoxLayerConfiguration(
-                storeInfo, (current, old) -> assertEquals(current, old), catalog);
+        testBBoxLayerConfiguration(storeInfo, (current, old) -> assertEquals(current, old), catalog);
     }
 
     private CoverageStoreInfo setUpBBoxTest() throws Exception {
@@ -935,23 +751,15 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         File dir = new File(getTestData().getDataDirectoryRoot(), "bboxtest");
         FileUtils.deleteQuietly(dir);
         getTestData()
-                .addRasterLayer(
-                        BBOXTEST,
-                        "test_bbox_raster1.zip",
-                        null,
-                        null,
-                        StructuredCoverageStoresTest.class,
-                        cat);
+                .addRasterLayer(BBOXTEST, "test_bbox_raster1.zip", null, null, StructuredCoverageStoresTest.class, cat);
         byte[] bytes = null;
         URL zipHarvest = getClass().getResource("test_bbox_granules.zip");
         try (InputStream is = zipHarvest.openStream()) {
             bytes = IOUtils.toByteArray(is);
         }
         // Create the POST request
-        MockHttpServletRequest request =
-                createRequest(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/bboxtest/file.imagemosaic");
+        MockHttpServletRequest request = createRequest(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/bboxtest/file.imagemosaic");
         request.setMethod("POST");
         request.setContentType("application/zip");
         request.setParameter("updateBBox", "true");

@@ -44,9 +44,7 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
                 "/wfs?NAMESPACE=xmlns%28topp%3Dhttp%3A%2F%2Fwww.topp.com%29&TYPENAME=topp%3Aroads22&REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS",
                 "desc_feature.xml");
         registerHttpGetFromResource(
-                httpClient,
-                "/wfs?REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS",
-                "desc_110.xml");
+                httpClient, "/wfs?REQUEST=DescribeFeatureType&VERSION=1.1.0&SERVICE=WFS", "desc_110.xml");
 
         // RESPONSE URLs
         registerHttpGetFromResource(
@@ -69,8 +67,7 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
 
         try {
             // add the remote wfs store using a file capabilities document
-            DataStoreInfo storeInfo =
-                    createWfsDataStore(getCatalog(), "RemoteWfsStore", "wfs_cap_110.xml");
+            DataStoreInfo storeInfo = createWfsDataStore(getCatalog(), "RemoteWfsStore", "wfs_cap_110.xml");
 
             // retrieve the wfs store and make sure we set it to use our mocked http client
             DataAccess dataStore = storeInfo.getDataStore(new NullProgressListener());
@@ -81,25 +78,22 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
             createWfsRemoteLayer(getCatalog(), storeInfo, "topp_roads22");
 
             // perform a get feature request to make sure the layer works properly
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gs:topp_roads22&srsName=EPSG:4326&bbox=-103.73937,43.47669,-102.739377,44.47536,EPSG:4326&maxFeatures=10");
+            MockHttpServletResponse response = getAsServletResponse(
+                    "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gs:topp_roads22&srsName=EPSG:4326&bbox=-103.73937,43.47669,-102.739377,44.47536,EPSG:4326&maxFeatures=10");
             assertThat(response.getStatus(), is(200));
             String content = response.getContentAsString();
             assertThat(content, notNullValue());
             // assertThat(content.contains("numberMatched=\"1\" numberReturned=\"1\""), is(true));
             // assert that EPSG:3857 is matched with urn:ogc:def:crs:EPSG::3857
-            MockHttpServletResponse responseURNOGC =
-                    getAsServletResponse(
-                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gs:topp_roads22&srsName=EPSG:3857&bbox=-11548213.8436,5384812.69673,-11436895.1321,5539302.36519&maxFeatures=10");
+            MockHttpServletResponse responseURNOGC = getAsServletResponse(
+                    "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gs:topp_roads22&srsName=EPSG:3857&bbox=-11548213.8436,5384812.69673,-11436895.1321,5539302.36519&maxFeatures=10");
             assertThat(responseURNOGC.getStatus(), is(200));
             content = responseURNOGC.getContentAsString();
             assertThat(content, notNullValue());
 
         } finally {
             // let's clean the catalog
-            DataStoreInfo dataStoreInfo =
-                    getCatalog().getStoreByName("RemoteWfsStore", DataStoreInfo.class);
+            DataStoreInfo dataStoreInfo = getCatalog().getStoreByName("RemoteWfsStore", DataStoreInfo.class);
             if (dataStoreInfo != null) {
                 // the store exists let's remove it, the associated layer will also be removed
                 CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(getCatalog());
@@ -109,19 +103,17 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
     }
 
     /**
-     * Helper method that creates a layer in GeoServer catalog from a WFS remote store, the provided
-     * layer name should match an entry on the remote WFS server.
+     * Helper method that creates a layer in GeoServer catalog from a WFS remote store, the provided layer name should
+     * match an entry on the remote WFS server.
      */
-    private static LayerInfo createWfsRemoteLayer(
-            Catalog catalog, DataStoreInfo storeInfo, String name) throws Exception {
+    private static LayerInfo createWfsRemoteLayer(Catalog catalog, DataStoreInfo storeInfo, String name)
+            throws Exception {
         // let's create the feature type based on the remote layer capabilities description
         CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
         catalogBuilder.setStore(storeInfo);
         // the following call will trigger a describe feature type call to the remote server
         FeatureTypeInfo featureTypeInfo = catalogBuilder.buildFeatureType(new NameImpl("", name));
-        featureTypeInfo
-                .getMetadata()
-                .put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,urn:ogc:def:crs:EPSG::3857");
+        featureTypeInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,urn:ogc:def:crs:EPSG::3857");
         catalog.add(featureTypeInfo);
         // create the layer info based on the feature type info we just created
         LayerInfo layerInfo = catalogBuilder.buildLayer(featureTypeInfo);
@@ -133,12 +125,11 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
     }
 
     /**
-     * Helper method that creates a WFS data store based ont he provided capabilities document,
-     * which should be a resource available in the classpath. The created store will be saved in the
-     * GeoServer catalog on the default workspace.
+     * Helper method that creates a WFS data store based ont he provided capabilities document, which should be a
+     * resource available in the classpath. The created store will be saved in the GeoServer catalog on the default
+     * workspace.
      */
-    private static DataStoreInfo createWfsDataStore(
-            Catalog catalog, String name, String capabilitiesDocument) {
+    private static DataStoreInfo createWfsDataStore(Catalog catalog, String name, String capabilitiesDocument) {
         // get the capabilities document url
         URL url = WfsRemoteStoreTest.class.getResource(capabilitiesDocument);
         assertThat(url, notNullValue());
@@ -151,9 +142,7 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
         // local capabilities document are only supported in testing mode
         storeInfo.getConnectionParameters().put("TESTING", Boolean.TRUE);
         // enable remote re-projection
-        storeInfo
-                .getConnectionParameters()
-                .put(WFSDataStoreFactory.USEDEFAULTSRS.key, Boolean.FALSE);
+        storeInfo.getConnectionParameters().put(WFSDataStoreFactory.USEDEFAULTSRS.key, Boolean.FALSE);
         catalog.add(storeInfo);
         // return the wfs data store we just build
         storeInfo = catalog.getStoreByName(name, DataStoreInfo.class);
@@ -162,22 +151,18 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
     }
 
     /**
-     * Help method that register in the provided mock HTTP client an HTTP GET URL and the respective
-     * response, the response will be retrieved from the provided resource name which should be
-     * available in the class-path.
+     * Help method that register in the provided mock HTTP client an HTTP GET URL and the respective response, the
+     * response will be retrieved from the provided resource name which should be available in the class-path.
      */
-    private static void registerHttpGetFromResource(
-            MockHttpClient httpClient, String url, String resourceName) throws Exception {
+    private static void registerHttpGetFromResource(MockHttpClient httpClient, String url, String resourceName)
+            throws Exception {
         URL finalUrl = new URL(TestHttpClientProvider.MOCKSERVER + url);
         URL resourceUrl = WfsRemoteStoreTest.class.getResource(resourceName);
         assertThat(resourceUrl, notNullValue());
         httpClient.expectGet(finalUrl, new MockHttpResponse(resourceUrl, "text/xml"));
     }
 
-    /**
-     * Helper method that obtains a WFS data store from a generic data access by unwrapping it if
-     * necessary.
-     */
+    /** Helper method that obtains a WFS data store from a generic data access by unwrapping it if necessary. */
     private static WFSDataStore extractWfsDataStore(DataAccess dataStore) {
         assertThat(dataStore, notNullValue());
         if (dataStore instanceof Wrapper) {

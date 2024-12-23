@@ -11,8 +11,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
 /**
- * A Features response that contains both the fake WFS request and response, to help reusing the
- * traditional WFS output formats
+ * A Features response that contains both the fake WFS request and response, to help reusing the traditional WFS output
+ * formats
  */
 @JsonIgnoreType // not meant for jackson serialization
 @XmlTransient

@@ -49,8 +49,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * The default behavior of this method is to return setHeader(String name, String value) on the
-     * wrapped response object.
+     * The default behavior of this method is to return setHeader(String name, String value) on the wrapped response
+     * object.
      */
     @Override
     public void setHeader(String name, String value) {
@@ -66,8 +66,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * The default behavior of this method is to return addHeader(String name, String value) on the
-     * wrapped response object.
+     * The default behavior of this method is to return addHeader(String name, String value) on the wrapped response
+     * object.
      */
     @Override
     public void addHeader(String name, String value) {
@@ -83,8 +83,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * The default behavior of this method is to call setIntHeader(String name, int value) on the
-     * wrapped response object.
+     * The default behavior of this method is to call setIntHeader(String name, int value) on the wrapped response
+     * object.
      */
     @Override
     public void setIntHeader(String name, int value) {
@@ -96,8 +96,8 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * The default behavior of this method is to call addIntHeader(String name, int value) on the
-     * wrapped response object.
+     * The default behavior of this method is to call addIntHeader(String name, int value) on the wrapped response
+     * object.
      */
     @Override
     public void addIntHeader(String name, int value) {

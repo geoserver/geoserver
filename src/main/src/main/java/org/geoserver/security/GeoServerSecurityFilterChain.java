@@ -31,10 +31,8 @@ public class GeoServerSecurityFilterChain implements Serializable {
      * chain patterns
      */
     public static final String WEB_CHAIN = "/web/**";
-    public static final String FORM_LOGIN_CHAIN =
-            "/j_spring_security_check,/j_spring_security_check/,/login";
-    public static final String FORM_LOGOUT_CHAIN =
-            "/j_spring_security_logout,/j_spring_security_logout/,/logout";
+    public static final String FORM_LOGIN_CHAIN = "/j_spring_security_check,/j_spring_security_check/,/login";
+    public static final String FORM_LOGOUT_CHAIN = "/j_spring_security_logout,/j_spring_security_logout/,/logout";
     public static final String REST_CHAIN = "/rest/**";
     public static final String GWC_WEB_CHAIN = "/gwc/rest/web/**";
     public static final String GWC_REST_CHAIN = "/gwc/rest/**";
@@ -158,8 +156,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
         }
     }
 
-    public static RequestFilterChain lookupRequestChainByName(
-            String name, GeoServerSecurityManager secMgr) {
+    public static RequestFilterChain lookupRequestChainByName(String name, GeoServerSecurityManager secMgr) {
         // this is kind of a hack but we create an initial filter chain and run it through the
         // security provider extension points to get an actual final chain, and then look through
         // the elements for a matching name
@@ -175,8 +172,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return null;
     }
 
-    public static RequestFilterChain lookupRequestChainByPattern(
-            String pattern, GeoServerSecurityManager secMgr) {
+    public static RequestFilterChain lookupRequestChainByPattern(String pattern, GeoServerSecurityManager secMgr) {
         // this is kind of a hack but we create an initial filter chain and run it through the
         // security provider extension points to get an actual final chain, and then look through
         // the elements for a matching name
@@ -198,8 +194,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
 
     public List<RequestFilterChain> getVariableRequestChains() {
         List<RequestFilterChain> result = new ArrayList<>();
-        for (RequestFilterChain chain : getRequestChains())
-            if (chain.isConstant() == false) result.add(chain);
+        for (RequestFilterChain chain : getRequestChains()) if (chain.isConstant() == false) result.add(chain);
         return result;
     }
 
@@ -287,16 +282,14 @@ public class GeoServerSecurityFilterChain implements Serializable {
     }
 
     /**
-     * Get a list of patterns having the filter in their chain. If includeAll is false, only
-     * authentication filters are searched
+     * Get a list of patterns having the filter in their chain. If includeAll is false, only authentication filters are
+     * searched
      */
     public List<String> patternsForFilter(String filterName, boolean includeAll) {
         List<String> result = new ArrayList<>();
         for (RequestFilterChain requestChain : requestChains) {
             List<String> filterNames =
-                    includeAll
-                            ? requestChain.getCompiledFilterNames()
-                            : requestChain.getFilterNames();
+                    includeAll ? requestChain.getCompiledFilterNames() : requestChain.getFilterNames();
             if (filterNames.contains(filterName)) {
                 result.addAll(requestChain.getPatterns());
             }

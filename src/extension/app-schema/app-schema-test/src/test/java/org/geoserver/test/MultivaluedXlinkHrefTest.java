@@ -20,15 +20,10 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
         return new MultivaluedXlinkHrefMockData();
     }
 
-    /**
-     * Test that GetFeature returns a single feature with two gsml:occurrence, each with expected
-     * xlink:href.
-     */
+    /** Test that GetFeature returns a single feature with two gsml:occurrence, each with expected xlink:href. */
     @Test
     public void testGetFeature() {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=gsml:GeologicUnit");
+        Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature, typename=gsml:GeologicUnit response:\n" + prettyString(doc));
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo("gu.1", "//gsml:GeologicUnit/@gml:id", doc);
@@ -44,8 +39,8 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Test that GetFeature filter on first gsml:occurrence/@xlink:href returns a single feature
-     * with two gsml:occurrence, each with expected xlink:href.
+     * Test that GetFeature filter on first gsml:occurrence/@xlink:href returns a single feature with two
+     * gsml:occurrence, each with expected xlink:href.
      */
     @Test
     public void testGetFeatureFilterFirstXlinkHref() throws Exception {
@@ -83,8 +78,8 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Test that GetFeature filter on second gsml:occurrence/@xlink:href returns a single feature
-     * with two gsml:occurrence, each with expected xlink:href.
+     * Test that GetFeature filter on second gsml:occurrence/@xlink:href returns a single feature with two
+     * gsml:occurrence, each with expected xlink:href.
      */
     @Test
     public void testGetFeatureFilterSecondXlinkHref() throws Exception {
@@ -121,9 +116,7 @@ public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
                 doc);
     }
 
-    /**
-     * Test that GetFeature filter on nonexistent gsml:occurrence/@xlink:href returns no features.
-     */
+    /** Test that GetFeature filter on nonexistent gsml:occurrence/@xlink:href returns no features. */
     @Test
     public void testGetFeatureFilterNonexistentXlinkHref() throws Exception {
         String xml = //

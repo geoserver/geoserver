@@ -64,32 +64,25 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertComponent("styleForm:context:panel:name", TextField.class);
-        tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         tester.assertComponent("styleForm:context:panel:filename", FileUploadField.class);
 
         // Load the legend
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
 
         tester.assertComponent("styleForm:context:panel:legendPanel", ExternalGraphicPanel.class);
 
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
                 GeoServerAjaxFormLink.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
         tester.assertModelValue("styleForm:context:panel:name", "");
     }
@@ -119,12 +112,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testUpload() throws Exception {
         FormTester upload = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
 
         upload.setFile("context:panel:filename", styleFile, "application/xml");
         tester.clickLink("styleForm:context:panel:upload", true);
@@ -136,12 +128,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testPreviewNoLegendSLD() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "previewsld");
         form.setValue("context:panel:format", "sld");
@@ -153,30 +144,27 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testPreviewNoLegendZIP() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "previewzip");
         form.setValue("context:panel:format", "zip");
         form.submit();
         tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
-        tester.assertErrorMessages(
-                "Failed to build legend preview. Check to see if the style is valid.");
+        tester.assertErrorMessages("Failed to build legend preview. Check to see if the style is valid.");
     }
 
     @Test
     public void testNoLegend() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "nolegendtest");
         form.submit();
@@ -192,39 +180,29 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testLegend() throws Exception {
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         // Make sure the fields we are editing actually exist
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
         FormTester form = tester.newFormTester("styleForm", false);
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "legendtest");
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "legend.png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
         form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "100");
         form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "100");
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");
         form.setValue("context:panel:format", "sld");
         form.submit();
         tester.assertNoErrorMessage();
@@ -239,39 +217,29 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testLegendWrongValues() throws Exception {
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         // Make sure the fields we are editing actually exist
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
         FormTester form = tester.newFormTester("styleForm", false);
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "legendwrongvaluestest");
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "thisisnotavalidurl");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "thisisnotavalidurl");
         form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "-1");
         form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "-1");
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");
         form.submit();
         tester.assertErrorMessages(
                 "Graphic resource must be a png, gif or jpeg",
@@ -281,36 +249,29 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testLegendAutoFillEmpty() throws Exception {
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         // Make sure the fields we are editing actually exist
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill",
                 GeoServerAjaxFormLink.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill", "click");
     }
 
     @Test
     public void testPreviewExternalLegendWithSlash() throws Exception {
         // Set the proxy base URL with an ending slash
         Resource resource = getResourceLoader().get("styles/legend.png");
-        String url = resource.file().getParentFile().getParentFile().toURI().toURL().toString();
+        String url =
+                resource.file().getParentFile().getParentFile().toURI().toURL().toString();
         if (!url.endsWith("/")) {
             url += '/';
         }
@@ -319,13 +280,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         getGeoServer().save(global);
 
         // Load legend.png
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         FormTester form = tester.newFormTester("styleForm", false);
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "legend.png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
         tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
         tester.assertNoErrorMessage();
     }
@@ -334,7 +291,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     public void testPreviewExternalLegendWithoutSlash() throws Exception {
         // Set the proxy base URL without an ending slash
         Resource resource = getResourceLoader().get("styles/legend.png");
-        String url = resource.file().getParentFile().getParentFile().toURI().toURL().toString();
+        String url =
+                resource.file().getParentFile().getParentFile().toURI().toURL().toString();
         if (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
         }
@@ -343,13 +301,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         getGeoServer().save(global);
 
         // Load legend.png
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         FormTester form = tester.newFormTester("styleForm", false);
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "legend.png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
         tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
         tester.assertNoErrorMessage();
     }
@@ -357,12 +311,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testMissingName() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.submit();
 
@@ -383,12 +336,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNewStyleRepeatedName() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "repeatedname");
         form.submit();
@@ -410,12 +362,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNewStyle() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "test");
         form.submit();
@@ -430,12 +381,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNewStyleApply() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "test");
         tester.executeAjaxEvent("apply", "click");
@@ -447,12 +397,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNewStyleSubmit() throws Exception {
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "test");
         tester.executeAjaxEvent("save", "click");
@@ -475,30 +424,25 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInsertImage() throws Exception {
         // create some fake images
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         dd.getStyles().get("somepicture.png").out().close();
         dd.getStyles().get("otherpicture.jpg").out().close();
         dd.getStyles().get("vector.svg").out().close();
 
         // since we don't have code mirror available in the test environment, we are kind of limited
         // we'll make the tool bar visible to test the dialog anyway
-        tester.getComponentFromLastRenderedPage(
-                        "styleForm:styleEditor:editorContainer:toolbar", false)
+        tester.getComponentFromLastRenderedPage("styleForm:styleEditor:editorContainer:toolbar", false)
                 .setVisible(true);
 
-        tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
         tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
         tester.assertInvisible("dialog:dialog:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
-        List<? extends String> choices =
-                ((DropDownChoice<String>)
-                                tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:image"))
-                        .getChoices();
+        List<? extends String> choices = ((DropDownChoice<String>)
+                        tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel:image"))
+                .getChoices();
         assertEquals(4, choices.size());
         assertEquals("otherpicture.jpg", choices.get(1));
         assertEquals("somepicture.png", choices.get(2));
@@ -513,15 +457,13 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         formTester.submit("submit");
 
         // we can at least test that the right javascript code is there
-        Pattern pattern =
-                Pattern.compile(
-                        "replaceSelection\\('<ExternalGraphic "
-                                + "xmlns=\"http://www.opengis.net/sld\" "
-                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
-                                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
-                                + "(.*)\" />\\\\n"
-                                + "<Format>(.*)</Format>\\\\n"
-                                + "</ExternalGraphic>\\\\n'\\)");
+        Pattern pattern = Pattern.compile("replaceSelection\\('<ExternalGraphic "
+                + "xmlns=\"http://www.opengis.net/sld\" "
+                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
+                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
+                + "(.*)\" />\\\\n"
+                + "<Format>(.*)</Format>\\\\n"
+                + "</ExternalGraphic>\\\\n'\\)");
         Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
         assertTrue(matcher.find());
         assertEquals("somepicture.png", matcher.group(1));
@@ -530,9 +472,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         // test uploading
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         formTester = tester.newFormTester("dialog:dialog:content:form");
-        org.apache.wicket.util.file.File file =
-                new org.apache.wicket.util.file.File(
-                        getClass().getResource("GeoServer_75.png").getFile());
+        org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(
+                getClass().getResource("GeoServer_75.png").getFile());
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
 
@@ -549,22 +490,19 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInsertImageEscaped() throws Exception {
         // create some fake images
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         dd.getStyles().get("');foo('.png").out().close();
 
         // since we don't have code mirror available in the test environment, we are kind of limited
         // we'll make the tool bar visible to test the dialog anyway
-        tester.getComponentFromLastRenderedPage(
-                        "styleForm:styleEditor:editorContainer:toolbar", false)
+        tester.getComponentFromLastRenderedPage("styleForm:styleEditor:editorContainer:toolbar", false)
                 .setVisible(true);
 
         // test uploading
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
-        org.apache.wicket.util.file.File file =
-                new org.apache.wicket.util.file.File(
-                        dd.getStyles().get("');foo('.png").file().getPath());
+        org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(
+                dd.getStyles().get("');foo('.png").file().getPath());
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
         String response = tester.getLastResponseAsString();
@@ -581,31 +519,25 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testLegendChooseImage() throws Exception {
         // create some fake images
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         dd.getStyles().get("somepicture.png").out().close();
         dd.getStyles().get("otherpicture.jpg").out().close();
         dd.getStyles().get("vector.svg").out().close();
 
         // Load the legend
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
 
         // choose image
         tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
-                "click");
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage", "click");
 
         tester.assertComponent("dialog:dialog:content:form:userPanel", ChooseImagePanel.class);
         tester.assertComponent("dialog:dialog:content:form:userPanel:image", DropDownChoice.class);
         tester.assertInvisible("dialog:dialog:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
-        List<? extends String> choices =
-                ((DropDownChoice<String>)
-                                tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:image"))
-                        .getChoices();
+        List<? extends String> choices = ((DropDownChoice<String>)
+                        tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel:image"))
+                .getChoices();
         assertEquals(3, choices.size());
         assertEquals("otherpicture.jpg", choices.get(1));
         assertEquals("somepicture.png", choices.get(2));
@@ -619,25 +551,21 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         formTester.submit("submit");
 
         tester.assertModelValue(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "somepicture.png");
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "somepicture.png");
 
         // test uploading
         tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
-                "click");
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage", "click");
         formTester = tester.newFormTester("dialog:dialog:content:form");
-        org.apache.wicket.util.file.File file =
-                new org.apache.wicket.util.file.File(
-                        getClass().getResource("GeoServer_75.png").getFile());
+        org.apache.wicket.util.file.File file = new org.apache.wicket.util.file.File(
+                getClass().getResource("GeoServer_75.png").getFile());
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
 
         assertTrue(Resources.exists(dd.getStyles().get("GeoServer_75.png")));
 
         tester.assertModelValue(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "GeoServer_75.png");
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "GeoServer_75.png");
 
         dd.getStyles().get("GeoServer_75.png").delete();
     }

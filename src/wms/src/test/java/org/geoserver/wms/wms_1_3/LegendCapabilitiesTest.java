@@ -34,8 +34,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     // What is important for this test is the legend info we are adding.
     private static final String LAYER_NAME = "watertemp";
     private static final String HTTP_LEGEND_LAYER = "watertemp_http_legend";
-    private static final QName LAYER_QNAME =
-            new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
+    private static final QName LAYER_QNAME = new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_QNAME_HTP_LEGND =
             new QName(MockData.DEFAULT_URI, HTTP_LEGEND_LAYER, MockData.DEFAULT_PREFIX);
     private static final String LAYER_FILE = "custwatertemp.zip";
@@ -51,8 +50,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     private static final String BASE = "src/test/resources/geoserver";
 
     private static final String LAYER_NAME_WS = "watertemp_ws";
-    private static final QName LAYER_QNAME_WS =
-            new QName(MockData.DEFAULT_URI, LAYER_NAME_WS, MockData.DEFAULT_PREFIX);
+    private static final QName LAYER_QNAME_WS = new QName(MockData.DEFAULT_URI, LAYER_NAME_WS, MockData.DEFAULT_PREFIX);
     private static final String STYLE_NAME_WS = "temperature_ws";
 
     @Override
@@ -73,8 +71,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         testData.addStyle(null, STYLE_NAME, STYLE_FILE, getClass(), getCatalog(), legend);
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
-        testData.addRasterLayer(
-                LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
 
         // Test for workspaced legend graphic
         LegendInfo legendWs = new LegendInfoImpl();
@@ -92,13 +89,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         testData.addStyle(wsInfo, STYLE_NAME_WS, STYLE_FILE, getClass(), getCatalog(), legendWs);
         Map<SystemTestData.LayerProperty, Object> propertyMapWs = new HashMap<>();
         propertyMapWs.put(LayerProperty.STYLE, STYLE_NAME_WS);
-        testData.addRasterLayer(
-                LAYER_QNAME_WS,
-                LAYER_FILE,
-                null,
-                propertyMapWs,
-                SystemTestData.class,
-                getCatalog());
+        testData.addRasterLayer(LAYER_QNAME_WS, LAYER_FILE, null, propertyMapWs, SystemTestData.class, getCatalog());
 
         addLayerWithHttpLegend(testData);
 
@@ -131,12 +122,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
         testData.addRasterLayer(
-                LAYER_QNAME_HTP_LEGND,
-                LAYER_FILE,
-                null,
-                propertyMap,
-                SystemTestData.class,
-                getCatalog());
+                LAYER_QNAME_HTP_LEGND, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -168,38 +154,30 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                         + "&layer=gs%3A"
                         + HTTP_LEGEND_LAYER;
 
-        final String legendUrlPath =
-                "//wms:Layer[wms:Name='gs:" + LAYER_NAME + "']/wms:Style/wms:LegendURL";
+        final String legendUrlPath = "//wms:Layer[wms:Name='gs:" + LAYER_NAME + "']/wms:Style/wms:LegendURL";
 
         // assert that legend resources are hidden behind a GetLegendGraphic request URL
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPath + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/wms:Format", dom);
         assertXpathEvaluatesTo(
-                BASE + expectedGetLegendGraphicRequestURL,
-                legendUrlPath + "/wms:OnlineResource/@xlink:href",
-                dom);
+                BASE + expectedGetLegendGraphicRequestURL, legendUrlPath + "/wms:OnlineResource/@xlink:href", dom);
 
-        final String legendUrlPathWs =
-                "//wms:Layer[wms:Name='gs:" + LAYER_NAME_WS + "']/wms:Style/wms:LegendURL";
+        final String legendUrlPathWs = "//wms:Layer[wms:Name='gs:" + LAYER_NAME_WS + "']/wms:Style/wms:LegendURL";
 
         // assert that legend resources are hidden behind a GetLegendGraphic request URL
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPathWs + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPathWs + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPathWs + "/wms:Format", dom);
         assertXpathEvaluatesTo(
-                BASE + expectedGetLegendGraphicRequestURLWS,
-                legendUrlPathWs + "/wms:OnlineResource/@xlink:href",
-                dom);
+                BASE + expectedGetLegendGraphicRequestURLWS, legendUrlPathWs + "/wms:OnlineResource/@xlink:href", dom);
 
         final String legendUrlPathHTTPLegend =
                 "//wms:Layer[wms:Name='gs:" + HTTP_LEGEND_LAYER + "']/wms:Style/wms:LegendURL";
 
         // assert that legend resources are hidden behind a GetLegendGraphic request URL
-        assertXpathEvaluatesTo(
-                String.valueOf(LEGEND_WIDTH), legendUrlPathHTTPLegend + "/@width", dom);
-        assertXpathEvaluatesTo(
-                String.valueOf(LEGEND_HEIGHT), legendUrlPathHTTPLegend + "/@height", dom);
+        assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPathHTTPLegend + "/@width", dom);
+        assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPathHTTPLegend + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPathHTTPLegend + "/wms:Format", dom);
         assertXpathEvaluatesTo(
                 BASE + expectedGetLegendGraphicRequestURLHttp,

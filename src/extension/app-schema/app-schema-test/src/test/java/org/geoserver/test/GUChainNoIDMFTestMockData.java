@@ -16,7 +16,6 @@ public class GUChainNoIDMFTestMockData extends AbstractAppSchemaMockData {
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(
-                GSML_PREFIX, "GeologicUnit", "GUInLineNoIDMF.xml", "GeologicUnit.properties");
+        addFeatureType(GSML_PREFIX, "GeologicUnit", "GUInLineNoIDMF.xml", "GeologicUnit.properties");
     }
 }

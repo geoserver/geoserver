@@ -31,8 +31,7 @@ public class LanguageURLManglerTest extends GeoServerSystemTestSupport {
     public void testAcceptLanguagesCommaParam() {
         final LanguageURLMangler languageURLMangler = new LanguageURLMangler();
         final Request wrappedRequest = new Request();
-        wrappedRequest.setRawKvp(
-                Collections.singletonMap(LanguageURLMangler.ACCEPT_LANGUAGES, "en, it, de"));
+        wrappedRequest.setRawKvp(Collections.singletonMap(LanguageURLMangler.ACCEPT_LANGUAGES, "en, it, de"));
         Dispatcher.REQUEST.set(wrappedRequest);
 
         final Map<String, String> accumulator = new HashMap<>();
@@ -45,8 +44,7 @@ public class LanguageURLManglerTest extends GeoServerSystemTestSupport {
     public void testAcceptLanguagesSpaceParam() {
         final LanguageURLMangler languageURLMangler = new LanguageURLMangler();
         final Request wrappedRequest = new Request();
-        wrappedRequest.setRawKvp(
-                Collections.singletonMap(LanguageURLMangler.ACCEPT_LANGUAGES, "de fr it"));
+        wrappedRequest.setRawKvp(Collections.singletonMap(LanguageURLMangler.ACCEPT_LANGUAGES, "de fr it"));
         Dispatcher.REQUEST.set(wrappedRequest);
 
         final Map<String, String> accumulator = new HashMap<>();
@@ -72,8 +70,7 @@ public class LanguageURLManglerTest extends GeoServerSystemTestSupport {
         final LanguageURLMangler languageURLMangler = new LanguageURLMangler();
         final Request wrappedRequest = new Request();
         Dispatcher.REQUEST.set(wrappedRequest);
-        wrappedRequest.setRawKvp(
-                Collections.singletonMap(LanguageURLMangler.ACCEPT_LANGUAGES, "de fr it"));
+        wrappedRequest.setRawKvp(Collections.singletonMap(LanguageURLMangler.ACCEPT_LANGUAGES, "de fr it"));
         wrappedRequest.setRawKvp(Collections.singletonMap(LanguageURLMangler.LANGUAGE, "it"));
 
         final Map<String, String> accumulator = new HashMap<>();

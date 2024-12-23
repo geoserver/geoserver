@@ -89,13 +89,11 @@ public class FeatureTypeInfoImplTest {
         FeatureTypeInfoImpl f2 = new FeatureTypeInfoImpl();
 
         // initialize both with the same state, no title but i18n title available
-        Consumer<FeatureTypeInfoImpl> initer =
-                f -> {
-                    GrowableInternationalString title =
-                            new GrowableInternationalString("default language");
-                    title.add(Locale.ITALIAN, "lingua italiana");
-                    f.setInternationalTitle(title);
-                };
+        Consumer<FeatureTypeInfoImpl> initer = f -> {
+            GrowableInternationalString title = new GrowableInternationalString("default language");
+            title.add(Locale.ITALIAN, "lingua italiana");
+            f.setInternationalTitle(title);
+        };
         initer.accept(f1);
         initer.accept(f2);
 
@@ -108,13 +106,11 @@ public class FeatureTypeInfoImplTest {
         FeatureTypeInfoImpl f2 = new FeatureTypeInfoImpl();
 
         // initialize both with the same state, no abstract but i18n abstract available
-        Consumer<FeatureTypeInfoImpl> initer =
-                f -> {
-                    GrowableInternationalString abs =
-                            new GrowableInternationalString("default language");
-                    abs.add(Locale.ITALIAN, "lingua italiana");
-                    f.setInternationalAbstract(abs);
-                };
+        Consumer<FeatureTypeInfoImpl> initer = f -> {
+            GrowableInternationalString abs = new GrowableInternationalString("default language");
+            abs.add(Locale.ITALIAN, "lingua italiana");
+            f.setInternationalAbstract(abs);
+        };
         initer.accept(f1);
         initer.accept(f2);
 

@@ -141,16 +141,11 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                 tmpWidth += ((int) Math.ceil(TITLE_INDENT * 2 * scaleFactor)); // indent the title
             }
 
-            Dimension size =
-                    new BasicStroke((float) scaleFactor)
-                            .createStrokedShape(new Rectangle(0, 0, tmpWidth, tmpHeight))
-                            .getBounds()
-                            .getSize();
-            height +=
-                    (int)
-                            Math.ceil(
-                                    size.getHeight()
-                                            + (size.getHeight() * BETWEEN_LEGENDS_PERCENT_INDENT));
+            Dimension size = new BasicStroke((float) scaleFactor)
+                    .createStrokedShape(new Rectangle(0, 0, tmpWidth, tmpHeight))
+                    .getBounds()
+                    .getSize();
+            height += (int) Math.ceil(size.getHeight() + (size.getHeight() * BETWEEN_LEGENDS_PERCENT_INDENT));
             if (size.getWidth() > width) {
                 width = (int) Math.ceil(size.getWidth());
             }
@@ -160,15 +155,12 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     @Override
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContext)
-            throws Exception {
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContext) throws Exception {
         // check if LayerLegends have been computed in the above method; if not
         // (cause a custom legend size and findOptimalSize has not been called)
         // they are produced here
         List<LayerLegend> legends =
-                this.legends.get() != null
-                        ? this.legends.get()
-                        : getLayerLegend(g2d, mapContext, paintArea);
+                this.legends.get() != null ? this.legends.get() : getLayerLegend(g2d, mapContext, paintArea);
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;
@@ -190,23 +182,17 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                 }
             }
 
-            Dimension size =
-                    new BasicStroke((float) scaleFactor)
-                            .createStrokedShape(new Rectangle(0, 0, width, height))
-                            .getBounds()
-                            .getSize();
+            Dimension size = new BasicStroke((float) scaleFactor)
+                    .createStrokedShape(new Rectangle(0, 0, width, height))
+                    .getBounds()
+                    .getSize();
             int strokeHeight = (int) Math.ceil(size.getHeight());
             int strokeWidth = (int) Math.ceil(size.getWidth());
 
             // output image
-            BufferedImage finalLegend =
-                    ImageUtils.createImage(strokeWidth, strokeHeight, null, false);
-            Graphics2D finalGraphics =
-                    ImageUtils.prepareTransparency(
-                            false,
-                            LegendUtils.getBackgroundColor(legend.request),
-                            finalLegend,
-                            new HashMap<>());
+            BufferedImage finalLegend = ImageUtils.createImage(strokeWidth, strokeHeight, null, false);
+            Graphics2D finalGraphics = ImageUtils.prepareTransparency(
+                    false, LegendUtils.getBackgroundColor(legend.request), finalLegend, new HashMap<>());
 
             // title
             int titleHeightOffset = 0;
@@ -229,10 +215,8 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
             // border
             finalGraphics.setColor(LegendUtils.DEFAULT_BORDER_COLOR);
-            finalGraphics.fill(
-                    new BasicStroke((float) scaleFactor)
-                            .createStrokedShape(
-                                    new Rectangle(0, 0, strokeWidth - 1, strokeHeight - 1)));
+            finalGraphics.fill(new BasicStroke((float) scaleFactor)
+                    .createStrokedShape(new Rectangle(0, 0, strokeWidth - 1, strokeHeight - 1)));
 
             // draw output image
             g2d.drawImage(
@@ -251,10 +235,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         }
         String[] nameparts = layer.getTitle().split(":");
 
-        ResourceInfo resource =
-                nameparts.length > 1
-                        ? catalog.getResourceByName(nameparts[0], nameparts[1], ResourceInfo.class)
-                        : catalog.getResourceByName(nameparts[0], ResourceInfo.class);
+        ResourceInfo resource = nameparts.length > 1
+                ? catalog.getResourceByName(nameparts[0], nameparts[1], ResourceInfo.class)
+                : catalog.getResourceByName(nameparts[0], ResourceInfo.class);
 
         if (useSldTitle
                 && layer.getStyle() != null
@@ -274,20 +257,15 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         LayerInfo info = wms.getLayerByName(layer.getTitle());
         StyleInfo defaultStyle = info.getDefaultStyle();
 
-        Predicate<StyleInfo> predicate =
-                s -> {
-                    try {
-                        return s.getName().equals(layer.getStyle().getName())
-                                && s.getStyle() != null;
-                    } catch (IOException e) {
-                        return false;
-                    }
-                };
+        Predicate<StyleInfo> predicate = s -> {
+            try {
+                return s.getName().equals(layer.getStyle().getName()) && s.getStyle() != null;
+            } catch (IOException e) {
+                return false;
+            }
+        };
         StyleInfo sInfo =
-                info.getStyles().stream()
-                        .filter(predicate)
-                        .findFirst()
-                        .orElseGet(() -> defaultStyle);
+                info.getStyles().stream().filter(predicate).findFirst().orElseGet(() -> defaultStyle);
 
         LegendInfo legend = sInfo.getLegend();
         // if there is no online resource symbol size is computed in
@@ -326,22 +304,17 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     @SuppressWarnings("unchecked")
-    private List<LayerLegend> getLayerLegend(
-            Graphics2D g2d, WMSMapContent mapContext, Rectangle size) {
+    private List<LayerLegend> getLayerLegend(Graphics2D g2d, WMSMapContent mapContext, Rectangle size) {
         List<LayerLegend> legendLayers = new ArrayList<>();
         double scaleDenominator = mapContext.getScaleDenominator(true);
         for (Layer layer : mapContext.layers()) {
-            Rule[] applicableRules =
-                    LegendUtils.getApplicableRules(
-                            layer.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0]),
-                            scaleDenominator);
-            if ((!layers.isEmpty() && !layers.contains(layer.getTitle()))
-                    || applicableRules.length == 0) {
+            Rule[] applicableRules = LegendUtils.getApplicableRules(
+                    layer.getStyle().featureTypeStyles().toArray(new FeatureTypeStyle[0]), scaleDenominator);
+            if ((!layers.isEmpty() && !layers.contains(layer.getTitle())) || applicableRules.length == 0) {
                 continue;
             }
 
-            BufferedImageLegendGraphicBuilder legendGraphicBuilder =
-                    new BufferedImageLegendGraphicBuilder();
+            BufferedImageLegendGraphicBuilder legendGraphicBuilder = new BufferedImageLegendGraphicBuilder();
             GetLegendGraphicRequest request = new GetLegendGraphicRequest();
             request.setLayer(layer.getFeatureSource().getSchema());
             request.setTransparent(true);
@@ -366,8 +339,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             float opacity = opacityOption;
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
-            if (dispatcherRequest != null
-                    && dispatcherRequest.getKvp().get("legend_options") != null) {
+            if (dispatcherRequest != null && dispatcherRequest.getKvp().get("legend_options") != null) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> requestOptions =
                         (Map) dispatcherRequest.getKvp().get("legend_options");
@@ -386,13 +358,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                 Font oldFont = g2d.getFont();
                 g2d.setFont(newFont);
                 if (LegendUtils.isFontAntiAliasing(legend.request)) {
-                    g2d.setRenderingHint(
-                            RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 } else {
-                    g2d.setRenderingHint(
-                            RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
                 }
                 BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
                 g2d.setFont(oldFont);

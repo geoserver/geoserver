@@ -28,26 +28,24 @@ public class WMSExtensions {
     }
 
     /**
-     * Finds out a {@link GetMapOutputFormat} specialized in generating the requested map format,
-     * registered in the spring context.
+     * Finds out a {@link GetMapOutputFormat} specialized in generating the requested map format, registered in the
+     * spring context.
      *
-     * @param outputFormat a request parameter object wich holds the processed request objects, such
-     *     as layers, bbox, outpu format, etc.
-     * @return A specialization of <code>GetMapDelegate</code> wich can produce the requested output
-     *     map format, or {@code null} if none is found
+     * @param outputFormat a request parameter object wich holds the processed request objects, such as layers, bbox,
+     *     outpu format, etc.
+     * @return A specialization of <code>GetMapDelegate</code> wich can produce the requested output map format, or
+     *     {@code null} if none is found
      */
     public static GetMapOutputFormat findMapProducer(
             final String outputFormat, final ApplicationContext applicationContext) {
 
-        final Collection<GetMapOutputFormat> producers =
-                WMSExtensions.findMapProducers(applicationContext);
+        final Collection<GetMapOutputFormat> producers = WMSExtensions.findMapProducers(applicationContext);
 
         return findMapProducer(outputFormat, producers);
     }
 
     /** @return {@link GetMapOutputFormat} for the requested outputFormat, or {@code null} */
-    public static GetMapOutputFormat findMapProducer(
-            String outputFormat, Collection<GetMapOutputFormat> producers) {
+    public static GetMapOutputFormat findMapProducer(String outputFormat, Collection<GetMapOutputFormat> producers) {
 
         Set<String> producerFormats;
         for (GetMapOutputFormat producer : producers) {
@@ -62,8 +60,7 @@ public class WMSExtensions {
     }
 
     /** @return the configured {@link GetFeatureInfoOutputFormat}s */
-    public static List<GetFeatureInfoOutputFormat> findFeatureInfoFormats(
-            ApplicationContext applicationContext) {
+    public static List<GetFeatureInfoOutputFormat> findFeatureInfoFormats(ApplicationContext applicationContext) {
         return GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class, applicationContext);
     }
 
@@ -83,24 +80,18 @@ public class WMSExtensions {
     public static List<GetLegendGraphicOutputFormat> findLegendGraphicFormats(
             final ApplicationContext applicationContext) {
         List<GetLegendGraphicOutputFormat> formats =
-                GeoServerExtensions.extensions(
-                        GetLegendGraphicOutputFormat.class, applicationContext);
+                GeoServerExtensions.extensions(GetLegendGraphicOutputFormat.class, applicationContext);
         return formats;
     }
 
     /** Looks up {@link ExtendedCapabilitiesProvider} extensions. */
     public static List<ExtendedCapabilitiesProvider> findExtendedCapabilitiesProviders(
             final ApplicationContext applicationContext) {
-        return GeoServerExtensions.extensions(
-                ExtendedCapabilitiesProvider.class, applicationContext);
+        return GeoServerExtensions.extensions(ExtendedCapabilitiesProvider.class, applicationContext);
     }
 
-    /**
-     * Looks up all the {@link RenderedImageMapResponse} registered in the Spring application
-     * context
-     */
-    public static Collection<RenderedImageMapResponse> findMapResponses(
-            ApplicationContext applicationContext) {
+    /** Looks up all the {@link RenderedImageMapResponse} registered in the Spring application context */
+    public static Collection<RenderedImageMapResponse> findMapResponses(ApplicationContext applicationContext) {
         return GeoServerExtensions.extensions(RenderedImageMapResponse.class, applicationContext);
     }
 }

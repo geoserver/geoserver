@@ -34,15 +34,13 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 
     public static final String REL_COVERAGE = "http://www.opengis.net/def/rel/ogc/1.0/coverage";
-    public static final String REL_DOMAINSET =
-            "http://www.opengis.net/def/rel/ogc/1.0/coverage-domainset";
+    public static final String REL_DOMAINSET = "http://www.opengis.net/def/rel/ogc/1.0/coverage-domainset";
 
     CoverageInfo coverage;
     String mapPreviewURL;
     List<String> crs;
 
-    public CollectionDocument(GeoServer geoServer, CoverageInfo coverage, List<String> crs)
-            throws IOException {
+    public CollectionDocument(GeoServer geoServer, CoverageInfo coverage, List<String> crs) throws IOException {
         super(coverage);
         // basic info
         String collectionId = coverage.prefixedName();
@@ -63,39 +61,29 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
 
         // links for coverage extraction
         String baseUrl = APIRequestInfo.get().getBaseURL();
-        for (MediaType format :
-                APIRequestInfo.get().getProducibleMediaTypes(CoveragesResponse.class, false)) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/coverages/v1/collections/" + collectionId + "/coverage",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            REL_COVERAGE,
-                            format.toString(),
-                            collectionId + " coverage as " + format,
-                            "coverage"));
+        for (MediaType format : APIRequestInfo.get().getProducibleMediaTypes(CoveragesResponse.class, false)) {
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/coverages/v1/collections/" + collectionId + "/coverage",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            addLink(new Link(
+                    apiUrl, REL_COVERAGE, format.toString(), collectionId + " coverage as " + format, "coverage"));
         }
 
         // domainSet
-        for (MediaType format :
-                APIRequestInfo.get().getProducibleMediaTypes(DomainSet.class, false)) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/coverages/v1/collections/" + collectionId + "/coverage/domainset",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            REL_DOMAINSET,
-                            format.toString(),
-                            collectionId + " coverage domainset as " + format,
-                            "domainset"));
+        for (MediaType format : APIRequestInfo.get().getProducibleMediaTypes(DomainSet.class, false)) {
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/coverages/v1/collections/" + collectionId + "/coverage/domainset",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            addLink(new Link(
+                    apiUrl,
+                    REL_DOMAINSET,
+                    format.toString(),
+                    collectionId + " coverage domainset as " + format,
+                    "domainset"));
         }
 
         // map preview
@@ -103,17 +91,15 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
             Map<String, String> kvp = new HashMap<>();
             kvp.put("LAYERS", coverage.prefixedName());
             kvp.put("FORMAT", "application/openlayers");
-            this.mapPreviewURL =
-                    ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
+            this.mapPreviewURL = ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
         }
     }
 
     private boolean isWMSAvailable(GeoServer geoServer) {
-        ServiceInfo si =
-                geoServer.getServices().stream()
-                        .filter(s -> "WMS".equals(s.getId()))
-                        .findFirst()
-                        .orElse(null);
+        ServiceInfo si = geoServer.getServices().stream()
+                .filter(s -> "WMS".equals(s.getId()))
+                .findFirst()
+                .orElse(null);
         return si != null;
     }
 

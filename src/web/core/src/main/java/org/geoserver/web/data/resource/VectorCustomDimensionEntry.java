@@ -15,8 +15,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 
 /**
- * DimensionInfo implementation with extra attributes for use in {@link
- * VectorCustomDimensionEditor}.
+ * DimensionInfo implementation with extra attributes for use in {@link VectorCustomDimensionEditor}.
  *
  * @author Fernando Mino - Geosolutions
  */

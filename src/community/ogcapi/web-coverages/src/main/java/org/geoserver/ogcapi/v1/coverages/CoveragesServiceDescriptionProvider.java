@@ -8,8 +8,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
-public class CoveragesServiceDescriptionProvider
-        extends OgcApiServiceDescriptionProvider<WCSInfo, CoveragesService> {
+public class CoveragesServiceDescriptionProvider extends OgcApiServiceDescriptionProvider<WCSInfo, CoveragesService> {
 
     public CoveragesServiceDescriptionProvider(GeoServer gs) {
         super(gs, "WCS", "Coverages", "Coverages");

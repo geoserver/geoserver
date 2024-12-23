@@ -105,17 +105,9 @@ public class FeatureTemplateTest extends WMSTestSupport {
         try (InputStream is = FeatureTemplate.class.getResourceAsStream("height.ftl")) {
             defaultHeightTemplate = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
-        assertTrue(
-                template.isTemplateEmpty(
-                        source.getSchema(),
-                        "height.ftl",
-                        FeatureTemplate.class,
-                        defaultHeightTemplate));
-        assertTrue(
-                template.isTemplateEmpty(
-                        source.getSchema(), "time.ftl", FeatureTemplate.class, null));
-        assertFalse(
-                template.isTemplateEmpty(
-                        source.getSchema(), "title.ftl", FeatureTemplate.class, null));
+        assertTrue(template.isTemplateEmpty(
+                source.getSchema(), "height.ftl", FeatureTemplate.class, defaultHeightTemplate));
+        assertTrue(template.isTemplateEmpty(source.getSchema(), "time.ftl", FeatureTemplate.class, null));
+        assertFalse(template.isTemplateEmpty(source.getSchema(), "title.ftl", FeatureTemplate.class, null));
     }
 }

@@ -56,8 +56,8 @@ public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serial
     }
 
     /**
-     * Select2 javascript code needs a unique HTML id for each component. This method generates a
-     * unique id for the component using the component's markup id and a random UUID.
+     * Select2 javascript code needs a unique HTML id for each component. This method generates a unique id for the
+     * component using the component's markup id and a random UUID.
      */
     private String select2UniqueIdentifier() {
         UUID randomUUID = UUID.randomUUID();

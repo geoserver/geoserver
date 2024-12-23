@@ -47,8 +47,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
     private static final Crop coverageCropFactory = new Crop();
 
     static {
-        final CoverageProcessor processor =
-                new CoverageProcessor(new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+        final CoverageProcessor processor = new CoverageProcessor(new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
         cropParams = processor.getOperation("CoverageCrop").getParameters();
     }
 
@@ -70,13 +69,11 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters)
-            throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
         return SecuredGridCoverage2DReader.read(delegate, policy, parameters);
     }
 
-    static GridCoverage2D read(
-            GridCoverage2DReader delegate, WrapperPolicy policy, GeneralParameterValue[] parameters)
+    static GridCoverage2D read(GridCoverage2DReader delegate, WrapperPolicy policy, GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         // Package private static method to share reading code with Structured reader
         MultiPolygon rasterFilter = null;
@@ -134,9 +131,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                     }
                 }
                 if (!replacedOriginalFilter) {
-                    parameters =
-                            CoverageUtils.mergeParameter(
-                                    descriptors, parameters, readFilter, "FILTER", "Filter");
+                    parameters = CoverageUtils.mergeParameter(descriptors, parameters, readFilter, "FILTER", "Filter");
                 }
             }
         }
@@ -145,8 +140,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
         // crop if necessary
         if (rasterFilter != null && grid != null) {
-            Geometry coverageBounds =
-                    JTS.toGeometry((Envelope) new ReferencedEnvelope(grid.getEnvelope2D()));
+            Geometry coverageBounds = JTS.toGeometry((Envelope) new ReferencedEnvelope(grid.getEnvelope2D()));
             if (coverageBounds.intersects(rasterFilter)) {
                 final ParameterValueGroup param = cropParams.clone();
                 param.parameter("source").setValue(grid);

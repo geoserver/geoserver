@@ -15,19 +15,16 @@ public class InspireDirectoryManagerTest extends GeoServerSystemTestSupport {
     public void testLanguagesMappingsOverride() throws IOException {
         InspireDirectoryManager inspireDir = InspireDirectoryManager.get();
         assertTrue(inspireDir.getLanguagesMappings().keySet().size() > 1);
-        File file =
-                getDataDirectory()
-                        .get(
-                                InspireDirectoryManager.INSPIRE_DIR,
-                                InspireDirectoryManager.LANGUAGES_MAPPINGS)
-                        .file();
+        File file = getDataDirectory()
+                .get(InspireDirectoryManager.INSPIRE_DIR, InspireDirectoryManager.LANGUAGES_MAPPINGS)
+                .file();
         file.createNewFile();
-        getResourceLoader()
-                .copyFromClassPath("available_languages_override.properties", file, getClass());
+        getResourceLoader().copyFromClassPath("available_languages_override.properties", file, getClass());
 
         Properties properties = inspireDir.getLanguagesMappings();
         assertEquals(1, properties.keySet().size());
         assertEquals(
-                "bg", properties.getProperty(properties.keySet().iterator().next().toString()));
+                "bg",
+                properties.getProperty(properties.keySet().iterator().next().toString()));
     }
 }

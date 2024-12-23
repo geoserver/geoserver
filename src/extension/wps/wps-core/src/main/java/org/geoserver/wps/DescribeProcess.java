@@ -70,8 +70,8 @@ public class DescribeProcess {
     Ows11Factory owsf = Ows11Factory.eINSTANCE;
 
     /**
-     * Maps the primitive types that can still be used in process input/output descriptions to
-     * object wrappers that we can use in process descriptions
+     * Maps the primitive types that can still be used in process input/output descriptions to object wrappers that we
+     * can use in process descriptions
      */
     static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER;
 
@@ -157,16 +157,13 @@ public class DescribeProcess {
 
             // WPS spec specifies non-negative for unlimited inputs, so -1 -> 0
             input.setMaxOccurs(
-                    p.maxOccurs == -1
-                            ? BigInteger.valueOf(Long.MAX_VALUE)
-                            : BigInteger.valueOf(p.maxOccurs));
+                    p.maxOccurs == -1 ? BigInteger.valueOf(Long.MAX_VALUE) : BigInteger.valueOf(p.maxOccurs));
 
             input.setMinOccurs(BigInteger.valueOf(p.minOccurs));
 
             List<ProcessParameterIO> ppios = ProcessParameterIO.findDecoder(p, context);
             if (ppios.isEmpty()) {
-                throw new WPSException(
-                        "Could not find process parameter for type " + p.key + "," + p.type);
+                throw new WPSException("Could not find process parameter for type " + p.key + "," + p.type);
             }
 
             // handle the literal case
@@ -207,10 +204,7 @@ public class DescribeProcess {
                 } catch (Exception e) {
                     LOGGER.log(
                             Level.WARNING,
-                            "Failed to fill the default value for input "
-                                    + p.key
-                                    + " of process "
-                                    + name,
+                            "Failed to fill the default value for input " + p.key + " of process " + name,
                             e);
                 }
             } else if (ppios.get(0) instanceof BoundingBoxPPIO) {
@@ -220,8 +214,7 @@ public class DescribeProcess {
                 SupportedComplexDataInputType complex = wpsf.createSupportedComplexDataInputType();
                 input.setComplexData(complex);
                 if (p.metadata.get(MaxSizeValidator.PARAMETER_KEY) instanceof Number) {
-                    int maxSize =
-                            ((Number) p.metadata.get(MaxSizeValidator.PARAMETER_KEY)).intValue();
+                    int maxSize = ((Number) p.metadata.get(MaxSizeValidator.PARAMETER_KEY)).intValue();
                     if (maxSize > 0) {
                         complex.setMaximumMegabytes(BigInteger.valueOf(maxSize));
                     }
@@ -235,8 +228,7 @@ public class DescribeProcess {
                     if (ppio instanceof RawDataPPIO) {
                         String[] mimeTypes = AbstractRawData.getMimeTypes(p);
                         for (String mimeType : mimeTypes) {
-                            ComplexDataDescriptionType ddt =
-                                    wpsf.createComplexDataDescriptionType();
+                            ComplexDataDescriptionType ddt = wpsf.createComplexDataDescriptionType();
                             ddt.setMimeType(mimeType);
                             // heuristic to figure out if a format is text based, or not, we
                             // might want to expose this as a separate annotation/property down the
@@ -341,8 +333,7 @@ public class DescribeProcess {
 
             List<ProcessParameterIO> ppios = ProcessParameterIO.findEncoder(p, context);
             if (ppios.isEmpty()) {
-                throw new WPSException(
-                        "Could not find process parameter for type " + p.key + "," + p.type);
+                throw new WPSException("Could not find process parameter for type " + p.key + "," + p.type);
             }
 
             // handle the literal case
@@ -379,8 +370,7 @@ public class DescribeProcess {
                     if (ppio instanceof RawDataPPIO) {
                         String[] mimeTypes = AbstractRawData.getMimeTypes(p);
                         for (String mimeType : mimeTypes) {
-                            ComplexDataDescriptionType ddt =
-                                    wpsf.createComplexDataDescriptionType();
+                            ComplexDataDescriptionType ddt = wpsf.createComplexDataDescriptionType();
                             ddt.setMimeType(mimeType);
                             complex.getSupported().getFormat().add(ddt);
                             if (format == null) {

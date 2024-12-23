@@ -27,30 +27,27 @@ public class DynamicComplexTypeBuilder extends AttributeTypeBuilder {
     }
 
     public DynamicFeatureType buildNestedFeatureType() {
-        DynamicFeatureType type =
-                (DynamicFeatureType)
-                        factory.createFeatureType(
-                                name(),
-                                new ArrayList<>(),
-                                null,
-                                isAbstract,
-                                Collections.emptyList(),
-                                GMLSchema.ABSTRACTGMLTYPE_TYPE,
-                                null);
+        DynamicFeatureType type = (DynamicFeatureType) factory.createFeatureType(
+                name(),
+                new ArrayList<>(),
+                null,
+                isAbstract,
+                Collections.emptyList(),
+                GMLSchema.ABSTRACTGMLTYPE_TYPE,
+                null);
         resetTypeState();
         return type;
     }
 
     public DynamicComplexType buildComplexType() {
-        ComplexType type =
-                factory.createComplexType(
-                        name(),
-                        new ArrayList<>(),
-                        isIdentifiable,
-                        isAbstract,
-                        Collections.emptyList(),
-                        GMLSchema.ABSTRACTGMLTYPE_TYPE,
-                        null);
+        ComplexType type = factory.createComplexType(
+                name(),
+                new ArrayList<>(),
+                isIdentifiable,
+                isAbstract,
+                Collections.emptyList(),
+                GMLSchema.ABSTRACTGMLTYPE_TYPE,
+                null);
         resetTypeState();
         return (DynamicComplexType) type;
     }

@@ -6,8 +6,8 @@
 package org.geoserver.importer;
 
 /**
- * An exception used to propagate information back to user regarding invalid input. Used to
- * differentiate from other exceptions.
+ * An exception used to propagate information back to user regarding invalid input. Used to differentiate from other
+ * exceptions.
  *
  * @author Ian Schneider <ischneider@opengeo.org>
  */

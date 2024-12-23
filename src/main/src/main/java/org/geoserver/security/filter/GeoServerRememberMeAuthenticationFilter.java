@@ -29,8 +29,7 @@ public class GeoServerRememberMeAuthenticationFilter extends GeoServerCompositeF
 
         GeoServerSecurityManager secMgr = getSecurityManager();
         RememberMeAuthenticationFilter filter =
-                new RememberMeAuthenticationFilter(
-                        secMgr.authenticationManager(), secMgr.getRememberMeService());
+                new RememberMeAuthenticationFilter(secMgr.authenticationManager(), secMgr.getRememberMeService());
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);
     }

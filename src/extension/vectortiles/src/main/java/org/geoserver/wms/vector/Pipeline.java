@@ -15,19 +15,18 @@ public abstract class Pipeline {
     protected static final Geometry EMPTY = new GeometryFactory().createPoint((Coordinate) null);
 
     /** Pipeline terminator which returns the geometry without change. */
-    static final Pipeline END =
-            new Pipeline() {
+    static final Pipeline END = new Pipeline() {
 
-                @Override
-                public final Geometry execute(Geometry geom) {
-                    return geom;
-                }
+        @Override
+        public final Geometry execute(Geometry geom) {
+            return geom;
+        }
 
-                @Override
-                protected final Geometry _run(Geometry geom) {
-                    throw new UnsupportedOperationException();
-                }
-            };
+        @Override
+        protected final Geometry _run(Geometry geom) {
+            throw new UnsupportedOperationException();
+        }
+    };
 
     private Pipeline next = END;
 

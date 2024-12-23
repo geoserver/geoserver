@@ -14,12 +14,11 @@ import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
 /**
- * A flow controller setting a cookie on HTTP request and making sure the same user cannot do more
- * than X requests in parallel. Warning: if a client does not support cookies this class cannot work
- * properly and will start accumulating queues with just one item inside. As a workaround when too
- * many queues are accumulated a scan starts that purges all queues that are empty and have not been
- * touched within a given amount of time: the idea is that a past that time we're assuming the
- * client is no more working actively against the server and the queue can thus be removed.
+ * A flow controller setting a cookie on HTTP request and making sure the same user cannot do more than X requests in
+ * parallel. Warning: if a client does not support cookies this class cannot work properly and will start accumulating
+ * queues with just one item inside. As a workaround when too many queues are accumulated a scan starts that purges all
+ * queues that are empty and have not been touched within a given amount of time: the idea is that a past that time
+ * we're assuming the client is no more working actively against the server and the queue can thus be removed.
  *
  * @author Andrea Aime - OpenGeo
  * @author Juan Marin, OpenGeo
@@ -27,10 +26,7 @@ import org.geotools.util.logging.Logging;
 public class UserConcurrentFlowController extends QueueController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
-    /**
-     * Thread local holding the current request queue id TODO: consider having a user map in {@link
-     * Request} instead
-     */
+    /** Thread local holding the current request queue id TODO: consider having a user map in {@link Request} instead */
     static ThreadLocal<String> QUEUE_ID = new ThreadLocal<>();
 
     CookieKeyGenerator keyGenerator = new CookieKeyGenerator();
@@ -45,8 +41,7 @@ public class UserConcurrentFlowController extends QueueController {
     int maxAge = 10000;
 
     /**
-     * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
-     * been accumulated and
+     * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have been accumulated and
      *
      * @param queueSize the maximum amount of per user concurrent requests
      */
@@ -100,30 +95,15 @@ public class UserConcurrentFlowController extends QueueController {
                 queue.put(request);
             }
         } catch (InterruptedException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Unexpected interruption while " + "blocking on the request queue");
+            LOGGER.log(Level.WARNING, "Unexpected interruption while " + "blocking on the request queue");
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "UserFlowController("
-                            + queueSize
-                            + ","
-                            + queueId
-                            + ") queue size "
-                            + queue.size());
-            LOGGER.fine(
-                    "UserFlowController("
-                            + queueSize
-                            + ","
-                            + queueId
-                            + ") total queues "
-                            + queues.size());
+            LOGGER.fine("UserFlowController(" + queueSize + "," + queueId + ") queue size " + queue.size());
+            LOGGER.fine("UserFlowController(" + queueSize + "," + queueId + ") total queues " + queues.size());
         }
 
         // cleanup stale queues if necessary
-        if ((queues.size() > maxQueues && (now - lastCleanup) > (maxAge / 10))
-                || (now - lastCleanup) > maxAge) {
+        if ((queues.size() > maxQueues && (now - lastCleanup) > (maxAge / 10)) || (now - lastCleanup) > maxAge) {
             int cleanupCount = 0;
             synchronized (this) {
                 for (String key : queues.keySet()) {
@@ -135,12 +115,7 @@ public class UserConcurrentFlowController extends QueueController {
                 }
                 lastCleanup = now;
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "UserFlowController("
-                                    + queueSize
-                                    + ") purged "
-                                    + cleanupCount
-                                    + " stale queues");
+                    LOGGER.fine("UserFlowController(" + queueSize + ") purged " + cleanupCount + " stale queues");
                 }
             }
         }

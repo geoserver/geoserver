@@ -77,8 +77,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
     }
 
     public MetadataTemplatePage(
-            IModel<List<MetadataTemplate>> templates,
-            IModel<MetadataTemplate> metadataTemplateModel) {
+            IModel<List<MetadataTemplate>> templates, IModel<MetadataTemplate> metadataTemplateModel) {
         this.templates = templates;
         this.metadataTemplateModel = metadataTemplateModel;
     }
@@ -91,21 +90,13 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
         dialog.setInitialHeight(100);
         ((ModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
-        IModel<ComplexMetadataMap> metadataModel =
-                new Model<>(
-                        new ComplexMetadataMapImpl(
-                                metadataTemplateModel.getObject().getMetadata()));
+        IModel<ComplexMetadataMap> metadataModel = new Model<>(
+                new ComplexMetadataMapImpl(metadataTemplateModel.getObject().getMetadata()));
         ComplexMetadataService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(ComplexMetadataService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
         service.clean(metadataModel.getObject());
 
-        add(
-                progressPanel =
-                        new ProgressPanel(
-                                "progress",
-                                new ResourceModel("MetadataTemplatesPage.updatingMetadata")));
+        add(progressPanel = new ProgressPanel("progress", new ResourceModel("MetadataTemplatesPage.updatingMetadata")));
 
         Form<?> form = new Form<>("form");
 
@@ -118,30 +109,26 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
         form.add(nameField);
 
         TextField<String> desicription =
-                new TextField<>(
-                        "description",
-                        new PropertyModel<String>(metadataTemplateModel, "description"));
+                new TextField<>("description", new PropertyModel<String>(metadataTemplateModel, "description"));
         form.add(desicription);
 
         List<ITab> tabs = new ArrayList<>();
-        tabs.add(
-                new AbstractTab(new ResourceModel("editMetadata")) {
-                    private static final long serialVersionUID = 4375160438369461475L;
+        tabs.add(new AbstractTab(new ResourceModel("editMetadata")) {
+            private static final long serialVersionUID = 4375160438369461475L;
 
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return MetadataPanel.buildPanel(panelId, metadataModel, null, null);
-                    }
-                });
-        tabs.add(
-                new AbstractTab(new ResourceModel("linkedLayers")) {
-                    private static final long serialVersionUID = 871647379377450152L;
+            @Override
+            public Panel getPanel(String panelId) {
+                return MetadataPanel.buildPanel(panelId, metadataModel, null, null);
+            }
+        });
+        tabs.add(new AbstractTab(new ResourceModel("linkedLayers")) {
+            private static final long serialVersionUID = 871647379377450152L;
 
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new LinkedLayersPanel(panelId, metadataTemplateModel);
-                    }
-                });
+            @Override
+            public Panel getPanel(String panelId) {
+                return new LinkedLayersPanel(panelId, metadataTemplateModel);
+            }
+        });
         form.add(new TabbedPanel<ITab>("metadataTabs", tabs));
 
         this.add(form);
@@ -153,8 +140,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
     }
 
     private TextField<String> createNameField(final Form<?> form, final AjaxSubmitLink saveButton) {
-        return new TextField<String>(
-                "name", new PropertyModel<String>(metadataTemplateModel, "name")) {
+        return new TextField<String>("name", new PropertyModel<String>(metadataTemplateModel, "name")) {
             private static final long serialVersionUID = -3736209422699508894L;
 
             @Override
@@ -171,43 +157,36 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 if (metadataTemplateModel.getObject().getLinkedLayers().size() > 0) {
-                    dialog.showOkCancel(
-                            target,
-                            new GeoServerDialog.DialogDelegate() {
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                                private boolean ok = false;
+                        private boolean ok = false;
 
-                                private static final long serialVersionUID = 6769706050075583226L;
+                        private static final long serialVersionUID = 6769706050075583226L;
 
-                                @Override
-                                protected Component getContents(String id) {
-                                    int numLinkedLayers =
-                                            metadataTemplateModel
-                                                    .getObject()
-                                                    .getLinkedLayers()
-                                                    .size();
-                                    return new Label(
-                                            id,
-                                            new ParamResourceModel(
-                                                    "saveWarning",
-                                                    MetadataTemplatePage.this,
-                                                    numLinkedLayers));
-                                }
+                        @Override
+                        protected Component getContents(String id) {
+                            int numLinkedLayers = metadataTemplateModel
+                                    .getObject()
+                                    .getLinkedLayers()
+                                    .size();
+                            return new Label(
+                                    id,
+                                    new ParamResourceModel("saveWarning", MetadataTemplatePage.this, numLinkedLayers));
+                        }
 
-                                @Override
-                                public void onClose(AjaxRequestTarget target) {
-                                    if (ok) {
-                                        save(form, target);
-                                    }
-                                }
+                        @Override
+                        public void onClose(AjaxRequestTarget target) {
+                            if (ok) {
+                                save(form, target);
+                            }
+                        }
 
-                                @Override
-                                protected boolean onSubmit(
-                                        AjaxRequestTarget target, Component contents) {
-                                    ok = true;
-                                    return true;
-                                }
-                            });
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            ok = true;
+                            return true;
+                        }
+                    });
                 } else {
                     save(form, target);
                 }
@@ -233,9 +212,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
 
     private void save(Form<?> form, AjaxRequestTarget target) {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         try {
             boolean isOld = templates.getObject().contains(metadataTemplateModel.getObject());
 
@@ -246,9 +223,9 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                 metadataTemplateModel
                         .getObject()
                         .getLinkedLayers()
-                        .addAll(
-                                service.getById(metadataTemplateModel.getObject().getId())
-                                        .getLinkedLayers());
+                        .addAll(service.getById(
+                                        metadataTemplateModel.getObject().getId())
+                                .getLinkedLayers());
             }
             // save
             service.save(metadataTemplateModel.getObject());
@@ -265,35 +242,28 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
             if (isOld) {
                 GlobalModel<Float> progressModel = new GlobalModel<>(0.0f);
 
-                Executors.newSingleThreadExecutor()
-                        .execute(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        service.update(
-                                                metadataTemplateModel.getObject(),
-                                                progressModel.getKey());
-                                    }
-                                });
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        service.update(metadataTemplateModel.getObject(), progressModel.getKey());
+                    }
+                });
 
-                progressPanel.start(
-                        target,
-                        progressModel,
-                        new ProgressPanel.EventHandler() {
-                            private static final long serialVersionUID = 8967087707332457974L;
+                progressPanel.start(target, progressModel, new ProgressPanel.EventHandler() {
+                    private static final long serialVersionUID = 8967087707332457974L;
 
-                            @Override
-                            public void onFinished(AjaxRequestTarget target) {
-                                doReturn();
-                                progressModel.cleanUp();
-                            }
+                    @Override
+                    public void onFinished(AjaxRequestTarget target) {
+                        doReturn();
+                        progressModel.cleanUp();
+                    }
 
-                            @Override
-                            public void onCanceled(AjaxRequestTarget target) {
-                                doReturn();
-                                progressModel.cleanUp();
-                            }
-                        });
+                    @Override
+                    public void onCanceled(AjaxRequestTarget target) {
+                        doReturn();
+                        progressModel.cleanUp();
+                    }
+                });
             } else {
                 doReturn();
             }
@@ -302,8 +272,7 @@ public class MetadataTemplatePage extends GeoServerSecuredPage {
                 LOGGER.log(Level.WARNING, e.getMessage(), e);
             }
             Throwable rootCause = ExceptionUtils.getRootCause(e);
-            String message =
-                    rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage();
+            String message = rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage();
             if (message != null) {
                 form.error(message);
             }

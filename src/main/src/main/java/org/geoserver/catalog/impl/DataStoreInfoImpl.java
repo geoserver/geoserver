@@ -29,8 +29,8 @@ public class DataStoreInfoImpl extends StoreInfoImpl implements DataStoreInfo {
     }
 
     @Override
-    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
-            ProgressListener listener) throws IOException {
+    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener)
+            throws IOException {
         return catalog.getResourcePool().getDataStore(this);
     }
 

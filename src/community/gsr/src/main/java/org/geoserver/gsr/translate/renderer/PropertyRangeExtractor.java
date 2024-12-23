@@ -9,8 +9,8 @@ import org.geotools.api.filter.Filter;
 public interface PropertyRangeExtractor {
 
     /**
-     * Returns a range representation from the filter, or null if the filter could not be converted
-     * to an equivalent range
+     * Returns a range representation from the filter, or null if the filter could not be converted to an equivalent
+     * range
      *
      * @param filter
      * @return

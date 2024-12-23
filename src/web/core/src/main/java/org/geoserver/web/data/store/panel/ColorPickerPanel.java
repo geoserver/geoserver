@@ -23,10 +23,7 @@ public class ColorPickerPanel extends Panel {
 
     private static final long serialVersionUID = 6661147317307298452L;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public ColorPickerPanel(
             final String id,
@@ -45,38 +42,35 @@ public class ColorPickerPanel extends Panel {
 
         // the color picker. Notice that we need to convert between RRGGBB and
         // #RRGGBB,
-        ColorPickerField textField =
-                new ColorPickerField("paramValue", paramVale) {
-                    private static final long serialVersionUID = 4185457152965032989L;
+        ColorPickerField textField = new ColorPickerField("paramValue", paramVale) {
+            private static final long serialVersionUID = 4185457152965032989L;
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        if (type.isAssignableFrom(String.class)) {
-                            return (IConverter<C>)
-                                    new IConverter<String>() {
-                                        private static final long serialVersionUID =
-                                                4343895199315509104L;
+            @SuppressWarnings("unchecked")
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                if (type.isAssignableFrom(String.class)) {
+                    return (IConverter<C>) new IConverter<String>() {
+                        private static final long serialVersionUID = 4343895199315509104L;
 
-                                        @Override
-                                        public String convertToString(String input, Locale locale) {
-                                            if (input.startsWith("#")) {
-                                                return input.substring(1);
-                                            } else {
-                                                return input;
-                                            }
-                                        }
-
-                                        @Override
-                                        public String convertToObject(String value, Locale locale) {
-                                            if (value.equals("")) return value;
-                                            return "#" + value;
-                                        }
-                                    };
+                        @Override
+                        public String convertToString(String input, Locale locale) {
+                            if (input.startsWith("#")) {
+                                return input.substring(1);
+                            } else {
+                                return input;
+                            }
                         }
-                        return super.getConverter(type);
-                    }
-                };
+
+                        @Override
+                        public String convertToObject(String value, Locale locale) {
+                            if (value.equals("")) return value;
+                            return "#" + value;
+                        }
+                    };
+                }
+                return super.getConverter(type);
+            }
+        };
         textField.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error
         // would look like

@@ -18,14 +18,12 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * The provider creates {@link Filter} objects appropriate for authentication using Keycloak. It is
- * also responsible for providing/validating the configuration of these filters, and for
- * persisting/retrieving the configuration.
+ * The provider creates {@link Filter} objects appropriate for authentication using Keycloak. It is also responsible for
+ * providing/validating the configuration of these filters, and for persisting/retrieving the configuration.
  */
 public class GeoServerKeycloakAuthenticationProvider extends AbstractFilterProvider {
 
-    private static final Logger LOG =
-            Logging.getLogger(GeoServerKeycloakAuthenticationProvider.class);
+    private static final Logger LOG = Logging.getLogger(GeoServerKeycloakAuthenticationProvider.class);
 
     @Autowired
     public GeoServerKeycloakAuthenticationProvider() {
@@ -54,11 +52,8 @@ public class GeoServerKeycloakAuthenticationProvider extends AbstractFilterProvi
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
-        LOG.log(
-                Level.FINER,
-                "GeoServerKeycloakAuthenticationProvider.createConfigurationValidator ENTRY");
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
+        LOG.log(Level.FINER, "GeoServerKeycloakAuthenticationProvider.createConfigurationValidator ENTRY");
         return new GeoServerKeycloakFilterConfigValidator(securityManager);
     }
 }

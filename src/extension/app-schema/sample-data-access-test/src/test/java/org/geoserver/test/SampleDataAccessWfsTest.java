@@ -63,9 +63,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /** Test whether DescribeFeatureType returns xsd:schema. */
     @Test
     public void testDescribeFeatureType() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
+        Document doc = getAsDOM("wfs?request=DescribeFeatureType&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS DescribeFeatureType response:\n" + prettyString(doc));
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
     }
@@ -90,13 +88,11 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
                 "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:description", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "mf1.spec",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/@gml:id",
                 doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "Gunthorpe specification description",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/gml:description",
                 doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
@@ -105,18 +101,14 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
 
         // mf2
         XMLAssert.assertXpathEvaluatesTo(
-                "MERCIA MUDSTONE GROUP",
-                "//gsml:MappedFeature[@gml:id='mf2']/gml:description",
-                doc);
+                "MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='mf2']/gml:description", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "mf2.spec",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/@gml:id",
                 doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "Mercia specification description",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/gml:description",
                 doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",

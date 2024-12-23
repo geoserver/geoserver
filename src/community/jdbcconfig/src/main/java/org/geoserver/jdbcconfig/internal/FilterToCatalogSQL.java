@@ -130,36 +130,26 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         throw new UnsupportedOperationException("Do not use null as filter");
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.ExcludeFilter,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.ExcludeFilter, java.lang.Object) */
     @Override
     public Object visit(ExcludeFilter filter, Object extraData) {
         return dialect.appendComment(append(extraData, "0 = 1"), "EXCLUDE");
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.IncludeFilter,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.IncludeFilter, java.lang.Object) */
     @Override
     public Object visit(IncludeFilter filter, Object extraData) {
         return dialect.appendComment(append(extraData, "1 = 1"), "INCLUDE");
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsEqualTo,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsEqualTo, java.lang.Object) */
     @Override
     public Object visit(PropertyIsEqualTo filter, Object extraData) {
 
         MatchAction matchAction = filter.getMatchAction();
         boolean matchingCase = filter.isMatchingCase();
 
-        if (!(filter.getExpression1() instanceof Literal)
-                && !(filter.getExpression2() instanceof Literal)) {
+        if (!(filter.getExpression1() instanceof Literal) && !(filter.getExpression2() instanceof Literal)) {
 
             // comparing two fields with each other
 
@@ -305,10 +295,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return dialect.appendComment(extraData, "isInstanceOf ", clazz.getName());
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsLike,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsLike, java.lang.Object) */
     @Override
     public Object visit(PropertyIsLike filter, Object extraData) {
         final PropertyName expression1 = (PropertyName) filter.getExpression();
@@ -322,8 +309,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final char single = filter.getSingleChar().charAt(0);
         final boolean matchCase = filter.isMatchingCase();
 
-        final String pattern =
-                LikeFilterImpl.convertToSQL92(esc, multi, single, matchCase, literal, false);
+        final String pattern = LikeFilterImpl.convertToSQL92(esc, multi, single, matchCase, literal, false);
 
         // respect match case
         String valueParam = newParam("value", pattern);
@@ -405,40 +391,27 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsNotEqualTo,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsNotEqualTo, java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsNotEqualTo filter, Object extraData) {
         // equivalent to not(propertyisequalto)
 
         FilterFactory ff = Predicates.factory;
-        Not not =
-                ff.not(
-                        ff.equal(
-                                filter.getExpression1(),
-                                filter.getExpression2(),
-                                filter.isMatchingCase(),
-                                filter.getMatchAction()));
+        Not not = ff.not(ff.equal(
+                filter.getExpression1(), filter.getExpression2(), filter.isMatchingCase(), filter.getMatchAction()));
         visit(not, extraData);
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.And,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.And, java.lang.Object) */
     @Override
     public Object visit(And filter, Object extraData) {
         return visit(filter, "AND", extraData);
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.Or,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.Or, java.lang.Object) */
     @Override
     public Object visit(Or filter, Object extraData) {
         return visit(filter, "OR", extraData);
@@ -461,35 +434,25 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return sql.append(')');
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.Id,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.Id, java.lang.Object) */
     @Override
     public Object visit(Id filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.Not,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.Not, java.lang.Object) */
     @Override
     public Object visit(Not filter, Object extraData) {
         Filter child = filter.getFilter();
         // these filter types are already enclosed in parentheses
-        boolean extraParens =
-                !(child instanceof And || child instanceof Or || child instanceof PropertyIsNull);
+        boolean extraParens = !(child instanceof And || child instanceof Or || child instanceof PropertyIsNull);
         append(extraData, "NOT ", extraParens ? "(" : "");
         child.accept(this, extraData);
         return append(extraData, extraParens ? ")" : "");
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsBetween,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsBetween, java.lang.Object) */
     @Override
     public Object visit(PropertyIsBetween filter, Object extraData) {
 
@@ -497,9 +460,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsGreaterThan,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsGreaterThan, java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsGreaterThan filter, Object extraData) {
@@ -508,8 +469,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo,
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo,
      *     java.lang.Object)
      */
     @Override
@@ -519,8 +479,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsLessThan,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsLessThan, java.lang.Object)
      */
     @Override
     public Object visit(PropertyIsLessThan filter, Object extraData) {
@@ -529,8 +488,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsLessThanOrEqualTo,
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsLessThanOrEqualTo,
      *     java.lang.Object)
      */
     @Override
@@ -539,10 +497,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsNull,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsNull, java.lang.Object) */
     @Override
     public Object visit(PropertyIsNull filter, Object extraData) {
         final PropertyName propertyName = (PropertyName) filter.getExpression();
@@ -558,10 +513,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return dialect.appendComment(extraData, filter);
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsNil,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.PropertyIsNil, java.lang.Object) */
     @Override
     public Object visit(PropertyIsNil filter, Object extraData) {
         final PropertyName propertyName = (PropertyName) filter.getExpression();
@@ -575,70 +527,49 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return dialect.appendComment(extraData, filter);
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.BBOX,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.BBOX, java.lang.Object) */
     @Override
     public Object visit(BBOX filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Beyond,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Beyond, java.lang.Object) */
     @Override
     public Object visit(Beyond filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Contains,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Contains, java.lang.Object) */
     @Override
     public Object visit(Contains filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Crosses,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Crosses, java.lang.Object) */
     @Override
     public Object visit(Crosses filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Disjoint,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Disjoint, java.lang.Object) */
     @Override
     public Object visit(Disjoint filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.DWithin,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.DWithin, java.lang.Object) */
     @Override
     public Object visit(DWithin filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Equals,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Equals, java.lang.Object) */
     @Override
     public Object visit(Equals filter, Object extraData) {
 
@@ -646,8 +577,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Intersects,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Intersects, java.lang.Object)
      */
     @Override
     public Object visit(Intersects filter, Object extraData) {
@@ -655,40 +585,28 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Overlaps,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Overlaps, java.lang.Object) */
     @Override
     public Object visit(Overlaps filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Touches,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Touches, java.lang.Object) */
     @Override
     public Object visit(Touches filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Within,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.spatial.Within, java.lang.Object) */
     @Override
     public Object visit(Within filter, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.After,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.After, java.lang.Object) */
     @Override
     public Object visit(After after, Object extraData) {
 
@@ -696,9 +614,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.AnyInteracts,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.AnyInteracts, java.lang.Object)
      */
     @Override
     public Object visit(AnyInteracts anyInteracts, Object extraData) {
@@ -706,80 +622,56 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Before,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Before, java.lang.Object) */
     @Override
     public Object visit(Before before, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Begins,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Begins, java.lang.Object) */
     @Override
     public Object visit(Begins begins, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.BegunBy,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.BegunBy, java.lang.Object) */
     @Override
     public Object visit(BegunBy begunBy, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.During,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.During, java.lang.Object) */
     @Override
     public Object visit(During during, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.EndedBy,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.EndedBy, java.lang.Object) */
     @Override
     public Object visit(EndedBy endedBy, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Ends,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Ends, java.lang.Object) */
     @Override
     public Object visit(Ends ends, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Meets,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.Meets, java.lang.Object) */
     @Override
     public Object visit(Meets meets, Object extraData) {
 
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.MetBy,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.MetBy, java.lang.Object) */
     @Override
     public Object visit(MetBy metBy, Object extraData) {
 
@@ -787,9 +679,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.OverlappedBy,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.OverlappedBy, java.lang.Object)
      */
     @Override
     public Object visit(OverlappedBy overlappedBy, Object extraData) {
@@ -798,8 +688,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.TContains,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.TContains, java.lang.Object)
      */
     @Override
     public Object visit(TContains contains, Object extraData) {
@@ -807,10 +696,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         return extraData;
     }
 
-    /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.TEquals,
-     *     java.lang.Object)
-     */
+    /** @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.TEquals, java.lang.Object) */
     @Override
     public Object visit(TEquals equals, Object extraData) {
 
@@ -818,8 +704,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.TOverlaps,
-     *     java.lang.Object)
+     * @see org.geotools.api.filter.FilterVisitor#visit(org.geotools.api.filter.temporal.TOverlaps, java.lang.Object)
      */
     @Override
     public Object visit(TOverlaps contains, Object extraData) {
@@ -828,8 +713,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.NilExpression,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.NilExpression,
      *     java.lang.Object)
      */
     @Override
@@ -839,8 +723,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Add,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Add,
      *     java.lang.Object)
      */
     @Override
@@ -850,8 +733,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Divide,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Divide,
      *     java.lang.Object)
      */
     @Override
@@ -861,8 +743,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Function,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Function,
      *     java.lang.Object)
      */
     @Override
@@ -872,8 +753,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Literal,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Literal,
      *     java.lang.Object)
      */
     @Override
@@ -883,8 +763,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Multiply,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Multiply,
      *     java.lang.Object)
      */
     @Override
@@ -894,8 +773,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.PropertyName,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.PropertyName,
      *     java.lang.Object)
      */
     @Override
@@ -905,8 +783,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
     }
 
     /**
-     * @see
-     *     org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Subtract,
+     * @see org.geotools.api.filter.expression.ExpressionVisitor#visit(org.geotools.api.filter.expression.Subtract,
      *     java.lang.Object)
      */
     @Override

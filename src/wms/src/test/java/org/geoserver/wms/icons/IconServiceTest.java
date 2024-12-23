@@ -39,10 +39,9 @@ public class IconServiceTest extends IconTestSupport {
 
     @Test
     public void testHandleMultipleFTS() throws Exception {
-        Style style =
-                style(
-                        featureTypeStyle(rule(Filter.INCLUDE, grayCircle())),
-                        featureTypeStyle(rule(Filter.INCLUDE, redStar())));
+        Style style = style(
+                featureTypeStyle(rule(Filter.INCLUDE, grayCircle())),
+                featureTypeStyle(rule(Filter.INCLUDE, redStar())));
 
         StyleInfo s = createNiceMock(StyleInfo.class);
         expect(s.getStyle()).andReturn(style);

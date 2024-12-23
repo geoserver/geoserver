@@ -37,20 +37,18 @@ public class TestHttpClientProvider {
 
     public static HTTPClient get(String url) {
         if (!url.startsWith(MOCKSERVER)) {
-            throw new IllegalArgumentException(
-                    "The url " + url + " does not start with " + MOCKSERVER);
+            throw new IllegalArgumentException("The url " + url + " does not start with " + MOCKSERVER);
         }
         if (!TEST_MODE) {
             throw new IllegalArgumentException("The provider is not in test mode now");
         }
         HTTPClient httpClient = CLIENTS.get(url);
         if (httpClient == null) {
-            throw new IllegalArgumentException(
-                    "The mock url "
-                            + url
-                            + " is not bound "
-                            + "to any mock http client, current bindings are towards: "
-                            + CLIENTS.keySet());
+            throw new IllegalArgumentException("The mock url "
+                    + url
+                    + " is not bound "
+                    + "to any mock http client, current bindings are towards: "
+                    + CLIENTS.keySet());
         }
         return httpClient;
     }

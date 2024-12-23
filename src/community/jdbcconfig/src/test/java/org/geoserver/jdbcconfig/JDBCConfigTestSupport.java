@@ -67,8 +67,7 @@ public class JDBCConfigTestSupport {
         BasicDataSource dataSource;
         boolean initialized = false;
 
-        public DBConfig(
-                String name, String driver, String connectionUrl, String dbUser, String dbPasswd) {
+        public DBConfig(String name, String driver, String connectionUrl, String dbUser, String dbPasswd) {
             this.name = name;
             this.driver = driver;
             this.connectionUrl = connectionUrl;
@@ -81,14 +80,13 @@ public class JDBCConfigTestSupport {
         BasicDataSource dataSource() throws Exception {
             if (dataSource != null) return dataSource;
 
-            dataSource =
-                    new BasicDataSource() {
+            dataSource = new BasicDataSource() {
 
-                        @Override
-                        public synchronized void close() throws SQLException {
-                            // do nothing
-                        }
-                    };
+                @Override
+                public synchronized void close() throws SQLException {
+                    // do nothing
+                }
+            };
             dataSource.setDriverClassName(driver);
             dataSource.setUrl(
                     connectionUrl.replace("${DATA_DIR}", createTempDir().getAbsolutePath()));
@@ -151,16 +149,8 @@ public class JDBCConfigTestSupport {
         ArrayList<DBConfig> configs = new ArrayList<DBConfig>();
 
         dbConfig(configs, "h2", "org.h2.Driver", "jdbc:h2:file:${DATA_DIR}/geoserver");
-        dbConfig(
-                configs,
-                "postgres",
-                "org.postgresql.Driver",
-                "jdbc:postgresql://localhost:5432/geoserver");
-        dbConfig(
-                configs,
-                "oracle",
-                "oracle.jdbc.OracleDriver",
-                "jdbc:oracle:thin:@//localhost:49161/xe");
+        dbConfig(configs, "postgres", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/geoserver");
+        dbConfig(configs, "oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@//localhost:49161/xe");
 
         return configs;
     }
@@ -169,19 +159,14 @@ public class JDBCConfigTestSupport {
         return System.getProperty("jdbcconfig." + dbName + "." + property);
     }
 
-    public static void dbConfig(
-            List<DBConfig> configs, String name, String driver, String connectionUrl) {
+    public static void dbConfig(List<DBConfig> configs, String name, String driver, String connectionUrl) {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException cnfe) {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }
-        if ("true"
-                .equals(
-                        System.getProperty(
-                                "jdbcconfig." + name + ".skip",
-                                "h2".equals(name) ? "false" : "true"))) {
+        if ("true".equals(System.getProperty("jdbcconfig." + name + ".skip", "h2".equals(name) ? "false" : "true"))) {
             System.err.println("skipping " + name + " tests, enable via maven profile");
             return;
         }
@@ -207,8 +192,7 @@ public class JDBCConfigTestSupport {
         try {
             conf.dataSource();
         } catch (Exception ex) {
-            System.err.println(
-                    "Unable to connect to datastore, either disable test or specify correct configuration:");
+            System.err.println("Unable to connect to datastore, either disable test or specify correct configuration:");
             System.out.println(ex.getMessage());
             System.out.println("Current configuration : " + conf.detailString());
             return;
@@ -246,8 +230,7 @@ public class JDBCConfigTestSupport {
 
         // use a context to initialize the ConfigDatabase as this will enable
         // transaction management making the tests much faster (and correcter)
-        AnnotationConfigApplicationContext context =
-                new AnnotationConfigApplicationContext(Config.class);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
         // use the dataSource we just created
         context.getBean(Config.class).real = dataSource;
         configDb = context.getBean(ConfigDatabase.class);
@@ -270,9 +253,7 @@ public class JDBCConfigTestSupport {
 
         GeoServerExtensionsHelper.init(appContext);
         GeoServerExtensionsHelper.singleton(
-                "configurationLock",
-                new GeoServerConfigurationLock(),
-                GeoServerConfigurationLock.class);
+                "configurationLock", new GeoServerConfigurationLock(), GeoServerConfigurationLock.class);
         GeoServerExtensionsHelper.singleton(
                 "JDBCConfigXStreamPersisterInitializer",
                 new JDBCConfigXStreamPersisterInitializer(),
@@ -282,8 +263,7 @@ public class JDBCConfigTestSupport {
     }
 
     protected void configureAppContext(WebApplicationContext appContext) {
-        expect(appContext.containsBean("JDBCConfigXStreamPersisterInitializer"))
-                .andStubReturn(true);
+        expect(appContext.containsBean("JDBCConfigXStreamPersisterInitializer")).andStubReturn(true);
 
         expect(appContext.getBeansOfType((Class<?>) anyObject()))
                 .andReturn(Collections.emptyMap())
@@ -346,36 +326,30 @@ public class JDBCConfigTestSupport {
         try (InputStream script = JDBCConfigProperties.class.getResourceAsStream(dbScriptName)) {
             if (script == null) {
                 throw new IllegalArgumentException(
-                        "Script not found: "
-                                + JDBCConfigProperties.class.getName()
-                                + "/"
-                                + dbScriptName);
+                        "Script not found: " + JDBCConfigProperties.class.getName() + "/" + dbScriptName);
             }
 
             if (!tx) {
                 NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
                 Util.runScript(script, template.getJdbcOperations(), null);
             } else {
-                DataSourceTransactionManager transactionManager =
-                        new DataSourceTransactionManager(dataSource);
+                DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
                 NamedParameterJdbcTemplate template =
                         new NamedParameterJdbcTemplate(transactionManager.getDataSource());
-                TransactionTemplate transactionTemplate =
-                        new TransactionTemplate(transactionManager);
+                TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
                 final JdbcOperations jdbcOperations = template.getJdbcOperations();
-                transactionTemplate.execute(
-                        new TransactionCallback<Object>() {
+                transactionTemplate.execute(new TransactionCallback<Object>() {
 
-                            @Override
-                            public Object doInTransaction(TransactionStatus ts) {
-                                try {
-                                    Util.runScript(script, jdbcOperations, null);
-                                } catch (IOException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                                return null;
-                            }
-                        });
+                    @Override
+                    public Object doInTransaction(TransactionStatus ts) {
+                        try {
+                            Util.runScript(script, jdbcOperations, null);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        return null;
+                    }
+                });
             }
         }
     }
@@ -402,14 +376,13 @@ public class JDBCConfigTestSupport {
         DataSource real;
         // we need a datasource immediately, but don't have one so use this as
         // a delegate that uses the 'real' DataSource
-        DataSource lazy =
-                new BasicDataSource() {
+        DataSource lazy = new BasicDataSource() {
 
-                    @Override
-                    protected synchronized DataSource createDataSource() throws SQLException {
-                        return real;
-                    }
-                };
+            @Override
+            protected synchronized DataSource createDataSource() throws SQLException {
+                return real;
+            }
+        };
 
         @Bean
         public PlatformTransactionManager jdbcConfigTransactionManager() {

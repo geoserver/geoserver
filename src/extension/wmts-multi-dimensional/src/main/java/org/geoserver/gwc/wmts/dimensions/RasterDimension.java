@@ -34,12 +34,10 @@ public abstract class RasterDimension extends Dimension {
 
     @Override
     public List<Comparable> getDomainValues(Filter filter, boolean noDuplicates) {
-        CoverageDimensionsReader reader =
-                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         if (noDuplicates) {
             // no duplicate values should be included
-            Set<Comparable> values =
-                    reader.readWithoutDuplicates(getDimensionName(), filter, dataType);
+            Set<Comparable> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType);
             return new ArrayList<>(values);
         }
         // we need the duplicate values (this is useful for some operations like get histogram
@@ -49,8 +47,7 @@ public abstract class RasterDimension extends Dimension {
 
     @Override
     protected DomainSummary getDomainSummary(Query query, int expandLimit) {
-        CoverageDimensionsReader reader =
-                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
 
         Tuple<String, FeatureCollection> values =
                 reader.getValues(getDimensionName(), query, dataType, SortOrder.ASCENDING);
@@ -58,20 +55,16 @@ public abstract class RasterDimension extends Dimension {
     }
 
     @Override
-    protected DomainSummary getPagedDomainValues(
-            Query query, int maxNumberOfValues, SortOrder sortOrder) {
-        CoverageDimensionsReader reader =
-                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+    protected DomainSummary getPagedDomainValues(Query query, int maxNumberOfValues, SortOrder sortOrder) {
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
 
-        Tuple<String, FeatureCollection> values =
-                reader.getValues(getDimensionName(), query, dataType, sortOrder);
+        Tuple<String, FeatureCollection> values = reader.getValues(getDimensionName(), query, dataType, sortOrder);
         return getPagedDomainValues(values.second, values.first, maxNumberOfValues);
     }
 
     @Override
     protected String getDimensionAttributeName() {
-        CoverageDimensionsReader reader =
-                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         return reader.getDimensionAttributesNames(getDimensionName()).first;
     }
 }

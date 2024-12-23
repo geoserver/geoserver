@@ -25,10 +25,7 @@ public class ProxyBaseExtensionTestSupport extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        new File(
-                        testData.getDataDirectoryRoot(),
-                        ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_DIRECTORY)
-                .mkdir();
+        new File(testData.getDataDirectoryRoot(), ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_DIRECTORY).mkdir();
         testData.copyTo(
                 ProxyBaseExtensionIntegrationTest.class.getResourceAsStream("/proxy-base-ext.xml"),
                 ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_PATH);

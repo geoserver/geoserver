@@ -22,17 +22,14 @@ import org.geotools.util.logging.Logging;
 public class PlacemarkSelfLinkDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
         if (!(context.getService() instanceof WMSInfo)) {
             return null;
         }
 
         String selfLinks = (String) context.getRequest().getFormatOptions().get("selfLinks");
-        if (selfLinks != null
-                && selfLinks.equalsIgnoreCase("true")
-                && Placemark.class.isAssignableFrom(featureClass)) {
+        if (selfLinks != null && selfLinks.equalsIgnoreCase("true") && Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkSelfLinkDecorator();
         } else {
             return null;

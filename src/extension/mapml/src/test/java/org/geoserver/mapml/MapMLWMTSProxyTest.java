@@ -26,19 +26,18 @@ import org.junit.Test;
 
 public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
 
-    protected static final String BASE_WMTS_REQUEST =
-            "wms?LAYERS=cascadedLayer"
-                    + "&STYLES=&FORMAT="
-                    + MapMLConstants.MAPML_MIME_TYPE
-                    + "&SERVICE=WMS&VERSION=1.1.0"
-                    + "&REQUEST=GetMap"
-                    + "&SRS=MapML:OSMTILE"
-                    + "&BBOX=-1.3885038382960921E7,2870337.130793682,-7455049.489182421,6338174.0557576185"
-                    + "&WIDTH=768"
-                    + "&HEIGHT=414"
-                    + "&format_options="
-                    + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                    + ":image/png";
+    protected static final String BASE_WMTS_REQUEST = "wms?LAYERS=cascadedLayer"
+            + "&STYLES=&FORMAT="
+            + MapMLConstants.MAPML_MIME_TYPE
+            + "&SERVICE=WMS&VERSION=1.1.0"
+            + "&REQUEST=GetMap"
+            + "&SRS=MapML:OSMTILE"
+            + "&BBOX=-1.3885038382960921E7,2870337.130793682,-7455049.489182421,6338174.0557576185"
+            + "&WIDTH=768"
+            + "&HEIGHT=414"
+            + "&format_options="
+            + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+            + ":image/png";
 
     @BeforeClass
     public static void beforeClass() {
@@ -85,8 +84,7 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
         GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
         GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
 
-        GeoServerTileLayer layerInfoTileLayer =
-                new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
         layerInfoTileLayer.addGridSubset(wgs84gridset);
         layerInfoTileLayer.addGridSubset(osmtilegridset);
         layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
@@ -124,9 +122,7 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
             // The remote capabilities defines a custom GridSet that matches
             // the OSMTILE with a different name: MATCHING_OSMTILE
             // Identifiers are also not simple numbers but contain a common prefix.
-            assertTrue(
-                    url.startsWith(
-                            "http://localhost:" + mockService.port() + MOCK_SERVER + CONTEXT));
+            assertTrue(url.startsWith("http://localhost:" + mockService.port() + MOCK_SERVER + CONTEXT));
             assertTrue(url.contains("layer=topp:states"));
             assertTrue(url.contains("tilematrixset=MATCHING_OSMTILE"));
             // Common prefix has been pre-pended to the tilematrix z input

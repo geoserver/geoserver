@@ -29,8 +29,8 @@ import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 
 /**
- * A component to display a tree that can be navigated through (folders can be expanded and closed,
- * items can be selected)
+ * A component to display a tree that can be navigated through (folders can be expanded and closed, items can be
+ * selected)
  *
  * @author Niels Charlier
  */
@@ -39,8 +39,7 @@ public class TreeView<T> extends Panel {
     private static final long serialVersionUID = 2683470514874500599L;
 
     /** Behaviour for selected node */
-    protected static final AttributeAppender SELECTED_BEHAVIOR =
-            new ClassAppender(new Model<>("selected"));
+    protected static final AttributeAppender SELECTED_BEHAVIOR = new ClassAppender(new Model<>("selected"));
 
     /** Implement this to listen to selection events */
     public static interface SelectionListener<T> extends Serializable {
@@ -83,10 +82,7 @@ public class TreeView<T> extends Panel {
      * @param rootModel model of the root node
      * @param selectedNodeModel model of the selected node
      */
-    public TreeView(
-            String id,
-            IModel<TreeNode<T>> rootModel,
-            IModel<Collection<TreeNode<T>>> selectedNodeModel) {
+    public TreeView(String id, IModel<TreeNode<T>> rootModel, IModel<Collection<TreeNode<T>>> selectedNodeModel) {
         super(id, rootModel);
         this.selectedNodeModel = selectedNodeModel;
         final RepeatingView rootView = new RepeatingView("rootView");
@@ -120,9 +116,8 @@ public class TreeView<T> extends Panel {
     }
 
     /**
-     * Get the view for the selected node. Refreshing this view refreshes all child nodes as well.
-     * It is efficient to only refresh the necessary node(s) on ajax requests, rather than the whole
-     * tree.
+     * Get the view for the selected node. Refreshing this view refreshes all child nodes as well. It is efficient to
+     * only refresh the necessary node(s) on ajax requests, rather than the whole tree.
      */
     public Panel[] getSelectedViews() {
         List<Panel> views = new ArrayList<>();
@@ -137,9 +132,9 @@ public class TreeView<T> extends Panel {
     }
 
     /**
-     * Get the view for a node, if there is not yet a view for this node, it will return the nearest
-     * parent node. Refreshing this view refreshes all child nodes as well. It is efficient to only
-     * refresh the necessary node(s) on ajax requests, rather than the whole tree.
+     * Get the view for a node, if there is not yet a view for this node, it will return the nearest parent node.
+     * Refreshing this view refreshes all child nodes as well. It is efficient to only refresh the necessary node(s) on
+     * ajax requests, rather than the whole tree.
      */
     public Panel getNearestView(TreeNode<T> node) {
         return getNearestViewInternal(node);
@@ -151,8 +146,8 @@ public class TreeView<T> extends Panel {
     }
 
     /**
-     * Change selected node, expand if necessary. Events aren't called. Caller is responsible for
-     * refreshing the view(s).
+     * Change selected node, expand if necessary. Events aren't called. Caller is responsible for refreshing the
+     * view(s).
      */
     public void setSelectedNodes(Collection<TreeNode<T>> selectedNodes) {
         setSelectedNodes(selectedNodes, null);
@@ -177,21 +172,16 @@ public class TreeView<T> extends Panel {
     }
 
     /**
-     * Change selected node (single), expand if necessary. Events aren't called. Caller is
-     * responsible for refreshing the view(s).
+     * Change selected node (single), expand if necessary. Events aren't called. Caller is responsible for refreshing
+     * the view(s).
      */
     public void setSelectedNode(TreeNode<T> selectedNode) {
         setSelectedNode(selectedNode, null);
     }
 
-    /**
-     * Change selected node (single), expand if necessary, fire events, and refresh the whole
-     * treeview.
-     */
+    /** Change selected node (single), expand if necessary, fire events, and refresh the whole treeview. */
     public void setSelectedNode(TreeNode<T> selectedNode, AjaxRequestTarget target) {
-        setSelectedNodes(
-                selectedNode == null ? Collections.emptySet() : Collections.singleton(selectedNode),
-                target);
+        setSelectedNodes(selectedNode == null ? Collections.emptySet() : Collections.singleton(selectedNode), target);
     }
 
     /**
@@ -210,8 +200,7 @@ public class TreeView<T> extends Panel {
     }
 
     /**
-     * Register a customised mark. The style of the mark can be defined in CSS with ".css-treeview
-     * a.{markName}"
+     * Register a customised mark. The style of the mark can be defined in CSS with ".css-treeview a.{markName}"
      *
      * @param markName name of the mark
      */
@@ -252,8 +241,7 @@ public class TreeView<T> extends Panel {
     // ------------------- internal methods/classes
 
     /** Select the node without automatic expansion but with event dispatching. */
-    protected void setSelectedNodesInternal(
-            Collection<TreeNode<T>> selectedNodes, AjaxRequestTarget target) {
+    protected void setSelectedNodesInternal(Collection<TreeNode<T>> selectedNodes, AjaxRequestTarget target) {
         selectedNodeModel.setObject(selectedNodes);
         if (target != null) {
             for (SelectionListener<T> listener : selectionListeners) {
@@ -263,9 +251,9 @@ public class TreeView<T> extends Panel {
     }
 
     /**
-     * Get the view for a node, if there is not yet a view for this node, it will return the nearest
-     * parent node. Refreshing this view refreshes all child nodes as well. It is efficient to only
-     * refresh the necessary node(s) on ajax requests, rather than the whole tree.
+     * Get the view for a node, if there is not yet a view for this node, it will return the nearest parent node.
+     * Refreshing this view refreshes all child nodes as well. It is efficient to only refresh the necessary node(s) on
+     * ajax requests, rather than the whole tree.
      */
     protected TreeNodeView getNearestViewInternal(TreeNode<T> node) {
         TreeNode<T> parent = node.getParent();
@@ -326,10 +314,9 @@ public class TreeView<T> extends Panel {
         }
 
         protected Component createSelectableLabel() {
-            return selectableLabel =
-                    new Label("selectableLabel", getNode().getLabel())
-                            .add(new SelectableLabelClickBehavior())
-                            .setOutputMarkupId(true);
+            return selectableLabel = new Label("selectableLabel", getNode().getLabel())
+                    .add(new SelectableLabelClickBehavior())
+                    .setOutputMarkupId(true);
         }
 
         public TreeNodeView getChildView(String id) {
@@ -373,25 +360,22 @@ public class TreeView<T> extends Panel {
                 super.updateAjaxAttributes(attributes);
                 attributes
                         .getDynamicExtraParameters()
-                        .add(
-                                "return {'ctrl' : attrs.event.ctrlKey, 'shift' : attrs.event.shiftKey}");
+                        .add("return {'ctrl' : attrs.event.ctrlKey, 'shift' : attrs.event.shiftKey}");
                 attributes.setPreventDefault(true);
             }
 
             @Override
             public void onEvent(AjaxRequestTarget target) {
-                boolean shift =
-                        RequestCycle.get()
-                                .getRequest()
-                                .getRequestParameters()
-                                .getParameterValue("shift")
-                                .toBoolean();
-                boolean ctrl =
-                        RequestCycle.get()
-                                .getRequest()
-                                .getRequestParameters()
-                                .getParameterValue("ctrl")
-                                .toBoolean();
+                boolean shift = RequestCycle.get()
+                        .getRequest()
+                        .getRequestParameters()
+                        .getParameterValue("shift")
+                        .toBoolean();
+                boolean ctrl = RequestCycle.get()
+                        .getRequest()
+                        .getRequestParameters()
+                        .getParameterValue("ctrl")
+                        .toBoolean();
 
                 if (ctrl) { // toggle selection of this node
                     Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
@@ -416,9 +400,7 @@ public class TreeView<T> extends Panel {
                             moveOn = !sibling.isSameAs(getNode()); // we _must_
                             // move on to
                             // clicked node
-                        } else if (select
-                                && (sibling.isSameAs(getNode())
-                                        || (!moveOn && isSelected(sibling)))) {
+                        } else if (select && (sibling.isSameAs(getNode()) || (!moveOn && isSelected(sibling)))) {
                             select = false;
                             break;
                         }
@@ -450,38 +432,37 @@ public class TreeView<T> extends Panel {
 
         public TreeExpandableNodeView(String id, IModel<TreeNode<T>> nodeModel) {
             super(id, nodeModel);
-            final AjaxCheckBox cbExpand =
-                    new AjaxCheckBox("cbExpand", nodeModel.getObject().getExpanded()) {
-                        private static final long serialVersionUID = 7602857423814264211L;
+            final AjaxCheckBox cbExpand = new AjaxCheckBox(
+                    "cbExpand", nodeModel.getObject().getExpanded()) {
+                private static final long serialVersionUID = 7602857423814264211L;
 
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            if (!getModelObject() && !selectedNodeModel.getObject().isEmpty()) {
-                                // if any nodes in the current selection become hidden, we unselect
-                                // them automatically
-                                Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
-                                for (TreeNode<T> selectedNode : selectedNodeModel.getObject()) {
-                                    TreeNode<T> node = selectedNode.getParent();
-                                    boolean selectionHidden = false;
-                                    while (!selectionHidden
-                                            && node != null) { // loop through parents
-                                        if (node.isSameAs(nodeModel.getObject())) {
-                                            selectionHidden = true;
-                                        }
-                                        node = node.getParent();
-                                    }
-                                    if (!selectionHidden) {
-                                        newSelectedNodes.add(selectedNode);
-                                    }
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    if (!getModelObject() && !selectedNodeModel.getObject().isEmpty()) {
+                        // if any nodes in the current selection become hidden, we unselect
+                        // them automatically
+                        Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
+                        for (TreeNode<T> selectedNode : selectedNodeModel.getObject()) {
+                            TreeNode<T> node = selectedNode.getParent();
+                            boolean selectionHidden = false;
+                            while (!selectionHidden && node != null) { // loop through parents
+                                if (node.isSameAs(nodeModel.getObject())) {
+                                    selectionHidden = true;
                                 }
-                                if (newSelectedNodes.size()
-                                        != selectedNodeModel.getObject().size()) {
-                                    setSelectedNodesInternal(newSelectedNodes, target);
-                                    target.add(TreeExpandableNodeView.this);
-                                }
+                                node = node.getParent();
+                            }
+                            if (!selectionHidden) {
+                                newSelectedNodes.add(selectedNode);
                             }
                         }
-                    };
+                        if (newSelectedNodes.size()
+                                != selectedNodeModel.getObject().size()) {
+                            setSelectedNodesInternal(newSelectedNodes, target);
+                            target.add(TreeExpandableNodeView.this);
+                        }
+                    }
+                }
+            };
             add(cbExpand);
             add(new FormComponentLabel("label", cbExpand).add(createSelectableLabel()));
             // add(new FormComponentLabel("label", cbExpand));

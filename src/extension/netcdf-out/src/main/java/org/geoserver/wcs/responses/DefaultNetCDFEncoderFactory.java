@@ -15,10 +15,7 @@ public class DefaultNetCDFEncoderFactory implements NetCDFEncoderFactory, Extens
 
     @Override
     public NetCDFEncoder getEncoderFor(
-            GranuleStack granuleStack,
-            File file,
-            Map<String, String> encodingParameters,
-            String outputFormat)
+            GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String outputFormat)
             throws IOException {
         return new DefaultNetCDFEncoder(granuleStack, file, encodingParameters, outputFormat);
     }

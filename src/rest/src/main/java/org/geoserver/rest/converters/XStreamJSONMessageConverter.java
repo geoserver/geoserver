@@ -40,8 +40,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
     protected boolean supports(Class<?> clazz) {
         // this converter is actually used for classes that are not RestWrapper, but we need to
         // exclude OGC API Objects that need to be managed by the Jackson converter
-        return clazz != null
-                && (RestWrapper.class.isAssignableFrom(clazz) || !isOGCAPIObject(clazz));
+        return clazz != null && (RestWrapper.class.isAssignableFrom(clazz) || !isOGCAPIObject(clazz));
     }
 
     private boolean isOGCAPIObject(Class<?> clazz) {

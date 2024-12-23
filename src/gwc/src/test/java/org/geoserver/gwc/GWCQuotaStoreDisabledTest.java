@@ -20,8 +20,8 @@ import org.junit.Test;
 public class GWCQuotaStoreDisabledTest extends GeoServerSystemTestSupport {
 
     /**
-     * We use this call because we need to set the system property before the app context gets
-     * loaded, and we don't need any test data
+     * We use this call because we need to set the system property before the app context gets loaded, and we don't need
+     * any test data
      */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -38,8 +38,7 @@ public class GWCQuotaStoreDisabledTest extends GeoServerSystemTestSupport {
     @Test
     public void testQuotaDisabled() throws Exception {
         // the provider returns no quota store
-        ConfigurableQuotaStoreProvider provider =
-                GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
         assertNull(provider.getQuotaStore());
 
         // check there is no quota database
@@ -49,8 +48,7 @@ public class GWCQuotaStoreDisabledTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testQuotaDisabledOnDestroy() throws Exception {
-        ConfigurableQuotaStoreProvider provider =
-                GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
 
         // check that no NPE is thrown on destroy() (because the store is null)
         try {

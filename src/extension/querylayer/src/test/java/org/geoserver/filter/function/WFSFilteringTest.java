@@ -102,8 +102,7 @@ public class WFSFilteringTest extends WFSTestSupport {
     }
 
     void _testSingleSmallDistance(String version) throws Exception {
-        String request =
-                QUERY_SINGLE.replace("${distance}", "0.00000001").replace("${version}", version);
+        String request = QUERY_SINGLE.replace("${distance}", "0.00000001").replace("${version}", version);
         Document doc = postAsDOM("wfs", request);
         print(doc);
 
@@ -122,8 +121,7 @@ public class WFSFilteringTest extends WFSTestSupport {
     }
 
     void _testSingleLargeDistance(String version) throws Exception {
-        String request =
-                QUERY_SINGLE.replace("${distance}", "0.001").replace("${version}", version);
+        String request = QUERY_SINGLE.replace("${distance}", "0.001").replace("${version}", version);
         Document doc = postAsDOM("wfs", request);
         // print(doc);
 

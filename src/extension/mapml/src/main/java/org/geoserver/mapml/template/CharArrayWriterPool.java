@@ -10,17 +10,16 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 
 /**
- * Simple "pool" like class that instantiates a {@link CharArrayWriter} per OGC request, makes it
- * available, and makes sure it is cleaned up when the request is finished.
+ * Simple "pool" like class that instantiates a {@link CharArrayWriter} per OGC request, makes it available, and makes
+ * sure it is cleaned up when the request is finished.
  */
 public class CharArrayWriterPool extends AbstractDispatcherCallback {
 
     static final ThreadLocal<CharArrayWriter> WRITER = new ThreadLocal<>();
 
     /**
-     * Returns a {@link CharArrayWriter} attached to the current thread (or a new one, in case this
-     * methods it's called outside the context of an OGC request). The writer is guaranteed to be
-     * either new, or freshly reset.
+     * Returns a {@link CharArrayWriter} attached to the current thread (or a new one, in case this methods it's called
+     * outside the context of an OGC request). The writer is guaranteed to be either new, or freshly reset.
      *
      * @return
      */

@@ -22,7 +22,8 @@ import org.w3c.dom.Document;
 
 public class WFSDisabledTest extends WFSTestSupport {
 
-    @Rule public final EnvironmentVariables enviromentVariables = new EnvironmentVariables();
+    @Rule
+    public final EnvironmentVariables enviromentVariables = new EnvironmentVariables();
 
     @Before
     public void resetConfiguration() {
@@ -57,16 +58,11 @@ public class WFSDisabledTest extends WFSTestSupport {
         ftinfo.setDisabledServices(new ArrayList<>(Arrays.asList("WFS")));
         getCatalog().save(ftinfo);
         // check GetFeature
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName="
-                                + layerName
-                                + "&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + layerName + "&version=1.0.0&service=wfs");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
         // check GetCapabilities
         doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
-        XMLAssert.assertXpathNotExists(
-                "//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
+        XMLAssert.assertXpathNotExists("//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
     }
 
     /** Tests WFS service disabled on layer-resource, by environment variable */
@@ -75,16 +71,11 @@ public class WFSDisabledTest extends WFSTestSupport {
         enableWFS();
         enviromentVariables.set(DisabledServiceResourceFilter.PROPERTY, "WFS,WPS");
         String layerName = "cite:RoadSegments";
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName="
-                                + layerName
-                                + "&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + layerName + "&version=1.0.0&service=wfs");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
         // GetCapabilities
         doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
-        XMLAssert.assertXpathNotExists(
-                "//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
+        XMLAssert.assertXpathNotExists("//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
     }
 
     @After
@@ -102,16 +93,11 @@ public class WFSDisabledTest extends WFSTestSupport {
         ftinfo.setDisabledServices(new ArrayList<>());
         getCatalog().save(ftinfo);
         // GetFeature
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName="
-                                + layerName
-                                + "&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + layerName + "&version=1.0.0&service=wfs");
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
         // GetCapabilities
         doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
-        XMLAssert.assertXpathExists(
-                "//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
+        XMLAssert.assertXpathExists("//wfs:FeatureTypeList/wfs:FeatureType/wfs:Name[.='" + layerName + "']", doc);
     }
 
     private void enableWFS() {

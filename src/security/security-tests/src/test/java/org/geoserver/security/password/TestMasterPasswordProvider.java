@@ -26,8 +26,8 @@ public final class TestMasterPasswordProvider extends MasterPasswordProvider {
         }
 
         @Override
-        public MasterPasswordProvider createMasterPasswordProvider(
-                MasterPasswordProviderConfig config) throws IOException {
+        public MasterPasswordProvider createMasterPasswordProvider(MasterPasswordProviderConfig config)
+                throws IOException {
             return new TestMasterPasswordProvider();
         }
     }

@@ -124,8 +124,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         // startIndex (wfs 2.0)
         if (node.hasAttribute("startIndex")) {
             // convert manually since this is not standard schema for wfs 1.1
-            BigInteger startIndex =
-                    Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class);
+            BigInteger startIndex = Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class);
             getFeature.setStartIndex(startIndex);
         }
 

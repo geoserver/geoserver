@@ -128,15 +128,13 @@ public class GWCTransactionListenerTest {
         when(event.getSource()).thenReturn(insert);
         when(event.getType()).thenReturn(TransactionEventType.PRE_INSERT);
 
-        when(mediator.getTileLayersByFeatureType(
-                        eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart())))
+        when(mediator.getTileLayersByFeatureType(eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart())))
                 .thenReturn(Collections.emptySet());
 
         listener.dataStoreChange(event);
         // nothing else to do
         verify(mediator, times(1))
-                .getTileLayersByFeatureType(
-                        eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart()));
+                .getTileLayersByFeatureType(eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart()));
         verifyNoMoreInteractions(mediator);
     }
 
@@ -148,15 +146,11 @@ public class GWCTransactionListenerTest {
 
         issueInsert(extendedProperties, affectedBounds);
 
-        assertTrue(
-                extendedProperties.containsKey(
-                        GWCTransactionListener.GWC_TRANSACTION_INFO_PLACEHOLDER));
+        assertTrue(extendedProperties.containsKey(GWCTransactionListener.GWC_TRANSACTION_INFO_PLACEHOLDER));
 
         @SuppressWarnings("unchecked")
-        Map<String, List<ReferencedEnvelope>> placeHolder =
-                (Map<String, List<ReferencedEnvelope>>)
-                        extendedProperties.get(
-                                GWCTransactionListener.GWC_TRANSACTION_INFO_PLACEHOLDER);
+        Map<String, List<ReferencedEnvelope>> placeHolder = (Map<String, List<ReferencedEnvelope>>)
+                extendedProperties.get(GWCTransactionListener.GWC_TRANSACTION_INFO_PLACEHOLDER);
 
         assertNotNull(placeHolder.get("theLayer"));
 
@@ -211,12 +205,8 @@ public class GWCTransactionListenerTest {
         verify(mediator, times(1)).truncate(eq("theGroup"), eq(expectedEnv));
     }
 
-    /**
-     * Issues a fake dataStoreChange insert event that affects two tile layers: "theLayer" and
-     * "theGroup"
-     */
-    private void issueInsert(
-            Map<Object, Object> extendedProperties, ReferencedEnvelope affectedBounds) {
+    /** Issues a fake dataStoreChange insert event that affects two tile layers: "theLayer" and "theGroup" */
+    private void issueInsert(Map<Object, Object> extendedProperties, ReferencedEnvelope affectedBounds) {
 
         TransactionType transaction = mock(TransactionType.class);
         when(transaction.getExtendedProperties()).thenReturn(extendedProperties);
@@ -233,8 +223,7 @@ public class GWCTransactionListenerTest {
         when(event.getSource()).thenReturn(insert);
         when(event.getType()).thenReturn(TransactionEventType.PRE_INSERT);
 
-        when(mediator.getTileLayersByFeatureType(
-                        eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart())))
+        when(mediator.getTileLayersByFeatureType(eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart())))
                 .thenReturn(ImmutableSet.of("theLayer", "theGroup"));
 
         SimpleFeatureCollection affectedFeatures = mock(SimpleFeatureCollection.class);

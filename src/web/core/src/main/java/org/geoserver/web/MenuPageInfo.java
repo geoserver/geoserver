@@ -8,19 +8,17 @@ package org.geoserver.web;
 import org.geoserver.web.services.ServiceMenuPageInfo;
 
 /**
- * Information about a page that should be linked from the main menu in the GeoServer UI. The
- * "category" field is a category object identifying the menu section into which the link should be
- * placed. The "category" can be null; in this case the link will be placed outside of any category,
- * as a 'standalone' link. The "order" field is a sort key for the link within the category.
- * (Categories also have an order field.)
+ * Information about a page that should be linked from the main menu in the GeoServer UI. The "category" field is a
+ * category object identifying the menu section into which the link should be placed. The "category" can be null; in
+ * this case the link will be placed outside of any category, as a 'standalone' link. The "order" field is a sort key
+ * for the link within the category. (Categories also have an order field.)
  *
  * <p>Menu pages for OGC service configuration should use the subclass {@link ServiceMenuPageInfo}.
  *
  * @author David Winslow <dwinslow@opengeo.org>
  */
 @SuppressWarnings("serial")
-public class MenuPageInfo<T extends GeoServerBasePage> extends ComponentInfo<T>
-        implements Comparable<MenuPageInfo<T>> {
+public class MenuPageInfo<T extends GeoServerBasePage> extends ComponentInfo<T> implements Comparable<MenuPageInfo<T>> {
     Category category;
     int order;
     String icon;

@@ -24,8 +24,7 @@ import org.geotools.util.logging.Logging;
 public class PlacemarkDescriptionDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
         if (!(context.getService() instanceof WMSInfo)) {
             return null;

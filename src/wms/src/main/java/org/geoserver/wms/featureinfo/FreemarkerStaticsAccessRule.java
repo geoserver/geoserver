@@ -26,10 +26,7 @@ class FreemarkerStaticsAccessRule {
         private Class<?> clazz;
         /** the alias (variable name) used to expose the statics of the class */
         private String alias;
-        /**
-         * true, in case an number prefix was appended to keep the names distinct. Unlikely to occur
-         * in real world
-         */
+        /** true, in case an number prefix was appended to keep the names distinct. Unlikely to occur in real world */
         private boolean numberedAlias;
 
         public RuleItem(Class<?> clazz, String alias, boolean numberedAlias) {
@@ -53,12 +50,10 @@ class FreemarkerStaticsAccessRule {
     }
 
     /** Instance signals unrestricted access */
-    private static final FreemarkerStaticsAccessRule UNRESTRICTED =
-            new FreemarkerStaticsAccessRule(true);
+    private static final FreemarkerStaticsAccessRule UNRESTRICTED = new FreemarkerStaticsAccessRule(true);
 
     /** Instance signals access is disabled */
-    private static final FreemarkerStaticsAccessRule DISABLED =
-            new FreemarkerStaticsAccessRule(false);
+    private static final FreemarkerStaticsAccessRule DISABLED = new FreemarkerStaticsAccessRule(false);
 
     public static FreemarkerStaticsAccessRule fromPattern(String aPattern) {
         if (aPattern == null || aPattern.trim().isEmpty()) {
@@ -69,23 +64,16 @@ class FreemarkerStaticsAccessRule {
 
         // check for validity
         List<Class<?>> tmpClasses = new ArrayList<>();
-        for (StringTokenizer tmpTokenizer = new StringTokenizer(aPattern, ",");
-                tmpTokenizer.hasMoreTokens(); ) {
+        for (StringTokenizer tmpTokenizer = new StringTokenizer(aPattern, ","); tmpTokenizer.hasMoreTokens(); ) {
             String tmpCandidate = tmpTokenizer.nextToken().trim();
             if (SourceVersion.isName(tmpCandidate)) {
                 try {
                     tmpClasses.add(Class.forName(tmpCandidate));
                 } catch (ClassNotFoundException e) {
-                    logger.warning(
-                            "Denying access to static members of '"
-                                    + tmpCandidate
-                                    + "': Class not found.");
+                    logger.warning("Denying access to static members of '" + tmpCandidate + "': Class not found.");
                 }
             } else {
-                logger.warning(
-                        "Denying access to static members of '"
-                                + tmpCandidate
-                                + "': Not a valid class name.");
+                logger.warning("Denying access to static members of '" + tmpCandidate + "': Not a valid class name.");
             }
         }
         if (tmpClasses.isEmpty()) {
@@ -140,10 +128,6 @@ class FreemarkerStaticsAccessRule {
 
     @Override
     public String toString() {
-        return "FreemarkerStaticsAccessRule [unrestricted="
-                + unrestricted
-                + ", rulesItems="
-                + rulesItems
-                + "]";
+        return "FreemarkerStaticsAccessRule [unrestricted=" + unrestricted + ", rulesItems=" + rulesItems + "]";
     }
 }

@@ -73,21 +73,17 @@ public abstract class AbstractTemplates {
      * @throws IOException
      */
     protected void validate(
-            RootBuilder root,
-            AbstractTemplateValidator validator,
-            FeatureSource<FeatureType, Feature> source)
+            RootBuilder root, AbstractTemplateValidator validator, FeatureSource<FeatureType, Feature> source)
             throws IOException {
         if (root != null) {
             boolean isValid = validator.validateTemplate(root);
             if (!isValid) {
-                throw new RuntimeException(
-                        "Failed to validate template for "
-                                + validator.getTypeName()
-                                + ". Failing attribute is "
-                                + URI.decode(validator.getFailingAttribute())
-                                + "\n"
-                                + availableAttributesSuffix(
-                                        source.getSchema(), getNamespaces(source)));
+                throw new RuntimeException("Failed to validate template for "
+                        + validator.getTypeName()
+                        + ". Failing attribute is "
+                        + URI.decode(validator.getFailingAttribute())
+                        + "\n"
+                        + availableAttributesSuffix(source.getSchema(), getNamespaces(source)));
             }
         }
     }
@@ -95,10 +91,9 @@ public abstract class AbstractTemplates {
     protected String availableAttributesSuffix(Object ctx, NamespaceSupport ns) {
         if (ctx instanceof FeatureType) {
             FeatureType ft = (FeatureType) ctx;
-            String values =
-                    ft.getDescriptors().stream()
-                            .map(ad -> attributeName(ad, ns))
-                            .collect(Collectors.joining(", "));
+            String values = ft.getDescriptors().stream()
+                    .map(ad -> attributeName(ad, ns))
+                    .collect(Collectors.joining(", "));
             if (!StringUtils.isEmpty(values)) return " Available attributes: " + values;
         }
         return "";
@@ -115,8 +110,8 @@ public abstract class AbstractTemplates {
     }
 
     /**
-     * Reloads the templates. Called by {@link TemplatesReloader} on big configuration event changes
-     * (reset, reload, possibly more).
+     * Reloads the templates. Called by {@link TemplatesReloader} on big configuration event changes (reset, reload,
+     * possibly more).
      */
     public abstract void reloadTemplates();
 }

@@ -17,9 +17,9 @@ import org.geoserver.wfs.xslt.config.TransformRepository;
 import org.geotools.util.logging.Logging;
 
 /**
- * Keeps the list of output formats XSLT can handle updated, without flooding the disk with multiple
- * accesses for each and every request in order to check which output formats are available now (as
- * we are trying to also support direct modifications on disk given that there is no UI)
+ * Keeps the list of output formats XSLT can handle updated, without flooding the disk with multiple accesses for each
+ * and every request in order to check which output formats are available now (as we are trying to also support direct
+ * modifications on disk given that there is no UI)
  *
  * @author Andrea Aime - GeoSolutions
  */

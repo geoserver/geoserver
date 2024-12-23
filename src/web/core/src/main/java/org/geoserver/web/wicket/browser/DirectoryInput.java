@@ -24,10 +24,7 @@ public class DirectoryInput extends FileInput {
     private static final long serialVersionUID = -8317791966175845831L;
     protected GeoServerDialog gsDialog;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public DirectoryInput(
             final String id,
@@ -44,68 +41,59 @@ public class DirectoryInput extends FileInput {
 
     @Override
     protected Component chooserButton(final String windowTitle) {
-        AjaxSubmitLink link =
-                new AjaxSubmitLink("chooser") {
+        AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
-                    private static final long serialVersionUID = -2860146532287292092L;
+            private static final long serialVersionUID = -2860146532287292092L;
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                gsDialog.setTitle(new Model<>(windowTitle));
+                gsDialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
+                    /** */
+                    private static final long serialVersionUID = 1576266249751904398L;
 
                     @Override
-                    public boolean getDefaultFormProcessing() {
-                        return false;
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        GeoServerFileChooser chooser = (GeoServerFileChooser) contents;
+                        String path = ((File) chooser.getDefaultModelObject()).getAbsolutePath();
+                        // clear the raw input of the field won't show the new model
+                        // value
+                        textField.clearInput();
+                        textField.setModelValue(new String[] {path});
+
+                        target.add(textField);
+                        return true;
                     }
 
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        gsDialog.setTitle(new Model<>(windowTitle));
-                        gsDialog.showOkCancel(
-                                target,
-                                new GeoServerDialog.DialogDelegate() {
-
-                                    /** */
-                                    private static final long serialVersionUID =
-                                            1576266249751904398L;
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        GeoServerFileChooser chooser =
-                                                (GeoServerFileChooser) contents;
-                                        String path =
-                                                ((File) chooser.getDefaultModelObject())
-                                                        .getAbsolutePath();
-                                        // clear the raw input of the field won't show the new model
-                                        // value
-                                        textField.clearInput();
-                                        textField.setModelValue(new String[] {path});
-
-                                        target.add(textField);
-                                        return true;
-                                    }
-
-                                    @Override
-                                    public void onClose(AjaxRequestTarget target) {
-                                        // update the field with the user chosen value
-                                        target.add(textField);
-                                    }
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        File file = null;
-                                        textField.processInput();
-                                        String input = textField.getConvertedInput();
-                                        if (input != null && !input.equals("")) {
-                                            file = new File(input);
-                                        }
-
-                                        GeoServerFileChooser chooser =
-                                                new GeoServerFileChooser(id, new Model<>(file));
-                                        chooser.setFilter(fileFilter);
-
-                                        return chooser;
-                                    }
-                                });
+                    public void onClose(AjaxRequestTarget target) {
+                        // update the field with the user chosen value
+                        target.add(textField);
                     }
-                };
+
+                    @Override
+                    protected Component getContents(String id) {
+                        File file = null;
+                        textField.processInput();
+                        String input = textField.getConvertedInput();
+                        if (input != null && !input.equals("")) {
+                            file = new File(input);
+                        }
+
+                        GeoServerFileChooser chooser = new GeoServerFileChooser(id, new Model<>(file));
+                        chooser.setFilter(fileFilter);
+
+                        return chooser;
+                    }
+                });
+            }
+        };
         return link;
     }
 }

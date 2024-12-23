@@ -22,8 +22,7 @@ public class WebServiceBodyResponseSecurityProviderConfig extends BaseSecurityNa
 
     public WebServiceBodyResponseSecurityProviderConfig() {}
 
-    public WebServiceBodyResponseSecurityProviderConfig(
-            WebServiceBodyResponseSecurityProviderConfig other) {
+    public WebServiceBodyResponseSecurityProviderConfig(WebServiceBodyResponseSecurityProviderConfig other) {
         super(other);
         userGroupServiceName = other.getUserGroupServiceName();
     }

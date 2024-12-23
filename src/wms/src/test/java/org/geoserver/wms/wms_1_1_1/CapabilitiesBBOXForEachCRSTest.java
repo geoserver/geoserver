@@ -38,10 +38,7 @@ public class CapabilitiesBBOXForEachCRSTest extends WMSTestSupport {
 
     @Test
     public void testBBOXForEachCRS() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
-                        true);
+        Document doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0", true);
 
         String layer = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:4326']", doc);
@@ -50,10 +47,7 @@ public class CapabilitiesBBOXForEachCRSTest extends WMSTestSupport {
 
         addSRSAndSetFlag();
 
-        doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
-                        true);
+        doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0", true);
 
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:4326']", doc);
         assertXpathExists("//Layer[Name='" + layer + "']/BoundingBox[@SRS = 'EPSG:3005']", doc);
@@ -62,29 +56,17 @@ public class CapabilitiesBBOXForEachCRSTest extends WMSTestSupport {
 
     @Test
     public void testRootLayer() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
-                        true);
+        Document doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0", true);
 
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:4326']", doc);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3005']", doc);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3857']", doc);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:4326']", doc);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3005']", doc);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3857']", doc);
 
         addSRSAndSetFlag();
-        doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
-                        true);
+        doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0", true);
 
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:4326']", doc);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3005']", doc);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3857']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:4326']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3005']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/BoundingBox[@SRS = 'EPSG:3857']", doc);
     }
 }

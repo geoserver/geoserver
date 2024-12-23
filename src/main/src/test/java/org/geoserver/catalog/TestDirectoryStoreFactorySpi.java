@@ -11,14 +11,10 @@ import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.data.memory.MemoryDataStore;
 
-/**
- * A fake store that returns nothing, used to similate the FGB store interaction with directory data
- * store
- */
+/** A fake store that returns nothing, used to similate the FGB store interaction with directory data store */
 public class TestDirectoryStoreFactorySpi implements DataStoreFactorySpi {
 
-    public static final Param URL_PARAM =
-            new Param("url", URL.class, "A file or directory", true, null);
+    public static final Param URL_PARAM = new Param("url", URL.class, "A file or directory", true, null);
 
     @Override
     public DataStore createDataStore(Map<String, ?> params) throws IOException {
@@ -51,11 +47,10 @@ public class TestDirectoryStoreFactorySpi implements DataStoreFactorySpi {
     }
 
     /**
-     * Empty subclass, just to have a clearer name on test failures, e.g., "failed to cast to
-     * TestDirectoryStore" is better than "failed to case to MemoryDataStore", e.g., it would lead
-     * immediately to this file. In case you're seeing this, it's likely that you created a
-     * DataStoreInfo without setting the "type" attribute to the desired data store factory
-     * displayName.
+     * Empty subclass, just to have a clearer name on test failures, e.g., "failed to cast to TestDirectoryStore" is
+     * better than "failed to case to MemoryDataStore", e.g., it would lead immediately to this file. In case you're
+     * seeing this, it's likely that you created a DataStoreInfo without setting the "type" attribute to the desired
+     * data store factory displayName.
      */
     public static class TestDirectoryStore extends MemoryDataStore {}
 }

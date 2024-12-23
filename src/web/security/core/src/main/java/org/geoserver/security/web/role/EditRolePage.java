@@ -36,8 +36,7 @@ public class EditRolePage extends AbstractRolePage {
     protected void onFormSubmit(GeoServerRole updated) throws IOException {
 
         if (hasRoleStore(roleServiceName) == false) {
-            throw new RuntimeException(
-                    "Invalid workflow, cannot store in a read only role service");
+            throw new RuntimeException("Invalid workflow, cannot store in a read only role service");
         }
 
         GeoServerRoleStore store = null;

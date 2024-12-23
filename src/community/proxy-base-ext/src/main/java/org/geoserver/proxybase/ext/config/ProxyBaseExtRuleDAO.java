@@ -24,23 +24,17 @@ public class ProxyBaseExtRuleDAO {
     private static SecureXStream xStream;
 
     public static final String PROXY_BASE_EXT_RULES_DIRECTORY = "proxy-base-ext";
-    public static final String PROXY_BASE_EXT_RULES_PATH =
-            PROXY_BASE_EXT_RULES_DIRECTORY + "/proxy-base-ext.xml";
+    public static final String PROXY_BASE_EXT_RULES_PATH = PROXY_BASE_EXT_RULES_DIRECTORY + "/proxy-base-ext.xml";
     private static final String DATA_DIRECTORY = "dataDirectory";
 
     static {
         xStream = new SecureXStream();
         xStream.registerConverter(new ProxyBaseExtRuleConverter());
         xStream.alias("ProxyBaseExtensionRule", ProxyBaseExtensionRule.class);
-        xStream.alias(
-                "ProxyBaseExtensionRules", ProxyBaseExtRuleDAO.ProxyBaseExtensionRuleList.class);
-        xStream.addImplicitCollection(
-                ProxyBaseExtRuleDAO.ProxyBaseExtensionRuleList.class, "proxyBaseExtensionRules");
+        xStream.alias("ProxyBaseExtensionRules", ProxyBaseExtRuleDAO.ProxyBaseExtensionRuleList.class);
+        xStream.addImplicitCollection(ProxyBaseExtRuleDAO.ProxyBaseExtensionRuleList.class, "proxyBaseExtensionRules");
         xStream.allowTypes(
-                new Class[] {
-                    ProxyBaseExtensionRule.class,
-                    ProxyBaseExtRuleDAO.ProxyBaseExtensionRuleList.class
-                });
+                new Class[] {ProxyBaseExtensionRule.class, ProxyBaseExtRuleDAO.ProxyBaseExtensionRuleList.class});
     }
 
     /**
@@ -55,15 +49,11 @@ public class ProxyBaseExtRuleDAO {
                 if (inputStream.available() == 0) {
                     LOGGER.log(Level.FINE, "Proxy Base Extension Rules file seems to be empty.");
                 } else {
-                    ProxyBaseExtensionRuleList list =
-                            (ProxyBaseExtensionRuleList) xStream.fromXML(inputStream);
-                    return list.proxyBaseExtensionRules == null
-                            ? new ArrayList<>()
-                            : list.proxyBaseExtensionRules;
+                    ProxyBaseExtensionRuleList list = (ProxyBaseExtensionRuleList) xStream.fromXML(inputStream);
+                    return list.proxyBaseExtensionRules == null ? new ArrayList<>() : list.proxyBaseExtensionRules;
                 }
             } catch (Exception exception) {
-                throw new ProxyBaseExtException(
-                        exception, "Error parsing Proxy Base Extension rule files.");
+                throw new ProxyBaseExtException(exception, "Error parsing Proxy Base Extension rule files.");
             }
         } else {
             LOGGER.log(Level.INFO, "Proxy Base Extension rules file does not exist.");
@@ -101,8 +91,7 @@ public class ProxyBaseExtRuleDAO {
      * @param proxyBaseExtRule the {@link ProxyBaseExtensionRule} to write
      * @param input the input {@link Resource}
      */
-    public static void saveOrUpdateProxyBaseExtRule(
-            ProxyBaseExtensionRule proxyBaseExtRule, Resource input) {
+    public static void saveOrUpdateProxyBaseExtRule(ProxyBaseExtensionRule proxyBaseExtRule, Resource input) {
         List<ProxyBaseExtensionRule> proxyBaseExtensionRules = getProxyBaseExtensionRules(input);
         boolean exists = false;
         for (int i = 0; i < proxyBaseExtensionRules.size() && !exists; i++) {
@@ -134,19 +123,16 @@ public class ProxyBaseExtRuleDAO {
      * @param inputResource the input {@link Resource}
      * @param forwardParameterIds the {@link ProxyBaseExtensionRule} ids to delete
      */
-    public static void deleteProxyBaseExtRules(
-            Resource inputResource, String... forwardParameterIds) {
+    public static void deleteProxyBaseExtRules(Resource inputResource, String... forwardParameterIds) {
 
-        List<ProxyBaseExtensionRule> collect =
-                getProxyBaseExtensionRules(inputResource).stream()
-                        .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
-                        .collect(Collectors.toList());
+        List<ProxyBaseExtensionRule> collect = getProxyBaseExtensionRules(inputResource).stream()
+                .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
+                .collect(Collectors.toList());
 
         writeProxyBaseExtRules(collect, inputResource);
     }
 
-    private static void writeProxyBaseExtRules(
-            List<ProxyBaseExtensionRule> proxyBaseExtRules, Resource output) {
+    private static void writeProxyBaseExtRules(List<ProxyBaseExtensionRule> proxyBaseExtRules, Resource output) {
         try (OutputStream outputStream = output.out()) {
             xStream.toXML(new ProxyBaseExtensionRuleList(proxyBaseExtRules), outputStream);
         } catch (Throwable exception) {

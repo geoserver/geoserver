@@ -187,12 +187,9 @@ public class DynamicValueBuilderTest extends DataTestCase {
     private JSONObject encodeDynamic(String expression, Feature feature) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GeoJSONWriter writer =
-                new GeoJSONWriter(
-                        new JsonFactory().createGenerator(baos, JsonEncoding.UTF8),
-                        TemplateIdentifier.JSON);
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
 
-        DynamicValueBuilder builder =
-                new DynamicValueBuilder("key", expression, new NamespaceSupport());
+        DynamicValueBuilder builder = new DynamicValueBuilder("key", expression, new NamespaceSupport());
 
         writer.writeStartObject();
         builder.evaluate(writer, new TemplateBuilderContext(feature));
@@ -208,8 +205,7 @@ public class DynamicValueBuilderTest extends DataTestCase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GMLTemplateWriter outputWriter = getGmlWriter(TemplateIdentifier.GML31, baos);
 
-        DynamicValueBuilder builder =
-                new DynamicValueBuilder("key", expression, new NamespaceSupport());
+        DynamicValueBuilder builder = new DynamicValueBuilder("key", expression, new NamespaceSupport());
         builder.evaluate(outputWriter, new TemplateBuilderContext(feature));
         outputWriter.close();
 
@@ -217,12 +213,10 @@ public class DynamicValueBuilderTest extends DataTestCase {
         return new String(baos.toByteArray());
     }
 
-    private GMLTemplateWriter getGmlWriter(TemplateIdentifier identifier, OutputStream out)
-            throws XMLStreamException {
+    private GMLTemplateWriter getGmlWriter(TemplateIdentifier identifier, OutputStream out) throws XMLStreamException {
         XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
         XMLStreamWriter xMLStreamWriter = xMLOutputFactory.createXMLStreamWriter(out);
-        GMLTemplateWriter outputWriter =
-                new GMLTemplateWriter(xMLStreamWriter, identifier.getOutputFormat());
+        GMLTemplateWriter outputWriter = new GMLTemplateWriter(xMLStreamWriter, identifier.getOutputFormat());
         outputWriter.addNamespaces(new HashMap<>());
         return outputWriter;
     }

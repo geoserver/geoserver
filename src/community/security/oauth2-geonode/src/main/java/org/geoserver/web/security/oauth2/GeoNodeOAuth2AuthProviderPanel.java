@@ -13,8 +13,7 @@ import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class GeoNodeOAuth2AuthProviderPanel
-        extends GeoServerOAuth2AuthProviderPanel<GeoNodeOAuth2FilterConfig> {
+public class GeoNodeOAuth2AuthProviderPanel extends GeoServerOAuth2AuthProviderPanel<GeoNodeOAuth2FilterConfig> {
 
     public GeoNodeOAuth2AuthProviderPanel(String id, IModel<GeoNodeOAuth2FilterConfig> model) {
         super(id, model);

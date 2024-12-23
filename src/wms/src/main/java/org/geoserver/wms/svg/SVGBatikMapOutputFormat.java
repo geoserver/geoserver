@@ -31,8 +31,8 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.w3c.dom.Document;
 
 /**
- * Renders svg using the Batik SVG Toolkit. An SVG context is created for a map and then passed of
- * to {@link org.geotools.renderer.lite.StreamingRenderer}.
+ * Renders svg using the Batik SVG Toolkit. An SVG context is created for a map and then passed of to
+ * {@link org.geotools.renderer.lite.StreamingRenderer}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -50,8 +50,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(false, false, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false, true);
 
     private final WMS wms;
 
@@ -110,16 +109,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
         }
-        rendererParams.put(
-                StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                mapContent.getRendererScaleMethod());
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY, mapContent.getRendererScaleMethod());
         renderer.setRendererHints(rendererParams);
         renderer.setMapContent(mapContent);
         return renderer;
     }
 
-    public SVGGraphics2D createSVGMap(
-            final StreamingRenderer renderer, final WMSMapContent mapContent)
+    public SVGGraphics2D createSVGMap(final StreamingRenderer renderer, final WMSMapContent mapContent)
             throws ServiceException, IOException {
         try {
             MapContent map = renderer.getMapContent();
@@ -148,11 +144,9 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
             // turn off/on anti aliasing
             if (wms.isSvgAntiAlias()) {
-                g.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             } else {
-                g.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
             // enforce no more than x rendering errors
@@ -162,8 +156,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             // Add a render listener that ignores well known rendering exceptions and reports back
             // non
             // ignorable ones
-            final RenderExceptionStrategy nonIgnorableExceptionListener =
-                    new RenderExceptionStrategy(renderer);
+            final RenderExceptionStrategy nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
             renderer.addRenderListener(nonIgnorableExceptionListener);
 
             renderer.paint(
@@ -183,8 +176,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             // check if a non ignorable error occurred
             if (nonIgnorableExceptionListener.exceptionOccurred()) {
                 Exception renderError = nonIgnorableExceptionListener.getException();
-                throw new ServiceException(
-                        "Rendering process failed", renderError, "internalError");
+                throw new ServiceException("Rendering process failed", renderError, "internalError");
             }
 
             return g;
@@ -193,8 +185,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         }
     }
 
-    private SVGGeneratorContext setupContext()
-            throws FactoryConfigurationError, ParserConfigurationException {
+    private SVGGeneratorContext setupContext() throws FactoryConfigurationError, ParserConfigurationException {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 

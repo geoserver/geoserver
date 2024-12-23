@@ -58,12 +58,10 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
     Property<DefaultValueConfiguration> DIMENSION =
             new BeanProperty<DefaultValueConfiguration>("dimension", "dimension");
 
-    Property<DefaultValueConfiguration> POLICY =
-            new BeanProperty<DefaultValueConfiguration>("policy", "policy");
+    Property<DefaultValueConfiguration> POLICY = new BeanProperty<DefaultValueConfiguration>("policy", "policy");
 
     Property<DefaultValueConfiguration> DEFAULT_VALUE_EXPRESSION =
-            new BeanProperty<DefaultValueConfiguration>(
-                    "defaultValueExpression", "defaultValueExpression");
+            new BeanProperty<DefaultValueConfiguration>("defaultValueExpression", "defaultValueExpression");
 
     ReorderableTablePanel<DefaultValueConfiguration> table;
 
@@ -74,11 +72,10 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
     public DynamicDimensionsTabPanel(String id, IModel<LayerInfo> model) {
         super(id, model);
 
-        MetadataMapModel configsModel =
-                new MetadataMapModel(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        DefaultValueConfigurations.KEY,
-                        DefaultValueConfigurations.class);
+        MetadataMapModel configsModel = new MetadataMapModel(
+                new PropertyModel<MetadataMap>(model, "resource.metadata"),
+                DefaultValueConfigurations.KEY,
+                DefaultValueConfigurations.class);
         final LayerInfo layer = model.getObject();
         configurations = getConfigurations(model, configsModel);
         Editor editor = new Editor("editor", getEnabledDimensionNames(layer), configsModel);
@@ -118,7 +115,8 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
 
     Set<String> getEnabledDimensionNames(LayerInfo layer) {
         Set<String> dimensionNames = new HashSet<String>();
-        for (Map.Entry<String, Serializable> entry : layer.getResource().getMetadata().entrySet()) {
+        for (Map.Entry<String, Serializable> entry :
+                layer.getResource().getMetadata().entrySet()) {
             String key = entry.getKey();
             Serializable md = entry.getValue();
             if (md instanceof DimensionInfo) {
@@ -157,9 +155,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
         private static final long serialVersionUID = -1339941470144600565L;
 
         public Editor(
-                String id,
-                final Collection<String> enabledDimensionNames,
-                IModel<DefaultValueConfigurations> model) {
+                String id, final Collection<String> enabledDimensionNames, IModel<DefaultValueConfigurations> model) {
             super(id, model);
             IModel<List<Property<DefaultValueConfiguration>>> properties =
                     new LoadableDetachableModel<List<Property<DefaultValueConfiguration>>>() {
@@ -172,10 +168,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
 
             table =
                     new ReorderableTablePanel<DefaultValueConfiguration>(
-                            "defaultConfigs",
-                            DefaultValueConfiguration.class,
-                            configurations,
-                            properties) {
+                            "defaultConfigs", DefaultValueConfiguration.class, configurations, properties) {
 
                         private static final long serialVersionUID = 8562909315041926320L;
 
@@ -185,37 +178,28 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 final IModel<DefaultValueConfiguration> itemModel,
                                 Property<DefaultValueConfiguration> property) {
                             if (DEFAULT_VALUE_EXPRESSION.equals(property)) {
-                                Fragment f =
-                                        new Fragment(
-                                                id, "ecqlEditor", DynamicDimensionsTabPanel.this);
+                                Fragment f = new Fragment(id, "ecqlEditor", DynamicDimensionsTabPanel.this);
                                 TextArea<String> ta = new TextArea<String>("editor");
                                 // a dimension expression cannot refer to itself
-                                List<String> otherDimensions =
-                                        new ArrayList<String>(enabledDimensionNames);
+                                List<String> otherDimensions = new ArrayList<String>(enabledDimensionNames);
                                 String currentDimension =
-                                        ((DefaultValueConfiguration) itemModel.getObject())
-                                                .getDimension();
+                                        ((DefaultValueConfiguration) itemModel.getObject()).getDimension();
                                 otherDimensions.remove(currentDimension);
                                 ta.add(new ECQLValidator().setValidAttributes(otherDimensions));
                                 ta.setModel((IModel<String>) property.getModel(itemModel));
                                 ta.setOutputMarkupId(true);
-                                Object currentPolicy = POLICY.getModel(itemModel).getObject();
+                                Object currentPolicy =
+                                        POLICY.getModel(itemModel).getObject();
                                 ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
                                 f.add(ta);
                                 return f;
                             } else if (POLICY.equals(property)) {
-                                Fragment f =
-                                        new Fragment(
-                                                id, "policyChoice", DynamicDimensionsTabPanel.this);
+                                Fragment f = new Fragment(id, "policyChoice", DynamicDimensionsTabPanel.this);
                                 final DropDownChoice<DefaultValuePolicy> dd =
-                                        new DropDownChoice<
-                                                DefaultValueConfiguration.DefaultValuePolicy>(
-                                                "choice",
-                                                Arrays.asList(DefaultValuePolicy.values()));
-                                dd.setChoiceRenderer(
-                                        new EnumChoiceRenderer(DynamicDimensionsTabPanel.this));
-                                dd.setModel(
-                                        (IModel<DefaultValuePolicy>) property.getModel(itemModel));
+                                        new DropDownChoice<DefaultValueConfiguration.DefaultValuePolicy>(
+                                                "choice", Arrays.asList(DefaultValuePolicy.values()));
+                                dd.setChoiceRenderer(new EnumChoiceRenderer(DynamicDimensionsTabPanel.this));
+                                dd.setModel((IModel<DefaultValuePolicy>) property.getModel(itemModel));
                                 f.add(dd);
                                 return f;
                             }
@@ -235,48 +219,36 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 // drill down into the containers to get the actual form components
                                 // we want
                                 final DropDownChoice<?> dd =
-                                        (DropDownChoice<?>)
-                                                ((Fragment) ((ListItem<?>) parent.get(3)).get(0))
-                                                        .get(0);
+                                        (DropDownChoice<?>) ((Fragment) ((ListItem<?>) parent.get(3)).get(0)).get(0);
                                 final TextArea<?> ta =
-                                        (TextArea<?>)
-                                                ((Fragment) ((ListItem<?>) parent.get(4)).get(0))
-                                                        .get(0);
-                                dd.add(
-                                        new OnChangeAjaxBehavior() {
+                                        (TextArea<?>) ((Fragment) ((ListItem<?>) parent.get(4)).get(0)).get(0);
+                                dd.add(new OnChangeAjaxBehavior() {
 
-                                            private static final long serialVersionUID =
-                                                    -6159626785706793328L;
+                                    private static final long serialVersionUID = -6159626785706793328L;
 
-                                            @Override
-                                            protected void onUpdate(AjaxRequestTarget target) {
-                                                DefaultValuePolicy currentPolicy =
-                                                        (DefaultValuePolicy) dd.getConvertedInput();
-                                                ta.setVisible(
-                                                        DefaultValuePolicy.EXPRESSION.equals(
-                                                                currentPolicy));
-                                                target.add(ta);
-                                                target.add(table);
-                                            }
-                                        });
+                                    @Override
+                                    protected void onUpdate(AjaxRequestTarget target) {
+                                        DefaultValuePolicy currentPolicy = (DefaultValuePolicy) dd.getConvertedInput();
+                                        ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
+                                        target.add(ta);
+                                        target.add(table);
+                                    }
+                                });
                             }
 
-                            item.add(
-                                    new Behavior() {
+                            item.add(new Behavior() {
 
-                                        private static final long serialVersionUID =
-                                                685833036040462732L;
+                                private static final long serialVersionUID = 685833036040462732L;
 
-                                        @Override
-                                        public void onComponentTag(
-                                                Component component, ComponentTag tag) {
-                                            if (property == DEFAULT_VALUE_EXPRESSION) {
-                                                tag.put("style", "width:99%");
-                                            } else {
-                                                tag.put("style", "width:1%");
-                                            }
-                                        }
-                                    });
+                                @Override
+                                public void onComponentTag(Component component, ComponentTag tag) {
+                                    if (property == DEFAULT_VALUE_EXPRESSION) {
+                                        tag.put("style", "width:99%");
+                                    } else {
+                                        tag.put("style", "width:1%");
+                                    }
+                                }
+                            });
                         }
                     };
             table.setFilterable(false);
@@ -287,40 +259,34 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
 
             add(table);
 
-            add(
-                    new IValidator<DefaultValueConfigurations>() {
+            add(new IValidator<DefaultValueConfigurations>() {
 
-                        private static final long serialVersionUID = 530635923236054192L;
+                private static final long serialVersionUID = 530635923236054192L;
 
-                        @Override
-                        public void validate(IValidatable<DefaultValueConfigurations> validatable) {
-                            DefaultValueConfigurations configurations = validatable.getValue();
-                            for (DefaultValueConfiguration config :
-                                    configurations.getConfigurations()) {
-                                if (config.getPolicy() == DefaultValuePolicy.EXPRESSION
-                                        && config.getDefaultValueExpression() == null) {
-                                    error(
-                                            new ParamResourceModel(
-                                                            "expressionRequired",
-                                                            DynamicDimensionsTabPanel.this)
-                                                    .getString());
-                                }
-                            }
+                @Override
+                public void validate(IValidatable<DefaultValueConfigurations> validatable) {
+                    DefaultValueConfigurations configurations = validatable.getValue();
+                    for (DefaultValueConfiguration config : configurations.getConfigurations()) {
+                        if (config.getPolicy() == DefaultValuePolicy.EXPRESSION
+                                && config.getDefaultValueExpression() == null) {
+                            error(new ParamResourceModel("expressionRequired", DynamicDimensionsTabPanel.this)
+                                    .getString());
                         }
-                    });
+                    }
+                }
+            });
         }
 
         @Override
         public void convertInput() {
-            visitChildren(
-                    TextArea.class,
-                    (component, visit) -> {
-                        if (component instanceof TextArea) {
-                            TextArea textArea = (TextArea) component;
-                            textArea.updateModel();
-                        }
-                    });
+            visitChildren(TextArea.class, (component, visit) -> {
+                if (component instanceof TextArea) {
+                    TextArea textArea = (TextArea) component;
+                    textArea.updateModel();
+                }
+            });
             setConvertedInput(new DefaultValueConfigurations(configurations));
         }
-    };
+    }
+    ;
 }

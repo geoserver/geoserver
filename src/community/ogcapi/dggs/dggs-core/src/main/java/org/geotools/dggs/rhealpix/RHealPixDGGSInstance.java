@@ -72,14 +72,12 @@ public class RHealPixDGGSInstance implements DGGSInstance {
         this.identifier = identifier;
 
         int[] resolutions = getResolutions();
-        this.northPoleZones =
-                Arrays.stream(resolutions)
-                        .mapToObj(r -> getZone(0, 90, r).getId())
-                        .collect(Collectors.toSet());
-        this.southPoleZones =
-                Arrays.stream(resolutions)
-                        .mapToObj(r -> getZone(0, -90, r).getId())
-                        .collect(Collectors.toSet());
+        this.northPoleZones = Arrays.stream(resolutions)
+                .mapToObj(r -> getZone(0, 90, r).getId())
+                .collect(Collectors.toSet());
+        this.southPoleZones = Arrays.stream(resolutions)
+                .mapToObj(r -> getZone(0, -90, r).getId())
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -122,16 +120,15 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
     @Override
     public Zone getZone(double lat, double lon, int resolution) {
-        return runtime.runSafe(
-                interpreter -> {
-                    interpreter.set("p", Arrays.asList(lat, lon));
-                    interpreter.set("r", (Integer) resolution);
-                    interpreter.exec("c = dggs.cell_from_point(r, p, False)");
-                    @SuppressWarnings("unchecked")
-                    List<Object> idList = interpreter.getValue("c.suid", List.class);
-                    String id = toZoneId(idList);
-                    return new RHealPixZone(this, id);
-                });
+        return runtime.runSafe(interpreter -> {
+            interpreter.set("p", Arrays.asList(lat, lon));
+            interpreter.set("r", (Integer) resolution);
+            interpreter.exec("c = dggs.cell_from_point(r, p, False)");
+            @SuppressWarnings("unchecked")
+            List<Object> idList = interpreter.getValue("c.suid", List.class);
+            String id = toZoneId(idList);
+            return new RHealPixZone(this, id);
+        });
     }
 
     private String toZoneId(List<Object> idList) {
@@ -140,8 +137,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Iterator<Zone> zonesFromEnvelope(
-            Envelope envelope, int targetResolution, boolean compact) {
+    public Iterator<Zone> zonesFromEnvelope(Envelope envelope, int targetResolution, boolean compact) {
         // WAY USING DIRECT LIBRARY CALLS. Faster, but memory bound.
         //        return runtime.runSafe(
         //                interpreter -> {
@@ -171,21 +167,20 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                                 int r = zone.getResolution();
                                 if (r >= targetResolution) return false;
                                 Polygon boundary = zone.getBoundary();
-                                return overlaps(boundary, envelope, true)
-                                        && !contained(boundary, envelope, true);
+                                return overlaps(boundary, envelope, true) && !contained(boundary, envelope, true);
                             },
                             zone -> {
                                 int r = zone.getResolution();
                                 Polygon boundary = zone.getBoundary();
-                                return (r == targetResolution
-                                                && overlaps(boundary, envelope, false))
-                                        || (r < targetResolution
-                                                && contained(boundary, envelope, true));
+                                return (r == targetResolution && overlaps(boundary, envelope, false))
+                                        || (r < targetResolution && contained(boundary, envelope, true));
                             },
                             zone -> zone.getId())
                     .forEachRemaining(id -> identifiers.add(id));
             compact(identifiers);
-            return identifiers.stream().map(id -> (Zone) new RHealPixZone(this, id)).iterator();
+            return identifiers.stream()
+                    .map(id -> (Zone) new RHealPixZone(this, id))
+                    .iterator();
         } else {
             return new RHealPixZoneIterator<>(
                     this,
@@ -264,10 +259,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
     /** Won't quite work with every type of relation, but does with contains/intersects */
     private boolean testRelation(
-            Polygon polygon,
-            Envelope envelope,
-            Function<Polygon, Boolean> relation,
-            boolean testAcrossDateline) {
+            Polygon polygon, Envelope envelope, Function<Polygon, Boolean> relation, boolean testAcrossDateline) {
         if (relation.apply(polygon)) {
             return true;
         } else if (!testAcrossDateline) {
@@ -323,32 +315,30 @@ public class RHealPixDGGSInstance implements DGGSInstance {
             return 0;
         }
         AtomicLong counter = new AtomicLong();
-        RHealPixZoneIterator<AtomicLong> iterator =
-                new RHealPixZoneIterator<>(
-                        this,
-                        zone -> {
-                            Polygon boundary = zone.getBoundary();
-                            // skip count of completely ouside
-                            if (!overlaps(boundary, envelope, true)) return false;
-                            // skip drilling down if completely contained too
-                            return (zone.getResolution() < resolution
-                                    && !contained(boundary, envelope, true));
-                        },
-                        zone -> {
-                            int currentResolution = zone.getResolution();
-                            Polygon boundary = zone.getBoundary();
-                            if (zone.getResolution() == resolution) {
-                                if (overlaps(boundary, envelope, true)) {
-                                    counter.addAndGet(1);
-                                    return true;
-                                }
-                            } else if (contained(boundary, envelope, true)) {
-                                counter.addAndGet(childrenCount(resolution - currentResolution));
-                            }
-                            return false;
-                        },
-                        // just return the current counter value
-                        zone -> counter);
+        RHealPixZoneIterator<AtomicLong> iterator = new RHealPixZoneIterator<>(
+                this,
+                zone -> {
+                    Polygon boundary = zone.getBoundary();
+                    // skip count of completely ouside
+                    if (!overlaps(boundary, envelope, true)) return false;
+                    // skip drilling down if completely contained too
+                    return (zone.getResolution() < resolution && !contained(boundary, envelope, true));
+                },
+                zone -> {
+                    int currentResolution = zone.getResolution();
+                    Polygon boundary = zone.getBoundary();
+                    if (zone.getResolution() == resolution) {
+                        if (overlaps(boundary, envelope, true)) {
+                            counter.addAndGet(1);
+                            return true;
+                        }
+                    } else if (contained(boundary, envelope, true)) {
+                        counter.addAndGet(childrenCount(resolution - currentResolution));
+                    }
+                    return false;
+                },
+                // just return the current counter value
+                zone -> counter);
         // make it visit
         while (iterator.hasNext()) iterator.next();
         return counter.get();
@@ -381,39 +371,35 @@ public class RHealPixDGGSInstance implements DGGSInstance {
         // cells yet to explore
         Set<String> toExplore = new HashSet<>();
         toExplore.add(id);
-        runtime.runSafe(
-                interpreter -> {
-                    for (int i = 0; i < radius; i++) {
-                        Set<String> nextRound = new HashSet<>();
-                        for (String cell : toExplore) {
-                            setCellId(interpreter, "id", cell);
-                            // find the neighbors of the cell
-                            @SuppressWarnings("unchecked")
-                            List<String> neighbors =
-                                    (List<String>)
-                                            interpreter
-                                                    .getValue(
-                                                            "list(Cell(dggs, id).neighbors(False).values())",
-                                                            List.class)
-                                                    .stream()
-                                                    .map(o -> String.valueOf((o)))
-                                                    .collect(Collectors.toList());
-                            // compute the zones that we haven't hit yet
-                            List<String> newZones = new ArrayList<>(neighbors);
-                            newZones.removeAll(result);
-                            // add to the result, schedule for next round of checks
-                            result.addAll(newZones);
-                            nextRound.addAll(newZones);
-                        }
-                        // done collecting the current ring, switch to the next
-                        toExplore.clear();
-                        toExplore.addAll(nextRound);
-                    }
-                    return null;
-                });
+        runtime.runSafe(interpreter -> {
+            for (int i = 0; i < radius; i++) {
+                Set<String> nextRound = new HashSet<>();
+                for (String cell : toExplore) {
+                    setCellId(interpreter, "id", cell);
+                    // find the neighbors of the cell
+                    @SuppressWarnings("unchecked")
+                    List<String> neighbors = (List<String>)
+                            interpreter.getValue("list(Cell(dggs, id).neighbors(False).values())", List.class).stream()
+                                    .map(o -> String.valueOf((o)))
+                                    .collect(Collectors.toList());
+                    // compute the zones that we haven't hit yet
+                    List<String> newZones = new ArrayList<>(neighbors);
+                    newZones.removeAll(result);
+                    // add to the result, schedule for next round of checks
+                    result.addAll(newZones);
+                    nextRound.addAll(newZones);
+                }
+                // done collecting the current ring, switch to the next
+                toExplore.clear();
+                toExplore.addAll(nextRound);
+            }
+            return null;
+        });
         // remove the seed zone
         result.remove(id);
-        return result.stream().map(zoneId -> (Zone) new RHealPixZone(this, zoneId)).iterator();
+        return result.stream()
+                .map(zoneId -> (Zone) new RHealPixZone(this, zoneId))
+                .iterator();
     }
 
     @Override
@@ -439,16 +425,13 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
     @Override
     public Zone point(Point point, int resolution) {
-        return runtime.runSafe(
-                interpreter -> {
-                    interpreter.set("p", Arrays.asList(point.getX(), point.getY()));
-                    interpreter.set("r", Integer.valueOf(resolution));
-                    @SuppressWarnings("unchecked")
-                    List<Object> idList =
-                            interpreter.getValue(
-                                    "dggs.cell_from_point(r, p, False).suid", List.class);
-                    return new RHealPixZone(this, toZoneId(idList));
-                });
+        return runtime.runSafe(interpreter -> {
+            interpreter.set("p", Arrays.asList(point.getX(), point.getY()));
+            interpreter.set("r", Integer.valueOf(resolution));
+            @SuppressWarnings("unchecked")
+            List<Object> idList = interpreter.getValue("dggs.cell_from_point(r, p, False).suid", List.class);
+            return new RHealPixZone(this, toZoneId(idList));
+        });
     }
 
     @Override
@@ -463,44 +446,38 @@ public class RHealPixDGGSInstance implements DGGSInstance {
         // return each cells that is either fully contained (at possibly a lower resolution) and
         // all the ones at the desired resolution whose centroid is contained in the target polygon
         PreparedPolygon prepared = new PreparedPolygon(polygon);
-        Iterator<Zone> compactIterator =
-                new RHealPixZoneIterator<>(
-                        this,
-                        zone ->
-                                // skip zones that are at target resolution, fully disjoint (no need
-                                // for their children), or fully contained (collected, children
-                                // expanded later)
-                                zone.getResolution() < resolution
-                                        && !testDisjoint(prepared, zone.getBoundary())
-                                        && !testContains(prepared, zone.getBoundary()),
-                        zone -> {
-                            // return a zone if it's at the target resolution with centroid inside
-                            // or it's fully contained
-                            return (zone.getResolution() == resolution
-                                            && testContains(prepared, zone.getCenter()))
-                                    || testContains(prepared, zone.getBoundary());
-                        },
-                        zone -> (Zone) zone);
+        Iterator<Zone> compactIterator = new RHealPixZoneIterator<>(
+                this,
+                zone ->
+                        // skip zones that are at target resolution, fully disjoint (no need
+                        // for their children), or fully contained (collected, children
+                        // expanded later)
+                        zone.getResolution() < resolution
+                                && !testDisjoint(prepared, zone.getBoundary())
+                                && !testContains(prepared, zone.getBoundary()),
+                zone -> {
+                    // return a zone if it's at the target resolution with centroid inside
+                    // or it's fully contained
+                    return (zone.getResolution() == resolution && testContains(prepared, zone.getCenter()))
+                            || testContains(prepared, zone.getBoundary());
+                },
+                zone -> (Zone) zone);
         // if compact iteration, we are done
         if (compact) return compactIterator;
         // otherwise expand the cells that are at a lower resolution using the fast children
         // computation
         return stream(spliteratorUnknownSize(compactIterator, Spliterator.ORDERED), false)
-                .flatMap(
-                        z -> {
-                            if (z.getResolution() < resolution) {
-                                // use children to efficiently get an iterator of all children of a
-                                // zone
-                                return stream(
-                                        spliteratorUnknownSize(
-                                                children(z.getId(), resolution),
-                                                Spliterator.ORDERED),
-                                        false);
-                            } else {
-                                // the zone itself is already at the desired target level
-                                return Stream.of(z);
-                            }
-                        })
+                .flatMap(z -> {
+                    if (z.getResolution() < resolution) {
+                        // use children to efficiently get an iterator of all children of a
+                        // zone
+                        return stream(
+                                spliteratorUnknownSize(children(z.getId(), resolution), Spliterator.ORDERED), false);
+                    } else {
+                        // the zone itself is already at the desired target level
+                        return Stream.of(z);
+                    }
+                })
                 .iterator();
     }
 

@@ -35,26 +35,24 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
 
     @Test
     public void testDeserialization() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<storedQueryConfiguration>\n"
-                        + "  <storedQueryParameterMappings>\n"
-                        + "    <storedQueryParameterMappingExpressionValue>\n"
-                        + "      <parameterName>bbox</parameterName>\n"
-                        + "      <expressionLanguage>CQL</expressionLanguage>\n"
-                        + "      <expression>strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinX), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxX), &apos;,EPSG:4258&apos;)))))))</expression>\n"
-                        + "    </storedQueryParameterMappingExpressionValue>\n"
-                        + "    <storedQueryParameterMappingDefaultValue>\n"
-                        + "      <parameterName>timestep</parameterName>\n"
-                        + "      <defaultValue>720</defaultValue>\n"
-                        + "    </storedQueryParameterMappingDefaultValue>\n"
-                        + "  </storedQueryParameterMappings>\n"
-                        + "</storedQueryConfiguration>";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<storedQueryConfiguration>\n"
+                + "  <storedQueryParameterMappings>\n"
+                + "    <storedQueryParameterMappingExpressionValue>\n"
+                + "      <parameterName>bbox</parameterName>\n"
+                + "      <expressionLanguage>CQL</expressionLanguage>\n"
+                + "      <expression>strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMinX), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxY), strConCat(&apos;,&apos;, strConCat(numberFormat(&apos;0.00000000000&apos;, bboxMaxX), &apos;,EPSG:4258&apos;)))))))</expression>\n"
+                + "    </storedQueryParameterMappingExpressionValue>\n"
+                + "    <storedQueryParameterMappingDefaultValue>\n"
+                + "      <parameterName>timestep</parameterName>\n"
+                + "      <defaultValue>720</defaultValue>\n"
+                + "    </storedQueryParameterMappingDefaultValue>\n"
+                + "  </storedQueryParameterMappings>\n"
+                + "</storedQueryConfiguration>";
 
         ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
 
-        StoredQueryConfiguration configuration =
-                persister.load(bais, StoredQueryConfiguration.class);
+        StoredQueryConfiguration configuration = persister.load(bais, StoredQueryConfiguration.class);
 
         assertNotNull(configuration);
 
@@ -66,18 +64,16 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
                 ParameterMappingDefaultValue.class,
                 configuration.getStoredQueryParameterMappings().get(1).getClass());
 
-        ParameterMappingExpressionValue map1 =
-                (ParameterMappingExpressionValue)
-                        configuration.getStoredQueryParameterMappings().get(0);
+        ParameterMappingExpressionValue map1 = (ParameterMappingExpressionValue)
+                configuration.getStoredQueryParameterMappings().get(0);
         assertEquals("bbox", map1.getParameterName());
         assertEquals("CQL", map1.getExpressionLanguage());
         assertEquals(
                 "strConCat(numberFormat('0.00000000000', bboxMinY), strConCat(',', strConCat(numberFormat('0.00000000000', bboxMinX), strConCat(',', strConCat(numberFormat('0.00000000000', bboxMaxY), strConCat(',', strConCat(numberFormat('0.00000000000', bboxMaxX), ',EPSG:4258')))))))",
                 map1.getExpression());
 
-        ParameterMappingDefaultValue map2 =
-                (ParameterMappingDefaultValue)
-                        configuration.getStoredQueryParameterMappings().get(1);
+        ParameterMappingDefaultValue map2 = (ParameterMappingDefaultValue)
+                configuration.getStoredQueryParameterMappings().get(1);
         assertEquals("timestep", map2.getParameterName());
         assertEquals("720", map2.getDefaultValue());
     }
@@ -89,15 +85,14 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
         ParameterMappingExpressionValue param1 = new ParameterMappingExpressionValue();
         param1.setParameterName("bbox");
         param1.setExpressionLanguage("CQL");
-        param1.setExpression(
-                "strConCat("
-                        + "numberFormat('0.00000000000', bboxMinY), strConCat("
-                        + "',', strConCat("
-                        + "numberFormat('0.00000000000', bboxMinX), strConCat("
-                        + "',', strConCat("
-                        + "numberFormat('0.00000000000', bboxMaxY), strConCat("
-                        + "',', strConCat("
-                        + "numberFormat('0.00000000000', bboxMaxX), ',EPSG:4258')))))))");
+        param1.setExpression("strConCat("
+                + "numberFormat('0.00000000000', bboxMinY), strConCat("
+                + "',', strConCat("
+                + "numberFormat('0.00000000000', bboxMinX), strConCat("
+                + "',', strConCat("
+                + "numberFormat('0.00000000000', bboxMaxY), strConCat("
+                + "',', strConCat("
+                + "numberFormat('0.00000000000', bboxMaxX), ',EPSG:4258')))))))");
         mockConfiguration.getStoredQueryParameterMappings().add(param1);
 
         ParameterMappingDefaultValue param2 = new ParameterMappingDefaultValue();

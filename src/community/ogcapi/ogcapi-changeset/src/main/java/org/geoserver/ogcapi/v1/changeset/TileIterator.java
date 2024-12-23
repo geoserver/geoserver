@@ -40,11 +40,10 @@ class TileIterator implements Iterator<long[]> {
 
             this.z = zoomStart;
             // place y just before
-            minY =
-                    subsets.stream()
-                            .map(ss -> ss.getCoverage(z)[1])
-                            .min((l1, l2) -> Long.compare(l1, l2))
-                            .get();
+            minY = subsets.stream()
+                    .map(ss -> ss.getCoverage(z)[1])
+                    .min((l1, l2) -> Long.compare(l1, l2))
+                    .get();
             this.y = minY - 1;
             nextRow();
         }
@@ -60,15 +59,13 @@ class TileIterator implements Iterator<long[]> {
         if (rowSubsets.isEmpty()) {
             // get the next min y higher than y
 
-            Optional<Long> nextY =
-                    subsets.stream()
-                            .filter(
-                                    ss -> {
-                                        long[] coverage = ss.getCoverage(z);
-                                        return coverage[1] > y;
-                                    })
-                            .map(ss -> ss.getCoverage(z)[1])
-                            .min((l1, l2) -> Long.compare(l1, l2));
+            Optional<Long> nextY = subsets.stream()
+                    .filter(ss -> {
+                        long[] coverage = ss.getCoverage(z);
+                        return coverage[1] > y;
+                    })
+                    .map(ss -> ss.getCoverage(z)[1])
+                    .min((l1, l2) -> Long.compare(l1, l2));
             if (nextY.isPresent()) {
                 y = nextY.get();
                 rowSubsets = getRowSubsets(y);
@@ -78,27 +75,24 @@ class TileIterator implements Iterator<long[]> {
         }
 
         // compute the starting column and end column for this row
-        this.x =
-                rowSubsets.stream()
-                        .map(ss -> ss.getCoverage(z)[0])
-                        .min((l1, l2) -> Long.compare(l1, l2))
-                        .get();
-        this.rowMaxX =
-                rowSubsets.stream()
-                        .map(ss -> ss.getCoverage(z)[2])
-                        .max((l1, l2) -> Long.compare(l1, l2))
-                        .get();
+        this.x = rowSubsets.stream()
+                .map(ss -> ss.getCoverage(z)[0])
+                .min((l1, l2) -> Long.compare(l1, l2))
+                .get();
+        this.rowMaxX = rowSubsets.stream()
+                .map(ss -> ss.getCoverage(z)[2])
+                .max((l1, l2) -> Long.compare(l1, l2))
+                .get();
 
         return true;
     }
 
     private List<GridSubset> getRowSubsets(long y) {
         return subsets.stream()
-                .filter(
-                        ss -> {
-                            long[] coverage = ss.getCoverage(z);
-                            return this.y >= coverage[1] && y <= coverage[3];
-                        })
+                .filter(ss -> {
+                    long[] coverage = ss.getCoverage(z);
+                    return this.y >= coverage[1] && y <= coverage[3];
+                })
                 .sorted((ss1, ss2) -> Long.signum(ss1.getCoverage(z)[0] - ss2.getCoverage(z)[0]))
                 .collect(Collectors.toList());
     }

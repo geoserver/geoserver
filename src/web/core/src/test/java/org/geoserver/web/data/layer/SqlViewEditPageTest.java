@@ -57,8 +57,7 @@ public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
         // print(tester.getLastRenderedPage(), true, true);
 
         // check we have item 50 (numbered 49) in the html output
-        Component component =
-                tester.getComponentFromLastRenderedPage("form:parameters:listContainer:items:49");
+        Component component = tester.getComponentFromLastRenderedPage("form:parameters:listContainer:items:49");
         assertNotNull(component);
     }
 
@@ -75,9 +74,7 @@ public class SqlViewEditPageTest extends AbstractSqlViewPageTest {
         // this assumes the resource pool will not drop the store, which it shuld not indeed
         JDBCDataStore store = (JDBCDataStore) ft.getStore().getDataStore(null);
         SQLDialect spy = spy(store.getSQLDialect());
-        doReturn(Polygon.class)
-                .when(spy)
-                .getMapping("VARBINARY"); // work around lack of geometry metadata
+        doReturn(Polygon.class).when(spy).getMapping("VARBINARY"); // work around lack of geometry metadata
         store.setSQLDialect(spy);
 
         // start the tester page

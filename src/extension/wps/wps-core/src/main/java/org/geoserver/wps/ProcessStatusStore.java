@@ -10,8 +10,7 @@ import org.geotools.api.data.Query;
 import org.geotools.api.filter.Filter;
 
 /**
- * Stores and allows retrieval of execution status information for the various running and recently
- * completed processes
+ * Stores and allows retrieval of execution status information for the various running and recently completed processes
  */
 public interface ProcessStatusStore {
     /** Saves or updates a given process status */
@@ -23,15 +22,12 @@ public interface ProcessStatusStore {
     /** Removes a specific status by id */
     ExecutionStatus remove(String executionId);
 
-    /**
-     * Clears process statuses matching a certain condition, and returns the number of statuses
-     * removed
-     */
+    /** Clears process statuses matching a certain condition, and returns the number of statuses removed */
     int remove(Filter filter);
 
     /**
-     * Retrieves process statuses based on the given conditions. The store should honor the filter,
-     * sorting and paging conditions, ignoring the others
+     * Retrieves process statuses based on the given conditions. The store should honor the filter, sorting and paging
+     * conditions, ignoring the others
      */
     List<ExecutionStatus> list(Query query);
 

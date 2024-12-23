@@ -10,7 +10,6 @@ public class ModuleStatusTest extends CSWTestSupport {
 
     @Test
     public void ModuleStatusTest() {
-        assertModuleStatus(
-                "gs-csw-core", "GeoServer Catalog Service for the Web (CSW) 2.0.2 Core Service");
+        assertModuleStatus("gs-csw-core", "GeoServer Catalog Service for the Web (CSW) 2.0.2 Core Service");
     }
 }

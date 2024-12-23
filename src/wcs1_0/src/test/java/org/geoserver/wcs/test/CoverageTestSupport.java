@@ -24,8 +24,7 @@ public abstract class CoverageTestSupport extends GeoServerSystemTestSupport {
 
     public static QName WATTEMP = new QName(MockData.WCS_URI, "watertemp", MockData.WCS_PREFIX);
 
-    protected static QName TIMERANGES =
-            new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
     /** @return The global wcs instance from the application context. */
     protected WCSInfo getWCS() {

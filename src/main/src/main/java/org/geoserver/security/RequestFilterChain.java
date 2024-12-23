@@ -118,8 +118,7 @@ public abstract class RequestFilterChain implements Serializable, Cloneable {
         RequestFilterChain other = (RequestFilterChain) obj;
 
         if (this.roleFilterName == null && other.roleFilterName != null) return false;
-        if (this.roleFilterName != null
-                && this.roleFilterName.equals(other.roleFilterName) == false) return false;
+        if (this.roleFilterName != null && this.roleFilterName.equals(other.roleFilterName) == false) return false;
 
         if (this.isAllowSessionCreation() != other.isAllowSessionCreation()) return false;
         if (this.isDisabled() != other.isDisabled()) return false;
@@ -167,8 +166,7 @@ public abstract class RequestFilterChain implements Serializable, Cloneable {
 
         if (isRequireSSL()) result.add(GeoServerSecurityFilterChain.SSL_FILTER);
 
-        if (isAllowSessionCreation())
-            result.add(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER);
+        if (isAllowSessionCreation()) result.add(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER);
         else result.add(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER);
 
         if (StringUtils.hasLength(getRoleFilterName())) result.add(getRoleFilterName());

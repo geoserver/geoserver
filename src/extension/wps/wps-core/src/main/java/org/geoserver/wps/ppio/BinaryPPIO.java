@@ -6,8 +6,8 @@
 package org.geoserver.wps.ppio;
 
 /**
- * Process parameter input / output for objects which are represented as binary streams (base64
- * encoding required when embeeding them in the XML)
+ * Process parameter input / output for objects which are represented as binary streams (base64 encoding required when
+ * embeeding them in the XML)
  *
  * @author Andrea Aime, OpenGEO
  */

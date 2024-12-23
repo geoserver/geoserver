@@ -15,9 +15,8 @@ import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.gml3.v3_2.GMLSchema;
 
 /**
- * A FeatureSource relying on a DynamicFeatureType. The getSchema() method will provide by default
- * an empty schema. Subclasses might implement the getGeometryDescriptor to provide at least the
- * geometry definition
+ * A FeatureSource relying on a DynamicFeatureType. The getSchema() method will provide by default an empty schema.
+ * Subclasses might implement the getGeometryDescriptor to provide at least the geometry definition
  */
 public abstract class SchemalessFeatureSource extends ComplexFeatureSource {
 
@@ -32,22 +31,21 @@ public abstract class SchemalessFeatureSource extends ComplexFeatureSource {
             GeometryDescriptor descriptor = getGeometryDescriptor();
             List<PropertyDescriptor> descriptorList = new ArrayList<>();
             descriptorList.add(descriptor);
-            featureType =
-                    new DynamicFeatureType(
-                            name,
-                            descriptorList,
-                            descriptor,
-                            false,
-                            Collections.emptyList(),
-                            GMLSchema.ABSTRACTFEATURETYPE_TYPE,
-                            null);
+            featureType = new DynamicFeatureType(
+                    name,
+                    descriptorList,
+                    descriptor,
+                    false,
+                    Collections.emptyList(),
+                    GMLSchema.ABSTRACTFEATURETYPE_TYPE,
+                    null);
         }
         return featureType;
     }
 
     /**
-     * Get the GeometryDescriptor to be added as the default geometry to the DynamicFeatureType. By
-     * default returns null.
+     * Get the GeometryDescriptor to be added as the default geometry to the DynamicFeatureType. By default returns
+     * null.
      *
      * @return the GeometryDescriptor
      */

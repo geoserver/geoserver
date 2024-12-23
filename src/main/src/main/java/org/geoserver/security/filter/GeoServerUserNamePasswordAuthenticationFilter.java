@@ -49,8 +49,7 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
 
         pathInfos = GeoServerSecurityFilterChain.FORM_LOGIN_CHAIN.split(",");
 
-        UsernamePasswordAuthenticationFilterConfig upConfig =
-                (UsernamePasswordAuthenticationFilterConfig) config;
+        UsernamePasswordAuthenticationFilterConfig upConfig = (UsernamePasswordAuthenticationFilterConfig) config;
 
         aep = new LoginUrlAuthenticationEntryPoint(URL_LOGIN_FORM);
         aep.setForceHttps(false);
@@ -63,18 +62,16 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         RememberMeServices rms = securityManager.getRememberMeService();
 
         // add login filter
-        UsernamePasswordAuthenticationFilter filter =
-                new UsernamePasswordAuthenticationFilter() {
-                    @Override
-                    protected boolean requiresAuthentication(
-                            HttpServletRequest request, HttpServletResponse response) {
+        UsernamePasswordAuthenticationFilter filter = new UsernamePasswordAuthenticationFilter() {
+            @Override
+            protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-                        for (String pathInfo : pathInfos) {
-                            if (getRequestPath(request).startsWith(pathInfo)) return true;
-                        }
-                        return false;
-                    }
-                };
+                for (String pathInfo : pathInfos) {
+                    if (getRequestPath(request).startsWith(pathInfo)) return true;
+                }
+                return false;
+            }
+        };
 
         filter.setPasswordParameter(upConfig.getPasswordParameterName());
         filter.setUsernameParameter(upConfig.getUsernameParameterName());
@@ -95,13 +92,11 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         filter.setAllowSessionCreation(false);
         // filter.setFilterProcessesUrl(URL_FOR_LOGIN);
 
-        SimpleUrlAuthenticationSuccessHandler successHandler =
-                new SimpleUrlAuthenticationSuccessHandler();
+        SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
         successHandler.setDefaultTargetUrl(URL_LOGIN_SUCCCESS);
         filter.setAuthenticationSuccessHandler(successHandler);
 
-        SimpleUrlAuthenticationFailureHandler failureHandler =
-                new SimpleUrlAuthenticationFailureHandler();
+        SimpleUrlAuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
         // TODO, check this when using encrypting of URL parameters
         failureHandler.setDefaultFailureUrl(URL_LOGIN_FAILURE);
         filter.setAuthenticationFailureHandler(failureHandler);

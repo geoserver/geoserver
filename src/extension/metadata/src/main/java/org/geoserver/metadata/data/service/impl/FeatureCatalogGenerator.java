@@ -40,9 +40,7 @@ public class FeatureCatalogGenerator implements ComplexAttributeGenerator {
             LayerInfo layerInfo,
             Object data) {
         ComplexMetadataService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(ComplexMetadataService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
 
         FeatureTypeInfo fti = (FeatureTypeInfo) layerInfo.getResource();
 
@@ -51,7 +49,8 @@ public class FeatureCatalogGenerator implements ComplexAttributeGenerator {
         for (int i = 0; i < metadata.size(attributeConfiguration.getKey()); i++) {
             ComplexMetadataMap attMap = metadata.subMap(attributeConfiguration.getKey(), i);
             old.put(
-                    attMap.get(String.class, MetadataConstants.FEATURE_ATTRIBUTE_NAME).getValue(),
+                    attMap.get(String.class, MetadataConstants.FEATURE_ATTRIBUTE_NAME)
+                            .getValue(),
                     attMap.clone());
         }
 
@@ -60,8 +59,7 @@ public class FeatureCatalogGenerator implements ComplexAttributeGenerator {
         int index = 0;
         try {
             for (AttributeTypeInfo att : fti.attributes()) {
-                ComplexMetadataMap attMap =
-                        metadata.subMap(attributeConfiguration.getKey(), index++);
+                ComplexMetadataMap attMap = metadata.subMap(attributeConfiguration.getKey(), index++);
 
                 ComplexMetadataMap oldMap = old.get(att.getName());
                 if (oldMap != null) {

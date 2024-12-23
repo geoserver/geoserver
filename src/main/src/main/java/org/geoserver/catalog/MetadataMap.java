@@ -15,8 +15,8 @@ import org.geotools.util.Converters;
 /**
  * A map used to store metadata on catalog and configuration objects.
  *
- * <p>This map is used to convert values from the map to a specified type, via the {@link
- * #get(String, Class)} method. Usage:
+ * <p>This map is used to convert values from the map to a specified type, via the {@link #get(String, Class)} method.
+ * Usage:
  *
  * <pre>
  * MetadataMap map = new MetadataMap();

@@ -32,8 +32,8 @@ import org.geotools.util.logging.Logging;
 /**
  * Abstract class for security dao's whose configuration is stored in a property file.
  *
- * <p>Subclasses must implement {@link #loadRules(Properties)} and {@link #toProperties()} to
- * provide the mapping back and forth to the underlying properly file.
+ * <p>Subclasses must implement {@link #loadRules(Properties)} and {@link #toProperties()} to provide the mapping back
+ * and forth to the underlying properly file.
  *
  * @author Justin Deoliveira, OpenGeo
  * @param <R> The access rule class.
@@ -59,8 +59,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     /** Data directory accessor */
     GeoServerDataDirectory dd;
 
-    protected AbstractAccessRuleDAO(GeoServerDataDirectory dd, String propertyFileName)
-            throws IOException {
+    protected AbstractAccessRuleDAO(GeoServerDataDirectory dd, String propertyFileName) throws IOException {
         this.dd = dd;
         this.securityDir = dd.getSecurity();
         this.propertyFileName = propertyFileName;
@@ -84,8 +83,8 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     }
 
     /**
-     * Returns the list of rules contained in the property file. The returned rules are sorted
-     * against the <code>R</code> natural order
+     * Returns the list of rules contained in the property file. The returned rules are sorted against the <code>R
+     * </code> natural order
      */
     public List<R> getRules() {
         checkPropertyFile(false);
@@ -120,8 +119,8 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     }
 
     /**
-     * Returns the last modification date of the rules in this DAO (last time the rules were
-     * reloaded from the property file)
+     * Returns the last modification date of the rules in this DAO (last time the rules were reloaded from the property
+     * file)
      */
     public long getLastModified() {
         return lastModified;
@@ -161,8 +160,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
                     Resource layers = securityDir.get(propertyFileName);
                     if (layers.getType() == Type.UNDEFINED) {
                         // try to load a template and copy it over
-                        try (InputStream in =
-                                getClass().getResourceAsStream(propertyFileName + ".template")) {
+                        try (InputStream in = getClass().getResourceAsStream(propertyFileName + ".template")) {
                             if (in != null) {
                                 IOUtils.copy(in, layers.out());
                             }
@@ -187,10 +185,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
                 lastModified = System.currentTimeMillis();
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Failed to reload data access rules from layers.properties, keeping old rules",
-                    e);
+            LOGGER.log(Level.SEVERE, "Failed to reload data access rules from layers.properties, keeping old rules", e);
         }
     }
 

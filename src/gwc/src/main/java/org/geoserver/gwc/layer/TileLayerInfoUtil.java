@@ -35,8 +35,7 @@ public class TileLayerInfoUtil {
      * @param info a Layerinfo or LayerGroupInfo
      * @param defaults default configuration
      */
-    public static GeoServerTileLayerInfo loadOrCreate(
-            final CatalogInfo info, final GWCConfig defaults) {
+    public static GeoServerTileLayerInfo loadOrCreate(final CatalogInfo info, final GWCConfig defaults) {
         if (info instanceof LayerInfo) {
             return loadOrCreate((LayerInfo) info, defaults);
         }
@@ -52,8 +51,7 @@ public class TileLayerInfoUtil {
      * @param groupInfo the layer group to cache
      * @param defaults default configuration
      */
-    public static GeoServerTileLayerInfoImpl loadOrCreate(
-            final LayerGroupInfo groupInfo, final GWCConfig defaults) {
+    public static GeoServerTileLayerInfoImpl loadOrCreate(final LayerGroupInfo groupInfo, final GWCConfig defaults) {
 
         GeoServerTileLayerInfoImpl info = LegacyTileLayerInfoLoader.load(groupInfo);
         if (info == null) {
@@ -71,8 +69,7 @@ public class TileLayerInfoUtil {
      * @param layerInfo the layer to cache
      * @param defaults default configuration
      */
-    public static GeoServerTileLayerInfoImpl loadOrCreate(
-            final LayerInfo layerInfo, final GWCConfig defaults) {
+    public static GeoServerTileLayerInfoImpl loadOrCreate(final LayerInfo layerInfo, final GWCConfig defaults) {
         GeoServerTileLayerInfoImpl info = LegacyTileLayerInfoLoader.load(layerInfo);
         if (info == null) {
             info = create(defaults);
@@ -93,10 +90,7 @@ public class TileLayerInfoUtil {
     }
 
     // FIXME I think this only needs to be package visible for the tests to work.
-    /**
-     * Creates a default tile layer info based on the global defaults, public only for unit testing
-     * purposes.
-     */
+    /** Creates a default tile layer info based on the global defaults, public only for unit testing purposes. */
     public static GeoServerTileLayerInfoImpl create(GWCConfig defaults) {
 
         GeoServerTileLayerInfoImpl info = new GeoServerTileLayerInfoImpl();
@@ -122,8 +116,7 @@ public class TileLayerInfoUtil {
         return info;
     }
 
-    public static void addAutoStyleParameterFilter(
-            final LayerInfo layer, GeoServerTileLayerInfo layerInfo) {
+    public static void addAutoStyleParameterFilter(final LayerInfo layer, GeoServerTileLayerInfo layerInfo) {
         StyleParameterFilter filter = new StyleParameterFilter();
         filter.setLayer(layer);
         layerInfo.removeParameterFilter("STYLES");
@@ -136,15 +129,13 @@ public class TileLayerInfoUtil {
      * @param published The GeoServer layer
      * @param layerInfo The GeoWebCache layer
      */
-    public static void checkAutomaticStyles(
-            final PublishedInfo published, GeoServerTileLayerInfo layerInfo) {
+    public static void checkAutomaticStyles(final PublishedInfo published, GeoServerTileLayerInfo layerInfo) {
         if (published instanceof LayerInfo) {
             checkAutomaticStyles((LayerInfo) published, layerInfo);
         } else if (published instanceof LayerGroupInfo) {
             checkAutomaticStyles((LayerGroupInfo) published, layerInfo);
         } else {
-            throw new IllegalArgumentException(
-                    "Do not know how to handle this kind of PublishedInfo: " + published);
+            throw new IllegalArgumentException("Do not know how to handle this kind of PublishedInfo: " + published);
         }
     }
 
@@ -154,8 +145,7 @@ public class TileLayerInfoUtil {
      * @param layer The GeoServer layer
      * @param layerInfo The GeoWebCache layer
      */
-    public static void checkAutomaticStyles(
-            final LayerInfo layer, GeoServerTileLayerInfo layerInfo) {
+    public static void checkAutomaticStyles(final LayerInfo layer, GeoServerTileLayerInfo layerInfo) {
 
         ParameterFilter filter = layerInfo.getParameterFilter("STYLES");
 
@@ -171,8 +161,7 @@ public class TileLayerInfoUtil {
      * @param layer The GeoServer layer group
      * @param layerInfo The GeoWebCache layer
      */
-    public static void checkAutomaticStyles(
-            final LayerGroupInfo layer, GeoServerTileLayerInfo layerInfo) {
+    public static void checkAutomaticStyles(final LayerGroupInfo layer, GeoServerTileLayerInfo layerInfo) {
 
         ParameterFilter filter = layerInfo.getParameterFilter("STYLES");
 
@@ -183,8 +172,7 @@ public class TileLayerInfoUtil {
     }
 
     /** Set the styles which should be cached on a layer */
-    public static void setCachedStyles(
-            GeoServerTileLayerInfo info, String defaultStyle, Set<String> cachedStyles) {
+    public static void setCachedStyles(GeoServerTileLayerInfo info, String defaultStyle, Set<String> cachedStyles) {
         StyleParameterFilter filter = (StyleParameterFilter) info.getParameterFilter("STYLES");
         if (filter == null) filter = new StyleParameterFilter();
 
@@ -213,13 +201,11 @@ public class TileLayerInfoUtil {
         if (allowedValues != null) {
             validValues.addAll(Arrays.asList(allowedValues));
         }
-        updateStringParameterFilter(
-                tileLayerInfo, paramKey, createParam, defaultValue, validValues);
+        updateStringParameterFilter(tileLayerInfo, paramKey, createParam, defaultValue, validValues);
     }
 
     /**
-     * Add a {@link StringParameterFilter} to the layer, replacing any existing filter for the same
-     * parameter.
+     * Add a {@link StringParameterFilter} to the layer, replacing any existing filter for the same parameter.
      *
      * @param tileLayerInfo layer to update the filter on
      * @param paramKey key for the parameter
@@ -250,17 +236,14 @@ public class TileLayerInfoUtil {
     }
 
     /**
-     * Add a {@link RegexParameterFilter} set accept anything, replacing any existing filter for the
-     * same parameter.
+     * Add a {@link RegexParameterFilter} set accept anything, replacing any existing filter for the same parameter.
      *
      * @param tileLayerInfo layer to update the filter on
      * @param paramKey key for the parameter
      * @param createParam create a new filter if there is none to replace for the specified key
      */
     public static void updateAcceptAllRegExParameterFilter(
-            final GeoServerTileLayerInfo tileLayerInfo,
-            final String paramKey,
-            boolean createParam) {
+            final GeoServerTileLayerInfo tileLayerInfo, final String paramKey, boolean createParam) {
 
         createParam |= tileLayerInfo.removeParameterFilter(paramKey);
 
@@ -274,17 +257,14 @@ public class TileLayerInfoUtil {
     }
 
     /**
-     * Add a {@link FloatParameterFilter} set accept anything, replacing any existing filter for the
-     * same parameter.
+     * Add a {@link FloatParameterFilter} set accept anything, replacing any existing filter for the same parameter.
      *
      * @param tileLayerInfo layer to update the filter on
      * @param paramKey key for the parameter
      * @param createParam create a new filter if there is none to replace for the specified key
      */
     public static void updateAcceptAllFloatParameterFilter(
-            final GeoServerTileLayerInfo tileLayerInfo,
-            final String paramKey,
-            boolean createParam) {
+            final GeoServerTileLayerInfo tileLayerInfo, final String paramKey, boolean createParam) {
 
         createParam |= tileLayerInfo.removeParameterFilter(paramKey);
 

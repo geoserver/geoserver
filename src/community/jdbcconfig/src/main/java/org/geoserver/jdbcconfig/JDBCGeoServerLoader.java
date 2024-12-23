@@ -41,8 +41,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
     private int importSteps = 2;
 
-    public JDBCGeoServerLoader(GeoServerResourceLoader resourceLoader, JDBCConfigProperties config)
-            throws Exception {
+    public JDBCGeoServerLoader(GeoServerResourceLoader resourceLoader, JDBCConfigProperties config) throws Exception {
         super(resourceLoader);
         this.config = config;
     }
@@ -128,8 +127,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
 
         // also ensure we have a service configuration for every service we know about
-        final List<XStreamServiceLoader> loaders =
-                GeoServerExtensions.extensions(XStreamServiceLoader.class);
+        final List<XStreamServiceLoader> loaders = GeoServerExtensions.extensions(XStreamServiceLoader.class);
         for (XStreamServiceLoader l : loaders) {
             ServiceInfo s = geoServer.getService(l.getServiceClass());
             if (s == null) {

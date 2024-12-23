@@ -94,20 +94,15 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX);
 
-    protected static final QName NO_NATIVE_SRS =
-            new QName(MockData.WCS_URI, "no_native_srs", MockData.WCS_PREFIX);
+    protected static final QName NO_NATIVE_SRS = new QName(MockData.WCS_URI, "no_native_srs", MockData.WCS_PREFIX);
+
+    /** Small dataset that sits slightly across the dateline, enough to trigger the "across the dateline" machinery */
+    protected static final QName DATELINE_CROSS = new QName(MockData.WCS_URI, "dateline_cross", MockData.WCS_PREFIX);
 
     /**
-     * Small dataset that sits slightly across the dateline, enough to trigger the "across the
-     * dateline" machinery
-     */
-    protected static final QName DATELINE_CROSS =
-            new QName(MockData.WCS_URI, "dateline_cross", MockData.WCS_PREFIX);
-
-    /**
-     * Small value for comparaison of sample values. Since most grid coverage implementations in
-     * Geotools 2 store geophysics values as {@code float} numbers, this {@code EPS} value must be
-     * of the order of {@code float} relative precision, not {@code double}.
+     * Small value for comparaison of sample values. Since most grid coverage implementations in Geotools 2 store
+     * geophysics values as {@code float} numbers, this {@code EPS} value must be of the order of {@code float} relative
+     * precision, not {@code double}.
      */
     static final float EPS = 1E-5f;
 
@@ -123,112 +118,81 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected static Schema getWcs20Schema() {
         if (WCS20_SCHEMA == null) {
-            final Map<String, String> namespaceMap =
-                    Map.ofEntries(
-                            entry("http://www.opengis.net/wcs/2.0", "/schemas/wcs/2.0/"),
-                            entry("http://www.opengis.net/gmlcov/1.0", "/schemas/gmlcov/1.0/"),
-                            entry("http://www.opengis.net/gml/3.2", "/schemas/gml/3.2.1/"),
-                            entry("http://www.w3.org/1999/xlink", "/schemas/xlink/"),
-                            entry("http://www.w3.org/XML/1998/namespace", "/schemas/xml/"),
-                            entry(
-                                    "http://www.isotc211.org/2005/gmd",
-                                    "/schemas/iso/19139/20070417/gmd/"),
-                            entry(
-                                    "http://www.isotc211.org/2005/gco",
-                                    "/schemas/iso/19139/20070417/gco/"),
-                            entry(
-                                    "http://www.isotc211.org/2005/gss",
-                                    "/schemas/iso/19139/20070417/gss/"),
-                            entry(
-                                    "http://www.isotc211.org/2005/gts",
-                                    "/schemas/iso/19139/20070417/gts/"),
-                            entry(
-                                    "http://www.isotc211.org/2005/gsr",
-                                    "/schemas/iso/19139/20070417/gsr/"),
-                            entry("http://www.opengis.net/swe/2.0", "/schemas/sweCommon/2.0/"),
-                            entry("http://www.opengis.net/ows/2.0", "/schemas/ows/2.0/"),
-                            entry("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/"));
+            final Map<String, String> namespaceMap = Map.ofEntries(
+                    entry("http://www.opengis.net/wcs/2.0", "/schemas/wcs/2.0/"),
+                    entry("http://www.opengis.net/gmlcov/1.0", "/schemas/gmlcov/1.0/"),
+                    entry("http://www.opengis.net/gml/3.2", "/schemas/gml/3.2.1/"),
+                    entry("http://www.w3.org/1999/xlink", "/schemas/xlink/"),
+                    entry("http://www.w3.org/XML/1998/namespace", "/schemas/xml/"),
+                    entry("http://www.isotc211.org/2005/gmd", "/schemas/iso/19139/20070417/gmd/"),
+                    entry("http://www.isotc211.org/2005/gco", "/schemas/iso/19139/20070417/gco/"),
+                    entry("http://www.isotc211.org/2005/gss", "/schemas/iso/19139/20070417/gss/"),
+                    entry("http://www.isotc211.org/2005/gts", "/schemas/iso/19139/20070417/gts/"),
+                    entry("http://www.isotc211.org/2005/gsr", "/schemas/iso/19139/20070417/gsr/"),
+                    entry("http://www.opengis.net/swe/2.0", "/schemas/sweCommon/2.0/"),
+                    entry("http://www.opengis.net/ows/2.0", "/schemas/ows/2.0/"),
+                    entry("http://www.geoserver.org/wcsgs/2.0", "/schemas/wcs/2.0/"));
 
             try {
-                final SchemaFactory factory =
-                        SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-                factory.setResourceResolver(
-                        new LSResourceResolver() {
+                factory.setResourceResolver(new LSResourceResolver() {
 
-                            DOMImplementationLS dom;
+                    DOMImplementationLS dom;
 
-                            {
-                                try {
-                                    // ok, this is ugly.. the only way I've found to create an
-                                    // InputLS
-                                    // without
-                                    // having to really implement every bit of it is to create a
-                                    // DOMImplementationLS
-                                    DocumentBuilderFactory builderFactory =
-                                            DocumentBuilderFactory.newInstance();
-                                    builderFactory.setNamespaceAware(true);
+                    {
+                        try {
+                            // ok, this is ugly.. the only way I've found to create an
+                            // InputLS
+                            // without
+                            // having to really implement every bit of it is to create a
+                            // DOMImplementationLS
+                            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                            builderFactory.setNamespaceAware(true);
 
-                                    DocumentBuilder builder = builderFactory.newDocumentBuilder();
-                                    // fake xml to parse
-                                    String xml =
-                                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
-                                    dom =
-                                            (DOMImplementationLS)
-                                                    builder.parse(
-                                                                    new ByteArrayInputStream(
-                                                                            xml.getBytes()))
-                                                            .getImplementation();
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
+                            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                            // fake xml to parse
+                            String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
+                            dom = (DOMImplementationLS) builder.parse(new ByteArrayInputStream(xml.getBytes()))
+                                    .getImplementation();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public LSInput resolveResource(
+                            String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+
+                        String localPosition = namespaceMap.get(namespaceURI);
+                        if (localPosition != null) {
+                            try {
+                                if (systemId.contains("/")) {
+                                    systemId = systemId.substring(systemId.lastIndexOf("/") + 1);
                                 }
-                            }
-
-                            @Override
-                            public LSInput resolveResource(
-                                    String type,
-                                    String namespaceURI,
-                                    String publicId,
-                                    String systemId,
-                                    String baseURI) {
-
-                                String localPosition = namespaceMap.get(namespaceURI);
-                                if (localPosition != null) {
-                                    try {
-                                        if (systemId.contains("/")) {
-                                            systemId =
-                                                    systemId.substring(
-                                                            systemId.lastIndexOf("/") + 1);
-                                        }
-                                        final URL resource =
-                                                WCSTestSupport.class.getResource(
-                                                        localPosition + "/" + systemId);
-                                        if (resource != null) {
-                                            systemId = resource.toURI().toASCIIString();
-                                            LSInput input = dom.createLSInput();
-                                            input.setPublicId(publicId);
-                                            input.setSystemId(systemId);
-                                            return input;
-                                        }
-                                    } catch (Exception e) {
-                                        return null;
-                                    }
+                                final URL resource = WCSTestSupport.class.getResource(localPosition + "/" + systemId);
+                                if (resource != null) {
+                                    systemId = resource.toURI().toASCIIString();
+                                    LSInput input = dom.createLSInput();
+                                    input.setPublicId(publicId);
+                                    input.setSystemId(systemId);
+                                    return input;
                                 }
+                            } catch (Exception e) {
                                 return null;
                             }
-                        });
-                WCS20_SCHEMA =
-                        factory.newSchema(
-                                new Source[] {
-                                    new StreamSource(
-                                            WCSTestSupport.class
-                                                    .getResource("/schemas/wcs/2.0/wcsAll.xsd")
-                                                    .toExternalForm()),
-                                    new StreamSource(
-                                            WCSTestSupport.class
-                                                    .getResource("/schemas/wcs/2.0/wcsgs.xsd")
-                                                    .toExternalForm())
-                                });
+                        }
+                        return null;
+                    }
+                });
+                WCS20_SCHEMA = factory.newSchema(new Source[] {
+                    new StreamSource(WCSTestSupport.class
+                            .getResource("/schemas/wcs/2.0/wcsAll.xsd")
+                            .toExternalForm()),
+                    new StreamSource(WCSTestSupport.class
+                            .getResource("/schemas/wcs/2.0/wcsgs.xsd")
+                            .toExternalForm())
+                });
             } catch (Exception e) {
                 throw new RuntimeException("Could not parse the WCS 2.0 schemas", e);
             }
@@ -250,8 +214,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpWcs10RasterLayers();
         testData.setUpWcs11RasterLayers();
         testData.setUpRasterLayer(UTM11, "/utm11-2.tiff", null, null, WCSTestSupport.class);
-        testData.setUpRasterLayer(
-                DATELINE_CROSS, "/datelinecross.tif", null, null, WCSTestSupport.class);
+        testData.setUpRasterLayer(DATELINE_CROSS, "/datelinecross.tif", null, null, WCSTestSupport.class);
         testData.setupIAULayers(true, false);
     }
 
@@ -286,16 +249,14 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         CoverageInfo utm11 = getCatalog().getCoverageByName(getLayerId(UTM11));
         if (utm11 != null) {
             utm11.setNativeBoundingBox(
-                    new ReferencedEnvelope(
-                            440600.0, 471700.0, 3720700.0, 3751000.0, utm11.getNativeCRS()));
+                    new ReferencedEnvelope(440600.0, 471700.0, 3720700.0, 3751000.0, utm11.getNativeCRS()));
             getCatalog().save(utm11);
         }
 
         // not reprojected, but rotated
         CoverageInfo cad = getCatalog().getCoverageByName(getLayerId(MockData.ROTATED_CAD));
         if (cad != null) {
-            cad.setNativeBoundingBox(
-                    new ReferencedEnvelope(1402800, 1402900, 5000000, 5000100, cad.getNativeCRS()));
+            cad.setNativeBoundingBox(new ReferencedEnvelope(1402800, 1402900, 5000000, 5000100, cad.getNativeCRS()));
             getCatalog().save(cad);
         }
 
@@ -330,8 +291,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                LOGGER.warning(
-                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                LOGGER.warning(ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }
@@ -387,33 +347,22 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 dom);
 
         // check that the bbox in the utm11 layer is reported as configured
-        String utm11Bbox =
-                "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__utm11']/ows:BoundingBox";
+        String utm11Bbox = "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__utm11']/ows:BoundingBox";
 
-        assertXpathCoordinate(
-                new CoordinateXY(440562.0, 3720758.0), utm11Bbox + "/ows:LowerCorner", dom);
-        assertXpathCoordinate(
-                new CoordinateXY(471794.0, 3750966.0), utm11Bbox + "/ows:UpperCorner", dom);
+        assertXpathCoordinate(new CoordinateXY(440562.0, 3720758.0), utm11Bbox + "/ows:LowerCorner", dom);
+        assertXpathCoordinate(new CoordinateXY(471794.0, 3750966.0), utm11Bbox + "/ows:UpperCorner", dom);
 
         // check that the bbox in the cad layer is reported as configured
-        String cadPath =
-                "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__RotatedCad']/ows:BoundingBox";
-        assertXpathCoordinate(
-                new CoordinateXY(1402800.0, 5000000.0), cadPath + "/ows:LowerCorner", dom);
-        assertXpathCoordinate(
-                new CoordinateXY(1402900.0, 5000100.0), cadPath + "/ows:UpperCorner", dom);
+        String cadPath = "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='wcs__RotatedCad']/ows:BoundingBox";
+        assertXpathCoordinate(new CoordinateXY(1402800.0, 5000000.0), cadPath + "/ows:LowerCorner", dom);
+        assertXpathCoordinate(new CoordinateXY(1402900.0, 5000100.0), cadPath + "/ows:UpperCorner", dom);
 
         // check that the bbox in the usa layer has been reprojected
-        String usaPath =
-                "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='cdf__usa']/ows:BoundingBox";
+        String usaPath = "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='cdf__usa']/ows:BoundingBox";
         assertXpathCoordinate(
-                new CoordinateXY(-1.457024062347863E7, 6199732.713729635),
-                usaPath + "/ows:LowerCorner",
-                dom);
+                new CoordinateXY(-1.457024062347863E7, 6199732.713729635), usaPath + "/ows:LowerCorner", dom);
         assertXpathCoordinate(
-                new CoordinateXY(-1.3790593336628266E7, 7197101.83024677),
-                usaPath + "/ows:UpperCorner",
-                dom);
+                new CoordinateXY(-1.3790593336628266E7, 7197101.83024677), usaPath + "/ows:UpperCorner", dom);
 
         // check the CRSs
         assertCRSReference(dom, "EPSG", "4326");
@@ -433,15 +382,12 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
         // check the viking raster is there with its CRS
         String vikingPath = "//wcs:Contents/wcs:CoverageSummary[wcs:CoverageId='iau__Viking']";
-        assertXpathEvaluatesTo(
-                "http://www.opengis.net/def/crs/IAU/0/49900",
-                vikingPath + "/ows:BoundingBox/@crs",
-                dom);
+        assertXpathEvaluatesTo("http://www.opengis.net/def/crs/IAU/0/49900", vikingPath + "/ows:BoundingBox/@crs", dom);
     }
 
     /**
-     * Need to add prefixes here because some ids are duplicated amongst EPSG and IAU and to filter
-     * out WGS84(DD) because it shows up in all authorities
+     * Need to add prefixes here because some ids are duplicated amongst EPSG and IAU and to filter out WGS84(DD)
+     * because it shows up in all authorities
      */
     private static Set<String> getCodes(String authority) {
         return CRS.getSupportedCodes(authority).stream()
@@ -450,20 +396,14 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 .collect(Collectors.toSet());
     }
 
-    private static void assertCRSReference(Document dom, String authority, String code)
-            throws XpathException {
+    private static void assertCRSReference(Document dom, String authority, String code) throws XpathException {
         assertXpathExists(
-                "//crs:crsSupported[text()='http://www.opengis.net/def/crs/"
-                        + authority
-                        + "/0/"
-                        + code
-                        + "']",
-                dom);
+                "//crs:crsSupported[text()='http://www.opengis.net/def/crs/" + authority + "/0/" + code + "']", dom);
     }
 
     /**
-     * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
-     * with attribute number whose value is the specified tag value.
+     * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField with attribute number
+     * whose value is the specified tag value.
      */
     protected IIOMetadataNode getTiffField(Node rootNode, final int tag) {
         Node node = rootNode.getFirstChild();
@@ -494,8 +434,8 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Compares the envelopes of two coverages for equality using the smallest scale factor of their
-     * "grid to world" transform as the tolerance.
+     * Compares the envelopes of two coverages for equality using the smallest scale factor of their "grid to world"
+     * transform as the tolerance.
      *
      * @param expected The coverage having the expected envelope.
      * @param actual The coverage having the actual envelope.
@@ -505,18 +445,12 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         final double scaleB = getScale(actual);
 
         assertEnvelopeEquals(
-                (GeneralBounds) expected.getEnvelope(),
-                scaleA,
-                (GeneralBounds) actual.getEnvelope(),
-                scaleB);
+                (GeneralBounds) expected.getEnvelope(), scaleA, (GeneralBounds) actual.getEnvelope(), scaleB);
     }
 
     @SuppressWarnings("PMD.SimplifiableTestAssertion") // equality with tolerance
     protected static void assertEnvelopeEquals(
-            GeneralBounds expected,
-            double scaleExpected,
-            GeneralBounds actual,
-            double scaleActual) {
+            GeneralBounds expected, double scaleExpected, GeneralBounds actual, double scaleActual) {
         final double tolerance;
         if (scaleExpected <= scaleActual) {
             tolerance = scaleExpected * 1E-1;
@@ -531,13 +465,12 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null} if none.
-     * Note that the returned instance may be an immutable one, not necessarly the default Java2D
-     * implementation.
+     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null} if none. Note that the
+     * returned instance may be an immutable one, not necessarly the default Java2D implementation.
      *
      * @param coverage The coverage for which to get the "grid to CRS" affine transform.
-     * @return The "grid to CRS" affine transform of the given coverage, or {@code null} if none or
-     *     if the transform is not affine.
+     * @return The "grid to CRS" affine transform of the given coverage, or {@code null} if none or if the transform is
+     *     not affine.
      */
     protected static AffineTransform getAffineTransform(final Coverage coverage) {
         if (coverage instanceof GridCoverage) {
@@ -569,8 +502,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Parses a multipart message from the response */
-    protected Multipart getMultipart(MockHttpServletResponse response)
-            throws MessagingException, IOException {
+    protected Multipart getMultipart(MockHttpServletResponse response) throws MessagingException, IOException {
         MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
@@ -578,10 +510,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     /** Configures the specified dimension for a coverage */
     protected void setupRasterDimension(
-            String coverageName,
-            String metadataKey,
-            DimensionPresentation presentation,
-            Double resolution) {
+            String coverageName, String metadataKey, DimensionPresentation presentation, Double resolution) {
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);

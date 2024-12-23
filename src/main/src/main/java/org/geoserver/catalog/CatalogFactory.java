@@ -77,8 +77,8 @@ public interface CatalogFactory {
     /**
      * Extensible factory method.
      *
-     * <p>This method should lookup the appropritae instance of {@link Extension} to create the
-     * object. The lookup mechanism is specific to the runtime environement.
+     * <p>This method should lookup the appropritae instance of {@link Extension} to create the object. The lookup
+     * mechanism is specific to the runtime environement.
      *
      * @param clazz The class of object to create.
      * @return The new object.

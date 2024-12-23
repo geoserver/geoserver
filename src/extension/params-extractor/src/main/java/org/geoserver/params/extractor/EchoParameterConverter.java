@@ -15,8 +15,7 @@ import java.util.UUID;
 /** Custom XStream converter for {@link EchoParameter} */
 public class EchoParameterConverter implements Converter {
     @Override
-    public void marshal(
-            Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         EchoParameter param = (EchoParameter) source;
         writer.addAttribute("id", param.getId());
         writer.addAttribute("parameter", param.getParameter());
@@ -26,9 +25,8 @@ public class EchoParameterConverter implements Converter {
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         return new EchoParameterBuilder()
-                .withId(
-                        Optional.ofNullable(reader.getAttribute("id"))
-                                .orElse(UUID.randomUUID().toString()))
+                .withId(Optional.ofNullable(reader.getAttribute("id"))
+                        .orElse(UUID.randomUUID().toString()))
                 .withActivated(Boolean.valueOf(reader.getAttribute("activated")))
                 .withParameter(reader.getAttribute("parameter"))
                 .build();

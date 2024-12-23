@@ -17,11 +17,10 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * This strategy just return the features as they come from the db and leave the pyramid structure
- * do the rest. Of course is the data is inserted in the db in a way that makes it return features
- * in some linear way the distribution won't look good. But the same might happen to attribute
- * sorting as well, for example, when the high values of the sorting attribute do concentrate in a
- * specific area instead of being evenly spread out.
+ * This strategy just return the features as they come from the db and leave the pyramid structure do the rest. Of
+ * course is the data is inserted in the db in a way that makes it return features in some linear way the distribution
+ * won't look good. But the same might happen to attribute sorting as well, for example, when the high values of the
+ * sorting attribute do concentrate in a specific area instead of being evenly spread out.
  *
  * @author Andrea Aime
  */
@@ -33,24 +32,20 @@ public class RandomRegionatingStrategy extends CachedHierarchyRegionatingStrateg
 
     @Override
     public FeatureIterator getSortedFeatures(
-            GeometryDescriptor geom,
-            ReferencedEnvelope latLongEnv,
-            ReferencedEnvelope nativeEnv,
-            Connection cacheConn)
+            GeometryDescriptor geom, ReferencedEnvelope latLongEnv, ReferencedEnvelope nativeEnv, Connection cacheConn)
             throws Exception {
         FeatureSource fs = featureType.getFeatureSource(null, null);
 
         // build the bbox filter
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
-        BBOX filter =
-                ff.bbox(
-                        geom.getLocalName(),
-                        nativeEnv.getMinX(),
-                        nativeEnv.getMinY(),
-                        nativeEnv.getMaxX(),
-                        nativeEnv.getMaxY(),
-                        null);
+        BBOX filter = ff.bbox(
+                geom.getLocalName(),
+                nativeEnv.getMinX(),
+                nativeEnv.getMinY(),
+                nativeEnv.getMaxX(),
+                nativeEnv.getMaxY(),
+                null);
 
         // build an optimized query (only the necessary attributes
         Query q = new Query();

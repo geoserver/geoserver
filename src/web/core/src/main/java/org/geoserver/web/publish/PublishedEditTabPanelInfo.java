@@ -13,9 +13,8 @@ import org.geoserver.web.data.resource.ResourceConfigurationPage;
 /**
  * Information about panels plugged into additional tabs on layer/layergroup edit page.
  *
- * <p>Layer edit tabs have a self declared order which describes where they end up on the layer edit
- * page. Lower order panels are weighted toward the left hand side, higher order panels are weighted
- * toward the right hand side.
+ * <p>Layer edit tabs have a self declared order which describes where they end up on the layer edit page. Lower order
+ * panels are weighted toward the left hand side, higher order panels are weighted toward the right hand side.
  *
  * @author Justin Deoliveira, OpenGeo
  * @author Niels Charlier
@@ -39,15 +38,14 @@ public abstract class PublishedEditTabPanelInfo<T extends PublishedInfo>
     }
 
     /**
-     * It may be that a tab contribution to the {@link PublishedConfigurationPage} need to work on a
-     * different model object that the page's layer and resource models (for example, because it
-     * edits and saves related information not directly attached to the layer/resource); if such is
-     * the case, this method shall return the model to be passed to the {@link
-     * PublishedEditTabPanel} constructor.
+     * It may be that a tab contribution to the {@link PublishedConfigurationPage} need to work on a different model
+     * object that the page's layer and resource models (for example, because it edits and saves related information not
+     * directly attached to the layer/resource); if such is the case, this method shall return the model to be passed to
+     * the {@link PublishedEditTabPanel} constructor.
      *
-     * <p>This default implementation just returns {@code null} and assumes the {@link
-     * PublishedEditTabPanel} described by this tab panel info works against the {@link
-     * ResourceConfigurationPage} LayerInfo model. Subclasses may override as appropriate.
+     * <p>This default implementation just returns {@code null} and assumes the {@link PublishedEditTabPanel} described
+     * by this tab panel info works against the {@link ResourceConfigurationPage} LayerInfo model. Subclasses may
+     * override as appropriate.
      *
      * @return {@code null} if no need for a custom model for the tab, the model to use otherwise
      * @see PublishedEditTabPanel#save()

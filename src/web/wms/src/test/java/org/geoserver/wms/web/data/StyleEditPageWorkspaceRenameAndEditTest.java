@@ -67,8 +67,7 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addStyle(
-                STYLE_TO_MOVE_NAME, STYLE_TO_MOVE_FILENAME, this.getClass(), getCatalog());
+        testData.addStyle(STYLE_TO_MOVE_NAME, STYLE_TO_MOVE_FILENAME, this.getClass(), getCatalog());
     }
 
     /*
@@ -78,61 +77,51 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
     public void testMoveWorkspaceAndEdit() throws Exception {
         // add catalog listener so we can validate the style modified event
         final boolean[] gotValidEvent = {false};
-        getCatalog()
-                .addListener(
-                        new CatalogListener() {
+        getCatalog().addListener(new CatalogListener() {
 
-                            @Override
-                            public void handleAddEvent(CatalogAddEvent event)
-                                    throws CatalogException {
-                                // not interest, ignore this events
-                            }
+            @Override
+            public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
+                // not interest, ignore this events
+            }
 
-                            @Override
-                            public void handleRemoveEvent(CatalogRemoveEvent event)
-                                    throws CatalogException {
-                                // not interest, ignore this events
-                            }
+            @Override
+            public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
+                // not interest, ignore this events
+            }
 
-                            @Override
-                            public void handleModifyEvent(CatalogModifyEvent event)
-                                    throws CatalogException {
-                                // not interest, ignore this events
-                            }
+            @Override
+            public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
+                // not interest, ignore this events
+            }
 
-                            @Override
-                            public void handlePostModifyEvent(CatalogPostModifyEvent event)
-                                    throws CatalogException {
-                                assertThat(event, notNullValue());
-                                assertThat(event.getSource(), notNullValue());
-                                if (!(event.getSource() instanceof StyleInfo)) {
-                                    // only interested in style info events
-                                    return;
-                                }
-                                try {
-                                    // get the associated style and check that you got the correct
-                                    // content
-                                    StyleInfo styleInfo = (StyleInfo) event.getSource();
-                                    assertThat(styleInfo, notNullValue());
-                                    Style style =
-                                            getCatalog().getResourcePool().getStyle(styleInfo);
-                                    assertThat(style, notNullValue());
-                                    assertThat(style.featureTypeStyles().size(), is(2));
-                                    // ok everything looks good
-                                    gotValidEvent[0] = true;
-                                } catch (Exception exception) {
-                                    LOGGER.log(
-                                            Level.SEVERE,
-                                            "Error handling catalog modified style event.",
-                                            exception);
-                                }
-                            }
+            @Override
+            public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
+                assertThat(event, notNullValue());
+                assertThat(event.getSource(), notNullValue());
+                if (!(event.getSource() instanceof StyleInfo)) {
+                    // only interested in style info events
+                    return;
+                }
+                try {
+                    // get the associated style and check that you got the correct
+                    // content
+                    StyleInfo styleInfo = (StyleInfo) event.getSource();
+                    assertThat(styleInfo, notNullValue());
+                    Style style = getCatalog().getResourcePool().getStyle(styleInfo);
+                    assertThat(style, notNullValue());
+                    assertThat(style.featureTypeStyles().size(), is(2));
+                    // ok everything looks good
+                    gotValidEvent[0] = true;
+                } catch (Exception exception) {
+                    LOGGER.log(Level.SEVERE, "Error handling catalog modified style event.", exception);
+                }
+            }
 
-                            @Override
-                            public void reloaded() {
-                                // not interest, ignore this events
-                            }
-                        });
+            @Override
+            public void reloaded() {
+                // not interest, ignore this events
+            }
+        });
 
         edit = new StyleEditPage(styleInfoToMove);
         tester.startPage(edit);
@@ -144,10 +133,8 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
 
         // Update the workspace (select "sf" from the dropdown)
         @SuppressWarnings("unchecked")
-        DropDownChoice<WorkspaceInfo> typeDropDown =
-                (DropDownChoice<WorkspaceInfo>)
-                        tester.getComponentFromLastRenderedPage(
-                                "styleForm:context:panel:workspace");
+        DropDownChoice<WorkspaceInfo> typeDropDown = (DropDownChoice<WorkspaceInfo>)
+                tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
 
         for (int wsIdx = 0; wsIdx < typeDropDown.getChoices().size(); wsIdx++) {
             WorkspaceInfo ws = typeDropDown.getChoices().get(wsIdx);
@@ -158,19 +145,17 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
         }
 
         // Update the raw style contents (the new style has TWO <FeatureTypeStyle> entries).
-        File styleFile = new File(getClass().getResource(STYLE_TO_MOVE_FILENAME_UPDATED).toURI());
-        String updatedSld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile =
+                new File(getClass().getResource(STYLE_TO_MOVE_FILENAME_UPDATED).toURI());
+        String updatedSld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", updatedSld);
 
         // Submit the form and verify that both the new workspace and new rawStyle saved.
         form.submit();
 
-        StyleInfo si =
-                getCatalog()
-                        .getStyleByName(getCatalog().getWorkspaceByName("sf"), STYLE_TO_MOVE_NAME);
+        StyleInfo si = getCatalog().getStyleByName(getCatalog().getWorkspaceByName("sf"), STYLE_TO_MOVE_NAME);
         assertNotNull(si);
         assertNotNull(si.getWorkspace());
         assertEquals("sf", si.getWorkspace().getName());

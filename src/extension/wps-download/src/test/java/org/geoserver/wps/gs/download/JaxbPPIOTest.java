@@ -10,15 +10,14 @@ public class JaxbPPIOTest {
 
     @Test
     public void testParseLayer() throws Exception {
-        String xml =
-                "<Layer xmlns=\""
-                        + AbstractParametricEntity.NAMESPACE
-                        + "\">\n"
-                        + "  <Capabilities>http://demo.geo-solutions.it/geoserver/ows?REQUEST=GetCapabilities&amp;SERVICE=WMS\n"
-                        + "  </Capabilities>\n"
-                        + "  <Name>tiger:giant_polygon</Name>\n"
-                        + "  <Parameter key=\"format\">image/png8</Parameter>\n"
-                        + "</Layer>\n";
+        String xml = "<Layer xmlns=\""
+                + AbstractParametricEntity.NAMESPACE
+                + "\">\n"
+                + "  <Capabilities>http://demo.geo-solutions.it/geoserver/ows?REQUEST=GetCapabilities&amp;SERVICE=WMS\n"
+                + "  </Capabilities>\n"
+                + "  <Name>tiger:giant_polygon</Name>\n"
+                + "  <Parameter key=\"format\">image/png8</Parameter>\n"
+                + "</Layer>\n";
 
         JaxbPPIO ppio = new JaxbPPIO(Layer.class, null);
         Layer layer = (Layer) ppio.decode(new ByteArrayInputStream(xml.getBytes()));
@@ -33,13 +32,12 @@ public class JaxbPPIOTest {
 
     @Test
     public void testParseFormat() throws Exception {
-        String xml =
-                "<Format xmlns=\""
-                        + AbstractParametricEntity.NAMESPACE
-                        + "\">\n"
-                        + "  <Name>image/jpeg</Name>\n"
-                        + "  <Parameter key=\"image-quality\">80%</Parameter>\n"
-                        + "</Format>\n";
+        String xml = "<Format xmlns=\""
+                + AbstractParametricEntity.NAMESPACE
+                + "\">\n"
+                + "  <Name>image/jpeg</Name>\n"
+                + "  <Parameter key=\"image-quality\">80%</Parameter>\n"
+                + "</Format>\n";
 
         JaxbPPIO ppio = new JaxbPPIO(Format.class, null);
         Format format = (Format) ppio.decode(new ByteArrayInputStream(xml.getBytes()));

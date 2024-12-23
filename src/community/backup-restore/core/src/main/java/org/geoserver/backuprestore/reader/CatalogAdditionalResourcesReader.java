@@ -19,6 +19,5 @@ public interface CatalogAdditionalResourcesReader<T> {
 
     public boolean canHandle(Object item);
 
-    public void readAdditionalResources(Backup backupFacade, Resource base, T item)
-            throws IOException;
+    public void readAdditionalResources(Backup backupFacade, Resource base, T item) throws IOException;
 }

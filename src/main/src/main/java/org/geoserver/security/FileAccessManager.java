@@ -12,20 +12,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Provides the GUI, REST API and catalog checks with directives on what parts of the file system
- * the current user can access.
+ * Provides the GUI, REST API and catalog checks with directives on what parts of the file system the current user can
+ * access.
  */
 public interface FileAccessManager {
     /**
-     * Returns the file system roots available for the current user (or <code>null</code> if there
-     * are no restrictions)
+     * Returns the file system roots available for the current user (or <code>null</code> if there are no restrictions)
      */
     public List<File> getAvailableRoots();
 
     /**
-     * Returns the sandbox root directory, if there is one, or <code>null</code> if there is none
-     * (i.e., the user can access the whole file system). This is used by the REST API to
-     * automatically prepend the sandbox root to the uploaded file paths.
+     * Returns the sandbox root directory, if there is one, or <code>null</code> if there is none (i.e., the user can
+     * access the whole file system). This is used by the REST API to automatically prepend the sandbox root to the
+     * uploaded file paths.
      */
     public File getSandbox();
 
@@ -37,14 +36,12 @@ public interface FileAccessManager {
     public boolean checkAccess(File file);
 
     /**
-     * Looks up the {@link FileAccessManager} to use, preferring a custom implementation if
-     * available, otherwise falling back on the default one. Mimics the behavior in {@link
-     * org.geoserver.security.SecureCatalogImpl}
+     * Looks up the {@link FileAccessManager} to use, preferring a custom implementation if available, otherwise falling
+     * back on the default one. Mimics the behavior in {@link org.geoserver.security.SecureCatalogImpl}
      */
     public static FileAccessManager lookupFileAccessManager() {
         List<FileAccessManager> managers = GeoServerExtensions.extensions(FileAccessManager.class);
-        if (managers.isEmpty())
-            throw new RuntimeException("Unexpected, no FileAdminAccessManager found");
+        if (managers.isEmpty()) throw new RuntimeException("Unexpected, no FileAdminAccessManager found");
 
         FileAccessManager manager = null;
         for (FileAccessManager resourceAccessManager : managers) {

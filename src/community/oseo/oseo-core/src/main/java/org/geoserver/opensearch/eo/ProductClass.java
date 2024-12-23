@@ -14,16 +14,13 @@ import org.geoserver.config.GeoServer;
 public class ProductClass implements Serializable, Cloneable {
 
     /** The generic product class */
-    public static final ProductClass GENERIC =
-            new ProductClass("eop_generic", "eop", "http://www.opengis.net/eop/2.1");
+    public static final ProductClass GENERIC = new ProductClass("eop_generic", "eop", "http://www.opengis.net/eop/2.1");
 
     /** Optical products */
-    public static final ProductClass OPTICAL =
-            new ProductClass("optical", "opt", "http://www.opengis.net/opt/2.1");
+    public static final ProductClass OPTICAL = new ProductClass("optical", "opt", "http://www.opengis.net/opt/2.1");
 
     /** Radar products */
-    public static final ProductClass RADAR =
-            new ProductClass("radar", "sar", "http://www.opengis.net/sar/2.1");
+    public static final ProductClass RADAR = new ProductClass("radar", "sar", "http://www.opengis.net/sar/2.1");
 
     /** Altimetric products */
     public static final ProductClass ALTIMETRIC =
@@ -34,17 +31,14 @@ public class ProductClass implements Serializable, Cloneable {
             new ProductClass("atmospheric", "atm", "http://www.opengis.net/atm/2.1");
 
     /** Limb products */
-    public static final ProductClass LIMB =
-            new ProductClass("limb", "lmb", "http://www.opengis.net/lmb/2.1");
+    public static final ProductClass LIMB = new ProductClass("limb", "lmb", "http://www.opengis.net/lmb/2.1");
 
     /** SSP products */
-    public static final ProductClass SSP =
-            new ProductClass("ssp", "ssp", "http://www.opengis.net/ssp/2.1");
+    public static final ProductClass SSP = new ProductClass("ssp", "ssp", "http://www.opengis.net/ssp/2.1");
 
     /** The default, built-in product classes */
     public static final List<ProductClass> DEFAULT_PRODUCT_CLASSES =
-            Collections.unmodifiableList(
-                    Arrays.asList(GENERIC, OPTICAL, RADAR, ALTIMETRIC, ATMOSPHERIC, LIMB, SSP));
+            Collections.unmodifiableList(Arrays.asList(GENERIC, OPTICAL, RADAR, ALTIMETRIC, ATMOSPHERIC, LIMB, SSP));
 
     public static ProductClass getProductClassFromName(GeoServer geoServer, String name) {
         for (ProductClass pc : getProductClasses(geoServer)) {
@@ -82,8 +76,7 @@ public class ProductClass implements Serializable, Cloneable {
                 return pc;
             }
         }
-        throw new IllegalArgumentException(
-                "Could not locate a product class with prefix " + prefix);
+        throw new IllegalArgumentException("Could not locate a product class with prefix " + prefix);
     }
 
     /**

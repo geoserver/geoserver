@@ -27,13 +27,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * Utility methods helpful when processing GeoServer Requests.
  *
- * <p>Provides helper functions and classes useful when implementing your own Response classes. Of
- * significant importantance are the Request processing functions that allow access to the
- * WebContainer, GeoServer and the User's Session.
+ * <p>Provides helper functions and classes useful when implementing your own Response classes. Of significant
+ * importantance are the Request processing functions that allow access to the WebContainer, GeoServer and the User's
+ * Session.
  *
- * <p>If you are working with the STRUTS API the Action method is the direct paralle of the Response
- * classes. You may whish to look at how ConfigAction is implemented, it is a super class which
- * delegates to these Request processing methods.
+ * <p>If you are working with the STRUTS API the Action method is the direct paralle of the Response classes. You may
+ * whish to look at how ConfigAction is implemented, it is a super class which delegates to these Request processing
+ * methods.
  *
  * @author Jody Garnett
  */
@@ -76,8 +76,7 @@ public final class Requests {
     /**
      * Appends a query string to a url.
      *
-     * <p>This method checks <code>url</code> to see if the appended query string requires a '?' or
-     * '&' to be prepended.
+     * <p>This method checks <code>url</code> to see if the appended query string requires a '?' or '&' to be prepended.
      *
      * @param url The base url.
      * @param queryString The query string to be appended, should not contain the '?' character.
@@ -106,15 +105,13 @@ public final class Requests {
         // check the user is not the anonymous one
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return (authentication != null)
-                && !(authentication instanceof AnonymousAuthenticationToken);
+        return (authentication != null) && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     /**
-     * This method gets the correct input stream for a URL. If the URL is a http/https connection,
-     * the Accept-Encoding: gzip, deflate is added. It the paramter is added, the response is
-     * checked to see if the response is encoded in gzip, deflate or plain bytes. The correct input
-     * stream wrapper is then selected and returned.
+     * This method gets the correct input stream for a URL. If the URL is a http/https connection, the Accept-Encoding:
+     * gzip, deflate is added. It the paramter is added, the response is checked to see if the response is encoded in
+     * gzip, deflate or plain bytes. The correct input stream wrapper is then selected and returned.
      *
      * <p>This method was added as part of GEOS-420
      *
@@ -162,13 +159,11 @@ public final class Requests {
     }
 
     /**
-     * Parses an 'option-holding' parameters in the following form
-     * FORMAT_OPTIONS=multiKey:val1,val2,val3;singleKey:val
+     * Parses an 'option-holding' parameters in the following form FORMAT_OPTIONS=multiKey:val1,val2,val3;singleKey:val
      *
      * <p>Useful for parsing out the FORMAT_OPTIONS and LEGEND_OPTIONS parameters
      */
-    public static Map<String, Object> parseOptionParameter(String rawOptionString)
-            throws IllegalArgumentException {
+    public static Map<String, Object> parseOptionParameter(String rawOptionString) throws IllegalArgumentException {
         Map<String, Object> map = new HashMap<>();
         if (rawOptionString == null) {
             return map;
@@ -180,10 +175,9 @@ public final class Requests {
 
             final int cloc = curKVP.indexOf(":");
             if (cloc <= 0) {
-                throw new IllegalArgumentException(
-                        "Key-value-pair: '"
-                                + curKVP
-                                + "' isn't properly formed.  It must be of the form 'Key:Value1,Value2...'");
+                throw new IllegalArgumentException("Key-value-pair: '"
+                        + curKVP
+                        + "' isn't properly formed.  It must be of the form 'Key:Value1,Value2...'");
             }
             String key = curKVP.substring(0, cloc);
             String values = curKVP.substring(cloc + 1, curKVP.length());

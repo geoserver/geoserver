@@ -27,15 +27,13 @@ public class SQLViewEditPage extends SQLViewAbstractPage {
     String originalName;
     FeatureTypeInfo tinfo;
 
-    public SQLViewEditPage(FeatureTypeInfo type, ResourceConfigurationPage previousPage)
-            throws IOException {
+    public SQLViewEditPage(FeatureTypeInfo type, ResourceConfigurationPage previousPage) throws IOException {
         super(
                 type.getStore().getWorkspace().getName(),
                 type.getStore().getName(),
                 type.getName(),
                 type.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class));
-        VirtualTable vt =
-                type.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+        VirtualTable vt = type.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
         tinfo = type;
         originalName = vt.getName();
         this.previusPage = previousPage;
@@ -60,9 +58,7 @@ public class SQLViewEditPage extends SQLViewAbstractPage {
             setResponsePage(previusPage);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create feature type", e);
-            error(
-                    new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e))
-                            .getString());
+            error(new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e)).getString());
         }
     }
 

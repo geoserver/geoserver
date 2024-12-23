@@ -28,15 +28,14 @@ public class CascadedWFSStoredQueryEditPage extends CascadedWFSStoredQueryAbstra
     private StoredQueryConfiguration configuration;
     private String storedQueryId;
 
-    public CascadedWFSStoredQueryEditPage(
-            FeatureTypeInfo type, ResourceConfigurationPage previousPage) throws IOException {
+    public CascadedWFSStoredQueryEditPage(FeatureTypeInfo type, ResourceConfigurationPage previousPage)
+            throws IOException {
         super(type.getStore().getWorkspace().getName(), type.getStore().getName(), type.getName());
 
         this.editableType = type;
 
         this.configuration =
-                (StoredQueryConfiguration)
-                        type.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION);
+                (StoredQueryConfiguration) type.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION);
 
         this.storedQueryId = this.configuration.getStoredQueryId();
 
@@ -50,12 +49,11 @@ public class CascadedWFSStoredQueryEditPage extends CascadedWFSStoredQueryAbstra
             String storedQueryId, ParameterExpressionType pet, StoredQueryParameterAttribute attr) {
         // Sanity check
         if (!storedQueryId.equals(configuration.getStoredQueryId())) {
-            throw new RuntimeException(
-                    "Programming error! Stored query ids do not match: '"
-                            + storedQueryId
-                            + "' vs '"
-                            + configuration.getStoredQueryId()
-                            + "'");
+            throw new RuntimeException("Programming error! Stored query ids do not match: '"
+                    + storedQueryId
+                    + "' vs '"
+                    + configuration.getStoredQueryId()
+                    + "'");
         }
 
         ParameterMapping mapping = null;
@@ -107,8 +105,7 @@ public class CascadedWFSStoredQueryEditPage extends CascadedWFSStoredQueryAbstra
 
     @Override
     protected void onSave() {
-        StoredQueryConfiguration config =
-                createStoredQueryConfiguration(parameterProvider.getItems(), storedQueryId);
+        StoredQueryConfiguration config = createStoredQueryConfiguration(parameterProvider.getItems(), storedQueryId);
 
         editableType.getMetadata().put(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, config);
 

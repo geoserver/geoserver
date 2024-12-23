@@ -22,15 +22,14 @@ import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 
 /**
- * A PointOpImage applying vertical transform to each pixel. Consider moving it down to geotools
- * process-raster or similar packages when ready.
+ * A PointOpImage applying vertical transform to each pixel. Consider moving it down to geotools process-raster or
+ * similar packages when ready.
  */
 public class VerticalTransformOpImage extends PointOpImage {
 
     private static final double DELTA = 1E-6;
 
-    private static final Logger LOGGER =
-            Logger.getLogger(VerticalTransformOpImage.class.toString());
+    private static final Logger LOGGER = Logger.getLogger(VerticalTransformOpImage.class.toString());
 
     // The 2 transforms have different dimension: 2D vs 3D
     // we might find some way to concatenate them
@@ -71,8 +70,7 @@ public class VerticalTransformOpImage extends PointOpImage {
     /**
      * Computes the final pixel from N source images within a specified rectangle.
      *
-     * @param sources Cobbled sources, guaranteed to provide all the source data necessary for
-     *     computing the rectangle.
+     * @param sources Cobbled sources, guaranteed to provide all the source data necessary for computing the rectangle.
      * @param dest The tile containing the rectangle to be computed.
      * @param destRect The rectangle within the tile to be computed.
      */
@@ -82,9 +80,8 @@ public class VerticalTransformOpImage extends PointOpImage {
         // Retrieve format tags.
         RasterFormatTag[] formatTags = getFormatTags();
 
-        RasterAccessor rasterArray =
-                new RasterAccessor(
-                        sources[0], destRect, formatTags[0], getSourceImage(0).getColorModel());
+        RasterAccessor rasterArray = new RasterAccessor(
+                sources[0], destRect, formatTags[0], getSourceImage(0).getColorModel());
 
         RasterAccessor d = new RasterAccessor(dest, destRect, formatTags[1], getColorModel());
 
@@ -119,8 +116,7 @@ public class VerticalTransformOpImage extends PointOpImage {
         d.copyDataToRaster();
     }
 
-    private void byteLoop(RasterAccessor rasterArray, RasterAccessor dst)
-            throws TransformException {
+    private void byteLoop(RasterAccessor rasterArray, RasterAccessor dst) throws TransformException {
 
         int srcLineStride = rasterArray.getScanlineStride();
         int srcPixelStride = rasterArray.getPixelStride();
@@ -163,8 +159,7 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
     }
 
-    private void shortLoop(RasterAccessor rasterArray, RasterAccessor dst)
-            throws TransformException {
+    private void shortLoop(RasterAccessor rasterArray, RasterAccessor dst) throws TransformException {
 
         int srcLineStride = rasterArray.getScanlineStride();
         int srcPixelStride = rasterArray.getPixelStride();
@@ -208,8 +203,7 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
     }
 
-    private void ushortLoop(RasterAccessor rasterArray, RasterAccessor dst)
-            throws TransformException {
+    private void ushortLoop(RasterAccessor rasterArray, RasterAccessor dst) throws TransformException {
 
         int srcLineStride = rasterArray.getScanlineStride();
         int srcPixelStride = rasterArray.getPixelStride();
@@ -297,8 +291,7 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
     }
 
-    private void floatLoop(RasterAccessor rasterArray, RasterAccessor dst)
-            throws TransformException {
+    private void floatLoop(RasterAccessor rasterArray, RasterAccessor dst) throws TransformException {
 
         int srcLineStride = rasterArray.getScanlineStride();
         int srcPixelStride = rasterArray.getPixelStride();
@@ -342,8 +335,7 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
     }
 
-    private void doubleLoop(RasterAccessor rasterArray, RasterAccessor dst)
-            throws TransformException {
+    private void doubleLoop(RasterAccessor rasterArray, RasterAccessor dst) throws TransformException {
 
         int srcLineStride = rasterArray.getScanlineStride();
         int srcPixelStride = rasterArray.getPixelStride();
@@ -388,8 +380,7 @@ public class VerticalTransformOpImage extends PointOpImage {
     }
 
     private void transform(double[] srcPoints, double[] destPoints) throws TransformException {
-        if (Double.isNaN(srcPoints[2])
-                || (hasNoData && Math.abs(this.noDataDouble - srcPoints[2]) < DELTA)) {
+        if (Double.isNaN(srcPoints[2]) || (hasNoData && Math.abs(this.noDataDouble - srcPoints[2]) < DELTA)) {
             destPoints[2] = srcPoints[2];
         } else {
             // Transform the pixel coordinate to the coordinate in the vertical grid crs

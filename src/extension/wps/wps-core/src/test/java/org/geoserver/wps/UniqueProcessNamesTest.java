@@ -20,9 +20,9 @@ import org.junit.Test;
 /**
  * Tests that the set of registered processes has unique names.
  *
- * <p>Duplicate names can happen if a process is defined in both the GeoServer wps-core
- * applicationContext.xml and in a GeoTools factory. (This isn't a functional problem, but is
- * confusing when displayed in the UI and listed in GetCapabilities).
+ * <p>Duplicate names can happen if a process is defined in both the GeoServer wps-core applicationContext.xml and in a
+ * GeoTools factory. (This isn't a functional problem, but is confusing when displayed in the UI and listed in
+ * GetCapabilities).
  *
  * @author Martin Davis, OpenGeo
  */

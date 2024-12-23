@@ -43,8 +43,7 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures =
-                new DefaultFeatureCollection(null, b.getFeatureType());
+        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b.getFeatureType());
 
         Coordinate[] firstArray = new Coordinate[5];
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
@@ -94,8 +93,7 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures =
-                new DefaultFeatureCollection(null, b.getFeatureType());
+        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b.getFeatureType());
 
         Coordinate[] firstArray = new Coordinate[5];
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
@@ -111,10 +109,9 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
             secondFeatures.add(b.buildFeature(numFeatures + ""));
         }
 
-        Coordinate centre =
-                ((Polygon) secondFeatures.features().next().getDefaultGeometry())
-                        .getCentroid()
-                        .getCoordinate();
+        Coordinate centre = ((Polygon) secondFeatures.features().next().getDefaultGeometry())
+                .getCentroid()
+                .getCoordinate();
         Point p = gf.createPoint(centre);
         b.add(p);
         b.add(0);

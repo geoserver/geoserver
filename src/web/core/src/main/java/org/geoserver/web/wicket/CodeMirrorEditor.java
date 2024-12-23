@@ -54,10 +54,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public static final PackageResourceReference[] CSS_REFERENCE = {
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/show-hint.css"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
     };
 
     public static final PackageResourceReference[] MODES = {
@@ -71,16 +69,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
     };
 
     private TextArea<String> editor;
@@ -111,9 +104,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
         WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
         if (enableCodeMirror) {
-            editorParent.add(
-                    AttributeModifier.replace(
-                            "style", "border: 1px solid black; padding-bottom: 3px"));
+            editorParent.add(AttributeModifier.replace("style", "border: 1px solid black; padding-bottom: 3px"));
         }
         container.add(editorParent);
         editor = new TextArea<>("editor", model);
@@ -142,8 +133,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                                 "var result = {'cmSelection': getSelection()};" + "return result;";
                         attributes.getDynamicExtraParameters().add(dynamicExtraParameters);
                     }
-                }.add(new AttributeAppender("class", cssClass, " "))
-                        .add(new AttributeAppender("title", title, " ")));
+                }.add(new AttributeAppender("class", cssClass, " ")).add(new AttributeAppender("title", title, " ")));
     }
 
     private boolean isCodeMirrorSupported() {
@@ -152,30 +142,20 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         ClientProperties clientProperties = clientInfo.getProperties();
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 8
-                            || props.getBrowserVersionMajor() >= 8;
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 8 || props.getBrowserVersionMajor() >= 8;
         } else if (clientProperties.isBrowserMozillaFirefox()) {
-            ClientProperties props =
-                    extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 3
-                            || props.getBrowserVersionMajor() >= 3;
+            ClientProperties props = extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 3 || props.getBrowserVersionMajor() >= 3;
         } else if (clientProperties.isBrowserSafari()) {
-            ClientProperties props =
-                    extractSafariVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() > 5
-                            || (clientProperties.getBrowserVersionMajor() == 5
-                                    && clientProperties.getBrowserVersionMinor() >= 2)
-                            || props.getBrowserVersionMajor() > 5
-                            || (props.getBrowserVersionMajor() == 5
-                                    && props.getBrowserVersionMinor() >= 2);
+            ClientProperties props = extractSafariVersion(clientProperties.getNavigatorAppVersion());
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() > 5
+                    || (clientProperties.getBrowserVersionMajor() == 5
+                            && clientProperties.getBrowserVersionMinor() >= 2)
+                    || props.getBrowserVersionMajor() > 5
+                    || (props.getBrowserVersionMajor() == 5 && props.getBrowserVersionMinor() >= 2);
         } else if (clientProperties.isBrowserOpera()) {
             ClientProperties props = extractOperaVersion(clientProperties.getNavigatorAppVersion());
-            enableCodeMirror =
-                    clientProperties.getBrowserVersionMajor() >= 9
-                            || props.getBrowserVersionMajor() >= 9;
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 9 || props.getBrowserVersionMajor() >= 9;
         }
         return enableCodeMirror;
     }
@@ -238,8 +218,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return props;
     }
 
-    private void setMajorMinorVersionByPattern(
-            String userAgent, String patternString, ClientProperties properties) {
+    private void setMajorMinorVersionByPattern(String userAgent, String patternString, ClientProperties properties) {
         Matcher matcher = Pattern.compile(patternString).matcher(userAgent);
         if (matcher.find()) {
             properties.setBrowserVersionMajor(Integer.parseInt(matcher.group(1)));
@@ -274,12 +253,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         this.mode = mode;
         AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
         if (requestTarget != null) {
-            String javascript =
-                    "document.gsEditors."
-                            + editor.getMarkupId()
-                            + ".setOption('mode', '"
-                            + mode
-                            + "');";
+            String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
             requestTarget.appendJavaScript(javascript);
         }
     }
@@ -340,8 +314,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         }
 
         private String getInitJavascript() {
-            try (InputStream is =
-                    CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js")) {
+            try (InputStream is = CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js")) {
                 String js = convertStreamToString(is);
                 js = js.replaceAll("\\$componentId", editor.getMarkupId());
                 js = js.replaceAll("\\$codeMirrorEditorId", getMarkupId());
@@ -365,9 +338,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
                     char[] buffer = new char[1024];
                     try {
-                        Reader reader =
-                                new BufferedReader(
-                                        new InputStreamReader(is, StandardCharsets.UTF_8));
+                        Reader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
                         int n;
                         while ((n = reader.read(buffer)) != -1) {
                             writer.write(buffer, 0, n);

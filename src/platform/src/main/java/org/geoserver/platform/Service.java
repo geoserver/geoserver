@@ -11,14 +11,13 @@ import org.geotools.util.Version;
 /**
  * A service descriptor which provides metadata, primarily service {@code id}, and {@code version}.
  *
- * <p>Service descriptors are identified by an {@code id}, version pair. Two service descriptors are
- * considered equal if they have the same {@code id}, and {@code version}.
+ * <p>Service descriptors are identified by an {@code id}, version pair. Two service descriptors are considered equal if
+ * they have the same {@code id}, and {@code version}.
  *
- * <p>The underlying service implementation is a plain old java object, available via {@link
- * #service}.
+ * <p>The underlying service implementation is a plain old java object, available via {@link #service}.
  *
- * <p>The {@code id} is treated as a service type by ServiceDescriptor for presentation, and by
- * ServiceResourceProvider for service enablement.
+ * <p>The {@code id} is treated as a service type by ServiceDescriptor for presentation, and by ServiceResourceProvider
+ * for service enablement.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -62,8 +61,7 @@ public final class Service {
      * @param version The version of the service.
      * @param operations The list of operations the service provides
      */
-    public Service(
-            String id, String namespace, Object service, Version version, List<String> operations) {
+    public Service(String id, String namespace, Object service, Version version, List<String> operations) {
         this.id = id;
         this.service = service;
         this.version = version;
@@ -77,9 +75,8 @@ public final class Service {
     /**
      * Service type used to identify the service.
      *
-     * <p>This is required to tbe the service type, example {@code WMS}, {@code WFS}, {@code
-     * Features} allowing ServiceDescription and
-     * ServiceResourceProvider.getServicesForResource(layer) to manage user interaction with web
+     * <p>This is required to tbe the service type, example {@code WMS}, {@code WFS}, {@code Features} allowing
+     * ServiceDescription and ServiceResourceProvider.getServicesForResource(layer) to manage user interaction with web
      * services.
      *
      * @return service type used to identify the service

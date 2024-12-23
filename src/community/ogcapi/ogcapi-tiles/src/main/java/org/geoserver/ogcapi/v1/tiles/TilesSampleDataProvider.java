@@ -48,13 +48,11 @@ public class TilesSampleDataProvider implements SampleDataProvider {
     }
 
     private Link buildSampleDataLink(LayerInfo layer, MimeType m) {
-        String href =
-                ResponseUtils.buildURL(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/tiles/v1/collections/"
-                                + ResponseUtils.urlEncode(layer.prefixedName() + "/tiles"),
-                        Collections.singletonMap("f", m.getFormat()),
-                        URLMangler.URLType.SERVICE);
+        String href = ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/tiles/v1/collections/" + ResponseUtils.urlEncode(layer.prefixedName() + "/tiles"),
+                Collections.singletonMap("f", m.getFormat()),
+                URLMangler.URLType.SERVICE);
         return new Link(href, "tiles", m.getFormat(), "Tiles as " + m.getFormat());
     }
 }

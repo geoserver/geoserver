@@ -49,9 +49,7 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         super(
                 gs,
                 new LinkedHashSet<>(
-                        Arrays.asList(
-                                MapMLConstants.MAPML_HTML_MIME_TYPE,
-                                MapMLConstants.HTML_FORMAT_NAME)));
+                        Arrays.asList(MapMLConstants.MAPML_HTML_MIME_TYPE, MapMLConstants.HTML_FORMAT_NAME)));
     }
 
     @Override
@@ -60,18 +58,14 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollectionResponse,
-            OutputStream out,
-            Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollectionResponse, OutputStream out, Operation getFeature)
             throws IOException, ServiceException {
         Request request = Dispatcher.REQUEST.get();
         HttpServletRequest httpRequest = request.getHttpRequest();
 
         List<FeatureCollection> featureCollections = featureCollectionResponse.getFeatures();
         if (featureCollections.size() != 1) {
-            throw new ServiceException(
-                    "MapML OutputFormat does not support Multiple Feature Type output.");
+            throw new ServiceException("MapML OutputFormat does not support Multiple Feature Type output.");
         }
         FeatureCollection featureCollection = featureCollections.get(0);
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
@@ -99,16 +93,15 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         double lat = flipCoords ? longitude : latitude;
         double lon = flipCoords ? latitude : longitude;
 
-        MapMLHTMLOutput output =
-                new MapMLHTMLOutput.HTMLOutputBuilder()
-                        .setLongitude(lon)
-                        .setLatitude(lat)
-                        .setRequest(httpRequest)
-                        .setLayerLabel(layerInfo.getTitle())
-                        .setProjType(projType)
-                        .setProjectedBbox(projectedBbox)
-                        .setSourceUrL(buildGetFeature(request))
-                        .build();
+        MapMLHTMLOutput output = new MapMLHTMLOutput.HTMLOutputBuilder()
+                .setLongitude(lon)
+                .setLatitude(lat)
+                .setRequest(httpRequest)
+                .setLayerLabel(layerInfo.getTitle())
+                .setProjType(projType)
+                .setProjectedBbox(projectedBbox)
+                .setSourceUrL(buildGetFeature(request))
+                .build();
 
         // write to output
         OutputStreamWriter osw = new OutputStreamWriter(out, gs.getSettings().getCharset());
@@ -131,11 +124,10 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         } catch (IllegalArgumentException | FactoryException iae) {
             // figure out the parameter name (version dependent) and the actual original
             // string value for the srs/crs parameter
-            String parameterName =
-                    Optional.ofNullable(request.getVersion())
-                            .filter(v -> v.equals("1.0.0"))
-                            .map(v -> "srs")
-                            .orElse("srsName");
+            String parameterName = Optional.ofNullable(request.getVersion())
+                    .filter(v -> v.equals("1.0.0"))
+                    .map(v -> "srs")
+                    .orElse("srsName");
             Map<String, Object> rawKvp = Dispatcher.REQUEST.get().getRawKvp();
             String value = (String) rawKvp.get("SRSNAME");
             if (value == null) value = (String) rawKvp.get("SRS");
@@ -175,17 +167,14 @@ public class MapMLHTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     private LinkedHashMap<String, String> extractKvp(Map<String, Object> rawKvp) {
-        LinkedHashMap<String, String> kvp =
-                rawKvp.entrySet().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        Map.Entry::getKey,
-                                        entry ->
-                                                "OUTPUTFORMAT".equals(entry.getKey())
-                                                        ? MapMLConstants.FORMAT_NAME
-                                                        : entry.getValue().toString(),
-                                        (existing, replacement) -> existing,
-                                        LinkedHashMap::new));
+        LinkedHashMap<String, String> kvp = rawKvp.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> "OUTPUTFORMAT".equals(entry.getKey())
+                                ? MapMLConstants.FORMAT_NAME
+                                : entry.getValue().toString(),
+                        (existing, replacement) -> existing,
+                        LinkedHashMap::new));
         kvp.putIfAbsent("OUTPUTFORMAT", MapMLConstants.FORMAT_NAME);
         return kvp;
     }

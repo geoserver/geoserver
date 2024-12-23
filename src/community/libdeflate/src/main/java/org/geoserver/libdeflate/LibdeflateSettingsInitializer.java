@@ -27,8 +27,7 @@ public class LibdeflateSettingsInitializer implements GeoServerInitializer {
             metadata.put(LibdeflateSettings.LIBDEFLATE_SETTINGS_KEY, new LibdeflateSettings());
             geoServer.save(global);
         } else {
-            initSettings(
-                    (LibdeflateSettings) metadata.get(LibdeflateSettings.LIBDEFLATE_SETTINGS_KEY));
+            initSettings((LibdeflateSettings) metadata.get(LibdeflateSettings.LIBDEFLATE_SETTINGS_KEY));
         }
     }
 

@@ -42,9 +42,9 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.jdbc.BasicSQLDialect;
 
 /**
- * Splits a Query into a Query that cna be run against the delegate alphanumeric datastore, and a
- * post-filter that should be run against the resulting DGGS feature collection (containing the
- * spatial bits that could not be turned into zoneId filters).
+ * Splits a Query into a Query that cna be run against the delegate alphanumeric datastore, and a post-filter that
+ * should be run against the resulting DGGS feature collection (containing the spatial bits that could not be turned
+ * into zoneId filters).
  */
 public class DGGSQuerySplitter {
 
@@ -60,9 +60,7 @@ public class DGGSQuerySplitter {
     }
 
     public DGGSQuerySplitter(
-            DGGSInstance dggs,
-            DGGSResolutionCalculator resolutionCalculator,
-            SimpleFeatureType schema) {
+            DGGSInstance dggs, DGGSResolutionCalculator resolutionCalculator, SimpleFeatureType schema) {
         this.dggs = dggs;
         this.resolutionCalculator = resolutionCalculator;
         this.schema = schema;
@@ -77,8 +75,7 @@ public class DGGSQuerySplitter {
 
         // split using non spatial capabilities
         PostPreProcessFilterSplittingVisitor splitter =
-                new PostPreProcessFilterSplittingVisitor(
-                        BasicSQLDialect.BASE_DBMS_CAPABILITIES, schema, null) {
+                new PostPreProcessFilterSplittingVisitor(BasicSQLDialect.BASE_DBMS_CAPABILITIES, schema, null) {
                     @Override
                     protected boolean supports(Object value) {
                         // delegate all functions to the underlying database, it will handle them
@@ -118,10 +115,8 @@ public class DGGSQuerySplitter {
         // remove the geometry property, delegate does not have it, replace it with
         // zoneId if necessary
         if (query.getPropertyNames() != null) {
-            Set<String> requestedProperties =
-                    new HashSet<>(Arrays.asList(query.getPropertyNames()));
-            Stream<String> namesStream =
-                    Arrays.stream(query.getPropertyNames()).filter(n -> !GEOMETRY.equals(n));
+            Set<String> requestedProperties = new HashSet<>(Arrays.asList(query.getPropertyNames()));
+            Stream<String> namesStream = Arrays.stream(query.getPropertyNames()).filter(n -> !GEOMETRY.equals(n));
             if (requestedProperties.contains(GEOMETRY) && !requestedProperties.contains(ZONE_ID)) {
                 namesStream = Stream.concat(namesStream, Stream.of(ZONE_ID));
             }
@@ -132,17 +127,13 @@ public class DGGSQuerySplitter {
 
         // transform sortBy if necessary
         if (query.getSortBy() != null) {
-            SortBy[] adaptedSort =
-                    Arrays.stream(query.getSortBy())
-                            .map(
-                                    sb -> {
-                                        if (sb == SortBy.NATURAL_ORDER)
-                                            return FF.sort(ZONE_ID, SortOrder.ASCENDING);
-                                        if (sb == SortBy.REVERSE_ORDER)
-                                            return FF.sort(ZONE_ID, SortOrder.DESCENDING);
-                                        return sb;
-                                    })
-                            .toArray(n -> new SortBy[n]);
+            SortBy[] adaptedSort = Arrays.stream(query.getSortBy())
+                    .map(sb -> {
+                        if (sb == SortBy.NATURAL_ORDER) return FF.sort(ZONE_ID, SortOrder.ASCENDING);
+                        if (sb == SortBy.REVERSE_ORDER) return FF.sort(ZONE_ID, SortOrder.DESCENDING);
+                        return sb;
+                    })
+                    .toArray(n -> new SortBy[n]);
             result.setSortBy(adaptedSort);
         } else if (query.getStartIndex() != null || query.getMaxFeatures() < Integer.MAX_VALUE) {
             // need a sort to do paging, the underlying store might not have a primary key
@@ -157,15 +148,12 @@ public class DGGSQuerySplitter {
 
         // extract resolution
         int resolution =
-                resolutionCalculator.getTargetResolution(
-                        query, DGGSFilterTransformer.RESOLUTION_NOT_SPECIFIED);
+                resolutionCalculator.getTargetResolution(query, DGGSFilterTransformer.RESOLUTION_NOT_SPECIFIED);
 
         // turn all spatial filters into checks against zoneId, if possible
-        Filter adapted =
-                DGGSFilterTransformer.adapt(filter, dggs, resolutionCalculator, resolution);
+        Filter adapted = DGGSFilterTransformer.adapt(filter, dggs, resolutionCalculator, resolution);
         if (resolution != DGGSFilterTransformer.RESOLUTION_NOT_SPECIFIED) {
-            PropertyIsEqualTo resolutionFilter =
-                    FF.equals(FF.property(DGGSStore.RESOLUTION), FF.literal(resolution));
+            PropertyIsEqualTo resolutionFilter = FF.equals(FF.property(DGGSStore.RESOLUTION), FF.literal(resolution));
             result.setFilter(FF.and(adapted, resolutionFilter));
         } else {
             result.setFilter(adapted);

@@ -20,12 +20,7 @@ public class StylesModelTest extends GeoServerWicketTestSupport {
         super.onSetUp(testData);
 
         Catalog catalog = getCatalog();
-        testData.addStyle(
-                catalog.getDefaultWorkspace(),
-                "Streams",
-                "Streams.sld",
-                SystemTestData.class,
-                catalog);
+        testData.addStyle(catalog.getDefaultWorkspace(), "Streams", "Streams.sld", SystemTestData.class, catalog);
     }
 
     @Test

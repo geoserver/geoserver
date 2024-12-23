@@ -34,8 +34,7 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
 
         try (GeoJSONWriter writer = getOutputWriter(output)) {
@@ -56,14 +55,12 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
     }
 
     @Override
-    protected void beforeFeatureIteration(
-            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
+    protected void beforeFeatureIteration(TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
         RootBuilder rb = root;
         GeoJSONWriter jsonWriter = (GeoJSONWriter) writer;
-        boolean flatOutput =
-                rb.getVendorOptions()
-                        .get(VendorOptions.FLAT_OUTPUT, Boolean.class, false)
-                        .booleanValue();
+        boolean flatOutput = rb.getVendorOptions()
+                .get(VendorOptions.FLAT_OUTPUT, Boolean.class, false)
+                .booleanValue();
         jsonWriter.setFlatOutput(flatOutput);
     }
 

@@ -36,8 +36,7 @@ public class RasterSymbolizerBuilderTest {
     @Test
     public void testUniqueBinary() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(ClassifierTest.class.getResourceAsStream("milanogeo.tif"));
+        RenderedImage image = ImageIO.read(ClassifierTest.class.getResourceAsStream("milanogeo.tif"));
         ColorMap cm = builder.uniqueIntervalClassification(image, 2);
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(2, entries.length);
@@ -48,23 +47,19 @@ public class RasterSymbolizerBuilderTest {
     @Test
     public void testUniqueBinaryTooManyValues() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(ClassifierTest.class.getResourceAsStream("milanogeo.tif"));
+        RenderedImage image = ImageIO.read(ClassifierTest.class.getResourceAsStream("milanogeo.tif"));
         try {
             builder.uniqueIntervalClassification(image, 1);
             fail("Was expecting an exception");
         } catch (IllegalArgumentException e) {
-            assertThat(
-                    e.getMessage(),
-                    allOf(containsString("2 unique values"), containsString("maximum of 1")));
+            assertThat(e.getMessage(), allOf(containsString("2 unique values"), containsString("maximum of 1")));
         }
     }
 
     @Test
     public void testUniqueDemByte() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(SystemTestData.class.getResourceAsStream("tazbyte.tiff"));
+        RenderedImage image = ImageIO.read(SystemTestData.class.getResourceAsStream("tazbyte.tiff"));
         ColorMap cm = builder.uniqueIntervalClassification(image, null);
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(167, entries.length);
@@ -100,8 +95,7 @@ public class RasterSymbolizerBuilderTest {
     @Test
     public void testUniqueFloatInvalid() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
+        RenderedImage image = ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
         try {
             builder.uniqueIntervalClassification(image, 1);
             fail("Was expecting an exception");
@@ -113,8 +107,7 @@ public class RasterSymbolizerBuilderTest {
     @Test
     public void testEqualIntervalContinuousFloat() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
+        RenderedImage image = ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
         ColorMap cm = builder.equalIntervalClassification(image, 5, false, true);
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(5, entries.length);
@@ -128,8 +121,7 @@ public class RasterSymbolizerBuilderTest {
     @Test
     public void testEqualClosedIntervalFloat() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
+        RenderedImage image = ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
         ColorMap cm = builder.equalIntervalClassification(image, 5, false, false);
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(6, entries.length);
@@ -144,8 +136,7 @@ public class RasterSymbolizerBuilderTest {
     @Test
     public void testEqualOpenIntervalFloat() throws IOException {
         RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-        RenderedImage image =
-                ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
+        RenderedImage image = ImageIO.read(ClassifierTest.class.getResourceAsStream("dem_float.tif"));
         ColorMap cm = builder.equalIntervalClassification(image, 5, true, false);
         ColorMapEntry[] entries = cm.getColorMapEntries();
         assertEquals(5, entries.length);
@@ -158,74 +149,70 @@ public class RasterSymbolizerBuilderTest {
 
     @Test
     public void testQuantilesContinuous() throws IOException {
-        assertOnSRTM(
-                image -> {
-                    RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-                    ColorMap cm = builder.quantileClassification(image, 5, false, true);
-                    ColorMapEntry[] entries = cm.getColorMapEntries();
-                    assertEquals(5, entries.length);
-                    assertLiteralValue(-2, entries[0]);
-                    assertLiteralValue(292, entries[1], 10);
-                    assertLiteralValue(536, entries[2], 10);
-                    assertLiteralValue(825, entries[3], 10);
-                    assertLiteralValue(1796, entries[4]);
-                });
+        assertOnSRTM(image -> {
+            RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+            ColorMap cm = builder.quantileClassification(image, 5, false, true);
+            ColorMapEntry[] entries = cm.getColorMapEntries();
+            assertEquals(5, entries.length);
+            assertLiteralValue(-2, entries[0]);
+            assertLiteralValue(292, entries[1], 10);
+            assertLiteralValue(536, entries[2], 10);
+            assertLiteralValue(825, entries[3], 10);
+            assertLiteralValue(1796, entries[4]);
+        });
     }
 
     @Test
     public void testQuantilesInterval() throws IOException {
-        assertOnSRTM(
-                image -> {
-                    RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-                    ColorMap cm = builder.quantileClassification(image, 5, false, false);
-                    ColorMapEntry[] entries = cm.getColorMapEntries();
-                    assertEquals(6, entries.length);
-                    assertLiteralValue(-2, entries[0]);
-                    assertLiteralValue(237, entries[1], 10);
-                    assertLiteralValue(441, entries[2], 10);
-                    assertLiteralValue(640, entries[3], 10);
-                    assertLiteralValue(894, entries[4], 10);
-                    assertLiteralValue(1796, entries[5]);
-                });
+        assertOnSRTM(image -> {
+            RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+            ColorMap cm = builder.quantileClassification(image, 5, false, false);
+            ColorMapEntry[] entries = cm.getColorMapEntries();
+            assertEquals(6, entries.length);
+            assertLiteralValue(-2, entries[0]);
+            assertLiteralValue(237, entries[1], 10);
+            assertLiteralValue(441, entries[2], 10);
+            assertLiteralValue(640, entries[3], 10);
+            assertLiteralValue(894, entries[4], 10);
+            assertLiteralValue(1796, entries[5]);
+        });
     }
 
     @Test
     public void testJenksContinuous() throws IOException {
-        assertOnSRTM(
-                image -> {
-                    RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-                    ColorMap cm = builder.jenksClassification(image, 5, false, true);
-                    ColorMapEntry[] entries = cm.getColorMapEntries();
-                    assertEquals(5, entries.length);
-                    assertLiteralValue(-2, entries[0]);
-                    // the expected values are from the pixel perfect jenks classification,
-                    // the tolerance is added to allow the histogram based classification to
-                    // pass the test, while ensuring it's not too far away
-                    assertLiteralValue(336, entries[1], 10);
-                    assertLiteralValue(660, entries[2], 10);
-                    assertLiteralValue(1011, entries[3], 10);
-                    assertLiteralValue(1796, entries[4]);
-                });
+        assertOnSRTM(image -> {
+            RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+            ColorMap cm = builder.jenksClassification(image, 5, false, true);
+            ColorMapEntry[] entries = cm.getColorMapEntries();
+            assertEquals(5, entries.length);
+            assertLiteralValue(-2, entries[0]);
+            // the expected values are from the pixel perfect jenks classification,
+            // the tolerance is added to allow the histogram based classification to
+            // pass the test, while ensuring it's not too far away
+            assertLiteralValue(336, entries[1], 10);
+            assertLiteralValue(660, entries[2], 10);
+            assertLiteralValue(1011, entries[3], 10);
+            assertLiteralValue(1796, entries[4]);
+        });
     }
 
     @Test
     public void testJenksInterval() throws IOException {
-        assertOnSRTM(
-                image -> {
-                    RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
-                    ColorMap cm = builder.jenksClassification(image, 5, false, false);
-                    ColorMapEntry[] entries = cm.getColorMapEntries();
-                    assertEquals(6, entries.length);
-                    assertLiteralValue(-2, entries[0]);
-                    // the expected values are from the pixel perfect jenks classification,
-                    // the tolerance is added to allow the histogram based classification to
-                    // pass the test, while ensuring it's not too far away
-                    assertLiteralValue(276, entries[1], 11);
-                    assertLiteralValue(531, entries[2], 11);
-                    assertLiteralValue(793, entries[3], 11);
-                    assertLiteralValue(1097, entries[4], 11);
-                    assertLiteralValue(1796, entries[5]);
-                });
+        assertOnSRTM(image -> {
+            RasterSymbolizerBuilder builder = new RasterSymbolizerBuilder();
+            ColorMap cm = builder.jenksClassification(image, 5, false, false);
+            ColorMapEntry[] entries = cm.getColorMapEntries();
+            assertEquals(6, entries.length);
+            assertLiteralValue(-2, entries[0]);
+            // the expected values are from the pixel perfect jenks classification,
+            // the tolerance is added to allow the histogram based classification to
+            // pass the test, while ensuring it's not too far away
+            assertLiteralValue(276, entries[1], 11);
+            assertLiteralValue(531, entries[2], 11);
+            assertLiteralValue(793, entries[3], 11);
+            assertLiteralValue(1097, entries[4], 11);
+            assertLiteralValue(1796, entries[5]);
+        });
     }
 
     private void assertLiteralValue(double value, ColorMapEntry entry) {
@@ -268,8 +255,7 @@ public class RasterSymbolizerBuilderTest {
 
     private void assertSubsampling(
             RasterSymbolizerBuilder builder, int size, int expectedXPeriod, int expectedYPeriod) {
-        ImageWorker iw =
-                builder.getImageWorker(new BufferedImage(size, size, BufferedImage.TYPE_BYTE_GRAY));
+        ImageWorker iw = builder.getImageWorker(new BufferedImage(size, size, BufferedImage.TYPE_BYTE_GRAY));
         assertEquals(expectedXPeriod, iw.getXPeriod());
         assertEquals(expectedYPeriod, iw.getYPeriod());
     }

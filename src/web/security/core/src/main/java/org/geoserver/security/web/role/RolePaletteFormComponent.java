@@ -28,9 +28,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     }
 
     public RolePaletteFormComponent(
-            String id,
-            IModel<List<GeoServerRole>> model,
-            IModel<List<GeoServerRole>> choicesModel) {
+            String id, IModel<List<GeoServerRole>> model, IModel<List<GeoServerRole>> choicesModel) {
         super(id, model, choicesModel, new ChoiceRenderer<>("authority", "authority"));
 
         //        rolePalette = new Palette<GeoServerRole>(
@@ -55,21 +53,16 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
         final String roleServiceName = roleService.getName();
 
-        if (choicesModel instanceof RuleRolesModel)
-            add(new Label("roles", new StringResourceModel("roles", this)));
+        if (choicesModel instanceof RuleRolesModel) add(new Label("roles", new StringResourceModel("roles", this)));
         else
-            add(
-                    new Label(
-                            "roles",
-                            new StringResourceModel("rolesFromActiveService", this)
-                                    .setParameters(roleServiceName)));
+            add(new Label(
+                    "roles", new StringResourceModel("rolesFromActiveService", this).setParameters(roleServiceName)));
 
         add(
                 new SubmitLink("addRole") {
                     @Override
                     public void onSubmit() {
-                        setResponsePage(
-                                new NewRolePage(roleServiceName).setReturnPage(this.getPage()));
+                        setResponsePage(new NewRolePage(roleServiceName).setReturnPage(this.getPage()));
                     }
                 }.setVisible(roleService.canCreateStore()));
     }
@@ -78,10 +71,7 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
         return GeoServerApplication.get().getSecurityManager();
     }
 
-    public void diff(
-            Collection<GeoServerRole> orig,
-            Collection<GeoServerRole> add,
-            Collection<GeoServerRole> remove) {
+    public void diff(Collection<GeoServerRole> orig, Collection<GeoServerRole> add, Collection<GeoServerRole> remove) {
 
         remove.addAll(orig);
         for (GeoServerRole role : getSelectedRoles()) {

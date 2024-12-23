@@ -33,10 +33,8 @@ import org.w3c.dom.NodeList;
 
 public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
 
-    private static final String WMS_1_1_1_GETCAPREQUEST =
-            "wms?request=GetCapabilities&service=WMS&version=1.1.1";
-    private static final String WMS_1_3_0_GETCAPREQUEST =
-            "wms?request=GetCapabilities&service=WMS&version=1.3.0";
+    private static final String WMS_1_1_1_GETCAPREQUEST = "wms?request=GetCapabilities&service=WMS&version=1.1.1";
+    private static final String WMS_1_3_0_GETCAPREQUEST = "wms?request=GetCapabilities&service=WMS&version=1.3.0";
 
     @Override
     protected String getGetCapabilitiesRequestPath() {
@@ -118,11 +116,9 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element suppLangs =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
-                                .item(0);
+        final Element suppLangs = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
@@ -151,11 +147,9 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
             NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
             final Element extendedCaps = (Element) nodeList.item(0);
 
-            final Element suppLangs =
-                    (Element)
-                            extendedCaps
-                                    .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                                    .item(0);
+            final Element suppLangs = (Element) extendedCaps
+                    .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                    .item(0);
             String language = null;
             for (int i = 0; i < suppLangs.getChildNodes().getLength(); i++) {
                 Node el = suppLangs.getChildNodes().item(i);
@@ -188,11 +182,9 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
             NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
             final Element extendedCaps = (Element) nodeList.item(0);
 
-            final Element suppLangs =
-                    (Element)
-                            extendedCaps
-                                    .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                                    .item(0);
+            final Element suppLangs = (Element) extendedCaps
+                    .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                    .item(0);
             String language = null;
             for (int i = 0; i < suppLangs.getChildNodes().getLength(); i++) {
                 Node el = suppLangs.getChildNodes().item(i);
@@ -219,22 +211,18 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element suppLangs =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                                .item(0);
+        final Element suppLangs = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                .item(0);
         String language = null;
         for (int i = 0; i < suppLangs.getChildNodes().getLength(); i++) {
             Node el = suppLangs.getChildNodes().item(i);
             if (isLangNode(el)) language = el.getTextContent();
         }
         assertEquals("fre", language);
-        final Element supportedLanguage =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage")
-                                .item(0);
+        final Element supportedLanguage = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage")
+                .item(0);
 
         String nodeName = "";
         for (int i = 0; i < supportedLanguage.getChildNodes().getLength(); i++) {
@@ -264,11 +252,9 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element supportedLanguage =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage")
-                                .item(0);
+        final Element supportedLanguage = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage")
+                .item(0);
 
         assertNull(supportedLanguage);
     }
@@ -291,13 +277,12 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST + "&LANGUAGE=unsupported");
 
-        final String responseLanguage =
-                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                        .item(0)
-                        .getFirstChild()
-                        .getNextSibling()
-                        .getFirstChild()
-                        .getNodeValue();
+        final String responseLanguage = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                .item(0)
+                .getFirstChild()
+                .getNextSibling()
+                .getFirstChild()
+                .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
 
         // title checks for configured i18n title with unsupported language and with default

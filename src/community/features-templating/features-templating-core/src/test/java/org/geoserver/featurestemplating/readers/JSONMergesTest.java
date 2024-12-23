@@ -41,9 +41,7 @@ public class JSONMergesTest {
     public void testRecursionLimited() {
         RuntimeException ex = checkThrowingTemplate("recurse.json");
         assertThat(
-                ex.getMessage(),
-                containsString(
-                        "Went beyond maximum expansion depth (51), chain is: [recurse.json"));
+                ex.getMessage(), containsString("Went beyond maximum expansion depth (51), chain is: [recurse.json"));
     }
 
     @Test
@@ -56,15 +54,12 @@ public class JSONMergesTest {
     public void testRecursionPingPong() {
         // ping and pong import each other in an infinite recursion
         RuntimeException ex = checkThrowingTemplate("ping.json");
-        assertThat(
-                ex.getMessage(),
-                containsString("Went beyond maximum expansion depth (51), chain is: [ping.json"));
+        assertThat(ex.getMessage(), containsString("Went beyond maximum expansion depth (51), chain is: [ping.json"));
         assertThat(ex.getMessage(), containsString("pong.json"));
     }
 
     private RuntimeException checkThrowingTemplate(String s) {
-        return assertThrows(
-                RuntimeException.class, () -> new RecursiveJSONParser(store.get(s)).parse());
+        return assertThrows(RuntimeException.class, () -> new RecursiveJSONParser(store.get(s)).parse());
     }
 
     @Test
@@ -118,10 +113,8 @@ public class JSONMergesTest {
     @Test
     public void testMergeModificationsAreDetected() throws IOException, InterruptedException {
         RecursiveJSONParser parser = new RecursiveJSONParser(store.get("simpleOverride.json"));
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(new NamespaceSupport());
-        JSONTemplateReader reader =
-                new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
+        TemplateReaderConfiguration configuration = new TemplateReaderConfiguration(new NamespaceSupport());
+        JSONTemplateReader reader = new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
         RootBuilder rootBuilder = reader.getRootBuilder();
         assertFalse(rootBuilder.needsReload());
         Resource mergeBase = store.get("simpleBase.json");

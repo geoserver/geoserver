@@ -11,10 +11,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 
-/**
- * Just a basic data store info panel that skips the file based validation present in the GeoServer
- * data store
- */
+/** Just a basic data store info panel that skips the file based validation present in the GeoServer data store */
 public class S3InfoPanel extends StoreEditPanel {
     public S3InfoPanel(String componentId, Form storeEditForm) {
         super(componentId, storeEditForm);
@@ -23,12 +20,7 @@ public class S3InfoPanel extends StoreEditPanel {
         setDefaultModel(model);
         IModel paramsModel = new PropertyModel(model, "connectionParameters");
         TextParamPanel urlPanel =
-                new TextParamPanel(
-                        "url",
-                        new PropertyModel(model, "URL"),
-                        new ResourceModel("url", "URL"),
-                        true,
-                        null);
+                new TextParamPanel("url", new PropertyModel(model, "URL"), new ResourceModel("url", "URL"), true, null);
         add(urlPanel);
     }
 }

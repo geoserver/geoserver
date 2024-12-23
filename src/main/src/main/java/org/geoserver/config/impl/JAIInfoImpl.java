@@ -230,10 +230,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         if (allowNativeWarp != other.allowNativeWarp) return false;
         if (imageIOCache != other.imageIOCache) return false;
         if (jpegAcceleration != other.jpegAcceleration) return false;
-        if (Double.doubleToLongBits(memoryCapacity)
-                != Double.doubleToLongBits(other.memoryCapacity)) return false;
-        if (Double.doubleToLongBits(memoryThreshold)
-                != Double.doubleToLongBits(other.memoryThreshold)) return false;
+        if (Double.doubleToLongBits(memoryCapacity) != Double.doubleToLongBits(other.memoryCapacity)) return false;
+        if (Double.doubleToLongBits(memoryThreshold) != Double.doubleToLongBits(other.memoryThreshold)) return false;
         if (pngAcceleration != other.pngAcceleration) return false;
         if (recycling != other.recycling) return false;
         if (tilePriority != other.tilePriority) return false;

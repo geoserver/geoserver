@@ -21,8 +21,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * A GetFeatureInfo response handler specialized in producing FlatGeobuf data for a GetFeatureInfo
- * request.
+ * A GetFeatureInfo response handler specialized in producing FlatGeobuf data for a GetFeatureInfo request.
  *
  * @author Björn Harrtell
  */
@@ -58,8 +57,7 @@ public class FlatGeobufOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
         if (LOGGER.isLoggable(Level.INFO)) LOGGER.info("about to encode FlatGeobuf");
 

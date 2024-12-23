@@ -15,8 +15,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.GeoServerTemplateLoader;
 
 /**
- * Similar to the {@link GeoServerTemplateLoader}, but does not work relative to the resource
- * directories
+ * Similar to the {@link GeoServerTemplateLoader}, but does not work relative to the resource directories
  *
  * @author Andrea Aime - GeoSolutions
  */

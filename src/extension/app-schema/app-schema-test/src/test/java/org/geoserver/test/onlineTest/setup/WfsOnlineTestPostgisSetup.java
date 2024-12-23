@@ -47,19 +47,17 @@ public class WfsOnlineTestPostgisSetup extends AbstractReferenceDataSetup {
     // modifier
     private void setDataVersion(double version) throws Exception {
         this.run("DROP TABLE IF EXISTS public." + versiontbl);
-        this.run(
-                "CREATE TABLE public."
-                        + versiontbl
-                        + " ("
-                        + "name character varying(100) NOT NULL, "
-                        + "version double precision,"
-                        + "insert_date timestamp without time zone);");
-        this.run(
-                "insert into public."
-                        + versiontbl
-                        + "(name,version,insert_date) values('Data reference set',"
-                        + version
-                        + ",current_timestamp)");
+        this.run("CREATE TABLE public."
+                + versiontbl
+                + " ("
+                + "name character varying(100) NOT NULL, "
+                + "version double precision,"
+                + "insert_date timestamp without time zone);");
+        this.run("insert into public."
+                + versiontbl
+                + "(name,version,insert_date) values('Data reference set',"
+                + version
+                + ",current_timestamp)");
     }
 
     @Override

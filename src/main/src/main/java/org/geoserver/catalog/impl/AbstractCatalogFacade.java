@@ -37,10 +37,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     }
 
     protected void beforeSaved(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // TODO: protect this original object, perhaps with another proxy
@@ -62,10 +59,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     }
 
     protected void afterSaved(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // fire the post modify event
@@ -110,8 +104,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         }
     }
 
-    private void resolveLayerGroupStyles(
-            List<PublishedInfo> assignedLayers, List<StyleInfo> styles) {
+    private void resolveLayerGroupStyles(List<PublishedInfo> assignedLayers, List<StyleInfo> styles) {
         for (int i = 0; i < styles.size(); i++) {
             StyleInfo s = styles.get(i);
             if (s != null) {

@@ -20,7 +20,6 @@ public class WFSExtensions {
     /** Looks up {@link ExtendedCapabilitiesProvider} extensions. */
     public static List<WFSExtendedCapabilitiesProvider> findExtendedCapabilitiesProviders(
             final ApplicationContext applicationContext) {
-        return GeoServerExtensions.extensions(
-                WFSExtendedCapabilitiesProvider.class, applicationContext);
+        return GeoServerExtensions.extensions(WFSExtendedCapabilitiesProvider.class, applicationContext);
     }
 }

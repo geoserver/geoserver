@@ -19,9 +19,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
- * Wicket does not appear to provide a list of Locales for which a translation is available. This
- * class scans, once, the classpath to find all files named "GeoServerApplication_*.properties" and
- * returns a list of Locale found.
+ * Wicket does not appear to provide a list of Locales for which a translation is available. This class scans, once, the
+ * classpath to find all files named "GeoServerApplication_*.properties" and returns a list of Locale found.
  */
 public class LocalizationsFinder {
 
@@ -32,11 +31,9 @@ public class LocalizationsFinder {
     static {
         try {
             PathMatchingResourcePatternResolver resolver =
-                    new PathMatchingResourcePatternResolver(
-                            LocalizationsFinder.class.getClassLoader());
+                    new PathMatchingResourcePatternResolver(LocalizationsFinder.class.getClassLoader());
             LinkedHashSet<Locale> locales = new LinkedHashSet<>();
-            for (Resource resource :
-                    resolver.getResources("classpath*:/GeoServerApplication_*.properties")) {
+            for (Resource resource : resolver.getResources("classpath*:/GeoServerApplication_*.properties")) {
                 String name = resource.getFilename();
                 if (name != null) {
                     try {
@@ -45,10 +42,7 @@ public class LocalizationsFinder {
                         Locale locale = LocaleUtils.toLocale(language);
                         locales.add(locale);
                     } catch (Exception e) {
-                        LOGGER.log(
-                                Level.FINE,
-                                "Skipping file " + name + ", could not extract a Locale from it",
-                                e);
+                        LOGGER.log(Level.FINE, "Skipping file " + name + ", could not extract a Locale from it", e);
                     }
                 }
             }

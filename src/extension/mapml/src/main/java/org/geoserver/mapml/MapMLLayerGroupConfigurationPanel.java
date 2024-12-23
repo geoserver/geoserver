@@ -41,21 +41,16 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
      * @param panelId
      * @param model
      */
-    public MapMLLayerGroupConfigurationPanel(
-            final String panelId, final IModel<LayerGroupInfo> model) {
+    public MapMLLayerGroupConfigurationPanel(final String panelId, final IModel<LayerGroupInfo> model) {
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA),
-                        MapMLConstants.LICENSE_TITLE);
+                new MapModel<>(new PropertyModel<MetadataMap>(model, METADATA), MapMLConstants.LICENSE_TITLE);
         TextField<String> licenseTitle = new TextField<>("licenseTitle", licenseTitleModel);
         add(licenseTitle);
 
         MapModel<String> licenseLinkModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA),
-                        MapMLConstants.LICENSE_LINK);
+                new MapModel<>(new PropertyModel<MetadataMap>(model, METADATA), MapMLConstants.LICENSE_LINK);
         TextField<String> licenseLink = new TextField<>("licenseLink", licenseLinkModel);
         add(licenseLink);
 
@@ -63,28 +58,22 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         MapModel<Boolean> useTilesModel =
                 new MapModel<>(new PropertyModel<MetadataMap>(model, METADATA), "mapml.useTiles");
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
-        useTiles.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        ajaxRequestTarget.add(mime);
-                        boolean useTilesChecked = useTiles.getConvertedInput();
-                        mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
-                    }
-                });
+        useTiles.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                ajaxRequestTarget.add(mime);
+                boolean useTilesChecked = useTiles.getConvertedInput();
+                mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
+            }
+        });
         add(useTiles);
 
         MapModel<String> mimeModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, METADATA), MapMLConstants.MAPML_MIME);
+                new MapModel<>(new PropertyModel<MetadataMap>(model, METADATA), MapMLConstants.MAPML_MIME);
         boolean useTilesFromModel =
-                Boolean.TRUE.equals(
-                        model.getObject().getMetadata().get(MAPML_USE_TILES, Boolean.class));
-        mime =
-                new DropDownChoice<>(
-                        MapMLConstants.MIME,
-                        mimeModel,
-                        getAvailableMimeTypes(model.getObject(), useTilesFromModel));
+                Boolean.TRUE.equals(model.getObject().getMetadata().get(MAPML_USE_TILES, Boolean.class));
+        mime = new DropDownChoice<>(
+                MapMLConstants.MIME, mimeModel, getAvailableMimeTypes(model.getObject(), useTilesFromModel));
         mime.setOutputMarkupId(true);
         mime.setNullValid(false);
         add(mime);

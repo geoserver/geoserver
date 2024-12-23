@@ -9,10 +9,7 @@
  */
 package org.geoserver.gsr.model.service;
 
-/**
- * Simple model of a feature service, for use in the list of services published by {@link
- * CatalogService}
- */
+/** Simple model of a feature service, for use in the list of services published by {@link CatalogService} */
 public class FeatureService implements AbstractService {
     private String name;
     private ServiceType type;

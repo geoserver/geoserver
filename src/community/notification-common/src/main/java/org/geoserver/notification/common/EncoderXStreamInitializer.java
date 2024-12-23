@@ -85,9 +85,7 @@ public class EncoderXStreamInitializer implements NotificationXStreamInitializer
                 if (serializer.name.equals(nodeName)) {
                     try {
                         encoder = serializer.clazz.getDeclaredConstructor().newInstance();
-                        encoder =
-                                (NotificationEncoder)
-                                        context.convertAnother(encoder, serializer.clazz);
+                        encoder = (NotificationEncoder) context.convertAnother(encoder, serializer.clazz);
                         break;
                     } catch (InstantiationException
                             | IllegalAccessException

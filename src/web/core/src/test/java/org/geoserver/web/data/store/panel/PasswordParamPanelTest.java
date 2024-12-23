@@ -25,14 +25,12 @@ public class PasswordParamPanelTest {
 
     @Before
     public void setUp() {
-        tester =
-                new WicketTester(
-                        new WebApplication() {
-                            @Override
-                            public Class<? extends Page> getHomePage() {
-                                return null;
-                            }
-                        });
+        tester = new WicketTester(new WebApplication() {
+            @Override
+            public Class<? extends Page> getHomePage() {
+                return null;
+            }
+        });
     }
 
     @Test
@@ -40,12 +38,8 @@ public class PasswordParamPanelTest {
         // start and render the test page
         String password = "thePassword";
         Model<String> pwModel = new Model<>(password);
-        FormTestPage testPage =
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id ->
-                                        new PasswordParamPanel(
-                                                id, pwModel, new Model<>("label"), true));
+        FormTestPage testPage = new FormTestPage(
+                (ComponentBuilder) id -> new PasswordParamPanel(id, pwModel, new Model<>("label"), true));
         tester.startPage(testPage);
 
         // check the password is not visible in source

@@ -21,7 +21,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 public class ResourceLocatorTest {
-    @Rule public TemporaryFolder testFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Test
     public void testRelativePathWithDefaultResourceLocator() throws Exception {
@@ -30,17 +31,16 @@ public class ResourceLocatorTest {
         // Want a real file to hold the YSLD
         File file = testFolder.newFile();
         try (PrintWriter out = new PrintWriter(file); ) {
-            out.print(
-                    "feature-styles:\n"
-                            + "- name: name\n"
-                            + "  rules:\n"
-                            + "  - symbolizers:\n"
-                            + "    - point:\n"
-                            + "        size: 32\n"
-                            + "        symbols:\n"
-                            + "        - external:\n"
-                            + "            url: smileyface.png\n"
-                            + "            format: image/png\n");
+            out.print("feature-styles:\n"
+                    + "- name: name\n"
+                    + "  rules:\n"
+                    + "  - symbolizers:\n"
+                    + "    - point:\n"
+                    + "        size: 32\n"
+                    + "        symbols:\n"
+                    + "        - external:\n"
+                    + "            url: smileyface.png\n"
+                    + "            format: image/png\n");
         }
 
         // A file in the same directory

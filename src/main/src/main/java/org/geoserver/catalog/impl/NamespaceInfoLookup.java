@@ -20,8 +20,7 @@ import org.geoserver.catalog.NamespaceInfo;
  * {@link CatalogInfoLookup} adding a {@link NamespaceInfo#getURI() URI} multi-valued index for
  * {@link #findAllByUri(String) fast lookup} of namespaces by uri.
  *
- * <p>All {@link CatalogInfoLookup} mutating methods are overridden to maintain the index
- * consistency
+ * <p>All {@link CatalogInfoLookup} mutating methods are overridden to maintain the index consistency
  */
 class NamespaceInfoLookup extends CatalogInfoLookup<NamespaceInfo> {
 
@@ -131,8 +130,7 @@ class NamespaceInfoLookup extends CatalogInfoLookup<NamespaceInfo> {
      *
      * @param uri the index key
      * @param create whether to create the index entry list if it doesn't exist
-     * @return the index entry, may an unmodifiable empty list if it doesn't exist and {@code create
-     *     == false}
+     * @return the index entry, may an unmodifiable empty list if it doesn't exist and {@code create == false}
      */
     @VisibleForTesting
     List<NamespaceInfo> valueList(String uri, boolean create) {

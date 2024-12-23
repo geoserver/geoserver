@@ -13,8 +13,7 @@ import org.geoserver.platform.ServiceException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Helper class putting together type names as strings and namespaces to build a list of {@link
- * QName} objects
+ * Helper class putting together type names as strings and namespaces to build a list of {@link QName} objects
  *
  * @author Andrea Aime - GeoSolutions
  */

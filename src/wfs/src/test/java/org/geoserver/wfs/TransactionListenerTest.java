@@ -19,8 +19,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * This test must be run with the server configured with the wfs 1.0 cite configuration, with data
- * initialized.
+ * This test must be run with the server configured with the wfs 1.0 cite configuration, with data initialized.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -31,34 +30,31 @@ public class TransactionListenerTest extends WFSTestSupport {
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                "classpath:/org/geoserver/wfs/TransactionListenerTestContext.xml");
+        springContextLocations.add("classpath:/org/geoserver/wfs/TransactionListenerTestContext.xml");
     }
 
     @Before
     public void clearState() throws Exception {
-        listener =
-                (TransactionListenerTester) applicationContext.getBean("transactionListenerTester");
+        listener = (TransactionListenerTester) applicationContext.getBean("transactionListenerTester");
         listener.clear();
     }
 
     @Test
     public void testDelete() throws Exception {
         // perform a delete
-        String delete =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
-                        + "<wfs:Delete typeName=\"cgf:Points\"> "
-                        + "<ogc:Filter> "
-                        + "<ogc:PropertyIsEqualTo> "
-                        + "<ogc:PropertyName>cgf:id</ogc:PropertyName> "
-                        + "<ogc:Literal>t0000</ogc:Literal> "
-                        + "</ogc:PropertyIsEqualTo> "
-                        + "</ogc:Filter> "
-                        + "</wfs:Delete> "
-                        + "</wfs:Transaction>";
+        String delete = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\"> "
+                + "<wfs:Delete typeName=\"cgf:Points\"> "
+                + "<ogc:Filter> "
+                + "<ogc:PropertyIsEqualTo> "
+                + "<ogc:PropertyName>cgf:id</ogc:PropertyName> "
+                + "<ogc:Literal>t0000</ogc:Literal> "
+                + "</ogc:PropertyIsEqualTo> "
+                + "</ogc:Filter> "
+                + "</wfs:Delete> "
+                + "</wfs:Transaction>";
 
         postAsDOM("wfs", delete);
         assertEquals(1, listener.events.size());
@@ -74,25 +70,24 @@ public class TransactionListenerTest extends WFSTestSupport {
     @Test
     public void testInsert() throws Exception {
         // perform an insert
-        String insert =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\"> "
-                        + "<wfs:Insert > "
-                        + "<cgf:Lines>"
-                        + "<cgf:lineStringProperty>"
-                        + "<gml:LineString>"
-                        + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
-                        + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
-                        + "</gml:coordinates>"
-                        + "</gml:LineString>"
-                        + "</cgf:lineStringProperty>"
-                        + "<cgf:id>t0002</cgf:id>"
-                        + "</cgf:Lines>"
-                        + "</wfs:Insert>"
-                        + "</wfs:Transaction>";
+        String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Insert > "
+                + "<cgf:Lines>"
+                + "<cgf:lineStringProperty>"
+                + "<gml:LineString>"
+                + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
+                + "</gml:coordinates>"
+                + "</gml:LineString>"
+                + "</cgf:lineStringProperty>"
+                + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
 
         postAsDOM("wfs", insert);
         assertEquals(2, listener.events.size());
@@ -105,31 +100,29 @@ public class TransactionListenerTest extends WFSTestSupport {
         assertEquals(2, listener.features.size());
 
         // what was the fid of the inserted feature?
-        String getFeature =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "> "
-                        + "<wfs:Query typeName=\"cgf:Lines\"> "
-                        + "<ogc:PropertyName>id</ogc:PropertyName> "
-                        + "<ogc:Filter>"
-                        + "<ogc:PropertyIsEqualTo>"
-                        + "<ogc:PropertyName>id</ogc:PropertyName>"
-                        + "<ogc:Literal>t0002</ogc:Literal>"
-                        + "</ogc:PropertyIsEqualTo>"
-                        + "</ogc:Filter>"
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String getFeature = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "> "
+                + "<wfs:Query typeName=\"cgf:Lines\"> "
+                + "<ogc:PropertyName>id</ogc:PropertyName> "
+                + "<ogc:Filter>"
+                + "<ogc:PropertyIsEqualTo>"
+                + "<ogc:PropertyName>id</ogc:PropertyName>"
+                + "<ogc:Literal>t0002</ogc:Literal>"
+                + "</ogc:PropertyIsEqualTo>"
+                + "</ogc:Filter>"
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", getFeature);
-        String fid =
-                dom.getElementsByTagName("cgf:Lines")
-                        .item(0)
-                        .getAttributes()
-                        .item(0)
-                        .getNodeValue();
+        String fid = dom.getElementsByTagName("cgf:Lines")
+                .item(0)
+                .getAttributes()
+                .item(0)
+                .getNodeValue();
 
         TransactionEvent secondEvent = listener.events.get(1);
         assertTrue(secondEvent.getSource() instanceof InsertElementType);
@@ -141,25 +134,24 @@ public class TransactionListenerTest extends WFSTestSupport {
     @Test
     public void testUpdate() throws Exception {
         // perform an update
-        String insert =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\"> "
-                        + "<wfs:Update typeName=\"cgf:Polygons\" > "
-                        + "<wfs:Property>"
-                        + "<wfs:Name>id</wfs:Name>"
-                        + "<wfs:Value>t0003</wfs:Value>"
-                        + "</wfs:Property>"
-                        + "<ogc:Filter>"
-                        + "<ogc:PropertyIsEqualTo>"
-                        + "<ogc:PropertyName>id</ogc:PropertyName>"
-                        + "<ogc:Literal>t0002</ogc:Literal>"
-                        + "</ogc:PropertyIsEqualTo>"
-                        + "</ogc:Filter>"
-                        + "</wfs:Update>"
-                        + "</wfs:Transaction>";
+        String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Update typeName=\"cgf:Polygons\" > "
+                + "<wfs:Property>"
+                + "<wfs:Name>id</wfs:Name>"
+                + "<wfs:Value>t0003</wfs:Value>"
+                + "</wfs:Property>"
+                + "<ogc:Filter>"
+                + "<ogc:PropertyIsEqualTo>"
+                + "<ogc:PropertyName>id</ogc:PropertyName>"
+                + "<ogc:Literal>t0002</ogc:Literal>"
+                + "</ogc:PropertyIsEqualTo>"
+                + "</ogc:Filter>"
+                + "</wfs:Update>"
+                + "</wfs:Transaction>";
 
         postAsDOM("wfs", insert);
         assertEquals(2, listener.events.size());

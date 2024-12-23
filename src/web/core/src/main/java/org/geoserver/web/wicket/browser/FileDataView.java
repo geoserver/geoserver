@@ -30,59 +30,56 @@ import org.apache.wicket.util.convert.IConverter;
  */
 @SuppressWarnings("serial")
 public abstract class FileDataView extends Panel {
-    private static final IConverter<File> FILE_NAME_CONVERTER =
-            new StringConverter() {
+    private static final IConverter<File> FILE_NAME_CONVERTER = new StringConverter() {
 
-                @Override
-                public String convertToString(File file, Locale locale) {
-                    if (file.isDirectory()) {
-                        return file.getName() + "/";
-                    } else {
-                        return file.getName();
-                    }
-                }
-            };
+        @Override
+        public String convertToString(File file, Locale locale) {
+            if (file.isDirectory()) {
+                return file.getName() + "/";
+            } else {
+                return file.getName();
+            }
+        }
+    };
 
-    private static final IConverter<File> FILE_LASTMODIFIED_CONVERTER =
-            new StringConverter() {
+    private static final IConverter<File> FILE_LASTMODIFIED_CONVERTER = new StringConverter() {
 
-                @Override
-                public String convertToString(File file, Locale locale) {
-                    long lastModified = file.lastModified();
-                    if (lastModified == 0L) return null;
-                    else {
-                        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
-                                .format(new Date(file.lastModified()));
-                    }
-                }
-            };
+        @Override
+        public String convertToString(File file, Locale locale) {
+            long lastModified = file.lastModified();
+            if (lastModified == 0L) return null;
+            else {
+                return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                        .format(new Date(file.lastModified()));
+            }
+        }
+    };
 
-    private static final IConverter<File> FILE_SIZE_CONVERTER =
-            new StringConverter() {
-                private static final double KBYTE = 1024;
-                private static final double MBYTE = KBYTE * 1024;
-                private static final double GBYTE = MBYTE * 1024;
+    private static final IConverter<File> FILE_SIZE_CONVERTER = new StringConverter() {
+        private static final double KBYTE = 1024;
+        private static final double MBYTE = KBYTE * 1024;
+        private static final double GBYTE = MBYTE * 1024;
 
-                @Override
-                public String convertToString(File value, Locale locale) {
-                    File file = value;
+        @Override
+        public String convertToString(File value, Locale locale) {
+            File file = value;
 
-                    if (!file.isFile()) return "";
+            if (!file.isFile()) return "";
 
-                    long size = file.length();
-                    if (size == 0L) return null;
+            long size = file.length();
+            if (size == 0L) return null;
 
-                    if (size < KBYTE) {
-                        return size + "";
-                    } else if (size < MBYTE) {
-                        return new DecimalFormat("#.#").format(size / KBYTE) + "K";
-                    } else if (size < GBYTE) {
-                        return new DecimalFormat("#.#").format(size / MBYTE) + "M";
-                    } else {
-                        return new DecimalFormat("#.#").format(size / GBYTE) + "G";
-                    }
-                }
-            };
+            if (size < KBYTE) {
+                return size + "";
+            } else if (size < MBYTE) {
+                return new DecimalFormat("#.#").format(size / KBYTE) + "K";
+            } else if (size < GBYTE) {
+                return new DecimalFormat("#.#").format(size / MBYTE) + "M";
+            } else {
+                return new DecimalFormat("#.#").format(size / GBYTE) + "G";
+            }
+        }
+    };
 
     FileProvider provider;
 
@@ -101,74 +98,63 @@ public abstract class FileDataView extends Panel {
         table.setOutputMarkupId(true);
         add(table);
 
-        DataView<File> fileTable =
-                new DataView<File>("files", fileProvider) {
+        DataView<File> fileTable = new DataView<File>("files", fileProvider) {
+
+            @Override
+            protected void populateItem(final Item<File> item) {
+
+                // odd/even alternate style
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+
+                // navigation/selection links
+                AjaxFallbackLink<?> link = new IndicatingAjaxFallbackLink<Void>("nameLink") {
 
                     @Override
-                    protected void populateItem(final Item<File> item) {
-
-                        // odd/even alternate style
-                        item.add(
-                                AttributeModifier.replace(
-                                        "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
-
-                        // navigation/selection links
-                        AjaxFallbackLink<?> link =
-                                new IndicatingAjaxFallbackLink<Void>("nameLink") {
-
-                                    @Override
-                                    public void onClick(AjaxRequestTarget target) {
-                                        linkNameClicked(item.getModelObject(), target);
-                                    }
-                                };
-                        link.add(
-                                new Label("name", item.getModel()) {
-                                    @SuppressWarnings("unchecked")
-                                    @Override
-                                    public <C> IConverter<C> getConverter(Class<C> type) {
-                                        return (IConverter<C>) FILE_NAME_CONVERTER;
-                                    }
-                                });
-                        item.add(link);
-
-                        // last modified and size labels
-                        item.add(
-                                new Label("lastModified", item.getModel()) {
-                                    @SuppressWarnings("unchecked")
-                                    @Override
-                                    public <C> IConverter<C> getConverter(Class<C> type) {
-                                        return (IConverter<C>) FILE_LASTMODIFIED_CONVERTER;
-                                    }
-                                });
-                        item.add(
-                                new Label("size", item.getModel()) {
-                                    @SuppressWarnings("unchecked")
-                                    @Override
-                                    public <C> IConverter<C> getConverter(Class<C> type) {
-                                        return (IConverter<C>) FILE_SIZE_CONVERTER;
-                                    }
-                                });
+                    public void onClick(AjaxRequestTarget target) {
+                        linkNameClicked(item.getModelObject(), target);
                     }
                 };
-
-        fileContent =
-                new WebMarkupContainer("fileContent") {
+                link.add(new Label("name", item.getModel()) {
+                    @SuppressWarnings("unchecked")
                     @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        if (tableHeight != null) {
-                            tag.getAttributes()
-                                    .put("style", "overflow:auto; height:" + tableHeight);
-                        }
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        return (IConverter<C>) FILE_NAME_CONVERTER;
                     }
-                };
+                });
+                item.add(link);
+
+                // last modified and size labels
+                item.add(new Label("lastModified", item.getModel()) {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        return (IConverter<C>) FILE_LASTMODIFIED_CONVERTER;
+                    }
+                });
+                item.add(new Label("size", item.getModel()) {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        return (IConverter<C>) FILE_SIZE_CONVERTER;
+                    }
+                });
+            }
+        };
+
+        fileContent = new WebMarkupContainer("fileContent") {
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                if (tableHeight != null) {
+                    tag.getAttributes().put("style", "overflow:auto; height:" + tableHeight);
+                }
+            }
+        };
 
         fileContent.add(fileTable);
 
         table.add(fileContent);
         table.add(new OrderByBorder<>("nameHeader", FileProvider.NAME, fileProvider));
-        table.add(
-                new OrderByBorder<>(
-                        "lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
+        table.add(new OrderByBorder<>("lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
         table.add(new OrderByBorder<>("sizeHeader", FileProvider.SIZE, fileProvider));
     }
 

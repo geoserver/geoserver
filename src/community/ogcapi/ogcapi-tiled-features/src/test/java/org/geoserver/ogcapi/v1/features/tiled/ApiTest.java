@@ -26,11 +26,9 @@ public class ApiTest extends TiledFeaturesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
         assertThat(
-                response.getContentType(),
-                CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
+                response.getContentType(), CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
@@ -43,9 +41,7 @@ public class ApiTest extends TiledFeaturesTestSupport {
         // only one server
         List<Server> servers = api.getServers();
         assertThat(servers, hasSize(1));
-        assertThat(
-                servers.get(0).getUrl(),
-                equalTo("http://localhost:8080/geoserver/ogc/features/v1"));
+        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/features/v1"));
 
         // paths
         Paths paths = api.getPaths();
@@ -62,8 +58,7 @@ public class ApiTest extends TiledFeaturesTestSupport {
 
         // ... the tiles themselves
         PathItem tiles =
-                paths.get(
-                        "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}");
+                paths.get("/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}");
         assertNotNull(tiles);
         assertThat(tiles.getGet().getOperationId(), equalTo("getTileOfCollectionId"));
     }

@@ -8,8 +8,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 import org.geoserver.wfs.WFSInfo;
 
-public class FeaturesServiceDescriptionProvider
-        extends OgcApiServiceDescriptionProvider<WFSInfo, FeatureService> {
+public class FeaturesServiceDescriptionProvider extends OgcApiServiceDescriptionProvider<WFSInfo, FeatureService> {
 
     public FeaturesServiceDescriptionProvider(GeoServer gs) {
         super(gs, "WFS", "Features", "Features");

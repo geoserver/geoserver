@@ -42,8 +42,7 @@ import org.xml.sax.InputSource;
  */
 public class WFSXmlUtils {
 
-    public static final String ENTITY_EXPANSION_LIMIT =
-            "org.geoserver.wfs.xml.entityExpansionLimit";
+    public static final String ENTITY_EXPANSION_LIMIT = "org.geoserver.wfs.xml.entityExpansionLimit";
 
     public static final String XLINK_DEFAULT_PREFIX = "xlink";
 
@@ -79,8 +78,7 @@ public class WFSXmlUtils {
         // TODO: HACK, disabling validation for transaction
         if (!"Transaction".equalsIgnoreCase(requestReader.getElement().getLocalPart())) {
             if (!parser.getValidationErrors().isEmpty()) {
-                WFSException exception =
-                        new WFSException("Invalid request", "InvalidParameterValue");
+                WFSException exception = new WFSException("Invalid request", "InvalidParameterValue");
 
                 for (Exception error : parser.getValidationErrors()) {
                     exception.getExceptionText().add(error.getLocalizedMessage());
@@ -129,15 +127,11 @@ public class WFSXmlUtils {
         // note: it is important that this component adapter is non-caching so
         // that the setter property gets updated properly every time
         bindings.put(
-                qName,
-                new SetterInjectionComponentAdapter(
-                        qName,
-                        AbstractGeometryTypeBinding.class,
-                        new Parameter[] {
-                            new OptionalComponentParameter(CoordinateReferenceSystem.class),
-                            new DirectObjectParameter(config, Configuration.class),
-                            new DirectObjectParameter(getSrsSyntax(config), SrsSyntax.class)
-                        }));
+                qName, new SetterInjectionComponentAdapter(qName, AbstractGeometryTypeBinding.class, new Parameter[] {
+                    new OptionalComponentParameter(CoordinateReferenceSystem.class),
+                    new DirectObjectParameter(config, Configuration.class),
+                    new DirectObjectParameter(getSrsSyntax(config), SrsSyntax.class)
+                }));
     }
 
     public static SrsSyntax getSrsSyntax(Configuration obj) {
@@ -165,8 +159,7 @@ public class WFSXmlUtils {
 
     /**
      * Returns the Entity Expansion Limit configuration from system property
-     * "org.geoserver.wfs.xml.entityExpansionLimit". Returns 100 as default if no system property is
-     * configured.
+     * "org.geoserver.wfs.xml.entityExpansionLimit". Returns 100 as default if no system property is configured.
      */
     public static Integer getEntityExpansionLimitConfiguration() {
         return Optional.ofNullable(GeoServerExtensions.getProperty(ENTITY_EXPANSION_LIMIT))
@@ -185,17 +178,16 @@ public class WFSXmlUtils {
         }
 
         @Override
-        public boolean isResolvable(
-                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+        public boolean isResolvable(PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return true;
             }
             return super.isResolvable(container, adapter, expectedType);
-        };
+        }
+        ;
 
         @Override
-        public Object resolveInstance(
-                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+        public Object resolveInstance(PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return obj;
             }

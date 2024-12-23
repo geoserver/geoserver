@@ -49,11 +49,9 @@ public class IntegerParameterFilterSubformTest extends GeoServerWicketTestSuppor
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<List<Integer>> values =
-                (AbstractTextComponent<List<Integer>>)
-                        tester.getComponentFromLastRenderedPage("form:panel:values");
+                (AbstractTextComponent<List<Integer>>) tester.getComponentFromLastRenderedPage("form:panel:values");
 
         assertThat(defaultValue.getValue(), equalTo(""));
         assertThat(values.getValue(), equalTo(""));
@@ -67,11 +65,9 @@ public class IntegerParameterFilterSubformTest extends GeoServerWicketTestSuppor
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<List<Integer>> values =
-                (AbstractTextComponent<List<Integer>>)
-                        tester.getComponentFromLastRenderedPage("form:panel:values");
+                (AbstractTextComponent<List<Integer>>) tester.getComponentFromLastRenderedPage("form:panel:values");
 
         assertThat(defaultValue.getValue(), equalTo("testDefault"));
         assertThat(values.getValue(), equalTo("1\r\n2"));
@@ -91,16 +87,14 @@ public class IntegerParameterFilterSubformTest extends GeoServerWicketTestSuppor
     }
 
     private void startPage() {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            /** serialVersionUID */
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new IntegerParameterFilterSubform(id, model);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new IntegerParameterFilterSubform(id, model);
+            }
+        }));
     }
 }

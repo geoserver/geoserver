@@ -67,17 +67,14 @@ public class WMSDynamicDimensionTestSupport extends WMSDimensionsTestSupport {
         getCatalog().save(ri);
     }
 
-    protected void setupDynamicDimensions(
-            String resourceName, DefaultValueConfiguration... configurations) {
+    protected void setupDynamicDimensions(String resourceName, DefaultValueConfiguration... configurations) {
         ResourceInfo info = getCatalog().getResourceByName(resourceName, ResourceInfo.class);
-        DefaultValueConfigurations configs =
-                new DefaultValueConfigurations(Arrays.asList(configurations));
+        DefaultValueConfigurations configs = new DefaultValueConfigurations(Arrays.asList(configurations));
         info.getMetadata().put(DefaultValueConfigurations.KEY, configs);
         getCatalog().save(info);
     }
 
-    protected void setupDynamicDimensions(
-            QName resourceName, DefaultValueConfiguration... configurations) {
+    protected void setupDynamicDimensions(QName resourceName, DefaultValueConfiguration... configurations) {
         setupDynamicDimensions(getLayerId(resourceName), configurations);
     }
 }

@@ -24,15 +24,15 @@ public class FeatureDataConverterTest {
         SimpleFeatureType badatts = buildFeatureTypeWithXMLUnsafeAtts();
         badatts = FeatureDataConverter.DEFAULT.convertType(badatts, null, null, null);
 
-        assertEquals("_123_number_first", badatts.getAttributeDescriptors().get(0).getLocalName());
+        assertEquals(
+                "_123_number_first", badatts.getAttributeDescriptors().get(0).getLocalName());
         assertEquals("i_has_spaces", badatts.getAttributeDescriptors().get(1).getLocalName());
     }
 
     @Test
     public void testPostgisConversion() {
         SimpleFeatureType t =
-                FeatureDataConverter.TO_POSTGIS.convertType(
-                        buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
+                FeatureDataConverter.TO_POSTGIS.convertType(buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
         assertEquals("_123_number_first", t.getAttributeDescriptors().get(0).getLocalName());
         assertEquals("i_has_spaces", t.getAttributeDescriptors().get(1).getLocalName());
     }
@@ -40,8 +40,7 @@ public class FeatureDataConverterTest {
     @Test
     public void testOracleConversion() {
         SimpleFeatureType t =
-                FeatureDataConverter.TO_ORACLE.convertType(
-                        buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
+                FeatureDataConverter.TO_ORACLE.convertType(buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
         assertEquals("_123_NUMBER_FIRST", t.getAttributeDescriptors().get(0).getLocalName());
         assertEquals("I_HAS_SPACES", t.getAttributeDescriptors().get(1).getLocalName());
     }

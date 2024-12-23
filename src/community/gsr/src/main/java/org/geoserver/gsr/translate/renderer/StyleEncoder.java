@@ -83,12 +83,8 @@ public class StyleEncoder {
     /** Max length of a dasharray line to be considered a dot instead of a dash */
     static final int DOT_THRESHOLD = 2;
 
-    private static List<PropertyRangeExtractor> propertyRangeExtractors =
-            Arrays.asList(
-                    new BetweenExtractor(),
-                    new LowerExtractor(),
-                    new GreaterExtractor(),
-                    new LowerGreaterExtractor());
+    private static List<PropertyRangeExtractor> propertyRangeExtractors = Arrays.asList(
+            new BetweenExtractor(), new LowerExtractor(), new GreaterExtractor(), new LowerGreaterExtractor());
 
     //    public static void defaultFillStyle(JSONBuilder json) {
     //        json.object()
@@ -184,13 +180,9 @@ public class StyleEncoder {
         if (rules == null || rules.size() == 0) return null;
 
         // filter out the rules with just text symbolization, they are handled elsewhere
-        rules =
-                rules.stream()
-                        .filter(
-                                r ->
-                                        r.symbolizers().stream()
-                                                .anyMatch(s -> (!(s instanceof TextSymbolizer))))
-                        .collect(Collectors.toList());
+        rules = rules.stream()
+                .filter(r -> r.symbolizers().stream().anyMatch(s -> (!(s instanceof TextSymbolizer))))
+                .collect(Collectors.toList());
 
         Renderer render = rulesToUniqueValueRenderer(rules);
         if (render != null) return render;
@@ -220,9 +212,7 @@ public class StyleEncoder {
                 ClassBreaksRenderer renderer = map.get(meta.propertyName);
                 if (renderer == null) {
                     double minValue = 0;
-                    renderer =
-                            new ClassBreaksRenderer(
-                                    meta.propertyName, minValue, new LinkedList<>());
+                    renderer = new ClassBreaksRenderer(meta.propertyName, minValue, new LinkedList<>());
                     map.put(meta.propertyName, renderer);
                 }
                 renderer.getClassBreakInfos().add(meta.classBreakInfo);
@@ -233,12 +223,11 @@ public class StyleEncoder {
 
         if (map.size() == 1 && rulesOther.size() <= 1) {
             ClassBreaksRenderer classBreaksRenderer = map.values().iterator().next();
-            classBreaksRenderer.setMinValue(
-                    classBreaksRenderer.getClassBreakInfos().stream()
-                            .map(cb -> cb.getClassMinValue())
-                            .filter(min -> min != null)
-                            .min(Double::compare)
-                            .orElse(0d));
+            classBreaksRenderer.setMinValue(classBreaksRenderer.getClassBreakInfos().stream()
+                    .map(cb -> cb.getClassMinValue())
+                    .filter(min -> min != null)
+                    .min(Double::compare)
+                    .orElse(0d));
             if (rulesOther.size() == 1) {
                 // assuming remaining rule is the default.
                 Rule rule = rulesOther.get(0);
@@ -260,47 +249,34 @@ public class StyleEncoder {
                 ClassificationFunctionsVisitor visitor = new ClassificationFunctionsVisitor();
                 Rule rule = rules.get(0);
                 rule.accept(visitor);
-                if (visitor.hasCategorize()
-                        && !visitor.hasRecode()
-                        && !visitor.hasOtherFunctions()) {
+                if (visitor.hasCategorize() && !visitor.hasRecode() && !visitor.hasOtherFunctions()) {
                     Set<List<Object>> keySets = visitor.getCategorizeKeys();
                     Set<String> properties = visitor.getClassificationProperty();
                     // only if the same set of keys is applied everywhere, then we can use a unique
                     // renderer
                     if (keySets.size() == 1 && properties.size() == 1) {
-                        List<Double> keys =
-                                keySets.iterator().next().stream()
-                                        .map(
-                                                k -> {
-                                                    Double v = Converters.convert(k, Double.class);
-                                                    if (v == null)
-                                                        throw new RuntimeException(
-                                                                "Key value was not a number, cannot "
-                                                                        + "use class breaks: "
-                                                                        + v);
-                                                    return v;
-                                                })
-                                        .collect(Collectors.toList());
+                        List<Double> keys = keySets.iterator().next().stream()
+                                .map(k -> {
+                                    Double v = Converters.convert(k, Double.class);
+                                    if (v == null)
+                                        throw new RuntimeException(
+                                                "Key value was not a number, cannot " + "use class breaks: " + v);
+                                    return v;
+                                })
+                                .collect(Collectors.toList());
                         String property = properties.iterator().next();
                         List<ClassBreakInfo> breaks = new ArrayList<>();
                         Symbolizer symbolizer = rule.getSymbolizers()[0];
                         for (Double key : keys) {
-                            Symbolizer erased =
-                                    ClassificationFunctionEraser.erase(
-                                            symbolizer, property, key - 1);
-                            ClassBreakInfo cb =
-                                    new ClassBreakInfo(
-                                            null, key, "", "", symbolizerToSymbol(erased));
+                            Symbolizer erased = ClassificationFunctionEraser.erase(symbolizer, property, key - 1);
+                            ClassBreakInfo cb = new ClassBreakInfo(null, key, "", "", symbolizerToSymbol(erased));
                             breaks.add(cb);
                         }
                         // "above" last value
                         Double lastKey = keys.get(keys.size() - 1);
-                        Symbolizer erased =
-                                ClassificationFunctionEraser.erase(
-                                        symbolizer, property, lastKey + 1);
+                        Symbolizer erased = ClassificationFunctionEraser.erase(symbolizer, property, lastKey + 1);
                         ClassBreakInfo cb =
-                                new ClassBreakInfo(
-                                        null, Double.MAX_VALUE, "", "", symbolizerToSymbol(erased));
+                                new ClassBreakInfo(null, Double.MAX_VALUE, "", "", symbolizerToSymbol(erased));
                         breaks.add(cb);
                         return new ClassBreaksRenderer(property, -Double.MAX_VALUE, breaks);
                     }
@@ -336,11 +312,10 @@ public class StyleEncoder {
         if (symbolizer == null) return null;
 
         Filter filter = rule.getFilter();
-        Optional<PropertyRange> range =
-                propertyRangeExtractors.stream()
-                        .map(re -> re.getRange(filter))
-                        .filter(pr -> pr != null)
-                        .findFirst();
+        Optional<PropertyRange> range = propertyRangeExtractors.stream()
+                .map(re -> re.getRange(filter))
+                .filter(pr -> pr != null)
+                .findFirst();
         if (!range.isPresent()) {
             return null;
         }
@@ -362,11 +337,7 @@ public class StyleEncoder {
         return new ClassBreakInfoMeta(
                 propertyRange.getPropertyName(),
                 new ClassBreakInfo(
-                        minMax.getMinimum(),
-                        minMax.getMaximum(),
-                        title,
-                        description,
-                        symbolizerToSymbol(symbolizer)));
+                        minMax.getMinimum(), minMax.getMaximum(), title, description, symbolizerToSymbol(symbolizer)));
     }
 
     private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
@@ -375,18 +346,16 @@ public class StyleEncoder {
         for (Rule rule : rules) {
             UniqueValueInfoMeta meta = ruleToUniqueValueInfoMeta(rule);
             if (meta != null) {
-                UniqueValueRenderer renderer =
-                        map.computeIfAbsent(
+                UniqueValueRenderer renderer = map.computeIfAbsent(
+                        meta.propertyName,
+                        k -> new UniqueValueRenderer(
                                 meta.propertyName,
-                                k ->
-                                        new UniqueValueRenderer(
-                                                meta.propertyName,
-                                                null, // field 2
-                                                null, // field 3
-                                                ", ", // delimiter, required even with single field
-                                                null, // default symbol (set later)
-                                                null, // default label (set later)
-                                                new LinkedList<>()));
+                                null, // field 2
+                                null, // field 3
+                                ", ", // delimiter, required even with single field
+                                null, // default symbol (set later)
+                                null, // default label (set later)
+                                new LinkedList<>()));
                 renderer.getUniqueValueInfos().addAll(meta.uniqueValueInfo);
             } else {
                 rulesOther.add(rule);
@@ -406,7 +375,8 @@ public class StyleEncoder {
                 }
                 if (title == null) title = "";
                 uniqueValueRenderer.setDefaultLabel(title);
-                uniqueValueRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
+                uniqueValueRenderer.setDefaultSymbol(
+                        symbolizerToSymbol(rule.symbolizers().get(0)));
             }
             return uniqueValueRenderer;
         } else if (map.size() == 0 && rules.size() == 1) {
@@ -416,9 +386,7 @@ public class StyleEncoder {
                 ClassificationFunctionsVisitor visitor = new ClassificationFunctionsVisitor();
                 Rule rule = rules.get(0);
                 rule.accept(visitor);
-                if (visitor.hasRecode()
-                        && !visitor.hasCategorize()
-                        && !visitor.hasOtherFunctions()) {
+                if (visitor.hasRecode() && !visitor.hasCategorize() && !visitor.hasOtherFunctions()) {
                     Set<List<Object>> keySets = visitor.getRecodeKeys();
                     Set<String> properties = visitor.getClassificationProperty();
                     // only if the same set of keys is applied everywhere, then we can use a unique
@@ -429,18 +397,12 @@ public class StyleEncoder {
                         List<UniqueValueInfo> uniqueValueInfos = new ArrayList<>();
                         Symbolizer symbolizer = rule.getSymbolizers()[0];
                         for (Object key : keys) {
-                            Symbolizer erased =
-                                    ClassificationFunctionEraser.erase(symbolizer, property, key);
-                            UniqueValueInfo vi =
-                                    new UniqueValueInfo(
-                                            String.valueOf(key),
-                                            String.valueOf(key),
-                                            "",
-                                            symbolizerToSymbol(erased));
+                            Symbolizer erased = ClassificationFunctionEraser.erase(symbolizer, property, key);
+                            UniqueValueInfo vi = new UniqueValueInfo(
+                                    String.valueOf(key), String.valueOf(key), "", symbolizerToSymbol(erased));
                             uniqueValueInfos.add(vi);
                         }
-                        return new UniqueValueRenderer(
-                                property, null, null, ", ", null, null, uniqueValueInfos);
+                        return new UniqueValueRenderer(property, null, null, ", ", null, null, uniqueValueInfos);
                     }
                 }
             } catch (Exception e) {
@@ -480,17 +442,13 @@ public class StyleEncoder {
             PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo) filter;
 
             Expression expression1 = uniqueValueFilter.getExpression1();
-            propertyName =
-                    expression1 instanceof PropertyName
-                            ? ((PropertyName) expression1).getPropertyName()
-                            : null;
+            propertyName = expression1 instanceof PropertyName ? ((PropertyName) expression1).getPropertyName() : null;
             if (propertyName == null) return null;
 
             Expression expression2 = uniqueValueFilter.getExpression2();
-            String valueAsString =
-                    expression2 instanceof Literal
-                            ? ((Literal) expression2).getValue().toString()
-                            : null;
+            String valueAsString = expression2 instanceof Literal
+                    ? ((Literal) expression2).getValue().toString()
+                    : null;
             if (valueAsString == null) return null;
             values.add(valueAsString);
         } else if (filter instanceof Or) {
@@ -504,9 +462,7 @@ public class StyleEncoder {
 
                 Expression expression1 = uniqueValueFilter.getExpression1();
                 String internalPropertyName =
-                        expression1 instanceof PropertyName
-                                ? ((PropertyName) expression1).getPropertyName()
-                                : null;
+                        expression1 instanceof PropertyName ? ((PropertyName) expression1).getPropertyName() : null;
                 if (internalPropertyName == null) return null;
 
                 if (propertyName == null) {
@@ -516,10 +472,9 @@ public class StyleEncoder {
                 }
 
                 Expression expression2 = uniqueValueFilter.getExpression2();
-                String valueAsString =
-                        expression2 instanceof Literal
-                                ? ((Literal) expression2).getValue().toString()
-                                : null;
+                String valueAsString = expression2 instanceof Literal
+                        ? ((Literal) expression2).getValue().toString()
+                        : null;
 
                 values.add(valueAsString);
             }
@@ -535,10 +490,7 @@ public class StyleEncoder {
                         : "";
         List<UniqueValueInfo> uniqueValues = new ArrayList<>();
         values.forEach(
-                v ->
-                        uniqueValues.add(
-                                new UniqueValueInfo(
-                                        v, title, description, symbolizerToSymbol(symbolizer))));
+                v -> uniqueValues.add(new UniqueValueInfo(v, title, description, symbolizerToSymbol(symbolizer))));
 
         return new UniqueValueInfoMeta(propertyName, uniqueValues);
     }
@@ -560,11 +512,8 @@ public class StyleEncoder {
     }
 
     private static Renderer defaultPolyRenderer() {
-        SimpleLineSymbol outline =
-                new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] {0, 0, 0, 255}, 1);
-        Symbol symbol =
-                new SimpleFillSymbol(
-                        SimpleFillSymbolEnum.SOLID, new int[] {255, 0, 0, 255}, outline);
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] {0, 0, 0, 255}, 1);
+        Symbol symbol = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, new int[] {255, 0, 0, 255}, outline);
         return new SimpleRenderer(symbol, "Polygon", "Default polygon renderer");
     }
 
@@ -575,22 +524,14 @@ public class StyleEncoder {
     }
 
     private static Renderer defaultLineRenderer() {
-        SimpleLineSymbol outline =
-                new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] {0, 0, 0, 255}, 1);
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] {0, 0, 0, 255}, 1);
         return new SimpleRenderer(outline, "Line", "Default line renderer");
     }
 
     private static Renderer defaultMarkRenderer() {
         Outline outline = new Outline(new int[] {0, 0, 0, 255}, 1);
-        SimpleMarkerSymbol marker =
-                new SimpleMarkerSymbol(
-                        SimpleMarkerSymbolEnum.esriSMSSquare,
-                        new int[] {255, 0, 0, 255},
-                        24,
-                        0,
-                        0,
-                        0,
-                        outline);
+        SimpleMarkerSymbol marker = new SimpleMarkerSymbol(
+                SimpleMarkerSymbolEnum.esriSMSSquare, new int[] {255, 0, 0, 255}, 24, 0, 0, 0, outline);
         return new SimpleRenderer(marker, "Marker", "Default marker renderer");
     }
 
@@ -606,8 +547,7 @@ public class StyleEncoder {
         }
 
         if (renderer == null) {
-            GeometryTypeEnum gtype =
-                    GeometryTypeEnum.forResourceDefaultGeometry(layer.getResource());
+            GeometryTypeEnum gtype = GeometryTypeEnum.forResourceDefaultGeometry(layer.getResource());
             if (gtype != null) {
                 switch (gtype) {
                     case ENVELOPE:
@@ -703,14 +643,10 @@ public class StyleEncoder {
             Color strokeColor = evaluateWithDefault(stroke.getColor(), Color.BLACK);
             double strokeOpacity = evaluateWithDefault(stroke.getOpacity(), 1d);
             double strokeWidth = evaluateWithDefault(stroke.getWidth(), 1d);
-            outline =
-                    new SimpleLineSymbol(
-                            SimpleLineSymbolEnum.SOLID,
-                            components(strokeColor, strokeOpacity),
-                            strokeWidth);
+            outline = new SimpleLineSymbol(
+                    SimpleLineSymbolEnum.SOLID, components(strokeColor, strokeOpacity), strokeWidth);
         } else {
-            outline =
-                    new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, components(Color.BLACK, 1), 1);
+            outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, components(Color.BLACK, 1), 1);
         }
 
         return new SimpleFillSymbol(fillStyle, components(color, opacity), outline);
@@ -718,8 +654,7 @@ public class StyleEncoder {
 
     private static MarkerSymbol pointSymbolizerToMarkSymbol(PointSymbolizer sym) {
         if (sym.getGraphic() == null) return null;
-        if (sym.getGraphic().graphicalSymbols().size() != 1)
-            return null; // REVISIT: should we throw instead?
+        if (sym.getGraphic().graphicalSymbols().size() != 1) return null; // REVISIT: should we throw instead?
         GraphicalSymbol symbol = sym.getGraphic().graphicalSymbols().get(0);
         if (symbol instanceof Mark) {
             Mark mark = (Mark) symbol;
@@ -755,21 +690,12 @@ public class StyleEncoder {
                 Color strokeColor = evaluateWithDefault(stroke.getColor(), Color.BLACK);
                 double strokeOpacity = evaluateWithDefault(stroke.getOpacity(), 1d);
                 double strokeWidth = evaluateWithDefault(stroke.getWidth(), 1d);
-                outline =
-                        new Outline(
-                                components(strokeColor, strokeOpacity),
-                                (int) Math.round(strokeWidth));
+                outline = new Outline(components(strokeColor, strokeOpacity), (int) Math.round(strokeWidth));
             } else {
                 outline = new Outline(components(Color.BLACK, 1d), 1);
             }
             return new SimpleMarkerSymbol(
-                    equivalentSMS(markName),
-                    components(color, opacity),
-                    size,
-                    angle,
-                    xoffset,
-                    yoffset,
-                    outline);
+                    equivalentSMS(markName), components(color, opacity), size, angle, xoffset, yoffset, outline);
         } else if (symbol instanceof ExternalGraphic) {
             ExternalGraphic exGraphic = (ExternalGraphic) symbol;
             URI resourceURI = exGraphic.getOnlineResource().getLinkage();
@@ -818,28 +744,16 @@ public class StyleEncoder {
             }
             double angle = evaluateWithDefault(sym.getGraphic().getRotation(), 0d);
             Displacement displacement = sym.getGraphic().getDisplacement();
-            int xoffset =
-                    displacement != null
-                            ? evaluateWithDefault(
-                                    sym.getGraphic().getDisplacement().getDisplacementX(), 0)
-                            : 0;
-            int yoffset =
-                    displacement != null
-                            ? evaluateWithDefault(
-                                    sym.getGraphic().getDisplacement().getDisplacementY(), 0)
-                            : 0;
+            int xoffset = displacement != null
+                    ? evaluateWithDefault(sym.getGraphic().getDisplacement().getDisplacementX(), 0)
+                    : 0;
+            int yoffset = displacement != null
+                    ? evaluateWithDefault(sym.getGraphic().getDisplacement().getDisplacementY(), 0)
+                    : 0;
 
             String url = relativizeExternalGraphicImageResourceURI(resourceURI);
             return new PictureMarkerSymbol(
-                    rawData,
-                    url,
-                    contentType,
-                    components(color, 1),
-                    width,
-                    height,
-                    angle,
-                    xoffset,
-                    yoffset);
+                    rawData, url, contentType, components(color, 1), width, height, angle, xoffset, yoffset);
         }
         return null;
     }
@@ -935,20 +849,13 @@ public class StyleEncoder {
             Color strokeColor = evaluateWithDefault(stroke.getColor(), Color.BLACK);
             double strokeOpacity = evaluateWithDefault(stroke.getOpacity(), 1d);
             double strokeWidth = evaluateWithDefault(stroke.getWidth(), 1d);
-            outline =
-                    new SimpleLineSymbol(
-                            SimpleLineSymbolEnum.SOLID,
-                            components(strokeColor, strokeOpacity),
-                            strokeWidth);
+            outline = new SimpleLineSymbol(
+                    SimpleLineSymbolEnum.SOLID, components(strokeColor, strokeOpacity), strokeWidth);
         } else {
-            outline =
-                    new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, components(Color.BLACK, 1), 1);
+            outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, components(Color.BLACK, 1), 1);
         }
 
-        encodeFillSymbol(
-                json,
-                new SimpleFillSymbol(
-                        SimpleFillSymbolEnum.SOLID, components(color, opacity), outline));
+        encodeFillSymbol(json, new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, components(color, opacity), outline));
     }
 
     private static void encodeFillSymbol(JSONBuilder json, SimpleFillSymbol sym) {
@@ -970,9 +877,7 @@ public class StyleEncoder {
     }
 
     private static int[] components(Color color, double opacity) {
-        return new int[] {
-            color.getRed(), color.getGreen(), color.getBlue(), (int) Math.round(opacity * 255)
-        };
+        return new int[] {color.getRed(), color.getGreen(), color.getBlue(), (int) Math.round(opacity * 255)};
     }
 
     private static void encodePointSymbolizer(JSONBuilder json, PointSymbolizer sym) {
@@ -1051,8 +956,7 @@ public class StyleEncoder {
         }
     }
 
-    private static <T> List<T> evaluateWithDefault(
-            List<Expression> exps, List<T> def, Class<T> clazz) {
+    private static <T> List<T> evaluateWithDefault(List<Expression> exps, List<T> def, Class<T> clazz) {
         if (exps == null) return def;
         try {
             List<T> list = new ArrayList<>();
@@ -1120,8 +1024,7 @@ public class StyleEncoder {
 
         for (ClassBreakInfo info : renderer.getClassBreakInfos()) {
             json.object();
-            if (info.getClassMinValue() != null)
-                json.key("classMinValue").value(info.getClassMinValue());
+            if (info.getClassMinValue() != null) json.key("classMinValue").value(info.getClassMinValue());
             json.key("classMaxValue")
                     .value(info.getClassMaxValue())
                     .key("label")

@@ -51,13 +51,11 @@ public class ExecuteURLCheckTest extends WPSTestSupport {
         // remote GML file
         String statesResource = getResourceAsString(STATES_COLLECTION);
         statesGMLURL = service.baseUrl() + "/" + STATES_COLLECTION;
-        service.stubFor(
-                WireMock.get(urlEqualTo("/" + STATES_COLLECTION))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBody(statesResource)));
+        service.stubFor(WireMock.get(urlEqualTo("/" + STATES_COLLECTION))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBody(statesResource)));
     }
 
     private static String getResourceAsString(String resource) throws IOException {

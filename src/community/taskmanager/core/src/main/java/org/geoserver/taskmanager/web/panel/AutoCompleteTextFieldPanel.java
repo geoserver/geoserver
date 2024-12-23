@@ -17,16 +17,15 @@ public class AutoCompleteTextFieldPanel extends Panel {
     public AutoCompleteTextFieldPanel(String id, IModel<String> model, Collection<String> orig) {
         super(id, model);
 
-        add(
-                new AutoCompleteTextField<String>("textfield", model) {
+        add(new AutoCompleteTextField<String>("textfield", model) {
 
-                    private static final long serialVersionUID = 3534191360864988131L;
+            private static final long serialVersionUID = 3534191360864988131L;
 
-                    @Override
-                    protected Iterator<String> getChoices(String input) {
-                        return orig.stream().filter(s -> s.startsWith(input)).iterator();
-                    }
-                });
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                return orig.stream().filter(s -> s.startsWith(input)).iterator();
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")

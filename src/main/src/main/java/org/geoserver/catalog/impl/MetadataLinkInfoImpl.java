@@ -109,8 +109,7 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
             parsed.toURI();
 
             if (!protocols.contains(protocol)) {
-                throw new IllegalArgumentException(
-                        "Protocol " + protocol + " is not supported in url " + url);
+                throw new IllegalArgumentException("Protocol " + protocol + " is not supported in url " + url);
             }
         } catch (MalformedURLException | URISyntaxException ex) {
             throw new IllegalArgumentException("Not a valid URL: " + url, ex);

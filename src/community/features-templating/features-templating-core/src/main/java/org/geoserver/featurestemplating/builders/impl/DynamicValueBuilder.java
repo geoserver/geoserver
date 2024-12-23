@@ -65,8 +65,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (evaluateFilter(context)) {
             Object o = evaluateDirective(context);
             addChildrenEvaluationToEncodingHints(writer, context);
@@ -82,14 +81,12 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      * @param context
      * @throws IOException
      */
-    protected void writeValue(
-            TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+    protected void writeValue(TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
             throws IOException {
         writeValue(null, writer, value, context);
     }
 
-    protected void writeValue(
-            String name, TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+    protected void writeValue(String name, TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
             throws IOException {
         if (encodeNull || canWriteValue(value)) {
             EncodingHints encodingHints = getEncodingHints();

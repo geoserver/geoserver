@@ -28,44 +28,41 @@ public class FileProvider extends SortableDataProvider<File, String> {
     public static final String SIZE = "size";
 
     /** Compares the file names, makes sure directories are listed first */
-    private static final Comparator<File> FILE_NAME_COMPARATOR =
-            new AbstractFileComparator() {
-                @Override
-                public int compareProperty(File o1, File o2) {
-                    // otherwise compare the name
-                    return o1.getName().compareToIgnoreCase(o2.getName());
-                }
-            };
+    private static final Comparator<File> FILE_NAME_COMPARATOR = new AbstractFileComparator() {
+        @Override
+        public int compareProperty(File o1, File o2) {
+            // otherwise compare the name
+            return o1.getName().compareToIgnoreCase(o2.getName());
+        }
+    };
 
     /** Compares last modified time */
-    private static final Comparator<File> FILE_LM_COMPARATOR =
-            new AbstractFileComparator() {
-                @Override
-                public int compareProperty(File o1, File o2) {
-                    long lm1 = o1.lastModified();
-                    long lm2 = o2.lastModified();
-                    if (lm1 == lm2) {
-                        return 0;
-                    } else {
-                        return lm1 < lm2 ? -1 : 1;
-                    }
-                }
-            };
+    private static final Comparator<File> FILE_LM_COMPARATOR = new AbstractFileComparator() {
+        @Override
+        public int compareProperty(File o1, File o2) {
+            long lm1 = o1.lastModified();
+            long lm2 = o2.lastModified();
+            if (lm1 == lm2) {
+                return 0;
+            } else {
+                return lm1 < lm2 ? -1 : 1;
+            }
+        }
+    };
 
     /** Compares file size */
-    private static final Comparator<File> FILE_SIZE_COMPARATOR =
-            new AbstractFileComparator() {
-                @Override
-                public int compareProperty(File o1, File o2) {
-                    long l1 = o1.length();
-                    long l2 = o2.length();
-                    if (l1 == l2) {
-                        return 0;
-                    } else {
-                        return l1 < l2 ? -1 : 1;
-                    }
-                }
-            };
+    private static final Comparator<File> FILE_SIZE_COMPARATOR = new AbstractFileComparator() {
+        @Override
+        public int compareProperty(File o1, File o2) {
+            long l1 = o1.length();
+            long l2 = o2.length();
+            if (l1 == l2) {
+                return 0;
+            } else {
+                return l1 < l2 ? -1 : 1;
+            }
+        }
+    };
 
     /** The current directory */
     IModel<File> directory;
@@ -158,8 +155,8 @@ public class FileProvider extends SortableDataProvider<File, String> {
     }
 
     /**
-     * A base file comparator: makes sure directories go first, files later. The subclass is used to
-     * perform comparison when both are files, or both directories
+     * A base file comparator: makes sure directories go first, files later. The subclass is used to perform comparison
+     * when both are files, or both directories
      */
     private abstract static class AbstractFileComparator implements Comparator<File> {
 

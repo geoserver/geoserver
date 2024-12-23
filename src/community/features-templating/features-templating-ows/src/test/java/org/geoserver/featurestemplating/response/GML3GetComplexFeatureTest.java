@@ -30,11 +30,9 @@ public class GML3GetComplexFeatureTest extends TemplateComplexTestSupport {
 
     @Test
     public void getMappedFeature() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=gml3"
-                                + MF_GML3_PARAM);
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                + "&outputFormat=gml3"
+                + MF_GML3_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
         assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
@@ -48,13 +46,11 @@ public class GML3GetComplexFeatureTest extends TemplateComplexTestSupport {
     @Test
     public void getMappedFeatureBackwardsMapping() throws IOException {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml3"
-                                + "&cql_filter=wfs:FeatureCollection.gml:featureMember"
-                                + ".gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
-                                + ".gsml:composition.gsml:CompositionPart.gsml:lithology.gsml:ControlledConcept.gsml:name = 'name_cc_3'"
-                                + MF_GML3_PARAM);
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml3"
+                + "&cql_filter=wfs:FeatureCollection.gml:featureMember"
+                + ".gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
+                + ".gsml:composition.gsml:CompositionPart.gsml:lithology.gsml:ControlledConcept.gsml:name = 'name_cc_3'"
+                + MF_GML3_PARAM);
         assertXpathCount(2, "//gsml:MappedFeature", doc);
     }
 }

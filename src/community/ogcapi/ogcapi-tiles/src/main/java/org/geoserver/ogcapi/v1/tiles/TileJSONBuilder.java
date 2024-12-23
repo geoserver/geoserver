@@ -67,8 +67,7 @@ class TileJSONBuilder {
     String tileMatrixSetId;
     TileLayer tileLayer;
 
-    public TileJSONBuilder(
-            String collectionId, String tileFormat, String tileMatrixSetId, TileLayer tileLayer) {
+    public TileJSONBuilder(String collectionId, String tileFormat, String tileMatrixSetId, TileLayer tileLayer) {
         this.collectionId = collectionId;
         this.tileFormat = tileFormat;
         this.tileMatrixSetId = tileMatrixSetId;
@@ -87,10 +86,7 @@ class TileJSONBuilder {
         GridSubset subset = tileLayer.getGridSubset(tileMatrixSetId);
         if (subset == null) {
             throw new ResourceNotFoundException(
-                    "Tiled collection "
-                            + collectionId
-                            + " does not support tile matrix set "
-                            + tileMatrixSetId);
+                    "Tiled collection " + collectionId + " does not support tile matrix set " + tileMatrixSetId);
         }
         LayerMetaInformation metadata = tileLayer.getMetaInformation();
 
@@ -99,31 +95,23 @@ class TileJSONBuilder {
         // with GeoServer layers, later)
         BoundingBox bounds = subset.getCoverageBestFitBounds();
         if (bounds != null) {
-            ReferencedEnvelope envelope =
-                    new ReferencedEnvelope(
-                            bounds.getMinX(),
-                            bounds.getMaxX(),
-                            bounds.getMinY(),
-                            bounds.getMaxY(),
-                            CRS.decode(subset.getSRS().toString()));
+            ReferencedEnvelope envelope = new ReferencedEnvelope(
+                    bounds.getMinX(),
+                    bounds.getMaxX(),
+                    bounds.getMinY(),
+                    bounds.getMaxY(),
+                    CRS.decode(subset.getSRS().toString()));
             ReferencedEnvelope wgs84Envelope = envelope.transform(DefaultGeographicCRS.WGS84, true);
-            ReferencedEnvelope intersection =
-                    wgs84Envelope.intersection(new Envelope(-180, 180, -90, 90));
-            tileJSON.setBounds(
-                    new double[] {
-                        intersection.getMinX(),
-                        intersection.getMinY(),
-                        intersection.getMaxX(),
-                        intersection.getMaxY()
-                    });
+            ReferencedEnvelope intersection = wgs84Envelope.intersection(new Envelope(-180, 180, -90, 90));
+            tileJSON.setBounds(new double[] {
+                intersection.getMinX(), intersection.getMinY(), intersection.getMaxX(), intersection.getMaxY()
+            });
 
             // compute a center too
             long[] coverageBestFit = subset.getCoverageBestFit();
             if (coverageBestFit != null) {
                 tileJSON.setCenter(
-                        new double[] {
-                            intersection.getMedian(0), intersection.getMedian(1), coverageBestFit[4]
-                        });
+                        new double[] {intersection.getMedian(0), intersection.getMedian(1), coverageBestFit[4]});
             }
         }
         // the tile links
@@ -134,32 +122,30 @@ class TileJSONBuilder {
         // isVector allows controlling if vector_layers metadata should be returned or not,
         // as well as whether the "map" prefix should be used in tile urls
         if (styleId != null) {
-            tilesURL =
-                    ResponseUtils.buildURL(
-                            baseURL,
-                            "ogc/tiles/v1/collections/"
-                                    + urlEncode(collectionId)
-                                    + "/styles/"
-                                    + urlEncode(styleId)
-                                    + "/map"
-                                    + "/tiles/"
-                                    + tileMatrixSetId
-                                    + "/{z}/{y}/{x}",
-                            Collections.singletonMap("f", tileFormat),
-                            URLMangler.URLType.SERVICE);
+            tilesURL = ResponseUtils.buildURL(
+                    baseURL,
+                    "ogc/tiles/v1/collections/"
+                            + urlEncode(collectionId)
+                            + "/styles/"
+                            + urlEncode(styleId)
+                            + "/map"
+                            + "/tiles/"
+                            + tileMatrixSetId
+                            + "/{z}/{y}/{x}",
+                    Collections.singletonMap("f", tileFormat),
+                    URLMangler.URLType.SERVICE);
         } else {
             String tilesPrefix = isVector ? "" : "/map";
-            tilesURL =
-                    ResponseUtils.buildURL(
-                            baseURL,
-                            "ogc/tiles/v1/collections/"
-                                    + urlEncode(collectionId)
-                                    + tilesPrefix
-                                    + "/tiles/"
-                                    + tileMatrixSetId
-                                    + "/{z}/{y}/{x}",
-                            Collections.singletonMap("f", tileFormat),
-                            URLMangler.URLType.SERVICE);
+            tilesURL = ResponseUtils.buildURL(
+                    baseURL,
+                    "ogc/tiles/v1/collections/"
+                            + urlEncode(collectionId)
+                            + tilesPrefix
+                            + "/tiles/"
+                            + tileMatrixSetId
+                            + "/{z}/{y}/{x}",
+                    Collections.singletonMap("f", tileFormat),
+                    URLMangler.URLType.SERVICE);
         }
         tileJSON.setTiles(new String[] {tilesURL});
 
@@ -171,8 +157,7 @@ class TileJSONBuilder {
                 tileJSON.setFormat(tileFormat);
                 return tileJSON;
             }
-            throw new InvalidParameterValueException(
-                    "TileJSON metadata is not supported on this layer");
+            throw new InvalidParameterValueException("TileJSON metadata is not supported on this layer");
         }
 
         GeoServerTileLayer gtl = (GeoServerTileLayer) tileLayer;
@@ -208,15 +193,11 @@ class TileJSONBuilder {
         return format != null ? format.isVector() : false;
     }
 
-    private TileJSON decorateTileJSON(
-            LayerGroupInfo group, TileJSON tileJSON, boolean vector, GridSubset subset)
+    private TileJSON decorateTileJSON(LayerGroupInfo group, TileJSON tileJSON, boolean vector, GridSubset subset)
             throws TransformException, FactoryException, IOException {
         ReferencedEnvelope groupBounds = group.getBounds();
         ReferencedEnvelope bounds = groupBounds.transform(DefaultGeographicCRS.WGS84, true);
-        tileJSON.setBounds(
-                new double[] {
-                    bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()
-                });
+        tileJSON.setBounds(new double[] {bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()});
 
         if (vector) {
             LayerGroupHelper helper = new LayerGroupHelper(group);
@@ -232,15 +213,11 @@ class TileJSONBuilder {
         return tileJSON;
     }
 
-    private void decorateTileJSON(
-            LayerInfo published, TileJSON tileJSON, boolean vector, GridSubset subset)
+    private void decorateTileJSON(LayerInfo published, TileJSON tileJSON, boolean vector, GridSubset subset)
             throws IOException {
         ResourceInfo resource = published.getResource();
         ReferencedEnvelope bounds = resource.getLatLonBoundingBox();
-        tileJSON.setBounds(
-                new double[] {
-                    bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()
-                });
+        tileJSON.setBounds(new double[] {bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()});
 
         if (vector) {
             VectorLayerMetadata layerMetadata = getVectorLayerMetadata(published, subset);
@@ -248,8 +225,7 @@ class TileJSONBuilder {
         }
     }
 
-    private VectorLayerMetadata getVectorLayerMetadata(LayerInfo layerInfo, GridSubset subset)
-            throws IOException {
+    private VectorLayerMetadata getVectorLayerMetadata(LayerInfo layerInfo, GridSubset subset) throws IOException {
         ResourceInfo ri = layerInfo.getResource();
         if (!(ri instanceof FeatureTypeInfo)) return null;
         FeatureTypeInfo fti = (FeatureTypeInfo) ri;
@@ -265,23 +241,17 @@ class TileJSONBuilder {
         SimpleFeatureType simple = (SimpleFeatureType) featureType;
         if (simple.getGeometryDescriptor() != null) {
             Class<?> binding = simple.getGeometryDescriptor().getType().getBinding();
-            if (LineString.class.isAssignableFrom(binding)
-                    || MultiLineString.class.isAssignableFrom(binding)) {
+            if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
                 metadata.setGeometryType(GeometryType.line);
-            } else if (Polygon.class.isAssignableFrom(binding)
-                    || MultiPolygon.class.isAssignableFrom(binding)) {
+            } else if (Polygon.class.isAssignableFrom(binding) || MultiPolygon.class.isAssignableFrom(binding)) {
                 metadata.setGeometryType(GeometryType.polygon);
-            } else if (Point.class.isAssignableFrom(binding)
-                    || MultiPoint.class.isAssignableFrom(binding)) {
+            } else if (Point.class.isAssignableFrom(binding) || MultiPoint.class.isAssignableFrom(binding)) {
                 metadata.setGeometryType(GeometryType.point);
             }
         }
-        Map<String, String> fields =
-                simple.getAttributeDescriptors().stream()
-                        .filter(d -> !(d instanceof GeometryDescriptor))
-                        .collect(
-                                Collectors.toMap(
-                                        d -> d.getLocalName(), d -> toTypeName(d.getType())));
+        Map<String, String> fields = simple.getAttributeDescriptors().stream()
+                .filter(d -> !(d instanceof GeometryDescriptor))
+                .collect(Collectors.toMap(d -> d.getLocalName(), d -> toTypeName(d.getType())));
         metadata.setFields(fields);
         NumberRange<Integer> zoomRange = findLayerZoomLevel(layerInfo, subset);
         metadata.setMinZoom(zoomRange.getMinValue());
@@ -296,8 +266,7 @@ class TileJSONBuilder {
 
     // find layer's min max scale denominators and matches them with the ones in the gridset
     // to find the corresponding min and max zoom levels
-    private NumberRange<Integer> findLayerZoomLevel(LayerInfo layerInfo, GridSubset subset)
-            throws IOException {
+    private NumberRange<Integer> findLayerZoomLevel(LayerInfo layerInfo, GridSubset subset) throws IOException {
         NumberRange<Double> scaleRange = CapabilityUtil.searchMinMaxScaleDenominator(layerInfo);
 
         double minScale = scaleRange.getMinimum();
@@ -305,8 +274,7 @@ class TileJSONBuilder {
 
         GridSet gridSet = subset.getGridSet();
 
-        int startLevel =
-                Optional.ofNullable(subset.getMinCachedZoom()).orElse(subset.getZoomStart());
+        int startLevel = Optional.ofNullable(subset.getMinCachedZoom()).orElse(subset.getZoomStart());
         int endLevel = Optional.ofNullable(subset.getMaxCachedZoom()).orElse(subset.getZoomStop());
         int limit = startLevel + gridSet.getNumLevels();
 
@@ -343,15 +311,17 @@ class TileJSONBuilder {
     // where at least one layer will be available
     private void setTileJSONZoomLevels(TileJSON tileJSON, GridSubset subset) {
         List<VectorLayerMetadata> layersMetadata = tileJSON.getLayers();
-        int globalMinZoomLevel =
-                Optional.ofNullable(subset.getMinCachedZoom()).orElse(subset.getZoomStart());
-        int globalMaxZoomLevel =
-                Optional.ofNullable(subset.getMaxCachedZoom()).orElse(subset.getZoomStop());
+        int globalMinZoomLevel = Optional.ofNullable(subset.getMinCachedZoom()).orElse(subset.getZoomStart());
+        int globalMaxZoomLevel = Optional.ofNullable(subset.getMaxCachedZoom()).orElse(subset.getZoomStop());
         if (layersMetadata != null && !layersMetadata.isEmpty()) {
-            globalMinZoomLevel =
-                    layersMetadata.stream().map(m -> m.getMinZoom()).min(Integer::compare).get();
-            globalMaxZoomLevel =
-                    layersMetadata.stream().map(m -> m.getMaxZoom()).max(Integer::compare).get();
+            globalMinZoomLevel = layersMetadata.stream()
+                    .map(m -> m.getMinZoom())
+                    .min(Integer::compare)
+                    .get();
+            globalMaxZoomLevel = layersMetadata.stream()
+                    .map(m -> m.getMaxZoom())
+                    .max(Integer::compare)
+                    .get();
         }
         tileJSON.setMinZoom(globalMinZoomLevel);
         tileJSON.setMaxZoom(globalMaxZoomLevel);

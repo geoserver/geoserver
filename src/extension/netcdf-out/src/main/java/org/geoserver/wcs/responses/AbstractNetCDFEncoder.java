@@ -64,28 +64,23 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
     public static final Logger LOGGER = Logging.getLogger(AbstractNetCDFEncoder.class);
 
-    protected static final double EQUALITY_DELTA =
-            1E-10; // Consider customizing it depending on the noData magnitude
+    protected static final double EQUALITY_DELTA = 1E-10; // Consider customizing it depending on the noData magnitude
 
     /**
-     * Attributes that are never copied to the main output variable from a NetCDF/GRIB source
-     * because they require special handling.
-     */
-    @SuppressWarnings("serial")
-    protected static final Set<String> COPY_ATTRIBUTES_BLACKLIST =
-            Set.of(
-                    // coordinate variable names are usually changed
-                    "coordinates",
-                    // do not survive type change or packing and should be set from no-data value
-                    "_FillValue",
-                    "missing_value",
-                    // this one is better not copied over in case of sub-setting instead
-                    "_ChunkSizes");
-
-    /**
-     * Global Attributes that are never copied from a NetCDF/GRIB source because they require
+     * Attributes that are never copied to the main output variable from a NetCDF/GRIB source because they require
      * special handling.
      */
+    @SuppressWarnings("serial")
+    protected static final Set<String> COPY_ATTRIBUTES_BLACKLIST = Set.of(
+            // coordinate variable names are usually changed
+            "coordinates",
+            // do not survive type change or packing and should be set from no-data value
+            "_FillValue",
+            "missing_value",
+            // this one is better not copied over in case of sub-setting instead
+            "_ChunkSizes");
+
+    /** Global Attributes that are never copied from a NetCDF/GRIB source because they require special handling. */
     @SuppressWarnings("serial")
     protected static final Set<String> COPY_GLOBAL_ATTRIBUTES_BLACKLIST = Set.of("_NCProperties");
 
@@ -93,8 +88,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     protected static NetCDFParserBean parserBean = GeoServerExtensions.bean(NetCDFParserBean.class);
 
     /**
-     * A dimension mapping between dimension names and dimension manager instances We use a Linked
-     * map to preserve the dimension order
+     * A dimension mapping between dimension names and dimension manager instances We use a Linked map to preserve the
+     * dimension order
      */
     protected NetCDFDimensionsManager dimensionsManager = new NetCDFDimensionsManager();
 
@@ -143,10 +138,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
      * @param encodingParameters customized encoding params
      */
     public AbstractNetCDFEncoder(
-            GranuleStack granuleStack,
-            File file,
-            Map<String, String> encodingParameters,
-            String outputFormat)
+            GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String outputFormat)
             throws IOException {
         this.granuleStack = granuleStack;
         this.sampleGranule = granuleStack.getGranules().get(0);
@@ -200,10 +192,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         if (globalAttributes != null) {
             for (NetCDFSettingsContainer.GlobalAttribute att : globalAttributes) {
                 if (att.getKey().equalsIgnoreCase(NetCDFUtilities.CONVENTIONS)) {
-                    writerb.addAttribute(
-                            new Attribute(
-                                    NetCDFUtilities.COORD_SYS_BUILDER,
-                                    NetCDFUtilities.COORD_SYS_BUILDER_CONVENTION));
+                    writerb.addAttribute(new Attribute(
+                            NetCDFUtilities.COORD_SYS_BUILDER, NetCDFUtilities.COORD_SYS_BUILDER_CONVENTION));
                 }
                 writerb.addAttribute(buildAttribute(att.getKey(), att.getValue()));
             }
@@ -240,9 +230,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 return NetCDFUtilities.getDataset(sourceUrl);
             } catch (Exception e) {
                 LOGGER.info(
-                        String.format(
-                                "Failed to open source URL %s as NetCDF/GRIB: %s",
-                                sourceUrl, e.getMessage()));
+                        String.format("Failed to open source URL %s as NetCDF/GRIB: %s", sourceUrl, e.getMessage()));
             }
         }
         return null;
@@ -263,18 +251,16 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         return new Attribute(key, value);
     }
 
-    protected NetcdfFormatWriter.Builder getWriterBuilder(File file, String outputFormat)
-            throws IOException {
+    protected NetcdfFormatWriter.Builder getWriterBuilder(File file, String outputFormat) throws IOException {
         if (NetCDFUtilities.NETCDF4_MIMETYPE.equalsIgnoreCase(outputFormat)) {
             ncFormat = NetcdfFileFormat.NETCDF4_CLASSIC;
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        "Requested output format "
-                                + outputFormat
-                                + " isn't "
-                                + NetCDFUtilities.NETCDF4_MIMETYPE
-                                + "\nFallback to Version 3");
+                LOGGER.fine("Requested output format "
+                        + outputFormat
+                        + " isn't "
+                        + NetCDFUtilities.NETCDF4_MIMETYPE
+                        + "\nFallback to Version 3");
             }
             // Version 3 as fallback (the Default)
             ncFormat = NetcdfFileFormat.NETCDF3;
@@ -286,13 +272,10 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 throw new IOException(NetCDFUtilities.NC4_ERROR_MESSAGE);
             }
             Nc4Chunking chunker = new Nc4ChunkingDefault(compressionLevel, shuffle);
-            writerb =
-                    NetcdfFormatWriter.createNewNetcdf4(ncFormat, file.getAbsolutePath(), chunker);
+            writerb = NetcdfFormatWriter.createNewNetcdf4(ncFormat, file.getAbsolutePath(), chunker);
         }
 
-        return writerb != null
-                ? writerb
-                : NetcdfFormatWriter.createNewNetcdf3(file.getAbsolutePath());
+        return writerb != null ? writerb : NetcdfFormatWriter.createNewNetcdf3(file.getAbsolutePath());
     }
 
     /**
@@ -318,9 +301,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** Parse encodingParams */
     protected NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
-        if (keys != null
-                && !keys.isEmpty()
-                && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
+        if (keys != null && !keys.isEmpty() && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
             String coverageId = encodingParameters.get(WCS20GetCoverageResponse.COVERAGE_ID_PARAM);
             if (coverageId != null) {
                 GeoServer geoserver = GeoServerExtensions.bean(GeoServer.class);
@@ -332,13 +313,9 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                         map = info.getResource().getMetadata();
                     }
                 }
-                if (map != null
-                        && !map.isEmpty()
-                        && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
+                if (map != null && !map.isEmpty() && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
                     NetCDFLayerSettingsContainer settings =
-                            map.get(
-                                    NetCDFSettingsContainer.NETCDFOUT_KEY,
-                                    NetCDFLayerSettingsContainer.class);
+                            map.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
                     return settings;
                 }
             }
@@ -350,11 +327,10 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     protected int checkLevel(Integer level) {
         if (level == null || (level < 0 || level > 9)) {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning(
-                        "NetCDF 4 compression Level not in the proper range [0, 9]: "
-                                + level
-                                + "\nProceeding with default value: "
-                                + NetCDFSettingsContainer.DEFAULT_COMPRESSION);
+                LOGGER.warning("NetCDF 4 compression Level not in the proper range [0, 9]: "
+                        + level
+                        + "\nProceeding with default value: "
+                        + NetCDFSettingsContainer.DEFAULT_COMPRESSION);
             }
             return NetCDFSettingsContainer.DEFAULT_COMPRESSION;
         }
@@ -364,19 +340,15 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     /** Update the dimension values of a Dimension, by inspecting the coverage properties */
     protected void updateDimensionValues(GridCoverage2D coverage) {
         Map properties = coverage.getProperties();
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
-                dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             final String dimensionName = dimension.getName();
             final Object value = properties.get(dimensionName);
             if (value == null) {
                 Set<String> dimensions = crsWriter.getCoordinatesDimensionNames();
                 // Coordinates dimensions (lon/lat) aren't taken into account
                 // for values update. Do not warn if they are missing
-                if (dimensions != null
-                        && !dimensions.contains(dimensionName)
-                        && LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning(
-                            "No Dimensions available with the specified name: " + dimensionName);
+                if (dimensions != null && !dimensions.contains(dimensionName) && LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("No Dimensions available with the specified name: " + dimensionName);
                 }
             } else {
                 dimension.getDimensionValues().addValue(value);
@@ -401,14 +373,12 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
 
         // Loop over dimensions
         Dimension boundDimension = null;
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
-                dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             final DimensionBean dim = dimension.getCoverageDimension();
             final boolean isRange = dim.isRange();
             String dimensionName = dimension.getName();
             final int dimensionLength = dimension.getDimensionValues().getSize();
-            if (dimensionName.equalsIgnoreCase("TIME")
-                    || dimensionName.equalsIgnoreCase("ELEVATION")) {
+            if (dimensionName.equalsIgnoreCase("TIME") || dimensionName.equalsIgnoreCase("ELEVATION")) {
                 // Special management for TIME and ELEVATION dimensions
                 // we will put these dimension lowercase for NetCDF names
                 dimensionName = dimensionName.toLowerCase();
@@ -422,21 +392,16 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             dimension.setNetCDFDimension(netcdfDimension);
 
             // Assign variable to dimensions having coordinates
-            Variable.Builder variableBuilder =
-                    writerb.addVariable(
-                                    dimensionName,
-                                    NetCDFUtilities.getNetCDFDataType(dim.getDatatype()),
-                                    dimensionName)
-                            .addAttribute(new Attribute(NetCDFUtilities.LONG_NAME, dimensionName))
-                            .addAttribute(
-                                    new Attribute(NetCDFUtilities.DESCRIPTION, dimensionName));
+            Variable.Builder variableBuilder = writerb.addVariable(
+                            dimensionName, NetCDFUtilities.getNetCDFDataType(dim.getDatatype()), dimensionName)
+                    .addAttribute(new Attribute(NetCDFUtilities.LONG_NAME, dimensionName))
+                    .addAttribute(new Attribute(NetCDFUtilities.DESCRIPTION, dimensionName));
 
             if (NetCDFUtilities.isATime(dim.getDatatype())) {
                 // Special management for times. We use the NetCDF convention of defining times
                 // starting from
                 // an origin. Right now we use the Linux EPOCH
-                variableBuilder.addAttribute(
-                        new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.TIME_ORIGIN));
+                variableBuilder.addAttribute(new Attribute(NetCDFUtilities.UNITS, NetCDFUtilities.TIME_ORIGIN));
             } else {
                 variableBuilder.addAttribute(new Attribute(NetCDFUtilities.UNITS, dim.getSymbol()));
             }
@@ -448,10 +413,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 boundsDimensions.add(boundDimension);
                 final String boundName = dimensionName + NetCDFUtilities.BOUNDS_SUFFIX;
                 variableBuilder.addAttribute(new Attribute(NetCDFUtilities.BOUNDS, boundName));
-                writerb.addVariable(
-                        boundName,
-                        NetCDFUtilities.getNetCDFDataType(dim.getDatatype()),
-                        boundsDimensions);
+                writerb.addVariable(boundName, NetCDFUtilities.getNetCDFDataType(dim.getDatatype()), boundsDimensions);
             }
         }
     }
@@ -461,8 +423,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     public void write() throws IOException, ucar.ma2.InvalidRangeException {
         try (NetcdfFormatWriter formatWriter = writer) {
             crsWriter.setWriter(formatWriter);
-            for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper :
-                    dimensionsManager.getDimensions()) {
+            for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper : dimensionsManager.getDimensions()) {
                 crsWriter.setCoordinateVariable(mapper);
             }
 
@@ -477,8 +438,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     @Override
     public void close() {
         // release resources
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper :
-                dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper : dimensionsManager.getDimensions()) {
             mapper.dispose();
         }
         dimensionsManager.dispose();
@@ -519,10 +479,9 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         // Checking CF convention
         boolean validName = parser.hasEntryId(variableName) || parser.hasAliasId(variableName);
         // Checking UOM
-        Entry e =
-                parser.getEntry(variableName) != null
-                        ? parser.getEntry(variableName)
-                        : parser.getEntryFromAlias(variableName);
+        Entry e = parser.getEntry(variableName) != null
+                ? parser.getEntry(variableName)
+                : parser.getEntryFromAlias(variableName);
 
         boolean validUOM = false;
         if (e != null) {
@@ -531,9 +490,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             if (canonical.equalsIgnoreCase(definedUnit)) {
                 validUOM = true;
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "Canonical unit and specified unit are equal. "
-                                    + "Proceeding with standard_name set");
+                    LOGGER.fine("Canonical unit and specified unit are equal. " + "Proceeding with standard_name set");
                 }
             } else {
                 boolean parseable = false;
@@ -544,26 +501,21 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                         validUOM = true;
                         parseable = true;
                         if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine(
-                                    "Canonical unit and specified unit are compatible. "
-                                            + "Proceeding with standard_name set");
+                            LOGGER.fine("Canonical unit and specified unit are compatible. "
+                                    + "Proceeding with standard_name set");
                         }
                     }
-                } catch (UnitDBException
-                        | SpecificationException
-                        | PrefixDBException
-                        | UnitSystemException e1) {
+                } catch (UnitDBException | SpecificationException | PrefixDBException | UnitSystemException e1) {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine(e1.getLocalizedMessage());
                     }
                 }
                 if (!parseable) {
                     if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info(
-                                "The specified unit "
-                                        + definedUnit
-                                        + " can't be converted to a "
-                                        + " UCAR unit so it doesn't allow to define a standard name");
+                        LOGGER.info("The specified unit "
+                                + definedUnit
+                                + " can't be converted to a "
+                                + " UCAR unit so it doesn't allow to define a standard name");
                     }
                 }
             }
@@ -574,9 +526,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
     }
 
     /**
-     * Get the x, y pixel from the data iterator and assign it to the NetCDF array matrix. Also
-     * check if the read pixel is noData and apply the unitConversion (if needed) and dataPacking
-     * (if needed).
+     * Get the x, y pixel from the data iterator and assign it to the NetCDF array matrix. Also check if the read pixel
+     * is noData and apply the unitConversion (if needed) and dataPacking (if needed).
      */
     protected void setPixel(
             int x,
@@ -615,10 +566,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     sampleFloat = (float) unitConverter.convert(sampleFloat);
                 }
                 if (dataPacker != null) {
-                    sample =
-                            validSample
-                                    ? dataPacker.pack(sampleFloat)
-                                    : dataPacker.getReservedValue();
+                    sample = validSample ? dataPacker.pack(sampleFloat) : dataPacker.getReservedValue();
                     setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 } else {
                     matrix.setFloat(matrixIndex, sampleFloat);
@@ -631,23 +579,18 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                     sampleDouble = unitConverter.convert(sampleDouble);
                 }
                 if (dataPacker != null) {
-                    sample =
-                            validSample
-                                    ? dataPacker.pack(sampleDouble)
-                                    : dataPacker.getReservedValue();
+                    sample = validSample ? dataPacker.pack(sampleDouble) : dataPacker.getReservedValue();
                     setIntegerSample(netCDFDataType, matrix, matrixIndex, sample);
                 } else {
                     matrix.setDouble(matrixIndex, sampleDouble);
                 }
                 break;
             default:
-                throw new UnsupportedOperationException(
-                        "Operation not supported for this dataType: " + netCDFDataType);
+                throw new UnsupportedOperationException("Operation not supported for this dataType: " + netCDFDataType);
         }
     }
 
-    protected void setIntegerSample(
-            DataType netCDFDataType, Array matrix, Index matrixIndex, int sample) {
+    protected void setIntegerSample(DataType netCDFDataType, Array matrix, Index matrixIndex, int sample) {
         switch (netCDFDataType) {
             case BYTE:
                 matrix.setByte(matrixIndex, (byte) sample);
@@ -669,16 +612,12 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         return (Math.abs(noDataValue - sample.doubleValue()) < EQUALITY_DELTA);
     }
 
-    /**
-     * Setup the proper NetCDF array indexing, taking current dimension values from the current
-     * coverage
-     */
+    /** Setup the proper NetCDF array indexing, taking current dimension values from the current coverage */
     protected void updateIndexing(final int[] indexing, final GridCoverage2D currentCoverage) {
         int i = 0;
         int dimElement = 0;
         final Map properties = currentCoverage.getProperties();
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping manager :
-                dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping manager : dimensionsManager.getDimensions()) {
             // Loop over dimensions
             final DimensionBean coverageDimension = manager.getCoverageDimension();
             if (coverageDimension != null) { // Lat and lon doesn't have a Coverage dimension
@@ -691,7 +630,8 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 // which matches the coverage's one
                 // TODO: Improve this search. Make it more smart/performant
                 @SuppressWarnings("unchecked")
-                final Set<Object> values = (Set<Object>) manager.getDimensionValues().getValues();
+                final Set<Object> values =
+                        (Set<Object>) manager.getDimensionValues().getValues();
                 final Iterator<Object> it = values.iterator();
                 while (it.hasNext()) {
                     Object value = it.next();
@@ -717,16 +657,14 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         // indices for which a data value as been written
         public final Set<Integer> writtenIndices = new HashSet<>();
 
-        public ExtraVariableRecord(
-                NetCDFSettingsContainer.ExtraVariable extraVariable, int dimensionIndex) {
+        public ExtraVariableRecord(NetCDFSettingsContainer.ExtraVariable extraVariable, int dimensionIndex) {
             this.extraVariable = extraVariable;
             this.dimensionIndex = dimensionIndex;
         }
     }
 
     @SuppressWarnings("deprecation") // getting Longname from attributes
-    protected void copyAttributes(
-            Variable sourceVar, Variable.Builder varb, DataPacking dataPacking) {
+    protected void copyAttributes(Variable sourceVar, Variable.Builder varb, DataPacking dataPacking) {
         AttributeContainerMutable attributesContainer = varb.getAttributeContainer();
         Iterator<Attribute> attributesIterator = sourceVar.attributes().iterator();
         while (attributesIterator.hasNext()) {
@@ -744,36 +682,25 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
             for (NetCDFSettingsContainer.ExtraVariable extra : extraVariables) {
                 Variable sourceVar = source.findVariable(extra.getSource());
                 if (sourceVar == null) {
-                    LOGGER.info(
-                            String.format(
-                                    "Could not find extra variable source '%s' "
-                                            + "in NetCDF/GRIB %s",
-                                    extra.getSource(), source.getLocation()));
+                    LOGGER.info(String.format(
+                            "Could not find extra variable source '%s' " + "in NetCDF/GRIB %s",
+                            extra.getSource(), source.getLocation()));
                 } else if (!sourceVar.getDimensionsString().isEmpty()) {
-                    LOGGER.info(
-                            String.format(
-                                    "Only scalar extra variables are supported but source "
-                                            + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
-                                    extra.getSource(),
-                                    source.getLocation(),
-                                    sourceVar.getDimensionsString()));
+                    LOGGER.info(String.format(
+                            "Only scalar extra variables are supported but source "
+                                    + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
+                            extra.getSource(), source.getLocation(), sourceVar.getDimensionsString()));
                 } else if (variableAlreadyDefined(writerb, extra.getOutput())) {
-                    LOGGER.info(
-                            String.format(
-                                    "Extra variable output '%s' already exists",
-                                    extra.getOutput()));
+                    LOGGER.info(String.format("Extra variable output '%s' already exists", extra.getOutput()));
                 } else if (extra.getDimensions().split("\\s").length > 1) {
-                    LOGGER.info(
-                            String.format(
-                                    "Extra variable output '%s' " + "has too many dimensions '%s'",
-                                    extra.getOutput(), extra.getDimensions()));
+                    LOGGER.info(String.format(
+                            "Extra variable output '%s' " + "has too many dimensions '%s'",
+                            extra.getOutput(), extra.getDimensions()));
                 } else {
                     Variable.Builder outputVarb =
-                            writerb.addVariable(
-                                    extra.getOutput(),
-                                    sourceVar.getDataType(),
-                                    extra.getDimensions());
-                    Iterator<Attribute> attributesIterator = sourceVar.attributes().iterator();
+                            writerb.addVariable(extra.getOutput(), sourceVar.getDataType(), extra.getDimensions());
+                    Iterator<Attribute> attributesIterator =
+                            sourceVar.attributes().iterator();
                     while (attributesIterator.hasNext()) {
                         Attribute att = attributesIterator.next();
                         outputVarb.addAttribute(att);
@@ -817,14 +744,11 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
                 if (extra.getDimensions().isEmpty()) {
                     scalarExtraVariables.add(extra);
                 } else {
-                    for (int dimensionIndex = 0;
-                            dimensionIndex < dimName.length;
-                            dimensionIndex++) {
+                    for (int dimensionIndex = 0; dimensionIndex < dimName.length; dimensionIndex++) {
                         // side effect of this condition is to skip extra variables
                         // with multiple output dimensions (unsupported)
                         if (extra.getDimensions().equals(dimName[dimensionIndex])) {
-                            nonscalarExtraVariables.add(
-                                    new ExtraVariableRecord(extra, dimensionIndex));
+                            nonscalarExtraVariables.add(new ExtraVariableRecord(extra, dimensionIndex));
                             break;
                         }
                     }

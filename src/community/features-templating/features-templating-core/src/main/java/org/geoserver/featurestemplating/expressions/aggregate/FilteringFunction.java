@@ -18,16 +18,13 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
 
 /**
- * A Function that can receive as a param a filter as a literal. Literal value in the argument must
- * be passed inside double quotes (eventually escaped).
+ * A Function that can receive as a param a filter as a literal. Literal value in the argument must be passed inside
+ * double quotes (eventually escaped).
  */
 public class FilteringFunction extends StringCQLFunction implements VolatileFunction {
 
     private static final FunctionName NAME =
-            new FunctionNameImpl(
-                    "filter",
-                    parameter("result", Object.class),
-                    parameter("filter", String.class, 1, 1));
+            new FunctionNameImpl("filter", parameter("result", Object.class), parameter("filter", String.class, 1, 1));
 
     private static final Logger LOGGER = Logging.getLogger(FilteringFunction.class);
 
@@ -50,15 +47,13 @@ public class FilteringFunction extends StringCQLFunction implements VolatileFunc
                 }
             }
         } catch (CQLException e) {
-            throw new RuntimeException(
-                    "The argument of the filter function is not a valid CQL filter");
+            throw new RuntimeException("The argument of the filter function is not a valid CQL filter");
         }
         return values;
     }
 
     /**
-     * Removes the double quotes from the literals in text filters to replace them with single
-     * quotes.
+     * Removes the double quotes from the literals in text filters to replace them with single quotes.
      *
      * @param textFilter the text filter.
      * @return the text filter with literals in single quotes.

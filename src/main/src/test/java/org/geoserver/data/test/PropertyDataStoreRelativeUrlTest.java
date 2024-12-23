@@ -42,8 +42,7 @@ public class PropertyDataStoreRelativeUrlTest extends GeoServerSystemTestSupport
         DataStoreInfoImpl info = new DataStoreInfoImpl(getGeoServer().getCatalog());
         info.setConnectionParameters(params);
 
-        DataAccessFactory f =
-                getGeoServer().getCatalog().getResourcePool().getDataStoreFactory(info);
+        DataAccessFactory f = getGeoServer().getCatalog().getResourcePool().getDataStoreFactory(info);
 
         assertNotNull(f);
         assertTrue(f instanceof PropertyDataStoreFactory);

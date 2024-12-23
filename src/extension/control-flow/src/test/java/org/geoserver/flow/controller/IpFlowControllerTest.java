@@ -20,8 +20,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         IpFlowController controller = new IpFlowController(1);
         String ipAddress = "127.0.0.1";
         Request firstRequest = buildIpRequest(ipAddress, "");
-        FlowControllerTestingThread tSample =
-                new FlowControllerTestingThread(firstRequest, 0, 0, controller);
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest, 0, 0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -33,11 +32,9 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         // themselves
         // as the same client, until we interrupt them
         FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
         FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -86,11 +83,9 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         // themselves
         // as the same client, until we interrupt them
         FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, ipController);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, ipController);
         FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, ipController);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, ipController);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -133,11 +128,9 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
         FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, "192.168.1.2"), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, "192.168.1.2"), 0, Long.MAX_VALUE, controller);
         FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, "192.168.1.3"), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, "192.168.1.3"), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before

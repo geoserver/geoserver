@@ -33,17 +33,13 @@ public class ConditionTest extends AbstractWicketMetadataTest {
     @Test
     public void testNoFeatureCatalogueForRasters() {
         login();
-        LayerInfo raster =
-                geoServer.getCatalog().getLayerByName(MockData.USA_WORLDIMG.getLocalPart());
+        LayerInfo raster = geoServer.getCatalog().getLayerByName(MockData.USA_WORLDIMG.getLocalPart());
         ResourceConfigurationPage page = new ResourceConfigurationPage(raster, false);
         tester.startPage(page);
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
-                .setSelectedTab(4);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs")).setSelectedTab(4);
 
-        MarkupContainer c =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items");
+        MarkupContainer c = (MarkupContainer) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items");
         tester.submitForm("publishedinfo");
         assertEquals(14, c.size());
         logout();

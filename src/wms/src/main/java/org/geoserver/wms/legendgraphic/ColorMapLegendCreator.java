@@ -105,8 +105,7 @@ public class ColorMapLegendCreator {
 
         private ColorMapEntry previousCMapEntry;
 
-        private final CaseInsensitiveMap<String, Object> additionalOptions =
-                new CaseInsensitiveMap<>();
+        private final CaseInsensitiveMap<String, Object> additionalOptions = new CaseInsensitiveMap<>();
 
         private Color backgroundColor;
 
@@ -167,11 +166,11 @@ public class ColorMapLegendCreator {
         private boolean alternativeColorMapEntryBuilder = false;
 
         /**
-         * Adds a {@link ColorMapEntry} element to this builder so that it can take it into account
-         * for building the legend.
+         * Adds a {@link ColorMapEntry} element to this builder so that it can take it into account for building the
+         * legend.
          *
-         * @param cEntry a {@link ColorMapEntry} element for this builder so that it can take it
-         *     into account for building the legend. It must be not <code>null</code>.
+         * @param cEntry a {@link ColorMapEntry} element for this builder so that it can take it into account for
+         *     building the legend. It must be not <code>null</code>.
          */
         public ColorMapEntryLegendBuilder addColorMapEntry(final ColorMapEntry cEntry) {
             PackagedUtils.ensureNotNull(cEntry, "cEntry");
@@ -186,61 +185,58 @@ public class ColorMapLegendCreator {
             //
             switch (colorMapType) {
                 case UNIQUE_VALUES:
-                    element =
-                            new SingleColorMapEntryLegendBuilder(
-                                    Arrays.asList(cEntry),
-                                    hAlign,
-                                    vAlign,
-                                    backgroundColor,
-                                    1.0,
-                                    grayChannelName,
-                                    requestedDimension,
-                                    labelFont,
-                                    labelFontColor,
-                                    extended,
-                                    borderColor,
-                                    unit,
-                                    digits,
-                                    alternativeColorMapEntryBuilder,
-                                    wrap);
+                    element = new SingleColorMapEntryLegendBuilder(
+                            Arrays.asList(cEntry),
+                            hAlign,
+                            vAlign,
+                            backgroundColor,
+                            1.0,
+                            grayChannelName,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            extended,
+                            borderColor,
+                            unit,
+                            digits,
+                            alternativeColorMapEntryBuilder,
+                            wrap);
                     break;
                 case RAMP:
-                    element =
-                            new RampColorMapEntryLegendBuilder(
-                                    Arrays.asList(previousCMapEntry, cEntry),
-                                    hAlign,
-                                    vAlign,
-                                    backgroundColor,
-                                    1.0,
-                                    grayChannelName,
-                                    requestedDimension,
-                                    labelFont,
-                                    labelFontColor,
-                                    extended,
-                                    borderColor,
-                                    unit,
-                                    digits,
-                                    alternativeColorMapEntryBuilder,
-                                    wrap);
+                    element = new RampColorMapEntryLegendBuilder(
+                            Arrays.asList(previousCMapEntry, cEntry),
+                            hAlign,
+                            vAlign,
+                            backgroundColor,
+                            1.0,
+                            grayChannelName,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            extended,
+                            borderColor,
+                            unit,
+                            digits,
+                            alternativeColorMapEntryBuilder,
+                            wrap);
                     break;
                 case CLASSES:
-                    element =
-                            new ClassesEntryLegendBuilder(
-                                    Arrays.asList(previousCMapEntry, cEntry),
-                                    hAlign,
-                                    vAlign,
-                                    backgroundColor,
-                                    1.0,
-                                    grayChannelName,
-                                    requestedDimension,
-                                    labelFont,
-                                    labelFontColor,
-                                    extended,
-                                    borderColor,
-                                    unit,
-                                    digits,
-                                    alternativeColorMapEntryBuilder,
-                                    wrap);
+                    element = new ClassesEntryLegendBuilder(
+                            Arrays.asList(previousCMapEntry, cEntry),
+                            hAlign,
+                            vAlign,
+                            backgroundColor,
+                            1.0,
+                            grayChannelName,
+                            requestedDimension,
+                            labelFont,
+                            labelFontColor,
+                            extended,
+                            borderColor,
+                            unit,
+                            digits,
+                            alternativeColorMapEntryBuilder,
+                            wrap);
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized colormap type");
@@ -274,22 +270,20 @@ public class ColorMapLegendCreator {
         }
 
         /**
-         * Sets the {@link ColorMapType} for this legend builder in order to instruct it on how to
-         * build the legend.
+         * Sets the {@link ColorMapType} for this legend builder in order to instruct it on how to build the legend.
          *
-         * @param colorMapType the {@link ColorMapType} for this legend builder in order to instruct
-         *     it on how to build the legend.
+         * @param colorMapType the {@link ColorMapType} for this legend builder in order to instruct it on how to build
+         *     the legend.
          */
         public void setColorMapType(final ColorMapType colorMapType) {
             this.colorMapType = colorMapType;
         }
 
         /**
-         * Sets the {@link ColorMapType} for this legend builder in order to instruct it on how to
-         * build the legend.
+         * Sets the {@link ColorMapType} for this legend builder in order to instruct it on how to build the legend.
          *
-         * @param type a int representing a {@link ColorMapType} for this legend builder in order to
-         *     instruct it on how to build the legend.
+         * @param type a int representing a {@link ColorMapType} for this legend builder in order to instruct it on how
+         *     to build the legend.
          */
         public void setColorMapType(final int type) {
             this.colorMapType = ColorMapType.create(type);
@@ -377,8 +371,7 @@ public class ColorMapLegendCreator {
             }
 
             if (additionalOptions.get("absoluteMargins") instanceof String) {
-                absoluteMargins =
-                        Boolean.parseBoolean((String) additionalOptions.get("absoluteMargins"));
+                absoluteMargins = Boolean.parseBoolean((String) additionalOptions.get("absoluteMargins"));
             }
 
             if (additionalOptions.get("bandInfo") instanceof String) {
@@ -481,8 +474,7 @@ public class ColorMapLegendCreator {
                     return ColorMapType.UNIQUE_VALUES;
 
                 default:
-                    throw new IllegalArgumentException(
-                            "Unable to create ColorMapType for value " + value);
+                    throw new IllegalArgumentException("Unable to create ColorMapType for value " + value);
             }
         }
     }
@@ -639,8 +631,7 @@ public class ColorMapLegendCreator {
         //
         BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
         final Map<Key, Object> hintsMap = new HashMap<>();
-        Graphics2D graphics =
-                ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
+        Graphics2D graphics = ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
         // elements used to compute maximum dimensions for rows and cells
         rowH = 0;
@@ -660,47 +651,43 @@ public class ColorMapLegendCreator {
         // set footer strings
         if (bandInformation) {
             final String bandNameString = "Band selection is " + this.grayChannelName;
-            footerRows.add(
-                    new Cell.TextManager(
-                            bandNameString,
-                            vAlign,
-                            hAlign,
-                            backgroundColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            fontAntiAliasing,
-                            borderColor,
-                            wrap));
+            footerRows.add(new Cell.TextManager(
+                    bandNameString,
+                    vAlign,
+                    hAlign,
+                    backgroundColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    wrap));
             // set footer strings
             final String colorMapTypeString = "ColorMap type is " + this.colorMapType.toString();
-            footerRows.add(
-                    new Cell.TextManager(
-                            colorMapTypeString,
-                            vAlign,
-                            hAlign,
-                            backgroundColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            fontAntiAliasing,
-                            borderColor,
-                            wrap));
+            footerRows.add(new Cell.TextManager(
+                    colorMapTypeString,
+                    vAlign,
+                    hAlign,
+                    backgroundColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    wrap));
             // extended colors or not
-            final String extendedCMapString =
-                    "ColorMap is " + (this.extended ? "" : "not") + " extended";
-            footerRows.add(
-                    new Cell.TextManager(
-                            extendedCMapString,
-                            vAlign,
-                            hAlign,
-                            backgroundColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            fontAntiAliasing,
-                            borderColor,
-                            wrap));
+            final String extendedCMapString = "ColorMap is " + (this.extended ? "" : "not") + " extended";
+            footerRows.add(new Cell.TextManager(
+                    extendedCMapString,
+                    vAlign,
+                    hAlign,
+                    backgroundColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    wrap));
             cycleFooterRows(graphics);
         }
 
@@ -772,8 +759,7 @@ public class ColorMapLegendCreator {
         // element
         final BufferedImage image = ImageUtils.createImage(1, 1, null, transparent);
         final Map<Key, Object> hintsMap = new HashMap<>();
-        final Graphics2D graphics =
-                ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
+        final Graphics2D graphics = ImageUtils.prepareTransparency(transparent, backgroundColor, image, hintsMap);
 
         // list where we store the rows for the footer
         final ImageQueue queue = new ImageQueue(tally);
@@ -795,11 +781,9 @@ public class ColorMapLegendCreator {
             final Rectangle clipboxA = new Rectangle(0, 0, rowWidth, rowHeight);
 
             // draw it
-            final BufferedImage colorCellLegend =
-                    new BufferedImage(rowWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
+            final BufferedImage colorCellLegend = new BufferedImage(rowWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
             Graphics2D rlg = colorCellLegend.createGraphics();
-            rlg.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            rlg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             cell.draw(rlg, clipboxA, border);
             rlg.dispose();
 
@@ -840,13 +824,10 @@ public class ColorMapLegendCreator {
             // get element for color default behavior
             final Cell colorCell = row.getColorManager();
             // draw it
-            final BufferedImage colorCellLegend =
-                    new BufferedImage(colorWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
+            final BufferedImage colorCellLegend = new BufferedImage(colorWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
             Graphics2D rlg = colorCellLegend.createGraphics();
-            rlg.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            rlg.setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            rlg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            rlg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             colorCell.draw(rlg, clipboxA, border);
             rlg.dispose();
 
@@ -855,14 +836,10 @@ public class ColorMapLegendCreator {
                 // get element for rule
                 final Cell ruleCell = row.getRuleManager();
                 // draw it
-                ruleCellLegend =
-                        new BufferedImage(ruleWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
+                ruleCellLegend = new BufferedImage(ruleWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
                 rlg = ruleCellLegend.createGraphics();
-                rlg.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                rlg.setRenderingHint(
-                        RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                rlg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                rlg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 ruleCell.draw(rlg, clipboxB, borderRule);
                 rlg.dispose();
             }
@@ -875,11 +852,8 @@ public class ColorMapLegendCreator {
                     final BufferedImage labelCellLegend =
                             new BufferedImage(labelWidth, rowHeight, BufferedImage.TYPE_INT_ARGB);
                     rlg = labelCellLegend.createGraphics();
-                    rlg.setRenderingHint(
-                            RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    rlg.setRenderingHint(
-                            RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    rlg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    rlg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                     labelCell.draw(rlg, clipboxC, borderLabel);
                     rlg.dispose();
 
@@ -889,26 +863,18 @@ public class ColorMapLegendCreator {
                     //
 
                     final Map<Key, Object> hintsMap = new HashMap<>();
-                    queue.add(
-                            LegendUtils.hMergeBufferedImages(
-                                    colorCellLegend,
-                                    ruleCellLegend,
-                                    labelCellLegend,
-                                    hintsMap,
-                                    transparent,
-                                    backgroundColor,
-                                    dx));
+                    queue.add(LegendUtils.hMergeBufferedImages(
+                            colorCellLegend,
+                            ruleCellLegend,
+                            labelCellLegend,
+                            hintsMap,
+                            transparent,
+                            backgroundColor,
+                            dx));
                 } else {
                     final Map<Key, Object> hintsMap = new HashMap<>();
-                    queue.add(
-                            LegendUtils.hMergeBufferedImages(
-                                    colorCellLegend,
-                                    ruleCellLegend,
-                                    null,
-                                    hintsMap,
-                                    transparent,
-                                    backgroundColor,
-                                    dx));
+                    queue.add(LegendUtils.hMergeBufferedImages(
+                            colorCellLegend, ruleCellLegend, null, hintsMap, transparent, backgroundColor, dx));
                 }
 
             } else {
@@ -918,15 +884,8 @@ public class ColorMapLegendCreator {
                 //
 
                 final Map<Key, Object> hintsMap = new HashMap<>();
-                queue.add(
-                        LegendUtils.hMergeBufferedImages(
-                                colorCellLegend,
-                                ruleCellLegend,
-                                null,
-                                hintsMap,
-                                transparent,
-                                backgroundColor,
-                                dx));
+                queue.add(LegendUtils.hMergeBufferedImages(
+                        colorCellLegend, ruleCellLegend, null, hintsMap, transparent, backgroundColor, dx));
             }
         }
 
@@ -946,8 +905,7 @@ public class ColorMapLegendCreator {
 
         final int totalWidth = (int) finalDimension.getWidth();
         final int totalHeight = (int) finalDimension.getHeight();
-        BufferedImage finalLegend =
-                ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
+        BufferedImage finalLegend = ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
 
         /*
          * For RAMP type, only HORIZONTAL or VERTICAL condition is valid
@@ -956,8 +914,7 @@ public class ColorMapLegendCreator {
 
             final Map<Key, Object> hintsMap = new HashMap<>();
             Graphics2D finalGraphics =
-                    ImageUtils.prepareTransparency(
-                            transparent, backgroundColor, finalLegend, hintsMap);
+                    ImageUtils.prepareTransparency(transparent, backgroundColor, finalLegend, hintsMap);
             hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             finalGraphics.setRenderingHints(hintsMap);
 
@@ -971,8 +928,7 @@ public class ColorMapLegendCreator {
             }
 
             if (this.layout == LegendLayout.HORIZONTAL) {
-                BufferedImage newImage =
-                        new BufferedImage(totalHeight, totalWidth, finalLegend.getType());
+                BufferedImage newImage = new BufferedImage(totalHeight, totalWidth, finalLegend.getType());
                 Graphics2D g2 = newImage.createGraphics();
                 g2.rotate(-Math.PI / 2, 0, 0);
                 g2.drawImage(finalLegend, null, -totalWidth, 0);
@@ -983,25 +939,24 @@ public class ColorMapLegendCreator {
         } else {
             ImageList imgs = new ImageList(tally, legendsQueue);
 
-            LegendMerger.MergeOptions options =
-                    new LegendMerger.MergeOptions(
-                            imgs,
-                            (int) dx,
-                            (int) dy,
-                            (int) margin,
-                            0,
-                            backgroundColor,
-                            transparent,
-                            true,
-                            layout,
-                            rowWidth,
-                            rows,
-                            columnHeight,
-                            columns,
-                            null,
-                            false,
-                            false,
-                            false);
+            LegendMerger.MergeOptions options = new LegendMerger.MergeOptions(
+                    imgs,
+                    (int) dx,
+                    (int) dy,
+                    (int) margin,
+                    0,
+                    backgroundColor,
+                    transparent,
+                    true,
+                    layout,
+                    rowWidth,
+                    rows,
+                    columnHeight,
+                    columns,
+                    null,
+                    false,
+                    false,
+                    false);
             finalLegend = LegendMerger.mergeRasterLegends(options);
         }
 

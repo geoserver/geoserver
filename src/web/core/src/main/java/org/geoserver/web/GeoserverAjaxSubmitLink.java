@@ -8,10 +8,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 
-/**
- * {@link AjaxSubmitLink} subclass that adds the {@link GeoServerBasePage} feedback panels on every
- * interaction
- */
+/** {@link AjaxSubmitLink} subclass that adds the {@link GeoServerBasePage} feedback panels on every interaction */
 public abstract class GeoserverAjaxSubmitLink extends AjaxSubmitLink {
 
     private final GeoServerBasePage page;

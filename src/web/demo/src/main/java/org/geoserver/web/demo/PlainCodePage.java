@@ -16,8 +16,7 @@ import org.apache.wicket.model.PropertyModel;
 public class PlainCodePage extends WebPage {
     String code;
 
-    public PlainCodePage(
-            final ModalWindow container, final ModalWindow responseWindow, String initialXml) {
+    public PlainCodePage(final ModalWindow container, final ModalWindow responseWindow, String initialXml) {
         this.code = initialXml;
 
         add(new Label("code", new PropertyModel(this, "code")));

@@ -44,8 +44,8 @@ public class LiveCasData extends LiveSystemTestData {
     protected File keyStoreFile;
 
     /**
-     * List of file paths (relative to the source data directory) that will be subjected to token
-     * filtering. By default only <code>catalog.xml</code> will be filtered.
+     * List of file paths (relative to the source data directory) that will be subjected to token filtering. By default
+     * only <code>catalog.xml</code> will be filtered.
      */
     public URL getServerURLPrefix() {
         return serverURLPrefix;
@@ -104,12 +104,11 @@ public class LiveCasData extends LiveSystemTestData {
         if (!base.exists()) base.mkdir();
         File fixtureFile = new File(base, fixtureId + ".properties");
         if (!fixtureFile.exists()) {
-            final String warning =
-                    "Disabling test based on fixture "
-                            + fixtureId
-                            + " since the file "
-                            + fixtureFile
-                            + " could not be found";
+            final String warning = "Disabling test based on fixture "
+                    + fixtureId
+                    + " since the file "
+                    + fixtureFile
+                    + " could not be found";
             disableTest(warning);
             return null;
         }
@@ -173,8 +172,7 @@ public class LiveCasData extends LiveSystemTestData {
     }
 
     /**
-     * Permanently disable this test logging the specificed warning message (the reason why the test
-     * is being disabled)
+     * Permanently disable this test logging the specificed warning message (the reason why the test is being disabled)
      */
     private void disableTest(final String warning) {
         LOGGER.warning(warning);
@@ -187,7 +185,8 @@ public class LiveCasData extends LiveSystemTestData {
         //        keytool -genkey -alias alias -keypass simulator \
         //        -keystore lig.keystore -storepass simulator
 
-        InetSocketAddress address = new InetSocketAddress(getProxyCallbackURLPrefix().getPort());
+        InetSocketAddress address =
+                new InetSocketAddress(getProxyCallbackURLPrefix().getPort());
 
         // initialise the HTTPS server
         HttpsServer httpsServer = HttpsServer.create(address, 0);
@@ -204,46 +203,41 @@ public class LiveCasData extends LiveSystemTestData {
 
         // setup the key manager factory
 
-        KeyManagerFactory kmf =
-                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(ks, password);
 
         // setup the trust manager factory
-        TrustManagerFactory tmf =
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(ks);
 
         // setup the HTTPS context and parameters
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-        httpsServer.setHttpsConfigurator(
-                new HttpsConfigurator(sslContext) {
-                    @Override
-                    public void configure(HttpsParameters params) {
-                        try {
-                            // initialise the SSL context
-                            SSLContext c = SSLContext.getDefault();
-                            SSLEngine engine = c.createSSLEngine();
-                            params.setNeedClientAuth(false);
-                            params.setCipherSuites(engine.getEnabledCipherSuites());
-                            params.setProtocols(engine.getEnabledProtocols());
+        httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+            @Override
+            public void configure(HttpsParameters params) {
+                try {
+                    // initialise the SSL context
+                    SSLContext c = SSLContext.getDefault();
+                    SSLEngine engine = c.createSSLEngine();
+                    params.setNeedClientAuth(false);
+                    params.setCipherSuites(engine.getEnabledCipherSuites());
+                    params.setProtocols(engine.getEnabledProtocols());
 
-                            // get the default parameters
-                            SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
-                            params.setSSLParameters(defaultSSLParameters);
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                });
+                    // get the default parameters
+                    SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
+                    params.setSSLParameters(defaultSSLParameters);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
-        httpsServer.createContext(
-                "/test",
-                t -> {
-                    LOGGER.info("https server working");
-                    t.getRequestBody().close();
-                    t.sendResponseHeaders(200, 0);
-                    t.getResponseBody().close();
-                });
+        httpsServer.createContext("/test", t -> {
+            LOGGER.info("https server working");
+            t.getRequestBody().close();
+            t.sendResponseHeaders(200, 0);
+            t.getResponseBody().close();
+        });
 
         httpsServer.setExecutor(null); // creates a default executor
         return httpsServer;
@@ -251,12 +245,11 @@ public class LiveCasData extends LiveSystemTestData {
 
     protected void checkSSLServer() throws Exception {
 
-        URL testSSLURL =
-                new URL(
-                        getProxyCallbackURLPrefix().getProtocol(),
-                        getProxyCallbackURLPrefix().getHost(),
-                        getProxyCallbackURLPrefix().getPort(),
-                        "/test");
+        URL testSSLURL = new URL(
+                getProxyCallbackURLPrefix().getProtocol(),
+                getProxyCallbackURLPrefix().getHost(),
+                getProxyCallbackURLPrefix().getPort(),
+                "/test");
         HttpURLConnection con = (HttpURLConnection) testSSLURL.openConnection();
         con.getInputStream().close();
     }

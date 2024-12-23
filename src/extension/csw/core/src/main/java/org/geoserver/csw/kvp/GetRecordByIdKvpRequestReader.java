@@ -28,8 +28,7 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
 
         ElementSetType ent = (ElementSetType) kvp.get("elementsetname");
         if (ent != null) {
@@ -41,10 +40,7 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
         List<URI> idsuri = new ArrayList<>();
         String rawId = (String) kvp.get("id");
         if (rawId == null) {
-            throw new ServiceException(
-                    "Missing required parameter id",
-                    ServiceException.MISSING_PARAMETER_VALUE,
-                    "id");
+            throw new ServiceException("Missing required parameter id", ServiceException.MISSING_PARAMETER_VALUE, "id");
         }
         String[] ids = rawId.split("\\s*,\\s*");
         for (String id : ids) {

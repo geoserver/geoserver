@@ -39,14 +39,13 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
     private static final AuthorizationDecision ACCESS_ABSTAIN = null;
 
     /**
-     * AuthorizationManager implementation considers the authentication requirements of the
-     * respective request, in contrast to Spring's AuthenticatedAuthorizationManager, which is setup
-     * for one authentication requirement explicitly.<br>
-     * Based on org.springframework.security.access.vote.AuthenticatedVoter, which is deprecated
-     * with Spring Security 5.8.
+     * AuthorizationManager implementation considers the authentication requirements of the respective request, in
+     * contrast to Spring's AuthenticatedAuthorizationManager, which is setup for one authentication requirement
+     * explicitly.<br>
+     * Based on org.springframework.security.access.vote.AuthenticatedVoter, which is deprecated with Spring Security
+     * 5.8.
      */
-    private static final class AuthenticatedAuthorizationManager
-            implements AuthorizationManager<HttpServletRequest> {
+    private static final class AuthenticatedAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
 
         public static final String IS_AUTHENTICATED_FULLY = "IS_AUTHENTICATED_FULLY";
 
@@ -56,8 +55,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
 
         private SecurityMetadataSource metadata;
 
-        private AuthenticationTrustResolver authenticationTrustResolver =
-                new AuthenticationTrustResolverImpl();
+        private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 
         /** @param metadata */
         public AuthenticatedAuthorizationManager(SecurityMetadataSource metadata) {
@@ -78,9 +76,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         private AuthorizationDecision vote(
-                Authentication authentication,
-                Object object,
-                Collection<ConfigAttribute> attributes) {
+                Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
             AuthorizationDecision result = ACCESS_ABSTAIN;
             for (ConfigAttribute attribute : attributes) {
                 if (this.supports(attribute)) {
@@ -109,24 +105,19 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         @Override
-        public AuthorizationDecision check(
-                Supplier<Authentication> authentication, HttpServletRequest request) {
+        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
             Collection<ConfigAttribute> attributes =
-                    Optional.ofNullable(metadata.getAttributes(request))
-                            .orElse(Collections.emptySet());
+                    Optional.ofNullable(metadata.getAttributes(request)).orElse(Collections.emptySet());
             return vote(authentication.get(), request, attributes);
         }
     }
 
     /**
-     * {@link AuthorizationManager} implementation considers the role requirements of the respective
-     * request, in contrast to Spring's AuthorityAuthorizationManager which is setup for certain
-     * roles explicitly. <br>
-     * Based on org.springframework.security.access.vote.RoleVoter, which is deprecated with Spring
-     * Security 5.8.
+     * {@link AuthorizationManager} implementation considers the role requirements of the respective request, in
+     * contrast to Spring's AuthorityAuthorizationManager which is setup for certain roles explicitly. <br>
+     * Based on org.springframework.security.access.vote.RoleVoter, which is deprecated with Spring Security 5.8.
      */
-    private static final class RoleAuthorizationManager
-            implements AuthorizationManager<HttpServletRequest> {
+    private static final class RoleAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
 
         private SecurityMetadataSource metadata;
 
@@ -137,9 +128,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         private AuthorizationDecision vote(
-                Authentication authentication,
-                Object object,
-                Collection<ConfigAttribute> attributes) {
+                Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
             if (authentication == null) {
                 return ACCESS_DENIED;
             }
@@ -160,22 +149,18 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         @Override
-        public AuthorizationDecision check(
-                Supplier<Authentication> authentication, HttpServletRequest request) {
+        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
             Collection<ConfigAttribute> attributes =
-                    Optional.ofNullable(metadata.getAttributes(request))
-                            .orElse(Collections.emptySet());
+                    Optional.ofNullable(metadata.getAttributes(request)).orElse(Collections.emptySet());
             return vote(authentication.get(), request, attributes);
         }
     }
 
     /**
      * Compound {@link AuthorizationManager} implementation forwards the check to delegates. <br>
-     * Based on org.springframework.security.access.vote.AffirmativeBased, which is deprecated with
-     * Spring Security 5.8.
+     * Based on org.springframework.security.access.vote.AffirmativeBased, which is deprecated with Spring Security 5.8.
      */
-    private static final class AffirmativeAuthorizationManager
-            implements AuthorizationManager<HttpServletRequest> {
+    private static final class AffirmativeAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
 
         private AuthorizationManager<HttpServletRequest> delegate1;
         private AuthorizationManager<HttpServletRequest> delegate2;
@@ -197,8 +182,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
 
         @Override
-        public AuthorizationDecision check(
-                Supplier<Authentication> authentication, HttpServletRequest object) {
+        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest object) {
             AuthorizationDecision d1 = delegate1.check(authentication, object);
             AuthorizationDecision d2 = delegate2.check(authentication, object);
             if (d1 == null && d2 == null) {
@@ -214,8 +198,8 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         }
     }
 
-    public void initializeFromConfig(
-            SecurityNamedServiceConfig config, SecurityMetadataSource source) throws IOException {
+    public void initializeFromConfig(SecurityNamedServiceConfig config, SecurityMetadataSource source)
+            throws IOException {
         super.initializeFromConfig(config);
 
         SecurityInterceptorFilterConfig siConfig = (SecurityInterceptorFilterConfig) config;
@@ -223,8 +207,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
 
         AuthenticatedAuthorizationManager aam = new AuthenticatedAuthorizationManager(source);
         RoleAuthorizationManager ram = new RoleAuthorizationManager(source);
-        AffirmativeAuthorizationManager am =
-                new AffirmativeAuthorizationManager(aam, ram, allowIfAllAbstainDecisions);
+        AffirmativeAuthorizationManager am = new AffirmativeAuthorizationManager(aam, ram, allowIfAllAbstainDecisions);
         AuthorizationFilter filter = new AuthorizationFilter(am);
 
         getNestedFilters().add(filter);

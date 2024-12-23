@@ -12,17 +12,15 @@ import java.util.concurrent.Callable;
 import org.geoserver.platform.GeoServerExtensions;
 
 /**
- * Collects all {@link ThreadLocalTransfer} found in the application context and applies them on
- * request. This object is not thread safe, it's meant to be instantiated when a transfer is
- * required To use it:
+ * Collects all {@link ThreadLocalTransfer} found in the application context and applies them on request. This object is
+ * not thread safe, it's meant to be instantiated when a transfer is required To use it:
  *
  * <ul>
  *   <li>Create a {@link ThreadLocalsTransfer} in the request thread
- *   <li>Pass the object as state to the {@link Runnable}/{@link Callable} being run in a thread
- *       pool
+ *   <li>Pass the object as state to the {@link Runnable}/{@link Callable} being run in a thread pool
  *   <li>As the {@link Runnable}/{@link Callable} starts its activity, invoke {@link #apply()}
- *   <li>In a finally block wrapping the whole activity of the {@link Runnable}/{@link Callable}
- *       call {@link #cleanup()} to clean the current Thread {@link ThreadLocal} variables
+ *   <li>In a finally block wrapping the whole activity of the {@link Runnable}/{@link Callable} call {@link #cleanup()}
+ *       to clean the current Thread {@link ThreadLocal} variables
  * </ul>
  *
  * @author Andrea Aime - GeoSolutions
@@ -34,8 +32,8 @@ public class ThreadLocalsTransfer {
     private List<ThreadLocalTransfer> transfers;
 
     /**
-     * Starts and runs all registered {@link ThreadLocalsTransfer} objects and collects the
-     * associated thread locals in the storage object
+     * Starts and runs all registered {@link ThreadLocalsTransfer} objects and collects the associated thread locals in
+     * the storage object
      */
     public ThreadLocalsTransfer() {
         transfers = GeoServerExtensions.extensions(ThreadLocalTransfer.class);

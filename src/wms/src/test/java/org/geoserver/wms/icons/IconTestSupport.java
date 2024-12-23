@@ -76,9 +76,7 @@ public class IconTestSupport {
                 } else {
                     buff.append("&");
                 }
-                buff.append(entry.getKey())
-                        .append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                buff.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), "UTF-8"));
             }
             return buff.toString();
         } catch (UnsupportedEncodingException e) {
@@ -94,9 +92,7 @@ public class IconTestSupport {
 
     protected final Font font(String fontFace, String style, String weight, Integer size) {
         List<Expression> fontFaceList =
-                fontFace == null
-                        ? null
-                        : Collections.singletonList(filterFactory.literal(fontFace));
+                fontFace == null ? null : Collections.singletonList(filterFactory.literal(fontFace));
         Expression styleExpr = style == null ? null : filterFactory.literal(style);
         Expression weightExpr = weight == null ? null : filterFactory.literal(weight);
         Expression sizeExpr = size == null ? null : filterFactory.literal(size);
@@ -109,16 +105,13 @@ public class IconTestSupport {
                 name, geometry, null, null, filterFactory.property(label), font, null, null, fill);
     }
 
-    protected final PointSymbolizer mark(
-            String name, Color stroke, Color fill, float opacity, int size) {
+    protected final PointSymbolizer mark(String name, Color stroke, Color fill, float opacity, int size) {
         return SLD.pointSymbolizer(SLD.createPointStyle(name, stroke, fill, opacity, size));
     }
 
     protected final PointSymbolizer externalGraphic(String url, String format) {
         ExternalGraphic exGraphic = styleFactory.createExternalGraphic(url, format);
-        Graphic graphic =
-                styleFactory.createGraphic(
-                        new ExternalGraphic[] {exGraphic}, null, null, null, null, null);
+        Graphic graphic = styleFactory.createGraphic(new ExternalGraphic[] {exGraphic}, null, null, null, null, null);
         return styleFactory.createPointSymbolizer(graphic, null);
     }
 

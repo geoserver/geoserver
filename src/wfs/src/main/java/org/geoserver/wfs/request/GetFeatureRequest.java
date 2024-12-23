@@ -171,14 +171,12 @@ public abstract class GetFeatureRequest extends RequestObject {
 
         @Override
         public LockFeatureRequest createLockRequest() {
-            return new LockFeatureRequest.WFS11(
-                    ((WfsFactory) getFactory()).createLockFeatureType());
+            return new LockFeatureRequest.WFS11(((WfsFactory) getFactory()).createLockFeatureType());
         }
 
         @Override
         public FeatureCollectionResponse createResponse() {
-            return new FeatureCollectionResponse.WFS11(
-                    ((WfsFactory) getFactory()).createFeatureCollectionType());
+            return new FeatureCollectionResponse.WFS11(((WfsFactory) getFactory()).createFeatureCollectionType());
         }
 
         @Override
@@ -222,8 +220,7 @@ public abstract class GetFeatureRequest extends RequestObject {
 
         @Override
         public boolean isQueryTypeNamesUnset() {
-            return EMFUtils.isUnset(
-                    eGet(adaptee, "abstractQueryExpression", List.class), "typeNames");
+            return EMFUtils.isUnset(eGet(adaptee, "abstractQueryExpression", List.class), "typeNames");
         }
 
         @Override
@@ -272,14 +269,12 @@ public abstract class GetFeatureRequest extends RequestObject {
 
         @Override
         public LockFeatureRequest createLockRequest() {
-            return new LockFeatureRequest.WFS20(
-                    ((Wfs20Factory) getFactory()).createLockFeatureType());
+            return new LockFeatureRequest.WFS20(((Wfs20Factory) getFactory()).createLockFeatureType());
         }
 
         @Override
         public FeatureCollectionResponse createResponse() {
-            return new FeatureCollectionResponse.WFS20(
-                    ((Wfs20Factory) getFactory()).createFeatureCollectionType());
+            return new FeatureCollectionResponse.WFS20(((Wfs20Factory) getFactory()).createFeatureCollectionType());
         }
 
         @Override

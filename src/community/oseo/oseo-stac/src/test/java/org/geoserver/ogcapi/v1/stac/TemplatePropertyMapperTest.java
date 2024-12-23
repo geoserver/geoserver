@@ -69,9 +69,7 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
         // even if they were not specified in the list
         TemplatePropertyMapper mapper = getPropertyMapper();
         Filter mapped = mapper.mapProperties(null, ECQL.toFilter("\"landsat:orbit\" < 50"));
-        assertEquals(
-                ECQL.toFilter("parentIdentifier = 'LANDSAT8' and \"eop:orbitNumber\" < 50"),
-                mapped);
+        assertEquals(ECQL.toFilter("parentIdentifier = 'LANDSAT8' and \"eop:orbitNumber\" < 50"), mapped);
     }
 
     @Test
@@ -80,21 +78,15 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
         // second should come out
         TemplatePropertyMapper mapper = getPropertyMapper();
         Filter mapped =
-                mapper.mapProperties(
-                        Arrays.asList("SENTINEL2", "LANDSAT8"),
-                        ECQL.toFilter("\"landsat:orbit\" < 50"));
-        assertEquals(
-                ECQL.toFilter("parentIdentifier = 'LANDSAT8' and \"eop:orbitNumber\" < 50"),
-                mapped);
+                mapper.mapProperties(Arrays.asList("SENTINEL2", "LANDSAT8"), ECQL.toFilter("\"landsat:orbit\" < 50"));
+        assertEquals(ECQL.toFilter("parentIdentifier = 'LANDSAT8' and \"eop:orbitNumber\" < 50"), mapped);
     }
 
     @Test
     public void testLS8SpecificWithSentinel() throws Exception {
         // property that exists only on LS8, provided against SENTINEL2... should exclude
         TemplatePropertyMapper mapper = getPropertyMapper();
-        Filter mapped =
-                mapper.mapProperties(
-                        Arrays.asList("SENTINEL2"), ECQL.toFilter("\"landsat:orbit\" < 50"));
+        Filter mapped = mapper.mapProperties(Arrays.asList("SENTINEL2"), ECQL.toFilter("\"landsat:orbit\" < 50"));
         assertEquals(Filter.EXCLUDE, mapped);
     }
 
@@ -122,10 +114,8 @@ public class TemplatePropertyMapperTest extends STACTestSupport {
         // property mapped in a different way in the two collections
         TemplatePropertyMapper mapper = getPropertyMapper();
         Filter mapped = mapper.mapProperties(null, ECQL.toFilter("eo:cloud_cover < 20"));
-        Filter expected =
-                ECQL.toFilter(
-                        "(parentIdentifier = 'LANDSAT8' and (opt:cloudCover / 2) < 20) "
-                                + "or (parentIdentifier <> 'LANDSAT8' and opt:cloudCover < 20)");
+        Filter expected = ECQL.toFilter("(parentIdentifier = 'LANDSAT8' and (opt:cloudCover / 2) < 20) "
+                + "or (parentIdentifier <> 'LANDSAT8' and opt:cloudCover < 20)");
         assertEquals(expected, mapped);
     }
 }

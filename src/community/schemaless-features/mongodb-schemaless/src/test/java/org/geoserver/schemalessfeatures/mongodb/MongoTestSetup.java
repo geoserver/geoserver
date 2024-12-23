@@ -7,10 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import java.util.Properties;
 import org.bson.Document;
 
-@SuppressWarnings({
-    "PMD.JUnit4TestShouldUseAfterAnnotation",
-    "PMD.JUnit4TestShouldUseBeforeAnnotation"
-})
+@SuppressWarnings({"PMD.JUnit4TestShouldUseAfterAnnotation", "PMD.JUnit4TestShouldUseBeforeAnnotation"})
 public abstract class MongoTestSetup {
 
     protected Properties fixture = null;

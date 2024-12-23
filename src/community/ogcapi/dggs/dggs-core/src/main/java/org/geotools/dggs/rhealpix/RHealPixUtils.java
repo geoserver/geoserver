@@ -7,8 +7,7 @@ import jep.SharedInterpreter;
 
 class RHealPixUtils {
 
-    public static void setCellId(SharedInterpreter interpreter, String variableName, String id)
-            throws JepException {
+    public static void setCellId(SharedInterpreter interpreter, String variableName, String id) throws JepException {
         interpreter.set(variableName, toInternalId(id));
         interpreter.exec(variableName + "= tuple(" + variableName + ")");
     }

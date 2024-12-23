@@ -31,19 +31,18 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();
-        paramInfo.put(
-                PARAM_DEFINITION, new ParameterInfo(PARAM_DEFINITION, ParameterType.SQL, true));
+        paramInfo.put(PARAM_DEFINITION, new ParameterInfo(PARAM_DEFINITION, ParameterType.SQL, true));
     }
 
     @Override
-    public String buildQueryDefinition(TaskContext ctx, BatchContext.Dependency dependency)
-            throws TaskException {
+    public String buildQueryDefinition(TaskContext ctx, BatchContext.Dependency dependency) throws TaskException {
         String definition = (String) ctx.getParameterValues().get(PARAM_DEFINITION);
 
         Matcher m = PATTERN_PLACEHOLDER.matcher(definition);
 
         while (m.find()) {
-            Attribute attribute = ctx.getTask().getConfiguration().getAttributes().get(m.group(1));
+            Attribute attribute =
+                    ctx.getTask().getConfiguration().getAttributes().get(m.group(1));
             if (attribute != null && attribute.getValue() != null) {
                 String value = attribute.getValue();
                 Object o = ctx.getBatchContext().get(value, dependency);
@@ -56,9 +55,7 @@ public class CreateComplexViewTaskTypeImpl extends AbstractCreateViewTaskTypeImp
                         o = t;
                     }
                 }
-                definition =
-                        m.replaceFirst(
-                                o instanceof DbTable ? ((DbTable) o).getTableName() : o.toString());
+                definition = m.replaceFirst(o instanceof DbTable ? ((DbTable) o).getTableName() : o.toString());
                 m = PATTERN_PLACEHOLDER.matcher(definition);
             } else {
                 // TODO: should already happen in validation

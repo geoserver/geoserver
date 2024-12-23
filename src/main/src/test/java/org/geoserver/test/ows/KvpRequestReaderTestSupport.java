@@ -17,8 +17,8 @@ import org.geoserver.test.GeoServerTestSupport;
 /**
  * Test class for testing instances of {@link KvpRequestReader}.
  *
- * <p>The {@link #parseKvp(Map)} method of this class sets up a kvp map and parses it by processing
- * instances of {@link KvpParser} in the application context.
+ * <p>The {@link #parseKvp(Map)} method of this class sets up a kvp map and parses it by processing instances of
+ * {@link KvpParser} in the application context.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */

@@ -39,11 +39,9 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
         Set<DataAccessRule> dataRules = ruleInfoMan.getResourceRule(ws.getName(), ws);
         assertTrue(dataRules.isEmpty());
         Set<String> availableRoles = ruleInfoMan.getAvailableRoles();
-        List<DataAccessRuleInfo> rulesInfo =
-                ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), null);
+        List<DataAccessRuleInfo> rulesInfo = ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), null);
         rulesInfo.forEach(i -> i.setRead(true));
-        Set<DataAccessRule> news =
-                ruleInfoMan.mapFrom(rulesInfo, availableRoles, ws.getName(), null, false);
+        Set<DataAccessRule> news = ruleInfoMan.mapFrom(rulesInfo, availableRoles, ws.getName(), null, false);
         ruleInfoMan.saveRules(dataRules, news);
         assertEquals(1, ruleInfoMan.getResourceRule(ws.getName(), ws).size());
         cleanRules(ws.getName(), ws);
@@ -59,8 +57,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
                 ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), layerInfo.getName());
         rulesInfo.forEach(i -> i.setRead(true));
         Set<DataAccessRule> news =
-                ruleInfoMan.mapFrom(
-                        rulesInfo, availableRoles, ws.getName(), layerInfo.getName(), false);
+                ruleInfoMan.mapFrom(rulesInfo, availableRoles, ws.getName(), layerInfo.getName(), false);
         ruleInfoMan.saveRules(dataRules, news);
         assertEquals(1, ruleInfoMan.getResourceRule(ws.getName(), layerInfo).size());
         cleanRules(ws.getName(), layerInfo);

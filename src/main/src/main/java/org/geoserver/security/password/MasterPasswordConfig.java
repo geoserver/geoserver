@@ -41,15 +41,12 @@ public class MasterPasswordConfig implements SecurityConfig {
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
 
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
         MasterPasswordConfig target = SerializationUtils.clone(this);
 
         if (target != null) {
-            if (allowEnvParametrization
-                    && gsEnvironment != null
-                    && GeoServerEnvironment.allowEnvParametrization()) {
+            if (allowEnvParametrization && gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setProviderName((String) gsEnvironment.resolveValue(providerName));
             }
         }

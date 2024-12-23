@@ -25,8 +25,7 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
 
     private ApplicationContext context;
 
-    public InternalWFSInputProvider(
-            InputType input, ProcessParameterIO ppio, ApplicationContext context) {
+    public InternalWFSInputProvider(InputType input, ProcessParameterIO ppio, ApplicationContext context) {
         super(input, ppio);
         this.context = context;
     }
@@ -39,8 +38,7 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
         if (ref.getMethod() == MethodType.POST_LITERAL) {
             gft = (GetFeatureType) ref.getBody();
         } else {
-            GetFeatureKvpRequestReader reader =
-                    (GetFeatureKvpRequestReader) context.getBean("getFeatureKvpReader");
+            GetFeatureKvpRequestReader reader = (GetFeatureKvpRequestReader) context.getBean("getFeatureKvpReader");
             gft = (GetFeatureType) kvpParse(ref.getHref(), reader);
         }
 

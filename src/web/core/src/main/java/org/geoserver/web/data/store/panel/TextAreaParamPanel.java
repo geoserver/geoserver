@@ -23,10 +23,7 @@ public class TextAreaParamPanel extends Panel implements ParamPanel<String> {
 
     private TextArea<String> textArea;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public TextAreaParamPanel(
             final String id,

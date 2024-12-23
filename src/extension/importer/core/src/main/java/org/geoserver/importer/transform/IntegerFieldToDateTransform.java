@@ -17,8 +17,7 @@ import org.geotools.api.data.DataStore;
 import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
- * Allow a string or number field to be used as a year Date. The number is interpreted as an
- * Integer.
+ * Allow a string or number field to be used as a year Date. The number is interpreted as an Integer.
  *
  * @author Ian Schneider <ischneider@opengeo.org>
  */
@@ -41,8 +40,7 @@ public class IntegerFieldToDateTransform extends AttributeRemapTransform {
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         Object val = oldFeature.getAttribute(field);
         Date parsed = null;

@@ -11,9 +11,9 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
 
 /**
- * Parses kvp of the form 'sortBy=Field1 {A|D},Field2 {A|D}...' into a list of {@link
- * org.geotools.api.filter.sort.SortBy} (WFS style syntax, as opposed to the CSW one, which is
- * slightly different)
+ * Parses kvp of the form 'sortBy=Field1 {A|D},Field2 {A|D}...' into a list of
+ * {@link org.geotools.api.filter.sort.SortBy} (WFS style syntax, as opposed to the CSW one, which is slightly
+ * different)
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

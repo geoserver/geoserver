@@ -84,13 +84,7 @@ public class LegacyServicesReader {
         value("verboseExceptions", globalElement, global, Boolean.class);
         value("charSet", globalElement, global, String.class);
         text("updateSequence", globalElement, global, Integer.class, false, 0);
-        text(
-                "log4jConfigFile",
-                globalElement,
-                global,
-                String.class,
-                false,
-                "DEFAULT_LOGGING.properties");
+        text("log4jConfigFile", globalElement, global, String.class, false, "DEFAULT_LOGGING.properties");
         text("logLocation", globalElement, global, String.class, false, "logs/geoserver.log");
         value("suppressStdOutLogging", globalElement, global, Boolean.class, false, Boolean.FALSE);
         value("maxFeatures", globalElement, global, Integer.class);
@@ -133,8 +127,7 @@ public class LegacyServicesReader {
 
         Element contactElement = ReaderUtils.getChildElement(globalElement, "ContactInformation");
         if (contactElement != null) {
-            Element personPrimaryElement =
-                    ReaderUtils.getChildElement(contactElement, "ContactPersonPrimary");
+            Element personPrimaryElement = ReaderUtils.getChildElement(contactElement, "ContactPersonPrimary");
             if (personPrimaryElement != null) {
                 text("ContactPerson", personPrimaryElement, contact, String.class);
                 text("ContactOrganization", personPrimaryElement, contact, String.class);
@@ -163,8 +156,7 @@ public class LegacyServicesReader {
             return wfs;
         }
 
-        Element servicesElement =
-                ReaderUtils.getChildElement(serverConfiguration, "services", true);
+        Element servicesElement = ReaderUtils.getChildElement(serverConfiguration, "services", true);
         Element wfsElement = service(servicesElement, "WFS");
 
         wfs = readService(wfsElement);
@@ -182,8 +174,7 @@ public class LegacyServicesReader {
             return wms;
         }
 
-        Element servicesElement =
-                ReaderUtils.getChildElement(serverConfiguration, "services", true);
+        Element servicesElement = ReaderUtils.getChildElement(serverConfiguration, "services", true);
         Element wmsElement = service(servicesElement, "WMS");
 
         wms = readService(wmsElement);
@@ -202,22 +193,17 @@ public class LegacyServicesReader {
         ArrayList<Map<String, Object>> baseMaps = new ArrayList<>();
         Element baseMapGroupsElement = ReaderUtils.getChildElement(wmsElement, "BaseMapGroups");
         if (baseMapGroupsElement != null) {
-            Element[] baseMapGroupElements =
-                    ReaderUtils.getChildElements(baseMapGroupsElement, "BaseMapGroup");
+            Element[] baseMapGroupElements = ReaderUtils.getChildElements(baseMapGroupsElement, "BaseMapGroup");
             for (Element baseMapGroupElement : baseMapGroupElements) {
                 HashMap<String, Object> baseMap = new HashMap<>();
-                baseMap.put(
-                        "baseMapTitle",
-                        ReaderUtils.getAttribute(baseMapGroupElement, "baseMapTitle", true));
+                baseMap.put("baseMapTitle", ReaderUtils.getAttribute(baseMapGroupElement, "baseMapTitle", true));
 
                 baseMap.put(
                         "baseMapLayers",
-                        Arrays.asList(
-                                ReaderUtils.getChildText(baseMapGroupElement, "baseMapLayers")
-                                        .split(",")));
+                        Arrays.asList(ReaderUtils.getChildText(baseMapGroupElement, "baseMapLayers")
+                                .split(",")));
 
-                String baseMapStyles =
-                        ReaderUtils.getChildText(baseMapGroupElement, "baseMapStyles");
+                String baseMapStyles = ReaderUtils.getChildText(baseMapGroupElement, "baseMapStyles");
                 if (baseMapStyles != null && !"".equals(baseMapStyles)) {
                     baseMapStyles = baseMapStyles.trim();
                     int j = -1, k = 0;
@@ -239,23 +225,17 @@ public class LegacyServicesReader {
                     baseMap.put("rawBaseMapStyles", "");
                 }
 
-                Element baseMapEnvelopeElement =
-                        ReaderUtils.getChildElement(baseMapGroupElement, "baseMapEnvelope");
+                Element baseMapEnvelopeElement = ReaderUtils.getChildElement(baseMapGroupElement, "baseMapEnvelope");
                 if (baseMapEnvelopeElement != null) {
-                    Element[] posElements =
-                            ReaderUtils.getChildElements(baseMapEnvelopeElement, "pos");
-                    double x1 =
-                            Double.parseDouble(
-                                    posElements[0].getFirstChild().getNodeValue().split(" ")[0]);
-                    double y1 =
-                            Double.parseDouble(
-                                    posElements[0].getFirstChild().getNodeValue().split(" ")[1]);
-                    double x2 =
-                            Double.parseDouble(
-                                    posElements[1].getFirstChild().getNodeValue().split(" ")[0]);
-                    double y2 =
-                            Double.parseDouble(
-                                    posElements[1].getFirstChild().getNodeValue().split(" ")[1]);
+                    Element[] posElements = ReaderUtils.getChildElements(baseMapEnvelopeElement, "pos");
+                    double x1 = Double.parseDouble(
+                            posElements[0].getFirstChild().getNodeValue().split(" ")[0]);
+                    double y1 = Double.parseDouble(
+                            posElements[0].getFirstChild().getNodeValue().split(" ")[1]);
+                    double x2 = Double.parseDouble(
+                            posElements[1].getFirstChild().getNodeValue().split(" ")[0]);
+                    double y2 = Double.parseDouble(
+                            posElements[1].getFirstChild().getNodeValue().split(" ")[1]);
 
                     String srs = ReaderUtils.getAttribute(baseMapEnvelopeElement, "srsName", false);
                     CoordinateReferenceSystem crs = srs != null ? CRS.decode(srs) : null;
@@ -275,8 +255,7 @@ public class LegacyServicesReader {
             return wcs;
         }
 
-        Element servicesElement =
-                ReaderUtils.getChildElement(serverConfiguration, "services", true);
+        Element servicesElement = ReaderUtils.getChildElement(serverConfiguration, "services", true);
         Element wcsElement = service(servicesElement, "WCS");
 
         wcs = readService(wcsElement);
@@ -286,8 +265,7 @@ public class LegacyServicesReader {
 
     Map<String, Object> readService(Element serviceElement) throws Exception {
         HashMap<String, Object> service = new HashMap<>();
-        service.put(
-                "enabled", ReaderUtils.getBooleanAttribute(serviceElement, "enabled", false, true));
+        service.put("enabled", ReaderUtils.getBooleanAttribute(serviceElement, "enabled", false, true));
 
         text("name", serviceElement, service, String.class);
         text("title", serviceElement, service, String.class);
@@ -298,8 +276,7 @@ public class LegacyServicesReader {
             Map<String, String> metadataLink = new HashMap<>();
             metadataLink.put("about", ReaderUtils.getAttribute(mlElement, "about", false));
             metadataLink.put("type", ReaderUtils.getAttribute(mlElement, "type", false));
-            metadataLink.put(
-                    "metadataType", ReaderUtils.getAttribute(mlElement, "metadataType", false));
+            metadataLink.put("metadataType", ReaderUtils.getAttribute(mlElement, "metadataType", false));
             service.put("metadataLink", metadataLink);
         }
 
@@ -316,13 +293,7 @@ public class LegacyServicesReader {
         text("onlineResource", serviceElement, service, String.class);
         text("fees", serviceElement, service, String.class);
         text("accessConstraints", serviceElement, service, String.class);
-        text(
-                "SchemaBaseUrl",
-                serviceElement,
-                service,
-                String.class,
-                false,
-                "http://schemas.opengis.net");
+        text("SchemaBaseUrl", serviceElement, service, String.class, false, "http://schemas.opengis.net");
         value("srsXmlStyle", serviceElement, service, Boolean.class);
         value("serviceLevel", serviceElement, service, Integer.class);
         text("citeConformanceHacks", serviceElement, service, Boolean.class, false, Boolean.FALSE);
@@ -343,18 +314,11 @@ public class LegacyServicesReader {
         throw new Exception("No service element: " + id);
     }
 
-    <T> void value(String parameter, Element element, Map<String, Object> map, Class<T> clazz)
-            throws Exception {
+    <T> void value(String parameter, Element element, Map<String, Object> map, Class<T> clazz) throws Exception {
         value(parameter, element, map, clazz, false, null);
     }
 
-    <T> void value(
-            String parameter,
-            Element element,
-            Map<String, Object> map,
-            Class<T> clazz,
-            boolean man,
-            T def)
+    <T> void value(String parameter, Element element, Map<String, Object> map, Class<T> clazz, boolean man, T def)
             throws Exception {
 
         Element valueElement = ReaderUtils.getChildElement(element, parameter);
@@ -369,9 +333,7 @@ public class LegacyServicesReader {
 
         Object value = null;
         if (Boolean.class.equals(clazz)) {
-            value =
-                    Boolean.valueOf(
-                            ReaderUtils.getBooleanAttribute(valueElement, "value", true, false));
+            value = Boolean.valueOf(ReaderUtils.getBooleanAttribute(valueElement, "value", true, false));
         } else if (Integer.class.equals(clazz)) {
             value = Integer.valueOf(ReaderUtils.getIntAttribute(valueElement, "value", true, -1));
 
@@ -384,18 +346,11 @@ public class LegacyServicesReader {
         map.put(parameter, value);
     }
 
-    <T> void text(String parameter, Element element, Map<String, Object> map, Class<T> clazz)
-            throws Exception {
+    <T> void text(String parameter, Element element, Map<String, Object> map, Class<T> clazz) throws Exception {
         text(parameter, element, map, clazz, false, null);
     }
 
-    <T> void text(
-            String parameter,
-            Element element,
-            Map<String, Object> map,
-            Class<T> clazz,
-            boolean man,
-            T def)
+    <T> void text(String parameter, Element element, Map<String, Object> map, Class<T> clazz, boolean man, T def)
             throws Exception {
 
         String text = ReaderUtils.getChildText(element, parameter);

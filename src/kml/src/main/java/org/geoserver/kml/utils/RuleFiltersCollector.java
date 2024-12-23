@@ -16,8 +16,8 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.styling.AbstractStyleVisitor;
 
 /**
- * Collects all the filters in the style and builds a summary filter that matches every feature
- * matched by at least one rule in the style
+ * Collects all the filters in the style and builds a summary filter that matches every feature matched by at least one
+ * rule in the style
  *
  * @author Andrea Aime - GeoSolutions
  */

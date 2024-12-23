@@ -12,6 +12,5 @@ import org.w3c.dom.Document;
 
 public interface GeonetworkXmlParser extends Serializable {
 
-    void parseMetadata(Document doc, ResourceInfo rInfo, ComplexMetadataMap metadataMap)
-            throws IOException;
+    void parseMetadata(Document doc, ResourceInfo rInfo, ComplexMetadataMap metadataMap) throws IOException;
 }

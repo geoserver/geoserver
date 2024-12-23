@@ -33,19 +33,14 @@ public class RequestFunctionsTest {
 
     @Test
     public void testRequestParamFunction() {
-        String result =
-                (String)
-                        FF.function("requestParam", FF.literal("testParameter"))
-                                .evaluate(Dispatcher.REQUEST.get());
+        String result = (String)
+                FF.function("requestParam", FF.literal("testParameter")).evaluate(Dispatcher.REQUEST.get());
         assertEquals("testParameterValue", result);
     }
 
     @Test
     public void testRequestHeaderFunction() {
-        String result =
-                (String)
-                        FF.function("header", FF.literal("testHeader"))
-                                .evaluate(Dispatcher.REQUEST.get());
+        String result = (String) FF.function("header", FF.literal("testHeader")).evaluate(Dispatcher.REQUEST.get());
         assertEquals("testHeaderValue", result);
     }
 
@@ -57,15 +52,11 @@ public class RequestFunctionsTest {
 
     @Test
     public void testRequestRegexMatch() {
-        Boolean result =
-                (Boolean)
-                        FF.function("requestMatchRegex", FF.literal("^.*wfs.*$"))
-                                .evaluate(Dispatcher.REQUEST.get());
+        Boolean result = (Boolean)
+                FF.function("requestMatchRegex", FF.literal("^.*wfs.*$")).evaluate(Dispatcher.REQUEST.get());
         assertTrue(result.booleanValue());
-        result =
-                (Boolean)
-                        FF.function("requestMatchRegex", FF.literal("^.*wms.*$"))
-                                .evaluate(Dispatcher.REQUEST.get());
+        result = (Boolean)
+                FF.function("requestMatchRegex", FF.literal("^.*wms.*$")).evaluate(Dispatcher.REQUEST.get());
         assertFalse(result.booleanValue());
     }
 }

@@ -63,11 +63,8 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
 
         // expand the image so that it's an exact multiple of the tile size
         CoverageRenderSupport support = new CoverageRenderSupport();
-        RenderedImage expandedImage =
-                support.directRasterRender(
-                        coverage,
-                        upRound(ri.getWidth(), TILE_SIZE),
-                        upRound(ri.getHeight(), TILE_SIZE));
+        RenderedImage expandedImage = support.directRasterRender(
+                coverage, upRound(ri.getWidth(), TILE_SIZE), upRound(ri.getHeight(), TILE_SIZE));
 
         File file = File.createTempFile("geopkg", ".tmp.gpkg");
         try {
@@ -91,11 +88,9 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                 // setup the tile matrix set info
                 Integer srid = CRS.lookupEpsgCode(coverage.getCoordinateReferenceSystem2D(), true);
                 if (srid == null)
-                    throw new ServiceException(
-                            "Could not lookup the SRID code from the coverage, this is unexpected");
+                    throw new ServiceException("Could not lookup the SRID code from the coverage, this is unexpected");
                 te.setSrid(srid);
-                ReferencedEnvelope envelope =
-                        ReferencedEnvelope.reference(coverage.getEnvelope2D());
+                ReferencedEnvelope envelope = ReferencedEnvelope.reference(coverage.getEnvelope2D());
                 te.setBounds(envelope);
 
                 // build the tile matrix best matching the data
@@ -126,19 +121,17 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
     private ReferencedEnvelope getTileMatrixBounds(ReferencedEnvelope envelope, TileMatrix tm) {
         double minX = envelope.getMinX();
         double maxY = envelope.getMaxY();
-        ReferencedEnvelope re =
-                new ReferencedEnvelope(
-                        minX,
-                        minX + tm.getMatrixWidth() * tm.getTileWidth() * tm.getXPixelSize(),
-                        maxY - tm.getMatrixHeight() * tm.getTileHeight() * tm.getYPixelSize(),
-                        maxY,
-                        envelope.getCoordinateReferenceSystem());
+        ReferencedEnvelope re = new ReferencedEnvelope(
+                minX,
+                minX + tm.getMatrixWidth() * tm.getTileWidth() * tm.getXPixelSize(),
+                maxY - tm.getMatrixHeight() * tm.getTileHeight() * tm.getYPixelSize(),
+                maxY,
+                envelope.getCoordinateReferenceSystem());
         return re;
     }
 
     /** Encodes tiles starting from an image whose size in an exact multiple of the tile size */
-    private void encodeTiles(RenderedImage ri, GeoPackage geopkg, TileEntry te, TileMatrix tm)
-            throws IOException {
+    private void encodeTiles(RenderedImage ri, GeoPackage geopkg, TileEntry te, TileMatrix tm) throws IOException {
         int tileHeight = tm.getTileHeight();
         int tileWidth = tm.getTileWidth();
 
@@ -157,10 +150,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                     // check if there is any data in the tile, the format allows to just
                     // skip the tile if it has empty contents
                     if (isFullyTransparent(iw.getRenderedImage())) {
-                        LOGGER.log(
-                                Level.FINE,
-                                "Tile at row {0}, col {1} is empty, skipping",
-                                new Object[] {r, c});
+                        LOGGER.log(Level.FINE, "Tile at row {0}, col {1} is empty, skipping", new Object[] {r, c});
                         continue;
                     }
 
@@ -179,11 +169,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                         // tried PNGJ too but got weird output with the built-in nurc:mosaic
                         // empty tiles, repeated ones, it does not happen with IW
                         iw.writePNG(
-                                bos,
-                                "FILTERED",
-                                0.75F,
-                                false,
-                                finalImage.getColorModel() instanceof IndexColorModel);
+                                bos, "FILTERED", 0.75F, false, finalImage.getColorModel() instanceof IndexColorModel);
                     }
 
                     // finally add to the geopackage
@@ -207,8 +193,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
             int transparentPixel = icm.getTransparentPixel();
             if (transparentPixel != -1) {
                 // are all pixels equal to the transparent pixel?
-                return iw.getMaximums()[0] == transparentPixel
-                        && iw.getMinimums()[0] == transparentPixel;
+                return iw.getMaximums()[0] == transparentPixel && iw.getMinimums()[0] == transparentPixel;
             }
 
             // the palette contains alpha then (the first test showed it has a transparency)
@@ -222,8 +207,7 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
 
             // only one fully transparent pixel? if so, same as having the designed tx pixel
             if (!multipleTransparentPixels) {
-                return iw.getMaximums()[0] == transparentPixel
-                        && iw.getMinimums()[0] == transparentPixel;
+                return iw.getMaximums()[0] == transparentPixel && iw.getMinimums()[0] == transparentPixel;
             } else {
                 // too complicated, expand to RGBA then
                 iw.forceComponentColorModel();
@@ -258,18 +242,14 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
     private void expandImageToTile(ImageWorker iw) {
         LOGGER.warning("Still missing transparency/nodata handling");
         RenderedImage ri = iw.getRenderedImage();
-        double[][] thresholds = {{ColorUtilities.getThreshold(ri.getSampleModel().getDataType())}};
+        double[][] thresholds = {
+            {ColorUtilities.getThreshold(ri.getSampleModel().getDataType())}
+        };
         ImageLayout layout = new ImageLayout(ri);
         layout.setWidth(TILE_SIZE);
         layout.setHeight(TILE_SIZE);
         iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
-        iw.mosaic(
-                new RenderedImage[] {ri},
-                MosaicDescriptor.MOSAIC_TYPE_OVERLAY,
-                null,
-                null,
-                thresholds,
-                null);
+        iw.mosaic(new RenderedImage[] {ri}, MosaicDescriptor.MOSAIC_TYPE_OVERLAY, null, null, thresholds, null);
     }
 
     private void checkImageStructure(RenderedImage ri) {
@@ -280,13 +260,11 @@ public class GeopkgRasterPPIO extends GeopkgPPIO {
                             + sm.getDataType()
                             + "\n See https://docs.oracle.com/javase/7/docs/api/constant-values.html#java.awt.image.DataBuffer.TYPE_BYTE for the meaning of the code type");
 
-        if (sm.getNumBands() > 4)
-            throw new ServiceException("Cannot encode images with more than four bands");
+        if (sm.getNumBands() > 4) throw new ServiceException("Cannot encode images with more than four bands");
 
         ColorModel cm = ri.getColorModel();
         if (sm.getNumBands() == 2 && !cm.hasAlpha())
-            throw new ServiceException(
-                    "Cannot encode two banded images unless they are gray/alpha");
+            throw new ServiceException("Cannot encode two banded images unless they are gray/alpha");
     }
 
     /**

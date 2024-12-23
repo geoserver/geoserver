@@ -26,8 +26,7 @@ public class OpenSearchAccessListModel extends LoadableDetachableModel<List<Data
 
     @Override
     protected List<DataStoreInfo> load() {
-        List<DataStoreInfo> stores =
-                GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class);
+        List<DataStoreInfo> stores = GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class);
         List<DataStoreInfo> openSearchAccesses = new ArrayList<>();
         for (DataStoreInfo info : stores) {
             try {
@@ -35,12 +34,11 @@ public class OpenSearchAccessListModel extends LoadableDetachableModel<List<Data
                     openSearchAccesses.add(info);
                 }
             } catch (Exception e) {
-                LOGGER.fine(
-                        "Skipping store "
-                                + info.getWorkspace().getName()
-                                + ":"
-                                + info.getName()
-                                + " as it cannot be connected to");
+                LOGGER.fine("Skipping store "
+                        + info.getWorkspace().getName()
+                        + ":"
+                        + info.getName()
+                        + " as it cannot be connected to");
             }
         }
         return openSearchAccesses;

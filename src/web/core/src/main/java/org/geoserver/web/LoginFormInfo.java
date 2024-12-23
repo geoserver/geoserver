@@ -7,14 +7,13 @@ package org.geoserver.web;
 import org.geoserver.security.GeoServerSecurityProvider;
 
 /**
- * Information about a login form that should be shown from the main page in the GeoServer UI. The
- * "order" field is based on the "name".
+ * Information about a login form that should be shown from the main page in the GeoServer UI. The "order" field is
+ * based on the "name".
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 @SuppressWarnings("serial")
-public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
-        implements Comparable<LoginFormInfo> {
+public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements Comparable<LoginFormInfo> {
     String name;
     String icon = "";
     private Class<GeoServerSecurityProvider> filterClass;
@@ -26,18 +25,12 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
         this.name = name;
     }
 
-    /**
-     * Path to the icon; the graphic file must be places under resources on the same package of the
-     * "componentClass"
-     */
+    /** Path to the icon; the graphic file must be places under resources on the same package of the "componentClass" */
     public String getIcon() {
         return icon;
     }
 
-    /**
-     * Path to the icon; the graphic file must be places under resources on the same package of the
-     * "componentClass"
-     */
+    /** Path to the icon; the graphic file must be places under resources on the same package of the "componentClass" */
     public void setIcon(String icon) {
         this.icon = icon;
     }

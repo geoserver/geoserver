@@ -95,18 +95,16 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         attributesEditor.setVisible(customizeFeatureType);
 
         CheckBox customizeCheck =
-                new CheckBox(
-                        "customizeFeatureType", new PropertyModel<>(this, "customizeFeatureType"));
-        customizeCheck.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        customizeCheck.processInput();
-                        nativeAttributePanel.setVisible(!customizeFeatureType);
-                        attributesEditor.setVisible(customizeFeatureType);
-                        ajaxRequestTarget.add(attributePanel);
-                    }
-                });
+                new CheckBox("customizeFeatureType", new PropertyModel<>(this, "customizeFeatureType"));
+        customizeCheck.add(new AjaxFormComponentUpdatingBehavior("click") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                customizeCheck.processInput();
+                nativeAttributePanel.setVisible(!customizeFeatureType);
+                attributesEditor.setVisible(customizeFeatureType);
+                ajaxRequestTarget.add(attributePanel);
+            }
+        });
         attributePanel.add(customizeCheck);
 
         TextArea<String> cqlFilter = new TextArea<>("cqlFilter");
@@ -116,36 +114,30 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         // reload links
         WebMarkupContainer reloadContainer = new WebMarkupContainer("reloadContainer");
         attributePanel.add(reloadContainer);
-        GeoServerAjaxFormLink reload =
-                new GeoServerAjaxFormLink("reload") {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        GeoServerApplication app = (GeoServerApplication) getApplication();
+        GeoServerAjaxFormLink reload = new GeoServerAjaxFormLink("reload") {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                GeoServerApplication app = (GeoServerApplication) getApplication();
 
-                        FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
-                        app.getCatalog().getResourcePool().clear(ft);
-                        app.getCatalog().getResourcePool().clear(ft.getStore());
-                        target.add(attributePanel);
-                    }
-                };
+                FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
+                app.getCatalog().getResourcePool().clear(ft);
+                app.getCatalog().getResourcePool().clear(ft.getStore());
+                target.add(attributePanel);
+            }
+        };
         reloadContainer.add(reload);
 
-        GeoServerAjaxFormLink warning =
-                new GeoServerAjaxFormLink("reloadWarning") {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        reloadWarningDialog.show(target);
-                    }
-                };
+        GeoServerAjaxFormLink warning = new GeoServerAjaxFormLink("reloadWarning") {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                reloadWarningDialog.show(target);
+            }
+        };
         reloadContainer.add(warning);
 
         add(reloadWarningDialog = new ModalWindow("reloadWarningDialog"));
-        reloadWarningDialog.setPageCreator(
-                (ModalWindow.PageCreator)
-                        () ->
-                                new ReloadWarningDialog(
-                                        new StringResourceModel(
-                                                "featureTypeReloadWarning", this, null)));
+        reloadWarningDialog.setPageCreator((ModalWindow.PageCreator)
+                () -> new ReloadWarningDialog(new StringResourceModel("featureTypeReloadWarning", this, null)));
         reloadWarningDialog.setTitle(new StringResourceModel("warning", null, null));
         reloadWarningDialog.setInitialHeight(100);
         reloadWarningDialog.setInitialHeight(200);
@@ -153,56 +145,44 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         // sql view handling
         WebMarkupContainer sqlViewContainer = new WebMarkupContainer("editSqlContainer");
         attributePanel.add(sqlViewContainer);
-        sqlViewContainer.add(
-                new Link("editSql") {
+        sqlViewContainer.add(new Link("editSql") {
 
-                    @Override
-                    public void onClick() {
-                        FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
-                        try {
-                            setResponsePage(
-                                    new SQLViewEditPage(
-                                            typeInfo,
-                                            ((ResourceConfigurationPage) this.getPage())));
-                        } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
-                            error(e.toString());
-                        }
-                    }
-                });
+            @Override
+            public void onClick() {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
+                try {
+                    setResponsePage(new SQLViewEditPage(typeInfo, ((ResourceConfigurationPage) this.getPage())));
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
+                    error(e.toString());
+                }
+            }
+        });
 
         // which one do we show, reload or edit?
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
         reloadContainer.setVisible(
-                typeInfo.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class)
-                        == null);
+                typeInfo.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class) == null);
         sqlViewContainer.setVisible(!reloadContainer.isVisible());
 
         // Cascaded Stored Query
-        WebMarkupContainer cascadedStoredQueryContainer =
-                new WebMarkupContainer("editCascadedStoredQueryContainer");
+        WebMarkupContainer cascadedStoredQueryContainer = new WebMarkupContainer("editCascadedStoredQueryContainer");
         attributePanel.add(cascadedStoredQueryContainer);
-        cascadedStoredQueryContainer.add(
-                new Link("editCascadedStoredQuery") {
-                    @Override
-                    public void onClick() {
-                        FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
-                        try {
-                            setResponsePage(
-                                    new CascadedWFSStoredQueryEditPage(
-                                            typeInfo,
-                                            ((ResourceConfigurationPage) this.getPage())));
-                        } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
-                            error(e.toString());
-                        }
-                    }
-                });
+        cascadedStoredQueryContainer.add(new Link("editCascadedStoredQuery") {
+            @Override
+            public void onClick() {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
+                try {
+                    setResponsePage(
+                            new CascadedWFSStoredQueryEditPage(typeInfo, ((ResourceConfigurationPage) this.getPage())));
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
+                    error(e.toString());
+                }
+            }
+        });
         cascadedStoredQueryContainer.setVisible(
-                typeInfo.getMetadata()
-                                .get(
-                                        FeatureTypeInfo.STORED_QUERY_CONFIGURATION,
-                                        StoredQueryConfiguration.class)
+                typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class)
                         != null);
     }
 
@@ -210,53 +190,44 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         Fragment fragment = new Fragment(id, "attributePanelFragment", this);
 
         // just use the direct attributes, this is not editable atm
-        attributes =
-                new ListView<AttributeTypeInfo>("attributes", new AttributeListModel()) {
-                    @Override
-                    protected void populateItem(ListItem item) {
+        attributes = new ListView<AttributeTypeInfo>("attributes", new AttributeListModel()) {
+            @Override
+            protected void populateItem(ListItem item) {
 
-                        // odd/even style
-                        item.add(
-                                AttributeModifier.replace(
-                                        "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+                // odd/even style
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
-                        // dump the attribute information we have
-                        AttributeTypeInfo attribute = (AttributeTypeInfo) item.getModelObject();
-                        item.add(new Label("name", attribute.getName()));
-                        item.add(
-                                new Label(
-                                        "minmax",
-                                        attribute.getMinOccurs() + "/" + attribute.getMaxOccurs()));
-                        try {
-                            // working around a serialization issue
-                            FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
-                            final ResourcePool resourcePool =
-                                    GeoServerApplication.get().getCatalog().getResourcePool();
-                            final FeatureType featureType = resourcePool.getFeatureType(typeInfo);
-                            org.geotools.api.feature.type.PropertyDescriptor pd =
-                                    featureType.getDescriptor(attribute.getName());
-                            String typeName = "?";
-                            String nillable = "?";
-                            try {
-                                typeName = pd.getType().getBinding().getSimpleName();
-                                nillable = String.valueOf(pd.isNillable());
-                            } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.INFO,
-                                        "Could not find attribute "
-                                                + attribute.getName()
-                                                + " in feature type "
-                                                + featureType,
-                                        e);
-                            }
-                            item.add(new Label("type", typeName));
-                            item.add(new Label("nillable", nillable));
-                        } catch (IOException e) {
-                            item.add(new Label("type", "?"));
-                            item.add(new Label("nillable", "?"));
-                        }
+                // dump the attribute information we have
+                AttributeTypeInfo attribute = (AttributeTypeInfo) item.getModelObject();
+                item.add(new Label("name", attribute.getName()));
+                item.add(new Label("minmax", attribute.getMinOccurs() + "/" + attribute.getMaxOccurs()));
+                try {
+                    // working around a serialization issue
+                    FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
+                    final ResourcePool resourcePool =
+                            GeoServerApplication.get().getCatalog().getResourcePool();
+                    final FeatureType featureType = resourcePool.getFeatureType(typeInfo);
+                    org.geotools.api.feature.type.PropertyDescriptor pd =
+                            featureType.getDescriptor(attribute.getName());
+                    String typeName = "?";
+                    String nillable = "?";
+                    try {
+                        typeName = pd.getType().getBinding().getSimpleName();
+                        nillable = String.valueOf(pd.isNillable());
+                    } catch (Exception e) {
+                        LOGGER.log(
+                                Level.INFO,
+                                "Could not find attribute " + attribute.getName() + " in feature type " + featureType,
+                                e);
                     }
-                };
+                    item.add(new Label("type", typeName));
+                    item.add(new Label("nillable", nillable));
+                } catch (IOException e) {
+                    item.add(new Label("type", "?"));
+                    item.add(new Label("nillable", "?"));
+                }
+            }
+        };
         fragment.add(attributes);
         return fragment;
     }
@@ -302,8 +273,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     /*
      * Validate that CQL filter syntax is valid, and attribute names used in the CQL filter are actually part of the layer
      */
-    private void validateCqlFilter(FeatureTypeInfo typeInfo, String cqlFilterString)
-            throws Exception {
+    private void validateCqlFilter(FeatureTypeInfo typeInfo, String cqlFilterString) throws Exception {
         Filter cqlFilter = null;
         if (cqlFilterString != null && !cqlFilterString.isEmpty()) {
             cqlFilter = ECQL.toFilter(cqlFilterString);
@@ -311,12 +281,9 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
             if (ft instanceof SimpleFeatureType) {
 
                 SimpleFeatureType sft = (SimpleFeatureType) ft;
-                BeanToPropertyValueTransformer transformer =
-                        new BeanToPropertyValueTransformer("localName");
-                Collection<String> featureAttributesNames =
-                        CollectionUtils.collect(
-                                sft.getAttributeDescriptors(),
-                                ad -> (String) transformer.transform(ad));
+                BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("localName");
+                Collection<String> featureAttributesNames = CollectionUtils.collect(
+                        sft.getAttributeDescriptors(), ad -> (String) transformer.transform(ad));
 
                 FilterAttributeExtractor filterAttriubtes = new FilterAttributeExtractor(null);
                 cqlFilter.accept(filterAttriubtes, null);
@@ -348,8 +315,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         @Override
         protected List<AttributeTypeInfo> load() {
             return AttributeTypeInfoEditor.loadNativeAttributes(
-                    (FeatureTypeInfo) getDefaultModelObject(),
-                    FeatureResourceConfigurationPanel.this);
+                    (FeatureTypeInfo) getDefaultModelObject(), FeatureResourceConfigurationPanel.this);
         }
     }
 }

@@ -18,11 +18,8 @@ import org.geotools.filter.capability.FunctionNameImpl;
  */
 public class FilterFunction_gridCoverageProperty extends FunctionExpressionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "gridCoverageProperty",
-                    parameter("value", Number.class),
-                    parameter("property", String.class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "gridCoverageProperty", parameter("value", Number.class), parameter("property", String.class));
 
     public FilterFunction_gridCoverageProperty() {
         super(NAME);
@@ -49,8 +46,7 @@ public class FilterFunction_gridCoverageProperty extends FunctionExpressionImpl 
                             + feature.getClass());
         } catch (Exception e) {
             // probably a type error
-            throw new IllegalArgumentException(
-                    "Filter Function problem for function gridCoverageProperty", e);
+            throw new IllegalArgumentException("Filter Function problem for function gridCoverageProperty", e);
         }
     }
 }

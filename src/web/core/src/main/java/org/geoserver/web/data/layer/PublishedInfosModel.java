@@ -36,8 +36,7 @@ public class PublishedInfosModel extends LoadableDetachableModel<List<PublishedI
         Catalog catalog = GeoServerApplication.get().getCatalog();
         List<PublishedInfo> layers = new ArrayList<>();
 
-        try (CloseableIterator<PublishedInfo> iterator =
-                catalog.list(PublishedInfo.class, getFilter())) {
+        try (CloseableIterator<PublishedInfo> iterator = catalog.list(PublishedInfo.class, getFilter())) {
             iterator.forEachRemaining(layers::add);
         }
         Collections.sort(layers, Comparator.comparing(PublishedInfo::prefixedName));

@@ -85,14 +85,12 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         int mapHeight = mapContent.getMapHeight();
         Rectangle paintArea = new Rectangle(mapWidth, mapHeight);
         if (this.tileBuilderFactory.shouldOversampleScale()) {
-            paintArea =
-                    new Rectangle(
-                            this.tileBuilderFactory.getOversampleX() * mapWidth,
-                            this.tileBuilderFactory.getOversampleY() * mapHeight);
+            paintArea = new Rectangle(
+                    this.tileBuilderFactory.getOversampleX() * mapWidth,
+                    this.tileBuilderFactory.getOversampleY() * mapHeight);
         }
 
-        final VectorTileBuilder vectorTileBuilder =
-                this.tileBuilderFactory.newBuilder(paintArea, renderingArea);
+        final VectorTileBuilder vectorTileBuilder = this.tileBuilderFactory.newBuilder(paintArea, renderingArea);
 
         CoordinateReferenceSystem sourceCrs;
         for (Layer layer : mapContent.layers()) {
@@ -104,21 +102,15 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             }
 
             sourceCrs = geometryDescriptor.getType().getCoordinateReferenceSystem();
-            int buffer =
-                    StyleQueryUtil.getComputedBuffer(
-                            mapContent.getBuffer(),
-                            StyleQueryUtil.getFeatureStyles(
-                                    layer,
-                                    StyleQueryUtil.getMapScale(mapContent, renderingArea),
-                                    schema));
+            int buffer = StyleQueryUtil.getComputedBuffer(
+                    mapContent.getBuffer(),
+                    StyleQueryUtil.getFeatureStyles(
+                            layer, StyleQueryUtil.getMapScale(mapContent, renderingArea), schema));
             if (this.tileBuilderFactory.shouldOversampleScale()) {
                 // buffer is in pixels (style pixels), need to convert to paint area pixels
-                buffer *=
-                        Math.max(
-                                Math.max(
-                                        this.tileBuilderFactory.getOversampleX(),
-                                        this.tileBuilderFactory.getOversampleY()),
-                                1); // if 0 (i.e. test case), don't expand
+                buffer *= Math.max(
+                        Math.max(this.tileBuilderFactory.getOversampleX(), this.tileBuilderFactory.getOversampleY()),
+                        1); // if 0 (i.e. test case), don't expand
             }
 
             VectorTileOptions vectorTileOptions = new VectorTileOptions(layer, mapContent);
@@ -126,28 +118,13 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
             Query query = StyleQueryUtil.getStyleQuery(layer, mapContent);
             vectorTileOptions.customizeQuery(query);
             Hints hints = query.getHints();
-            Pipeline pipeline =
-                    getPipeline(
-                            mapContent,
-                            renderingArea,
-                            paintArea,
-                            sourceCrs,
-                            featureSource.getSupportedHints(),
-                            hints,
-                            buffer);
+            Pipeline pipeline = getPipeline(
+                    mapContent, renderingArea, paintArea, sourceCrs, featureSource.getSupportedHints(), hints, buffer);
             hints.remove(Hints.SCREENMAP);
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);
             String layerName = schema.getName().getLocalPart();
             boolean coalesceEnabled = vectorTileOptions.isCoalesceEnabled();
-            run(
-                    features,
-                    pipeline,
-                    geometryDescriptor,
-                    vectorTileBuilder,
-                    layer,
-                    false,
-                    layerName,
-                    coalesceEnabled);
+            run(features, pipeline, geometryDescriptor, vectorTileBuilder, layer, false, layerName, coalesceEnabled);
 
             if (vectorTileOptions.generateLabelLayer()) {
                 vectorTileOptions.customizeLabelQuery(query);
@@ -179,16 +156,14 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
         final Pipeline pipeline;
         try {
             final PipelineBuilder builder =
-                    PipelineBuilder.newBuilder(
-                            renderingArea, paintArea, sourceCrs, overSamplingFactor, buffer);
+                    PipelineBuilder.newBuilder(renderingArea, paintArea, sourceCrs, overSamplingFactor, buffer);
 
-            pipeline =
-                    builder.preprocess()
-                            .transform(transformToScreenCoordinates)
-                            .clip(clipToMapBounds, transformToScreenCoordinates)
-                            .simplify(transformToScreenCoordinates, fsHints, qHints)
-                            .collapseCollections()
-                            .build();
+            pipeline = builder.preprocess()
+                    .transform(transformToScreenCoordinates)
+                    .clip(clipToMapBounds, transformToScreenCoordinates)
+                    .simplify(transformToScreenCoordinates, fsHints, qHints)
+                    .collapseCollections()
+                    .build();
 
         } catch (FactoryException e) {
             throw new ServiceException(e);
@@ -221,10 +196,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                 try {
                     finalGeom = pipeline.execute(originalGeom);
                 } catch (Exception processingException) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            processingException.getLocalizedMessage(),
-                            processingException);
+                    LOGGER.log(Level.WARNING, processingException.getLocalizedMessage(), processingException);
                     continue;
                 }
                 if (finalGeom.isEmpty()) {
@@ -233,17 +205,14 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
 
                 final String featureId = feature.getFeatureId();
                 final Map<String, Object> properties = feature.getProperties();
-                vectorTileBuilder.addFeature(
-                        layerName, featureId, geometryName, finalGeom, properties);
+                vectorTileBuilder.addFeature(layerName, featureId, geometryName, finalGeom, properties);
                 count++;
             }
         }
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
             String msg =
-                    String.format(
-                            "Added %,d out of %,d features of '%s' in %s",
-                            count, total, layer.getTitle(), sw);
+                    String.format("Added %,d out of %,d features of '%s' in %s", count, total, layer.getTitle(), sw);
             LOGGER.fine(msg);
         }
     }

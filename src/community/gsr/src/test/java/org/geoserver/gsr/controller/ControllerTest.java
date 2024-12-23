@@ -101,8 +101,7 @@ public class ControllerTest extends GeoServerSystemTestSupport {
         return baseURL;
     }
 
-    protected MockHttpServletResponse getAsMockHttpServletResponse(
-            String path, int expectedHttpCode) throws Exception {
+    protected MockHttpServletResponse getAsMockHttpServletResponse(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
 
         assertEquals(expectedHttpCode, response.getStatus());

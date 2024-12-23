@@ -18,8 +18,7 @@ public class GeoPkgSymbolImage {
         this.symbol = symbol;
     }
 
-    public GeoPkgSymbolImage(
-            long id, String format, byte[] content, String uri, GeoPkgSymbol symbol) {
+    public GeoPkgSymbolImage(long id, String format, byte[] content, String uri, GeoPkgSymbol symbol) {
         this.id = id;
         this.format = format;
         this.content = content;

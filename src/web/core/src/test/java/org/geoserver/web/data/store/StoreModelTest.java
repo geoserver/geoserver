@@ -57,8 +57,7 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testStoresModel() throws Exception {
-        WorkspaceDetachableModel ws =
-                new WorkspaceDetachableModel(getCatalog().getWorkspaceByName("sf"));
+        WorkspaceDetachableModel ws = new WorkspaceDetachableModel(getCatalog().getWorkspaceByName("sf"));
         StoresModel model = new StoresModel(ws);
 
         List<StoreInfo> stores = getCatalog().getStoresByWorkspace("ws", StoreInfo.class);
@@ -85,8 +84,7 @@ public class StoreModelTest extends GeoServerWicketTestSupport {
         objout.flush();
         objout.close();
 
-        ObjectInputStream objin =
-                new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        ObjectInputStream objin = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
         return (T) objin.readObject();
     }
 }

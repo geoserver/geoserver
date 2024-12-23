@@ -35,12 +35,10 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
     public static Property<RequestFilterChain> POSITION = new PropertyPlaceholder<>("position");
     public static Property<RequestFilterChain> REMOVE = new PropertyPlaceholder<>("remove");
 
-    public static final Property<RequestFilterChain> DISABLED =
-            new BeanProperty<>("disabled", "disabled");
+    public static final Property<RequestFilterChain> DISABLED = new BeanProperty<>("disabled", "disabled");
     public static final Property<RequestFilterChain> ALLOWSESSIONCREATION =
             new BeanProperty<>("allowSessionCreation", "allowSessionCreation");
-    public static final Property<RequestFilterChain> REQUIRESSL =
-            new BeanProperty<>("requireSSL", "requireSSL");
+    public static final Property<RequestFilterChain> REQUIRESSL = new BeanProperty<>("requireSSL", "requireSSL");
     public static final Property<RequestFilterChain> MATCHHTTPMETHOD =
             new BeanProperty<>("matchHTTPMethod", "matchHTTPMethod");
 

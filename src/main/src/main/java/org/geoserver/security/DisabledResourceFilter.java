@@ -35,8 +35,7 @@ public class DisabledResourceFilter extends AbstractCatalogFilter {
                         Predicates.equal("resource.enabled", true),
                         Predicates.equal("resource.store.enabled", true));
             } else if (ResourceInfo.class.isAssignableFrom(clazz)) {
-                return Predicates.and(
-                        Predicates.equal("enabled", true), Predicates.equal("store.enabled", true));
+                return Predicates.and(Predicates.equal("enabled", true), Predicates.equal("store.enabled", true));
             }
         }
         return Filter.INCLUDE;

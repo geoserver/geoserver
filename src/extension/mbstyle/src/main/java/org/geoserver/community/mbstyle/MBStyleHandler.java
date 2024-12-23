@@ -41,28 +41,19 @@ public class MBStyleHandler extends StyleHandler {
         try {
             TEMPLATES.put(
                     StyleType.GENERIC,
-                    IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_generic.json"),
-                            UTF_8));
+                    IOUtils.toString(MBStyleHandler.class.getResourceAsStream("template_generic.json"), UTF_8));
             TEMPLATES.put(
                     StyleType.POINT,
-                    IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_point.json"),
-                            UTF_8));
+                    IOUtils.toString(MBStyleHandler.class.getResourceAsStream("template_point.json"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
-                    IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_polygon.json"),
-                            UTF_8));
+                    IOUtils.toString(MBStyleHandler.class.getResourceAsStream("template_polygon.json"), UTF_8));
             TEMPLATES.put(
                     StyleType.LINE,
-                    IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_line.json"), UTF_8));
+                    IOUtils.toString(MBStyleHandler.class.getResourceAsStream("template_line.json"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
-                    IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_raster.json"),
-                            UTF_8));
+                    IOUtils.toString(MBStyleHandler.class.getResourceAsStream("template_raster.json"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -77,10 +68,7 @@ public class MBStyleHandler extends StyleHandler {
 
     @Override
     public StyledLayerDescriptor parse(
-            Object input,
-            Version version,
-            ResourceLocator resourceLocator,
-            EntityResolver entityResolver)
+            Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         // see if we can use the style cache, some conversions are expensive.
         if (input instanceof File) {
@@ -91,15 +79,11 @@ public class MBStyleHandler extends StyleHandler {
 
         if (input instanceof Resource) {
             Resource jsonResource = (Resource) input;
-            Resource sldResource =
-                    jsonResource
-                            .parent()
-                            .get(FilenameUtils.getBaseName(jsonResource.name()) + ".sld");
+            Resource sldResource = jsonResource.parent().get(FilenameUtils.getBaseName(jsonResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > jsonResource.lastmodified()) {
                 // if sld resource exists, use it
-                return sldHandler.parse(
-                        sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
+                return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
             } else {
                 // otherwise convert and write the cache
                 try (Reader reader = toReader(input)) {
@@ -107,8 +91,7 @@ public class MBStyleHandler extends StyleHandler {
                     try (OutputStream fos = sldResource.out()) {
                         sldHandler.encode(sld, SLDHandler.VERSION_10, true, fos);
                     }
-                    return sldHandler.parse(
-                            sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
+                    return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
                 } catch (ParseException e) {
                     throw new IOException(e);
                 }
@@ -128,15 +111,13 @@ public class MBStyleHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(
-            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
             throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         return MapBoxStyle.validate(toReader(input));
     }
 

@@ -79,8 +79,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         List<GrantedAuthority> l = new ArrayList<>();
         l.add(new GeoServerRole("ROLE_ADMINISTRATOR"));
         SecurityContextHolder.getContext()
-                .setAuthentication(
-                        new UsernamePasswordAuthenticationToken("admin", "geoserver", l));
+                .setAuthentication(new UsernamePasswordAuthenticationToken("admin", "geoserver", l));
     }
 
     @Before
@@ -95,8 +94,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     private Integer putZip(String path) throws Exception {
         File file = new File(path);
         try (InputStream stream = getInputStream(path, file)) {
-            MockHttpServletResponse resp =
-                    postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
+            MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
             assertEquals(201, resp.getStatus());
             assertNotNull(resp.getHeader("Location"));
 
@@ -105,12 +103,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
             ImportContext context = importer.getContext(id);
 
             MockHttpServletRequest req =
-                    createRequest(
-                            RestBaseController.ROOT_PATH
-                                    + "/imports/"
-                                    + id
-                                    + "/tasks/"
-                                    + file.getName());
+                    createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/" + file.getName());
             req.setContentType("application/zip");
             req.addHeader("Content-Type", "application/zip");
             req.setMethod("PUT");
@@ -141,8 +134,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     }
 
     private Integer putZipAsURL(String zip) throws Exception {
-        MockHttpServletResponse resp =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
+        MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
@@ -150,27 +142,22 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         Integer id = Integer.parseInt(split[split.length - 1]);
         ImportContext context = importer.getContext(id);
 
-        MockHttpServletRequest req =
-                createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/");
+        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/");
         MultiValueMap<String, Object> form = new LinkedMultiValueMap<>(1);
         form.add("url", new File(zip).getAbsoluteFile().toURI().toString());
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
         final HttpHeaders headers = new HttpHeaders();
-        new FormHttpMessageConverter()
-                .write(
-                        form,
-                        MediaType.APPLICATION_FORM_URLENCODED,
-                        new HttpOutputMessage() {
-                            @Override
-                            public OutputStream getBody() throws IOException {
-                                return stream;
-                            }
+        new FormHttpMessageConverter().write(form, MediaType.APPLICATION_FORM_URLENCODED, new HttpOutputMessage() {
+            @Override
+            public OutputStream getBody() throws IOException {
+                return stream;
+            }
 
-                            @Override
-                            public HttpHeaders getHeaders() {
-                                return headers;
-                            }
-                        });
+            @Override
+            public HttpHeaders getHeaders() {
+                return headers;
+            }
+        });
         req.setContent(stream.toByteArray());
         req.setMethod("POST");
         req.setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE);
@@ -213,8 +200,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testGetAllTasks() throws Exception {
         int id = lastId();
-        JSONObject json =
-                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
 
         JSONArray tasks = json.getJSONArray("tasks");
         assertEquals(2, tasks.size());
@@ -231,9 +217,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testGetTask() throws Exception {
         int id = lastId();
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
         JSONObject task = json.getJSONObject("task");
         assertEquals(0, task.getInt("id"));
         assertTrue(task.getString("href").endsWith("/imports/" + id + "/tasks/0"));
@@ -241,22 +225,15 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetTaskProgress() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + lastId()
-                                        + "/tasks/0/progress",
-                                200);
+        JSONObject json = (JSONObject)
+                getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks/0/progress", 200);
         assertEquals("READY", json.get("state"));
         // TODO: trigger import and check progress
     }
 
     @Test
     public void testDeleteTask() throws Exception {
-        MockHttpServletResponse resp =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
+        MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
@@ -275,14 +252,12 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
             parts[i] = new FilePart(files[i].getName(), files[i]);
         }
 
-        MultipartRequestEntity multipart =
-                new MultipartRequestEntity(parts, new PostMethod().getParams());
+        MultipartRequestEntity multipart = new MultipartRequestEntity(parts, new PostMethod().getParams());
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         multipart.writeRequest(bout);
 
-        MockHttpServletRequest req =
-                createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
         req.setContentType(multipart.getContentType());
         req.addHeader("Content-Type", multipart.getContentType());
         req.setMethod("POST");
@@ -303,8 +278,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testPostMultiPartFormData() throws Exception {
-        MockHttpServletResponse resp =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
+        MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", "");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
@@ -323,14 +297,12 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
             new FilePart("archsites.prj", new File(dir, "archsites.prj"))
         };
 
-        MultipartRequestEntity multipart =
-                new MultipartRequestEntity(parts, new PostMethod().getParams());
+        MultipartRequestEntity multipart = new MultipartRequestEntity(parts, new PostMethod().getParams());
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         multipart.writeRequest(bout);
 
-        MockHttpServletRequest req =
-                createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
         req.setContentType(multipart.getContentType());
         req.addHeader("Content-Type", multipart.getContentType());
         req.setMethod("POST");
@@ -348,11 +320,9 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertTrue(new File(data.getFile().getParentFile(), ".locking").exists());
     }
 
-    private ImportContext uploadGeotiffAndVerify(
-            String taskName, InputStream geotiffResourceStream, String contentType)
+    private ImportContext uploadGeotiffAndVerify(String taskName, InputStream geotiffResourceStream, String contentType)
             throws Exception {
-        return uploadGeotiffAndVerify(
-                taskName, geotiffResourceStream, contentType, "", "application/xml");
+        return uploadGeotiffAndVerify(taskName, geotiffResourceStream, contentType, "", "application/xml");
     }
 
     private ImportContext uploadGeotiffAndVerify(
@@ -364,10 +334,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
             throws Exception {
         // upload  tif or zip file containing a tif and verify the results
         MockHttpServletResponse resp =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports",
-                        createImportBody,
-                        creationContentType);
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/imports", createImportBody, creationContentType);
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
@@ -376,8 +343,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         ImportContext context = importer.getContext(id);
 
         MockHttpServletRequest req =
-                createRequest(
-                        RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/" + taskName);
+                createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/" + taskName);
         req.setContentType(contentType);
         req.addHeader("Content-Type", contentType);
         req.setMethod("PUT");
@@ -405,8 +371,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testPostGeotiffBz2() throws Exception {
         String path = "geotiff/EmissiveCampania.tif.bz2";
-        try (InputStream stream =
-                ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
+        try (InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
 
             uploadGeotiffAndVerify(new File(path).getName(), stream, "application/x-bzip2");
         }
@@ -415,26 +380,23 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testPostGeotiffBz2TargetWorkspaceJsonUTF8() throws Exception {
         String path = "geotiff/EmissiveCampania.tif.bz2";
-        try (InputStream stream =
-                ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
+        try (InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path)) {
 
-            String creationRequest =
-                    "{\n"
-                            + "   \"import\": {\n"
-                            + "      \"targetWorkspace\": {\n"
-                            + "         \"workspace\": {\n"
-                            + "            \"name\": \"sf\"\n"
-                            + "         }\n"
-                            + "      }\n"
-                            + "   }\n"
-                            + "}";
-            ImportContext context =
-                    uploadGeotiffAndVerify(
-                            new File(path).getName(),
-                            stream,
-                            "application/x-bzip2",
-                            creationRequest,
-                            "application/json;charset=UTF-8");
+            String creationRequest = "{\n"
+                    + "   \"import\": {\n"
+                    + "      \"targetWorkspace\": {\n"
+                    + "         \"workspace\": {\n"
+                    + "            \"name\": \"sf\"\n"
+                    + "         }\n"
+                    + "      }\n"
+                    + "   }\n"
+                    + "}";
+            ImportContext context = uploadGeotiffAndVerify(
+                    new File(path).getName(),
+                    stream,
+                    "application/x-bzip2",
+                    creationRequest,
+                    "application/json;charset=UTF-8");
             final ImportTask task = context.getTasks().get(0);
             assertEquals("sf", task.getStore().getWorkspace().getName());
         }
@@ -451,8 +413,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         String tifname = "EmissiveCampania.tif";
         String bz2name = tifname + ".bz2";
         File destinationArchive = new File(tempDir, bz2name);
-        try (InputStream inputStream =
-                ImporterTestSupport.class.getResourceAsStream("test-data/geotiff/" + bz2name)) {
+        try (InputStream inputStream = ImporterTestSupport.class.getResourceAsStream("test-data/geotiff/" + bz2name)) {
 
             IOUtils.copy(inputStream, destinationArchive);
 
@@ -473,49 +434,26 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     @Test
     public void testGetTarget() throws Exception {
         int id = lastId();
-        JSONObject json =
-                ((JSONObject)
-                                getAsJSON(
-                                        RestBaseController.ROOT_PATH
-                                                + "/imports/"
-                                                + id
-                                                + "/tasks/0"))
-                        .getJSONObject("task");
+        JSONObject json = ((JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0"))
+                .getJSONObject("task");
 
         JSONObject target = json.getJSONObject("target");
         assertTrue(target.has("href"));
         assertTrue(
-                target.getString("href")
-                        .endsWith(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0/target"));
+                target.getString("href").endsWith(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target"));
         assertTrue(target.has("dataStore"));
 
         target = target.getJSONObject("dataStore");
         assertTrue(target.has("name"));
 
-        json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0/target");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target");
         assertNotNull(json.get("dataStore"));
     }
 
     @Test
     public void testPutTarget() throws Exception {
         int id = lastId();
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0/target");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target");
         assertEquals("archsites", json.getJSONObject("dataStore").getString("name"));
 
         String update = "{\"dataStore\": { \"type\": \"foo\" }}";
@@ -524,13 +462,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
                 update,
                 MediaType.APPLICATION_JSON.toString());
 
-        json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0/target");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("type"));
     }
 
@@ -545,13 +477,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
                 update,
                 MediaType.APPLICATION_JSON.toString());
 
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0/target");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("name"));
         assertEquals("H2", json.getJSONObject("dataStore").getString("type"));
     }
@@ -605,13 +531,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         ImportContext context = importer.getContext(id);
 
-        json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0?expand=2");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0?expand=2");
         task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));
 
@@ -627,25 +547,16 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
 
         int id = lastId();
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0");
         JSONObject task = json.getJSONObject("task");
         assertEquals("NO_CRS", task.get("state"));
         assertFalse(task.getJSONObject("layer").containsKey("srs"));
 
-        setSRSRequest(
-                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/layer", "EPSG:26713");
+        setSRSRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/layer", "EPSG:26713");
 
         ImportContext context = importer.getContext(id);
 
-        json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + id
-                                        + "/tasks/0?expand=2");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0?expand=2");
         task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));
 
@@ -669,32 +580,21 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
         JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + context.getId()
-                                        + "/tasks/0");
+                (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0");
         JSONObject task = json.getJSONObject("task");
         assertEquals("READY", task.get("state"));
 
         // now rename the layer
-        String renamer =
-                "{\n"
-                        + "  \"layer\": {\n"
-                        + "\t\t\t\"name\": \"test123\",\n"
-                        + "\t\t  \"nativeName\": \"test123\",\n"
-                        + "\t\t}\n"
-                        + "}";
-        JSONObject response =
-                (JSONObject)
-                        putAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/imports/"
-                                        + context.getId()
-                                        + "/tasks/0/layer",
-                                renamer,
-                                "application/json");
+        String renamer = "{\n"
+                + "  \"layer\": {\n"
+                + "\t\t\t\"name\": \"test123\",\n"
+                + "\t\t  \"nativeName\": \"test123\",\n"
+                + "\t\t}\n"
+                + "}";
+        JSONObject response = (JSONObject) putAsJSON(
+                RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/layer",
+                renamer,
+                "application/json");
         JSONObject layer = response.getJSONObject("layer");
         assertEquals("test123", layer.getString("name"));
         assertEquals("test123", layer.getString("nativeName"));
@@ -711,8 +611,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertThat(Arrays.asList(store.getTypeNames()), CoreMatchers.hasItem("test123"));
     }
 
-    private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp)
-            throws UnsupportedEncodingException {
+    private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) throws UnsupportedEncodingException {
         assertEquals(HttpStatus.BAD_REQUEST.value(), resp.getStatus());
         // TODO: Implement JSON error format
         /*
@@ -723,8 +622,8 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     }
 
     /**
-     * Ideally, many variations of error handling could be tested here. (For performance - otherwise
-     * too much tear-down/setup)
+     * Ideally, many variations of error handling could be tested here. (For performance - otherwise too much
+     * tear-down/setup)
      */
     @Test
     public void testErrorHandling() throws Exception {
@@ -754,24 +653,20 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
                 .endObject()
                 .endObject();
 
-        MockHttpServletResponse resp =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0",
-                        badDateFormatTransform.buildObject().toString(),
-                        "application/json");
+        MockHttpServletResponse resp = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0",
+                badDateFormatTransform.buildObject().toString(),
+                "application/json");
         assertErrorResponse(resp, "Invalid date parsing format");
     }
 
     @Test
     public void testDeleteTask2() throws Exception {
         MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks/0");
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks/0");
         assertEquals(204, response.getStatus());
 
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + lastId() + "/tasks");
 
         JSONArray items = json.getJSONArray("tasks");
         assertEquals(1, items.size());

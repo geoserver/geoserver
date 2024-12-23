@@ -40,10 +40,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
                     return new SemanticAnnotationsExtension(geoPackage);
                 }
             } catch (SQLException e) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Could not initialize the semantic annotations extension",
-                        e);
+                LOGGER.log(Level.WARNING, "Could not initialize the semantic annotations extension", e);
             }
 
             return null;
@@ -68,18 +65,13 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
         // ensure the necessary tables are there
         try (Connection cx = getConnection()) {
             if (!extensionExists(cx)) {
-                SqlUtil.runScript(
-                        PortrayalExtension.class.getResourceAsStream("geopkg_sa_extension.sql"),
-                        cx);
+                SqlUtil.runScript(PortrayalExtension.class.getResourceAsStream("geopkg_sa_extension.sql"), cx);
             }
         }
     }
 
     public void addAnnotation(GeoPkgSemanticAnnotation sa) throws SQLException {
-        String sql =
-                format(
-                        "INSERT INTO %s(type, title, description, uri) VALUES(?, ?, ?, ?)",
-                        SA_TABLE);
+        String sql = format("INSERT INTO %s(type, title, description, uri) VALUES(?, ?, ?, ?)", SA_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, sa.getType());
@@ -108,8 +100,7 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     public List<GeoPkgSemanticAnnotation> getAnnotationsByURI(String uri) throws SQLException {
-        String sql =
-                format("SELECT id, type, title, description, uri from %s WHERE uri = ?", SA_TABLE);
+        String sql = format("SELECT id, type, title, description, uri from %s WHERE uri = ?", SA_TABLE);
         List<GeoPkgSemanticAnnotation> result = new ArrayList<>();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
@@ -143,17 +134,14 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
     }
 
     private boolean extensionExists(Connection cx) throws SQLException {
-        try (ResultSet rs =
-                cx.getMetaData().getTables(null, null, SA_TABLE, new String[] {"TABLE"})) {
+        try (ResultSet rs = cx.getMetaData().getTables(null, null, SA_TABLE, new String[] {"TABLE"})) {
             return rs.next();
         }
     }
 
     public void addReference(GeoPkgAnnotationReference ref) throws SQLException {
-        String sql =
-                format(
-                        "INSERT INTO %s(table_name, key_column_name, key_value, sa_id) VALUES(?, ?, ?, ?)",
-                        SA_REFERENCE_TABLE);
+        String sql = format(
+                "INSERT INTO %s(table_name, key_column_name, key_value, sa_id) VALUES(?, ?, ?, ?)", SA_REFERENCE_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, ref.getTableName());
@@ -171,14 +159,13 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
      * @return
      * @throws SQLException
      */
-    public List<GeoPkgAnnotationReference> getReferencesForAnnotation(
-            GeoPkgSemanticAnnotation annotation) throws SQLException {
-        String sql =
-                format(
-                        "SELECT table_name, key_column_name, key_value, sa_id from %s "
-                                + "WHERE sa_id = ? "
-                                + "ORDER BY table_name, key_column_name, key_value",
-                        SA_REFERENCE_TABLE);
+    public List<GeoPkgAnnotationReference> getReferencesForAnnotation(GeoPkgSemanticAnnotation annotation)
+            throws SQLException {
+        String sql = format(
+                "SELECT table_name, key_column_name, key_value, sa_id from %s "
+                        + "WHERE sa_id = ? "
+                        + "ORDER BY table_name, key_column_name, key_value",
+                SA_REFERENCE_TABLE);
         List<GeoPkgAnnotationReference> result = new ArrayList<>();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
@@ -192,12 +179,9 @@ public class SemanticAnnotationsExtension extends GeoPkgExtension {
         return result;
     }
 
-    private GeoPkgAnnotationReference mapAnnotationReference(
-            ResultSet rs, GeoPkgSemanticAnnotation annotation) throws SQLException {
+    private GeoPkgAnnotationReference mapAnnotationReference(ResultSet rs, GeoPkgSemanticAnnotation annotation)
+            throws SQLException {
         return new GeoPkgAnnotationReference(
-                rs.getString(1),
-                rs.getString(2),
-                Converters.convert(rs.getObject(3), Long.class),
-                annotation);
+                rs.getString(1), rs.getString(2), Converters.convert(rs.getObject(3), Long.class), annotation);
     }
 }

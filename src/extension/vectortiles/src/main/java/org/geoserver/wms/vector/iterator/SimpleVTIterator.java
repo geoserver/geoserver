@@ -14,9 +14,8 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A {@link VTIterator} taking advantage of the leaner {@link SimpleFeature} to avoid extra object
- * allocations (e.g., {@link SimpleFeature#getProperties()} generates the Property wrappers on the
- * fly).
+ * A {@link VTIterator} taking advantage of the leaner {@link SimpleFeature} to avoid extra object allocations (e.g.,
+ * {@link SimpleFeature#getProperties()} generates the Property wrappers on the fly).
  */
 class SimpleVTIterator implements VTIterator {
 
@@ -45,8 +44,7 @@ class SimpleVTIterator implements VTIterator {
     }
 
     private Map<String, Object> getProperties(SimpleFeature f) {
-        if (this.descriptors == null)
-            this.descriptors = f.getFeatureType().getAttributeDescriptors();
+        if (this.descriptors == null) this.descriptors = f.getFeatureType().getAttributeDescriptors();
         List<Object> attributeValues = f.getAttributes();
         Map<String, Object> properties = new HashMap<>();
         for (int i = 0; i < descriptors.size(); i++) {

@@ -14,8 +14,7 @@ public interface ThreadBlocker {
      *
      * @param request new request
      * @param timeout maximum time the request can be blocked
-     * @return True if the request was processed successfully, false if the request timed out during
-     *     the wait
+     * @return True if the request was processed successfully, false if the request timed out during the wait
      */
     boolean requestIncoming(Request request, long timeout) throws InterruptedException;
 
@@ -27,9 +26,8 @@ public interface ThreadBlocker {
     void requestComplete(Request request);
 
     /**
-     * Returns the number of requests "running" (could be both executing and timed out, anything
-     * that went into {@link #requestIncoming(Request, long)} and managed to get out of it, but it's
-     * not yet complete)
+     * Returns the number of requests "running" (could be both executing and timed out, anything that went into
+     * {@link #requestIncoming(Request, long)} and managed to get out of it, but it's not yet complete)
      */
     int getRunningRequestsCount();
 }

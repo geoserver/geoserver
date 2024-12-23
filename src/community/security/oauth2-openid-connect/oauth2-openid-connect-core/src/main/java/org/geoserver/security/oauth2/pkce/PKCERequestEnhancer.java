@@ -40,9 +40,7 @@ public class PKCERequestEnhancer implements RequestEnhancer {
             HttpHeaders headers) {
 
         if (config.isSendClientSecret()) {
-            form.put(
-                    ClientSecretRequestEnhancer.CLIENT_SECRET,
-                    Arrays.asList(resource.getClientSecret()));
+            form.put(ClientSecretRequestEnhancer.CLIENT_SECRET, Arrays.asList(resource.getClientSecret()));
             if (config.isAllowUnSecureLogging()) {
                 LOGGER.fine("CLIENT_SECRET: " + resource.getClientSecret());
             }

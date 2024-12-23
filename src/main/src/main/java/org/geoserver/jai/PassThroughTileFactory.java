@@ -14,11 +14,10 @@ import javax.media.jai.TileFactory;
 import javax.media.jai.TileRecycler;
 
 /**
- * A pass-through recycling tile factory that does not cache tiles but simply creates new ones as
- * asked
+ * A pass-through recycling tile factory that does not cache tiles but simply creates new ones as asked
  *
- * <p>It is crucial to avoid using the standard one when we don't want caching as it might pop-up
- * here and there otherwise.
+ * <p>It is crucial to avoid using the standard one when we don't want caching as it might pop-up here and there
+ * otherwise.
  *
  * @author Simone Giannecchini - GeoSolutions
  */

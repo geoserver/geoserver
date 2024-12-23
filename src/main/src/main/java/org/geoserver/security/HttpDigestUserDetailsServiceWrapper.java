@@ -29,8 +29,8 @@ import org.springframework.security.web.authentication.www.DigestAuthenticationF
  *
  * <p>{@link UserDetails} objects have their password alreay md5a1 encoded.
  *
- * <p>{@link DigestAuthenticationFilter#setPasswordAlreadyEncoded(boolean)} must be called with a
- * value of <code>true</code>
+ * <p>{@link DigestAuthenticationFilter#setPasswordAlreadyEncoded(boolean)} must be called with a value of <code>true
+ * </code>
  *
  * @author christian
  */
@@ -42,8 +42,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
         private String password;
         private Collection<GrantedAuthority> roles;
 
-        public DigestUserDetails(
-                UserDetails details, String password, Collection<GrantedAuthority> roles) {
+        public DigestUserDetails(UserDetails details, String password, Collection<GrantedAuthority> roles) {
             super(details);
             this.password = password;
             this.roles = roles;
@@ -80,8 +79,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
 
         if (GeoServerUser.ROOT_USERNAME.equals(username)) return prepareForRootUser();
 
@@ -97,8 +95,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
             pw = user.getPassword().toCharArray();
         }
 
-        String a1 =
-                encodePasswordInA1Format(user.getUsername(), GeoServerSecurityManager.REALM, pw);
+        String a1 = encodePasswordInA1Format(user.getUsername(), GeoServerSecurityManager.REALM, pw);
         manager.disposePassword(pw);
         List<GrantedAuthority> roles = new ArrayList<>();
         roles.addAll(user.getAuthorities());
@@ -111,9 +108,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
         char[] mpw = null;
         try {
             mpw = manager.getMasterPassword();
-            String a1 =
-                    encodePasswordInA1Format(
-                            GeoServerUser.ROOT_USERNAME, GeoServerSecurityManager.REALM, mpw);
+            String a1 = encodePasswordInA1Format(GeoServerUser.ROOT_USERNAME, GeoServerSecurityManager.REALM, mpw);
 
             return new UserDetailsPasswordWrapper(GeoServerUser.createRoot(), a1);
         } finally {

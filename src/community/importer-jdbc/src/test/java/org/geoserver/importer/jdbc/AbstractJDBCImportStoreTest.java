@@ -43,9 +43,7 @@ public abstract class AbstractJDBCImportStoreTest extends ImporterTestSupport {
         Properties props = getFixture();
         Assume.assumeNotNull(props);
 
-        this.datastore =
-                (JDBCDataStore)
-                        DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(props));
+        this.datastore = (JDBCDataStore) DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(props));
         if (datastore == null) {
             fail("Could not locate datastore with properties: " + props);
         }

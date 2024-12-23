@@ -27,16 +27,11 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
         testData.addStyle(
-                catalog.getWorkspaceByName(MockData.CITE_PREFIX),
-                "lakes",
-                "Lakes.sld",
-                SystemTestData.class,
-                catalog);
+                catalog.getWorkspaceByName(MockData.CITE_PREFIX), "lakes", "Lakes.sld", SystemTestData.class, catalog);
     }
 
     void setupPanel(final CatalogInfo... roots) {
-        tester.startPage(
-                new FormTestPage((ComponentBuilder) id -> new ConfirmRemovalPanel(id, roots)));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new ConfirmRemovalPanel(id, roots)));
     }
 
     @Test
@@ -51,14 +46,11 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         tester.assertLabel("form:panel:removedObjects:storesRemoved:stores", "cite");
         tester.assertLabel("form:panel:removedObjects:stylesRemoved:styles", "lakes");
 
-        String layers =
-                tester.getComponentFromLastRenderedPage(
-                                "form:panel:removedObjects:layersRemoved:layers")
-                        .getDefaultModelObjectAsString();
+        String layers = tester.getComponentFromLastRenderedPage("form:panel:removedObjects:layersRemoved:layers")
+                .getDefaultModelObjectAsString();
         String[] layerArray = layers.split(", ");
         DataStoreInfo citeStore = getCatalog().getStoreByName("cite", DataStoreInfo.class);
-        List<FeatureTypeInfo> typeInfos =
-                getCatalog().getResourcesByStore(citeStore, FeatureTypeInfo.class);
+        List<FeatureTypeInfo> typeInfos = getCatalog().getResourcesByStore(citeStore, FeatureTypeInfo.class);
         assertEquals(typeInfos.size(), layerArray.length);
     }
 
@@ -72,11 +64,11 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // damn wicket tester, it does not have a assertHidden...
+        assertFalse(tester.getLastRenderedPage()
+                .get("form:panel:removedObjects:storesRemoved")
+                .isVisible());
         assertFalse(
-                tester.getLastRenderedPage()
-                        .get("form:panel:removedObjects:storesRemoved")
-                        .isVisible());
-        assertFalse(tester.getLastRenderedPage().get("form:panel:modifiedObjects").isVisible());
+                tester.getLastRenderedPage().get("form:panel:modifiedObjects").isVisible());
     }
 
     @Test
@@ -89,10 +81,9 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // damn wicket tester, it does not have a assertHidden...
-        assertFalse(
-                tester.getLastRenderedPage()
-                        .get("form:panel:removedObjects:storesRemoved")
-                        .isVisible());
+        assertFalse(tester.getLastRenderedPage()
+                .get("form:panel:removedObjects:storesRemoved")
+                .isVisible());
 
         tester.assertLabel("form:panel:modifiedObjects:layersModified:layers", "Buildings");
     }

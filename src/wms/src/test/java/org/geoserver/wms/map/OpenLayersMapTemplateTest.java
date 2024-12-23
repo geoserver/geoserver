@@ -70,15 +70,13 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         dbf.setExpandEntityReferences(false);
 
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-        docBuilder.setEntityResolver(
-                (publicId, systemId) -> {
-                    StringReader reader =
-                            new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    InputSource source = new InputSource(reader);
-                    source.setPublicId(publicId);
-                    source.setSystemId(systemId);
-                    return source;
-                });
+        docBuilder.setEntityResolver((publicId, systemId) -> {
+            StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            InputSource source = new InputSource(reader);
+            source.setPublicId(publicId);
+            source.setSystemId(systemId);
+            return source;
+        });
 
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));
         assertNotNull(document);

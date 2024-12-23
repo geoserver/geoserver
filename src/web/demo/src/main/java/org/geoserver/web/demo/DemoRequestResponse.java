@@ -18,8 +18,7 @@ import org.geoserver.web.GeoServerBasePage;
 /**
  * An intermediate page used to submit a demo request.
  *
- * <p>This page does not extend {@link GeoServerBasePage} since its just an intermediate form to
- * submit to the servlet.
+ * <p>This page does not extend {@link GeoServerBasePage} since its just an intermediate form to submit to the servlet.
  *
  * @author Gabriel Roldan (TOPP)
  * @version $Id$
@@ -28,8 +27,8 @@ import org.geoserver.web.GeoServerBasePage;
 public class DemoRequestResponse extends WebPage {
 
     /**
-     * Fills out the form to be submitted with the properties from the {@code DemoRequestModel}
-     * provided, and auto-submit the form on page load so the results get loaded in the page body.
+     * Fills out the form to be submitted with the properties from the {@code DemoRequestModel} provided, and
+     * auto-submit the form on page load so the results get loaded in the page body.
      *
      * @param model the demo request parameters holder, as a model for {@link DemoRequest}
      */
@@ -50,8 +49,7 @@ public class DemoRequestResponse extends WebPage {
         // [WICKET-6211] Wicket clears the password after submission, so we need to save as a string
         // now.
         HiddenField<String> passwordField =
-                new HiddenField<String>(
-                        "password", new Model<>(((DemoRequest) model.getObject()).getPassword())) {
+                new HiddenField<String>("password", new Model<>(((DemoRequest) model.getObject()).getPassword())) {
                     @Override
                     protected void onDetach() {
                         // clear the password after we are done with it

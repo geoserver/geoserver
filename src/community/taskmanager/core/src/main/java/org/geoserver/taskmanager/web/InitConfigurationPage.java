@@ -25,40 +25,29 @@ public class InitConfigurationPage extends GeoServerSecuredPage {
     public void onInitialize() {
         super.onInitialize();
 
-        final String schedulerReference =
-                TaskManagerBeans.get()
-                        .getBjService()
-                        .scheduleNow(InitConfigUtil.getInitBatch(configurationModel.getObject()));
+        final String schedulerReference = TaskManagerBeans.get()
+                .getBjService()
+                .scheduleNow(InitConfigUtil.getInitBatch(configurationModel.getObject()));
 
         if (schedulerReference == null) { // empty batch
-            setResponsePage(
-                    new ConfigurationPage(InitConfigUtil.unwrap(configurationModel.getObject())));
+            setResponsePage(new ConfigurationPage(InitConfigUtil.unwrap(configurationModel.getObject())));
         } else {
-            add(
-                    new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+            add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
 
-                        private static final long serialVersionUID = -8006498530965431853L;
+                private static final long serialVersionUID = -8006498530965431853L;
 
-                        @Override
-                        protected void onTimer(AjaxRequestTarget target) {
-                            BatchRun br =
-                                    TaskManagerBeans.get()
-                                            .getDao()
-                                            .getBatchRunBySchedulerReference(schedulerReference);
+                @Override
+                protected void onTimer(AjaxRequestTarget target) {
+                    BatchRun br = TaskManagerBeans.get().getDao().getBatchRunBySchedulerReference(schedulerReference);
 
-                            if (br != null && br.getStatus().isClosed()) {
-                                // reload page
-                                setResponsePage(
-                                        new ConfigurationPage(
-                                                TaskManagerBeans.get()
-                                                        .getDao()
-                                                        .init(
-                                                                InitConfigUtil.unwrap(
-                                                                        configurationModel
-                                                                                .getObject()))));
-                            }
-                        }
-                    });
+                    if (br != null && br.getStatus().isClosed()) {
+                        // reload page
+                        setResponsePage(new ConfigurationPage(TaskManagerBeans.get()
+                                .getDao()
+                                .init(InitConfigUtil.unwrap(configurationModel.getObject()))));
+                    }
+                }
+            });
         }
     }
 

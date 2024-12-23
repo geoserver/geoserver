@@ -32,10 +32,7 @@ public abstract class IsolatedWorkspacesTest extends GeoServerSystemTestSupport 
         LocalWorkspace.set(null);
     }
 
-    /**
-     * Helper method that updates the isolation state of an workspace and the corresponding
-     * namespace.
-     */
+    /** Helper method that updates the isolation state of an workspace and the corresponding namespace. */
     protected void updateWorkspaceIsolationState(String prefix, boolean isolated) {
         Catalog catalog = getCatalog();
         // set the workspace isolation state using the provided one
@@ -49,8 +46,7 @@ public abstract class IsolatedWorkspacesTest extends GeoServerSystemTestSupport 
     }
 
     /** Helper method that checks that the provided workspace has the expected content. */
-    protected void checkWorkspace(
-            WorkspaceInfo workspace, String expectedPrefix, boolean expectedIsolation) {
+    protected void checkWorkspace(WorkspaceInfo workspace, String expectedPrefix, boolean expectedIsolation) {
         assertThat(workspace, notNullValue());
         assertThat(workspace.getName(), is(expectedPrefix));
         assertThat(workspace.isIsolated(), is(expectedIsolation));
@@ -58,10 +54,7 @@ public abstract class IsolatedWorkspacesTest extends GeoServerSystemTestSupport 
 
     /** Helper method that checks that the provided namespace has the expected content. */
     protected void checkNamespace(
-            NamespaceInfo namespace,
-            String expectedPrefix,
-            String expectedNamespaceUri,
-            boolean expectedIsolation) {
+            NamespaceInfo namespace, String expectedPrefix, String expectedNamespaceUri, boolean expectedIsolation) {
         assertThat(namespace, notNullValue());
         assertThat(namespace.getPrefix(), is(expectedPrefix));
         assertThat(namespace.getName(), is(expectedPrefix));
@@ -70,8 +63,8 @@ public abstract class IsolatedWorkspacesTest extends GeoServerSystemTestSupport 
     }
 
     /**
-     * Helper functional interface to allow passing functions that don't receive anything as input
-     * and don't provide anything as output.
+     * Helper functional interface to allow passing functions that don't receive anything as input and don't provide
+     * anything as output.
      */
     @FunctionalInterface
     protected interface Statement {
@@ -80,9 +73,8 @@ public abstract class IsolatedWorkspacesTest extends GeoServerSystemTestSupport 
     }
 
     /**
-     * Helper method that executes a statement where an exception of a certain type is expected to
-     * happen. This method will check hat the obtained exception contains the expected message and
-     * is an instance expected type.
+     * Helper method that executes a statement where an exception of a certain type is expected to happen. This method
+     * will check hat the obtained exception contains the expected message and is an instance expected type.
      */
     protected void executeAndValidateException(
             Statement statement, Class<?> expectedException, String expectedMessage) {
@@ -101,9 +93,8 @@ public abstract class IsolatedWorkspacesTest extends GeoServerSystemTestSupport 
     }
 
     /**
-     * Helper method that creates a workspace and add it to the catalog. This method will first
-     * create the namespace and then the workspace. The create workspaces prefixes are stored in
-     * {@link #CREATED_WORKSPACES_PREFIXES}.
+     * Helper method that creates a workspace and add it to the catalog. This method will first create the namespace and
+     * then the workspace. The create workspaces prefixes are stored in {@link #CREATED_WORKSPACES_PREFIXES}.
      */
     protected void createWorkspace(String prefix, String namespaceUri, boolean isolated) {
         Catalog catalog = getCatalog();

@@ -23,16 +23,12 @@ public class MultiOutputEchoProcess implements org.geoserver.wps.gs.GeoServerPro
     private static class MultiOutputEchoProcessProcessFactory extends AnnotatedBeanProcessFactory {
 
         public MultiOutputEchoProcessProcessFactory() {
-            super(
-                    new SimpleInternationalString("MultiOutputEcho"),
-                    "gs",
-                    MultiOutputEchoProcess.class);
+            super(new SimpleInternationalString("MultiOutputEcho"), "gs", MultiOutputEchoProcess.class);
         }
     }
 
     @DescribeResult(name = "result", description = "output result")
-    public String execute(
-            @DescribeParameter(name = "text", description = "text to return") String text) {
+    public String execute(@DescribeParameter(name = "text", description = "text to return") String text) {
         return "Echo='" + text + "'";
     }
 }

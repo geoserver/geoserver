@@ -15,9 +15,6 @@ import java.io.Serializable;
  */
 public interface SecurityConfig extends Serializable {
 
-    /**
-     * Clone of a Security Config allowing expansion of placeholders through GeoServerEnvironment
-     * helper.
-     */
+    /** Clone of a Security Config allowing expansion of placeholders through GeoServerEnvironment helper. */
     public SecurityConfig clone(boolean allowEnvParametrization);
 }

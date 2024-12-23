@@ -41,11 +41,11 @@ public class GeometryResponse extends WFSResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
 
         Encoder encoder = new Encoder(new GMLConfiguration());
-        encoder.setEncoding(Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
+        encoder.setEncoding(
+                Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
 
         if (value instanceof Point) {
             encoder.encode(value, GML.Point, output);

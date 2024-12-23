@@ -45,8 +45,7 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
         expectLastCall();
         replay(callback);
 
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/index.html");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/index.html");
         assertEquals(200, response.getStatus());
         verify(callback);
     }

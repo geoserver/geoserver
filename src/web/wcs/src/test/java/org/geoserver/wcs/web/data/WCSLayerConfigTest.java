@@ -19,15 +19,11 @@ public class WCSLayerConfigTest extends GeoServerWicketCoverageTestSupport {
     @Test
     public void testValues() {
         login();
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> {
-                                    CoverageInfo info =
-                                            getCatalog().getResources(CoverageInfo.class).get(0);
-                                    LayerInfo layer = getCatalog().getLayerByName(info.getName());
-                                    return new WCSLayerConfig(id, new Model<>(layer));
-                                });
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> {
+            CoverageInfo info = getCatalog().getResources(CoverageInfo.class).get(0);
+            LayerInfo layer = getCatalog().getLayerByName(info.getName());
+            return new WCSLayerConfig(id, new Model<>(layer));
+        });
 
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);

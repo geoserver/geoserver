@@ -13,8 +13,7 @@ import org.geoserver.security.oauth2.GoogleOAuth2FilterConfig;
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class GoogleOAuth2AuthProviderPanel
-        extends GeoServerOAuth2AuthProviderPanel<GoogleOAuth2FilterConfig> {
+public class GoogleOAuth2AuthProviderPanel extends GeoServerOAuth2AuthProviderPanel<GoogleOAuth2FilterConfig> {
 
     public GoogleOAuth2AuthProviderPanel(String id, IModel<GoogleOAuth2FilterConfig> model) {
         super(id, model);

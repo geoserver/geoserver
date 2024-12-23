@@ -12,8 +12,8 @@ import java.util.List;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
 
 /**
- * validates the Audience of an accesstoken. The OAUTH2/OIDC spec recommends validating this.
- * Security concern - the AccessToken was retrieved for a different client (not ours).
+ * validates the Audience of an accesstoken. The OAUTH2/OIDC spec recommends validating this. Security concern - the
+ * AccessToken was retrieved for a different client (not ours).
  */
 public class TokenAudienceValidator {
 

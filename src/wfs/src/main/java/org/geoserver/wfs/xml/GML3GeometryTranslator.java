@@ -31,10 +31,7 @@ public class GML3GeometryTranslator extends GeometryTranslator {
     }
 
     public GML3GeometryTranslator(
-            ContentHandler handler,
-            int numDecimals,
-            boolean padWithZeros,
-            boolean forceDecimalEncoding) {
+            ContentHandler handler, int numDecimals, boolean padWithZeros, boolean forceDecimalEncoding) {
         super(handler, numDecimals, padWithZeros, forceDecimalEncoding);
     }
 

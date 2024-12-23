@@ -108,6 +108,7 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
         assertEquals("TestCaseServiceType", links.get(0).getServiceType());
         assertEquals("TestCase", links.get(0).getSpecificServiceType());
         assertEquals("OGCAPI-TestCase", links.get(0).getProtocol());
-        assertEquals("../cite/DividedRoutes/ogc/TestCaseService/v1", links.get(0).getLink());
+        assertEquals(
+                "../cite/DividedRoutes/ogc/TestCaseService/v1", links.get(0).getLink());
     }
 }

@@ -10,8 +10,8 @@ import org.geoserver.ogcapi.v1.stac.functions.EoSummaries;
 import org.geotools.api.feature.Feature;
 
 /**
- * Wrapper for the returned FeatureCollection containing a single STAC Collection definition. Used
- * because Spring MVC response binding is driven by the response type.
+ * Wrapper for the returned FeatureCollection containing a single STAC Collection definition. Used because Spring MVC
+ * response binding is driven by the response type.
  */
 @JsonIgnoreType
 public class CollectionResponse extends AbstractDocument {

@@ -23,8 +23,7 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
         configsContainer.setOutputMarkupId(true);
         add(configsContainer);
 
-        final GraticulePanel advancedConfigPanel =
-                new GraticulePanel("gratpanel", paramsModel, storeEditForm);
+        final GraticulePanel advancedConfigPanel = new GraticulePanel("gratpanel", paramsModel, storeEditForm);
         advancedConfigPanel.setOutputMarkupId(true);
         advancedConfigPanel.setVisible(true);
         configsContainer.add(advancedConfigPanel);

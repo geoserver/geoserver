@@ -8,8 +8,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 import org.geoserver.wms.WMSInfo;
 
-public class MapsServiceDescriptionProvider
-        extends OgcApiServiceDescriptionProvider<WMSInfo, MapsService> {
+public class MapsServiceDescriptionProvider extends OgcApiServiceDescriptionProvider<WMSInfo, MapsService> {
 
     public MapsServiceDescriptionProvider(GeoServer gs) {
         super(gs, "WMS", "Maps", "Maps");

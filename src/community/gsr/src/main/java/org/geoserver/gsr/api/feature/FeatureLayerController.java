@@ -41,12 +41,9 @@ import org.springframework.web.bind.annotation.*;
 
 /** Controller for the Feature Service layer endpoint */
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName}/FeatureServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureLayerController extends AbstractGSRController {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(FeatureLayerController.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(FeatureLayerController.class);
 
     @Autowired
     public FeatureLayerController(@Qualifier("geoServer") GeoServer geoServer) {
@@ -56,19 +53,14 @@ public class FeatureLayerController extends AbstractGSRController {
     @ResponseBody
     @GetMapping(path = "/{layerId}", name = "FeatureServerGetFeature")
     @HTMLResponseBody(templateName = "featurelayer.ftl", fileName = "featurelayer.html")
-    public FeatureLayer featureGet(
-            @PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
+    public FeatureLayer featureGet(@PathVariable String workspaceName, @PathVariable Integer layerId)
+            throws IOException {
         LayerOrTable entry;
         try {
             entry = LayerDAO.find(catalog, workspaceName, layerId);
         } catch (IOException e) {
             throw new NoSuchElementException(
-                    "Unavailable table or layer in workspace \""
-                            + workspaceName
-                            + "\" for id "
-                            + layerId
-                            + ":"
-                            + e);
+                    "Unavailable table or layer in workspace \"" + workspaceName + "\" for id " + layerId + ":" + e);
         }
         if (entry == null) {
             throw new NoSuchElementException(
@@ -76,51 +68,39 @@ public class FeatureLayerController extends AbstractGSRController {
         }
         FeatureLayer layer = new FeatureLayer(entry);
         layer.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
-                                new Link(
-                                        workspaceName + "/" + "FeatureServer/" + layerId,
-                                        entry.getName())));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
+                        new Link(workspaceName + "/" + "FeatureServer/" + layerId, entry.getName())));
         layer.getInterfaces()
-                .add(
-                        new Link(
-                                workspaceName
-                                        + "/"
-                                        + "FeatureServer/"
-                                        + layerId
-                                        + "?f=json&pretty=true",
-                                "REST"));
+                .add(new Link(workspaceName + "/" + "FeatureServer/" + layerId + "?f=json&pretty=true", "REST"));
         return layer;
     }
 
     /**
      * @param workspaceName Workspace name
      * @param layerId Layer id
-     * @param objectIdsText A comma delimited list of object ids of features to delete. If present
-     *     all other query parameters are ignored.
-     * @param geometryTypeName If using a geometry to select delete features, specifies the input
-     *     geometry type. Values: * esriGeometryPoint | esriGeometryMultipoint |
-     *     esriGeometryPolyline | esriGeometryPolygon | * esriGeometryEnvelope
-     * @param whereClause If not using a list of object ids or a geometry query use this to pass in
-     *     an attribute query. Eg POP2000 > 350000
+     * @param objectIdsText A comma delimited list of object ids of features to delete. If present all other query
+     *     parameters are ignored.
+     * @param geometryTypeName If using a geometry to select delete features, specifies the input geometry type. Values:
+     *     * esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | *
+     *     esriGeometryEnvelope
+     * @param whereClause If not using a list of object ids or a geometry query use this to pass in an attribute query.
+     *     Eg POP2000 > 350000
      * @param geometryText A geometry representing a spatial filter to filter the features by. See
      *     https://developers.arcgis.com/documentation/common-data-types/geometry-objects.htm
-     * @param inSRText The spatial reference of the input geometry. If the inSR is not specified,
-     *     the geometry is * assumed to be in the spatial reference of the map.
-     * @param spatialRelText The spatial relationship to be applied on the input geometry while
-     *     performing the query. * Values: esriSpatialRelIntersects | esriSpatialRelContains |
-     *     esriSpatialRelCrosses | * esriSpatialRelEnvelopeIntersects |
-     *     esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | * esriSpatialRelTouches |
-     *     esriSpatialRelWithin
-     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if
-     *     all submitted edits succeed. If false, the server will apply the edits that succeed even
-     *     if some of the submitted edits fail. If true, the server will apply the edits only if all
-     *     edits succeed. The default value is true.
-     * @param returnEditMoment Optional parameter specifying whether the response will report the
-     *     time features were updated. If returnEditMoment = true, the server will report the time
-     *     in the response's editMoment key. The default value is false.
+     * @param inSRText The spatial reference of the input geometry. If the inSR is not specified, the geometry is *
+     *     assumed to be in the spatial reference of the map.
+     * @param spatialRelText The spatial relationship to be applied on the input geometry while performing the query. *
+     *     Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses | *
+     *     esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps | *
+     *     esriSpatialRelTouches | esriSpatialRelWithin
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted edits
+     *     succeed. If false, the server will apply the edits that succeed even if some of the submitted edits fail. If
+     *     true, the server will apply the edits only if all edits succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *     updated. If returnEditMoment = true, the server will report the time in the response's editMoment key. The
+     *     default value is false.
      * @return
      */
     @ResponseBody
@@ -139,8 +119,7 @@ public class FeatureLayerController extends AbstractGSRController {
             @RequestParam(name = "spatialRel", required = false) String spatialRelText,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false")
                     boolean rollbackOnFailure,
-            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false")
-                    boolean returnEditMoment)
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment)
             throws IOException, ServiceException {
 
         return deleteFeatures(
@@ -177,29 +156,27 @@ public class FeatureLayerController extends AbstractGSRController {
                     "No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
         LayerInfo l = entry.layer;
-        FeatureCollection features =
-                FeatureDAO.getFeatureCollectionForLayer(
-                        workspaceName,
-                        entry.getId(),
-                        geometryTypeName,
-                        geometryText,
-                        inSRText,
-                        null,
-                        spatialRelText,
-                        objectIdsText,
-                        null,
-                        null,
-                        null,
-                        null,
-                        whereClause,
-                        false,
-                        null,
-                        l);
+        FeatureCollection features = FeatureDAO.getFeatureCollectionForLayer(
+                workspaceName,
+                entry.getId(),
+                geometryTypeName,
+                geometryText,
+                inSRText,
+                null,
+                spatialRelText,
+                objectIdsText,
+                null,
+                null,
+                null,
+                null,
+                whereClause,
+                false,
+                null,
+                l);
         long[] ids = FeatureEncoder.objectIds(features).getObjectIds();
         List<Long> idsList = Arrays.stream(ids).boxed().collect(Collectors.toList());
         FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) l.getResource();
-        return FeatureDAO.deleteFeatures(
-                featureTypeInfo, idsList, returnEditMoment, rollbackOnFailure);
+        return FeatureDAO.deleteFeatures(featureTypeInfo, idsList, returnEditMoment, rollbackOnFailure);
     }
 
     /** @See FeatureLayerController#featureDelete */
@@ -229,15 +206,13 @@ public class FeatureLayerController extends AbstractGSRController {
      * @param features Array of features to update
      * @param workspaceName Workspace name
      * @param layerId layer id
-     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if
-     *     all submitted edits succeed. If false, the server will apply the edits that succeed even
-     *     if some of the submitted edits fail. If true, the server will apply the edits only if all
-     *     edits succeed. The default value is true.
-     * @param returnEditMoment Optional parameter specifying whether the response will report the
-     *     time features were updated. If returnEditMoment = true, the server will report the time
-     *     in the response's editMoment key. The default value is false. TODO: Unsupported
-     *     parameters f - only json supported (used by default), ignored gdbVersion - GSR does not
-     *     support versioned data, ignored. trueCurveClient - GSR does not support true curve
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted edits
+     *     succeed. If false, the server will apply the edits that succeed even if some of the submitted edits fail. If
+     *     true, the server will apply the edits only if all edits succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *     updated. If returnEditMoment = true, the server will report the time in the response's editMoment key. The
+     *     default value is false. TODO: Unsupported parameters f - only json supported (used by default), ignored
+     *     gdbVersion - GSR does not support versioned data, ignored. trueCurveClient - GSR does not support true curve
      *     encoding, ignored.
      * @return Results of the update
      * @throws IOException
@@ -252,12 +227,10 @@ public class FeatureLayerController extends AbstractGSRController {
             @RequestParam String features,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false")
                     boolean rollbackOnFailure,
-            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false")
-                    boolean returnEditMoment)
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment)
             throws IOException, ServiceException {
         FeatureArray featureArray = jsonStringToFeatureArray(features);
-        return updateFeatures(
-                featureArray, workspaceName, layerId, rollbackOnFailure, returnEditMoment);
+        return updateFeatures(featureArray, workspaceName, layerId, rollbackOnFailure, returnEditMoment);
     }
 
     /** @See FeatureLayerController#updateFeaturesPost */
@@ -288,13 +261,12 @@ public class FeatureLayerController extends AbstractGSRController {
      * @param features Array of features to update
      * @param workspaceName Workspace name
      * @param layerId layer id
-     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if
-     *     all submitted edits succeed. If false, the server will apply the edits that succeed even
-     *     if some of the submitted edits fail. If true, the server will apply the edits only if all
-     *     edits succeed. The default value is true.
-     * @param returnEditMoment Optional parameter specifying whether the response will report the
-     *     time features were updated. If returnEditMoment = true, the server will report the time
-     *     in the response's editMoment key. The default value is false.
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted edits
+     *     succeed. If false, the server will apply the edits that succeed even if some of the submitted edits fail. If
+     *     true, the server will apply the edits only if all edits succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *     updated. If returnEditMoment = true, the server will report the time in the response's editMoment key. The
+     *     default value is false.
      * @return Results of the update
      * @throws IOException
      */
@@ -308,12 +280,10 @@ public class FeatureLayerController extends AbstractGSRController {
             @RequestParam String features,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false")
                     boolean rollbackOnFailure,
-            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false")
-                    boolean returnEditMoment)
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment)
             throws IOException, ServiceException {
         FeatureArray featureArray = jsonStringToFeatureArray(features);
-        return addFeatures(
-                featureArray, workspaceName, layerId, rollbackOnFailure, returnEditMoment);
+        return addFeatures(featureArray, workspaceName, layerId, rollbackOnFailure, returnEditMoment);
     }
 
     /** @See FeatureLayerController#addFeaturesPost */
@@ -346,19 +316,17 @@ public class FeatureLayerController extends AbstractGSRController {
      * @param deletes Comma delimited list of feature ids
      * @param workspaceName Workspace name
      * @param layerId Layer Id
-     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if
-     *     all submitted edits succeed. If false, the server will apply the edits that succeed even
-     *     if some of the submitted edits fail. If true, the server will apply the edits only if all
-     *     edits succeed. The default value is true.
-     * @param returnEditMoment Optional parameter specifying whether the response will report the
-     *     time features were updated. If returnEditMoment = true, the server will report the time
-     *     in the response's editMoment key. The default value is false.
-     *     <p>TODO: Unsupported parameters f - only json supported (used by default), ignored
-     *     gdbVersion - GSR does not support versioned data, ignored. trueCurveClient - GSR does not
-     *     support true curve encoding, ignored. useGlobalIds - GSR does not support global ids,
-     *     ignored. attachments - GSR does not support attachments, ignored. sessionID - GSR does
-     *     not support session ids, ignored. usePreviousEditMoment - GSR does not support merging of
-     *     transactions with the editMoment, ignored.
+     * @param rollbackOnFailure Optional parameter to specify if the edits should be applied only if all submitted edits
+     *     succeed. If false, the server will apply the edits that succeed even if some of the submitted edits fail. If
+     *     true, the server will apply the edits only if all edits succeed. The default value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were
+     *     updated. If returnEditMoment = true, the server will report the time in the response's editMoment key. The
+     *     default value is false.
+     *     <p>TODO: Unsupported parameters f - only json supported (used by default), ignored gdbVersion - GSR does not
+     *     support versioned data, ignored. trueCurveClient - GSR does not support true curve encoding, ignored.
+     *     useGlobalIds - GSR does not support global ids, ignored. attachments - GSR does not support attachments,
+     *     ignored. sessionID - GSR does not support session ids, ignored. usePreviousEditMoment - GSR does not support
+     *     merging of transactions with the editMoment, ignored.
      * @return Results of adds, updates, and/or deletes
      * @throws IOException
      */
@@ -374,8 +342,7 @@ public class FeatureLayerController extends AbstractGSRController {
             @RequestParam(name = "deletes", required = false) String deletes,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false")
                     boolean rollbackOnFailure,
-            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false")
-                    boolean returnEditMoment)
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment)
             throws IOException, ServiceException {
 
         EditResults addEditResults = null;
@@ -385,35 +352,20 @@ public class FeatureLayerController extends AbstractGSRController {
         if (adds != null) {
             FeatureArray addsArray = jsonStringToFeatureArray(adds);
             if (addsArray.features != null && addsArray.features.size() > 0) {
-                addEditResults =
-                        addFeatures(
-                                addsArray,
-                                workspaceName,
-                                layerId,
-                                returnEditMoment,
-                                rollbackOnFailure);
+                addEditResults = addFeatures(addsArray, workspaceName, layerId, returnEditMoment, rollbackOnFailure);
             }
         }
 
         if (updates != null) {
             FeatureArray updatesArray = jsonStringToFeatureArray(updates);
-            if (updatesArray != null
-                    && updatesArray.features != null
-                    && updatesArray.features.size() > 0) {
+            if (updatesArray != null && updatesArray.features != null && updatesArray.features.size() > 0) {
                 updateEditResults =
-                        updateFeatures(
-                                updatesArray,
-                                workspaceName,
-                                layerId,
-                                returnEditMoment,
-                                rollbackOnFailure);
+                        updateFeatures(updatesArray, workspaceName, layerId, returnEditMoment, rollbackOnFailure);
             }
         }
 
         if (deletes != null && deletes.length() > 0) {
-            deleteEditResults =
-                    deleteFeatures(
-                            workspaceName, layerId, deletes, returnEditMoment, rollbackOnFailure);
+            deleteEditResults = deleteFeatures(workspaceName, layerId, deletes, returnEditMoment, rollbackOnFailure);
         }
 
         return new EditResults(
@@ -457,42 +409,34 @@ public class FeatureLayerController extends AbstractGSRController {
     }
 
     /**
-     * @param edits Array of objects that specify the layer id and the edits to be applied, adds,
-     *     updates, or deletes. See
-     *     https://developers.arcgis.com/rest/services-reference/apply-edits-feature-service-.htm
-     *     for structure
+     * @param edits Array of objects that specify the layer id and the edits to be applied, adds, updates, or deletes.
+     *     See https://developers.arcgis.com/rest/services-reference/apply-edits-feature-service-.htm for structure
      * @param workspaceName Workspace name
-     * @param rollbackOnFailure edits succeed. If false, the server will apply the edits that
-     *     succeed even if some of * the submitted edits fail. If true, the server will apply the
-     *     edits only if all edits * succeed. The default value is true.
-     * @param returnEditMoment Optional parameter specifying whether the response will report the
-     *     time features were * updated. If returnEditMoment = true, the server will report the time
-     *     in the response's * editMoment key. The default value is false.
-     * @param honorSequenceOfEdits Optional parameter specifying whether to apply edits in the order
-     *     submitted or by ascending layer id order If true the edits will be applied in the order
-     *     they are submitted. If false(default) they will be applied in ascending layer-ID order.
-     *     <p>TODO: Unsupported parameters f - only json supported (used by default), ignored
-     *     gdbVersion - GSR does not support versioned data, ignored. trueCurveClient - GSR does not
-     *     support true curve encoding, ignored. useGlobalIds - GSR does not support global ids,
-     *     ignored. sessionID - GSR does not support session ids, ignored. usePreviousEditMoment -
-     *     GSR does not support merging of transactions with the editMoment, ignored.
-     *     returnServiceEditsOption - GSR does not support tracking of composite relationships,
-     *     ignored.
+     * @param rollbackOnFailure edits succeed. If false, the server will apply the edits that succeed even if some of *
+     *     the submitted edits fail. If true, the server will apply the edits only if all edits * succeed. The default
+     *     value is true.
+     * @param returnEditMoment Optional parameter specifying whether the response will report the time features were *
+     *     updated. If returnEditMoment = true, the server will report the time in the response's * editMoment key. The
+     *     default value is false.
+     * @param honorSequenceOfEdits Optional parameter specifying whether to apply edits in the order submitted or by
+     *     ascending layer id order If true the edits will be applied in the order they are submitted. If false(default)
+     *     they will be applied in ascending layer-ID order.
+     *     <p>TODO: Unsupported parameters f - only json supported (used by default), ignored gdbVersion - GSR does not
+     *     support versioned data, ignored. trueCurveClient - GSR does not support true curve encoding, ignored.
+     *     useGlobalIds - GSR does not support global ids, ignored. sessionID - GSR does not support session ids,
+     *     ignored. usePreviousEditMoment - GSR does not support merging of transactions with the editMoment, ignored.
+     *     returnServiceEditsOption - GSR does not support tracking of composite relationships, ignored.
      * @return
      * @throws IOException
      * @throws ServiceException
      */
-    @PostMapping(
-            path = "/applyEdits",
-            consumes = APPLICATION_FORM_URLENCODED_VALUE,
-            name = "FeatureServerApplyEdits")
+    @PostMapping(path = "/applyEdits", consumes = APPLICATION_FORM_URLENCODED_VALUE, name = "FeatureServerApplyEdits")
     public List<EditResults> applyEditsByService(
             @PathVariable String workspaceName,
             @RequestParam String edits,
             @RequestParam(name = "rollbackOnFailure", required = false, defaultValue = "false")
                     boolean rollbackOnFailure,
-            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false")
-                    boolean returnEditMoment,
+            @RequestParam(name = "returnEditMoment", required = false, defaultValue = "false") boolean returnEditMoment,
             @RequestParam(name = "honorSequenceOfEdits", required = false, defaultValue = "false")
                     boolean honorSequenceOfEdits)
             throws IOException, ServiceException {
@@ -513,48 +457,37 @@ public class FeatureLayerController extends AbstractGSRController {
                 if (layerEdits.getAdds() != null
                         && layerEdits.getAdds().features != null
                         && layerEdits.getAdds().features.size() > 0) {
-                    addEditResults =
-                            addFeatures(
-                                    layerEdits.getAdds(),
-                                    workspaceName,
-                                    layerEdits.getId(),
-                                    returnEditMoment,
-                                    rollbackOnFailure);
+                    addEditResults = addFeatures(
+                            layerEdits.getAdds(),
+                            workspaceName,
+                            layerEdits.getId(),
+                            returnEditMoment,
+                            rollbackOnFailure);
                 }
 
                 if (layerEdits.getUpdates() != null
                         && layerEdits.getUpdates().features != null
                         && layerEdits.getUpdates().features.size() > 0) {
-                    updateEditResults =
-                            updateFeatures(
-                                    layerEdits.getUpdates(),
-                                    workspaceName,
-                                    layerEdits.getId(),
-                                    returnEditMoment,
-                                    rollbackOnFailure);
+                    updateEditResults = updateFeatures(
+                            layerEdits.getUpdates(),
+                            workspaceName,
+                            layerEdits.getId(),
+                            returnEditMoment,
+                            rollbackOnFailure);
                 }
 
                 if (layerEdits.getDeletes() != null && layerEdits.getDeletes().size() > 0) {
-                    String objectIdString =
-                            layerEdits.getDeletes().stream()
-                                    .map(String::valueOf)
-                                    .collect(Collectors.joining(","));
-                    deleteEditResults =
-                            deleteFeatures(
-                                    workspaceName,
-                                    layerEdits.getId(),
-                                    objectIdString,
-                                    returnEditMoment,
-                                    rollbackOnFailure);
+                    String objectIdString = layerEdits.getDeletes().stream()
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(","));
+                    deleteEditResults = deleteFeatures(
+                            workspaceName, layerEdits.getId(), objectIdString, returnEditMoment, rollbackOnFailure);
                 }
 
-                editResults.add(
-                        new EditResults(
-                                addEditResults != null ? addEditResults.addResults : null,
-                                updateEditResults != null ? updateEditResults.updateResults : null,
-                                deleteEditResults != null
-                                        ? deleteEditResults.deleteResults
-                                        : null));
+                editResults.add(new EditResults(
+                        addEditResults != null ? addEditResults.addResults : null,
+                        updateEditResults != null ? updateEditResults.updateResults : null,
+                        deleteEditResults != null ? deleteEditResults.deleteResults : null));
             }
 
         } else {

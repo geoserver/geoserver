@@ -69,8 +69,7 @@ class DomainSetBuilder {
         // handle time as well
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time != null) {
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) coverage.getGridCoverageReader(null, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) coverage.getGridCoverageReader(null, null);
             TimeDimensionHelper helper = new TimeDimensionHelper(time, reader);
             switch (time.getPresentation()) {
                 case CONTINUOUS_INTERVAL:
@@ -109,10 +108,7 @@ class DomainSetBuilder {
     }
 
     private RegularAxis toRegularAxis(
-            CoordinateSystemAxis axis,
-            EnvelopeAxesLabelsMapper mapper,
-            CoverageInfo coverage,
-            int axisIndex) {
+            CoordinateSystemAxis axis, EnvelopeAxesLabelsMapper mapper, CoverageInfo coverage, int axisIndex) {
         double lowerBound, upperBound, resolution;
         ReferencedEnvelope envelope = coverage.getNativeBoundingBox();
         GridGeometry grid = coverage.getGrid();
@@ -122,9 +118,7 @@ class DomainSetBuilder {
             resolution = (upperBound - lowerBound) / grid.getGridRange().getSpan(axisIndex);
         } else {
             throw new UnsupportedOperationException(
-                    "Cannot describe a coverage with a CRS having "
-                            + (axisIndex + 1)
-                            + " dimensions");
+                    "Cannot describe a coverage with a CRS having " + (axisIndex + 1) + " dimensions");
         }
 
         return new RegularAxis(

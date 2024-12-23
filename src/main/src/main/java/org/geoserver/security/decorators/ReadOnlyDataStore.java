@@ -24,10 +24,9 @@ import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
 
 /**
- * Given a {@link DataStore} subclass makes sure no write operations can be performed through it.
- * Regardless of the policy the store is kept read only as services are supposed to perform writes
- * via {@link FeatureStore} instances returned by {@link FeatureTypeInfo} and not via direct data
- * store access.
+ * Given a {@link DataStore} subclass makes sure no write operations can be performed through it. Regardless of the
+ * policy the store is kept read only as services are supposed to perform writes via {@link FeatureStore} instances
+ * returned by {@link FeatureTypeInfo} and not via direct data store access.
  *
  * @author Andrea Aime - TOPP
  */
@@ -66,8 +65,7 @@ public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataSto
         } else {
             final AccessLimits limits = policy.getLimits();
             VectorAccessLimits vectorLimits =
-                    new VectorAccessLimits(
-                            limits.getMode(), null, Filter.INCLUDE, null, Filter.EXCLUDE);
+                    new VectorAccessLimits(limits.getMode(), null, Filter.INCLUDE, null, Filter.EXCLUDE);
             childPolicy = this.policy.derive(vectorLimits);
         }
         return childPolicy;
@@ -80,8 +78,8 @@ public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataSto
     }
 
     @Override
-    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
-            String typeName, Transaction transaction) throws IOException {
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String typeName, Transaction transaction)
+            throws IOException {
         throw notifyUnsupportedOperation();
     }
 
@@ -117,10 +115,9 @@ public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataSto
     }
 
     /**
-     * Notifies the caller the requested operation is not supported, using a plain {@link
-     * UnsupportedOperationException} in case we have to conceal the fact the data is actually
-     * writable, using an Spring security exception otherwise to force an authentication from the
-     * user
+     * Notifies the caller the requested operation is not supported, using a plain {@link UnsupportedOperationException}
+     * in case we have to conceal the fact the data is actually writable, using an Spring security exception otherwise
+     * to force an authentication from the user
      */
     protected RuntimeException notifyUnsupportedOperation() {
         if (policy.response == Response.CHALLENGE) {

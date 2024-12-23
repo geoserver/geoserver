@@ -22,8 +22,7 @@ public abstract class AbstractOAuth2RestTemplateTest extends GeoServerMockTestSu
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
-    protected DefaultOAuth2RequestAuthenticator authenticator =
-            new DefaultOAuth2RequestAuthenticator();
+    protected DefaultOAuth2RequestAuthenticator authenticator = new DefaultOAuth2RequestAuthenticator();
 
     protected GeoServerOAuth2SecurityConfiguration configuration;
 

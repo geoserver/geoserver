@@ -61,10 +61,8 @@ public class WCSEnvelopeTest {
         assertEquals(newGeneralEnvelope(160, -10, 180, 10), new GeneralBounds(env));
     }
 
-    private static GeneralBounds newGeneralEnvelope(
-            int minLon, int minLat, int maxLon, int maxLat) {
-        GeneralBounds expected =
-                new GeneralBounds(new double[] {minLon, minLat}, new double[] {maxLon, maxLat});
+    private static GeneralBounds newGeneralEnvelope(int minLon, int minLat, int maxLon, int maxLat) {
+        GeneralBounds expected = new GeneralBounds(new double[] {minLon, minLat}, new double[] {maxLon, maxLat});
         expected.setCoordinateReferenceSystem(WGS84);
         return expected;
     }

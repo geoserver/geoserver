@@ -26,16 +26,13 @@ public class LocalResolveFeatureChainingByRefTest extends AbstractAppSchemaTestS
     @Test
     public void testResolveDepth2() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=local&resolveDepth=2");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=local&resolveDepth=2");
 
         LOGGER.info("WFS testResolveDepth2 response:\n" + prettyString(doc));
 
         assertXpathCount(
-                1,
-                "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature[@gml:id='mf2']",
-                doc);
+                1, "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature[@gml:id='mf2']", doc);
         assertXpathEvaluatesTo(
                 "#gu.25678",
                 "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature[@gml:id='mf2']/gsml:specification/@xlink:href",
@@ -46,16 +43,13 @@ public class LocalResolveFeatureChainingByRefTest extends AbstractAppSchemaTestS
     @Test
     public void testResolveDepth1() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=local&resolveDepth=1");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=local&resolveDepth=1");
 
         LOGGER.info("WFS testResolveDepth1 response:\n" + prettyString(doc));
 
         assertXpathCount(
-                1,
-                "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature[@gml:id='mf2']",
-                doc);
+                1, "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature[@gml:id='mf2']", doc);
         assertXpathEvaluatesTo(
                 "urn:x-test:GeologicUnit:gu.25678",
                 "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature[@gml:id='mf2']/gsml:specification/@xlink:href",
@@ -66,9 +60,8 @@ public class LocalResolveFeatureChainingByRefTest extends AbstractAppSchemaTestS
     @Test
     public void testResolveDepth0() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=local&resolveDepth=0");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=local&resolveDepth=0");
 
         LOGGER.info("WFS testResolveDepth0 response:\n" + prettyString(doc));
 
@@ -82,9 +75,7 @@ public class LocalResolveFeatureChainingByRefTest extends AbstractAppSchemaTestS
     @Test
     public void testNoResolve() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=none");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&resolve=none");
 
         LOGGER.info("WFS testNoResolve response:\n" + prettyString(doc));
 

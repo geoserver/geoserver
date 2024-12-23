@@ -13,9 +13,8 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 
 /**
- * Default implementation that will store the artifacts on the file system inside
- * $GEOSEVER_DATA_DIR/temp/wps, or if otherwise configured, in the folder setup in
- * WPSINfo.outputStorageDirectory
+ * Default implementation that will store the artifacts on the file system inside $GEOSEVER_DATA_DIR/temp/wps, or if
+ * otherwise configured, in the folder setup in WPSINfo.outputStorageDirectory
  *
  * @author Andrea Aime - GeoSolutions
  */

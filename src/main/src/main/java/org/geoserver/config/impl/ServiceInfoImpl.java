@@ -81,8 +81,8 @@ public class ServiceInfoImpl implements ServiceInfo {
     }
 
     /**
-     * Default implementation attempts to determine service type based on class naming convention.
-     * Subclasses are encouraged to override.
+     * Default implementation attempts to determine service type based on class naming convention. Subclasses are
+     * encouraged to override.
      *
      * @return service type based on class name, truncating ServiceInfo.
      */

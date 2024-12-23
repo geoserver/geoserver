@@ -65,27 +65,24 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
     public static final Property<PreviewLayer> TYPE = new BeanProperty<>("type", "type");
 
-    public static final AbstractProperty<PreviewLayer> NAME =
-            new AbstractProperty<PreviewLayer>("name") {
-                @Override
-                public Object getPropertyValue(PreviewLayer item) {
-                    if (item.layerInfo != null) {
-                        return item.layerInfo.prefixedName();
-                    }
-                    if (item.groupInfo != null) {
-                        return item.groupInfo.prefixedName();
-                    }
-                    return null;
-                }
-            };
+    public static final AbstractProperty<PreviewLayer> NAME = new AbstractProperty<PreviewLayer>("name") {
+        @Override
+        public Object getPropertyValue(PreviewLayer item) {
+            if (item.layerInfo != null) {
+                return item.layerInfo.prefixedName();
+            }
+            if (item.groupInfo != null) {
+                return item.groupInfo.prefixedName();
+            }
+            return null;
+        }
+    };
 
     public static final Property<PreviewLayer> TITLE = new BeanProperty<>("title", "title");
 
-    public static final Property<PreviewLayer> ABSTRACT =
-            new BeanProperty<>("abstract", "abstract", false);
+    public static final Property<PreviewLayer> ABSTRACT = new BeanProperty<>("abstract", "abstract", false);
 
-    public static final Property<PreviewLayer> KEYWORDS =
-            new BeanProperty<>("keywords", "keywords", false);
+    public static final Property<PreviewLayer> KEYWORDS = new BeanProperty<>("keywords", "keywords", false);
 
     public static final Property<PreviewLayer> COMMON = new PropertyPlaceholder<>("commonFormats");
 
@@ -153,10 +150,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         }
     }
 
-    /**
-     * Returns the requested page of layer objects after applying any keyword filtering set on the
-     * page
-     */
+    /** Returns the requested page of layer objects after applying any keyword filtering set on the page */
     private CloseableIterator<PreviewLayer> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
@@ -167,8 +161,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         SortBy sortOrder = null;
         if (sort != null) {
             if (property instanceof BeanProperty) {
-                final String sortProperty =
-                        ((BeanProperty<PreviewLayer>) property).getPropertyPath();
+                final String sortProperty = ((BeanProperty<PreviewLayer>) property).getPropertyPath();
                 sortOrder = sortBy(sortProperty, sort.isAscending());
             } else if (property == NAME) {
                 sortOrder = sortBy("prefixedName", sort.isAscending());
@@ -179,16 +172,14 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         CloseableIterator<PublishedInfo> pi =
                 catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
-        return CloseableIteratorAdapter.transform(
-                pi,
-                input -> {
-                    if (input instanceof LayerInfo) {
-                        return new PreviewLayer((LayerInfo) input);
-                    } else if (input instanceof LayerGroupInfo) {
-                        return new PreviewLayer((LayerGroupInfo) input);
-                    }
-                    return null;
-                });
+        return CloseableIteratorAdapter.transform(pi, input -> {
+            if (input instanceof LayerInfo) {
+                return new PreviewLayer((LayerInfo) input);
+            } else if (input instanceof LayerGroupInfo) {
+                return new PreviewLayer((LayerGroupInfo) input);
+            }
+            return null;
+        });
     }
 
     @Override
@@ -205,23 +196,17 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         Filter enabledLayerGroup = Predicates.equal("enabled", true);
         Filter advertisedLayerGroup = Predicates.equal("advertised", true);
         // return only layer groups that are not containers
-        Filter nonContainerGroup =
-                Predicates.or(
-                        Predicates.equal("mode", LayerGroupInfo.Mode.EO),
-                        Predicates.equal("mode", LayerGroupInfo.Mode.NAMED),
-                        Predicates.equal("mode", LayerGroupInfo.Mode.OPAQUE_CONTAINER),
-                        Predicates.equal("mode", LayerGroupInfo.Mode.SINGLE));
+        Filter nonContainerGroup = Predicates.or(
+                Predicates.equal("mode", LayerGroupInfo.Mode.EO),
+                Predicates.equal("mode", LayerGroupInfo.Mode.NAMED),
+                Predicates.equal("mode", LayerGroupInfo.Mode.OPAQUE_CONTAINER),
+                Predicates.equal("mode", LayerGroupInfo.Mode.SINGLE));
 
         // Filter for the Layers
-        Filter layerFilter =
-                Predicates.and(isLayerInfo, enabledFilter, storeEnabledFilter, advertisedFilter);
+        Filter layerFilter = Predicates.and(isLayerInfo, enabledFilter, storeEnabledFilter, advertisedFilter);
         // Filter for the LayerGroups
         Filter layerGroupFilter =
-                Predicates.and(
-                        isLayerGroupInfo,
-                        nonContainerGroup,
-                        enabledLayerGroup,
-                        advertisedLayerGroup);
+                Predicates.and(isLayerGroupInfo, nonContainerGroup, enabledLayerGroup, advertisedLayerGroup);
         // Or filter for merging them
         Filter orFilter = Predicates.or(layerFilter, layerGroupFilter);
         // And between the new filter and the initial filter

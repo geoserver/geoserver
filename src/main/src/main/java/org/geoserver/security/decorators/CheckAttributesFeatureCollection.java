@@ -30,9 +30,7 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
     Response response;
 
     protected CheckAttributesFeatureCollection(
-            SimpleFeatureCollection delegate,
-            Collection<String> writableAttributes,
-            Response response) {
+            SimpleFeatureCollection delegate, Collection<String> writableAttributes, Response response) {
         super(delegate);
         this.writableAttributes = new HashSet<>(writableAttributes);
         this.response = response;
@@ -47,8 +45,7 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
 
         SimpleFeatureIterator delegate;
 
-        public CheckAttributesFeatureIterator(
-                SimpleFeatureIterator delegate, Set<String> writableAttributes) {
+        public CheckAttributesFeatureIterator(SimpleFeatureIterator delegate, Set<String> writableAttributes) {
             this.delegate = delegate;
         }
 

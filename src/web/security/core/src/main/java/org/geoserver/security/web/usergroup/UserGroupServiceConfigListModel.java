@@ -18,8 +18,7 @@ import org.geoserver.web.GeoServerApplication;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class UserGroupServiceConfigListModel
-        extends LoadableDetachableModel<List<SecurityUserGroupServiceConfig>> {
+public class UserGroupServiceConfigListModel extends LoadableDetachableModel<List<SecurityUserGroupServiceConfig>> {
 
     @Override
     protected List<SecurityUserGroupServiceConfig> load() {
@@ -27,8 +26,7 @@ public class UserGroupServiceConfigListModel
         List<SecurityUserGroupServiceConfig> configs = new ArrayList<>();
         try {
             for (String ugServiceName : secMgr.listUserGroupServices()) {
-                SecurityUserGroupServiceConfig config =
-                        secMgr.loadUserGroupServiceConfig(ugServiceName);
+                SecurityUserGroupServiceConfig config = secMgr.loadUserGroupServiceConfig(ugServiceName);
                 configs.add(config);
             }
         } catch (IOException e) {

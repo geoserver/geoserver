@@ -33,8 +33,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.util.StringUtils;
 
 /** Keycloak implementation of {@link org.geoserver.security.GeoServerRoleService} */
-public class KeycloakRoleService extends AbstractGeoServerSecurityService
-        implements GeoServerRoleService {
+public class KeycloakRoleService extends AbstractGeoServerSecurityService implements GeoServerRoleService {
 
     protected String adminRoleName, groupAdminRoleName;
     protected SortedSet<GeoServerRole> emptySet;
@@ -68,15 +67,15 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
             KeycloakRoleServiceConfig keycloakConfig = (KeycloakRoleServiceConfig) config;
             List<String> idsOfClients = null;
             if (!StringUtils.isEmpty(keycloakConfig.getIdsOfClientsList())) {
-                idsOfClients = Arrays.asList(keycloakConfig.getIdsOfClientsList().split(","));
+                idsOfClients =
+                        Arrays.asList(keycloakConfig.getIdsOfClientsList().split(","));
             }
-            this.client =
-                    new KeycloakRESTClient(
-                            keycloakConfig.getServerURL(),
-                            keycloakConfig.getRealm(),
-                            keycloakConfig.getClientID(),
-                            keycloakConfig.getClientSecret(),
-                            idsOfClients);
+            this.client = new KeycloakRESTClient(
+                    keycloakConfig.getServerURL(),
+                    keycloakConfig.getRealm(),
+                    keycloakConfig.getClientID(),
+                    keycloakConfig.getClientSecret(),
+                    idsOfClients);
         }
         this.rolesCache = buildCache(new RoleCacheLoader(), roleCacheExpiresAfter);
         this.userRolesCache = buildCache(new UserRoleCacheLoader(), roleCacheExpiresAfter);
@@ -227,10 +226,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
         try {
             return usersInRoleCache.get(role.getAuthority());
         } catch (ExecutionException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error while retrieving user names in role " + role.getAuthority(),
-                    e.getCause());
+            LOGGER.log(Level.SEVERE, "Error while retrieving user names in role " + role.getAuthority(), e.getCause());
             throw new RuntimeException(e);
         }
     }
@@ -250,8 +246,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
      */
     @Override
     public Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
-            throws IOException {
+            String roleName, Properties roleParams, String userName, Properties userProps) throws IOException {
         return null;
     }
 
@@ -266,8 +261,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
         return 0;
     }
 
-    private <T> LoadingCache<String, T> buildCache(
-            CacheLoader<String, T> cacheLoader, Integer rolesCacheExpireAfter) {
+    private <T> LoadingCache<String, T> buildCache(CacheLoader<String, T> cacheLoader, Integer rolesCacheExpireAfter) {
         return CacheBuilder.newBuilder()
                 .maximumSize(1000)
                 .initialCapacity(100)
@@ -290,10 +284,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
             try {
                 return client.getUserRoles(key);
             } catch (IOException e) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "Error while retrieve user " + key + " roles from keycloak.",
-                        e);
+                LOGGER.log(Level.SEVERE, "Error while retrieve user " + key + " roles from keycloak.", e);
             }
             return emptySet;
         }
@@ -306,10 +297,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService
             try {
                 return client.getUserInRole(key);
             } catch (IOException e) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "Error while retrieve users in role " + key + " from keycloak.",
-                        e);
+                LOGGER.log(Level.SEVERE, "Error while retrieve users in role " + key + " from keycloak.", e);
             }
             return emptyStringSet;
         }

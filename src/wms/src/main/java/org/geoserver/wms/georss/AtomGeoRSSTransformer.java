@@ -135,8 +135,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
                 end("entry");
 
                 for (int i = 1; i < col.getNumGeometries(); i++) {
-                    encodeRelatedGeometryEntry(
-                            col.getGeometryN(i), feature.getID(), link, link + "#" + i);
+                    encodeRelatedGeometryEntry(col.getGeometryN(i), feature.getID(), link, link + "#" + i);
                 }
             }
         }

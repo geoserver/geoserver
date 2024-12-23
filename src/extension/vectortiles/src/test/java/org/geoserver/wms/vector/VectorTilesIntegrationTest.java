@@ -34,27 +34,18 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testSimple() throws Exception {
-        String request =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.ROAD_SEGMENTS)
-                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
-                        + "&format=application%2Fjson%3Btype%3Dgeojson";
+        String request = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.ROAD_SEGMENTS)
+                + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                + "&format=application%2Fjson%3Btype%3Dgeojson";
         DocumentContext json = getAsJSONPath(request, 200);
         // all features returned, with a geometry and a name attribute
         assertEquals(5, ((JSONArray) json.read("$.features")).size());
         assertEquals(5, ((JSONArray) json.read("$.features[*].geometry")).size());
+        assertEquals(3, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Route 5')]")).size());
+        assertEquals(1, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Main Street')]")).size());
         assertEquals(
-                3, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Route 5')]")).size());
-        assertEquals(
-                1,
-                ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Main Street')]"))
-                        .size());
-        assertEquals(
-                1,
-                ((JSONArray)
-                                json.read(
-                                        "$.features[?(@.properties.NAME == 'Dirt Road by Green Forest')]"))
-                        .size());
+                1, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Dirt Road by Green Forest')]")).size());
     }
 
     @Test
@@ -68,18 +59,18 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
     }
 
     public void checkSimpleMVT(String mimeType) throws Exception {
-        String request =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.ROAD_SEGMENTS)
-                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
-                        + "&format="
-                        + mimeType;
+        String request = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.ROAD_SEGMENTS)
+                + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                + "&format="
+                + mimeType;
         MockHttpServletResponse response = getAsServletResponse(request);
         // the standard mime type is returned
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, response.getContentType());
         byte[] responseBytes = response.getContentAsByteArray();
         VectorTileDecoder decoder = new VectorTileDecoder();
-        List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
+        List<VectorTileDecoder.Feature> featuresList =
+                decoder.decode(responseBytes).asList();
         assertEquals(5, featuresList.size());
         assertEquals(
                 3,
@@ -96,68 +87,50 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testCqlFilter() throws Exception {
-        String request =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.ROAD_SEGMENTS)
-                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
-                        + "&CQL_FILTER=NAME='Main Street'&format=application%2Fjson%3Btype%3Dgeojson";
+        String request = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.ROAD_SEGMENTS)
+                + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                + "&CQL_FILTER=NAME='Main Street'&format=application%2Fjson%3Btype%3Dgeojson";
         DocumentContext json = getAsJSONPath(request, 200);
         // all features returned, with a geometry and a name attribute
         assertEquals(1, ((JSONArray) json.read("$.features")).size());
         assertEquals(1, ((JSONArray) json.read("$.features[*].geometry")).size());
+        assertEquals(0, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Route 5')]")).size());
+        assertEquals(1, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Main Street')]")).size());
         assertEquals(
-                0, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Route 5')]")).size());
-        assertEquals(
-                1,
-                ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Main Street')]"))
-                        .size());
-        assertEquals(
-                0,
-                ((JSONArray)
-                                json.read(
-                                        "$.features[?(@.properties.NAME == 'Dirt Road by Green Forest')]"))
-                        .size());
+                0, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Dirt Road by Green Forest')]")).size());
     }
 
     @Test
     public void testCqlFilterNoMatch() throws Exception {
-        String request =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.ROAD_SEGMENTS)
-                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
-                        + "&CQL_FILTER=1=0&format="
-                        + MapBoxTileBuilderFactory.MIME_TYPE;
+        String request = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.ROAD_SEGMENTS)
+                + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                + "&CQL_FILTER=1=0&format="
+                + MapBoxTileBuilderFactory.MIME_TYPE;
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals(200, response.getStatus());
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, response.getContentType());
         byte[] responseBytes = response.getContentAsByteArray();
         VectorTileDecoder decoder = new VectorTileDecoder();
-        List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
+        List<VectorTileDecoder.Feature> featuresList =
+                decoder.decode(responseBytes).asList();
         assertEquals(0, featuresList.size());
     }
 
     @Test
     public void testFilterById() throws Exception {
-        String request =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.ROAD_SEGMENTS)
-                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
-                        + "&featureId=RoadSegments.1107532045091&format=application%2Fjson%3Btype%3Dgeojson";
+        String request = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.ROAD_SEGMENTS)
+                + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                + "&featureId=RoadSegments.1107532045091&format=application%2Fjson%3Btype%3Dgeojson";
         DocumentContext json = getAsJSONPath(request, 200);
         // all features returned, with a geometry and a name attribute
         assertEquals(1, ((JSONArray) json.read("$.features")).size());
         assertEquals(1, ((JSONArray) json.read("$.features[*].geometry")).size());
+        assertEquals(0, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Route 5')]")).size());
+        assertEquals(0, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Main Street')]")).size());
         assertEquals(
-                0, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Route 5')]")).size());
-        assertEquals(
-                0,
-                ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Main Street')]"))
-                        .size());
-        assertEquals(
-                1,
-                ((JSONArray)
-                                json.read(
-                                        "$.features[?(@.properties.NAME == 'Dirt Road by Green Forest')]"))
-                        .size());
+                1, ((JSONArray) json.read("$.features[?(@.properties.NAME == 'Dirt Road by Green Forest')]")).size());
     }
 }

@@ -32,8 +32,7 @@ public class GeoServerImplTrailingSlashTest extends GeoServerSystemTestSupport {
     public void testSetTrailinSlashMatchFalse() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(BASEPATH + "/about/status/", null);
         assertEquals(404, response.getStatus());
-        MockHttpServletResponse responseNoSlash =
-                getAsServletResponse(BASEPATH + "/about/status", null);
+        MockHttpServletResponse responseNoSlash = getAsServletResponse(BASEPATH + "/about/status", null);
         assertEquals(200, responseNoSlash.getStatus());
     }
 }

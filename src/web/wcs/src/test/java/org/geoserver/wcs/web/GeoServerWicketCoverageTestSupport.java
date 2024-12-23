@@ -67,12 +67,9 @@ public abstract class GeoServerWicketCoverageTestSupport extends GeoServerWicket
         props.put(LayerProperty.STYLE, styleName);
 
         // wcs 1.1
-        testData.addRasterLayer(
-                TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
-        testData.addRasterLayer(
-                TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
-        testData.addRasterLayer(
-                ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
     }
 }

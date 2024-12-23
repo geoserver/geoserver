@@ -37,13 +37,11 @@ public class AtomSearchResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         SearchResults results = (SearchResults) value;
 
         TemplatesProcessor processor =
-                new TemplatesProcessor(
-                        freemarkerTemplates, gs.getGlobal(), gs.getService(OSEOInfo.class));
+                new TemplatesProcessor(freemarkerTemplates, gs.getGlobal(), gs.getService(OSEOInfo.class));
         String result = null;
         try {
             result = processor.processTemplate(results);

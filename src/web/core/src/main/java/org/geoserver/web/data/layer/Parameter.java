@@ -103,12 +103,6 @@ class Parameter implements Serializable {
 
     @Override
     public String toString() {
-        return "Parameter [defaultValue="
-                + defaultValue
-                + ", name="
-                + name
-                + ", regexp="
-                + regexp
-                + "]";
+        return "Parameter [defaultValue=" + defaultValue + ", name=" + name + ", regexp=" + regexp + "]";
     }
 }

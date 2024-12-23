@@ -8,9 +8,7 @@ package org.geoserver.feature.retype;
 import org.geotools.api.data.FeatureEvent;
 import org.geotools.api.data.FeatureListener;
 
-/**
- * A FeatureListener wrapper that changes the feature source, to be used in wrapping feature sources
- */
+/** A FeatureListener wrapper that changes the feature source, to be used in wrapping feature sources */
 public class WrappingFeatureListener implements FeatureListener {
 
     RetypingFeatureSource source;
@@ -23,8 +21,7 @@ public class WrappingFeatureListener implements FeatureListener {
 
     @Override
     public void changed(FeatureEvent featureEvent) {
-        FeatureEvent retyped =
-                new FeatureEvent(source, featureEvent.getType(), featureEvent.getBounds());
+        FeatureEvent retyped = new FeatureEvent(source, featureEvent.getType(), featureEvent.getBounds());
         listener.changed(retyped);
     }
 }

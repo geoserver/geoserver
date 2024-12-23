@@ -15,8 +15,7 @@ public interface NamespaceInfo extends CatalogInfo {
     /**
      * The prefix of the namespace.
      *
-     * <p>This prefix is unique among all namespace instances and can be used to identify a
-     * particular namespace.
+     * <p>This prefix is unique among all namespace instances and can be used to identify a particular namespace.
      *
      * @uml.property name="prefix"
      */
@@ -35,8 +34,7 @@ public interface NamespaceInfo extends CatalogInfo {
     /**
      * The uri of the namespace.
      *
-     * <p>This uri is unique among all namespace instances and can be used to identify a particular
-     * namespace.
+     * <p>This uri is unique among all namespace instances and can be used to identify a particular namespace.
      *
      * @uml.property name="uRI"
      */
@@ -52,8 +50,8 @@ public interface NamespaceInfo extends CatalogInfo {
     /**
      * A persistent map of metadata.
      *
-     * <p>Data in this map is intended to be persisted. Common case of use is to have services
-     * associate various bits of data with a particular namespace.
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services associate various bits of
+     * data with a particular namespace.
      */
     MetadataMap getMetadata();
 

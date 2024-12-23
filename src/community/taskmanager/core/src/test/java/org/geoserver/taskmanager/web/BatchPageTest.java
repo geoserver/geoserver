@@ -167,21 +167,17 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
         tester.assertComponent("dialog:dialog:content:form:userPanel", DropDownPanel.class);
         assertEquals(
                 3,
-                (((DropDownChoice<?>)
-                                tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:dropdown"))
+                (((DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                                "dialog:dialog:content:form:userPanel:dropdown"))
                         .getChoices()
                         .size()));
         FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
         formTester.select("userPanel:dropdown", 0);
         formTester.submit("submit");
 
-        BatchElementsModel provider =
-                (BatchElementsModel)
-                        ((GeoServerTablePanel<?>)
-                                        tester.getComponentFromLastRenderedPage(
-                                                "batchForm:tasksPanel"))
-                                .getDataProvider();
+        BatchElementsModel provider = (BatchElementsModel)
+                ((GeoServerTablePanel<?>) tester.getComponentFromLastRenderedPage("batchForm:tasksPanel"))
+                        .getDataProvider();
 
         assertEquals(1, provider.size());
         assertEquals("task1", provider.getItems().get(0).getTask().getName());
@@ -191,9 +187,8 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
         formTester = tester.newFormTester("dialog:dialog:content:form");
         assertEquals(
                 2,
-                (((DropDownChoice<?>)
-                                tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:dropdown"))
+                (((DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                                "dialog:dialog:content:form:userPanel:dropdown"))
                         .getChoices()
                         .size()));
         formTester.select("userPanel:dropdown", 1);
@@ -206,9 +201,8 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
         formTester = tester.newFormTester("dialog:dialog:content:form");
         assertEquals(
                 1,
-                (((DropDownChoice<?>)
-                                tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:content:form:userPanel:dropdown"))
+                (((DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                                "dialog:dialog:content:form:userPanel:dropdown"))
                         .getChoices()
                         .size()));
         formTester.select("userPanel:dropdown", 0);
@@ -227,25 +221,19 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
         // tester.assertInvisible("batchForm:tasksPanel:listContainer:items:3:itemProperties:0:component:down");
         // tester.assertVisible("batchForm:tasksPanel:listContainer:items:3:itemProperties:0:component:up");
 
-        tester.clickLink(
-                "batchForm:tasksPanel:listContainer:items:2:itemProperties:0:component:up:link");
-        tester.clickLink(
-                "batchForm:tasksPanel:listContainer:items:5:itemProperties:0:component:down:link");
+        tester.clickLink("batchForm:tasksPanel:listContainer:items:2:itemProperties:0:component:up:link");
+        tester.clickLink("batchForm:tasksPanel:listContainer:items:5:itemProperties:0:component:down:link");
         assertEquals("task3", provider.getItems().get(0).getTask().getName());
         assertEquals("task2", provider.getItems().get(1).getTask().getName());
         assertEquals("task1", provider.getItems().get(2).getTask().getName());
 
         // select and delete
-        CheckBox selector =
-                ((CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                "batchForm:tasksPanel:listContainer:items:7:selectItemContainer:selectItem"));
+        CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage(
+                "batchForm:tasksPanel:listContainer:items:7:selectItemContainer:selectItem"));
         tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
-        selector =
-                ((CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                "batchForm:tasksPanel:listContainer:items:9:selectItemContainer:selectItem"));
+        selector = ((CheckBox) tester.getComponentFromLastRenderedPage(
+                "batchForm:tasksPanel:listContainer:items:9:selectItemContainer:selectItem"));
         tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
         tester.clickLink("batchForm:removeSelected");

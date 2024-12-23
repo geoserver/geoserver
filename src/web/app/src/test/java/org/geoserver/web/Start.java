@@ -38,24 +38,21 @@ import org.eclipse.jetty.xml.XmlConfiguration;
 
 /**
  * Jetty starter, will run geoserver inside the Jetty web container.<br>
- * Useful for debugging, especially in IDE were you have direct dependencies between the sources of
- * the various modules (such as Eclipse).
+ * Useful for debugging, especially in IDE were you have direct dependencies between the sources of the various modules
+ * (such as Eclipse).
  *
  * @author wolf
  */
-@SuppressWarnings(
-        "deprecation") // deep BouncyCastle API changes, need someone that understands it to replace
+@SuppressWarnings("deprecation") // deep BouncyCastle API changes, need someone that understands it to replace
 // current code
 public class Start {
-    private static final Logger log =
-            org.geotools.util.logging.Logging.getLogger(Start.class.getName());
+    private static final Logger log = org.geotools.util.logging.Logging.getLogger(Start.class.getName());
 
     public static void main(String[] args) {
         final Server jettyServer = new Server();
 
         HttpConfiguration httpConfig = new HttpConfiguration();
-        try (ServerConnector http =
-                        new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
+        try (ServerConnector http = new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
                 ServerConnector https = getHTTPSConnector(jettyServer, httpConfig)) {
             http.setPort(Integer.getInteger("jetty.port", 8080));
             http.setAcceptQueueSize(100);
@@ -68,8 +65,7 @@ public class Start {
             // tp.setMaxThreads(8);
             // conn.setThreadPool(tp);
 
-            jettyServer.setConnectors(
-                    https != null ? new Connector[] {http, https} : new Connector[] {http});
+            jettyServer.setConnectors(https != null ? new Connector[] {http, https} : new Connector[] {http});
 
             /*Constraint constraint = new Constraint();
             constraint.setName(Constraint.__BASIC_AUTH);;
@@ -140,17 +136,13 @@ public class Start {
                 try {
                     jettyServer.stop();
                 } catch (Exception e1) {
-                    log.log(
-                            Level.SEVERE,
-                            "Unable to stop the " + "Jetty server:" + e1.getMessage(),
-                            e1);
+                    log.log(Level.SEVERE, "Unable to stop the " + "Jetty server:" + e1.getMessage(), e1);
                 }
             }
         }
     }
 
-    private static ServerConnector getHTTPSConnector(
-            Server jettyServer, HttpConfiguration httpConfig) {
+    private static ServerConnector getHTTPSConnector(Server jettyServer, HttpConfiguration httpConfig) {
         // SSL host name given ?
         String sslHost = System.getProperty("ssl.hostname");
         ServerConnector https = null;
@@ -161,11 +153,10 @@ public class Start {
             HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
             httpsConfig.addCustomizer(new SecureRequestCustomizer());
 
-            https =
-                    new ServerConnector(
-                            jettyServer,
-                            new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
-                            new HttpConnectionFactory(httpsConfig));
+            https = new ServerConnector(
+                    jettyServer,
+                    new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
+                    new HttpConnectionFactory(httpsConfig));
             https.setPort(Integer.getInteger("jetty.ssl.port", 8443));
         }
         return https;
@@ -196,7 +187,8 @@ public class Start {
         ssl.setKeyStorePassword(password);
 
         File javaHome = new File(System.getProperty("java.home"));
-        File cacerts = new File(javaHome, "lib").toPath().resolve("security/cacerts").toFile();
+        File cacerts =
+                new File(javaHome, "lib").toPath().resolve("security/cacerts").toFile();
 
         if (!cacerts.exists()) {
             return null;
@@ -208,8 +200,8 @@ public class Start {
         return ssl;
     }
 
-    private static void assureSelfSignedServerCertificate(
-            String hostname, File keyStoreFile, String password) throws Exception {
+    private static void assureSelfSignedServerCertificate(String hostname, File keyStoreFile, String password)
+            throws Exception {
 
         KeyStore privateKS = KeyStore.getInstance("JKS");
         if (keyStoreFile.exists()) {
@@ -237,14 +229,11 @@ public class Start {
         if (random < 0) random *= -1;
         v3CertGen.setSerialNumber(BigInteger.valueOf(random));
         v3CertGen.setIssuerDN(
-                new org.bouncycastle.jce.X509Principal(
-                        "CN=" + hostname + ", OU=None, O=None L=None, C=None"));
+                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
         v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-        v3CertGen.setNotAfter(
-                new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
+        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
         v3CertGen.setSubjectDN(
-                new org.bouncycastle.jce.X509Principal(
-                        "CN=" + hostname + ", OU=None, O=None L=None, C=None"));
+                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
 
         v3CertGen.setPublicKey(KPair.getPublic());
         v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption");
@@ -259,18 +248,16 @@ public class Start {
         }
 
         privateKS.setKeyEntry(
-                hostname + ".key",
-                KPair.getPrivate(),
-                password.toCharArray(),
-                new java.security.cert.Certificate[] {PKCertificate});
+                hostname + ".key", KPair.getPrivate(), password.toCharArray(), new java.security.cert.Certificate[] {
+                    PKCertificate
+                });
 
         privateKS.setCertificateEntry(hostname + ".cert", PKCertificate);
 
         privateKS.store(new FileOutputStream(keyStoreFile), password.toCharArray());
     }
 
-    private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname)
-            throws Exception {
+    private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname) throws Exception {
         Enumeration<String> e = ks.aliases();
         while (e.hasMoreElements()) {
             String alias = e.nextElement();

@@ -122,28 +122,27 @@ public class URLChecksIntegrationTest extends GeoServerSystemTestSupport {
     private void writeSampleRulesXML(boolean dataEnabled) {
         Resource config = getConfigurationFile();
         try (PrintStream os = new PrintStream(config.out(), true, StandardCharsets.UTF_8)) {
-            os.println(
-                    "<checks>"
-                            + "<regex>"
-                            + "<name>geoserver</name>"
-                            + "<description>Allows access to geoserver.org</description>"
-                            + "<regex>https?://.*geoserver.org/.*</regex>"
-                            + "<enabled>true</enabled>"
-                            + "</regex>"
-                            + "<regex>"
-                            + "<name>geotools</name>"
-                            + "<regex>https?://.*geotools.org/.*</regex>"
-                            + "<enabled>true</enabled>"
-                            + "</regex>"
-                            + "<regex>"
-                            + "<name>data</name>"
-                            + "<description>Allows access to the data folder</description>"
-                            + "<regex>file:///data/.*\\.tif</regex>"
-                            + "<enabled>"
-                            + dataEnabled
-                            + "</enabled>"
-                            + "</regex>"
-                            + "</checks>");
+            os.println("<checks>"
+                    + "<regex>"
+                    + "<name>geoserver</name>"
+                    + "<description>Allows access to geoserver.org</description>"
+                    + "<regex>https?://.*geoserver.org/.*</regex>"
+                    + "<enabled>true</enabled>"
+                    + "</regex>"
+                    + "<regex>"
+                    + "<name>geotools</name>"
+                    + "<regex>https?://.*geotools.org/.*</regex>"
+                    + "<enabled>true</enabled>"
+                    + "</regex>"
+                    + "<regex>"
+                    + "<name>data</name>"
+                    + "<description>Allows access to the data folder</description>"
+                    + "<regex>file:///data/.*\\.tif</regex>"
+                    + "<enabled>"
+                    + dataEnabled
+                    + "</enabled>"
+                    + "</regex>"
+                    + "</checks>");
         }
     }
 
@@ -151,16 +150,12 @@ public class URLChecksIntegrationTest extends GeoServerSystemTestSupport {
         // prepare 3 checks
         List<AbstractURLCheck> checks = new ArrayList<>();
         RegexURLCheck gsCheck =
-                new RegexURLCheck(
-                        "geoserver",
-                        "Allows access to geoserver.org",
-                        "https?://.*geoserver.org/.*");
+                new RegexURLCheck("geoserver", "Allows access to geoserver.org", "https?://.*geoserver.org/.*");
         checks.add(gsCheck);
         RegexURLCheck gtCheck = new RegexURLCheck("geotools", null, "https?://.*geotools.org/.*");
         checks.add(gtCheck);
         RegexURLCheck fileCheck =
-                new RegexURLCheck(
-                        "data", "Allows access to the data folder", "file:///data/.*\\.tif");
+                new RegexURLCheck("data", "Allows access to the data folder", "file:///data/.*\\.tif");
         fileCheck.setEnabled(dataEnabled);
         checks.add(fileCheck);
         return checks;

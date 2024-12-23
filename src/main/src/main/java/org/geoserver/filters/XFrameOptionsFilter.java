@@ -23,34 +23,33 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
 /**
- * Simple filter to set various security related HTTP response headers. The properties to control
- * these headers can be set via command line -D arg, web.xml init or environment variable.<br>
+ * Simple filter to set various security related HTTP response headers. The properties to control these headers can be
+ * set via command line -D arg, web.xml init or environment variable.<br>
  * <br>
  * Two properties control the X-Frame-Options header to prevent click jacking attacks:<br>
- * - geoserver.xframe.shouldSetPolicy: controls whether to set the X-Frame-Options header. Default
- * is true.<br>
- * - geoserver.xframe.policy: controls the value of the X-Frame-Options header. Default is
- * SAMEORIGIN. Valid options are DENY, SAMEORIGIN and ALLOW-FROM [uri] (ALLOW-FROM is unsupported in
- * modern browsers and will be treated as if the header was not set at all)<br>
+ * - geoserver.xframe.shouldSetPolicy: controls whether to set the X-Frame-Options header. Default is true.<br>
+ * - geoserver.xframe.policy: controls the value of the X-Frame-Options header. Default is SAMEORIGIN. Valid options are
+ * DENY, SAMEORIGIN and ALLOW-FROM [uri] (ALLOW-FROM is unsupported in modern browsers and will be treated as if the
+ * header was not set at all)<br>
  * <br>
- * One property controls the X-Content-Type-Options header to prevent cross-site scripting attacks
- * that depend on content sniffing:<br>
- * - geoserver.xContentType.shouldSetPolicy: controls whether to set the X-Content-Type-Options
- * header. Default is true.<br>
+ * One property controls the X-Content-Type-Options header to prevent cross-site scripting attacks that depend on
+ * content sniffing:<br>
+ * - geoserver.xContentType.shouldSetPolicy: controls whether to set the X-Content-Type-Options header. Default is true.
+ * <br>
  * <br>
  * Two properties control the X-XSS-Protection header:<br>
- * - geoserver.xXssProtection.shouldSetPolicy: controls whether to set the X-XSS-Protection header.
- * Default is false.<br>
- * - geoserver.xXssProtection.policy: controls the value of the X-XSS-Protection header. Default is
- * 0. Valid options are 0, 1, 1; mode=block<br>
+ * - geoserver.xXssProtection.shouldSetPolicy: controls whether to set the X-XSS-Protection header. Default is false.
  * <br>
- * Two properties control the Strict-Transport-Security header to reduce the possibility of
- * man-in-the-middle attacks:<br>
- * - geoserver.hsts.shouldSetPolicy: controls whether to set the Strict-Transport-Security header.
- * This header will only be added to HTTPS requests. Default is false.<br>
- * - geoserver.hsts.policy: controls the value of the Strict-Transport-Security header. Default is
- * "max-age=31536000 ; includeSubDomains". Valid options can change the max-age to the desired age
- * in seconds and can omit the includeSubDomains directive.
+ * - geoserver.xXssProtection.policy: controls the value of the X-XSS-Protection header. Default is 0. Valid options are
+ * 0, 1, 1; mode=block<br>
+ * <br>
+ * Two properties control the Strict-Transport-Security header to reduce the possibility of man-in-the-middle attacks:
+ * <br>
+ * - geoserver.hsts.shouldSetPolicy: controls whether to set the Strict-Transport-Security header. This header will only
+ * be added to HTTPS requests. Default is false.<br>
+ * - geoserver.hsts.policy: controls the value of the Strict-Transport-Security header. Default is "max-age=31536000 ;
+ * includeSubDomains". Valid options can change the max-age to the desired age in seconds and can omit the
+ * includeSubDomains directive.
  */
 public class XFrameOptionsFilter implements Filter {
 
@@ -67,19 +66,16 @@ public class XFrameOptionsFilter implements Filter {
     public static final String GEOSERVER_HSTS_POLICY = "geoserver.hsts.policy";
 
     /** The system property to set whether the X-Frame-Options header should be set */
-    public static final String GEOSERVER_XFRAME_SHOULD_SET_POLICY =
-            "geoserver.xframe.shouldSetPolicy";
+    public static final String GEOSERVER_XFRAME_SHOULD_SET_POLICY = "geoserver.xframe.shouldSetPolicy";
 
     /** The system property for the value of the X-Frame-Options header */
     public static final String GEOSERVER_XFRAME_POLICY = "geoserver.xframe.policy";
 
     /** The system property to set whether the X-Content-Type-Options header should be set */
-    public static final String GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY =
-            "geoserver.xContentType.shouldSetPolicy";
+    public static final String GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY = "geoserver.xContentType.shouldSetPolicy";
 
     /** The system property to set whether the X-XSS-Protection header should be set */
-    public static final String GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY =
-            "geoserver.xXssProtection.shouldSetPolicy";
+    public static final String GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY = "geoserver.xXssProtection.shouldSetPolicy";
 
     /** The system property for the value of the X-XSS-Protection header */
     public static final String GEOSERVER_XXSS_PROTECTION_POLICY = "geoserver.xXssProtection.policy";
@@ -96,21 +92,17 @@ public class XFrameOptionsFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Map<String, Object> map = getCache();
         if (request.isSecure() && (Boolean) map.get(GEOSERVER_HSTS_SHOULD_SET_POLICY)) {
-            httpResponse.setHeader(
-                    HttpHeaders.STRICT_TRANSPORT_SECURITY, (String) map.get(GEOSERVER_HSTS_POLICY));
+            httpResponse.setHeader(HttpHeaders.STRICT_TRANSPORT_SECURITY, (String) map.get(GEOSERVER_HSTS_POLICY));
         }
         if ((Boolean) map.get(GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY)) {
             // there is no other valid value for this header
             httpResponse.setHeader(HttpHeaders.X_CONTENT_TYPE_OPTIONS, "nosniff");
         }
         if ((Boolean) map.get(GEOSERVER_XFRAME_SHOULD_SET_POLICY)) {
-            httpResponse.setHeader(
-                    HttpHeaders.X_FRAME_OPTIONS, (String) map.get(GEOSERVER_XFRAME_POLICY));
+            httpResponse.setHeader(HttpHeaders.X_FRAME_OPTIONS, (String) map.get(GEOSERVER_XFRAME_POLICY));
         }
         if ((Boolean) map.get(GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY)) {
-            httpResponse.setHeader(
-                    HttpHeaders.X_XSS_PROTECTION,
-                    (String) map.get(GEOSERVER_XXSS_PROTECTION_POLICY));
+            httpResponse.setHeader(HttpHeaders.X_XSS_PROTECTION, (String) map.get(GEOSERVER_XXSS_PROTECTION_POLICY));
         }
 
         chain.doFilter(request, response);
@@ -142,33 +134,23 @@ public class XFrameOptionsFilter implements Filter {
 
     private static Map<String, Object> initializeCache() {
         Map<String, Object> map = new LinkedHashMap<>();
-        map.put(
-                GEOSERVER_HSTS_SHOULD_SET_POLICY,
-                getBooleanProperty(GEOSERVER_HSTS_SHOULD_SET_POLICY, false));
-        map.put(
-                GEOSERVER_HSTS_POLICY,
-                getStringProperty(GEOSERVER_HSTS_POLICY, DEFAULT_HSTS_POLICY));
+        map.put(GEOSERVER_HSTS_SHOULD_SET_POLICY, getBooleanProperty(GEOSERVER_HSTS_SHOULD_SET_POLICY, false));
+        map.put(GEOSERVER_HSTS_POLICY, getStringProperty(GEOSERVER_HSTS_POLICY, DEFAULT_HSTS_POLICY));
         map.put(
                 GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY,
                 getBooleanProperty(GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY, true));
-        map.put(
-                GEOSERVER_XFRAME_SHOULD_SET_POLICY,
-                getBooleanProperty(GEOSERVER_XFRAME_SHOULD_SET_POLICY, true));
-        map.put(
-                GEOSERVER_XFRAME_POLICY,
-                getStringProperty(GEOSERVER_XFRAME_POLICY, DEFAULT_FRAME_POLICY));
+        map.put(GEOSERVER_XFRAME_SHOULD_SET_POLICY, getBooleanProperty(GEOSERVER_XFRAME_SHOULD_SET_POLICY, true));
+        map.put(GEOSERVER_XFRAME_POLICY, getStringProperty(GEOSERVER_XFRAME_POLICY, DEFAULT_FRAME_POLICY));
         map.put(
                 GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY,
                 getBooleanProperty(GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY, false));
         map.put(
                 GEOSERVER_XXSS_PROTECTION_POLICY,
                 getStringProperty(GEOSERVER_XXSS_PROTECTION_POLICY, DEFAULT_XXSS_POLICY));
-        LOGGER.fine(
-                () ->
-                        "Security HTTP response header settings: \n "
-                                + map.entrySet().stream()
-                                        .map(e -> e.getKey() + " = " + e.getValue())
-                                        .collect(Collectors.joining("\n ")));
+        LOGGER.fine(() -> "Security HTTP response header settings: \n "
+                + map.entrySet().stream()
+                        .map(e -> e.getKey() + " = " + e.getValue())
+                        .collect(Collectors.joining("\n ")));
         return Collections.unmodifiableMap(map);
     }
 }

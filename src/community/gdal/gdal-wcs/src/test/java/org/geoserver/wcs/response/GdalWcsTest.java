@@ -19,18 +19,14 @@ import org.w3c.dom.Document;
 
 public class GdalWcsTest extends WCSKVPTestSupport {
 
-    private static final QName GRAYALPHA =
-            new QName(MockData.SF_URI, "grayAlpha", MockData.SF_PREFIX);
-    private static final QName PALETTED =
-            new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX);
+    private static final QName GRAYALPHA = new QName(MockData.SF_URI, "grayAlpha", MockData.SF_PREFIX);
+    private static final QName PALETTED = new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addRasterLayer(
-                GRAYALPHA, "gray_alpha.tif", "tif", null, GdalWcsTest.class, getCatalog());
-        testData.addRasterLayer(
-                PALETTED, "paletted.tif", "tif", null, GdalWcsTest.class, getCatalog());
+        testData.addRasterLayer(GRAYALPHA, "gray_alpha.tif", "tif", null, GdalWcsTest.class, getCatalog());
+        testData.addRasterLayer(PALETTED, "paletted.tif", "tif", null, GdalWcsTest.class, getCatalog());
     }
 
     @Override
@@ -49,21 +45,15 @@ public class GdalWcsTest extends WCSKVPTestSupport {
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
 
         String exprResult =
-                xpath.evaluate(
-                        "count(//wcs:ServiceMetadata/wcs:formatSupported[text()='"
-                                + mimeType
-                                + "'])",
-                        dom);
+                xpath.evaluate("count(//wcs:ServiceMetadata/wcs:formatSupported[text()='" + mimeType + "'])", dom);
         return "1".equals(exprResult);
     }
 
     @Test
     public void testUnsupportedFormat() throws Exception {
         // MrSID format is not among the default ones
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=BlueMarble&Format=image/x-mrsid");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=BlueMarble&Format=image/x-mrsid");
 
         checkOws20Exception(response, 400, "InvalidParameterValue", "format");
     }
@@ -72,10 +62,8 @@ public class GdalWcsTest extends WCSKVPTestSupport {
     public void testGetCoverageJP2K() throws Exception {
         assumeTrue(isFormatSupported("image/jp2"));
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=BlueMarble&Format=image/jp2");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=BlueMarble&Format=image/jp2");
 
         assertEquals("image/jp2", response.getContentType());
     }
@@ -84,34 +72,28 @@ public class GdalWcsTest extends WCSKVPTestSupport {
     public void testGetCoveragePdfByMimeType() throws Exception {
         assumeTrue(isFormatSupported("application/pdf"));
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=BlueMarble&Format=application/pdf");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=BlueMarble&Format=application/pdf");
 
         assertEquals("application/pdf", response.getContentType());
     }
 
     @Test
     public void testGrayAlphaGetCoveragePdf() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId="
-                                + getLayerId(GRAYALPHA)
-                                + "&Format=application/pdf");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId="
+                + getLayerId(GRAYALPHA)
+                + "&Format=application/pdf");
 
         assertEquals("application/pdf", response.getContentType());
     }
 
     @Test
     public void testPalettedGetCoveragePdf() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId="
-                                + getLayerId(PALETTED)
-                                + "&Format=application/pdf");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId="
+                + getLayerId(PALETTED)
+                + "&Format=application/pdf");
 
         assertEquals("application/pdf", response.getContentType());
     }
@@ -120,10 +102,8 @@ public class GdalWcsTest extends WCSKVPTestSupport {
     public void testGetCoveragePdfByName() throws Exception {
         assumeTrue(isFormatSupported("application/pdf"));
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=BlueMarble&Format=gdal-pdf");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=BlueMarble&Format=gdal-pdf");
 
         // assertEquals("application/pdf", response.getContentType());
         assertEquals("gdal-pdf", response.getContentType());
@@ -133,10 +113,8 @@ public class GdalWcsTest extends WCSKVPTestSupport {
     public void testGetCoverageArcInfoGrid() throws Exception {
         assumeTrue(isFormatSupported("application/zip"));
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=DEM&Format=GDAL-ArcInfoGrid");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=DEM&Format=GDAL-ArcInfoGrid");
 
         // assertEquals("application/zip", response.getContentType());
         assertEquals("GDAL-ArcInfoGrid", response.getContentType());
@@ -148,10 +126,8 @@ public class GdalWcsTest extends WCSKVPTestSupport {
     public void testGetCoverageXyzGrid() throws Exception {
         assumeTrue(isFormatSupported("text/plain"));
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=DEM&Format=GDAL-XYZ");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=DEM&Format=GDAL-XYZ");
 
         // assertEquals("text/plain", response.getContentType());
         assertEquals("GDAL-XYZ", response.getContentType());

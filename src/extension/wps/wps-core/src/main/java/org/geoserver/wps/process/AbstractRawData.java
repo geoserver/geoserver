@@ -30,8 +30,7 @@ public abstract class AbstractRawData implements RawData {
     public static final String DEFAULT_EXTENSION = "bin";
 
     /**
-     * The metadata entry pointing at the input attribute that will be filled with the user chosen
-     * selection attribute
+     * The metadata entry pointing at the input attribute that will be filled with the user chosen selection attribute
      */
     public static final String SELECTION_ATTRIBUTE = "chosenMimeType";
 
@@ -90,9 +89,8 @@ public abstract class AbstractRawData implements RawData {
     }
 
     /**
-     * Extracts the a map of process input parameters that should be filled with the chosen output
-     * mime type for RawData outputs, the map goes from the output result name to the input that
-     * will receive the user chosen mime type
+     * Extracts the a map of process input parameters that should be filled with the chosen output mime type for RawData
+     * outputs, the map goes from the output result name to the input that will receive the user chosen mime type
      */
     public static Map<String, String> getOutputMimeParameters(Name processName, ProcessFactory pf) {
         Map<String, Parameter<?>> resultInfo = pf.getResultInfo(processName, null);
@@ -102,12 +100,11 @@ public abstract class AbstractRawData implements RawData {
                 String attribute = (String) p.metadata.get(SELECTION_ATTRIBUTE);
                 if (attribute != null) {
                     if (result.containsValue(attribute)) {
-                        LOGGER.warning(
-                                "In process "
-                                        + processName
-                                        + " two raw results parameter are using the same input attribute "
-                                        + attribute
-                                        + " to notify the process of the user chosen mime type");
+                        LOGGER.warning("In process "
+                                + processName
+                                + " two raw results parameter are using the same input attribute "
+                                + attribute
+                                + " to notify the process of the user chosen mime type");
                     } else {
                         result.put(p.key, attribute);
                     }
@@ -123,12 +120,11 @@ public abstract class AbstractRawData implements RawData {
         Map<String, Parameter<?>> resultInfo = pf.getResultInfo(processName, null);
         Parameter<?> parameter = resultInfo.get(resultName);
         if (parameter == null) {
-            LOGGER.warning(
-                    "Looked up raw result "
-                            + resultName
-                            + " in process "
-                            + processName
-                            + " but found none, returned default mime type");
+            LOGGER.warning("Looked up raw result "
+                    + resultName
+                    + " in process "
+                    + processName
+                    + " but found none, returned default mime type");
             return BINARY_MIME;
         }
 

@@ -34,15 +34,12 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
         container.setOutputMarkupId(true);
         add(container);
 
-        compressionPriority =
-                new TextField<>(
-                        "compressionPriority", new PropertyModel(model, "compressionPriority"));
+        compressionPriority = new TextField<>("compressionPriority", new PropertyModel(model, "compressionPriority"));
         compressionPriority.add(new RangeValidator(0, 100));
         container.add(compressionPriority);
 
         decompressionPriority =
-                new TextField<>(
-                        "decompressionPriority", new PropertyModel(model, "decompressionPriority"));
+                new TextField<>("decompressionPriority", new PropertyModel(model, "decompressionPriority"));
         decompressionPriority.add(new RangeValidator(0, 100));
         container.add(decompressionPriority);
 
@@ -56,55 +53,51 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
 
         LibdeflateSettings object = getSettings(model);
 
-        compressionPriority.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+        compressionPriority.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        int priority = compressionPriority.getModelObject().intValue();
-                        LibdeflateSettings object = getSettings(model);
-                        object.setCompressionPriority(priority);
-                        model.setObject((T) object);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                int priority = compressionPriority.getModelObject().intValue();
+                LibdeflateSettings object = getSettings(model);
+                object.setCompressionPriority(priority);
+                model.setObject((T) object);
+            }
+        });
 
-        decompressionPriority.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+        decompressionPriority.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        int priority = decompressionPriority.getModelObject().intValue();
-                        LibdeflateSettings object = getSettings(model);
-                        object.setDecompressionPriority(priority);
-                        model.setObject((T) object);
-                    }
-                });
-        minLevel.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                int priority = decompressionPriority.getModelObject().intValue();
+                LibdeflateSettings object = getSettings(model);
+                object.setDecompressionPriority(priority);
+                model.setObject((T) object);
+            }
+        });
+        minLevel.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        int min = minLevel.getModelObject().intValue();
-                        LibdeflateSettings object = getSettings(model);
-                        object.setMinLevel(min);
-                        model.setObject((T) object);
-                    }
-                });
-        maxLevel.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                int min = minLevel.getModelObject().intValue();
+                LibdeflateSettings object = getSettings(model);
+                object.setMinLevel(min);
+                model.setObject((T) object);
+            }
+        });
+        maxLevel.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        int max = maxLevel.getModelObject().intValue();
-                        LibdeflateSettings object = getSettings(model);
-                        object.setMaxLevel(max);
-                        model.setObject((T) object);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                int max = maxLevel.getModelObject().intValue();
+                LibdeflateSettings object = getSettings(model);
+                object.setMaxLevel(max);
+                model.setObject((T) object);
+            }
+        });
     }
 
     private LibdeflateSettings getSettings(IModel<T> model) {
@@ -117,13 +110,12 @@ public class LibdeflateSettingsPanel<T extends LibdeflateSettings> extends FormC
 
     @Override
     public void convertInput() {
-        IVisitor<Component, Object> formComponentVisitor =
-                (component, visit) -> {
-                    if (component instanceof FormComponent) {
-                        FormComponent<?> formComponent = (FormComponent<?>) component;
-                        formComponent.processInput();
-                    }
-                };
+        IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
+            }
+        };
 
         LibdeflateSettings convertedInput = new LibdeflateSettings();
         convertedInput.setCompressionPriority(compressionPriority.getModelObject());

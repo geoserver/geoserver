@@ -50,14 +50,12 @@ import org.geoserver.web.wicket.ParamResourceModel;
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class OpenIdConnectAuthProviderPanel
-        extends GeoServerOAuth2AuthProviderPanel<OpenIdConnectFilterConfig> {
+public class OpenIdConnectAuthProviderPanel extends GeoServerOAuth2AuthProviderPanel<OpenIdConnectFilterConfig> {
 
     /**
-     * If they have chosen MSGraphAPI as the RoleProvider, we need to make sure that the userinfo
-     * endpoint is also an MS Graph URL. If not, they've probably made a misconfiguration - the
-     * bearer token is from another IDP and this will cause issues access the MS graph endpoint.
-     * Let's fail early.
+     * If they have chosen MSGraphAPI as the RoleProvider, we need to make sure that the userinfo endpoint is also an MS
+     * Graph URL. If not, they've probably made a misconfiguration - the bearer token is from another IDP and this will
+     * cause issues access the MS graph endpoint. Let's fail early.
      */
     class MSGraphRoleProviderOnlyWithMSGraphSystem extends AbstractFormValidator {
 
@@ -76,8 +74,7 @@ public class OpenIdConnectAuthProviderPanel
                 return;
             }
 
-            TextField userInfoTextField =
-                    (TextField) form.get("panel").get("checkTokenEndpointUrl");
+            TextField userInfoTextField = (TextField) form.get("panel").get("checkTokenEndpointUrl");
 
             String userInfoEndpointUrl = (String) userInfoTextField.getConvertedInput();
 
@@ -88,10 +85,9 @@ public class OpenIdConnectAuthProviderPanel
     }
 
     /**
-     * Attached Bearer Tokens are NOT compatible with ID Tokens roles source. This is because there
-     * isn't an ID Token available when the Access Token is attached to the HTTP request. User
-     * should choose a different role Source (which may require setting up the IDP to put roles in a
-     * different location).
+     * Attached Bearer Tokens are NOT compatible with ID Tokens roles source. This is because there isn't an ID Token
+     * available when the Access Token is attached to the HTTP request. User should choose a different role Source
+     * (which may require setting up the IDP to put roles in a different location).
      */
     class BearerTokenNoIDTokensValidator extends AbstractFormValidator {
 
@@ -107,19 +103,16 @@ public class OpenIdConnectAuthProviderPanel
          */
         @Override
         public void validate(Form<?> form) {
-            CheckBox allowBearerTokensCheckbox =
-                    (CheckBox) form.get("panel").get("allowBearerTokens");
+            CheckBox allowBearerTokensCheckbox = (CheckBox) form.get("panel").get("allowBearerTokens");
             if (allowBearerTokensCheckbox == null) {
                 return; // this happens when the "discovery" button is pressed
             }
-            if (!allowBearerTokensCheckbox.getConvertedInput())
-                return; // bearer tokens not allowed -> no issues
+            if (!allowBearerTokensCheckbox.getConvertedInput()) return; // bearer tokens not allowed -> no issues
 
             DropDownChoice roleSource = (DropDownChoice) form.get("panel").get("roleSource");
 
             if (IdToken.equals(roleSource.getConvertedInput())) {
-                form.error(
-                        form.getString("OpenIdConnectAuthProviderPanel.invalidBearerRoleSource"));
+                form.error(form.getString("OpenIdConnectAuthProviderPanel.invalidBearerRoleSource"));
             }
         }
     }
@@ -194,30 +187,27 @@ public class OpenIdConnectAuthProviderPanel
         public DiscoveryPanel(String panelId) {
             super(panelId);
 
-            TextField<String> url =
-                    new TextField<>("discoveryURL", new PropertyModel<>(this, "discoveryURL"));
+            TextField<String> url = new TextField<>("discoveryURL", new PropertyModel<>(this, "discoveryURL"));
             add(url);
-            add(
-                    new AjaxButton("discover") {
+            add(new AjaxButton("discover") {
 
-                        @Override
-                        protected void onError(AjaxRequestTarget target, Form<?> form) {
-                            onSubmit(target, form);
-                        }
+                @Override
+                protected void onError(AjaxRequestTarget target, Form<?> form) {
+                    onSubmit(target, form);
+                }
 
-                        @Override
-                        protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                            url.processInput();
-                            discover(url.getInput(), target);
-                        }
-                    });
+                @Override
+                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    url.processInput();
+                    discover(url.getInput(), target);
+                }
+            });
             add(new HelpLink("discoveryURLKeyHelp", this).setDialog(dialog));
         }
 
         private void discover(String discoveryURL, AjaxRequestTarget target) {
-            OpenIdConnectFilterConfig model =
-                    (OpenIdConnectFilterConfig)
-                            OpenIdConnectAuthProviderPanel.this.getForm().getModelObject();
+            OpenIdConnectFilterConfig model = (OpenIdConnectFilterConfig)
+                    OpenIdConnectAuthProviderPanel.this.getForm().getModelObject();
             try {
                 new DiscoveryClient(discoveryURL).autofill(model);
                 target.add(OpenIdConnectAuthProviderPanel.this);

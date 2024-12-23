@@ -43,10 +43,9 @@ import org.springframework.web.servlet.mvc.method.annotation.JsonViewResponseBod
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
 /**
- * Customized {@link RequestResponseBodyMethodProcessor} that allows full support of {@link
- * DispatcherCallback}, and has a customized content negotiation strategy that allows to set up the
- * default media type by using the defaultMediaType annotation on the controller and prefer JSON
- * producing converters in case no default has been set up.
+ * Customized {@link RequestResponseBodyMethodProcessor} that allows full support of {@link DispatcherCallback}, and has
+ * a customized content negotiation strategy that allows to set up the default media type by using the defaultMediaType
+ * annotation on the controller and prefer JSON producing converters in case no default has been set up.
  */
 public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
@@ -59,10 +58,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             List<HttpMessageConverter<?>> converters,
             ContentNegotiationManager contentNegotiationManager,
             List<DispatcherCallback> callbacks) {
-        super(
-                converters,
-                contentNegotiationManager,
-                Collections.singletonList(new JsonViewResponseBodyAdvice()));
+        super(converters, contentNegotiationManager, Collections.singletonList(new JsonViewResponseBodyAdvice()));
         this.contentNegotiationManager = contentNegotiationManager;
         this.callbacks = callbacks;
         // allow converter overrides, the Spring internal machinery picks the first one matching
@@ -76,8 +72,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,
             ServletServerHttpResponse outputMessage)
-            throws IOException, HttpMediaTypeNotAcceptableException,
-                    HttpMessageNotWritableException {
+            throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
         // handle case of null value returned by controller methods
         HttpServletResponse servletResponse = outputMessage.getServletResponse();
         if (value == null) {
@@ -85,27 +80,24 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             return;
         }
 
-        HttpMessageConverter<T> converter =
-                getMessageConverter(value, returnType, inputMessage, outputMessage);
+        HttpMessageConverter<T> converter = getMessageConverter(value, returnType, inputMessage, outputMessage);
 
         // DispatcherCallback bridging
         MediaType mediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
-        Response response =
-                new Response(value.getClass()) {
+        Response response = new Response(value.getClass()) {
 
-                    @Override
-                    public String getMimeType(Object value, Operation operation)
-                            throws ServiceException {
-                        return mediaType.toString();
-                    }
+            @Override
+            public String getMimeType(Object value, Operation operation) throws ServiceException {
+                return mediaType.toString();
+            }
 
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public void write(Object value, OutputStream output, Operation operation)
-                            throws IOException, ServiceException {
-                        converter.write((T) value, mediaType, outputMessage);
-                    }
-                };
+            @Override
+            @SuppressWarnings("unchecked")
+            public void write(Object value, OutputStream output, Operation operation)
+                    throws IOException, ServiceException {
+                converter.write((T) value, mediaType, outputMessage);
+            }
+        };
 
         Request dr = Dispatcher.REQUEST.get();
         response = fireResponseDispatchedCallback(dr, dr.getOperation(), value, response);
@@ -113,8 +105,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         // write using the response provided by the callbacks
         outputMessage
                 .getHeaders()
-                .setContentType(
-                        MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
+                .setContentType(MediaType.parseMediaType(response.getMimeType(value, dr.getOperation())));
         response.write(value, servletResponse.getOutputStream(), dr.getOperation());
     }
 
@@ -141,9 +132,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         } else {
             body = value;
             valueType = getReturnValueType(body, returnType);
-            targetType =
-                    GenericTypeResolver.resolveType(
-                            getGenericType(returnType), returnType.getContainingClass());
+            targetType = GenericTypeResolver.resolveType(getGenericType(returnType), returnType.getContainingClass());
         }
 
         if (isResourceType(value, returnType)) {
@@ -162,14 +151,12 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             List<MediaType> acceptableTypes = getAcceptableMediaTypes(request);
             // if we got no indication, see if the method has a default content type, and
             // if not, default to JSON as per OGC API expectations
-            List<MediaType> producibleTypes =
-                    getProducibleMediaTypes(request, valueType, targetType, value);
+            List<MediaType> producibleTypes = getProducibleMediaTypes(request, valueType, targetType, value);
             if (ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(acceptableTypes)) {
-                MediaType defaultMediaType =
-                        Optional.ofNullable(
-                                        returnType.getMethodAnnotation(DefaultContentType.class))
-                                .map(t -> MediaType.parseMediaType(t.value()))
-                                .orElse(null);
+                MediaType defaultMediaType = Optional.ofNullable(
+                                returnType.getMethodAnnotation(DefaultContentType.class))
+                        .map(t -> MediaType.parseMediaType(t.value()))
+                        .orElse(null);
                 if (defaultMediaType != null) {
                     acceptableTypes = Collections.singletonList(defaultMediaType);
                 } else if (producibleTypes.contains(MediaType.APPLICATION_JSON)) {
@@ -178,22 +165,19 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             }
             // we want to check if HTML is the first producible without using converters, adding it
             // to the mix
-            HTMLResponseBody htmlResponseBody =
-                    returnType.getMethodAnnotation(HTMLResponseBody.class);
+            HTMLResponseBody htmlResponseBody = returnType.getMethodAnnotation(HTMLResponseBody.class);
             if (htmlResponseBody != null) {
                 producibleTypes.add(MediaType.TEXT_HTML);
             }
 
             if (body != null && producibleTypes.isEmpty()) {
-                throw new HttpMessageNotWritableException(
-                        "No converter found for return value of type: " + valueType);
+                throw new HttpMessageNotWritableException("No converter found for return value of type: " + valueType);
             }
             List<MediaType> mediaTypesToUse = new ArrayList<>();
             for (MediaType requestedType : acceptableTypes) {
                 for (MediaType producibleType : producibleTypes) {
                     if (requestedType.isCompatibleWith(producibleType)) {
-                        mediaTypesToUse.add(
-                                getMostSpecificMediaType(requestedType, producibleType));
+                        mediaTypesToUse.add(getMostSpecificMediaType(requestedType, producibleType));
                     }
                 }
             }
@@ -202,8 +186,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                     throw new HttpMediaTypeNotAcceptableException(producibleTypes);
                 }
                 if (logger.isDebugEnabled()) {
-                    logger.debug(
-                            "No match for " + acceptableTypes + ", supported: " + producibleTypes);
+                    logger.debug("No match for " + acceptableTypes + ", supported: " + producibleTypes);
                 }
                 return null;
             }
@@ -227,8 +210,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                     if (mediaType.isConcrete()) {
                         selectedMediaType = mediaType;
                         break;
-                    } else if (mediaType.equals(MediaType.ALL)
-                            || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
+                    } else if (mediaType.equals(MediaType.ALL) || mediaType.equals(MEDIA_TYPE_APPLICATION)) {
                         selectedMediaType = MediaType.APPLICATION_OCTET_STREAM;
                         break;
                     }
@@ -236,21 +218,19 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug(
-                        "Using '"
-                                + selectedMediaType
-                                + "', given "
-                                + acceptableTypes
-                                + " and supported "
-                                + producibleTypes);
+                logger.debug("Using '"
+                        + selectedMediaType
+                        + "', given "
+                        + acceptableTypes
+                        + " and supported "
+                        + producibleTypes);
             }
         }
         return selectedMediaType;
     }
 
     @Override
-    protected List<MediaType> getProducibleMediaTypes(
-            HttpServletRequest request, Class<?> valueClass) {
+    protected List<MediaType> getProducibleMediaTypes(HttpServletRequest request, Class<?> valueClass) {
         return getProducibleMediaTypes(request, valueClass, null);
     }
 
@@ -261,33 +241,24 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
      *   <li>The producible media types specified in the request mappings, or
      *   <li>Media types of configured converters that can write the specific return value, or
      *   <li>{@link MediaType#ALL}
-     *   <li>Specific GeoServer converters that can declare a mediatype only when given the actual
-     *       response value
+     *   <li>Specific GeoServer converters that can declare a mediatype only when given the actual response value
      * </ul>
      */
     @SuppressWarnings("unchecked")
     protected List<MediaType> getProducibleMediaTypes(
-            HttpServletRequest request,
-            Class<?> valueClass,
-            @Nullable Type targetType,
-            Object value) {
+            HttpServletRequest request, Class<?> valueClass, @Nullable Type targetType, Object value) {
 
         Set<MediaType> mediaTypes =
-                (Set<MediaType>)
-                        request.getAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
+                (Set<MediaType>) request.getAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
         if (!CollectionUtils.isEmpty(mediaTypes)) {
             return new ArrayList<>(mediaTypes);
         }
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
-            if (converter instanceof ResponseMessageConverter
-                    && converter.canWrite(valueClass, null)) {
-                result.addAll(
-                        ((ResponseMessageConverter) converter)
-                                .getSupportedMediaTypes(valueClass, value));
+            if (converter instanceof ResponseMessageConverter && converter.canWrite(valueClass, null)) {
+                result.addAll(((ResponseMessageConverter) converter).getSupportedMediaTypes(valueClass, value));
             } else if (converter instanceof GenericHttpMessageConverter && targetType != null) {
-                if (((GenericHttpMessageConverter<?>) converter)
-                        .canWrite(targetType, valueClass, null)) {
+                if (((GenericHttpMessageConverter<?>) converter).canWrite(targetType, valueClass, null)) {
                     result.addAll(converter.getSupportedMediaTypes());
                 }
             } else if (converter.canWrite(valueClass, null)) {
@@ -304,10 +275,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 : produceTypeToUse);
     }
 
-    /**
-     * Return the generic type of the {@code returnType} (or of the nested type if it is an {@link
-     * HttpEntity}).
-     */
+    /** Return the generic type of the {@code returnType} (or of the nested type if it is an {@link HttpEntity}). */
     private Type getGenericType(MethodParameter returnType) {
         if (HttpEntity.class.isAssignableFrom(returnType.getParameterType())) {
             return ResolvableType.forType(returnType.getGenericParameterType())
@@ -324,8 +292,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,
             ServletServerHttpResponse outputMessage)
-            throws IOException, HttpMediaTypeNotAcceptableException,
-                    HttpMessageNotWritableException {
+            throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
         Object body;
         Class<?> valueType;
         Type targetType;
@@ -337,19 +304,16 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
             body = value;
             valueType = this.getReturnValueType(value, returnType);
             targetType =
-                    GenericTypeResolver.resolveType(
-                            this.getGenericType(returnType), returnType.getContainingClass());
+                    GenericTypeResolver.resolveType(this.getGenericType(returnType), returnType.getContainingClass());
         }
 
-        MediaType selectedMediaType =
-                getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
+        MediaType selectedMediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
 
         if (selectedMediaType != null) {
             selectedMediaType = selectedMediaType.removeQualityValue();
             for (HttpMessageConverter<?> converter : this.messageConverters) {
                 if (converter instanceof ResponseMessageConverter
-                        && ((ResponseMessageConverter) converter)
-                                .canWrite(value, selectedMediaType)) {
+                        && ((ResponseMessageConverter) converter).canWrite(value, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;
                 }
                 if (converter instanceof GenericHttpMessageConverter
@@ -363,14 +327,12 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         }
 
         if (body != null) {
-            throw new HttpMediaTypeNotAcceptableException(
-                    this.getSupportedMediaTypes(Object.class));
+            throw new HttpMediaTypeNotAcceptableException(this.getSupportedMediaTypes(Object.class));
         }
         return null;
     }
 
-    Response fireResponseDispatchedCallback(
-            Request req, Operation op, Object result, Response response) {
+    Response fireResponseDispatchedCallback(Request req, Operation op, Object result, Response response) {
         for (DispatcherCallback cb : callbacks) {
             Response r = cb.responseDispatched(req, op, result, response);
             response = r != null ? r : response;

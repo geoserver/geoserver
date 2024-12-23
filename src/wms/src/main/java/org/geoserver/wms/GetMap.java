@@ -90,9 +90,8 @@ public class GetMap {
     }
 
     /**
-     * Implements the map production logic for a WMS GetMap request, delegating the encoding to the
-     * appropriate output format to a {@link GetMapOutputFormat} appropriate for the required
-     * format.
+     * Implements the map production logic for a WMS GetMap request, delegating the encoding to the appropriate output
+     * format to a {@link GetMapOutputFormat} appropriate for the required format.
      *
      * <p>Preconditions:
      *
@@ -164,12 +163,10 @@ public class GetMap {
     }
 
     /**
-     * TODO: This method have become a 300+ lines monster, refactor it to private methods from which
-     * names one can infer what's going on... but get a decent test coverage on it first as to avoid
-     * regressions as much as possible
+     * TODO: This method have become a 300+ lines monster, refactor it to private methods from which names one can infer
+     * what's going on... but get a decent test coverage on it first as to avoid regressions as much as possible
      */
-    public WebMap run(final GetMapRequest request, WMSMapContent mapContent)
-            throws ServiceException, IOException {
+    public WebMap run(final GetMapRequest request, WMSMapContent mapContent) throws ServiceException, IOException {
         assertMandatory(request);
 
         final String outputFormat = request.getFormat();
@@ -185,8 +182,7 @@ public class GetMap {
 
         // is the request tiled? We support that?
         if (cap != null && !cap.isTiledRequestsSupported() && isTiled) {
-            throw new ServiceException(
-                    "Format " + request.getFormat() + " does not support tiled requests");
+            throw new ServiceException("Format " + request.getFormat() + " does not support tiled requests");
         }
         // enable on the fly meta tiling if request looks like a tiled one
         if (MetatileMapOutputFormat.isRequestTiled(request, delegate)) {
@@ -194,8 +190,7 @@ public class GetMap {
                 LOGGER.finer("Tiled request detected, activating on the fly meta tiler");
             }
 
-            delegate =
-                    new MetatileMapOutputFormat(request, (RenderedImageMapOutputFormat) delegate);
+            delegate = new MetatileMapOutputFormat(request, (RenderedImageMapOutputFormat) delegate);
         }
 
         // handling time series and elevation series
@@ -205,8 +200,8 @@ public class GetMap {
     }
 
     /**
-     * Actually computes the WebMap, either in a single shot, or for a particular time/elevation
-     * value should there be a list of them
+     * Actually computes the WebMap, either in a single shot, or for a particular time/elevation value should there be a
+     * list of them
      */
     WebMap executeInternal(
             WMSMapContent mapContent,
@@ -230,9 +225,7 @@ public class GetMap {
         if (mapcrs != null) {
             mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, mapcrs));
         } else {
-            mapContent
-                    .getViewport()
-                    .setBounds(new ReferencedEnvelope(envelope, DefaultGeographicCRS.WGS84));
+            mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, DefaultGeographicCRS.WGS84));
         }
 
         mapContent.setMapWidth(request.getWidth());
@@ -288,13 +281,7 @@ public class GetMap {
             int layerType = mapLayerInfo.getType();
             if (layerType == MapLayerInfo.TYPE_REMOTE_VECTOR) {
                 addRemoteVectorLayer(
-                        mapContent,
-                        request,
-                        featureVersion,
-                        mapLayerInfo,
-                        layerStyle,
-                        layerFilter,
-                        layerSort);
+                        mapContent, request, featureVersion, mapLayerInfo, layerStyle, layerFilter, layerSort);
             } else if (layerType == MapLayerInfo.TYPE_VECTOR) {
                 wms.checkMaxDimensions(mapLayerInfo, times, elevations, false);
                 addLocalVectorLayer(
@@ -312,14 +299,7 @@ public class GetMap {
             } else if (layerType == MapLayerInfo.TYPE_RASTER) {
                 wms.checkMaxDimensions(mapLayerInfo, times, elevations, true);
                 addRasterLayer(
-                        mapContent,
-                        request,
-                        times,
-                        elevations,
-                        mapLayerInfo,
-                        layerStyle,
-                        layerFilter,
-                        layerSort);
+                        mapContent, request, times, elevations, mapLayerInfo, layerStyle, layerFilter, layerSort);
             } else if (layerType == MapLayerInfo.TYPE_WMS) {
                 addWMSLayer(mapContent, request, i, mapLayerInfo);
             } else if (layerType == MapLayerInfo.TYPE_WMTS) {
@@ -372,23 +352,20 @@ public class GetMap {
         mapContent.addLayer(mapLayer);
     }
 
-    private void addWMSLayer(
-            WMSMapContent mapContent, GetMapRequest request, int i, MapLayerInfo mapLayerInfo)
+    private void addWMSLayer(WMSMapContent mapContent, GetMapRequest request, int i, MapLayerInfo mapLayerInfo)
             throws IOException {
         WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
         if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) return;
         WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
         Layer gt2Layer = wmsLayer.getWMSLayer(null);
         if (wmsLayer.isMetadataBBoxRespected()) {
-            boolean isInsideBounnds =
-                    checkEnvelopOverLapWithNativeBounds(
-                            mapContent.getViewport().getBounds(), wmsLayer.getNativeBoundingBox());
+            boolean isInsideBounnds = checkEnvelopOverLapWithNativeBounds(
+                    mapContent.getViewport().getBounds(), wmsLayer.getNativeBoundingBox());
             if (!isInsideBounnds) {
                 if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.fine(
-                            "Get Map Request BBOX is outside Layer "
-                                    + request.getLayers().get(i).getName()
-                                    + " metada BoundsIgnoring Layer,Ignoring");
+                    LOGGER.fine("Get Map Request BBOX is outside Layer "
+                            + request.getLayers().get(i).getName()
+                            + " metada BoundsIgnoring Layer,Ignoring");
 
                 return;
             }
@@ -415,12 +392,11 @@ public class GetMap {
             String imageFormat = request.getFormat();
             // if passed style does not exist in remote, throw exception
             if (!wmsLayer.isSelectedRemoteStyles(style))
-                throw new IllegalArgumentException(
-                        "Unknown remote style "
-                                + style
-                                + " in cascaded layer "
-                                + wmsLayer.getName()
-                                + ", , re-configure the layer and WMS Store");
+                throw new IllegalArgumentException("Unknown remote style "
+                        + style
+                        + " in cascaded layer "
+                        + wmsLayer.getName()
+                        + ", , re-configure the layer and WMS Store");
 
             // if the format is not selected then fall back to preffered
             if (!wmsLayer.isFormatValid(imageFormat)) imageFormat = wmsLayer.getPreferredFormat();
@@ -453,21 +429,12 @@ public class GetMap {
             wms.validateRasterDimensions(times, elevations, mapLayerInfo, request);
 
             // get the group of parameters tha this reader supports
-            GeneralParameterValue[] readParameters =
-                    wms.getWMSReadParameters(
-                            request,
-                            mapLayerInfo,
-                            layerFilter,
-                            layerSort,
-                            times,
-                            elevations,
-                            reader,
-                            false);
+            GeneralParameterValue[] readParameters = wms.getWMSReadParameters(
+                    request, mapLayerInfo, layerFilter, layerSort, times, elevations, reader, false);
             try {
 
                 try {
-                    CachedGridReaderLayer layer =
-                            new CachedGridReaderLayer(reader, layerStyle, readParameters);
+                    CachedGridReaderLayer layer = new CachedGridReaderLayer(reader, layerStyle, readParameters);
                     layer.setTitle(mapLayerInfo.getCoverage().prefixedName());
                     mapContent.addLayer(layer);
                 } catch (Exception e) {
@@ -484,13 +451,11 @@ public class GetMap {
                 }
 
                 throw new ServiceException(
-                        "Internal error : unable to get reader for this coverage layer "
-                                + mapLayerInfo);
+                        "Internal error : unable to get reader for this coverage layer " + mapLayerInfo);
             }
         } else {
             throw new ServiceException(
-                    new StringBuffer(
-                                    "Internal error : unable to get reader for this coverage layer ")
+                    new StringBuffer("Internal error : unable to get reader for this coverage layer ")
                             .append(mapLayerInfo.toString())
                             .toString());
         }
@@ -558,8 +523,7 @@ public class GetMap {
         // mix the dimension related filter with the layer filter
         wms.validateVectorDimensions(times, elevations, featureInfo, request);
         Filter dimensionFilter = wms.getDimensionFilter(times, elevations, featureInfo, request);
-        Filter filter =
-                SimplifyingFilterVisitor.simplify(Filters.and(ff, layerFilter, dimensionFilter));
+        Filter filter = SimplifyingFilterVisitor.simplify(Filters.and(ff, layerFilter, dimensionFilter));
 
         final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
         definitionQuery.setVersion(featureVersion);
@@ -580,13 +544,11 @@ public class GetMap {
             } else {
                 // source = new PagingFeatureSource(source,
                 // request.getStartIndex(), limit);
-                throw new ServiceException(
-                        "startIndex is not supported for the " + mapLayerInfo.getName() + " layer");
+                throw new ServiceException("startIndex is not supported for the " + mapLayerInfo.getName() + " layer");
             }
         }
 
-        int maxFeatures =
-                request.getMaxFeatures() != null ? request.getMaxFeatures() : Integer.MAX_VALUE;
+        int maxFeatures = request.getMaxFeatures() != null ? request.getMaxFeatures() : Integer.MAX_VALUE;
         definitionQuery.setMaxFeatures(maxFeatures);
 
         featureLayer.setQuery(definitionQuery);
@@ -609,8 +571,7 @@ public class GetMap {
         definitionQuery.setFilter(layerFilter);
         definitionQuery.setVersion(featureVersion);
         definitionQuery.setSortBy(layerSort);
-        int maxFeatures =
-                request.getMaxFeatures() != null ? request.getMaxFeatures() : Integer.MAX_VALUE;
+        int maxFeatures = request.getMaxFeatures() != null ? request.getMaxFeatures() : Integer.MAX_VALUE;
         definitionQuery.setMaxFeatures(maxFeatures);
         featureLayer.setQuery(definitionQuery);
 
@@ -618,9 +579,7 @@ public class GetMap {
     }
 
     private void validateSort(
-            FeatureSource<? extends FeatureType, ? extends Feature> source,
-            SortBy[] sort,
-            MapLayerInfo mapLayerInfo) {
+            FeatureSource<? extends FeatureType, ? extends Feature> source, SortBy[] sort, MapLayerInfo mapLayerInfo) {
         FeatureType ft = source.getSchema();
         for (SortBy sortBy : sort) {
             if (sortBy.getPropertyName().evaluate(ft) == null) {
@@ -636,8 +595,8 @@ public class GetMap {
     }
 
     /**
-     * Computes the rendering buffer in case the user did not specify one in the request, and the
-     * admin setup some rendering buffer hints in the layer configurations
+     * Computes the rendering buffer in case the user did not specify one in the request, and the admin setup some
+     * rendering buffer hints in the layer configurations
      */
     public static void setupRenderingBuffer(WMSMapContent map, List<MapLayerInfo> layers) {
         // easy case, the buffer is already set in the call
@@ -669,8 +628,7 @@ public class GetMap {
             for (int i = 0; i < layers.size(); i++) {
                 int layerBuffer = layerBuffers[i];
                 if (layerBuffer == 0) {
-                    layerBuffer =
-                            computeLayerBuffer(map.layers().get(i).getStyle(), scaleDenominator);
+                    layerBuffer = computeLayerBuffer(map.layers().get(i).getStyle(), scaleDenominator);
                 }
                 if (layerBuffer > buffer) {
                     buffer = layerBuffer;
@@ -701,8 +659,7 @@ public class GetMap {
     /**
      * Asserts the mandatory GetMap parameters have been provided.
      *
-     * <p>With the exception of the SRS and STYLES parameters, for which default values are
-     * assigned.
+     * <p>With the exception of the SRS and STYLES parameters, for which default values are assigned.
      *
      * @throws ServiceException if any mandatory parameter has not been set on the request
      */
@@ -734,8 +691,7 @@ public class GetMap {
         // if it is, throw a service exception!
         final Envelope env = request.getBbox();
         if (env == null) {
-            throw new ServiceException(
-                    "GetMap requests must include a BBOX parameter.", "MissingBBox");
+            throw new ServiceException("GetMap requests must include a BBOX parameter.", "MissingBBox");
         }
         if (env.isNull() || (env.getWidth() <= 0) || (env.getHeight() <= 0)) {
             throw new ServiceException(
@@ -747,17 +703,16 @@ public class GetMap {
     }
 
     /**
-     * Returns the list of filters resulting of combining the layers definition filters with the per
-     * layer filters made by the user.
+     * Returns the list of filters resulting of combining the layers definition filters with the per layer filters made
+     * by the user.
      *
-     * <p>If <code>requestFilters != null</code>, it shall contain the same number of elements than
-     * <code>layers</code>, as filters are requested one per layer.
+     * <p>If <code>requestFilters != null</code>, it shall contain the same number of elements than <code>layers</code>,
+     * as filters are requested one per layer.
      *
      * @param requestFilters the list of filters sent by the user, or <code>null</code>
-     * @param layers the layers requested in the GetMap request, where to get the per layer
-     *     definition filters from.
-     * @return a list of filters, one per layer, resulting of anding the user requested filter and
-     *     the layer definition filter
+     * @param layers the layers requested in the GetMap request, where to get the per layer definition filters from.
+     * @return a list of filters, one per layer, resulting of anding the user requested filter and the layer definition
+     *     filter
      */
     private Filter[] buildLayersFilters(List<Filter> requestFilters, List<MapLayerInfo> layers) {
         final int nLayers = layers.size();
@@ -765,8 +720,7 @@ public class GetMap {
         if (requestFilters == null || requestFilters.isEmpty()) {
             requestFilters = Collections.nCopies(layers.size(), Filter.INCLUDE);
         } else if (requestFilters.size() != nLayers) {
-            throw new IllegalArgumentException(
-                    "requested filters and number of layers do not match");
+            throw new IllegalArgumentException("requested filters and number of layers do not match");
         }
         Filter[] combinedList = new Filter[nLayers];
         Filter layerDefinitionFilter;
@@ -777,8 +731,7 @@ public class GetMap {
         for (int i = 0; i < nLayers; i++) {
             layer = layers.get(i);
             userRequestedFilter = requestFilters.get(i);
-            if (layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR
-                    || layer.getType() == MapLayerInfo.TYPE_RASTER) {
+            if (layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR || layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 combinedList[i] = userRequestedFilter;
             } else if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
                 layerDefinitionFilter = layer.getFeature().filter();
@@ -804,24 +757,21 @@ public class GetMap {
     }
 
     /**
-     * Finds out a {@link GetMapOutputFormat} specialized in generating the requested map format,
-     * registered in the spring context.
+     * Finds out a {@link GetMapOutputFormat} specialized in generating the requested map format, registered in the
+     * spring context.
      *
-     * @param outputFormat a request parameter object wich holds the processed request objects, such
-     *     as layers, bbox, outpu format, etc.
-     * @return A specialization of <code>GetMapDelegate</code> wich can produce the requested output
-     *     map format
-     * @throws ServiceException if no specialization is configured for the output format specified
-     *     in <code>request</code> or if it can't be instantiated or the format is not allowed
+     * @param outputFormat a request parameter object wich holds the processed request objects, such as layers, bbox,
+     *     outpu format, etc.
+     * @return A specialization of <code>GetMapDelegate</code> wich can produce the requested output map format
+     * @throws ServiceException if no specialization is configured for the output format specified in <code>request
+     *     </code> or if it can't be instantiated or the format is not allowed
      */
     protected GetMapOutputFormat getDelegate(final String outputFormat) throws ServiceException {
 
         final GetMapOutputFormat producer = wms.getMapOutputFormat(outputFormat);
         if (producer == null) {
-            ServiceException e =
-                    new ServiceException(
-                            "There is no support for creating maps in " + outputFormat + " format",
-                            "InvalidFormat");
+            ServiceException e = new ServiceException(
+                    "There is no support for creating maps in " + outputFormat + " format", "InvalidFormat");
             e.setCode("InvalidFormat");
             throw e;
         }
@@ -836,11 +786,9 @@ public class GetMap {
         // if none configured
         if (wmsLayerInfo.getMinScale() == null && wmsLayerInfo.getMaxScale() == null) return true;
         // return false map scale is below min
-        if (wmsLayerInfo.getMinScale() != null && mapScale < wmsLayerInfo.getMinScale())
-            return false;
+        if (wmsLayerInfo.getMinScale() != null && mapScale < wmsLayerInfo.getMinScale()) return false;
         // return false map scale is above max
-        if (wmsLayerInfo.getMaxScale() != null && mapScale > wmsLayerInfo.getMaxScale())
-            return false;
+        if (wmsLayerInfo.getMaxScale() != null && mapScale > wmsLayerInfo.getMaxScale()) return false;
 
         return true;
     }
@@ -854,8 +802,7 @@ public class GetMap {
                     requestEnevelope.transform(layerEnevelope.getCoordinateReferenceSystem(), true);
             return !layerEnevelope.intersection(transformedRequestEnv).isEmpty();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE, "Error in WMSLayerInfo.checkEnvelopOverLapWithNativeBounds", e);
+            LOGGER.log(Level.SEVERE, "Error in WMSLayerInfo.checkEnvelopOverLapWithNativeBounds", e);
         }
         return false;
     }

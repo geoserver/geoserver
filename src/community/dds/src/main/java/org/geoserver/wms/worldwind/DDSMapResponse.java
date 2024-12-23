@@ -36,8 +36,7 @@ public class DDSMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
-    public void formatImageOutputStream(
-            RenderedImage img, OutputStream os, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage img, OutputStream os, WMSMapContent mapContent)
             throws ServiceException, IOException {
         BufferedImage bimg = convertRenderedImage(img);
         ByteBuffer bb = DDSConverter.convertToDxt3(bimg);

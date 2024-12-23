@@ -81,8 +81,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         }
 
         @SuppressWarnings("unchecked")
-        ListView<String> list =
-                (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
+        ListView<String> list = (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
         assertNotNull(list);
 
         int i = 0;

@@ -8,8 +8,8 @@ package org.geoserver.wms;
 import org.geoserver.catalog.CoverageInfo;
 
 /**
- * The following will provide data to test the default ImageMosaic cql filter The added mosaic is
- * used WITHOUT dimensions which are instead used as attributes.
+ * The following will provide data to test the default ImageMosaic cql filter The added mosaic is used WITHOUT
+ * dimensions which are instead used as attributes.
  *
  * @see {@link FilterMosaicGetMapTest}
  * @author carlo cancellieri

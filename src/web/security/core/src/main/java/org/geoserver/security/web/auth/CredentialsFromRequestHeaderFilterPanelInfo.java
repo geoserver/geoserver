@@ -8,8 +8,7 @@ import org.geoserver.security.config.CredentialsFromRequestHeaderFilterConfig;
 import org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderFilter;
 
 /**
- * Configuration panel extension for {@link
- * GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
+ * Configuration panel extension for {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions

@@ -34,8 +34,7 @@ public class MetadataLinkInfoImplTest {
     public void testSetAbsoluteTelnet() {
         MetadataLinkInfoImpl info = new MetadataLinkInfoImpl();
 
-        Assert.assertThrows(
-                IllegalArgumentException.class, () -> info.setContent("telnet:example.com"));
+        Assert.assertThrows(IllegalArgumentException.class, () -> info.setContent("telnet:example.com"));
     }
 
     @Test
@@ -70,8 +69,7 @@ public class MetadataLinkInfoImplTest {
     public void testSetNotAURL() {
         MetadataLinkInfoImpl info = new MetadataLinkInfoImpl();
 
-        Assert.assertThrows(
-                IllegalArgumentException.class, () -> info.setContent("::^%/[*] FOO ::"));
+        Assert.assertThrows(IllegalArgumentException.class, () -> info.setContent("::^%/[*] FOO ::"));
     }
 
     @Test
@@ -79,7 +77,6 @@ public class MetadataLinkInfoImplTest {
         MetadataLinkInfoImpl info = new MetadataLinkInfoImpl();
 
         Assert.assertThrows(
-                IllegalArgumentException.class,
-                () -> info.setContent("https://example.com/::^%/[*] FOO ::"));
+                IllegalArgumentException.class, () -> info.setContent("https://example.com/::^%/[*] FOO ::"));
     }
 }

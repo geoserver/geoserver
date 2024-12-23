@@ -32,25 +32,20 @@ public class JAIInitializer implements GeoServerInitializer {
     public void initialize(GeoServer geoServer) throws Exception {
         initJAI(geoServer.getGlobal().getJAI());
 
-        geoServer.addListener(
-                new ConfigurationListenerAdapter() {
+        geoServer.addListener(new ConfigurationListenerAdapter() {
 
-                    @Override
-                    public void handleGlobalChange(
-                            GeoServerInfo global,
-                            List<String> propertyNames,
-                            List<Object> oldValues,
-                            List<Object> newValues) {
+            @Override
+            public void handleGlobalChange(
+                    GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
-                        if (propertyNames.contains(
-                                "jAI")) { // TODO: check why the propertyname is reported as jAI
-                            // instead of JAI
-                            // Make sure to proceed with JAI init
-                            // only in case the global change involved that section
-                            initJAI(global.getJAI());
-                        }
-                    }
-                });
+                if (propertyNames.contains("jAI")) { // TODO: check why the propertyname is reported as jAI
+                    // instead of JAI
+                    // Make sure to proceed with JAI init
+                    // only in case the global change involved that section
+                    initJAI(global.getJAI());
+                }
+            }
+        });
     }
 
     void initJAI(JAIInfo jai) {
@@ -96,9 +91,7 @@ public class JAIInitializer implements GeoServerInitializer {
         jaiDef.setRenderingHint(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());
 
         // tile factory and recycler
-        if (jai.isRecycling()
-                && !(jaiDef.getRenderingHint(JAI.KEY_TILE_FACTORY)
-                        instanceof ConcurrentTileFactory)) {
+        if (jai.isRecycling() && !(jaiDef.getRenderingHint(JAI.KEY_TILE_FACTORY) instanceof ConcurrentTileFactory)) {
             final ConcurrentTileFactory recyclingFactory = new ConcurrentTileFactory();
             jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, recyclingFactory);
             jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, recyclingFactory);

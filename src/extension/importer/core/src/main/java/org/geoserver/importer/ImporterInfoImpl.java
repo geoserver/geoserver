@@ -76,7 +76,6 @@ public class ImporterInfoImpl implements ImporterInfo {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                uploadRoot, maxSynchronousImports, maxAsynchronousImports, contextExpiration);
+        return Objects.hash(uploadRoot, maxSynchronousImports, maxAsynchronousImports, contextExpiration);
     }
 }

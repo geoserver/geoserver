@@ -23,9 +23,7 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         login();
         tester.startPage(new WPSAccessRulePage());
         tester.assertRenderedPage(WPSAccessRulePage.class);
-        tester.clickLink(
-                "form:processFilterTable:listContainer:items:1:itemProperties:5:component:link",
-                false);
+        tester.clickLink("form:processFilterTable:listContainer:items:1:itemProperties:5:component:link", false);
         tester.assertRenderedPage(ProcessSelectionPage.class);
     }
 
@@ -34,19 +32,14 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         login();
         tester.startPage(new WPSAccessRulePage());
         tester.assertRenderedPage(WPSAccessRulePage.class);
-        tester.clickLink(
-                "form:processFilterTable:listContainer:items:1:itemProperties:5:component:link",
-                false);
+        tester.clickLink("form:processFilterTable:listContainer:items:1:itemProperties:5:component:link", false);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue(
-                "selectionTable:listContainer:items:1:itemProperties:0:component:enabled", "false");
+        ft.setValue("selectionTable:listContainer:items:1:itemProperties:0:component:enabled", "false");
         ft.submit("apply");
         @SuppressWarnings("unchecked")
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
-                (GeoServerTablePanel)
-                        tester.getComponentFromLastRenderedPage("form:processFilterTable");
-        ProcessFactoryInfoProvider dp =
-                (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("form:processFilterTable");
+        ProcessFactoryInfoProvider dp = (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
         assertEquals(dp.getItems().get(0).getFilteredProcesses().size(), 1);
     }
 
@@ -61,21 +54,15 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         tester.assertComponent("form:processFilterTable", GeoServerTablePanel.class);
         @SuppressWarnings("unchecked")
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
-                (GeoServerTablePanel)
-                        tester.getComponentFromLastRenderedPage("form:processFilterTable");
-        ProcessFactoryInfoProvider dp =
-                (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
+                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("form:processFilterTable");
+        ProcessFactoryInfoProvider dp = (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
         for (ProcessGroupInfo pgi : dp.getItems()) {
             assertTrue(pgi.isEnabled());
         }
 
         FormTester ft = tester.newFormTester("form");
-        ft.setValue(
-                "processFilterTable:listContainer:items:1:itemProperties:0:component:enabled",
-                "false");
-        ft.setValue(
-                "processFilterTable:listContainer:items:4:itemProperties:0:component:enabled",
-                "false");
+        ft.setValue("processFilterTable:listContainer:items:1:itemProperties:0:component:enabled", "false");
+        ft.setValue("processFilterTable:listContainer:items:4:itemProperties:0:component:enabled", "false");
         ft.submit();
         assertFalse(dp.getItems().get(0).isEnabled());
         assertFalse(dp.getItems().get(3).isEnabled());

@@ -8,8 +8,7 @@ package org.geoserver.wcs2_0.exception;
 import org.geoserver.platform.OWS20Exception;
 
 /**
- * This defines an exception that can be turned into a valid xml service exception that wcs clients
- * will expect.
+ * This defines an exception that can be turned into a valid xml service exception that wcs clients will expect.
  *
  * <p>All errors should be wrapped in this before returning to clients.
  *
@@ -22,22 +21,17 @@ public class WCS20Exception extends OWS20Exception {
 
     public static class WCS20ExceptionCode extends OWS20Exception.OWSExceptionCode {
 
-        public static final WCS20ExceptionCode EmptyCoverageIdList =
-                new WCS20ExceptionCode("emptyCoverageIdList", 404);
+        public static final WCS20ExceptionCode EmptyCoverageIdList = new WCS20ExceptionCode("emptyCoverageIdList", 404);
         public static final WCS20ExceptionCode InvalidEncodingSyntax =
                 new WCS20ExceptionCode("InvalidEncodingSyntax", 400);
 
         // Scaling Extension
-        public static final WCS20ExceptionCode InvalidScaleFactor =
-                new WCS20ExceptionCode("InvalidScaleFactor", 404);
-        public static final WCS20ExceptionCode InvalidExtent =
-                new WCS20ExceptionCode("InvalidExtent", 404);
-        public static final WCS20ExceptionCode ScaleAxisUndefined =
-                new WCS20ExceptionCode("ScaleAxisUndefined", 404);
+        public static final WCS20ExceptionCode InvalidScaleFactor = new WCS20ExceptionCode("InvalidScaleFactor", 404);
+        public static final WCS20ExceptionCode InvalidExtent = new WCS20ExceptionCode("InvalidExtent", 404);
+        public static final WCS20ExceptionCode ScaleAxisUndefined = new WCS20ExceptionCode("ScaleAxisUndefined", 404);
 
         // Interpolation Extension
-        public static final WCS20ExceptionCode NoSuchAxis =
-                new WCS20ExceptionCode("ScalingAxisUndefined", 404);
+        public static final WCS20ExceptionCode NoSuchAxis = new WCS20ExceptionCode("ScalingAxisUndefined", 404);
         public static final WCS20ExceptionCode InterpolationMethodNotSupported =
                 new WCS20ExceptionCode("InterpolationMethodNotSupported", 404);
 
@@ -49,16 +43,12 @@ public class WCS20Exception extends OWS20Exception {
                 new WCS20ExceptionCode("OutputCrs-NotSupported", 404);
 
         // CORE
-        public static final WCS20ExceptionCode NoSuchCoverage =
-                new WCS20ExceptionCode("NoSuchCoverage", 404);
-        public static final WCS20ExceptionCode InvalidSubsetting =
-                new WCS20ExceptionCode("InvalidSubsetting", 404);
-        public static final WCS20ExceptionCode InvalidAxisLabel =
-                new WCS20ExceptionCode("InvalidAxisLabel", 404);
+        public static final WCS20ExceptionCode NoSuchCoverage = new WCS20ExceptionCode("NoSuchCoverage", 404);
+        public static final WCS20ExceptionCode InvalidSubsetting = new WCS20ExceptionCode("InvalidSubsetting", 404);
+        public static final WCS20ExceptionCode InvalidAxisLabel = new WCS20ExceptionCode("InvalidAxisLabel", 404);
 
         // RangeSubset extension
-        public static final WCS20ExceptionCode NoSuchField =
-                new WCS20ExceptionCode("NoSuchField", 404);
+        public static final WCS20ExceptionCode NoSuchField = new WCS20ExceptionCode("NoSuchField", 404);
 
         protected WCS20ExceptionCode(String exceptionCode, Integer httpCode) {
             super(exceptionCode, httpCode);
@@ -81,8 +71,7 @@ public class WCS20Exception extends OWS20Exception {
         super(message, code, locator);
     }
 
-    public WCS20Exception(
-            String message, OWS20Exception.OWSExceptionCode code, String locator, Throwable cause) {
+    public WCS20Exception(String message, OWS20Exception.OWSExceptionCode code, String locator, Throwable cause) {
         super(message, code, locator);
         initCause(cause);
     }

@@ -199,8 +199,7 @@ public final class CoverageStoreUtils {
      *
      * @return Map with real values that may be acceptable to GDSFactory
      */
-    public static Map<String, Object> toParams(GridFormatFactorySpi factory, Map<String, ?> params)
-            throws IOException {
+    public static Map<String, Object> toParams(GridFormatFactorySpi factory, Map<String, ?> params) throws IOException {
         final Map<String, Object> map = new HashMap<>(params.size());
 
         final ParameterValueGroup info = factory.createFormat().getReadParameters();

@@ -44,9 +44,7 @@ public class CatalogEventDispatcher {
 
     public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         new ArrayList<>(listeners)
-                .stream()
-                        .filter(l -> listenerClass.isInstance(l))
-                        .forEach(l -> listeners.remove(l));
+                .stream().filter(l -> listenerClass.isInstance(l)).forEach(l -> listeners.remove(l));
     }
 
     public void dispatch(CatalogEvent event) {
@@ -69,8 +67,7 @@ public class CatalogEventDispatcher {
                 if (t instanceof CatalogException && toThrow == null) {
                     toThrow = (CatalogException) t;
                 } else if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(
-                            Level.WARNING, "Catalog listener threw exception handling event.", t);
+                    LOGGER.log(Level.WARNING, "Catalog listener threw exception handling event.", t);
                 }
             }
         }

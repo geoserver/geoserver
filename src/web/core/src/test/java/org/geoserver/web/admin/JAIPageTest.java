@@ -143,17 +143,11 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         if (isJAIExtEnabled) {
             Assert.assertTrue(info.isAllowNativeWarp());
             // Ensure the factory is correctly registered
-            factory =
-                    info.getJAI()
-                            .getOperationRegistry()
-                            .getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
+            factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
             Assert.assertTrue(factory instanceof MlibWarpRIF);
         } else {
             Assert.assertFalse(info.isAllowNativeWarp());
-            factory =
-                    info.getJAI()
-                            .getOperationRegistry()
-                            .getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
+            factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
             Assert.assertTrue(factory instanceof WarpRIF);
         }
 
@@ -185,10 +179,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         Assert.assertFalse(info.isAllowNativeWarp());
 
         // Ensure the factory is correctly registered
-        factory =
-                info.getJAI()
-                        .getOperationRegistry()
-                        .getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
+        factory = info.getJAI().getOperationRegistry().getFactory(RenderedRegistryMode.MODE_NAME, "Warp");
         Assert.assertTrue(factory instanceof WarpRIF);
     }
 }

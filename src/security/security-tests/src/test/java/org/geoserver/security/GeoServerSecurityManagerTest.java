@@ -35,8 +35,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         GeoServerSecurityManager secMgr = getSecurityManager();
 
         TestingAuthenticationToken auth =
-                new TestingAuthenticationToken(
-                        "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                new TestingAuthenticationToken("admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
         auth.setAuthenticated(true);
         assertTrue(secMgr.checkAuthenticationForAdminRole(auth));
     }
@@ -57,9 +56,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
         // check all users with default password
         String defaultMasterePassword = new String(GeoServerSecurityManager.MASTER_PASSWD_DEFAULT);
-        props.put(
-                GeoServerUser.ADMIN_USERNAME,
-                defaultMasterePassword + "," + GeoServerRole.ADMIN_ROLE);
+        props.put(GeoServerUser.ADMIN_USERNAME, defaultMasterePassword + "," + GeoServerRole.ADMIN_ROLE);
         props.put(adminUser, defaultMasterePassword + "," + GeoServerRole.ADMIN_ROLE);
         props.put(noAdminUser, defaultMasterePassword + ",ROLE_WFS");
 
@@ -115,8 +112,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
             assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
 
             TestingAuthenticationToken auth =
-                    new TestingAuthenticationToken(
-                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                    new TestingAuthenticationToken("admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -137,8 +133,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
             assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
 
             TestingAuthenticationToken auth =
-                    new TestingAuthenticationToken(
-                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                    new TestingAuthenticationToken("admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -160,8 +155,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
             assertFalse(secMgr.dumpMasterPassword(Files.asResource(f)));
 
             TestingAuthenticationToken auth =
-                    new TestingAuthenticationToken(
-                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                    new TestingAuthenticationToken("admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -186,10 +180,8 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
     }
 
     void dumpPWInfoFile() throws Exception {
-        dumpPWInfoFile(
-                new File(
-                        getSecurityManager().get("security").dir(),
-                        GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME));
+        dumpPWInfoFile(new File(
+                getSecurityManager().get("security").dir(), GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME));
     }
 
     boolean masterPWInfoFileContains(File infoFile, String searchString) throws Exception {
@@ -220,8 +212,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         SecurityManagerConfig config = secMgr.loadSecurityConfig();
 
         RequestFilterChain chain =
-                config.getFilterChain()
-                        .getRequestChainByName(GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME);
+                config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME);
         assertTrue(chain.isAllowSessionCreation());
     }
 

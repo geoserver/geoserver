@@ -27,16 +27,15 @@ import org.geotools.api.data.DataStoreFinder;
 public class VectorMosaicDataStoreEditPanel extends DefaultDataStoreEditPanel {
     private static final String SPI_PARAM_NAME = "preferredDataStoreSPI";
     private static final String DELEGATE_STORE_PARAM_NAME = "delegateStoreName";
-    private static final String VECTOR_MOSAIC_DATASTORE_SPI =
-            "org.geotools.vectormosaic.VectorMosaicStoreFactory";
+    private static final String VECTOR_MOSAIC_DATASTORE_SPI = "org.geotools.vectormosaic.VectorMosaicStoreFactory";
     private static final String VECTOR_MOSAIC_DATASTORE_TYPE = "Vector Mosaic Data Store";
     /**
-     * Creates a new parameters panel with a list of input fields matching the {@link Param}s for
-     * the Vector Mosaic factory that's the model of the provided {@code Form}.
+     * Creates a new parameters panel with a list of input fields matching the {@link Param}s for the Vector Mosaic
+     * factory that's the model of the provided {@code Form}.
      *
      * @param componentId the id for this component instance
-     * @param storeEditForm the form being build by the calling class, whose model is the {@link
-     *     DataStoreInfo} being edited
+     * @param storeEditForm the form being build by the calling class, whose model is the {@link DataStoreInfo} being
+     *     edited
      */
     public VectorMosaicDataStoreEditPanel(String componentId, Form storeEditForm) {
         super(componentId, storeEditForm);
@@ -49,8 +48,7 @@ public class VectorMosaicDataStoreEditPanel extends DefaultDataStoreEditPanel {
             final ParamInfo paramMetadata) {
 
         if (paramMetadata.getName().equals(SPI_PARAM_NAME)) {
-            Iterator<DataStoreFactorySpi> dataStoreFactorySpiIterator =
-                    DataStoreFinder.getAvailableDataStores();
+            Iterator<DataStoreFactorySpi> dataStoreFactorySpiIterator = DataStoreFinder.getAvailableDataStores();
             List<String> dataStoreFactorySpiList = new ArrayList<>();
             while (dataStoreFactorySpiIterator.hasNext()) {
                 DataStoreFactorySpi dataStoreFactorySpi = dataStoreFactorySpiIterator.next();
@@ -61,23 +59,16 @@ public class VectorMosaicDataStoreEditPanel extends DefaultDataStoreEditPanel {
             dataStoreFactorySpiList.sort(Collator.getInstance());
             IModel<Serializable> mapModel = new MapModel<>(paramsModel, SPI_PARAM_NAME);
             ResourceModel labelModel = new ResourceModel(componentId, SPI_PARAM_NAME);
-            return new DropDownChoiceParamPanel(
-                    componentId, mapModel, labelModel, dataStoreFactorySpiList, false);
+            return new DropDownChoiceParamPanel(componentId, mapModel, labelModel, dataStoreFactorySpiList, false);
         } else if (paramMetadata.getName().equals(DELEGATE_STORE_PARAM_NAME)) {
-            List<String> storeNames =
-                    GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class).stream()
-                            .filter(
-                                    dataStoreInfo ->
-                                            !dataStoreInfo
-                                                    .getType()
-                                                    .equals(VECTOR_MOSAIC_DATASTORE_TYPE))
-                            .map(DataStoreInfo::getName)
-                            .collect(Collectors.toList());
+            List<String> storeNames = GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class).stream()
+                    .filter(dataStoreInfo -> !dataStoreInfo.getType().equals(VECTOR_MOSAIC_DATASTORE_TYPE))
+                    .map(DataStoreInfo::getName)
+                    .collect(Collectors.toList());
             storeNames.sort(Collator.getInstance());
             IModel<Serializable> mapModel = new MapModel<>(paramsModel, DELEGATE_STORE_PARAM_NAME);
             ResourceModel labelModel = new ResourceModel(componentId, DELEGATE_STORE_PARAM_NAME);
-            return new DropDownChoiceParamPanel(
-                    componentId, mapModel, labelModel, storeNames, true);
+            return new DropDownChoiceParamPanel(componentId, mapModel, labelModel, storeNames, true);
         } else {
             return super.getInputComponent(componentId, paramsModel, paramMetadata);
         }

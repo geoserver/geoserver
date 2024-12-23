@@ -23,8 +23,7 @@ public class XMLTransformerMap extends WebMap {
 
     /**
      * @param transformer the transformer that writes to the response stream
-     * @param subject the object to be passed down to the transformer, might be {@code null} at the
-     *     user's choice
+     * @param subject the object to be passed down to the transformer, might be {@code null} at the user's choice
      * @param mimeType the MIME-Type to be declared in the response
      */
     public XMLTransformerMap(

@@ -33,8 +33,7 @@ public class TilesExtensionsTest extends OGCApiTestSupport {
 
     @Test
     public void testApiExtension() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/tiles/v1/openapi", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/v1/openapi", 200);
         assertThat(response.getContentType(), startsWith(OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
@@ -43,15 +42,12 @@ public class TilesExtensionsTest extends OGCApiTestSupport {
         OpenAPI api = mapper.readValue(json, OpenAPI.class);
 
         // check the multitile path
-        PathItem multiTile =
-                api.getPaths()
-                        .get("/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}");
+        PathItem multiTile = api.getPaths().get("/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}");
         assertThat(multiTile, notNullValue());
         // check the extra params are in there
-        List<String> parameterNames =
-                multiTile.getGet().getParameters().stream()
-                        .map(p -> p.get$ref())
-                        .collect(Collectors.toList());
+        List<String> parameterNames = multiTile.getGet().getParameters().stream()
+                .map(p -> p.get$ref())
+                .collect(Collectors.toList());
         assertThat(parameterNames, hasItem("#/components/parameters/f-tile"));
         assertThat(parameterNames, hasItem("#/components/parameters/f-json-zip"));
 

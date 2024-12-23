@@ -37,8 +37,8 @@ import org.springframework.web.context.WebApplicationContext;
  *         &lt;bean id="geoserverExtensions" class="org.geoserver.GeoServerExtensions"/&gt;
  * </code></pre>
  *
- * It must be a singleton, and must not be loaded lazily. Furthermore, this bean must be loaded
- * before any beans that use it.
+ * It must be a singleton, and must not be loaded lazily. Furthermore, this bean must be loaded before any beans that
+ * use it.
  *
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime, The Open Planning Project
@@ -49,9 +49,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     protected static final Logger LOGGER = Logging.getLogger("org.geoserver.platform");
 
     /**
-     * Caches the names of the beans for a particular type, so that the lookup (expensive) wont' be
-     * needed. We cache names instead of beans because doing the latter we would break the
-     * "singleton=false" directive of some beans
+     * Caches the names of the beans for a particular type, so that the lookup (expensive) wont' be needed. We cache
+     * names instead of beans because doing the latter we would break the "singleton=false" directive of some beans
      */
     static SoftValueHashMap<Class<?>, String[]> extensionsCache = new SoftValueHashMap<>(40);
 
@@ -59,14 +58,13 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     static ConcurrentHashMap<String, Object> singletonBeanCache = new ConcurrentHashMap<>();
 
     /**
-     * Property cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link
-     * #getProperty(String)} results.
+     * Property cache maintained by GeoServerExtensionsHelper allowing temporary override of
+     * {@link #getProperty(String)} results.
      */
     static ConcurrentHashMap<String, String> propertyCache = new ConcurrentHashMap<>();
 
     /**
-     * File cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link
-     * #file(String)} results.
+     * File cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link #file(String)} results.
      */
     static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<>();
 
@@ -74,16 +72,15 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     static SoftValueHashMap<Class<?>, List<?>> spiCache = new SoftValueHashMap<>(40);
 
     /**
-     * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)}
-     * an enable additional consistency checks for missing extensions.
+     * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)} an enable
+     * additional consistency checks for missing extensions.
      *
      * <p>This flag is only set to false during testing to avoid warnings.
      */
     static boolean isSpringContext = true;
 
     /**
-     * Static application context provided to {@link #setApplicationContext(ApplicationContext)}
-     * during initalization.
+     * Static application context provided to {@link #setApplicationContext(ApplicationContext)} during initalization.
      *
      * <p>This context is used by methods such as {@link #bean(String)}, {@link #bean(Class)} and
      * {@link #extensionNames(Class)} for code that does not have access to the application context.
@@ -93,8 +90,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Sets the web application context to be used for looking up extensions.
      *
-     * <p>This method is called by the spring container, and should never be called by client code.
-     * If client needs to supply a particular context, methods which take a context are available.
+     * <p>This method is called by the spring container, and should never be called by client code. If client needs to
+     * supply a particular context, methods which take a context are available.
      *
      * <p>This is the context that is used for methods which don't supply their own context.
      *
@@ -117,8 +114,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @param context The context in which to perform the lookup.
      * @return A collection of the extensions, or an empty collection.
      */
-    public static final <T> List<T> extensions(
-            Class<T> extensionPoint, ApplicationContext context) {
+    public static final <T> List<T> extensions(Class<T> extensionPoint, ApplicationContext context) {
         return extensions(extensionPoint, context, false);
     }
     /**
@@ -130,11 +126,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     @SuppressWarnings("unchecked")
     public static final <T> List<T> extensions(
-            Class<T> extensionPoint,
-            ApplicationContext context,
-            boolean isGeoServerExtensionsContext) {
-        Collection<String> names =
-                extensionNames(extensionPoint, context, isGeoServerExtensionsContext);
+            Class<T> extensionPoint, ApplicationContext context, boolean isGeoServerExtensionsContext) {
+        Collection<String> names = extensionNames(extensionPoint, context, isGeoServerExtensionsContext);
 
         // lookup extension filters preventing recursion
         List<ExtensionFilter> filters;
@@ -194,8 +187,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      *
      * @param extensionPoint Extension point class or interface to match
      * @param <T>
-     * @return Names of beans (or objects created by FactoryBeans) matching the extension point type
-     *     (including subclasses), or an empty array if none.
+     * @return Names of beans (or objects created by FactoryBeans) matching the extension point type (including
+     *     subclasses), or an empty array if none.
      */
     public static <T> Collection<String> extensionNames(Class<T> extensionPoint) {
         return extensionNames(extensionPoint, GeoServerExtensions.context, true);
@@ -207,18 +200,15 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @param extensionPoint Extension point class or interface to match
      * @param context Application context used to look up extensions
      * @param <T>
-     * @return Names of beans (or objects created by FactoryBeans) matching the extension point type
-     *     (including subclasses), or an empty array if none.
+     * @return Names of beans (or objects created by FactoryBeans) matching the extension point type (including
+     *     subclasses), or an empty array if none.
      */
-    public static <T> Collection<String> extensionNames(
-            Class<T> extensionPoint, ApplicationContext context) {
+    public static <T> Collection<String> extensionNames(Class<T> extensionPoint, ApplicationContext context) {
         return extensionNames(extensionPoint, context, false);
     }
 
     private static <T> Collection<String> extensionNames(
-            Class<T> extensionPoint,
-            ApplicationContext context,
-            boolean isGeoServerExtensionsContext) {
+            Class<T> extensionPoint, ApplicationContext context, boolean isGeoServerExtensionsContext) {
 
         String[] names;
         if (GeoServerExtensions.context == context) {
@@ -253,8 +243,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         return Arrays.asList(names);
     }
 
-    private static Object getBean(
-            ApplicationContext context, String name, boolean isGeoServerExtensionsContext) {
+    private static Object getBean(ApplicationContext context, String name, boolean isGeoServerExtensionsContext) {
         Object bean = singletonBeanCache.get(name);
         if (bean == null && context != null) {
             bean = context.getBean(name);
@@ -282,8 +271,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Loads all extensions implementing or extending <code>extensionPoint</code>.
      *
-     * <p>This method uses the "default" application context to perform the lookup. See {@link
-     * #setApplicationContext(ApplicationContext)}.
+     * <p>This method uses the "default" application context to perform the lookup. See
+     * {@link #setApplicationContext(ApplicationContext)}.
      *
      * @param extensionPoint The class or interface of the extensions.
      * @return A collection of the extensions, or an empty collection.
@@ -328,12 +317,11 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Loads a single bean by its type.
      *
-     * <p>This method returns null if there is no such bean. An exception is thrown if multiple
-     * beans of the specified type exist.
+     * <p>This method returns null if there is no such bean. An exception is thrown if multiple beans of the specified
+     * type exist.
      *
      * @param type THe type of the bean to lookup.
-     * @throws MultipleBeansException If there are multiple beans of the specified type in the
-     *     context.
+     * @throws MultipleBeansException If there are multiple beans of the specified type in the context.
      */
     public static final <T> T bean(Class<T> type) throws IllegalArgumentException {
         checkContext(GeoServerExtensions.context, type.getSimpleName(), true);
@@ -343,16 +331,14 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Loads a single bean by its type (class or interface) from the specified application context.
      *
-     * <p>This method returns null if there is no such bean. An exception is thrown if multiple
-     * beans of the specified type exist.
+     * <p>This method returns null if there is no such bean. An exception is thrown if multiple beans of the specified
+     * type exist.
      *
      * @param type Type of the bean to lookup.
      * @param context The application context
-     * @throws MultipleBeansException If there are multiple beans of the specified type in the
-     *     context.
+     * @throws MultipleBeansException If there are multiple beans of the specified type in the context.
      */
-    public static final <T> T bean(Class<T> type, ApplicationContext context)
-            throws IllegalArgumentException {
+    public static final <T> T bean(Class<T> type, ApplicationContext context) throws IllegalArgumentException {
         List<T> beans = extensions(type, context);
         if (beans.isEmpty()) {
             return null;
@@ -365,10 +351,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         return beans.get(0);
     }
 
-    /**
-     * Exception thrown when multiple beans implementing an extension point and only one is
-     * expected.
-     */
+    /** Exception thrown when multiple beans implementing an extension point and only one is expected. */
     public static class MultipleBeansException extends IllegalArgumentException {
         /** serialVersionUID */
         private static final long serialVersionUID = -8039187466594032626L;
@@ -404,49 +387,41 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Checks the context has been provided, if null will issue a warning.
      *
-     * <p>Intended for checking context provided as a parameter to methods such as {@link
-     * #bean(String, ApplicationContext)} and {@link #extensionNames(Class, ApplicationContext)} as
-     * used by beans that are ApplicationContextAware.
+     * <p>Intended for checking context provided as a parameter to methods such as {@link #bean(String,
+     * ApplicationContext)} and {@link #extensionNames(Class, ApplicationContext)} as used by beans that are
+     * ApplicationContextAware.
      *
      * @param context Application context
      * @param bean Extension
      * @param isGeoServerExtensionsContext Indicate use of {@link GeoServerExtensions#context}
      */
-    static void checkContext(
-            ApplicationContext context, String bean, boolean isGeoServerExtensionsContext) {
+    static void checkContext(ApplicationContext context, String bean, boolean isGeoServerExtensionsContext) {
         if (isGeoServerExtensionsContext) {
             if (context == null) {
                 if (isSpringContext) {
-                    LOGGER.fine(
-                            "Extension lookup '"
-                                    + bean
-                                    + "', prior to bean geoserverExtensions initialisation.");
+                    LOGGER.fine("Extension lookup '" + bean + "', prior to bean geoserverExtensions initialisation.");
                 } else {
                     // Test cases require <bean id="geoserverExtensions"
                     // class="org.geoserver.GeoServerExtensions">
                     // Or use of GeoServerExtensionsHelper
-                    LOGGER.fine(
-                            "Extension lookup '"
-                                    + bean
-                                    + "', bean not provided by GeoServerExtensionHelper or geoserverExtensions.");
+                    LOGGER.fine("Extension lookup '"
+                            + bean
+                            + "', bean not provided by GeoServerExtensionHelper or geoserverExtensions.");
                 }
             }
         } else {
             if (context == null) {
-                LOGGER.fine(
-                        "Extension lookup '"
-                                + bean
-                                + "', but provided ApplicationContext is unset.");
+                LOGGER.fine("Extension lookup '" + bean + "', but provided ApplicationContext is unset.");
             }
         }
     }
 
     /**
-     * Looks up for a named string property in the order defined by {@link #getProperty(String,
-     * ApplicationContext)} using the internally cached spring application context.
+     * Looks up for a named string property in the order defined by {@link #getProperty(String, ApplicationContext)}
+     * using the internally cached spring application context.
      *
-     * <p>Care should be taken when using this method. It should not be called during startup or
-     * from tests cases as the internal context will not have been set.
+     * <p>Care should be taken when using this method. It should not be called during startup or from tests cases as the
+     * internal context will not have been set.
      *
      * @param propertyName The property name to lookup.
      * @return The property value, or null if not found
@@ -558,8 +533,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
         ServletContext servletContext;
         if (context instanceof WebApplicationContext
-                && (servletContext = ((WebApplicationContext) context).getServletContext())
-                        != null) {
+                && (servletContext = ((WebApplicationContext) context).getServletContext()) != null) {
             String filepath = servletContext.getRealPath(path);
             if (filepath != null) {
                 File file = new File(filepath);

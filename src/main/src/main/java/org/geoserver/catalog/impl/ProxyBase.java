@@ -12,8 +12,8 @@ import java.util.HashMap;
 /**
  * Base class for catalog proxies.
  *
- * <p>This class maintains a map of "dirty" properties which have been set via a well formed java
- * bean setter method. Subsequence getter methods accessing
+ * <p>This class maintains a map of "dirty" properties which have been set via a well formed java bean setter method.
+ * Subsequence getter methods accessing
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -29,8 +29,7 @@ public class ProxyBase implements InvocationHandler {
         if ((method.getName().startsWith("get") || method.getName().startsWith("is"))
                 && method.getParameterTypes().length == 0) {
 
-            String property =
-                    method.getName().substring(method.getName().startsWith("get") ? 3 : 2);
+            String property = method.getName().substring(method.getName().startsWith("get") ? 3 : 2);
 
             return handleGet(proxy, method, property);
         }
@@ -61,8 +60,7 @@ public class ProxyBase implements InvocationHandler {
         return method.invoke(proxy, null);
     }
 
-    protected void handleSet(Object proxy, Method method, Object value, String property)
-            throws Throwable {
+    protected void handleSet(Object proxy, Method method, Object value, String property) throws Throwable {
         properties().put(property, value);
     }
 

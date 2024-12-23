@@ -16,8 +16,7 @@ public class ExecutionStatusAccessorFactory implements PropertyAccessorFactory {
     private static final BeanPropertyAccessor INSTANCE = new BeanPropertyAccessor();
 
     @Override
-    public PropertyAccessor createPropertyAccessor(
-            Class<?> type, String xpath, Class<?> target, Hints hints) {
+    public PropertyAccessor createPropertyAccessor(Class<?> type, String xpath, Class<?> target, Hints hints) {
         if (ExecutionStatus.class.isAssignableFrom(type)) {
             return INSTANCE;
         }

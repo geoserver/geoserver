@@ -19,8 +19,8 @@ import org.apache.directory.server.protocol.shared.transport.TcpTransport;
 /**
  * Helper class for embedded Apache Directory Server.
  *
- * <p>copied and modified from org.springframework.ldap.test.EmbeddedLdapServer to allow anonymous
- * access (there was no alternative way)
+ * <p>copied and modified from org.springframework.ldap.test.EmbeddedLdapServer to allow anonymous access (there was no
+ * alternative way)
  *
  * @author Mattias Hellborg Arthursson
  * @author Niels Charlier
@@ -37,26 +37,20 @@ public class EmbeddedLdapServer {
     }
 
     public static EmbeddedLdapServer newEmbeddedServer(
-            String defaultPartitionName,
-            String defaultPartitionSuffix,
-            int port,
-            boolean allowAnonymousAccess)
+            String defaultPartitionName, String defaultPartitionSuffix, int port, boolean allowAnonymousAccess)
             throws Exception {
         DirectoryServiceFactory directoryServiceFactory = new DefaultDirectoryServiceFactory();
         directoryServiceFactory.init("geoserver-ldap" + UUID.randomUUID().toString());
         DirectoryService directoryService = directoryServiceFactory.getDirectoryService();
-        workingDirectory =
-                new File(
-                        System.getProperty("java.io.tmpdir")
-                                + "/apacheds-test"
-                                + UUID.randomUUID().toString());
+        workingDirectory = new File(System.getProperty("java.io.tmpdir")
+                + "/apacheds-test"
+                + UUID.randomUUID().toString());
         directoryService.setShutdownHookEnabled(true);
         directoryService.setAllowAnonymousAccess(allowAnonymousAccess);
         directoryService.getChangeLog().setEnabled(false);
 
         JdbmPartition partition =
-                new JdbmPartition(
-                        directoryService.getSchemaManager(), directoryService.getDnFactory());
+                new JdbmPartition(directoryService.getSchemaManager(), directoryService.getDnFactory());
         partition.setId(defaultPartitionName);
         partition.setSuffixDn(new Dn(defaultPartitionSuffix));
         partition.setPartitionPath(workingDirectory.toURI());

@@ -12,8 +12,8 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.Utilities;
 
 /**
- * Class containing main definition of a Coverage View, such as, originating coverageStore and
- * composing coverageNames/bands.
+ * Class containing main definition of a Coverage View, such as, originating coverageStore and composing
+ * coverageNames/bands.
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
@@ -49,10 +49,9 @@ public class CoverageView implements Serializable {
     /**
      * Composition Type, used to specify how output bands should be composed.
      *
-     * <p>BAND_SELECT: The output band is simply a band selected from the input bands. FORMULA: The
-     * output band is computed by applying a formula on the input selected band(s). As an instance,
-     * the output band could be defined like this: Speed = SQRT(SELECTED_BAND_1^2 +
-     * SELECTED_BAND_2^2)
+     * <p>BAND_SELECT: The output band is simply a band selected from the input bands. FORMULA: The output band is
+     * computed by applying a formula on the input selected band(s). As an instance, the output band could be defined
+     * like this: Speed = SQRT(SELECTED_BAND_1^2 + SELECTED_BAND_2^2)
      */
     public static enum CompositionType {
 
@@ -89,13 +88,12 @@ public class CoverageView implements Serializable {
     }
 
     /**
-     * Definition of Input Coverage Bands composing a single {@link CoverageBand} A {@link
-     * CoverageBand} may be composed of different {@link InputCoverageBand}s.
+     * Definition of Input Coverage Bands composing a single {@link CoverageBand} A {@link CoverageBand} may be composed
+     * of different {@link InputCoverageBand}s.
      *
-     * <p>Current implementation only deal with {@link CoverageBand}s made of a single {@link
-     * InputCoverageBand}. Once we allows for Scripts and Math on bands compositions (like
-     * WindSpeedBand = SQRT(UBand^2 + VBand^2)) we will have a {@link CoverageBand} built on top of
-     * multiple {@link InputCoverageBand}s
+     * <p>Current implementation only deal with {@link CoverageBand}s made of a single {@link InputCoverageBand}. Once
+     * we allows for Scripts and Math on bands compositions (like WindSpeedBand = SQRT(UBand^2 + VBand^2)) we will have
+     * a {@link CoverageBand} built on top of multiple {@link InputCoverageBand}s
      */
     public static class InputCoverageBand implements Serializable {
 
@@ -162,16 +160,13 @@ public class CoverageView implements Serializable {
     }
 
     /**
-     * Definition of a {@link CoverageView}'s Band composing the {@link CoverageView}. A {@link
-     * CoverageBand} is made of
+     * Definition of a {@link CoverageView}'s Band composing the {@link CoverageView}. A {@link CoverageBand} is made of
      *
      * <ul>
-     *   <li>a list of {@link InputCoverageBand}s defining which coverages and which bands have been
-     *       used to compose this band
-     *   <li>the type of composition used to configure this band (Currently, only BAND_SELECT is
-     *       supported)
-     *   <li>the definition of this band (It may contain the script, or the RULE to compose that
-     *       band)
+     *   <li>a list of {@link InputCoverageBand}s defining which coverages and which bands have been used to compose
+     *       this band
+     *   <li>the type of composition used to configure this band (Currently, only BAND_SELECT is supported)
+     *   <li>the definition of this band (It may contain the script, or the RULE to compose that band)
      *   <li>the index in the output coverage (Wondering if this can be removed)
      * </ul>
      */
@@ -234,10 +229,9 @@ public class CoverageView implements Serializable {
         private List<InputCoverageBand> inputCoverageBands;
 
         /**
-         * The definition of this coverage band. Currently it simply contains the name of the input
-         * band. Once we support different compositions, it will contain the maths... something
-         * like, as an instance, speed = sqrt(u_component_of_the_wind@0 ^ 2 +
-         * v_component_of_the_wind@0^2).
+         * The definition of this coverage band. Currently it simply contains the name of the input band. Once we
+         * support different compositions, it will contain the maths... something like, as an instance, speed =
+         * sqrt(u_component_of_the_wind@0 ^ 2 + v_component_of_the_wind@0^2).
          */
         private String definition;
 
@@ -245,8 +239,8 @@ public class CoverageView implements Serializable {
         private int index;
 
         /**
-         * Type of composition used to define this band. Currently, only {@link
-         * CompositionType#BAND_SELECT} is supported.
+         * Type of composition used to define this band. Currently, only {@link CompositionType#BAND_SELECT} is
+         * supported.
          */
         private CompositionType compositionType;
 
@@ -328,9 +322,7 @@ public class CoverageView implements Serializable {
 
     public EnvelopeCompositionType getEnvelopeCompositionType() {
         // for backwards compatibility
-        return envelopeCompositionType == null
-                ? EnvelopeCompositionType.INTERSECTION
-                : envelopeCompositionType;
+        return envelopeCompositionType == null ? EnvelopeCompositionType.INTERSECTION : envelopeCompositionType;
     }
 
     public void setEnvelopeCompositionType(EnvelopeCompositionType envelopeCompositionType) {
@@ -364,8 +356,7 @@ public class CoverageView implements Serializable {
 
     /** Create a {@link CoverageInfo} */
     private CoverageInfo buildCoverageInfo(
-            CatalogBuilder builder, CoverageStoreInfo storeInfo, CoverageInfo cinfo, String name)
-            throws Exception {
+            CatalogBuilder builder, CoverageStoreInfo storeInfo, CoverageInfo cinfo, String name) throws Exception {
         Catalog catalog = storeInfo.getCatalog();
 
         // Get a reader from the pool for this Sample CoverageInfo
@@ -376,15 +367,14 @@ public class CoverageView implements Serializable {
         cinfo.setNativeCoverageName(name);
 
         GridCoverage2DReader reader =
-                (GridCoverage2DReader)
-                        catalog.getResourcePool().getGridCoverageReader(cinfo, name, null);
+                (GridCoverage2DReader) catalog.getResourcePool().getGridCoverageReader(cinfo, name, null);
         builder.setStore(storeInfo);
         return builder.buildCoverage(reader, name, null);
     }
 
     /** Create a new {@link CoverageInfo} for this {@link CoverageView} */
-    public CoverageInfo createCoverageInfo(
-            String name, CoverageStoreInfo storeInfo, CatalogBuilder builder) throws Exception {
+    public CoverageInfo createCoverageInfo(String name, CoverageStoreInfo storeInfo, CatalogBuilder builder)
+            throws Exception {
         Catalog catalog = storeInfo.getCatalog();
 
         CoverageInfo coverageInfo = catalog.getFactory().createCoverage();
@@ -396,15 +386,9 @@ public class CoverageView implements Serializable {
         return info;
     }
 
-    /**
-     * Update the specified {@link CoverageInfo} with the updated {@link CoverageView} stored within
-     * its metadata
-     */
+    /** Update the specified {@link CoverageInfo} with the updated {@link CoverageView} stored within its metadata */
     public void updateCoverageInfo(
-            String name,
-            CoverageStoreInfo storeInfo,
-            CatalogBuilder builder,
-            CoverageInfo coverageInfo)
+            String name, CoverageStoreInfo storeInfo, CatalogBuilder builder, CoverageInfo coverageInfo)
             throws Exception {
         Utilities.ensureNonNull("coverageInfo", coverageInfo);
 
@@ -443,14 +427,9 @@ public class CoverageView implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((coverageBands == null) ? 0 : coverageBands.hashCode());
-        result =
-                prime * result
-                        + ((envelopeCompositionType == null)
-                                ? 0
-                                : envelopeCompositionType.hashCode());
+        result = prime * result + ((envelopeCompositionType == null) ? 0 : envelopeCompositionType.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result =
-                prime * result + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
+        result = prime * result + ((selectedResolution == null) ? 0 : selectedResolution.hashCode());
         result = prime * result + selectedResolutionIndex;
         return result;
     }

@@ -66,7 +66,8 @@ import org.junit.Test;
 
 public class RemoteRequestInputProviderTest {
 
-    @ClassRule @Rule
+    @ClassRule
+    @Rule
     public static WireMockRule service =
             new WireMockRule(WireMockConfiguration.options().dynamicPort().dynamicHttpsPort());
 
@@ -75,12 +76,11 @@ public class RemoteRequestInputProviderTest {
     @BeforeClass
     public static void setSocketFactory() throws Exception {
         // create a socket factory that trusts all certificates
-        RemoteRequestInputProvider.setSocketFactory(
-                new SSLConnectionSocketFactory(
-                        SSLContextBuilder.create()
-                                .loadTrustMaterial(null, new TrustEverythingStrategy())
-                                .build(),
-                        NoopHostnameVerifier.INSTANCE));
+        RemoteRequestInputProvider.setSocketFactory(new SSLConnectionSocketFactory(
+                SSLContextBuilder.create()
+                        .loadTrustMaterial(null, new TrustEverythingStrategy())
+                        .build(),
+                NoopHostnameVerifier.INSTANCE));
     }
 
     @Before
@@ -96,16 +96,15 @@ public class RemoteRequestInputProviderTest {
     @Test
     public void testNullResult() throws Exception {
         InputType input = input(file("test.txt"), null, null, null);
-        ComplexPPIO ppio =
-                new ComplexPPIO(null, null, null) {
-                    @Override
-                    public Object decode(InputStream input) throws Exception {
-                        return null;
-                    }
+        ComplexPPIO ppio = new ComplexPPIO(null, null, null) {
+            @Override
+            public Object decode(InputStream input) throws Exception {
+                return null;
+            }
 
-                    @Override
-                    public void encode(Object value, OutputStream os) {}
-                };
+            @Override
+            public void encode(Object value, OutputStream os) {}
+        };
         assertNull(getValue(input, ppio, 0, 0));
     }
 
@@ -113,8 +112,7 @@ public class RemoteRequestInputProviderTest {
     public void testIncorrectResultType() throws Exception {
         InputType input = input(file("test.txt"), null, null, null);
         String message = "Failed to retrieve value for input testInput";
-        assertException(
-                input, ppio(Number.class, null), 0, 0, message, IllegalArgumentException.class);
+        assertException(input, ppio(Number.class, null), 0, 0, message, IllegalArgumentException.class);
     }
 
     @Test
@@ -257,8 +255,7 @@ public class RemoteRequestInputProviderTest {
         doTestHttpInvalidBadStatus(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpInvalidBadStatus(URL url, MethodType method, URL bodyUrl)
-            throws Exception {
+    private void doTestHttpInvalidBadStatus(URL url, MethodType method, URL bodyUrl) throws Exception {
         String auth = "Basic YWxhZGRpbjpvcGVuc2VzYW1l";
         stub(forbidden(), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl, AUTHORIZATION, auth);
@@ -343,8 +340,7 @@ public class RemoteRequestInputProviderTest {
         doTestHttpValidWithoutMaxSize(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpValidWithoutMaxSize(URL url, MethodType method, URL bodyUrl)
-            throws Exception {
+    private void doTestHttpValidWithoutMaxSize(URL url, MethodType method, URL bodyUrl) throws Exception {
         stub(ok("TEST"), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl);
         assertValue(input, ppio(), 0, 0, "TEST", request(input), bodyRequest(input));
@@ -420,8 +416,7 @@ public class RemoteRequestInputProviderTest {
         doTestHttpValidWithoutContentLength(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpValidWithoutContentLength(URL url, MethodType method, URL bodyUrl)
-            throws Exception {
+    private void doTestHttpValidWithoutContentLength(URL url, MethodType method, URL bodyUrl) throws Exception {
         stub(ok("TEST"), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl);
         assertValue(input, ppio(), 0, 100, "TEST", request(input), bodyRequest(input));
@@ -497,8 +492,7 @@ public class RemoteRequestInputProviderTest {
         doTestHttpValidWithMaxSizeAndContentLength(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpValidWithMaxSizeAndContentLength(URL url, MethodType method, URL bodyUrl)
-            throws Exception {
+    private void doTestHttpValidWithMaxSizeAndContentLength(URL url, MethodType method, URL bodyUrl) throws Exception {
         stub(ok("TEST").withHeader(CONTENT_LENGTH, "4"), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl);
         assertValue(input, ppio(), 0, 100, "TEST", request(input), bodyRequest(input));
@@ -574,8 +568,7 @@ public class RemoteRequestInputProviderTest {
         doTestHttpInvalidTooBigWithoutContentLength(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpInvalidTooBigWithoutContentLength(
-            URL url, MethodType method, URL bodyUrl) throws Exception {
+    private void doTestHttpInvalidTooBigWithoutContentLength(URL url, MethodType method, URL bodyUrl) throws Exception {
         stub(ok("TEST"), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl);
         String message = "Exceeded maximum input size of 3 bytes while reading input testInput";
@@ -652,13 +645,11 @@ public class RemoteRequestInputProviderTest {
         doTestHttpInvalidTooBigWithContentLength(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpInvalidTooBigWithContentLength(URL url, MethodType method, URL bodyUrl)
-            throws Exception {
+    private void doTestHttpInvalidTooBigWithContentLength(URL url, MethodType method, URL bodyUrl) throws Exception {
         stub(ok("TEST").withHeader(CONTENT_LENGTH, "4"), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl);
-        String message =
-                "Input testInput size 4 exceeds maximum allowed size of 3 "
-                        + "according to HTTP Content-Length response header";
+        String message = "Input testInput size 4 exceeds maximum allowed size of 3 "
+                + "according to HTTP Content-Length response header";
         assertException(input, ppio(), 0, 3, message, null, request(input), bodyRequest(input));
     }
 
@@ -732,8 +723,7 @@ public class RemoteRequestInputProviderTest {
         doTestHttpInvalidCanceled(https("test"), POST_LITERAL, https("foo"));
     }
 
-    private void doTestHttpInvalidCanceled(URL url, MethodType method, URL bodyUrl)
-            throws Exception {
+    private void doTestHttpInvalidCanceled(URL url, MethodType method, URL bodyUrl) throws Exception {
         when(listener.isCanceled()).thenReturn(false, true);
         stub(ok("TEST"), bodyUrl, ok("FOO"));
         InputType input = input(url, method, "FOO", bodyUrl);
@@ -794,9 +784,8 @@ public class RemoteRequestInputProviderTest {
 
     private void doTestHttpPostInvalidBodyType(URL url) throws Exception {
         InputType input = input(url, POST_LITERAL, 1, null);
-        String message =
-                "The request body should be contained in a CDATA section, otherwise "
-                        + "it will get parsed as XML instead of being preserved as is";
+        String message = "The request body should be contained in a CDATA section, otherwise "
+                + "it will get parsed as XML instead of being preserved as is";
         assertException(input, ppio(), 0, 0, message, null);
     }
 
@@ -809,8 +798,7 @@ public class RemoteRequestInputProviderTest {
             Class<? extends Exception> hidden,
             RequestPatternBuilder... requests)
             throws Exception {
-        WPSException e =
-                assertThrows(WPSException.class, () -> getValue(input, ppio, timeout, maxSize));
+        WPSException e = assertThrows(WPSException.class, () -> getValue(input, ppio, timeout, maxSize));
         assertEquals(message, e.getMessage());
         assertEquals("NoApplicableCode", e.getCode());
         assertEquals("testInput", e.getLocator());
@@ -834,8 +822,7 @@ public class RemoteRequestInputProviderTest {
         Arrays.stream(requests).filter(Objects::nonNull).forEach(WireMock::verify);
     }
 
-    private Object getValue(InputType input, ComplexPPIO ppio, int timeout, long maxSize)
-            throws Exception {
+    private Object getValue(InputType input, ComplexPPIO ppio, int timeout, long maxSize) throws Exception {
         Map<String, InputProvider> map = new HashMap<>();
         map.put("testInput", new RemoteRequestInputProvider(input, ppio, timeout, maxSize));
         LazyInputMap inputs = new LazyInputMap(map);
@@ -860,10 +847,7 @@ public class RemoteRequestInputProviderTest {
         return new URL("https://localhost:" + service.httpsPort() + "/" + name);
     }
 
-    private static void stub(
-            ResponseDefinitionBuilder response,
-            URL bodyUrl,
-            ResponseDefinitionBuilder bodyResponse) {
+    private static void stub(ResponseDefinitionBuilder response, URL bodyUrl, ResponseDefinitionBuilder bodyResponse) {
         // stub for the main reference HTTP(S) URL
         stubFor(any(urlEqualTo("/test")).willReturn(response));
         if (bodyUrl != null && bodyUrl.getProtocol().startsWith("http")) {
@@ -896,8 +880,7 @@ public class RemoteRequestInputProviderTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static InputType input(
-            URL href, MethodType method, Object body, URL bodyHref, String... headers) {
+    private static InputType input(URL href, MethodType method, Object body, URL bodyHref, String... headers) {
         Wps10Factory factory = Wps10Factory.eINSTANCE;
         InputType input = factory.createInputType();
         input.setIdentifier(Ows11Util.code("testInput"));

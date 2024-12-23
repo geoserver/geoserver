@@ -43,15 +43,13 @@ public class MiniRule {
             for (Rule rule : ftStyle.rules()) {
                 List<Symbolizer> graphicSymbolizers = new ArrayList<>();
                 for (Symbolizer symbolizer : rule.symbolizers()) {
-                    Graphic graphic =
-                            IconPropertyExtractor.getGraphic(symbolizer, includeNonPointGraphics);
+                    Graphic graphic = IconPropertyExtractor.getGraphic(symbolizer, includeNonPointGraphics);
                     if (graphic != null) {
                         graphicSymbolizers.add(symbolizer);
                     }
                 }
                 if (!graphicSymbolizers.isEmpty()) {
-                    MiniRule miniRule =
-                            new MiniRule(rule.getFilter(), rule.isElseFilter(), graphicSymbolizers);
+                    MiniRule miniRule = new MiniRule(rule.getFilter(), rule.isElseFilter(), graphicSymbolizers);
                     miniRule.setName(rule.getName());
                     rules.add(miniRule);
                 }

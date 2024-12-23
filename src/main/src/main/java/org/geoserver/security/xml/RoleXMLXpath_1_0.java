@@ -62,21 +62,20 @@ public class RoleXMLXpath_1_0 extends RoleXMLXpath {
         xpath.setNamespaceContext(this.rrContext);
         // versionExpression = compile(xpath,"/"+E_USERREGISTRY+"["+A_VERSION_UR + "]");
 
-        roleListExpression =
-                compile(
-                        xpath,
-                        "/"
-                                + NSP_RR
-                                + ":"
-                                + E_ROLEREGISTRY_RR
-                                + "/"
-                                + NSP_RR
-                                + ":"
-                                + E_ROLELIST_RR
-                                + "/"
-                                + NSP_RR
-                                + ":"
-                                + E_ROLE_RR);
+        roleListExpression = compile(
+                xpath,
+                "/"
+                        + NSP_RR
+                        + ":"
+                        + E_ROLEREGISTRY_RR
+                        + "/"
+                        + NSP_RR
+                        + ":"
+                        + E_ROLELIST_RR
+                        + "/"
+                        + NSP_RR
+                        + ":"
+                        + E_ROLE_RR);
         parentExpression = compileRelativeAttribute(xpath, A_PARENTID_RR, NSP_RR);
         roleNameExpression = compileRelativeAttribute(xpath, A_ROLEID_RR, NSP_RR);
 
@@ -84,40 +83,38 @@ public class RoleXMLXpath_1_0 extends RoleXMLXpath {
         propertyNameExpression = compileRelativeAttribute(xpath, A_PROPERTY_NAME_RR, NSP_RR);
         propertyValueExpression = compile(xpath, "text()");
 
-        userRolesExpression =
-                compile(
-                        xpath,
-                        "/"
-                                + NSP_RR
-                                + ":"
-                                + E_ROLEREGISTRY_RR
-                                + "/"
-                                + NSP_RR
-                                + ":"
-                                + E_USERLIST_RR
-                                + "/"
-                                + NSP_RR
-                                + ":"
-                                + E_USERROLES_RR);
+        userRolesExpression = compile(
+                xpath,
+                "/"
+                        + NSP_RR
+                        + ":"
+                        + E_ROLEREGISTRY_RR
+                        + "/"
+                        + NSP_RR
+                        + ":"
+                        + E_USERLIST_RR
+                        + "/"
+                        + NSP_RR
+                        + ":"
+                        + E_USERROLES_RR);
         userNameExpression = compileRelativeAttribute(xpath, A_USERNAME_RR, NSP_RR);
         userRolRefsExpression = compile(xpath, NSP_RR + ":" + E_ROLEREF_RR);
         userRolRefNameExpression = compileRelativeAttribute(xpath, A_ROLEREFID_RR, NSP_RR);
 
-        groupRolesExpression =
-                compile(
-                        xpath,
-                        "/"
-                                + NSP_RR
-                                + ":"
-                                + E_ROLEREGISTRY_RR
-                                + "/"
-                                + NSP_RR
-                                + ":"
-                                + E_GROUPLIST_RR
-                                + "/"
-                                + NSP_RR
-                                + ":"
-                                + E_GROUPROLES_RR);
+        groupRolesExpression = compile(
+                xpath,
+                "/"
+                        + NSP_RR
+                        + ":"
+                        + E_ROLEREGISTRY_RR
+                        + "/"
+                        + NSP_RR
+                        + ":"
+                        + E_GROUPLIST_RR
+                        + "/"
+                        + NSP_RR
+                        + ":"
+                        + E_GROUPROLES_RR);
         groupNameExpression = compileRelativeAttribute(xpath, A_GROUPNAME_RR, NSP_RR);
         groupRolRefsExpression = compile(xpath, NSP_RR + ":" + E_ROLEREF_RR);
         groupRolRefNameExpression = compileRelativeAttribute(xpath, A_ROLEREFID_RR, NSP_RR);

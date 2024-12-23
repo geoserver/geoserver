@@ -22,8 +22,7 @@ public class CompositeBuilderTest extends DataTestCase {
     public void testCompositeNulls() throws Exception {
         NamespaceSupport ns = new NamespaceSupport();
         DynamicValueBuilder p1 = new DynamicValueBuilder("k1", "${notThere}", ns);
-        DynamicValueBuilder p2 =
-                new DynamicValueBuilder("k2", "$${strSubstring(notThereEither, 5, 10)}", ns);
+        DynamicValueBuilder p2 = new DynamicValueBuilder("k2", "$${strSubstring(notThereEither, 5, 10)}", ns);
         JSONObject json = buildComposite(ns, p1, p2);
 
         assertTrue(json.isEmpty());
@@ -58,8 +57,7 @@ public class CompositeBuilderTest extends DataTestCase {
         assertEquals("R1", composite.get("k2"));
     }
 
-    private JSONObject buildComposite(
-            NamespaceSupport ns, DynamicValueBuilder p1, DynamicValueBuilder p2)
+    private JSONObject buildComposite(NamespaceSupport ns, DynamicValueBuilder p1, DynamicValueBuilder p2)
             throws IOException {
         CompositeBuilder composite = new CompositeBuilder("composite", ns, false);
         composite.addChild(p1);
@@ -67,9 +65,7 @@ public class CompositeBuilderTest extends DataTestCase {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GeoJSONWriter writer =
-                new GeoJSONWriter(
-                        new JsonFactory().createGenerator(baos, JsonEncoding.UTF8),
-                        TemplateIdentifier.JSON);
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
 
         writer.writeStartObject();
         composite.evaluate(writer, new TemplateBuilderContext(roadFeatures[0]));

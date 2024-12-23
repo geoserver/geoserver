@@ -18,9 +18,8 @@ import org.springframework.security.web.authentication.rememberme.AbstractRememb
 /**
  * Factory bean that proxies for the global remember me service.
  *
- * <p>The actual underlying rememberme service is determined by {@link
- * RememberMeServicesConfig#getClassName()}, obtained from {@link
- * GeoServerSecurityManager#getSecurityConfig()}.
+ * <p>The actual underlying rememberme service is determined by {@link RememberMeServicesConfig#getClassName()},
+ * obtained from {@link GeoServerSecurityManager#getSecurityConfig()}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -72,17 +71,12 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
 
         @Override
         public void loginSuccess(
-                HttpServletRequest request,
-                HttpServletResponse response,
-                Authentication successfulAuthentication) {
+                HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {
             rms().loginSuccess(request, response, successfulAuthentication);
         }
 
         @Override
-        public void logout(
-                HttpServletRequest request,
-                HttpServletResponse response,
-                Authentication authentication) {
+        public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
             RememberMeServices rms = rms();
             if (rms instanceof LogoutHandler) {
                 ((LogoutHandler) rms).logout(request, response, authentication);
@@ -100,11 +94,8 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
                 @SuppressWarnings("unchecked")
                 Class<RememberMeServices> rmsClass =
                         (Class<RememberMeServices>) Class.forName(rmsConfig.getClassName());
-                rms =
-                        rmsClass.getConstructor(String.class, UserDetailsService.class)
-                                .newInstance(
-                                        rmsConfig.getKey(),
-                                        new RememberMeUserDetailsService(securityManager));
+                rms = rmsClass.getConstructor(String.class, UserDetailsService.class)
+                        .newInstance(rmsConfig.getKey(), new RememberMeUserDetailsService(securityManager));
                 if (rms instanceof AbstractRememberMeServices) {
                     ((AbstractRememberMeServices) rms).setParameter(PARAMETER_NAME);
                 }

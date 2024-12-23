@@ -51,8 +51,8 @@ public class KmlCentroidOptions {
     /**
      * Determines if the "contain" option is set.
      *
-     * <p>This option causes the centroid builder to find a point (via sampling if necessary) that
-     * is contained within a polygon geometry.
+     * <p>This option causes the centroid builder to find a point (via sampling if necessary) that is contained within a
+     * polygon geometry.
      *
      * @see #getSamples()
      */
@@ -63,8 +63,8 @@ public class KmlCentroidOptions {
     /**
      * Determines if the "clip" option is set.
      *
-     * <p>This option causes the centroid builder to clip geometries by the request bounding box
-     * before computing the centroid.
+     * <p>This option causes the centroid builder to clip geometries by the request bounding box before computing the
+     * centroid.
      */
     public boolean isClip() {
         return Boolean.valueOf(raw.getOrDefault(CLIP, "false").toString());

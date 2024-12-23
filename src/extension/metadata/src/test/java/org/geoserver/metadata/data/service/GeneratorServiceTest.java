@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GeneratorServiceTest extends AbstractMetadataTest {
 
-    @Autowired private GeneratorService generatorService;
+    @Autowired
+    private GeneratorService generatorService;
 
     @Test
     public void testGeneratorService() {
-        assertNotNull(
-                generatorService.findGeneratorByType(MetadataConstants.FEATURE_ATTRIBUTE_TYPENAME));
+        assertNotNull(generatorService.findGeneratorByType(MetadataConstants.FEATURE_ATTRIBUTE_TYPENAME));
 
         assertNotNull(generatorService.findGeneratorByType(MetadataConstants.DOMAIN_TYPENAME));
     }

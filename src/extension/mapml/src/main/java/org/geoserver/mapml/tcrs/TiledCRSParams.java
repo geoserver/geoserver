@@ -22,8 +22,7 @@ public class TiledCRSParams {
      * @param origin
      * @param scales
      */
-    public TiledCRSParams(
-            String name, String code, Bounds bounds, int tileSize, Point origin, double[] scales) {
+    public TiledCRSParams(String name, String code, Bounds bounds, int tileSize, Point origin, double[] scales) {
         this.name = name;
         this.code = code;
         this.bounds = bounds;

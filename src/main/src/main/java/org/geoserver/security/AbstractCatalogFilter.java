@@ -22,16 +22,15 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.filter.expression.InternalVolatileFunction;
 
 /**
- * A convenient base class for catalog filters. By default does not filter anything, it is advised
- * to use this class as the base to protect yourself from CatalogFilter API changes, implement
- * CatalogFilter directly only if you need a different base class
+ * A convenient base class for catalog filters. By default does not filter anything, it is advised to use this class as
+ * the base to protect yourself from CatalogFilter API changes, implement CatalogFilter directly only if you need a
+ * different base class
  *
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractCatalogFilter implements CatalogFilter {
 
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(AbstractCatalogFilter.class);
+    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger(AbstractCatalogFilter.class);
 
     @Override
     public boolean hideLayer(LayerInfo layer) {
@@ -63,8 +62,8 @@ public abstract class AbstractCatalogFilter implements CatalogFilter {
     }
 
     /**
-     * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified
-     * type. Implementers should override and return an appropriate well known filter
+     * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified type. Implementers
+     * should override and return an appropriate well known filter
      *
      * @see Predicates
      */
@@ -72,62 +71,50 @@ public abstract class AbstractCatalogFilter implements CatalogFilter {
     public Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz) {
         org.geotools.api.filter.expression.Function visible;
         if (ResourceInfo.class.isAssignableFrom(clazz)) {
-            visible =
-                    new InternalVolatileFunction() {
-                        @Override
-                        public Boolean evaluate(Object object) {
-                            return !hideResource((ResourceInfo) object);
-                        }
-                    };
+            visible = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    return !hideResource((ResourceInfo) object);
+                }
+            };
         } else if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
-            visible =
-                    new InternalVolatileFunction() {
-                        @Override
-                        public Boolean evaluate(Object object) {
-                            return !hideWorkspace((WorkspaceInfo) object);
-                        }
-                    };
+            visible = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    return !hideWorkspace((WorkspaceInfo) object);
+                }
+            };
         } else if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
-            visible =
-                    new InternalVolatileFunction() {
-                        @Override
-                        public Boolean evaluate(Object object) {
-                            return !hideLayerGroup((LayerGroupInfo) object);
-                        }
-                    };
+            visible = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    return !hideLayerGroup((LayerGroupInfo) object);
+                }
+            };
         } else if (StyleInfo.class.isAssignableFrom(clazz)) {
-            visible =
-                    new InternalVolatileFunction() {
-                        @Override
-                        public Boolean evaluate(Object object) {
-                            return !hideStyle((StyleInfo) object);
-                        }
-                    };
+            visible = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    return !hideStyle((StyleInfo) object);
+                }
+            };
         } else if (LayerInfo.class.isAssignableFrom(clazz)) {
-            visible =
-                    new InternalVolatileFunction() {
-                        @Override
-                        public Boolean evaluate(Object object) {
-                            return !hideLayer((LayerInfo) object);
-                        }
-                    };
+            visible = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    return !hideLayer((LayerInfo) object);
+                }
+            };
         } else if (NamespaceInfo.class.isAssignableFrom(clazz)) {
-            visible =
-                    new InternalVolatileFunction() {
-                        @Override
-                        public Boolean evaluate(Object object) {
-                            WorkspaceInfo wsInfo =
-                                    getCatalog()
-                                            .getWorkspaceByName(
-                                                    ((NamespaceInfo) object).getPrefix());
-                            return !hideWorkspace(wsInfo);
-                        }
-                    };
+            visible = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    WorkspaceInfo wsInfo = getCatalog().getWorkspaceByName(((NamespaceInfo) object).getPrefix());
+                    return !hideWorkspace(wsInfo);
+                }
+            };
         } else {
-            LOGGER.log(
-                    Level.FINE,
-                    "CatalogFilter does not recognize interface {0} accepting all.",
-                    clazz);
+            LOGGER.log(Level.FINE, "CatalogFilter does not recognize interface {0} accepting all.", clazz);
             return Predicates.acceptAll();
         }
 

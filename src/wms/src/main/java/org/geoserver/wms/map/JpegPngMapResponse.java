@@ -22,8 +22,7 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
 
     private static final String[] OUTPUT_FORMATS = {MIME, MIME8};
 
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false, true);
 
     private PNGMapResponse pngResponse;
 
@@ -47,8 +46,7 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
      * @see RasterMapOutputFormat#formatImageOutputStream(RenderedImage, OutputStream)
      */
     @Override
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {
         JpegOrPngChooser chooser = JpegOrPngChooser.getFromMapContent(image, mapContent);
         if (chooser.isJpegPreferred()) {
@@ -80,9 +78,7 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
         if (idx > 0) {
             return fileName.substring(0, idx)
                     + "."
-                    + getExtension(
-                            ((RenderedImageMap) value).getImage(),
-                            ((RenderedImageMap) value).getMapContext());
+                    + getExtension(((RenderedImageMap) value).getImage(), ((RenderedImageMap) value).getMapContext());
         } else {
             return fileName;
         }

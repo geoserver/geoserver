@@ -11,8 +11,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 /**
- * A simple external link with a label inside. This is a utility component, avoid some boilerplate
- * code in case the link is really just a link with a label inside
+ * A simple external link with a label inside. This is a utility component, avoid some boilerplate code in case the link
+ * is really just a link with a label inside
  */
 public class SimpleExternalLink extends Panel {
 

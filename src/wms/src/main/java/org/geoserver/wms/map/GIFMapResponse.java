@@ -49,8 +49,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      *
      * <p>We should soon support multipage tiff.
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, true, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, true, true);
 
     public GIFMapResponse(WMS wms) {
         super(OUTPUT_FORMATS, wms);
@@ -65,8 +64,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      * @throws IOException if encoding to <code>outStream</code> fails.
      */
     @Override
-    public void formatImageOutputStream(
-            RenderedImage originalImage, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage originalImage, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {
 
         if (LOGGER.isLoggable(Level.FINE)) {

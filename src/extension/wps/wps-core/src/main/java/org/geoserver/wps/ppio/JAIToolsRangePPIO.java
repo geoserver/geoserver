@@ -17,8 +17,7 @@ import org.jaitools.numeric.Range;
  */
 public class JAIToolsRangePPIO extends LiteralPPIO {
 
-    static Converter CONVERTER =
-            new JAIToolsRangeConverterFactory().createConverter(String.class, Range.class, null);
+    static Converter CONVERTER = new JAIToolsRangeConverterFactory().createConverter(String.class, Range.class, null);
 
     /** Parses a single range from a string */
     public static Range<Double> parseRange(String sRange) {

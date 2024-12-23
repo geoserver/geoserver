@@ -47,17 +47,15 @@ public class WMSDisabledTest extends WMSTestSupport {
         ftinfo.setServiceConfiguration(true);
         ftinfo.setDisabledServices(new ArrayList<>(Arrays.asList("WMS")));
         getCatalog().save(ftinfo);
-        Document doc =
-                getAsDOM(
-                        "wms?bbox="
-                                + "-180,-90,180,90"
-                                + "&layers="
-                                + layerName
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326");
+        Document doc = getAsDOM("wms?bbox="
+                + "-180,-90,180,90"
+                + "&layers="
+                + layerName
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
     }
 
@@ -70,18 +68,17 @@ public class WMSDisabledTest extends WMSTestSupport {
         ri.setServiceConfiguration(false);
         ri.setDisabledServices(new ArrayList<>());
         getCatalog().save(ri);
-        BufferedImage image =
-                getAsImage(
-                        "wms?bbox="
-                                + "-180,-90,180,90"
-                                + "&layers="
-                                + layerName
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?bbox="
+                        + "-180,-90,180,90"
+                        + "&layers="
+                        + layerName
+                        + "&Format=image/png"
+                        + "&request=GetMap"
+                        + "&width=550"
+                        + "&height=250"
+                        + "&srs=EPSG:4326",
+                "image/png");
         assertNotNull(image);
     }
 

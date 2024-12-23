@@ -40,18 +40,17 @@ public class WorkspaceProviderTest {
         w3 = add("w3");
         w4 = add("w4");
         settings = new SettingsInfoImpl();
-        provider =
-                new WorkspaceProvider() {
-                    @Override
-                    public Catalog getCatalog() {
-                        return catalog;
-                    }
+        provider = new WorkspaceProvider() {
+            @Override
+            public Catalog getCatalog() {
+                return catalog;
+            }
 
-                    @Override
-                    protected SettingsInfo getSettings() {
-                        return settings;
-                    }
-                };
+            @Override
+            protected SettingsInfo getSettings() {
+                return settings;
+            }
+        };
     }
 
     private WorkspaceInfo add(String name) {
@@ -159,8 +158,7 @@ public class WorkspaceProviderTest {
         WorkspaceInfo decoratedWithDefault = actual.get(2);
         assertEquals(w3.getId(), decoratedWithDefault.getId());
 
-        assertEquals(
-                Boolean.TRUE, WorkspaceProvider.DEFAULT.getPropertyValue(decoratedWithDefault));
+        assertEquals(Boolean.TRUE, WorkspaceProvider.DEFAULT.getPropertyValue(decoratedWithDefault));
         assertEquals(Boolean.FALSE, WorkspaceProvider.DEFAULT.getPropertyValue(actual.get(0)));
         assertEquals(Boolean.FALSE, WorkspaceProvider.DEFAULT.getPropertyValue(actual.get(1)));
         assertEquals(Boolean.FALSE, WorkspaceProvider.DEFAULT.getPropertyValue(actual.get(3)));

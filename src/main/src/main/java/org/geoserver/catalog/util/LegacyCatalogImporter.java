@@ -108,8 +108,7 @@ public class LegacyCatalogImporter {
         // datastores and coveragestores are read
         File catalogFile = new File(dir, "catalog.xml");
         if (!catalogFile.exists()) {
-            throw new FileNotFoundException(
-                    "Could not find catalog.xml under:" + dir.getAbsolutePath());
+            throw new FileNotFoundException("Could not find catalog.xml under:" + dir.getAbsolutePath());
         }
         importCatalog(catalogFile);
 
@@ -119,24 +118,19 @@ public class LegacyCatalogImporter {
         File[] featureTypeDirectories = featureTypes.listFiles();
         if (featureTypeDirectories != null) {
             for (File featureTypeDirectory : featureTypeDirectories) {
-                if (!featureTypeDirectory.isDirectory() || featureTypeDirectory.isHidden())
-                    continue;
+                if (!featureTypeDirectory.isDirectory() || featureTypeDirectory.isHidden()) continue;
 
                 // load info.xml
                 File ftInfoFile = new File(featureTypeDirectory, "info.xml");
                 if (!ftInfoFile.exists()) {
-                    LOGGER.fine(
-                            "No info.xml found in directory: '"
-                                    + featureTypeDirectory.getName()
-                                    + "', ignoring");
+                    LOGGER.fine("No info.xml found in directory: '" + featureTypeDirectory.getName() + "', ignoring");
                     continue;
                 }
 
                 LegacyFeatureTypeInfoReader ftInfoReader = new LegacyFeatureTypeInfoReader();
                 try {
                     ftInfoReader.read(Files.asResource(ftInfoFile));
-                    FeatureTypeInfo featureType =
-                            readFeatureType(ftInfoReader, featureTypeDirectory);
+                    FeatureTypeInfo featureType = readFeatureType(ftInfoReader, featureTypeDirectory);
                     if (featureType == null) {
                         continue;
                     }
@@ -184,10 +178,7 @@ public class LegacyCatalogImporter {
                     layer.setEnabled(featureType.isEnabled());
                     catalog.add(layer);
                 } catch (Exception e) {
-                    LOGGER.warning(
-                            "Error loadin '"
-                                    + featureTypeDirectory.getName()
-                                    + "/info.xml', ignoring");
+                    LOGGER.warning("Error loadin '" + featureTypeDirectory.getName() + "/info.xml', ignoring");
                     LOGGER.log(Level.INFO, "", e);
                     continue;
                 }
@@ -205,10 +196,7 @@ public class LegacyCatalogImporter {
                 // load info.xml
                 File cInfoFile = new File(coverageDirectory, "info.xml");
                 if (!cInfoFile.exists()) {
-                    LOGGER.fine(
-                            "No info.xml found in directory: '"
-                                    + coverageDirectory.getName()
-                                    + "', ignoring");
+                    LOGGER.fine("No info.xml found in directory: '" + coverageDirectory.getName() + "', ignoring");
                     continue;
                 }
 
@@ -252,10 +240,7 @@ public class LegacyCatalogImporter {
 
                     catalog.add(layer);
                 } catch (Exception e) {
-                    LOGGER.warning(
-                            "Error loading '"
-                                    + coverageDirectory.getName()
-                                    + "/info.xml', ignoring");
+                    LOGGER.warning("Error loading '" + coverageDirectory.getName() + "/info.xml', ignoring");
                     LOGGER.log(Level.INFO, "", e);
                     continue;
                 }
@@ -294,11 +279,10 @@ public class LegacyCatalogImporter {
             coverageStore.setEnabled((Boolean) map.get("enabled"));
             catalog.add(coverageStore);
 
-            LOGGER.info(
-                    "Processed coverage store '"
-                            + coverageStore.getName()
-                            + "', "
-                            + (coverageStore.isEnabled() ? "enabled" : "disabled"));
+            LOGGER.info("Processed coverage store '"
+                    + coverageStore.getName()
+                    + "', "
+                    + (coverageStore.isEnabled() ? "enabled" : "disabled"));
         }
     }
 
@@ -321,7 +305,8 @@ public class LegacyCatalogImporter {
                 dataStore.getConnectionParameters().put(key, value);
             }
             // set the namespace parameter
-            NamespaceInfo ns = catalog.getNamespaceByPrefix(dataStore.getWorkspace().getName());
+            NamespaceInfo ns =
+                    catalog.getNamespaceByPrefix(dataStore.getWorkspace().getName());
             dataStore.getConnectionParameters().put("namespace", ns.getURI());
 
             dataStore.setEnabled((Boolean) map.get("enabled"));
@@ -339,11 +324,10 @@ public class LegacyCatalogImporter {
                     dataStore.getDataStore(null);
 
                     // connection ok
-                    LOGGER.config(
-                            "Processed data store '"
-                                    + dataStore.getName()
-                                    + "', "
-                                    + (dataStore.isEnabled() ? "enabled" : "disabled"));
+                    LOGGER.config("Processed data store '"
+                            + dataStore.getName()
+                            + "', "
+                            + (dataStore.isEnabled() ? "enabled" : "disabled"));
                 } catch (Exception e) {
                     LOGGER.warning("Error connecting to '" + dataStore.getName() + "'");
                     LOGGER.log(Level.INFO, "", e);
@@ -373,10 +357,7 @@ public class LegacyCatalogImporter {
         importNamespaces(factory, namespaces, false);
     }
 
-    /**
-     * Imports namespaces and create symmetric workspaces for them setting isolation using the
-     * provided value.
-     */
+    /** Imports namespaces and create symmetric workspaces for them setting isolation using the provided value. */
     void importNamespaces(CatalogFactory factory, Map namespaces, boolean isolated) {
         for (Object o : namespaces.entrySet()) {
             Map.Entry entry = (Map.Entry) o;
@@ -400,12 +381,7 @@ public class LegacyCatalogImporter {
                 catalog.setDefaultWorkspace(workspace);
             }
 
-            LOGGER.config(
-                    "Loaded namespace '"
-                            + namespace.getPrefix()
-                            + "' ("
-                            + namespace.getURI()
-                            + ")");
+            LOGGER.config("Loaded namespace '" + namespace.getPrefix() + "' (" + namespace.getURI() + ")");
         }
 
         if (catalog.getDefaultNamespace() != null) {
@@ -416,8 +392,7 @@ public class LegacyCatalogImporter {
     }
 
     /** TODO: code smell: no method should be this long */
-    FeatureTypeInfo readFeatureType(LegacyFeatureTypeInfoReader ftInfoReader, File ftDirectory)
-            throws Exception {
+    FeatureTypeInfo readFeatureType(LegacyFeatureTypeInfoReader ftInfoReader, File ftDirectory) throws Exception {
         CatalogFactory factory = catalog.getFactory();
         FeatureTypeInfo featureType = factory.createFeatureType();
 
@@ -448,8 +423,7 @@ public class LegacyCatalogImporter {
         }
 
         featureType.setLatLonBoundingBox(
-                new ReferencedEnvelope(
-                        ftInfoReader.latLonBoundingBox(), DefaultGeographicCRS.WGS84));
+                new ReferencedEnvelope(ftInfoReader.latLonBoundingBox(), DefaultGeographicCRS.WGS84));
         featureType.setEnabled(true);
         featureType.setMaxFeatures(ftInfoReader.maxFeatures());
         featureType.getMetadata().put("dirName", ftInfoReader.parentDirectoryName());
@@ -458,20 +432,17 @@ public class LegacyCatalogImporter {
         featureType.getMetadata().put(ResourceInfo.CACHE_AGE_MAX, ftInfoReader.cacheAgeMax());
         featureType.getMetadata().put("kml.regionateAttribute", ftInfoReader.regionateAttribute());
         featureType.getMetadata().put("kml.regionateStrategy", ftInfoReader.regionateStrategy());
-        featureType
-                .getMetadata()
-                .put("kml.regionateFeatureLimit", ftInfoReader.regionateFeatureLimit());
+        featureType.getMetadata().put("kml.regionateFeatureLimit", ftInfoReader.regionateFeatureLimit());
 
         // link to datastore
         String dataStoreName = ftInfoReader.dataStore();
         DataStoreInfo dataStore = catalog.getDataStoreByName(dataStoreName);
         if (dataStore == null) {
-            LOGGER.warning(
-                    "Ignoring feature type: '"
-                            + ftInfoReader.parentDirectoryName()
-                            + "', data store '"
-                            + dataStoreName
-                            + "'  not found");
+            LOGGER.warning("Ignoring feature type: '"
+                    + ftInfoReader.parentDirectoryName()
+                    + "', data store '"
+                    + dataStoreName
+                    + "'  not found");
             return null;
         }
         featureType.setStore(dataStore);
@@ -481,10 +452,7 @@ public class LegacyCatalogImporter {
         featureType.setNamespace(catalog.getNamespaceByPrefix(prefix));
 
         if (featureType.isEnabled() && !dataStore.isEnabled()) {
-            LOGGER.info(
-                    "Ignoring feature type: '"
-                            + ftInfoReader.parentDirectoryName()
-                            + "', data store is disabled");
+            LOGGER.info("Ignoring feature type: '" + ftInfoReader.parentDirectoryName() + "', data store is disabled");
             featureType.setEnabled(false);
         }
 
@@ -496,11 +464,10 @@ public class LegacyCatalogImporter {
             try {
                 ds = dataStore.getDataStore(null);
             } catch (Exception e) {
-                LOGGER.warning(
-                        "Ignoring feature type: '"
-                                + featureType.getName()
-                                + "', error occured connecting to data store: "
-                                + e.getMessage());
+                LOGGER.warning("Ignoring feature type: '"
+                        + featureType.getName()
+                        + "', error occured connecting to data store: "
+                        + e.getMessage());
                 LOGGER.log(Level.INFO, "", e);
                 error = e;
             }
@@ -511,11 +478,10 @@ public class LegacyCatalogImporter {
                     FeatureType ft = ds.getSchema(featureType.getQualifiedNativeName());
                     featureType.setNativeCRS(ft.getCoordinateReferenceSystem());
                 } catch (Exception e) {
-                    LOGGER.warning(
-                            "Ignoring feature type: '"
-                                    + featureType.getNativeName()
-                                    + "', error occured loading schema: "
-                                    + e.getMessage());
+                    LOGGER.warning("Ignoring feature type: '"
+                            + featureType.getNativeName()
+                            + "', error occured loading schema: "
+                            + e.getMessage());
                     LOGGER.log(Level.INFO, "", e);
                     error = e;
                 }
@@ -525,8 +491,7 @@ public class LegacyCatalogImporter {
                 // native bounds
                 Envelope nativeBBOX = ftInfoReader.nativeBoundingBox();
                 if (nativeBBOX != null) {
-                    featureType.setNativeBoundingBox(
-                            new ReferencedEnvelope(nativeBBOX, featureType.getNativeCRS()));
+                    featureType.setNativeBoundingBox(new ReferencedEnvelope(nativeBBOX, featureType.getNativeCRS()));
                 }
             }
 
@@ -546,20 +511,16 @@ public class LegacyCatalogImporter {
         CoverageStoreInfo coverageStore = catalog.getCoverageStoreByName(coverageStoreName);
 
         if (coverageStore == null) {
-            LOGGER.warning(
-                    "Ignoring coverage: '"
-                            + cInfoReader.parentDirectoryName()
-                            + "', coverage store '"
-                            + coverageStoreName
-                            + "'  not found");
+            LOGGER.warning("Ignoring coverage: '"
+                    + cInfoReader.parentDirectoryName()
+                    + "', coverage store '"
+                    + coverageStoreName
+                    + "'  not found");
             return null;
         }
 
         if (!coverageStore.isEnabled()) {
-            LOGGER.info(
-                    "Ignoring coverage: '"
-                            + cInfoReader.parentDirectoryName()
-                            + "', coverage store is disabled");
+            LOGGER.info("Ignoring coverage: '" + cInfoReader.parentDirectoryName() + "', coverage store is disabled");
             return null;
         }
 
@@ -582,17 +543,15 @@ public class LegacyCatalogImporter {
         CoordinateReferenceSystem crs = CRS.parseWKT(nativeCrsWkt);
         coverage.setNativeCRS(crs);
 
-        ReferencedEnvelope bounds =
-                new ReferencedEnvelope(
-                        (Double) envelope.get("x1"),
-                        (Double) envelope.get("x2"),
-                        (Double) envelope.get("y1"),
-                        (Double) envelope.get("y2"),
-                        crs);
+        ReferencedEnvelope bounds = new ReferencedEnvelope(
+                (Double) envelope.get("x1"),
+                (Double) envelope.get("x2"),
+                (Double) envelope.get("y1"),
+                (Double) envelope.get("y2"),
+                crs);
         coverage.setNativeBoundingBox(bounds);
 
-        GeneralBounds boundsLatLon =
-                CoverageStoreUtils.getWGS84LonLatEnvelope(new GeneralBounds(bounds));
+        GeneralBounds boundsLatLon = CoverageStoreUtils.getWGS84LonLatEnvelope(new GeneralBounds(bounds));
         coverage.setLatLonBoundingBox(new ReferencedEnvelope(boundsLatLon));
 
         GeneralBounds gridEnvelope = new GeneralBounds(bounds);
@@ -616,8 +575,7 @@ public class LegacyCatalogImporter {
                 matrix[8] = 1.0;
 
                 MathTransform gridToCRS =
-                        new DefaultMathTransformFactory()
-                                .createAffineTransform(new GeneralMatrix(3, 3, matrix));
+                        new DefaultMathTransformFactory().createAffineTransform(new GeneralMatrix(3, 3, matrix));
                 coverage.setGrid(new GridGeometry2D(range, gridToCRS, crs));
             } else {
                 coverage.setGrid(new GridGeometry2D(range, gridEnvelope));
@@ -653,7 +611,8 @@ public class LegacyCatalogImporter {
         coverage.getParameters().putAll(cInfoReader.parameters());
 
         // link to namespace
-        String prefix = catalog.getCoverageStoreByName(coverageStoreName).getWorkspace().getName();
+        String prefix =
+                catalog.getCoverageStoreByName(coverageStoreName).getWorkspace().getName();
         coverage.setNamespace(catalog.getNamespaceByPrefix(prefix));
 
         return coverage;

@@ -27,8 +27,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.junit.Before;
 
-public abstract class AbstractSecurityNamedServicePanelTest
-        extends AbstractSecurityWicketTestSupport {
+public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecurityWicketTestSupport {
 
     public static final String FIRST_COLUM_PATH = "itemProperties:0:component:link";
     public static final String CHECKBOX_PATH = "selectItemContainer:selectItem";
@@ -99,8 +98,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
 
     @SuppressWarnings("unchecked")
     protected DataView<SecurityNamedServiceConfig> getDataView() {
-        return (DataView<SecurityNamedServiceConfig>)
-                basePage.get(basePanelId + ":table:listContainer:items");
+        return (DataView<SecurityNamedServiceConfig>) basePage.get(basePanelId + ":table:listContainer:items");
     }
 
     protected long countItems() {
@@ -142,8 +140,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
         AbstractSecurityPage testPage = (AbstractSecurityPage) tester.getLastRenderedPage();
 
         if (serviceNames.length == 0) {
-            String selectAllPath =
-                    basePanelId + ":table:listContainer:selectAllContainer:selectAll";
+            String selectAllPath = basePanelId + ":table:listContainer:selectAllContainer:selectAll";
             tester.assertComponent(selectAllPath, CheckBox.class);
 
             FormComponent selectAllPathComponent =
@@ -182,8 +179,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
         tester.clickLink(basePanelId + ":remove", true);
         assertTrue(w.isShown());
 
-        ((GeoServerDialog) w.getParent())
-                .submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
+        ((GeoServerDialog) w.getParent()).submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
         // simulateDeleteSubmit();
         // executeModalWindowCloseButtonCallback(w);
     }
@@ -206,8 +202,7 @@ public abstract class AbstractSecurityNamedServicePanelTest
     }
 
     @SuppressWarnings("deprecation")
-    protected <T extends SecurityNamedServicePanelInfo> void setSecurityConfigClassName(
-            Class<T> clazz) {
+    protected <T extends SecurityNamedServicePanelInfo> void setSecurityConfigClassName(Class<T> clazz) {
         ListView list = (ListView) tester.getLastRenderedPage().get("servicesContainer:services");
         int toClick = -1;
         for (int i = 0; i < list.getList().size(); i++) {

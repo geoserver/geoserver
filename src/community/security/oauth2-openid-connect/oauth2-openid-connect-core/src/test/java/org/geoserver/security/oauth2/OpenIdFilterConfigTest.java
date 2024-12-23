@@ -34,8 +34,7 @@ public class OpenIdFilterConfigTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         FileUtils.copyFileToDirectory(
-                new File("./src/test/resources/geoserver-environment.properties"),
-                testData.getDataDirectoryRoot());
+                new File("./src/test/resources/geoserver-environment.properties"), testData.getDataDirectoryRoot());
     }
 
     private OpenIdConnectFilterConfig getFilterConfig() {
@@ -76,9 +75,8 @@ public class OpenIdFilterConfigTest extends GeoServerSystemTestSupport {
         OpenIdConnectFilterConfig filterConfig = getFilterConfig();
         filterConfig.setPostLogoutRedirectUri("http://localhost:8080/post-redirect");
         String logouturl = filterConfig.buildEndSessionUrl("aToken").toString();
-        assertTrue(
-                logouturl.contains(
-                        "?id_token_hint=aToken&post_logout_redirect_uri=http://localhost:8080/post-redirect"));
+        assertTrue(logouturl.contains(
+                "?id_token_hint=aToken&post_logout_redirect_uri=http://localhost:8080/post-redirect"));
     }
 
     @Test
@@ -86,9 +84,7 @@ public class OpenIdFilterConfigTest extends GeoServerSystemTestSupport {
         OpenIdConnectFilterConfig filterConfig = getFilterConfig();
         filterConfig.setPostLogoutRedirectUri("http://localhost:8080/post-redirect");
         String logouturl = filterConfig.buildEndSessionUrl(null).toString();
-        assertTrue(
-                logouturl.contains(
-                        "?post_logout_redirect_uri=http://localhost:8080/post-redirect"));
+        assertTrue(logouturl.contains("?post_logout_redirect_uri=http://localhost:8080/post-redirect"));
     }
 
     @Test

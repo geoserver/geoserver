@@ -35,8 +35,8 @@ public class InspireDirectoryManager {
     }
 
     /**
-     * Get available languages from the available_languages.properties file in the inspire directory
-     * if present otherwise from the file in the classpath.
+     * Get available languages from the available_languages.properties file in the inspire directory if present
+     * otherwise from the file in the classpath.
      *
      * @return
      * @throws IOException
@@ -49,10 +49,9 @@ public class InspireDirectoryManager {
             LOGGER.fine("Error occurred while retrieving languages mappings from inspire dir");
         }
 
-        try (InputStream is =
-                file != null && file.exists()
-                        ? new FileInputStream(file)
-                        : getClass().getResource("available_languages.properties").openStream()) {
+        try (InputStream is = file != null && file.exists()
+                ? new FileInputStream(file)
+                : getClass().getResource("available_languages.properties").openStream()) {
             Properties list = new Properties();
             list.load(is);
             return list;

@@ -21,16 +21,14 @@ public interface DataStoreInfo extends StoreInfo {
     /**
      * Returns the underlying datastore instance.
      *
-     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to
-     * report the progress of loading the datastore and also to report any errors or warnings that
-     * occur.
+     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to report the progress of
+     * loading the datastore and also to report any errors or warnings that occur.
      *
      * @param listener A progress listener, may be <code>null</code>.
      * @return The datastore.
      * @throws IOException Any I/O problems.
      */
-    DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener)
-            throws IOException;
+    DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener) throws IOException;
 
     /**
      * DataStoreInfo equality is based on the following properties:

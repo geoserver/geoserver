@@ -66,8 +66,7 @@ public class GeoServerSSLFilter extends GeoServerSecurityFilter {
                 kvp.put(kvpArray[0], kvpArray[1]);
             }
         }
-        String redirectURL =
-                ResponseUtils.buildURL(buff.toString(), httpRequest.getPathInfo(), kvp, null);
+        String redirectURL = ResponseUtils.buildURL(buff.toString(), httpRequest.getPathInfo(), kvp, null);
 
         if (LOGGER.isLoggable(Level.INFO))
             LOGGER.info("Redirecting " + httpRequest.getRequestURL() + " to " + redirectURL);

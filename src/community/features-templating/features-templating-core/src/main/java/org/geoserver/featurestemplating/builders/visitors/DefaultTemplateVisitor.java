@@ -8,9 +8,7 @@ import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 
-/**
- * A default implementation of a {@link TemplateVisitor}. It simply traverse a TemplateBuilder tree.
- */
+/** A default implementation of a {@link TemplateVisitor}. It simply traverse a TemplateBuilder tree. */
 public class DefaultTemplateVisitor implements TemplateVisitor {
 
     @Override

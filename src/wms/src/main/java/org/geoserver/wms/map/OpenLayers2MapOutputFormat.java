@@ -13,9 +13,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.ProjectedCRS;
 
-/**
- * Subclass of {@link OpenLayersMapOutputFormat} allowing to explictly request a OpenLayers 2 client
- */
+/** Subclass of {@link OpenLayersMapOutputFormat} allowing to explictly request a OpenLayers 2 client */
 public class OpenLayers2MapOutputFormat extends AbstractOpenLayersMapOutputFormat {
 
     /** The freemarker template for OL2 */
@@ -28,8 +26,7 @@ public class OpenLayers2MapOutputFormat extends AbstractOpenLayersMapOutputForma
     public static final String MIME_TYPE = "text/html; subtype=openlayers2";
 
     /** The formats accepted in a GetMap request for this producer and stated in getcaps */
-    private static final Set<String> OUTPUT_FORMATS =
-            new HashSet<>(Arrays.asList(OL2_FORMAT, MIME_TYPE));
+    private static final Set<String> OUTPUT_FORMATS = new HashSet<>(Arrays.asList(OL2_FORMAT, MIME_TYPE));
 
     public OpenLayers2MapOutputFormat(WMS wms) {
         super(wms);
@@ -51,9 +48,8 @@ public class OpenLayers2MapOutputFormat extends AbstractOpenLayersMapOutputForma
     }
 
     /**
-     * OL does support only a limited number of unit types, we have to try and return one of those,
-     * otherwise the scale won't be shown. From the OL guide: possible values are "degrees" (or
-     * "dd"), "m", "ft", "km", "mi", "inches".
+     * OL does support only a limited number of unit types, we have to try and return one of those, otherwise the scale
+     * won't be shown. From the OL guide: possible values are "degrees" (or "dd"), "m", "ft", "km", "mi", "inches".
      */
     @Override
     protected String getUnits(WMSMapContent mapContent) {
@@ -66,8 +62,7 @@ public class OpenLayers2MapOutputFormat extends AbstractOpenLayersMapOutputForma
             // use the unicode escape sequence for the degree sign so its not
             // screwed up by different local encodings
             final String degreeSign = "\u00B0";
-            if (degreeSign.equals(unit) || "degrees".equals(unit) || "dd".equals(unit))
-                result = "degrees";
+            if (degreeSign.equals(unit) || "degrees".equals(unit) || "dd".equals(unit)) result = "degrees";
             else if ("m".equals(unit) || "meters".equals(unit)) result = "m";
             else if ("km".equals(unit) || "kilometers".equals(unit)) result = "mi";
             else if ("in".equals(unit) || "inches".equals(unit)) result = "inches";

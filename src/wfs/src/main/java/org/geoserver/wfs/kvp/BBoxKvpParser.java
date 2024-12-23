@@ -29,11 +29,10 @@ public class BBoxKvpParser extends KvpParser {
 
         // check to make sure that the bounding box has 4 coordinates
         if (unparsed.size() < 4) {
-            throw new IllegalArgumentException(
-                    "Requested bounding box contains wrong"
-                            + "number of coordinates (should have "
-                            + "4): "
-                            + unparsed.size());
+            throw new IllegalArgumentException("Requested bounding box contains wrong"
+                    + "number of coordinates (should have "
+                    + "4): "
+                    + unparsed.size());
         }
 
         int countco = 4;
@@ -85,28 +84,18 @@ public class BBoxKvpParser extends KvpParser {
     }
 
     protected Object buildEnvelope(
-            int countco,
-            double minx,
-            double miny,
-            double minz,
-            double maxx,
-            double maxy,
-            double maxz,
-            String srs)
+            int countco, double minx, double miny, double minz, double maxx, double maxy, double maxz, String srs)
             throws NoSuchAuthorityCodeException, FactoryException {
         if (minx > maxx) {
-            throw new ServiceException(
-                    "illegal bbox, minX: " + minx + " is " + "greater than maxX: " + maxx);
+            throw new ServiceException("illegal bbox, minX: " + minx + " is " + "greater than maxX: " + maxx);
         }
 
         if (miny > maxy) {
-            throw new ServiceException(
-                    "illegal bbox, minY: " + miny + " is " + "greater than maxY: " + maxy);
+            throw new ServiceException("illegal bbox, minY: " + miny + " is " + "greater than maxY: " + maxy);
         }
 
         if (minz > maxz) {
-            throw new ServiceException(
-                    "illegal bbox, minZ: " + minz + " is " + "greater than maxZ: " + maxz);
+            throw new ServiceException("illegal bbox, minZ: " + minz + " is " + "greater than maxZ: " + maxz);
         }
 
         if (countco == 6) {
@@ -117,13 +106,10 @@ public class BBoxKvpParser extends KvpParser {
             if (crs == null || crs.getCoordinateSystem().getDimension() == 2) {
                 return new SRSEnvelope(minx, maxx, miny, maxy, srs);
             } else if (crs.getCoordinateSystem().getDimension() == 3) {
-                return new ReferencedEnvelope3D(
-                        minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
+                return new ReferencedEnvelope3D(minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
             } else {
                 throw new WFSException(
-                        "Unexpected BBOX, can only handle 2D or 3D ones",
-                        "bbox",
-                        "InvalidParameterValue");
+                        "Unexpected BBOX, can only handle 2D or 3D ones", "bbox", "InvalidParameterValue");
             }
         }
     }

@@ -26,11 +26,7 @@ public class SchemalessFilterToMongo extends AbstractFilterToMongo {
     @Override
     protected String getGeometryPath() {
         Object path =
-                featureType
-                        .getGeometryDescriptor()
-                        .getType()
-                        .getUserData()
-                        .get(MongoSchemalessUtils.GEOMETRY_PATH);
+                featureType.getGeometryDescriptor().getType().getUserData().get(MongoSchemalessUtils.GEOMETRY_PATH);
         if (path == null) path = typeFinder.getGeometryPath();
 
         if (path != null) return path.toString();
@@ -45,8 +41,7 @@ public class SchemalessFilterToMongo extends AbstractFilterToMongo {
     @Override
     protected Class<?> getValueTypeInternal(Expression e) {
         Class<?> clazz = null;
-        if (e instanceof PropertyName)
-            clazz = typeFinder.getAttributeType(((PropertyName) e).getPropertyName());
+        if (e instanceof PropertyName) clazz = typeFinder.getAttributeType(((PropertyName) e).getPropertyName());
         return clazz;
     }
 }

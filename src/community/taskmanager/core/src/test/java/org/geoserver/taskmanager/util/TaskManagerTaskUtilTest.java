@@ -45,13 +45,17 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
 
     private static final String ATT_DUMMY = "dummy";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil util;
+    @Autowired
+    private TaskManagerDataUtil util;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
     private Configuration config;
 
@@ -114,22 +118,18 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         final AtomicInteger counter = new AtomicInteger(0);
         BatchContext bContext = taskUtil.createContext(fac.createBatchRun());
         bContext.put("foo", "bar");
-        bContext.get(
-                "foo",
-                new BatchContext.Dependency() {
-                    @Override
-                    public void revert() throws TaskException {
-                        counter.set(counter.get() + 1);
-                    }
-                });
-        bContext.get(
-                "foo",
-                new BatchContext.Dependency() {
-                    @Override
-                    public void revert() throws TaskException {
-                        counter.set(counter.get() + 2);
-                    }
-                });
+        bContext.get("foo", new BatchContext.Dependency() {
+            @Override
+            public void revert() throws TaskException {
+                counter.set(counter.get() + 1);
+            }
+        });
+        bContext.get("foo", new BatchContext.Dependency() {
+            @Override
+            public void revert() throws TaskException {
+                counter.set(counter.get() + 2);
+            }
+        });
         bContext.delete("foo");
         assertEquals(3, counter.get());
     }
@@ -180,8 +180,10 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         Task t = taskUtil.initTask("Dummy", "newDummyTask");
         assertEquals("newDummyTask", t.getName());
         assertEquals(2, t.getParameters().size());
-        assertEquals("${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
-        assertEquals("${param2}", t.getParameters().get(DummyTaskTypeImpl.PARAM2).getValue());
+        assertEquals(
+                "${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
+        assertEquals(
+                "${param2}", t.getParameters().get(DummyTaskTypeImpl.PARAM2).getValue());
     }
 
     @Test
@@ -189,11 +191,14 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
         Task t = taskUtil.initTask("Dummy", "newDummyTask");
         t.getParameters().remove(DummyTaskTypeImpl.PARAM2);
         assertEquals(1, t.getParameters().size());
-        assertEquals("${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
+        assertEquals(
+                "${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
         taskUtil.fixTask(t);
         assertEquals(2, t.getParameters().size());
-        assertEquals("${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
-        assertEquals("${param2}", t.getParameters().get(DummyTaskTypeImpl.PARAM2).getValue());
+        assertEquals(
+                "${param1}", t.getParameters().get(DummyTaskTypeImpl.PARAM1).getValue());
+        assertEquals(
+                "${param2}", t.getParameters().get(DummyTaskTypeImpl.PARAM2).getValue());
     }
 
     @Test
@@ -280,9 +285,8 @@ public class TaskManagerTaskUtilTest extends AbstractTaskManagerTest {
 
     @Test
     public void testGetDependantRawValues() {
-        List<String> rawValues =
-                taskUtil.getDependentRawValues(
-                        DummyAction.NAME, config.getAttributes().get(ATT_DUMMY), config);
+        List<String> rawValues = taskUtil.getDependentRawValues(
+                DummyAction.NAME, config.getAttributes().get(ATT_DUMMY), config);
         assertEquals(1, rawValues.size());
         assertEquals("false", rawValues.get(0));
     }

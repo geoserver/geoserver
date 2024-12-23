@@ -53,8 +53,7 @@ public class Database extends ImportData {
     @Override
     public void prepare(ProgressMonitor m) throws IOException {
         tables = new ArrayList<>();
-        DataStoreFactorySpi factory =
-                (DataStoreFactorySpi) DataStoreUtils.aquireFactory(parameters);
+        DataStoreFactorySpi factory = (DataStoreFactorySpi) DataStoreUtils.aquireFactory(parameters);
         if (factory == null) {
             throw new IOException("Unable to find data store for specified parameters");
         }

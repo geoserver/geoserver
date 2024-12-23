@@ -25,18 +25,17 @@ public class AdminRequestThreadLocalTransferTest extends AbstractThreadLocalTran
         final Object myState = new Object();
         AdminRequest.start(myState);
         // test it's transferred properly using the base class machinery
-        testThreadLocalTransfer(
-                new ThreadLocalTransferCallable(new AdminRequestThreadLocalTransfer()) {
+        testThreadLocalTransfer(new ThreadLocalTransferCallable(new AdminRequestThreadLocalTransfer()) {
 
-                    @Override
-                    void assertThreadLocalCleaned() {
-                        assertNull(AdminRequest.get());
-                    }
+            @Override
+            void assertThreadLocalCleaned() {
+                assertNull(AdminRequest.get());
+            }
 
-                    @Override
-                    void assertThreadLocalApplied() {
-                        assertSame(myState, AdminRequest.get());
-                    }
-                });
+            @Override
+            void assertThreadLocalApplied() {
+                assertSame(myState, AdminRequest.get());
+            }
+        });
     }
 }

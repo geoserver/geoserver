@@ -46,8 +46,7 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
 
     @Override
     public GeoServerUser getUserInternal(String key) throws IOException {
-        SortedSet<GeoServerUser> set =
-                getUserGroupService().getUsersHavingPropertyValue(getUserPropertyName(), key);
+        SortedSet<GeoServerUser> set = getUserGroupService().getUsersHavingPropertyValue(getUserPropertyName(), key);
         if (set.isEmpty()) return null;
 
         if (set.size() > 1) {
@@ -57,20 +56,12 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
             }
             buff.setLength(buff.length() - 1);
             throw new IOException(
-                    "More than one user have auth key: "
-                            + key
-                            + ". Problematic users :"
-                            + buff.toString());
+                    "More than one user have auth key: " + key + ". Problematic users :" + buff.toString());
         }
 
         GeoServerUser user = set.first();
         if (!user.isEnabled()) {
-            LOGGER.info(
-                    "Found user "
-                            + user.getUsername()
-                            + " for key "
-                            + key
-                            + ", but this user is disabled");
+            LOGGER.info("Found user " + user.getUsername() + " for key " + key + ", but this user is disabled");
             return null;
         }
         return (GeoServerUser) getUserGroupService().loadUserByUsername(user.getUsername());
@@ -80,8 +71,7 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
     public synchronized int synchronize() throws IOException {
         checkProperties();
         GeoServerUserGroupService service = getUserGroupService();
-        if (!service.canCreateStore())
-            throw new IOException("Cannot synchronize a read only user group service");
+        if (!service.canCreateStore()) throw new IOException("Cannot synchronize a read only user group service");
 
         // Clear the local cache
         resetUserCache();

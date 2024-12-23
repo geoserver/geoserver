@@ -71,18 +71,11 @@ public abstract class LegendGraphicBuilder {
     public static final double TOLERANCE = 1e-6;
     /** used to create sample point shapes with LiteShape (not lines nor polygons) */
     protected static final GeometryFactory geomFac = new GeometryFactory();
-    /**
-     * Just a holder to avoid creating many line shapes from inside <code>getSampleShape()</code>
-     */
+    /** Just a holder to avoid creating many line shapes from inside <code>getSampleShape()</code> */
     private LiteShape2 sampleLine;
-    /**
-     * Just a holder to avoid creating many point shapes from inside <code>getSampleShape()</code>
-     */
+    /** Just a holder to avoid creating many point shapes from inside <code>getSampleShape()</code> */
     protected LiteShape2 samplePoint;
-    /**
-     * Default minimum size for symbols rendering. Can be overridden using LEGEND_OPTIONS
-     * (minSymbolSize).
-     */
+    /** Default minimum size for symbols rendering. Can be overridden using LEGEND_OPTIONS (minSymbolSize). */
     protected final double MINIMUM_SYMBOL_SIZE = 3.0;
 
     double dpiScaleFactor;
@@ -128,19 +121,15 @@ public abstract class LegendGraphicBuilder {
             }
         }
 
-        if (Boolean.TRUE.equals(
-                        request.getLegendOption(
-                                GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))
+        if (Boolean.TRUE.equals(request.getLegendOption(GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))
                 || Boolean.TRUE.equals(
-                        request.getLegendOption(
-                                GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
+                        request.getLegendOption(GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
             countProcessor = new FeatureCountProcessor(request);
         }
         layers = request.getLegends();
 
         // pre-process styles, statically removing rules that cannot match
-        if (Boolean.TRUE.equals(
-                request.getLegendOption(GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
+        if (Boolean.TRUE.equals(request.getLegendOption(GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
             for (LegendRequest legend : request.getLegends()) {
                 Style style = legend.getStyle();
                 DisabledRulesRemover remover = new DisabledRulesRemover();
@@ -153,20 +142,19 @@ public abstract class LegendGraphicBuilder {
     public Symbolizer rescaleSymbolizer(Symbolizer symbolizer, double size, double newSize) {
         // perform a unit-less rescale
         double scaleFactor = newSize / size;
-        RescaleStyleVisitor rescaleVisitor =
-                new RescaleStyleVisitor(scaleFactor) {
-                    @Override
-                    protected Expression rescale(Expression expr) {
-                        if (expr == null) {
-                            return null;
-                        } else if (expr instanceof Literal) {
-                            Double value = expr.evaluate(null, Double.class);
-                            return ff.literal(value * scaleFactor);
-                        } else {
-                            return ff.multiply(expr, ff.literal(scaleFactor));
-                        }
-                    }
-                };
+        RescaleStyleVisitor rescaleVisitor = new RescaleStyleVisitor(scaleFactor) {
+            @Override
+            protected Expression rescale(Expression expr) {
+                if (expr == null) {
+                    return null;
+                } else if (expr instanceof Literal) {
+                    Double value = expr.evaluate(null, Double.class);
+                    return ff.literal(value * scaleFactor);
+                } else {
+                    return ff.multiply(expr, ff.literal(scaleFactor));
+                }
+            }
+        };
         symbolizer.accept(rescaleVisitor);
         symbolizer = (Symbolizer) rescaleVisitor.getCopy();
         return symbolizer;
@@ -183,8 +171,7 @@ public abstract class LegendGraphicBuilder {
         // apply UOM rescaling if we have a scale
         if (request.getScale() > 0) {
             double pixelsPerMeters =
-                    RendererUtilities.calculatePixelsPerMeterRatio(
-                            request.getScale(), request.getLegendOptions());
+                    RendererUtilities.calculatePixelsPerMeterRatio(request.getScale(), request.getLegendOptions());
             UomRescaleStyleVisitor rescaleVisitor = new UomRescaleStyleVisitor(pixelsPerMeters);
             rescaleVisitor.visit(gt2Style);
             gt2Style = (Style) rescaleVisitor.getCopy();
@@ -192,13 +179,13 @@ public abstract class LegendGraphicBuilder {
         return gt2Style;
     }
     /**
-     * Calculates a global rescaling factor for all the symbols to be drawn in the given rules. This
-     * is to be sure all symbols are drawn inside the given w x h box.
+     * Calculates a global rescaling factor for all the symbols to be drawn in the given rules. This is to be sure all
+     * symbols are drawn inside the given w x h box.
      *
-     * @param featureType FeatureType to be used for size extraction in expressions (used to create
-     *     a sample if feature is null)
-     * @param feature Feature to be used for size extraction in expressions (if null a sample
-     *     Feature will be created from featureType)
+     * @param featureType FeatureType to be used for size extraction in expressions (used to create a sample if feature
+     *     is null)
+     * @param feature Feature to be used for size extraction in expressions (if null a sample Feature will be created
+     *     from featureType)
      * @param rules set of rules to scan for symbols
      */
     protected double[] calcSymbolSize(
@@ -237,8 +224,7 @@ public abstract class LegendGraphicBuilder {
      * @param symbolizer symbolizer
      * @param defaultSize size to use is none can be taken from the symbolizer
      */
-    protected double getSymbolizerSize(
-            MetaBufferEstimator estimator, Symbolizer symbolizer, double defaultSize) {
+    protected double getSymbolizerSize(MetaBufferEstimator estimator, Symbolizer symbolizer, double defaultSize) {
         estimator.reset();
         symbolizer.accept(estimator);
         int buffer = estimator.getBuffer();
@@ -250,17 +236,15 @@ public abstract class LegendGraphicBuilder {
     }
 
     /**
-     * Returns a sample feature for the given rule, with the following criteria: - if a sample is
-     * given in input is returned in output - if a sample is not given in input, scan the rule
-     * symbolizers to find the one with the max dimensionality, and return a sample for that
-     * dimensionality.
+     * Returns a sample feature for the given rule, with the following criteria: - if a sample is given in input is
+     * returned in output - if a sample is not given in input, scan the rule symbolizers to find the one with the max
+     * dimensionality, and return a sample for that dimensionality.
      *
      * @param featureType featureType used to create a sample, if none is given as input
      * @param sample feature sample to be returned as is in output, if defined
      * @param rule rule containing symbolizers to scan for max dimensionality
      */
-    protected Feature getSampleFeatureForRule(
-            FeatureType featureType, Feature sample, final Rule rule) {
+    protected Feature getSampleFeatureForRule(FeatureType featureType, Feature sample, final Rule rule) {
         // if we don't have a sample as input, we need to create a sampleFeature
         // looking at the requested symbolizers (we chose the one with the max
         // dimensionality and create a congruent sample)
@@ -281,33 +265,26 @@ public abstract class LegendGraphicBuilder {
     }
 
     /**
-     * Returns a <code>java.awt.Shape</code> appropiate to render a legend graphic given the
-     * symbolizer type and the legend dimensions.
+     * Returns a <code>java.awt.Shape</code> appropiate to render a legend graphic given the symbolizer type and the
+     * legend dimensions.
      *
      * @param symbolizer the Symbolizer for whose type a sample shape will be created
      * @param legendWidth the requested width, in output units, of the legend graphic
      * @param legendHeight the requested height, in output units, of the legend graphic
-     * @return an appropiate Line2D, Rectangle2D or LiteShape(Point) for the symbolizer, wether it
-     *     is a LineSymbolizer, a PolygonSymbolizer, or a Point ot Text Symbolizer
+     * @return an appropiate Line2D, Rectangle2D or LiteShape(Point) for the symbolizer, wether it is a LineSymbolizer,
+     *     a PolygonSymbolizer, or a Point ot Text Symbolizer
      * @throws IllegalArgumentException if an unknown symbolizer impl was passed in.
      */
     protected LiteShape2 getSampleShape(
-            Symbolizer symbolizer,
-            int legendWidth,
-            int legendHeight,
-            int areaWidth,
-            int areaHeight) {
+            Symbolizer symbolizer, int legendWidth, int legendHeight, int areaWidth, int areaHeight) {
         LiteShape2 sampleShape;
-        final float hpad =
-                (areaWidth * LegendUtils.hpaddingFactor) + (areaWidth - legendWidth) / 2f;
-        final float vpad =
-                (areaHeight * LegendUtils.vpaddingFactor) + (areaHeight - legendHeight) / 2f;
+        final float hpad = (areaWidth * LegendUtils.hpaddingFactor) + (areaWidth - legendWidth) / 2f;
+        final float vpad = (areaHeight * LegendUtils.vpaddingFactor) + (areaHeight - legendHeight) / 2f;
 
         if (symbolizer instanceof LineSymbolizer) {
             if (this.sampleLine == null) {
                 Coordinate[] coords = {
-                    new Coordinate(hpad, legendHeight - vpad - 1),
-                    new Coordinate(legendWidth - hpad - 1, vpad)
+                    new Coordinate(hpad, legendHeight - vpad - 1), new Coordinate(legendWidth - hpad - 1, vpad)
                 };
                 LineString geom = geomFac.createLineString(coords);
 
@@ -319,8 +296,7 @@ public abstract class LegendGraphicBuilder {
             }
 
             sampleShape = this.sampleLine;
-        } else if ((symbolizer instanceof PolygonSymbolizer)
-                || (symbolizer instanceof RasterSymbolizer)) {
+        } else if ((symbolizer instanceof PolygonSymbolizer) || (symbolizer instanceof RasterSymbolizer)) {
             final float w = areaWidth - (2 * hpad) - 1;
             final float h = areaHeight - (2 * vpad) - 1;
 
@@ -344,8 +320,7 @@ public abstract class LegendGraphicBuilder {
                 Coordinate coord = new Coordinate(legendWidth / 2d, legendHeight / 2d);
 
                 try {
-                    this.samplePoint =
-                            new LiteShape2(geomFac.createPoint(coord), null, null, false);
+                    this.samplePoint = new LiteShape2(geomFac.createPoint(coord), null, null, false);
                 } catch (Exception e) {
                     this.samplePoint = null;
                 }
@@ -370,15 +345,14 @@ public abstract class LegendGraphicBuilder {
     }
 
     /**
-     * Creates a sample Feature instance in the hope that it can be used in the rendering of the
-     * legend graphic, using the given dimensionality for the geometry attribute.
+     * Creates a sample Feature instance in the hope that it can be used in the rendering of the legend graphic, using
+     * the given dimensionality for the geometry attribute.
      *
      * @param schema the schema for which to create a sample Feature instance
-     * @param dimensionality the geometry dimensionality required (ovverides the one defined in the
-     *     schema) 1= points, 2= lines, 3= polygons
+     * @param dimensionality the geometry dimensionality required (ovverides the one defined in the schema) 1= points,
+     *     2= lines, 3= polygons
      */
-    private Feature createSampleFeature(FeatureType schema, int dimensionality)
-            throws ServiceException {
+    private Feature createSampleFeature(FeatureType schema, int dimensionality) throws ServiceException {
         if (schema instanceof SimpleFeatureType) {
             schema = cloneWithDimensionality(schema, dimensionality);
         }
@@ -404,25 +378,23 @@ public abstract class LegendGraphicBuilder {
 
                 Class<?> geometryClass = getGeometryForDimensionality(dimensionality);
 
-                GeometryType gt =
-                        new GeometryTypeImpl(
-                                geomType.getName(),
-                                geometryClass,
-                                geomType.getCoordinateReferenceSystem(),
-                                geomType.isIdentified(),
-                                geomType.isAbstract(),
-                                geomType.getRestrictions(),
-                                geomType.getSuper(),
-                                geomType.getDescription());
+                GeometryType gt = new GeometryTypeImpl(
+                        geomType.getName(),
+                        geometryClass,
+                        geomType.getCoordinateReferenceSystem(),
+                        geomType.isIdentified(),
+                        geomType.isAbstract(),
+                        geomType.getRestrictions(),
+                        geomType.getSuper(),
+                        geomType.getDescription());
 
-                builder.add(
-                        new GeometryDescriptorImpl(
-                                gt,
-                                geomDescriptor.getName(),
-                                geomDescriptor.getMinOccurs(),
-                                geomDescriptor.getMaxOccurs(),
-                                geomDescriptor.isNillable(),
-                                geomDescriptor.getDefaultValue()));
+                builder.add(new GeometryDescriptorImpl(
+                        gt,
+                        geomDescriptor.getName(),
+                        geomDescriptor.getMinOccurs(),
+                        geomDescriptor.getMaxOccurs(),
+                        geomDescriptor.isNillable(),
+                        geomDescriptor.getDefaultValue()));
             } else {
                 builder.add(desc);
             }
@@ -443,8 +415,7 @@ public abstract class LegendGraphicBuilder {
     }
 
     /**
-     * Creates a sample Feature instance in the hope that it can be used in the rendering of the
-     * legend graphic.
+     * Creates a sample Feature instance in the hope that it can be used in the rendering of the legend graphic.
      *
      * @param schema the schema for which to create a sample Feature instance
      */
@@ -467,9 +438,7 @@ public abstract class LegendGraphicBuilder {
         return sampleFeature;
     }
 
-    /**
-     * Checks if the given schema contains a GeometryDescriptor that has a generic Geometry type.
-     */
+    /** Checks if the given schema contains a GeometryDescriptor that has a generic Geometry type. */
     private boolean hasMixedGeometry(SimpleFeatureType schema) {
         for (AttributeDescriptor attDesc : schema.getAttributeDescriptors()) {
             if (isMixedGeometry(attDesc)) {
@@ -481,8 +450,7 @@ public abstract class LegendGraphicBuilder {
 
     /** Checks if the given AttributeDescriptor describes a generic Geometry. */
     private boolean isMixedGeometry(AttributeDescriptor attDesc) {
-        if (attDesc instanceof GeometryDescriptor
-                && attDesc.getType().getBinding() == Geometry.class) {
+        if (attDesc instanceof GeometryDescriptor && attDesc.getType().getBinding() == Geometry.class) {
             return true;
         }
         return false;
@@ -525,16 +493,13 @@ public abstract class LegendGraphicBuilder {
                             && functionName.getReturn().getName() != null
                             && functionName.getReturn() instanceof Parameter<?>) {
                         outputs = new HashMap<>();
-                        outputs.put(
-                                functionName.getReturn().getName(),
-                                (Parameter<?>) functionName.getReturn());
+                        outputs.put(functionName.getReturn().getName(), (Parameter<?>) functionName.getReturn());
                     }
                     if (outputs.isEmpty()) {
                         continue;
                     }
                 }
-                Parameter<?> output =
-                        outputs.values().iterator().next(); // we assume there is only one output
+                Parameter<?> output = outputs.values().iterator().next(); // we assume there is only one output
                 if (isVectorOrRaster(output)) break;
             }
         }
@@ -552,15 +517,14 @@ public abstract class LegendGraphicBuilder {
     }
 
     /**
-     * Checks if any <VendorOption name="renderingLegend">false</VendorOption> is present in the
-     * style removing style's elements not meant to be applied to the legend.
+     * Checks if any <VendorOption name="renderingLegend">false</VendorOption> is present in the style removing style's
+     * elements not meant to be applied to the legend.
      *
      * @param style the style being used to build the legend
      * @return the style without the element not meant to be applied to obtain the legend output
      */
     protected Style applyRenderingSelection(Style style) {
-        RenderingSelectorStyleVisitor renderingSelectorStyleVisitor =
-                new LegendRenderingSelectorStyleVisitor();
+        RenderingSelectorStyleVisitor renderingSelectorStyleVisitor = new LegendRenderingSelectorStyleVisitor();
         style.accept(renderingSelectorStyleVisitor);
         return (Style) renderingSelectorStyleVisitor.getCopy();
     }

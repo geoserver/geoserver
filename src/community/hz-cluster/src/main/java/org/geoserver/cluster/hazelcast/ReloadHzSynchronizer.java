@@ -38,16 +38,13 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
     public ReloadHzSynchronizer(HzCluster cluster, GeoServer gs) {
         super(cluster, gs);
 
-        ThreadFactory threadFactory =
-                new ThreadFactoryBuilder()
-                        .setDaemon(true)
-                        .setNameFormat("Hz-GeoServer-Reload-%d")
-                        .build();
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                .setDaemon(true)
+                .setNameFormat("Hz-GeoServer-Reload-%d")
+                .build();
         // a thread pool executor operating out of a blocking queue with maximum of 1 element, which
         // discards execute requests if the queue is full
-        reloadService =
-                new ThreadPoolExecutor(
-                        1, 1, 0L, TimeUnit.MILLISECONDS, getWorkQueue(), threadFactory);
+        reloadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, getWorkQueue(), threadFactory);
     }
 
     BlockingQueue<Runnable> getWorkQueue() {
@@ -59,22 +56,20 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
         // submit task and return immediately. The task will be ignored if another one is already
         // scheduled
         try {
-            return reloadService.submit(
-                    () -> {
-                        // lock during event processing
-                        eventLock.set(true);
-                        try {
-                            gs.reload();
-                        } catch (Exception e) {
-                            LOGGER.log(Level.WARNING, "Reload failed", e);
-                        } finally {
-                            eventLock.set(false);
-                        }
-                    });
+            return reloadService.submit(() -> {
+                // lock during event processing
+                eventLock.set(true);
+                try {
+                    gs.reload();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Reload failed", e);
+                } finally {
+                    eventLock.set(false);
+                }
+            });
         } catch (RejectedExecutionException e) {
             if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.finest(
-                        format("%s - Reload in progress. Ignoring event %s", nodeId(), event));
+                LOGGER.finest(format("%s - Reload in progress. Ignoring event %s", nodeId(), event));
             }
             return null;
         }

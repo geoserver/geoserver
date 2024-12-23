@@ -17,8 +17,8 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
 
 /**
- * A class representing the DGGS server "collections" in a way that Jackson can easily translate to
- * JSON/YAML (and can be used as a Freemarker template model)
+ * A class representing the DGGS server "collections" in a way that Jackson can easily translate to JSON/YAML (and can
+ * be used as a Freemarker template model)
  */
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
@@ -55,8 +55,7 @@ public class CollectionsDocument extends AbstractDocument {
                 }
 
                 FeatureTypeInfo featureType = null;
-                while (featureTypes.hasNext()
-                        && !DGGSService.isDGGSType((featureType = featureTypes.next())))
+                while (featureTypes.hasNext() && !DGGSService.isDGGSType((featureType = featureTypes.next())))
                     ; // nothing to do here, the iteration does it all
 
                 if (featureType == null || !DGGSService.isDGGSType(featureType)) {
@@ -64,15 +63,13 @@ public class CollectionsDocument extends AbstractDocument {
                     return false;
                 } else {
                     try {
-                        CollectionDocument collection =
-                                new CollectionDocument(geoServer, featureType);
+                        CollectionDocument collection = new CollectionDocument(geoServer, featureType);
 
                         next = collection;
                         return true;
                     } catch (Exception e) {
                         featureTypes.close();
-                        throw new ServiceException(
-                                "Failed to iterate over the feature types in the catalog", e);
+                        throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
                     }
                 }
             }

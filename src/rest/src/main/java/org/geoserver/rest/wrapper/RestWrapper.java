@@ -21,8 +21,7 @@ public interface RestWrapper<T> {
     /**
      * Get the wrapped object
      *
-     * <p>May return either an instace of {@link #getObjectClass()} or a collection of instances of
-     * that class.
+     * <p>May return either an instace of {@link #getObjectClass()} or a collection of instances of that class.
      *
      * @return wrapped object
      */
@@ -33,8 +32,7 @@ public interface RestWrapper<T> {
      *
      * @param persister The XStream persister
      */
-    void configurePersister(
-            XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter);
+    void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter);
 
     /**
      * Apply configuration to the template based on the data format

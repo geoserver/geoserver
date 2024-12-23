@@ -5,9 +5,8 @@
 package org.geoserver.featurestemplating.builders.impl;
 
 /**
- * The context against which evaluate during the output encoding process It holds a reference to the
- * current Feature being evaluated as well as a reference to the parent context if source evaluation
- * happens during the encoding
+ * The context against which evaluate during the output encoding process It holds a reference to the current Feature
+ * being evaluated as well as a reference to the parent context if source evaluation happens during the encoding
  */
 public class TemplateBuilderContext {
 

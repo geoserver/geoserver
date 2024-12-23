@@ -16,17 +16,12 @@ public class BasicOWSController extends SingleQueueFlowController {
         this(service, null, null, controllerPriority, blocker);
     }
 
-    public BasicOWSController(
-            String service, String method, int controllerPriority, ThreadBlocker blocker) {
+    public BasicOWSController(String service, String method, int controllerPriority, ThreadBlocker blocker) {
         this(service, method, null, controllerPriority, blocker);
     }
 
     public BasicOWSController(
-            String service,
-            String method,
-            String outputFormat,
-            int controllerPriority,
-            ThreadBlocker blocker) {
+            String service, String method, String outputFormat, int controllerPriority, ThreadBlocker blocker) {
         super(new OWSRequestMatcher(service, method, outputFormat), controllerPriority, blocker);
     }
 

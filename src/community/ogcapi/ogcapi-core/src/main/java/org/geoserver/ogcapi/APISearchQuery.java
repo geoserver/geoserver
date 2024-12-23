@@ -154,14 +154,13 @@ public class APISearchQuery {
 
     protected List<String> arrayNodeToStringList(ArrayNode node) {
         final List<String> values = new ArrayList<>(node.size());
-        node.forEach(
-                childNode -> {
-                    if (childNode.isTextual()) {
-                        values.add(childNode.textValue());
-                    } else {
-                        values.add(childNode.toString());
-                    }
-                });
+        node.forEach(childNode -> {
+            if (childNode.isTextual()) {
+                values.add(childNode.textValue());
+            } else {
+                values.add(childNode.toString());
+            }
+        });
         return values;
     }
 

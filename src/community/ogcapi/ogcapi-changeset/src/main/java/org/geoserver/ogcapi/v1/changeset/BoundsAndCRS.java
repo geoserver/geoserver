@@ -26,9 +26,7 @@ public class BoundsAndCRS {
     }
 
     public double[] getBbox() {
-        return new double[] {
-            envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY()
-        };
+        return new double[] {envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY()};
     }
 
     public String getCrs() {

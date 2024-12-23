@@ -7,8 +7,7 @@ package org.geoserver.wps.remote;
 import java.util.Map;
 
 /**
- * Interface allowing a {@link RemoteProcess} instance to listen to the {@link RemoteProcessClient}
- * messages.
+ * Interface allowing a {@link RemoteProcess} instance to listen to the {@link RemoteProcessClient} messages.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -33,8 +32,6 @@ public interface RemoteProcessClientListener {
     /** Raise an Exception to the {@link RemoteProcess} associated to the remote service with the */
     public void exceptionOccurred(final String pId, Exception cause, Map<String, Object> metadata);
 
-    /**
-     * Expose a log message to the {@link RemoteProcess} progress listener associated to the remote
-     */
+    /** Expose a log message to the {@link RemoteProcess} progress listener associated to the remote */
     public void setTask(final String pId, final String logMessage);
 }

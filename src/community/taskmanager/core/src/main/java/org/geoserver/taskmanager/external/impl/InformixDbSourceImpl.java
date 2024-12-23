@@ -14,8 +14,8 @@ import org.geoserver.taskmanager.external.ExternalGS;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
- * The informix datasource that only takes the connection url and driver class as input in addition
- * the user name and password.
+ * The informix datasource that only takes the connection url and driver class as input in addition the user name and
+ * password.
  *
  * @author Timothy De Bock
  */

@@ -89,35 +89,28 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         tester.startPage(new BatchesPage());
         tester.assertRenderedPage(BatchesPage.class);
 
-        tester.clickLink(
-                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:6:component:link");
+        tester.clickLink("batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:6:component:link");
 
         Thread.sleep(500);
 
         tester.clickLink("batchesPanel:refresh");
 
         tester.assertModelValue(
-                "batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component",
-                Status.RUNNING);
+                "batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component", Status.RUNNING);
 
-        tester.clickLink(
-                "batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component:link");
+        tester.clickLink("batchesPanel:form:batchesPanel:listContainer:items:2:itemProperties:7:component:link");
 
         tester.assertRenderedPage(BatchRunsPage.class);
 
-        tester.assertModelValue(
-                "form:runsPanel:listContainer:items:1:itemProperties:2:component", Status.RUNNING);
+        tester.assertModelValue("form:runsPanel:listContainer:items:1:itemProperties:2:component", Status.RUNNING);
 
         tester.clickLink("form:runsPanel:listContainer:items:1:itemProperties:0:component:link");
 
         tester.assertRenderedPage(BatchRunPage.class);
 
-        tester.assertModelValue(
-                "runPanel:listContainer:items:1:itemProperties:3:component",
-                Status.READY_TO_COMMIT);
+        tester.assertModelValue("runPanel:listContainer:items:1:itemProperties:3:component", Status.READY_TO_COMMIT);
 
-        tester.assertModelValue(
-                "runPanel:listContainer:items:2:itemProperties:3:component", Status.RUNNING);
+        tester.assertModelValue("runPanel:listContainer:items:2:itemProperties:3:component", Status.RUNNING);
 
         tester.clickLink("close");
 
@@ -132,19 +125,15 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
 
         tester.clickLink("refresh");
 
-        tester.assertModelValue(
-                "form:runsPanel:listContainer:items:2:itemProperties:2:component",
-                Status.ROLLED_BACK);
+        tester.assertModelValue("form:runsPanel:listContainer:items:2:itemProperties:2:component", Status.ROLLED_BACK);
 
         tester.clickLink("form:runsPanel:listContainer:items:2:itemProperties:0:component:link");
 
         tester.assertRenderedPage(BatchRunPage.class);
 
-        tester.assertModelValue(
-                "runPanel:listContainer:items:1:itemProperties:3:component", Status.ROLLED_BACK);
+        tester.assertModelValue("runPanel:listContainer:items:1:itemProperties:3:component", Status.ROLLED_BACK);
 
-        tester.assertModelValue(
-                "runPanel:listContainer:items:2:itemProperties:3:component", Status.ROLLED_BACK);
+        tester.assertModelValue("runPanel:listContainer:items:2:itemProperties:3:component", Status.ROLLED_BACK);
 
         tester.clickLink("close");
 
@@ -157,8 +146,7 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         tester.clickLink("batchesPanel:refresh");
 
         tester.assertModelValue(
-                "batchesPanel:form:batchesPanel:listContainer:items:4:itemProperties:7:component",
-                Status.ROLLED_BACK);
+                "batchesPanel:form:batchesPanel:listContainer:items:4:itemProperties:7:component", Status.ROLLED_BACK);
     }
 
     @Test
@@ -181,15 +169,12 @@ public class BatchRunTest extends AbstractWicketTaskManagerTest {
         tester.assertRenderedPage(BatchesPage.class);
 
         tester.assertModelValue(
-                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:7:component",
-                Status.RUNNING);
+                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:7:component", Status.RUNNING);
 
-        tester.clickLink(
-                "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:7:component:link");
+        tester.clickLink("batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:7:component:link");
 
         tester.assertRenderedPage(BatchRunsPage.class);
 
-        tester.assertModelValue(
-                "form:runsPanel:listContainer:items:1:itemProperties:2:component", Status.RUNNING);
+        tester.assertModelValue("form:runsPanel:listContainer:items:1:itemProperties:2:component", Status.RUNNING);
     }
 }

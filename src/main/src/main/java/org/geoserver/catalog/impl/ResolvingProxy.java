@@ -33,8 +33,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 public class ResolvingProxy extends ProxyBase {
 
     /** Avoids the cost of looking up over and over the same proxy class */
-    static final Map<Class<?>, Constructor> PROXY_CLASS_CONSTRUCTOR_CACHE =
-            new ConcurrentHashMap<>();
+    static final Map<Class<?>, Constructor> PROXY_CLASS_CONSTRUCTOR_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Wraps an object in the proxy.
@@ -100,12 +99,7 @@ public class ResolvingProxy extends ProxyBase {
                     if (resolved == null) {
                         if (ref.indexOf(":") > 0) {
                             String[] qualifiedName = ref.split(":");
-                            resolved =
-                                    (T)
-                                            catalog.getStoreByName(
-                                                    qualifiedName[0],
-                                                    qualifiedName[1],
-                                                    StoreInfo.class);
+                            resolved = (T) catalog.getStoreByName(qualifiedName[0], qualifiedName[1], StoreInfo.class);
                         } else {
                             resolved = (T) catalog.getStoreByName(ref, StoreInfo.class);
                         }

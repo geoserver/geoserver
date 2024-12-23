@@ -53,10 +53,7 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
         tester.assertNoErrorMessage();
 
         assertTrue(
-                "Expected "
-                        + getRemoveableObjectRegExp()
-                        + " to match "
-                        + labelTextForRemovedObjects(),
+                "Expected " + getRemoveableObjectRegExp() + " to match " + labelTextForRemovedObjects(),
                 labelTextForRemovedObjects().matches(getRemoveableObjectRegExp()));
 
         tester.assertVisible("form:panel:removedObjects");
@@ -95,18 +92,14 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
 
     protected String labelTextForRemovedObjects() {
         ListView list =
-                (ListView)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:removedObjects:rulesRemoved:rules");
+                (ListView) tester.getComponentFromLastRenderedPage("form:panel:removedObjects:rulesRemoved:rules");
 
         return list.getDefaultModelObjectAsString();
     }
 
     protected String labelTextForProblematicObjects() {
-        ListView list =
-                (ListView)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:problematicObjects:rulesNotRemoved:problems");
+        ListView list = (ListView)
+                tester.getComponentFromLastRenderedPage("form:panel:problematicObjects:rulesNotRemoved:problems");
         return list.getDefaultModelObjectAsString();
     }
 }

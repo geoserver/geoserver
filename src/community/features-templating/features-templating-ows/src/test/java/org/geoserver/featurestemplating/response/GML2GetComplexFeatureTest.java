@@ -30,18 +30,15 @@ public class GML2GetComplexFeatureTest extends TemplateComplexTestSupport {
 
     @Test
     public void getMappedFeature() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.0.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=text%2Fxml%3B%20subtype%3Dgml%2F2.1.2"
-                                + MF_GML2_PARAM);
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&typename=gsml:MappedFeature"
+                + "&outputFormat=text%2Fxml%3B%20subtype%3Dgml%2F2.1.2"
+                + MF_GML2_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
         assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Polygon", doc);
         // filtered static valued attribute
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
-        assertXpathCount(
-                1, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/@xlink:title", doc);
+        assertXpathCount(1, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/@xlink:title", doc);
         // lithology array has been flattened in the template to directly have the gsml:name value
         assertXpathEvaluatesTo(
                 "name_cc_5",
@@ -51,11 +48,9 @@ public class GML2GetComplexFeatureTest extends TemplateComplexTestSupport {
 
     @Test
     public void testBackwardMappingOnFilterStaticAttribute() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.0.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=text%2Fxml%3B%20subtype%3Dgml%2F2.1.2&cql_filter=wfs:FeatureCollection.gml:featureMember.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.xlink:title='a static xlink:title filtered'"
-                                + MF_GML2_PARAM);
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.0.0&typename=gsml:MappedFeature"
+                + "&outputFormat=text%2Fxml%3B%20subtype%3Dgml%2F2.1.2&cql_filter=wfs:FeatureCollection.gml:featureMember.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.xlink:title='a static xlink:title filtered'"
+                + MF_GML2_PARAM);
         assertXpathCount(1, "//gsml:MappedFeature", doc);
     }
 }

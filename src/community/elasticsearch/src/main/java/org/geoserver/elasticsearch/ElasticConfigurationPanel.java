@@ -38,10 +38,9 @@ import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 
 /**
  * Resource configuration panel to show a link to open Elasticsearch attribute modal dialog <br>
- * If the Elasticsearch attribute are not configured for current layer, the modal dialog will be
- * open at first resource configuration window opening <br>
- * After modal dialog is closed the resource page is reloaded and feature configuration table
- * updated
+ * If the Elasticsearch attribute are not configured for current layer, the modal dialog will be open at first resource
+ * configuration window opening <br>
+ * After modal dialog is closed the resource page is reloaded and feature configuration table updated
  */
 @SuppressWarnings("WeakerAccess")
 public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
@@ -55,8 +54,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     protected ModalWindow modal;
 
     /**
-     * Adds Elasticsearch configuration panel link, configure modal dialog and implements modal
-     * callback.
+     * Adds Elasticsearch configuration panel link, configure modal dialog and implements modal callback.
      *
      * @see ElasticConfigurationPage#done
      */
@@ -75,13 +73,12 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         modal.setContent(getElasticConfigurationPage(modal.getContentId(), model, modal, false));
         add(modal);
 
-        AjaxLink<?> findLink =
-                new AjaxLink("edit") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        modal.show(target);
-                    }
-                };
+        AjaxLink<?> findLink = new AjaxLink("edit") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                modal.show(target);
+            }
+        };
         final Fragment attributePanel = new Fragment("esPanel", "esPanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);
@@ -89,48 +86,38 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     }
 
     protected ElasticConfigurationPage getElasticConfigurationPage(
-            final String panelId,
-            final IModel<?> model,
-            final ModalWindow modal,
-            boolean isRefresh) {
-        modal.setWindowClosedCallback(
-                new ModalWindow.WindowClosedCallback() {
-                    private static final long serialVersionUID = 1L;
+            final String panelId, final IModel<?> model, final ModalWindow modal, boolean isRefresh) {
+        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        Optional<ListView> listView = getEditTabPanel(modal);
-                        if (listView.isPresent()) {
-                            Optional<WebMarkupContainer> attributePanel2 =
-                                    getAttributePanel(listView.get());
-                            if (attributePanel2.isPresent()) {
-                                WebMarkupContainer attributePanel = attributePanel2.get();
-                                GeoServerApplication app = (GeoServerApplication) getApplication();
-                                FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
-                                app.getCatalog().getResourcePool().clear(ft);
-                                app.getCatalog().getResourcePool().clear(ft.getStore());
-                                attributePanel.modelChanged();
-                                target.add(attributePanel);
-                            } else {
-                                LOGGER.log(
-                                        Level.INFO,
-                                        "Cannot refresh the attribute panel, cannot find the attributePanel component");
-                            }
-                        } else {
-                            LOGGER.log(
-                                    Level.INFO,
-                                    "DataLayerEditTabPanel is not present, cannot refresh the attribute panel");
-                        }
-
-                        modal.close(target);
+            @Override
+            public void onClose(AjaxRequestTarget target) {
+                Optional<ListView> listView = getEditTabPanel(modal);
+                if (listView.isPresent()) {
+                    Optional<WebMarkupContainer> attributePanel2 = getAttributePanel(listView.get());
+                    if (attributePanel2.isPresent()) {
+                        WebMarkupContainer attributePanel = attributePanel2.get();
+                        GeoServerApplication app = (GeoServerApplication) getApplication();
+                        FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
+                        app.getCatalog().getResourcePool().clear(ft);
+                        app.getCatalog().getResourcePool().clear(ft.getStore());
+                        attributePanel.modelChanged();
+                        target.add(attributePanel);
+                    } else {
+                        LOGGER.log(
+                                Level.INFO,
+                                "Cannot refresh the attribute panel, cannot find the attributePanel component");
                     }
-                });
+                } else {
+                    LOGGER.log(Level.INFO, "DataLayerEditTabPanel is not present, cannot refresh the attribute panel");
+                }
+
+                modal.close(target);
+            }
+        });
         return new ElasticConfigurationPage(panelId, model, isRefresh) {
             @Override
-            void done(
-                    AjaxRequestTarget target,
-                    LayerInfo layerInfo,
-                    ElasticLayerConfiguration layerConfig) {
+            void done(AjaxRequestTarget target, LayerInfo layerInfo, ElasticLayerConfiguration layerConfig) {
                 _layerInfo = layerInfo;
                 _layerConfig = layerConfig;
                 modal.close(target);
@@ -138,9 +125,9 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
             @Override
             void refresh(AjaxRequestTarget target) {
-                Component elasticConfigurationPage =
-                        getElasticConfigurationPage(panelId, this.getDefaultModel(), modal, true)
-                                .setOutputMarkupId(true);
+                Component elasticConfigurationPage = getElasticConfigurationPage(
+                                panelId, this.getDefaultModel(), modal, true)
+                        .setOutputMarkupId(true);
                 elasticConfigurationPage.setEnabled(true);
                 modal.addOrReplace(elasticConfigurationPage);
                 target.add(elasticConfigurationPage);
@@ -197,9 +184,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         Name qualifiedName = ft.getQualifiedName();
         LayerInfo layerInfo = catalog.getLayerByName(qualifiedName);
 
-        boolean isNew =
-                ft.getId() == null
-                        || app.getCatalog().getResource(ft.getId(), ResourceInfo.class) == null;
+        boolean isNew = ft.getId() == null || app.getCatalog().getResource(ft.getId(), ResourceInfo.class) == null;
 
         FeatureTypeInfo typeInfo;
         if (layerInfo == null || isNew) {
@@ -264,9 +249,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
                     _layerConfig.setLayerName(fti.getName());
                     _layerInfo.setName(fti.getName());
                 } else {
-                    _layerConfig =
-                            (ElasticLayerConfiguration)
-                                    fti.getMetadata().get(ElasticLayerConfiguration.KEY);
+                    _layerConfig = (ElasticLayerConfiguration) fti.getMetadata().get(ElasticLayerConfiguration.KEY);
                     _layerConfig.setLayerName(fti.getName());
                 }
                 saveLayer(fti);

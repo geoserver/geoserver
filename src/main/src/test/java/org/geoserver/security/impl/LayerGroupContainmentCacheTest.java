@@ -137,8 +137,8 @@ public class LayerGroupContainmentCacheTest {
         }
     }
 
-    private LayerGroupInfo addLayerGroup(
-            String name, Mode mode, WorkspaceInfo ws, PublishedInfo... layers) throws Exception {
+    private LayerGroupInfo addLayerGroup(String name, Mode mode, WorkspaceInfo ws, PublishedInfo... layers)
+            throws Exception {
         CatalogBuilder cb = new CatalogBuilder(catalog);
 
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
@@ -189,8 +189,7 @@ public class LayerGroupContainmentCacheTest {
 
     @Test
     public void buildLayerGroupCaches() {
-        LayerGroupContainmentCache layerGroupContainmentCache =
-                new LayerGroupContainmentCache(catalog);
+        LayerGroupContainmentCache layerGroupContainmentCache = new LayerGroupContainmentCache(catalog);
         ContextRefreshedEvent contextRefreshedEvent = mock(ContextRefreshedEvent.class);
 
         layerGroupContainmentCache.onApplicationEvent(contextRefreshedEvent);
@@ -215,8 +214,7 @@ public class LayerGroupContainmentCacheTest {
         // now check the groups containing the layers (nature being SINGLE, not a container)
         assertThat(containerNamesForResource(MockData.LAKES), equalTo(set(CONTAINER_GROUP)));
         assertThat(containerNamesForResource(MockData.FORESTS), equalTo(set(CONTAINER_GROUP)));
-        assertThat(
-                containerNamesForResource(MockData.ROAD_SEGMENTS), equalTo(set(CONTAINER_GROUP)));
+        assertThat(containerNamesForResource(MockData.ROAD_SEGMENTS), equalTo(set(CONTAINER_GROUP)));
     }
 
     @Test
@@ -248,8 +246,7 @@ public class LayerGroupContainmentCacheTest {
 
         assertThat(containerNamesForResource(MockData.LAKES), empty());
         assertThat(containerNamesForResource(MockData.FORESTS), equalTo(set(CONTAINER_GROUP)));
-        assertThat(
-                containerNamesForResource(MockData.ROAD_SEGMENTS), equalTo(set(CONTAINER_GROUP)));
+        assertThat(containerNamesForResource(MockData.ROAD_SEGMENTS), equalTo(set(CONTAINER_GROUP)));
     }
 
     @Test
@@ -273,8 +270,7 @@ public class LayerGroupContainmentCacheTest {
         assertThat(containerNamesForGroup(nature), empty());
         assertThat(containerNamesForResource(MockData.LAKES), empty());
         assertThat(containerNamesForResource(MockData.FORESTS), empty());
-        assertThat(
-                containerNamesForResource(MockData.ROAD_SEGMENTS), equalTo(set(CONTAINER_GROUP)));
+        assertThat(containerNamesForResource(MockData.ROAD_SEGMENTS), equalTo(set(CONTAINER_GROUP)));
     }
 
     @Test
@@ -296,9 +292,7 @@ public class LayerGroupContainmentCacheTest {
 
         // add and check containment
         LayerGroupInfo named = addLayerGroup(NAMED_GROUP, Mode.NAMED, null, lakes, neatline);
-        assertThat(
-                containerNamesForResource(MockData.LAKES),
-                equalTo(set(CONTAINER_GROUP, NAMED_GROUP)));
+        assertThat(containerNamesForResource(MockData.LAKES), equalTo(set(CONTAINER_GROUP, NAMED_GROUP)));
         assertThat(containerNamesForResource(MockData.MAP_NEATLINE), equalTo(set(NAMED_GROUP)));
         assertThat(containerNamesForGroup(named), empty());
 
@@ -320,12 +314,8 @@ public class LayerGroupContainmentCacheTest {
         container.getLayers().add(nestedNamed);
         container.getStyles().add(null);
         catalog.save(container);
-        assertThat(
-                containerNamesForResource(MockData.LAKES),
-                equalTo(set(CONTAINER_GROUP, NESTED_NAMED)));
-        assertThat(
-                containerNamesForResource(MockData.MAP_NEATLINE),
-                equalTo(set(CONTAINER_GROUP, NESTED_NAMED)));
+        assertThat(containerNamesForResource(MockData.LAKES), equalTo(set(CONTAINER_GROUP, NESTED_NAMED)));
+        assertThat(containerNamesForResource(MockData.MAP_NEATLINE), equalTo(set(CONTAINER_GROUP, NESTED_NAMED)));
         assertThat(containerNamesForGroup(nestedNamed), equalTo(set(CONTAINER_GROUP)));
 
         // delete and check containment

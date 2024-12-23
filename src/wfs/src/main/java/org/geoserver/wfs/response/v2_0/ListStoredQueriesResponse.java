@@ -31,8 +31,7 @@ public class ListStoredQueriesResponse extends WFSResponse {
             if (sq.getReturnFeatureType() != null) {
                 for (QName qName : sq.getReturnFeatureType()) {
                     if (qName.getNamespaceURI() != null && qName.getPrefix() != null) {
-                        encoder.getNamespaces()
-                                .declarePrefix(qName.getPrefix(), qName.getNamespaceURI());
+                        encoder.getNamespaces().declarePrefix(qName.getPrefix(), qName.getNamespaceURI());
                     }
                 }
             }

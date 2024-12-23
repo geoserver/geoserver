@@ -49,8 +49,7 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         GeoServerUserGroupStore userGroupStore = userGroupService.createStore();
         GeoServerRoleStore rolesStore = roleService.createStore();
 
-        GeoServerUser roleUserTest =
-                userGroupService.createUserObject("role_user_test", "role_user_test", true);
+        GeoServerUser roleUserTest = userGroupService.createUserObject("role_user_test", "role_user_test", true);
         userGroupStore.addUser(roleUserTest);
 
         GeoServerRole roleTest = rolesStore.createRoleObject("ROLE_TEST");
@@ -109,18 +108,12 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
-                    e);
+            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}", e);
         }
     }
 
     protected void addTestUser(
-            String username,
-            List<String> roles,
-            GeoServerRoleService service,
-            GeoServerRoleStore store)
+            String username, List<String> roles, GeoServerRoleService service, GeoServerRoleStore store)
             throws Exception {
 
         if (roles != null && !roles.isEmpty()) {
@@ -177,15 +170,13 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         assertEquals("test", resolver.getDefaultSecurityService().getName());
         assertTrue(resolver.getDefaultSecurityService() instanceof GeoServerRoleService);
 
-        GeoServerRoleStore store =
-                ((GeoServerRoleService) resolver.getDefaultSecurityService()).createStore();
+        GeoServerRoleStore store = ((GeoServerRoleService) resolver.getDefaultSecurityService()).createStore();
         addTestUser("user1", Arrays.asList("adminRole", "groupAdminRole"), service, store);
         addTestUser("user2", Arrays.asList("adminRole"), service, store);
         addTestUser("user3", Arrays.asList("role1"), service, store);
 
         assertEquals(3, service.getRoleCount());
-        assertEquals(
-                3, ((GeoServerRoleService) resolver.getDefaultSecurityService()).getRoleCount());
+        assertEquals(3, ((GeoServerRoleService) resolver.getDefaultSecurityService()).getRoleCount());
         assertTrue(resolver.existsUser("user1"));
         assertTrue(resolver.existsUser("user2"));
         assertTrue(resolver.existsUser("user3"));

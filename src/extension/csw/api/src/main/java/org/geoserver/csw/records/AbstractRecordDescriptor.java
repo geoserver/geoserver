@@ -18,8 +18,8 @@ import org.geotools.referencing.CRS;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Describes a record, its schema, its possible representations, in a pluggable way The Abstract
- * class provides some default behaviour.
+ * Describes a record, its schema, its possible representations, in a pluggable way The Abstract class provides some
+ * default behaviour.
  *
  * @author Niels Charlier
  */
@@ -36,14 +36,12 @@ public abstract class AbstractRecordDescriptor implements RecordDescriptor {
         try {
             DEFAULT_CRS = CRS.decode(DEFAULT_CRS_NAME);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Failed to decode the default CRS, this should never happen!", e);
+            throw new RuntimeException("Failed to decode the default CRS, this should never happen!", e);
         }
     }
 
     /**
-     * The GeoTools feature type representing this kind of record The default method retrieves type
-     * from the descriptor
+     * The GeoTools feature type representing this kind of record The default method retrieves type from the descriptor
      *
      * @return the feature type
      */
@@ -78,8 +76,7 @@ public abstract class AbstractRecordDescriptor implements RecordDescriptor {
     }
 
     /**
-     * Helper method to build a property name from a simple name (not an x-path) with namespace
-     * support.
+     * Helper method to build a property name from a simple name (not an x-path) with namespace support.
      *
      * @param namespaces Namespace support
      * @param name the Name

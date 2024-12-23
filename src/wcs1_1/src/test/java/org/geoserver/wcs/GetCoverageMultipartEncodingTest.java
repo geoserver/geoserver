@@ -27,13 +27,12 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     @Test
     public void testKvpBasic() throws Exception {
-        String request =
-                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
-                        + "&identifier="
-                        + getLayerId(TASMANIA_BM)
-                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
-                        + "&format=geotiff";
+        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                + "&identifier="
+                + getLayerId(TASMANIA_BM)
+                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
+                + "&format=geotiff";
         MockHttpServletResponse response = getAsServletResponse(request);
         // System.out.println(response.getOutputStreamContent());
         // make sure we got a multipart
@@ -57,26 +56,22 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // read the xml document into a dom
         Document dom = dom(coveragesPart.getDataHandler().getInputStream());
         checkValidationErrors(dom, WCS11_SCHEMA);
-        assertXpathEvaluatesTo(
-                TASMANIA_BM.getLocalPart(), "wcs:Coverages/wcs:Coverage/ows:Title", dom);
+        assertXpathEvaluatesTo(TASMANIA_BM.getLocalPart(), "wcs:Coverages/wcs:Coverage/ows:Title", dom);
 
         // the second part is the actual coverage
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals(
-                GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
-                coveragePart.getContentType());
+        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE, coveragePart.getContentType());
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
     }
 
     @Test
     public void testTiffOutput() throws Exception {
-        String request =
-                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
-                        + "&identifier="
-                        + getLayerId(TASMANIA_BM)
-                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
-                        + "&format=image/tiff";
+        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                + "&identifier="
+                + getLayerId(TASMANIA_BM)
+                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
+                + "&format=image/tiff";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         // parse the multipart, check there are two parts
@@ -96,13 +91,12 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     @Test
     public void testPngOutput() throws Exception {
-        String request =
-                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
-                        + "&identifier="
-                        + getLayerId(TASMANIA_BM)
-                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
-                        + "&format=image/png";
+        String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                + "&identifier="
+                + getLayerId(TASMANIA_BM)
+                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326"
+                + "&format=image/png";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         // parse the multipart, check there are two parts
@@ -120,19 +114,17 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffNamesGalore() throws Exception {
-        String requestBase =
-                "wcs?service=WCS&version=1.1.1&request=GetCoverage"
-                        + "&identifier="
-                        + getLayerId(TASMANIA_BM)
-                        + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
-                        + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326";
+        String requestBase = "wcs?service=WCS&version=1.1.1&request=GetCoverage"
+                + "&identifier="
+                + getLayerId(TASMANIA_BM)
+                + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:4326"
+                + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326";
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/tiff"));
     }
 
-    private void ensureTiffFormat(MockHttpServletResponse response)
-            throws MessagingException, IOException {
+    private void ensureTiffFormat(MockHttpServletResponse response) throws MessagingException, IOException {
         // make sure we got a multipart
         assertTrue(
                 "Content type not mulipart but " + response.getContentType(),
@@ -141,8 +133,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // parse the multipart, check the second part is a geotiff
         Multipart multipart = getMultipart(response);
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals(
-                GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE,
-                coveragePart.getContentType());
+        assertEquals(GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE, coveragePart.getContentType());
     }
 }

@@ -26,16 +26,15 @@ public class GMLWriterTest {
         Geometry geom = new WKTReader().read(polygon);
         outputWriter.writeGeometry(geom);
         outputWriter.close();
-        String expected =
-                "<gml:Polygon>"
-                        + "<gml:outerBoundaryIs>"
-                        + "<gml:LinearRing>"
-                        + "<gml:coordinates>"
-                        + "-41.9 145.5 -42.1 145.5 -42.0 145.6 -41.9 145.5"
-                        + "</gml:coordinates>"
-                        + "</gml:LinearRing>"
-                        + "</gml:outerBoundaryIs>"
-                        + "</gml:Polygon>";
+        String expected = "<gml:Polygon>"
+                + "<gml:outerBoundaryIs>"
+                + "<gml:LinearRing>"
+                + "<gml:coordinates>"
+                + "-41.9 145.5 -42.1 145.5 -42.0 145.6 -41.9 145.5"
+                + "</gml:coordinates>"
+                + "</gml:LinearRing>"
+                + "</gml:outerBoundaryIs>"
+                + "</gml:Polygon>";
         String encodedGeom = new String(baos.toByteArray());
         assertEquals(expected, encodedGeom);
     }
@@ -48,16 +47,15 @@ public class GMLWriterTest {
         Geometry geom = new WKTReader().read(polygon);
         outputWriter.writeGeometry(geom);
         outputWriter.close();
-        String expected =
-                "<gml:Surface>"
-                        + "<gml:exterior>"
-                        + "<gml:LinearRing>"
-                        + "<gml:posList>"
-                        + "-41.9 145.5 -42.1 145.5 -42.0 145.6 -41.9 145.5"
-                        + "</gml:posList>"
-                        + "</gml:LinearRing>"
-                        + "</gml:exterior>"
-                        + "</gml:Surface>";
+        String expected = "<gml:Surface>"
+                + "<gml:exterior>"
+                + "<gml:LinearRing>"
+                + "<gml:posList>"
+                + "-41.9 145.5 -42.1 145.5 -42.0 145.6 -41.9 145.5"
+                + "</gml:posList>"
+                + "</gml:LinearRing>"
+                + "</gml:exterior>"
+                + "</gml:Surface>";
         String encodedGeom = new String(baos.toByteArray());
         assertEquals(expected, encodedGeom);
     }
@@ -70,16 +68,15 @@ public class GMLWriterTest {
         Geometry geom = new WKTReader().read(polygon);
         outputWriter.writeGeometry(geom);
         outputWriter.close();
-        String expected =
-                "<gml:Surface>"
-                        + "<gml:exterior>"
-                        + "<gml:LinearRing>"
-                        + "<gml:posList>"
-                        + "-41.9 145.5 -42.1 145.5 -42.0 145.6 -41.9 145.5"
-                        + "</gml:posList>"
-                        + "</gml:LinearRing>"
-                        + "</gml:exterior>"
-                        + "</gml:Surface>";
+        String expected = "<gml:Surface>"
+                + "<gml:exterior>"
+                + "<gml:LinearRing>"
+                + "<gml:posList>"
+                + "-41.9 145.5 -42.1 145.5 -42.0 145.6 -41.9 145.5"
+                + "</gml:posList>"
+                + "</gml:LinearRing>"
+                + "</gml:exterior>"
+                + "</gml:Surface>";
         String encodedGeom = new String(baos.toByteArray());
         assertEquals(expected, encodedGeom);
     }
@@ -120,12 +117,10 @@ public class GMLWriterTest {
         assertTrue(result.contains("xmlns:gml=\"http://www.opengis.net/gml/3.2\""));
     }
 
-    private GMLTemplateWriter getGmlWriter(TemplateIdentifier identifier, OutputStream out)
-            throws XMLStreamException {
+    private GMLTemplateWriter getGmlWriter(TemplateIdentifier identifier, OutputStream out) throws XMLStreamException {
         XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
         XMLStreamWriter xMLStreamWriter = xMLOutputFactory.createXMLStreamWriter(out);
-        GMLTemplateWriter outputWriter =
-                new GMLTemplateWriter(xMLStreamWriter, identifier.getOutputFormat());
+        GMLTemplateWriter outputWriter = new GMLTemplateWriter(xMLStreamWriter, identifier.getOutputFormat());
         outputWriter.addNamespaces(new HashMap<>());
         return outputWriter;
     }

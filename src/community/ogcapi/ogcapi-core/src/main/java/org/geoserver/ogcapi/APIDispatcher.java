@@ -70,9 +70,8 @@ import org.springframework.web.util.WebUtils;
 import org.xml.sax.SAXException;
 
 /**
- * A dispatcher for OGC API requests (and suitable for implementation restful services in general.
- * Supports {@link DispatcherCallback} and {@link Dispatcher#REQUEST} to properly play with the
- * existing GeoServer ecosystem
+ * A dispatcher for OGC API requests (and suitable for implementation restful services in general. Supports
+ * {@link DispatcherCallback} and {@link Dispatcher#REQUEST} to properly play with the existing GeoServer ecosystem
  */
 public class APIDispatcher extends AbstractController {
 
@@ -81,8 +80,7 @@ public class APIDispatcher extends AbstractController {
 
     public static final String ROOT_PATH = "ogc";
 
-    static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.ogcapi");
+    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ogcapi");
     public static final String SERVICE_DISABLED_PREFIX = "Service ";
     public static final String SERVICE_DISABLED_SUFFIX = " is disabled";
 
@@ -96,8 +94,7 @@ public class APIDispatcher extends AbstractController {
 
     protected RequestMappingHandlerAdapter handlerAdapter;
     protected HandlerMethodReturnValueHandlerComposite returnValueHandlers;
-    protected ContentNegotiationManager contentNegotiationManager =
-            new APIContentNegotiationManager();
+    protected ContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
     private List<HttpMessageConverter<?>> messageConverters;
     private List<APIExceptionHandler> exceptionHandlers;
 
@@ -123,28 +120,22 @@ public class APIDispatcher extends AbstractController {
 
         // create the one handler adapter we need similar to how DispatcherServlet does it
         // but with a special implementation that supports callbacks for the operation
-        APIConfigurationSupport configurationSupport =
-                context.getBean(APIConfigurationSupport.class);
+        APIConfigurationSupport configurationSupport = context.getBean(APIConfigurationSupport.class);
         configurationSupport.setCallbacks(callbacks);
 
-        handlerAdapter =
-                configurationSupport.requestMappingHandlerAdapter(
-                        context.getBean(
-                                "mvcContentNegotiationManager", ContentNegotiationManager.class),
-                        context.getBean("mvcConversionService", FormattingConversionService.class),
-                        context.getBean("mvcValidator", Validator.class));
+        handlerAdapter = configurationSupport.requestMappingHandlerAdapter(
+                context.getBean("mvcContentNegotiationManager", ContentNegotiationManager.class),
+                context.getBean("mvcConversionService", FormattingConversionService.class),
+                context.getBean("mvcValidator", Validator.class));
         handlerAdapter.setApplicationContext(context);
         handlerAdapter.afterPropertiesSet();
         // remove the default Jackson converters, we will add them back later
-        handlerAdapter
-                .getMessageConverters()
-                .removeIf(AbstractJackson2HttpMessageConverter.class::isInstance);
+        handlerAdapter.getMessageConverters().removeIf(AbstractJackson2HttpMessageConverter.class::isInstance);
         // force GeoServer version of jackson as the first choice
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2YAMLMessageConverter());
         handlerAdapter.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter());
         // add all registered converters before the Spring ones too
-        List<HttpMessageConverter> extensionConverters =
-                GeoServerExtensions.extensions(HttpMessageConverter.class);
+        List<HttpMessageConverter> extensionConverters = GeoServerExtensions.extensions(HttpMessageConverter.class);
         addToListBackwards(extensionConverters, handlerAdapter.getMessageConverters());
         this.messageConverters = handlerAdapter.getMessageConverters();
 
@@ -152,8 +143,7 @@ public class APIDispatcher extends AbstractController {
         List<HandlerMethodArgumentResolver> pluginResolvers =
                 GeoServerExtensions.extensions(HandlerMethodArgumentResolver.class);
         List<HandlerMethodArgumentResolver> adapterResolvers = new ArrayList<>();
-        List<HandlerMethodArgumentResolver> existingResolvers =
-                handlerAdapter.getArgumentResolvers();
+        List<HandlerMethodArgumentResolver> existingResolvers = handlerAdapter.getArgumentResolvers();
         if (existingResolvers != null) {
             adapterResolvers.addAll(existingResolvers);
         }
@@ -163,8 +153,7 @@ public class APIDispatcher extends AbstractController {
         // replace the body processory with one that supports DispatcherCallback and has some
         // customized content type negotiation
         List<HandlerMethodReturnValueHandler> returnValueHandlers =
-                Optional.ofNullable(handlerAdapter.getReturnValueHandlers())
-                        .orElse(Collections.emptyList()).stream()
+                Optional.ofNullable(handlerAdapter.getReturnValueHandlers()).orElse(Collections.emptyList()).stream()
                         .map(this::replaceBodyMethodProcessor)
                         .collect(Collectors.toList());
 
@@ -172,28 +161,25 @@ public class APIDispatcher extends AbstractController {
         // architecture
         this.returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
         this.returnValueHandlers.addHandlers(returnValueHandlers);
-        handlerAdapter.setReturnValueHandlers(
-                Arrays.asList(
-                        new HandlerMethodReturnValueHandler() {
-                            @Override
-                            public boolean supportsReturnType(MethodParameter returnType) {
-                                return true;
-                            }
+        handlerAdapter.setReturnValueHandlers(Arrays.asList(new HandlerMethodReturnValueHandler() {
+            @Override
+            public boolean supportsReturnType(MethodParameter returnType) {
+                return true;
+            }
 
-                            @Override
-                            public void handleReturnValue(
-                                    Object returnValue,
-                                    MethodParameter returnType,
-                                    ModelAndViewContainer mavContainer,
-                                    NativeWebRequest webRequest)
-                                    throws Exception {
-                                mavContainer.getModel().put(RESPONSE_OBJECT, returnValue);
-                            }
-                        }));
+            @Override
+            public void handleReturnValue(
+                    Object returnValue,
+                    MethodParameter returnType,
+                    ModelAndViewContainer mavContainer,
+                    NativeWebRequest webRequest)
+                    throws Exception {
+                mavContainer.getModel().put(RESPONSE_OBJECT, returnValue);
+            }
+        }));
     }
 
-    private HandlerMethodReturnValueHandler replaceBodyMethodProcessor(
-            HandlerMethodReturnValueHandler f) {
+    private HandlerMethodReturnValueHandler replaceBodyMethodProcessor(HandlerMethodReturnValueHandler f) {
         if (f instanceof RequestResponseBodyMethodProcessor)
             return new APIBodyMethodProcessor(
                     handlerAdapter.getMessageConverters(), contentNegotiationManager, callbacks);
@@ -228,8 +214,8 @@ public class APIDispatcher extends AbstractController {
     }
 
     @Override
-    protected ModelAndView handleRequestInternal(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
+    protected ModelAndView handleRequestInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws Exception {
 
         preprocessRequest(httpRequest);
 
@@ -251,20 +237,17 @@ public class APIDispatcher extends AbstractController {
             // store it in the thread local used by the
             dr = init(dr);
             requestInfo.setRequestedMediaTypes(
-                    contentNegotiationManager.resolveMediaTypes(
-                            new ServletWebRequest(dr.getHttpRequest())));
+                    contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(dr.getHttpRequest())));
 
             // lookup the handler adapter (same as service and operation)
             HandlerMethod handler = getHandlerMethod(httpRequest, dr);
             dispatchService(dr, handler);
 
             // this is actually "execute", internaly
-            ModelAndView mav =
-                    handlerAdapter.handle(dr.getHttpRequest(), dr.getHttpResponse(), handler);
+            ModelAndView mav = handlerAdapter.handle(dr.getHttpRequest(), dr.getHttpResponse(), handler);
 
             ModelAndViewContainer mavContainer = new ModelAndViewContainer();
-            mavContainer.addAllAttributes(
-                    RequestContextUtils.getInputFlashMap(dr.getHttpRequest()));
+            mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(dr.getHttpRequest()));
 
             // and this is response handling
             Object returnValue = mav != null ? mav.getModel().get(RESPONSE_OBJECT) : null;
@@ -316,9 +299,7 @@ public class APIDispatcher extends AbstractController {
         if (apiService != null && apiService.version() != null) {
             httpResponse.addHeader(VERSION_HEADER, apiService.version());
         } else {
-            logger.debug(
-                    "Could not find the APIService annotation in the controller for:"
-                            + serviceClass);
+            logger.debug("Could not find the APIService annotation in the controller for:" + serviceClass);
         }
     }
 
@@ -330,12 +311,8 @@ public class APIDispatcher extends AbstractController {
         dr.setRequest(getOperationName(handler.getMethod()));
 
         // comply with DispatcherCallback and fire a service dispatched callback
-        Service service =
-                new Service(
-                        annotation.service(),
-                        handler.getBean(),
-                        new Version(annotation.service()),
-                        Collections.emptyList());
+        Service service = new Service(
+                annotation.service(), handler.getBean(), new Version(annotation.service()), Collections.emptyList());
         dr.setServiceDescriptor(service);
         service = fireServiceDispatchedCallback(dr, service);
         // replace in case callbacks have replaced it
@@ -346,8 +323,7 @@ public class APIDispatcher extends AbstractController {
      * Returns the {@link APIService} annotation from the class, or if not found, from a superclass
      *
      * @param clazz The class to look {@link APIService} on
-     * @return The first {@link APIService} found walking up the inheritance hierarchy, or null if
-     *     not found
+     * @return The first {@link APIService} found walking up the inheritance hierarchy, or null if not found
      */
     public static APIService getApiServiceAnnotation(Class<?> clazz) {
         APIService annotation = null;
@@ -361,13 +337,11 @@ public class APIDispatcher extends AbstractController {
         return annotation;
     }
 
-    private HandlerMethod getHandlerMethod(HttpServletRequest httpRequest, Request dr)
-            throws Exception {
+    private HandlerMethod getHandlerMethod(HttpServletRequest httpRequest, Request dr) throws Exception {
         LocalWorkspace.get();
         HandlerExecutionChain chain = mappingHandler.getHandler(dr.getHttpRequest());
         if (chain == null) {
-            String msg =
-                    "No mapping for " + httpRequest.getMethod() + " " + getRequestUri(httpRequest);
+            String msg = "No mapping for " + httpRequest.getMethod() + " " + getRequestUri(httpRequest);
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
@@ -375,12 +349,11 @@ public class APIDispatcher extends AbstractController {
         }
         Object handler = chain.getHandler();
         if (!handlerAdapter.supports(handler)) {
-            String msg =
-                    "Mapping for "
-                            + httpRequest.getMethod()
-                            + " "
-                            + getRequestUri(httpRequest)
-                            + " found but it's not supported by the HandlerAdapter. Check for mis-setup of service beans";
+            String msg = "Mapping for "
+                    + httpRequest.getMethod()
+                    + " "
+                    + getRequestUri(httpRequest)
+                    + " found but it's not supported by the HandlerAdapter. Check for mis-setup of service beans";
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning(msg);
             }
@@ -416,8 +389,7 @@ public class APIDispatcher extends AbstractController {
         // is it meant to be a simple and straight answer?
         if (current instanceof HttpErrorCodeException) {
             HttpErrorCodeException hec = (HttpErrorCodeException) current;
-            response.setContentType(
-                    hec.getContentType() != null ? hec.getContentType() : "text/plain");
+            response.setContentType(hec.getContentType() != null ? hec.getContentType() : "text/plain");
             if (hec.getErrorCode() >= 400) {
                 response.sendError(hec.getErrorCode(), hec.getMessage());
             } else {
@@ -428,17 +400,12 @@ public class APIDispatcher extends AbstractController {
             // for service unavailable, we want to return a 404, not a 500
             if (t instanceof ServiceException
                     && ((ServiceException) t).getCode() != null
-                    && ((ServiceException) t)
-                            .getCode()
-                            .equals(ServiceException.SERVICE_UNAVAILABLE)) {
+                    && ((ServiceException) t).getCode().equals(ServiceException.SERVICE_UNAVAILABLE)) {
                 if (request.getService() != null && request.getService().getId() != null) {
                     // The error message references the ServiceInfo name, which may not match the
                     // requested service id
                     response.sendError(
-                            404,
-                            SERVICE_DISABLED_PREFIX
-                                    + request.getService().getId()
-                                    + SERVICE_DISABLED_SUFFIX);
+                            404, SERVICE_DISABLED_PREFIX + request.getService().getId() + SERVICE_DISABLED_SUFFIX);
                 } else {
                     response.sendError(404, t.getMessage());
                 }
@@ -539,8 +506,7 @@ public class APIDispatcher extends AbstractController {
      */
     // SHARE
     protected static boolean isSecurityException(Throwable t) {
-        return t != null
-                && t.getClass().getPackage().getName().startsWith("org.springframework.security");
+        return t != null && t.getClass().getPackage().getName().startsWith("org.springframework.security");
     }
 
     // SHARE
@@ -561,10 +527,7 @@ public class APIDispatcher extends AbstractController {
         return result;
     }
 
-    /**
-     * This comes from {@link org.springframework.web.servlet.DispatcherServlet}, it's private and
-     * thus not reusable
-     */
+    /** This comes from {@link org.springframework.web.servlet.DispatcherServlet}, it's private and thus not reusable */
     private static String getRequestUri(HttpServletRequest request) {
         String uri = (String) request.getAttribute(WebUtils.INCLUDE_REQUEST_URI_ATTRIBUTE);
         if (uri == null) {
@@ -583,8 +546,7 @@ public class APIDispatcher extends AbstractController {
         List<MediaType> result = new ArrayList<>();
         for (HttpMessageConverter<?> converter : this.messageConverters) {
             if (converter instanceof GenericHttpMessageConverter) {
-                if (((GenericHttpMessageConverter<?>) converter)
-                        .canWrite(responseType, responseType, null)) {
+                if (((GenericHttpMessageConverter<?>) converter).canWrite(responseType, responseType, null)) {
                     result.addAll(converter.getSupportedMediaTypes());
                 }
             } else if (converter.canWrite(responseType, null)) {
@@ -595,47 +557,39 @@ public class APIDispatcher extends AbstractController {
             result.add(MediaType.TEXT_HTML);
         }
 
-        return result.stream()
-                .filter(mt -> mt.isConcrete())
-                .distinct()
-                .collect(Collectors.toList());
+        return result.stream().filter(mt -> mt.isConcrete()).distinct().collect(Collectors.toList());
     }
 
     /**
-     * Returns the name of a given handler method, using the name found in {@link RequestMapping} or
-     * one of its method specific sub-annotations. If not found, falls back on the method name.
+     * Returns the name of a given handler method, using the name found in {@link RequestMapping} or one of its method
+     * specific sub-annotations. If not found, falls back on the method name.
      */
     public static String getOperationName(Method m) {
         return Arrays.stream(m.getAnnotations())
                 .filter(a -> isRequestMapping(a))
-                .map(
-                        a -> {
-                            try {
-                                return (String) a.annotationType().getMethod("name").invoke(a);
-                            } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Failed to get name from request mapping annotation, unexpected",
-                                        e);
-                            }
-                            return "";
-                        })
+                .map(a -> {
+                    try {
+                        return (String) a.annotationType().getMethod("name").invoke(a);
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Failed to get name from request mapping annotation, unexpected", e);
+                    }
+                    return "";
+                })
                 .filter(name -> name != null && !name.isEmpty())
                 .findFirst()
                 .orElse(m.getName()); // fallback on the method name if needs be
     }
 
     /**
-     * Returns true if the method in question is a service method, annotated with a {@link
-     * RequestMapping} or one of its method specific sub-annotations
+     * Returns true if the method in question is a service method, annotated with a {@link RequestMapping} or one of its
+     * method specific sub-annotations
      */
     public static boolean hasRequestMapping(Method m) {
         return Arrays.stream(m.getAnnotations()).anyMatch(a -> isRequestMapping(a));
     }
 
     private static boolean isRequestMapping(Annotation a) {
-        return a instanceof RequestMapping
-                || a.annotationType().getAnnotation(RequestMapping.class) != null;
+        return a instanceof RequestMapping || a.annotationType().getAnnotation(RequestMapping.class) != null;
     }
 
     /**
@@ -661,8 +615,8 @@ public class APIDispatcher extends AbstractController {
     }
 
     /**
-     * Decides whether to handle a request or not, based on the {@link APIService} annotation and
-     * the trailing slash treatment
+     * Decides whether to handle a request or not, based on the {@link APIService} annotation and the trailing slash
+     * treatment
      */
     private class APIRequestHandlerMapping extends RequestMappingHandlerMapping {
         private final LocalWorkspaceURLPathHelper pathHelper = new LocalWorkspaceURLPathHelper();

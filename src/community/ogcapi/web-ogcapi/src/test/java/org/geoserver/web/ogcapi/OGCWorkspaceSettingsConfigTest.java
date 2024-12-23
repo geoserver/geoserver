@@ -40,11 +40,7 @@ public class OGCWorkspaceSettingsConfigTest extends AbstractLinksEditorTest {
         SettingsInfo settings = gs.getFactory().createSettings();
         settings.setWorkspace(cite);
         ArrayList<LinkInfo> links = new ArrayList<>();
-        link =
-                new LinkInfoImpl(
-                        "enclosure",
-                        "application/zip",
-                        "http://www.geoserver.org/data/dataset.zip");
+        link = new LinkInfoImpl("enclosure", "application/zip", "http://www.geoserver.org/data/dataset.zip");
         link.setTitle("The cite workspace dataset");
         link.setService("Features");
         links.add(link);
@@ -57,20 +53,15 @@ public class OGCWorkspaceSettingsConfigTest extends AbstractLinksEditorTest {
 
         // figure out the links editor path (it's not predictable, it depends on the number of
         // setting panel extensions available in the classpath
-        WebMarkupContainer extensions =
-                (WebMarkupContainer)
-                        tester.getLastRenderedPage()
-                                .get(
-                                        "form:tabs:panel:settings:settingsContainer:otherSettings:extensions");
-        extensions.visitChildren(
-                Component.class,
-                (component, visit) -> {
-                    if (component instanceof LinkInfoEditor) {
-                        visit.stop();
-                        EDITOR = component.getPageRelativePath();
-                        EDITOR_FT = EDITOR.substring(EDITOR.indexOf(":") + 1);
-                    }
-                });
+        WebMarkupContainer extensions = (WebMarkupContainer)
+                tester.getLastRenderedPage().get("form:tabs:panel:settings:settingsContainer:otherSettings:extensions");
+        extensions.visitChildren(Component.class, (component, visit) -> {
+            if (component instanceof LinkInfoEditor) {
+                visit.stop();
+                EDITOR = component.getPageRelativePath();
+                EDITOR_FT = EDITOR.substring(EDITOR.indexOf(":") + 1);
+            }
+        });
     }
 
     @After

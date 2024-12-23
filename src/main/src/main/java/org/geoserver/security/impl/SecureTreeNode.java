@@ -42,15 +42,14 @@ public class SecureTreeNode {
     SecureTreeNode parent;
 
     /**
-     * A map from access mode to set of roles that can perform that kind of access. Given a certain
-     * access mode, the intepretation of the associated set of roles is:
+     * A map from access mode to set of roles that can perform that kind of access. Given a certain access mode, the
+     * intepretation of the associated set of roles is:
      *
      * <ul>
      *   <li>roles set null: no local rule, fall back on the parent of this node
      *   <li>roles set empty: nobody can perform this kind of access
      *   <li>roles list equals to {@link #EVERYBODY}: everybody can perform accesses in that mode
-     *   <li>otherwise: only users having at least one granted authority matching one of the roles
-     *       in the set can access
+     *   <li>otherwise: only users having at least one granted authority matching one of the roles in the set can access
      * </ul>
      */
     Map<AccessMode, Set<String>> authorizedRoles = new HashMap<>();
@@ -85,8 +84,7 @@ public class SecureTreeNode {
     /** Adds a child to this path element */
     public SecureTreeNode addChild(String name) {
         if (getChild(name) != null)
-            throw new IllegalArgumentException(
-                    "This pathElement " + name + " is already among my children");
+            throw new IllegalArgumentException("This pathElement " + name + " is already among my children");
 
         SecureTreeNode child = new SecureTreeNode(this);
         children.put(name, child);
@@ -94,17 +92,16 @@ public class SecureTreeNode {
     }
 
     /**
-     * Tells if the user is allowed to access the PathElement with the specified access mode. If no
-     * information can be found in the current node, the decision is delegated to the parent. If the
-     * root is reached and it has no security definition, access will be granted. Otherwise, the
-     * first path element with a role list for the specified access mode will return true if the
-     * user has a {@link GrantedAuthority} matching one of the specified roles, false otherwise
+     * Tells if the user is allowed to access the PathElement with the specified access mode. If no information can be
+     * found in the current node, the decision is delegated to the parent. If the root is reached and it has no security
+     * definition, access will be granted. Otherwise, the first path element with a role list for the specified access
+     * mode will return true if the user has a {@link GrantedAuthority} matching one of the specified roles, false
+     * otherwise
      */
     public boolean canAccess(Authentication user, AccessMode mode) {
         Set<String> roles = getAuthorizedRoles(mode);
 
-        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest() == false)
-            return true;
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest() == false) return true;
 
         // if we don't know, we ask the parent, otherwise we assume
         // the object is unsecured
@@ -127,8 +124,8 @@ public class SecureTreeNode {
     }
 
     /**
-     * Returns the authorized roles for the specified access mode. The collection can be null if we
-     * don't have a rule, meaning the rule will have to searched in the parent node
+     * Returns the authorized roles for the specified access mode. The collection can be null if we don't have a rule,
+     * meaning the rule will have to searched in the parent node
      */
     public Set<String> getAuthorizedRoles(AccessMode mode) {
         return authorizedRoles.get(mode);
@@ -140,10 +137,9 @@ public class SecureTreeNode {
     }
 
     /**
-     * Utility method that drills down from the current node using the specified list of child
-     * names, and returns the latest element found along that path (might not be correspondent to
-     * the full path specified, security paths can be incomplete, the definition of the parent
-     * applies to the missing children as well)
+     * Utility method that drills down from the current node using the specified list of child names, and returns the
+     * latest element found along that path (might not be correspondent to the full path specified, security paths can
+     * be incomplete, the definition of the parent applies to the missing children as well)
      */
     public SecureTreeNode getDeepestNode(String... pathElements) {
         SecureTreeNode curr = this;
@@ -165,8 +161,8 @@ public class SecureTreeNode {
     }
 
     /**
-     * Utility method that drills down from the current node using the specified list of child
-     * names, and returns an element only if it fully matches the provided path
+     * Utility method that drills down from the current node using the specified list of child names, and returns an
+     * element only if it fully matches the provided path
      */
     public SecureTreeNode getNode(String... pathElements) {
         SecureTreeNode curr = this;
@@ -199,9 +195,7 @@ public class SecureTreeNode {
                 + "]";
     }
 
-    /**
-     * Returns the node depth, 0 is the root, 1 is a workspace/global layer one, 2 is layer specific
-     */
+    /** Returns the node depth, 0 is the root, 1 is a workspace/global layer one, 2 is layer specific */
     int getDepth() {
         int depth = 0;
         Set<SecureTreeNode> visited = new HashSet<>();

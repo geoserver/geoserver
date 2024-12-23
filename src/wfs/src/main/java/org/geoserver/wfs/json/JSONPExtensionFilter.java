@@ -12,8 +12,7 @@ import org.geoserver.platform.NameExclusionFilter;
  *
  * @author carlo cancellieri - GeoSolutions
  */
-public class JSONPExtensionFilter extends NameExclusionFilter
-        implements org.geoserver.platform.ExtensionFilter {
+public class JSONPExtensionFilter extends NameExclusionFilter implements org.geoserver.platform.ExtensionFilter {
 
     public JSONPExtensionFilter(String beanId) {
         super();

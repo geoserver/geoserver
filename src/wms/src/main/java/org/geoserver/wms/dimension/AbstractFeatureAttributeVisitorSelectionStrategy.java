@@ -21,27 +21,24 @@ import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 
 /**
- * An abstract parent class for a DefaultValueSelectionStrategy implementations that use a {@link
- * FeatureCalc} instances for finding the matching default value.
+ * An abstract parent class for a DefaultValueSelectionStrategy implementations that use a {@link FeatureCalc} instances
+ * for finding the matching default value.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public abstract class AbstractFeatureAttributeVisitorSelectionStrategy
-        extends AbstractDefaultValueSelectionStrategy {
+public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends AbstractDefaultValueSelectionStrategy {
 
-    private static Logger LOGGER =
-            Logging.getLogger(AbstractFeatureAttributeVisitorSelectionStrategy.class);
+    private static Logger LOGGER = Logging.getLogger(AbstractFeatureAttributeVisitorSelectionStrategy.class);
 
     /**
-     * Return the result of iterating through the dimension collection of the given dimension using
-     * given calculator as the attribute value calculator.
+     * Return the result of iterating through the dimension collection of the given dimension using given calculator as
+     * the attribute value calculator.
      */
     protected CalcResult getCalculatedResult(
             FeatureTypeInfo typeInfo, DimensionInfo dimension, FeatureCalc calculator) {
         CalcResult retval = null;
         try {
-            FeatureCollection<?, ?> dimensionCollection =
-                    getDimensionCollection(typeInfo, dimension);
+            FeatureCollection<?, ?> dimensionCollection = getDimensionCollection(typeInfo, dimension);
             if (dimensionCollection == null) {
                 throw new ServiceException(
                         "No dimension collection given, cannot select default value for dimension based on attribute"
@@ -55,17 +52,15 @@ public abstract class AbstractFeatureAttributeVisitorSelectionStrategy
         return retval;
     }
 
-    private FeatureCollection<?, ?> getDimensionCollection(
-            FeatureTypeInfo typeInfo, DimensionInfo dimension) throws IOException {
+    private FeatureCollection<?, ?> getDimensionCollection(FeatureTypeInfo typeInfo, DimensionInfo dimension)
+            throws IOException {
         // grab the feature source
         FeatureSource<?, ?> source = null;
         try {
             source = typeInfo.getFeatureSource(null, GeoTools.getDefaultHints());
         } catch (IOException e) {
             throw new ServiceException(
-                    "Could not get the feauture source to list time info for layer "
-                            + typeInfo.prefixedName(),
-                    e);
+                    "Could not get the feauture source to list time info for layer " + typeInfo.prefixedName(), e);
         }
 
         // build query to grab the dimension values

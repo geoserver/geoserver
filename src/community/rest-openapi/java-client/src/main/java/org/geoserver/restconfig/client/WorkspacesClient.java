@@ -44,12 +44,8 @@ public class WorkspacesClient {
     }
 
     public void setDeafultWorkspace(@NonNull String name) {
-        WorkspaceInfo info =
-                getAsInfo(name)
-                        .orElseThrow(
-                                () ->
-                                        new ServerException.NotFound(
-                                                "No such workspace: " + name, null, null));
+        WorkspaceInfo info = getAsInfo(name)
+                .orElseThrow(() -> new ServerException.NotFound("No such workspace: " + name, null, null));
         setDeafultWorkspace(info);
     }
 
@@ -90,20 +86,16 @@ public class WorkspacesClient {
 
     public WorkspaceInfo create(@NonNull WorkspaceInfo ws) {
         api().createWorkspace(wrap(ws), false);
-        WorkspaceInfo created =
-                getAsInfo(ws.getName())
-                        .orElseThrow(
-                                () ->
-                                        new NoSuchElementException(
-                                                "Workspace create endpoint didn't fail but workspace does not exist"));
+        WorkspaceInfo created = getAsInfo(ws.getName())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Workspace create endpoint didn't fail but workspace does not exist"));
 
         // workaround for geoserver bug
         if (Boolean.TRUE.equals(ws.getIsolated()) && !Boolean.TRUE.equals(created.getIsolated())) {
             setIsolatedNamespace(created);
             created = getAsInfo(ws.getName()).get();
             if (!Boolean.TRUE.equals(created.getIsolated())) {
-                throw new IllegalStateException(
-                        "Workspace isolated not set even after configuring the namespace");
+                throw new IllegalStateException("Workspace isolated not set even after configuring the namespace");
             }
         }
         return created;
@@ -113,19 +105,13 @@ public class WorkspacesClient {
         final NamespacesClient namespaces = client.namespaces();
         final String workspaceName = wsInfo.getName();
         // change the namespace URI associated to the workspace
-        NamespaceInfo nsInfo =
-                namespaces
-                        .findByPrefix(workspaceName)
-                        .orElseThrow(
-                                () ->
-                                        new IllegalStateException(
-                                                "NamespaceInfo not found for workspace "
-                                                        + workspaceName));
+        NamespaceInfo nsInfo = namespaces
+                .findByPrefix(workspaceName)
+                .orElseThrow(() -> new IllegalStateException("NamespaceInfo not found for workspace " + workspaceName));
 
         Objects.requireNonNull(nsInfo.getPrefix(), "namespace prefix not set");
         if (!Boolean.TRUE.equals(nsInfo.getIsolated())) {
-            log.warn(
-                    "NamespaceInfo isolated wasn't set to true during workspace creation. Fixing it...");
+            log.warn("NamespaceInfo isolated wasn't set to true during workspace creation. Fixing it...");
             nsInfo.setIsolated(Boolean.TRUE);
         }
         namespaces.update(nsInfo.getPrefix(), nsInfo);

@@ -17,10 +17,7 @@ import org.junit.Test;
 
 public class SecuredGetMapRequestTest extends SecureObjectsTest {
 
-    /**
-     * Test for GEOS-6362: getFinalURL had side effects and gave different results if called
-     * multiple times.
-     */
+    /** Test for GEOS-6362: getFinalURL had side effects and gave different results if called multiple times. */
     @Test
     public void testNoSideEffectsOnGetFinalUrl() throws Exception {
         GetMapRequest request = new WMS1_0_0().createGetMapRequest(new URL("http://test?"));

@@ -30,10 +30,7 @@ public class InternalWPSInputProvider extends AbstractInputProvider {
     private int longSteps;
 
     public InternalWPSInputProvider(
-            InputType input,
-            ProcessParameterIO ppio,
-            WPSExecutionManager executor,
-            ApplicationContext context)
+            InputType input, ProcessParameterIO ppio, WPSExecutionManager executor, ApplicationContext context)
             throws Exception {
         super(input, ppio);
         this.executor = executor;
@@ -43,8 +40,7 @@ public class InternalWPSInputProvider extends AbstractInputProvider {
         if (ref.getMethod() == MethodType.POST_LITERAL) {
             request = (ExecuteType) ref.getBody();
         } else {
-            ExecuteKvpRequestReader reader =
-                    (ExecuteKvpRequestReader) context.getBean("executeKvpRequestReader");
+            ExecuteKvpRequestReader reader = (ExecuteKvpRequestReader) context.getBean("executeKvpRequestReader");
             request = (ExecuteType) kvpParse(ref.getHref(), reader);
         }
         executeRequest = new ExecuteRequest(request);
@@ -82,11 +78,10 @@ public class InternalWPSInputProvider extends AbstractInputProvider {
 
         Object obj = results.values().iterator().next();
         if (obj != null && !ppio.getType().isInstance(obj)) {
-            throw new WPSException(
-                    "The process output is incompatible with the input target type, was expecting "
-                            + ppio.getType().getName()
-                            + " and got "
-                            + obj.getClass().getName());
+            throw new WPSException("The process output is incompatible with the input target type, was expecting "
+                    + ppio.getType().getName()
+                    + " and got "
+                    + obj.getClass().getName());
         }
 
         // make sure we have the process receiving this fail if cancellation triggers

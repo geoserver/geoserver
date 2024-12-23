@@ -45,8 +45,9 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+        springContextLocations.add(getClass()
+                .getResource(getClass().getSimpleName() + "-context.xml")
+                .toString());
     }
 
     @After
@@ -69,8 +70,7 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
         assertNull(response.getHeader("foo"));
     }
 
-    void setupFilterEntry(Pos pos, String relativeTo, boolean assertSecurityContext)
-            throws Exception {
+    void setupFilterEntry(Pos pos, String relativeTo, boolean assertSecurityContext) throws Exception {
 
         GeoServerSecurityManager secMgr = getSecurityManager();
 

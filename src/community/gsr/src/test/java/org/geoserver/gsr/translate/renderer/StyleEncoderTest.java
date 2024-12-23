@@ -23,15 +23,12 @@ public class StyleEncoderTest {
         URI uri;
 
         uri = new URI("http://somehost:8080/geoserver/somedir/test.png");
-        assertEquals(
-                "images/test.png", StyleEncoder.relativizeExternalGraphicImageResourceURI(uri));
+        assertEquals("images/test.png", StyleEncoder.relativizeExternalGraphicImageResourceURI(uri));
 
         uri = new URI("somedir/test.png");
-        assertEquals(
-                "images/test.png", StyleEncoder.relativizeExternalGraphicImageResourceURI(uri));
+        assertEquals("images/test.png", StyleEncoder.relativizeExternalGraphicImageResourceURI(uri));
 
         uri = new URI("test.png");
-        assertEquals(
-                "images/test.png", StyleEncoder.relativizeExternalGraphicImageResourceURI(uri));
+        assertEquals("images/test.png", StyleEncoder.relativizeExternalGraphicImageResourceURI(uri));
     }
 }

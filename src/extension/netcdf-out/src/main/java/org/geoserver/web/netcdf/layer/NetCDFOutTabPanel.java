@@ -20,8 +20,7 @@ public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    public NetCDFOutTabPanel(
-            String id, IModel<LayerInfo> model, IModel<CoverageInfo> resourceModel) {
+    public NetCDFOutTabPanel(String id, IModel<LayerInfo> model, IModel<CoverageInfo> resourceModel) {
         super(id, model);
 
         // Selection of the IModel associated to the metadata map
@@ -34,13 +33,9 @@ public class NetCDFOutTabPanel extends PublishedEditTabPanel<LayerInfo> {
         }
 
         // Getting the NetcdfSettingsContainer model from MetadataMap
-        IModel<NetCDFLayerSettingsContainer> netcdfModel =
-                new MetadataMapModel<>(
-                        metadata,
-                        NetCDFSettingsContainer.NETCDFOUT_KEY,
-                        NetCDFLayerSettingsContainer.class);
-        NetCDFOutSettingsEditor editor =
-                new NetCDFOutSettingsEditor("netcdfeditor", netcdfModel, cmodel);
+        IModel<NetCDFLayerSettingsContainer> netcdfModel = new MetadataMapModel<>(
+                metadata, NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
+        NetCDFOutSettingsEditor editor = new NetCDFOutSettingsEditor("netcdfeditor", netcdfModel, cmodel);
         add(editor);
     }
 }

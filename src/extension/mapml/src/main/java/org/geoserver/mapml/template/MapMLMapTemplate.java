@@ -32,8 +32,7 @@ public class MapMLMapTemplate {
     /** The template configuration */
     static Configuration templateConfig;
 
-    static DirectTemplateFeatureCollectionFactory FC_FACTORY =
-            new DirectTemplateFeatureCollectionFactory();
+    static DirectTemplateFeatureCollectionFactory FC_FACTORY = new DirectTemplateFeatureCollectionFactory();
 
     static {
         // initialize the template engine, this is static to maintain a cache
@@ -68,8 +67,7 @@ public class MapMLMapTemplate {
      * @param writer the writer to write the output to
      * @throws IOException in case of an error
      */
-    public void preview(Map<String, Object> model, SimpleFeatureType featureType, Writer writer)
-            throws IOException {
+    public void preview(Map<String, Object> model, SimpleFeatureType featureType, Writer writer) throws IOException {
         execute(model, featureType, writer, MAPML_PREVIEW_HEAD_FTL);
     }
 
@@ -87,16 +85,14 @@ public class MapMLMapTemplate {
         return caw.toString();
     }
 
-    public String features(SimpleFeatureType featureType, SimpleFeature feature)
-            throws IOException {
+    public String features(SimpleFeatureType featureType, SimpleFeature feature) throws IOException {
         CharArrayWriter caw = CharArrayWriterPool.getWriter();
 
         features(featureType, feature, caw);
         return caw.toString();
     }
 
-    public void features(SimpleFeatureType featureType, SimpleFeature feature, Writer writer)
-            throws IOException {
+    public void features(SimpleFeatureType featureType, SimpleFeature feature, Writer writer) throws IOException {
         execute(feature, featureType, writer, MAPML_FEATURE_FTL);
     }
 
@@ -108,8 +104,7 @@ public class MapMLMapTemplate {
      * @param writer the writer to write the output to
      * @throws IOException in case of an error
      */
-    public void head(Map<String, Object> model, SimpleFeatureType featureType, Writer writer)
-            throws IOException {
+    public void head(Map<String, Object> model, SimpleFeatureType featureType, Writer writer) throws IOException {
         execute(model, featureType, writer, MAPML_XML_HEAD_FTL);
     }
 
@@ -131,8 +126,7 @@ public class MapMLMapTemplate {
      * @return the head content
      * @throws IOException in case of an error
      */
-    public String head(Map<String, Object> model, SimpleFeatureType featureType)
-            throws IOException {
+    public String head(Map<String, Object> model, SimpleFeatureType featureType) throws IOException {
         CharArrayWriter caw = CharArrayWriterPool.getWriter();
         head(model, featureType, caw);
 
@@ -143,11 +137,7 @@ public class MapMLMapTemplate {
      * Internal helper method to exceute the template against feature or
      * feature collection.
      */
-    private void execute(
-            Map<String, Object> model,
-            SimpleFeatureType featureType,
-            Writer writer,
-            String template)
+    private void execute(Map<String, Object> model, SimpleFeatureType featureType, Writer writer, String template)
             throws IOException {
 
         Template t = lookupTemplate(featureType, template, null);
@@ -164,8 +154,7 @@ public class MapMLMapTemplate {
      * Internal helper method to exceute the template against feature or
      * feature collection.
      */
-    private void execute(
-            Feature feature, SimpleFeatureType featureType, Writer writer, String template)
+    private void execute(Feature feature, SimpleFeatureType featureType, Writer writer, String template)
             throws IOException {
 
         Template t = lookupTemplate(featureType, template, null);
@@ -182,8 +171,7 @@ public class MapMLMapTemplate {
      * Internal helper method to exceute the template against feature or
      * feature collection.
      */
-    private void execute(SimpleFeatureType featureType, Writer writer, String template)
-            throws IOException {
+    private void execute(SimpleFeatureType featureType, Writer writer, String template) throws IOException {
 
         Template t = lookupTemplate(featureType, template, null);
 
@@ -196,8 +184,8 @@ public class MapMLMapTemplate {
     }
 
     /**
-     * Returns the template for the specified feature type. Looking up templates is pretty
-     * expensive, so we cache templates by feture type and template.
+     * Returns the template for the specified feature type. Looking up templates is pretty expensive, so we cache
+     * templates by feture type and template.
      */
     private Template lookupTemplate(SimpleFeatureType featureType, String template, Class<?> lookup)
             throws IOException {
@@ -208,10 +196,8 @@ public class MapMLMapTemplate {
         if (t != null) return t;
 
         // otherwise, build a loader and do the lookup
-        GeoServerTemplateLoader templateLoader =
-                new GeoServerTemplateLoader(
-                        lookup != null ? lookup : getClass(),
-                        GeoServerExtensions.bean(GeoServerResourceLoader.class));
+        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(
+                lookup != null ? lookup : getClass(), GeoServerExtensions.bean(GeoServerResourceLoader.class));
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         templateLoader.setFeatureType(catalog.getFeatureTypeByName(featureType.getName()));
 
@@ -226,10 +212,7 @@ public class MapMLMapTemplate {
 
     /** Returns true if the required template is empty or has its default content */
     public boolean isTemplateEmpty(
-            SimpleFeatureType featureType,
-            String template,
-            Class<FeatureTemplate> lookup,
-            String defaultContent)
+            SimpleFeatureType featureType, String template, Class<FeatureTemplate> lookup, String defaultContent)
             throws IOException {
         Template t = lookupTemplate(featureType, template, lookup);
         if (t == null) {
@@ -240,8 +223,7 @@ public class MapMLMapTemplate {
         t.dump(sw);
         // an empty template canonical form is "0\n".. weird!
         String templateText = sw.toString();
-        return "".equals(templateText)
-                || (defaultContent != null && defaultContent.equals(templateText));
+        return "".equals(templateText) || (defaultContent != null && defaultContent.equals(templateText));
     }
 
     /** Template key class used to cache templates by feature type and template name. */

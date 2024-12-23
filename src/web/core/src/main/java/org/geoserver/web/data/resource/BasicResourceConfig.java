@@ -69,11 +69,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(new CheckBox("enabled"));
         add(new CheckBox("advertised"));
         add(new TitleAndAbstractPanel("titleAndAbstract", model, "titleMsg", "abstract", this));
-        add(
-                new KeywordsEditor(
-                        "keywords",
-                        LiveCollectionModel.list(
-                                new PropertyModel<List<KeywordInfo>>(model, "keywords"))));
+        add(new KeywordsEditor(
+                "keywords", LiveCollectionModel.list(new PropertyModel<List<KeywordInfo>>(model, "keywords"))));
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 
@@ -81,8 +78,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(refForm);
 
         // native bbox
-        PropertyModel<ReferencedEnvelope> nativeBBoxModel =
-                new PropertyModel<>(model, "nativeBoundingBox");
+        PropertyModel<ReferencedEnvelope> nativeBBoxModel = new PropertyModel<>(model, "nativeBoundingBox");
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
@@ -90,8 +86,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         // lat/lon bbox
         final EnvelopePanel latLonPanel =
-                new EnvelopePanel(
-                        "latLonBoundingBox", new PropertyModel<>(model, "latLonBoundingBox"));
+                new EnvelopePanel("latLonBoundingBox", new PropertyModel<>(model, "latLonBoundingBox"));
         latLonPanel.setOutputMarkupId(true);
         latLonPanel.setRequired(true);
         refForm.add(latLonPanel);
@@ -118,20 +113,18 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         }
         refForm.add(nativeBoundsLink);
         refForm.add(nativeCRS);
-        declaredCRS =
-                new CRSPanel("declaredSRS", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
+        declaredCRS = new CRSPanel("declaredSRS", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
         declaredCRS.setRequired(true);
         refForm.add(declaredCRS);
 
         // compute from native or declared crs links
         refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
 
-        projectionPolicy =
-                new DropDownChoice<>(
-                        "srsHandling",
-                        new PropertyModel<>(model, "projectionPolicy"),
-                        Arrays.asList(ProjectionPolicy.values()),
-                        new ProjectionPolicyRenderer());
+        projectionPolicy = new DropDownChoice<>(
+                "srsHandling",
+                new PropertyModel<>(model, "projectionPolicy"),
+                Arrays.asList(ProjectionPolicy.values()),
+                new ProjectionPolicyRenderer());
         ResourceInfo ri = model.getObject();
         if (model.getObject().getCRS() == null) {
             // no native, the only meaningful policy is to force
@@ -151,10 +144,10 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             public void onSubmit(final AjaxRequestTarget target, Form form) {
                 // perform manual processing otherwise the component contents won't be updated
                 form.process(null);
-                ResourceInfo resource =
-                        (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
+                ResourceInfo resource = (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
                 try {
-                    CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                    CatalogBuilder cb =
+                            new CatalogBuilder(GeoServerApplication.get().getCatalog());
                     ReferencedEnvelope bounds = cb.getNativeBounds(resource);
                     resource.setNativeBoundingBox(bounds);
                     nativeBBox.setModelObject(bounds);
@@ -175,11 +168,10 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     }
 
     /**
-     * Compute the native bounds from the native CRS. Acts as an alternative to computing the bounds
-     * from the data itself.
+     * Compute the native bounds from the native CRS. Acts as an alternative to computing the bounds from the data
+     * itself.
      */
-    AjaxSubmitLink computeBoundsFromSRS(
-            final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel) {
+    AjaxSubmitLink computeBoundsFromSRS(final Form<ResourceInfo> refForm, final EnvelopePanel nativeBoundsPanel) {
 
         return new AjaxSubmitLink("computeLatLonFromNativeSRS", refForm) {
             private static final long serialVersionUID = 9211250161114770325L;
@@ -187,9 +179,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 LOGGER.log(Level.FINE, "Computing bounds from native CRS");
-                ResourceInfo resource =
-                        (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
-                CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                ResourceInfo resource = (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
+                CatalogBuilder cb =
+                        new CatalogBuilder(GeoServerApplication.get().getCatalog());
                 ReferencedEnvelope nativeBBox = cb.getBoundsFromCRS(resource);
 
                 if (nativeBBox != null) {
@@ -222,8 +214,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 try {
                     // if the native bounds are not around compute them
                     if (nativeBounds == null) {
-                        ResourceInfo resource =
-                                (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
+                        ResourceInfo resource = (ResourceInfo) BasicResourceConfig.this.getDefaultModelObject();
                         CatalogBuilder cb =
                                 new CatalogBuilder(GeoServerApplication.get().getCatalog());
                         nativeBounds = cb.getNativeBounds(resource);
@@ -232,9 +223,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                         target.add(nativeBBox);
                     }
 
-                    CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
-                    latLonPanel.setModelObject(
-                            cb.getLatLonBounds(nativeBounds, declaredCRS.getCRS()));
+                    CatalogBuilder cb =
+                            new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                    latLonPanel.setModelObject(cb.getLatLonBounds(nativeBounds, declaredCRS.getCRS()));
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error computing the geographic BBOX", e);
                     error("Error computing the geographic bounds:" + e.getMessage());
@@ -257,8 +248,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         @Override
         public Object getDisplayValue(ProjectionPolicy object) {
-            return new StringResourceModel(object.name(), BasicResourceConfig.this, null)
-                    .getString();
+            return new StringResourceModel(object.name(), BasicResourceConfig.this, null).getString();
         }
 
         @Override
@@ -267,9 +257,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         }
     }
 
-    /**
-     * Checks a resource name is actually a valid one (WFS/WMS wise), in particular, only word chars
-     */
+    /** Checks a resource name is actually a valid one (WFS/WMS wise), in particular, only word chars */
     static class ResourceNameValidator extends PatternValidator {
         private static final long serialVersionUID = 2160813837236916013L;
 
@@ -279,8 +267,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     }
 
     /**
-     * Form validator that checks whether the native CRS can be projected to the declared one
-     * whenever the projection policy chosen is "reproject"
+     * Form validator that checks whether the native CRS can be projected to the declared one whenever the projection
+     * policy chosen is "reproject"
      */
     private static class ReprojectionIsPossibleValidator implements IFormValidator {
 
@@ -301,8 +289,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
             this.nativeCRS = nativeCRS;
             this.declaredCRS = declaredCRS;
             this.projectionPolicy = projectionPolicy;
-            this.dependentFormComponents =
-                    new FormComponent[] {nativeCRS, declaredCRS, projectionPolicy};
+            this.dependentFormComponents = new FormComponent[] {nativeCRS, declaredCRS, projectionPolicy};
         }
 
         @Override
@@ -313,10 +300,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         @Override
         public void validate(final Form<?> form) {
 
-            CoordinateReferenceSystem nativeCrs =
-                    (CoordinateReferenceSystem) nativeCRS.getConvertedInput();
-            CoordinateReferenceSystem declaredCrs =
-                    (CoordinateReferenceSystem) declaredCRS.getConvertedInput();
+            CoordinateReferenceSystem nativeCrs = (CoordinateReferenceSystem) nativeCRS.getConvertedInput();
+            CoordinateReferenceSystem declaredCrs = (CoordinateReferenceSystem) declaredCRS.getConvertedInput();
             ProjectionPolicy policy = (ProjectionPolicy) projectionPolicy.getConvertedInput();
             if (policy == ProjectionPolicy.REPROJECT_TO_DECLARED) {
                 final boolean lenient = true;
@@ -339,9 +324,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         if (otherSRS != null) {
             if (!otherSRS.isEmpty()) {
-                resourceInfo
-                        .getMetadata()
-                        .put(FeatureTypeInfo.OTHER_SRS, String.join(",", otherSRS));
+                resourceInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, String.join(",", otherSRS));
                 return true;
             }
         }
@@ -357,8 +340,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         } catch (Exception e) {
             LOGGER.log(
                     Level.SEVERE,
-                    "Error getting actual Native SRS code for resource "
-                            + resourceInfo.getNativeName(),
+                    "Error getting actual Native SRS code for resource " + resourceInfo.getNativeName(),
                     e);
         }
 
@@ -366,8 +348,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     }
 
     /**
-     * Returns a list of alternative SRS for resources that support multiple ones, e.g., WMS, WFS,
-     * WMTS cascaded layers
+     * Returns a list of alternative SRS for resources that support multiple ones, e.g., WMS, WFS, WMTS cascaded layers
      */
     private List<String> getOtherSRS(ResourceInfo resourceInfo) {
         // first check if its WFS-NG
@@ -396,11 +377,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         String actualSRS = getActualNativeSRSCode(model.getObject());
         if (!otherSRS.contains(actualSRS)) otherSRS.add(getActualNativeSRSCode(model.getObject()));
         CRSPanel nativeCRS =
-                new CRSPanel(
-                        "nativeSRS",
-                        new PropertyModel<>(model, "nativeCRS"),
-                        otherSRS,
-                        !otherSRS.isEmpty()) {
+                new CRSPanel("nativeSRS", new PropertyModel<>(model, "nativeCRS"), otherSRS, !otherSRS.isEmpty()) {
 
                     /** serialVersionUID */
                     private static final long serialVersionUID = -7725670382699858126L;
@@ -419,8 +396,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                             model.getObject().setNativeBoundingBox(bounds);
                             target.add(nativeBBox);
 
-                            refForm.get("computeNative")
-                                    .setVisible(isActualNative(crs, model.getObject()));
+                            refForm.get("computeNative").setVisible(isActualNative(crs, model.getObject()));
                             refForm.add(refForm.get("computeNative"));
                             target.add(refForm);
                         } catch (Exception e) {
@@ -429,20 +405,18 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     }
 
                     // checks if the selected SRS is actual native?
-                    private boolean isActualNative(
-                            CoordinateReferenceSystem crs, ResourceInfo resourceInfo) {
+                    private boolean isActualNative(CoordinateReferenceSystem crs, ResourceInfo resourceInfo) {
 
                         try {
-                            CatalogBuilder cb =
-                                    new CatalogBuilder(GeoServerApplication.get().getCatalog());
+                            CatalogBuilder cb = new CatalogBuilder(
+                                    GeoServerApplication.get().getCatalog());
                             cb.setStore(resourceInfo.getStore());
 
                             return CRS.equalsIgnoreMetadata(crs, cb.getNativeCRS(resourceInfo));
                         } catch (Exception e) {
                             LOGGER.log(
                                     Level.SEVERE,
-                                    "Error getting actual Native SRS code for resource "
-                                            + resourceInfo.getNativeName(),
+                                    "Error getting actual Native SRS code for resource " + resourceInfo.getNativeName(),
                                     e);
                         }
                         return false;

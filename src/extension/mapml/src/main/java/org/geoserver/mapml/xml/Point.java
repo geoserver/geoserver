@@ -38,18 +38,15 @@ import javax.xml.bind.annotation.XmlType;
 public class Point {
 
     @XmlMixed
-    @XmlElementRef(
-            name = "map-coordinates",
-            type = Coordinates.class,
-            namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElementRef(name = "map-coordinates", type = Coordinates.class, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Coordinates> coordinates;
 
     /**
      * Gets the value of the coordinates property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the coordinates property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the coordinates property.
      *
      * <p>For example, to add a new item, do as follows:
      *

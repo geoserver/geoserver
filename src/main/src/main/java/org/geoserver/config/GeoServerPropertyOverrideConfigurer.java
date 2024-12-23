@@ -12,8 +12,8 @@ import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.core.io.Resource;
 
 /**
- * Allows the use of ${GEOSERVER_DATA_DIR} inside properties to refer to the data directory,
- * irrespective of whether that system property has been set or not.
+ * Allows the use of ${GEOSERVER_DATA_DIR} inside properties to refer to the data directory, irrespective of whether
+ * that system property has been set or not.
  *
  * <p>Also makes locations relative to the GeoServer Data Directory.
  *
@@ -45,8 +45,7 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
         Resource[] newLocations = new Resource[locations.length];
         for (int i = 0; i < locations.length; i++) {
             try {
-                newLocations[i] =
-                        SpringResourceAdaptor.relative(locations[i], data.getResourceStore());
+                newLocations[i] = SpringResourceAdaptor.relative(locations[i], data.getResourceStore());
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Error reading resource " + locations[i], e);
                 newLocations[i] = locations[i];

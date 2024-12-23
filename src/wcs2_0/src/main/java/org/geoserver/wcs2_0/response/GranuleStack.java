@@ -10,8 +10,7 @@ import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 /**
- * A stack of GridCoverage2D instances (granules). This class may be used to deal with
- * multidimensional outputs.
+ * A stack of GridCoverage2D instances (granules). This class may be used to deal with multidimensional outputs.
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */

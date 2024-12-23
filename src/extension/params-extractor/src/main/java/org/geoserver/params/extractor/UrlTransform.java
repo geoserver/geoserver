@@ -23,8 +23,7 @@ public class UrlTransform {
         this.requestUri = requestUri;
         for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
             normalizedNames.put(entry.getKey().toLowerCase(), entry.getKey());
-            this.parameters.put(
-                    entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
+            this.parameters.put(entry.getKey(), Arrays.copyOf(entry.getValue(), entry.getValue().length));
         }
     }
 
@@ -62,15 +61,12 @@ public class UrlTransform {
         String[] existingValues = parameters.get(rawName);
         if ((existingValues != null || repeat) && combine != null) {
             int num = 1;
-            if (repeat
-                    && parameters.containsKey(layersRawName)
-                    && parameters.get(layersRawName) != null) {
+            if (repeat && parameters.containsKey(layersRawName) && parameters.get(layersRawName) != null) {
                 num = parameters.get(layersRawName)[0].split(",").length;
             }
             String existingValue = existingValues == null ? null : existingValues[0];
             for (int count = 0; count < num; count++) {
-                String combinedValue =
-                        existingValue == null ? "$2" : combine.replace("$1", existingValue);
+                String combinedValue = existingValue == null ? "$2" : combine.replace("$1", existingValue);
                 combinedValue = combinedValue.replace("$2", value);
                 existingValue = combinedValue;
             }

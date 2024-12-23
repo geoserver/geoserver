@@ -14,9 +14,9 @@ import java.net.URISyntaxException;
 
 public class GeofenceTestUtils {
 
-    public static String readConfig(String fileName)
-            throws URISyntaxException, FileNotFoundException, IOException {
-        File configFile = new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
+    public static String readConfig(String fileName) throws URISyntaxException, FileNotFoundException, IOException {
+        File configFile =
+                new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
 
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
@@ -28,8 +28,7 @@ public class GeofenceTestUtils {
         return content.toString();
     }
 
-    public static String readConfig(File configFile)
-            throws URISyntaxException, FileNotFoundException, IOException {
+    public static String readConfig(File configFile) throws URISyntaxException, FileNotFoundException, IOException {
 
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
@@ -43,7 +42,8 @@ public class GeofenceTestUtils {
 
     public static File emptyFile(String fileName) throws URISyntaxException, IOException {
         if (GeofenceTestUtils.class.getResource("/" + fileName) != null) {
-            File file = new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
+            File file =
+                    new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
             try (FileWriter writer = new FileWriter(file)) {
                 writer.write("");
                 return file;

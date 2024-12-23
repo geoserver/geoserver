@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
 
-/**
- * This is a token validator that runs a list of TokenValidators. This doesn't do any validation on
- * its own...
- */
+/** This is a token validator that runs a list of TokenValidators. This doesn't do any validation on its own... */
 public class MultiTokenValidator implements TokenValidator {
 
     List<TokenValidator> validators;
@@ -21,8 +18,7 @@ public class MultiTokenValidator implements TokenValidator {
     }
 
     @Override
-    public void verifyToken(
-            OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
+    public void verifyToken(OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
             throws Exception {
         if (validators == null) {
             return; // nothing to do

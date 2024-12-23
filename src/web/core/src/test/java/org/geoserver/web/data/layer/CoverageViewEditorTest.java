@@ -21,15 +21,13 @@ import org.junit.Test;
 
 public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
 
-    private static QName TIME_RANGES =
-            new QName(MockData.DEFAULT_URI, "timeranges", MockData.DEFAULT_PREFIX);
+    private static QName TIME_RANGES = new QName(MockData.DEFAULT_URI, "timeranges", MockData.DEFAULT_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         // add raster file to perform some tests
-        testData.addRasterLayer(
-                TIME_RANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(TIME_RANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
         testData.addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
     }
 
@@ -38,8 +36,7 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
         // perform the login as administrator
         login();
         // opening the new coverage view page
-        CoverageViewNewPage newPage =
-                new CoverageViewNewPage(MockData.DEFAULT_PREFIX, "timeranges", null, null);
+        CoverageViewNewPage newPage = new CoverageViewNewPage(MockData.DEFAULT_PREFIX, "timeranges", null, null);
         tester.startPage(newPage);
         tester.assertComponent("form:coverages:outputBandsChoice", ListMultipleChoice.class);
         // let's see if we have the correct components instantiated
@@ -54,11 +51,9 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
                 (CoverageViewEditor) tester.getComponentFromLastRenderedPage("form:coverages");
         coverageViewEditor.setModelObject(null);
         ListMultipleChoice availableBands =
-                (ListMultipleChoice)
-                        tester.getComponentFromLastRenderedPage("form:coverages:coveragesChoice");
+                (ListMultipleChoice) tester.getComponentFromLastRenderedPage("form:coverages:coveragesChoice");
         ListMultipleChoice selectedBands =
-                (ListMultipleChoice)
-                        tester.getComponentFromLastRenderedPage("form:coverages:outputBandsChoice");
+                (ListMultipleChoice) tester.getComponentFromLastRenderedPage("form:coverages:outputBandsChoice");
         // select the first band
         FormTester formTester = tester.newFormTester("form");
         formTester.selectMultiple("coverages:coveragesChoice", new int[] {0});
@@ -80,12 +75,8 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
         // perform the login as administrator
         login();
         // opening the new coverage view page
-        CoverageViewNewPage newPage =
-                new CoverageViewNewPage(
-                        MockData.TASMANIA_BM.getPrefix(),
-                        MockData.TASMANIA_BM.getLocalPart(),
-                        null,
-                        null);
+        CoverageViewNewPage newPage = new CoverageViewNewPage(
+                MockData.TASMANIA_BM.getPrefix(), MockData.TASMANIA_BM.getLocalPart(), null, null);
         tester.startPage(newPage);
         tester.assertComponent("form:coverages:outputBandsChoice", ListMultipleChoice.class);
         // check the available bands names without any selected band
@@ -93,11 +84,9 @@ public class CoverageViewEditorTest extends GeoServerWicketTestSupport {
                 (CoverageViewEditor) tester.getComponentFromLastRenderedPage("form:coverages");
         coverageViewEditor.setModelObject(null);
         ListMultipleChoice availableBands =
-                (ListMultipleChoice)
-                        tester.getComponentFromLastRenderedPage("form:coverages:coveragesChoice");
+                (ListMultipleChoice) tester.getComponentFromLastRenderedPage("form:coverages:coveragesChoice");
         ListMultipleChoice selectedBands =
-                (ListMultipleChoice)
-                        tester.getComponentFromLastRenderedPage("form:coverages:outputBandsChoice");
+                (ListMultipleChoice) tester.getComponentFromLastRenderedPage("form:coverages:outputBandsChoice");
         // select the first band
         FormTester formTester = tester.newFormTester("form");
         formTester.selectMultiple("coverages:coveragesChoice", new int[] {0});

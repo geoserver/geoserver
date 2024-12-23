@@ -27,8 +27,7 @@ import org.geotools.referencing.CRS;
 
 public class GraticulePanel extends Panel {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(GraticuleDataStore.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(GraticuleDataStore.class);
 
     FormComponent steps;
 
@@ -54,11 +53,8 @@ public class GraticulePanel extends Panel {
         // deseialise bounds
 
         add(
-                bounds =
-                        new EnvelopePanel(
-                                "bounds",
-                                new MapModel<org.geotools.geometry.jts.ReferencedEnvelope>(
-                                        paramsModel, "bounds")));
+                bounds = new EnvelopePanel(
+                        "bounds", new MapModel<org.geotools.geometry.jts.ReferencedEnvelope>(paramsModel, "bounds")));
         if (bounds.getModelObject() == null) {
             bounds.setDefaultModelObject(new ReferencedEnvelope(DEFAULT_CRS));
         }
@@ -67,48 +63,39 @@ public class GraticulePanel extends Panel {
         bounds.setCrsRequired(true);
         bounds.setOutputMarkupId(true);
 
-        add(
-                new GeoServerAjaxFormLink("generateBoundsFromCRS") {
-                    private static final long serialVersionUID = -7907583302556368270L;
+        add(new GeoServerAjaxFormLink("generateBoundsFromCRS") {
+            private static final long serialVersionUID = -7907583302556368270L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        LOGGER.log(Level.FINE, "Computing bounds for graticule based off CRS");
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                LOGGER.log(Level.FINE, "Computing bounds for graticule based off CRS");
 
-                        CoordinateReferenceSystem crs = bounds.getCoordinateReferenceSystem();
-                        Bounds crsEnvelope = CRS.getEnvelope(crs);
-                        if (crsEnvelope != null) {
-                            ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
-                            bounds.setDefaultModelObject(refEnvelope);
-                        }
+                CoordinateReferenceSystem crs = bounds.getCoordinateReferenceSystem();
+                Bounds crsEnvelope = CRS.getEnvelope(crs);
+                if (crsEnvelope != null) {
+                    ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
+                    bounds.setDefaultModelObject(refEnvelope);
+                }
 
-                        bounds.modelChanged();
-                        target.add(bounds);
-                    }
-                });
+                bounds.modelChanged();
+                target.add(bounds);
+            }
+        });
 
         steps.setOutputMarkupId(true);
     }
 
-    private FormComponent addTextPanel(
-            final IModel paramsModel, final String paramName, final boolean required) {
+    private FormComponent addTextPanel(final IModel paramsModel, final String paramName, final boolean required) {
         return addTextPanel(paramsModel, paramName, paramName, required);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private FormComponent addTextPanel(
-            final IModel paramsModel,
-            final String paramName,
-            final String paramTitle,
-            final boolean required) {
+            final IModel paramsModel, final String paramName, final String paramTitle, final boolean required) {
         final String resourceKey = getClass().getSimpleName() + "." + paramName;
 
-        final TextParamPanel textParamPanel =
-                new TextParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramTitle),
-                        new ResourceModel(resourceKey, paramName),
-                        required);
+        final TextParamPanel textParamPanel = new TextParamPanel(
+                paramName, new MapModel(paramsModel, paramTitle), new ResourceModel(resourceKey, paramName), required);
         textParamPanel.getFormComponent().setType(String.class /*param.type*/);
 
         String defaultTitle = paramTitle;

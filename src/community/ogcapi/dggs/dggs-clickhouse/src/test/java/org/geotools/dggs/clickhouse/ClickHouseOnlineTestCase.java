@@ -64,8 +64,8 @@ public abstract class ClickHouseOnlineTestCase extends OnlineTestCase {
     /**
      * Allows test to create a sample fixture for users.
      *
-     * <p>If this method returns a value the first time a fixture is looked up and not found this
-     * method will be called to create a fixture file with teh same id, but suffixed with .template.
+     * <p>If this method returns a value the first time a fixture is looked up and not found this method will be called
+     * to create a fixture file with teh same id, but suffixed with .template.
      */
     @Override
     protected Properties createExampleFixture() {

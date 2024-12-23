@@ -30,8 +30,8 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 /**
- * Generate the gui as a list of Complex Objects(an object contains multiple simple fields or
- * objects). Add ui components to manage the list.
+ * Generate the gui as a list of Complex Objects(an object contains multiple simple fields or objects). Add ui
+ * components to manage the list.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -90,8 +90,7 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         dataProvider.addField();
                         updateTable();
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                         target.add(tablePanel);
                         target.add(noData);
                     }
@@ -110,58 +109,45 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         dialog.setInitialHeight(generator.getDialogContentHeight());
-                        dialog.showOkCancel(
-                                target,
-                                new GeoServerDialog.DialogDelegate() {
-                                    private static final long serialVersionUID =
-                                            -8716380894588651422L;
+                        dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                            private static final long serialVersionUID = -8716380894588651422L;
 
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        return generator.getDialogContent(
-                                                id, (LayerInfo) tabPanel.getDefaultModelObject());
-                                    }
+                            @Override
+                            protected Component getContents(String id) {
+                                return generator.getDialogContent(id, (LayerInfo) tabPanel.getDefaultModelObject());
+                            }
 
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        generator.generate(
-                                                attributeConfiguration,
-                                                getMetadataModel().getObject(),
-                                                (LayerInfo) tabPanel.getDefaultModelObject(),
-                                                contents.getDefaultModelObject());
-                                        fixAll();
-                                        dataProvider.reset();
-                                        GeoServerTablePanel<ComplexMetadataMap> panel =
-                                                createAttributesTablePanel(
-                                                        dataProvider, derivedAtts);
-                                        target.add(
-                                                RepeatableComplexAttributesTablePanel.this
-                                                        .get("attributesTablePanel")
-                                                        .replaceWith(panel));
-                                        updateTable();
-                                        target.add(noData);
-                                        return true;
-                                    }
-                                });
-                    }
-                }.setVisible(
-                        isEnabledInHierarchy()
-                                && generator != null
-                                && tabPanel != null
-                                && generator.supports(
+                            @Override
+                            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                                generator.generate(
+                                        attributeConfiguration,
                                         getMetadataModel().getObject(),
-                                        (LayerInfo) tabPanel.getDefaultModelObject())));
+                                        (LayerInfo) tabPanel.getDefaultModelObject(),
+                                        contents.getDefaultModelObject());
+                                fixAll();
+                                dataProvider.reset();
+                                GeoServerTablePanel<ComplexMetadataMap> panel =
+                                        createAttributesTablePanel(dataProvider, derivedAtts);
+                                target.add(RepeatableComplexAttributesTablePanel.this
+                                        .get("attributesTablePanel")
+                                        .replaceWith(panel));
+                                updateTable();
+                                target.add(noData);
+                                return true;
+                            }
+                        });
+                    }
+                }.setVisible(isEnabledInHierarchy()
+                        && generator != null
+                        && tabPanel != null
+                        && generator.supports(
+                                getMetadataModel().getObject(), (LayerInfo) tabPanel.getDefaultModelObject())));
     }
 
     private void fixAll() {
         ComplexMetadataService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(ComplexMetadataService.class);
-        for (int i = 0;
-                i < getMetadataModel().getObject().size(attributeConfiguration.getKey());
-                i++) {
+                GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
+        for (int i = 0; i < getMetadataModel().getObject().size(attributeConfiguration.getKey()); i++) {
             service.init(
                     getMetadataModel().getObject().subMap(attributeConfiguration.getKey(), i),
                     attributeConfiguration.getTypename());
@@ -169,110 +155,93 @@ public class RepeatableComplexAttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<ComplexMetadataMap> createAttributesTablePanel(
-            RepeatableComplexAttributeDataProvider dataProvider,
-            Map<String, List<Integer>> derivedAtts) {
+            RepeatableComplexAttributeDataProvider dataProvider, Map<String, List<Integer>> derivedAtts) {
 
-        tablePanel =
-                new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
-                    private static final long serialVersionUID = 4333335931795175790L;
+        tablePanel = new GeoServerTablePanel<ComplexMetadataMap>("attributesTablePanel", dataProvider) {
+            private static final long serialVersionUID = 4333335931795175790L;
 
-                    private IModel<ComplexMetadataMap> disabledValue = null;
+            private IModel<ComplexMetadataMap> disabledValue = null;
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<ComplexMetadataMap> itemModel,
-                            GeoServerDataProvider.Property<ComplexMetadataMap> property) {
+            @SuppressWarnings("unchecked")
+            @Override
+            protected Component getComponentForProperty(
+                    String id,
+                    IModel<ComplexMetadataMap> itemModel,
+                    GeoServerDataProvider.Property<ComplexMetadataMap> property) {
 
-                        AttributeConfiguration attributeConfiguration =
-                                dataProvider.getConfiguration();
+                AttributeConfiguration attributeConfiguration = dataProvider.getConfiguration();
 
-                        // disable input values from template
-                        boolean enableInput = true;
+                // disable input values from template
+                boolean enableInput = true;
 
-                        if (derivedAtts != null
-                                && derivedAtts.containsKey(attributeConfiguration.getKey())) {
-                            List<Integer> indexes =
-                                    derivedAtts.get(attributeConfiguration.getKey());
-                            if (indexes.contains(itemModel.getObject().getIndex())) {
-                                enableInput = false;
-                                disabledValue = itemModel;
-                            }
-                        }
-
-                        if (property.getName()
-                                .equals(RepeatableComplexAttributeDataProvider.KEY_VALUE)) {
-
-                            Component component =
-                                    new AttributesTablePanel(
-                                            id,
-                                            new AttributeDataProvider(
-                                                    attributeConfiguration.getTypename(), rInfo),
-                                            itemModel,
-                                            null,
-                                            rInfo);
-                            component.setEnabled(enableInput);
-
-                            return component;
-
-                        } else if (property.getName()
-                                .equals(RepeatableComplexAttributeDataProvider.KEY_REMOVE_ROW)) {
-                            if (itemModel.equals(disabledValue)) {
-                                // If the object is for a row that is not editable don't show the
-                                // remove button
-                                disabledValue = null;
-                                return new Label(id, "");
-                            } else {
-                                MarkupContainer container =
-                                        (MarkupContainer)
-                                                tablePanel.get("listContainer").get("items");
-                                AjaxSubmitLink deleteAction =
-                                        new AjaxSubmitLink(id) {
-
-                                            private static final long serialVersionUID =
-                                                    -8829474855848647384L;
-
-                                            @Override
-                                            public void onSubmit(
-                                                    AjaxRequestTarget target, Form<?> form) {
-                                                removeFields(target, itemModel);
-                                                updateTable();
-                                                container.removeAll();
-                                                target.add(tablePanel);
-                                                target.add(noData);
-                                            }
-                                        };
-                                deleteAction.add(new AttributeAppender("class", "remove-link"));
-                                deleteAction.setVisible(isEnabledInHierarchy());
-                                return deleteAction;
-                            }
-                        } else if (property.getName()
-                                .equals(RepeatableComplexAttributeDataProvider.KEY_UPDOWN_ROW)) {
-                            IModel<ComplexMetadataMap> model =
-                                    (IModel<ComplexMetadataMap>)
-                                            RepeatableComplexAttributesTablePanel.this
-                                                    .getDefaultModel();
-                            return new AttributePositionPanel(
-                                            id,
-                                            model,
-                                            dataProvider.getConfiguration(),
-                                            itemModel.getObject().getIndex(),
-                                            getDerivedAtts(
-                                                    dataProvider.getConfiguration().getKey()),
-                                            this)
-                                    .setVisible(isEnabledInHierarchy());
-                        }
-                        return null;
+                if (derivedAtts != null && derivedAtts.containsKey(attributeConfiguration.getKey())) {
+                    List<Integer> indexes = derivedAtts.get(attributeConfiguration.getKey());
+                    if (indexes.contains(itemModel.getObject().getIndex())) {
+                        enableInput = false;
+                        disabledValue = itemModel;
                     }
+                }
 
-                    private void removeFields(
-                            AjaxRequestTarget target, IModel<ComplexMetadataMap> itemModel) {
-                        ComplexMetadataMap object = itemModel.getObject();
-                        dataProvider.removeField(object);
-                        target.add(this);
+                if (property.getName().equals(RepeatableComplexAttributeDataProvider.KEY_VALUE)) {
+
+                    Component component = new AttributesTablePanel(
+                            id,
+                            new AttributeDataProvider(attributeConfiguration.getTypename(), rInfo),
+                            itemModel,
+                            null,
+                            rInfo);
+                    component.setEnabled(enableInput);
+
+                    return component;
+
+                } else if (property.getName().equals(RepeatableComplexAttributeDataProvider.KEY_REMOVE_ROW)) {
+                    if (itemModel.equals(disabledValue)) {
+                        // If the object is for a row that is not editable don't show the
+                        // remove button
+                        disabledValue = null;
+                        return new Label(id, "");
+                    } else {
+                        MarkupContainer container = (MarkupContainer)
+                                tablePanel.get("listContainer").get("items");
+                        AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
+
+                            private static final long serialVersionUID = -8829474855848647384L;
+
+                            @Override
+                            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                                removeFields(target, itemModel);
+                                updateTable();
+                                container.removeAll();
+                                target.add(tablePanel);
+                                target.add(noData);
+                            }
+                        };
+                        deleteAction.add(new AttributeAppender("class", "remove-link"));
+                        deleteAction.setVisible(isEnabledInHierarchy());
+                        return deleteAction;
                     }
-                };
+                } else if (property.getName().equals(RepeatableComplexAttributeDataProvider.KEY_UPDOWN_ROW)) {
+                    IModel<ComplexMetadataMap> model =
+                            (IModel<ComplexMetadataMap>) RepeatableComplexAttributesTablePanel.this.getDefaultModel();
+                    return new AttributePositionPanel(
+                                    id,
+                                    model,
+                                    dataProvider.getConfiguration(),
+                                    itemModel.getObject().getIndex(),
+                                    getDerivedAtts(
+                                            dataProvider.getConfiguration().getKey()),
+                                    this)
+                            .setVisible(isEnabledInHierarchy());
+                }
+                return null;
+            }
+
+            private void removeFields(AjaxRequestTarget target, IModel<ComplexMetadataMap> itemModel) {
+                ComplexMetadataMap object = itemModel.getObject();
+                dataProvider.removeField(object);
+                target.add(this);
+            }
+        };
 
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);

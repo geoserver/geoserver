@@ -73,17 +73,8 @@ public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
         }
 
         Set<String> resourceIds = new LinkedHashSet<>(getAud(map));
-        OAuth2Request request =
-                new OAuth2Request(
-                        parameters,
-                        clientId,
-                        null,
-                        true,
-                        scope,
-                        resourceIds,
-                        null,
-                        null,
-                        extensionParameters);
+        OAuth2Request request = new OAuth2Request(
+                parameters, clientId, null, true, scope, resourceIds, null, null, extensionParameters);
         return new OAuth2Authentication(request, user);
     }
 

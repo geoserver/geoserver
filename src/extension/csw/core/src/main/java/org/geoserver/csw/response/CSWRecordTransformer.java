@@ -23,8 +23,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Encodes a FeatureCollection containing {@link CSWRecordDescriptor#RECORD} features into the
- * specified XML according to the chosen profile, brief, summary or full
+ * Encodes a FeatureCollection containing {@link CSWRecordDescriptor#RECORD} features into the specified XML according
+ * to the chosen profile, brief, summary or full
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -91,13 +91,11 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                     // aggregate)
                     @SuppressWarnings("unchecked")
                     List<ReferencedEnvelope> originalBoxes =
-                            (List<ReferencedEnvelope>)
-                                    bboxes.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
+                            (List<ReferencedEnvelope>) bboxes.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
                     for (ReferencedEnvelope re : originalBoxes) {
                         try {
                             ReferencedEnvelope wgs84re =
-                                    re.transform(
-                                            CRS.decode(CSWRecordDescriptor.DEFAULT_CRS_NAME), true);
+                                    re.transform(CRS.decode(CSWRecordDescriptor.DEFAULT_CRS_NAME), true);
 
                             String minx = String.valueOf(wgs84re.getMinX());
                             String miny = String.valueOf(wgs84re.getMinY());
@@ -111,8 +109,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                             element("ows:UpperCorner", maxx + " " + maxy);
                             end("ows:BoundingBox");
                         } catch (Exception e) {
-                            throw new ServiceException(
-                                    "Failed to encode the current record: " + f, e);
+                            throw new ServiceException("Failed to encode the current record: " + f, e);
                         }
                     }
                 }
@@ -124,21 +121,18 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
             if (p.getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
                 encodeSimpleLiteral(p);
             } else if (!CSWRecordDescriptor.RECORD_BBOX_NAME.equals(p.getName())) {
-                throw new IllegalArgumentException(
-                        "Don't know how to encode property " + p + " in record " + f);
+                throw new IllegalArgumentException("Don't know how to encode property " + p + " in record " + f);
             }
         }
 
         private void encodeSimpleLiteral(Property p) {
             ComplexAttribute sl = (ComplexAttribute) p;
-            String scheme =
-                    sl.getProperty("scheme") == null
-                            ? null
-                            : (String) sl.getProperty("scheme").getValue();
-            String value =
-                    sl.getProperty("value") == null
-                            ? ""
-                            : (String) sl.getProperty("value").getValue();
+            String scheme = sl.getProperty("scheme") == null
+                    ? null
+                    : (String) sl.getProperty("scheme").getValue();
+            String value = sl.getProperty("value") == null
+                    ? ""
+                    : (String) sl.getProperty("value").getValue();
             Name dn = p.getDescriptor().getName();
             String name = dn.getLocalPart();
             String prefix = CSWRecordDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());

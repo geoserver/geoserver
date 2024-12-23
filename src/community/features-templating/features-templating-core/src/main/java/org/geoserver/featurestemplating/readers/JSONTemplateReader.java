@@ -53,9 +53,7 @@ public class JSONTemplateReader implements TemplateReader {
     private List<FileWatcher<Object>> watchers;
 
     public JSONTemplateReader(
-            JsonNode template,
-            TemplateReaderConfiguration configuration,
-            List<FileWatcher<Object>> watchers) {
+            JsonNode template, TemplateReaderConfiguration configuration, List<FileWatcher<Object>> watchers) {
         this.template = template;
         this.configuration = configuration;
         this.watchers = watchers;
@@ -69,8 +67,7 @@ public class JSONTemplateReader implements TemplateReader {
     @Override
     public RootBuilder getRootBuilder() {
         TemplateBuilderMaker builderMaker = configuration.getBuilderMaker();
-        if (template.has(CONTEXTKEY))
-            builderMaker.encodingOption(CONTEXTKEY, template.get(CONTEXTKEY));
+        if (template.has(CONTEXTKEY)) builderMaker.encodingOption(CONTEXTKEY, template.get(CONTEXTKEY));
         builderMaker.rootBuilder(true);
         RootBuilder root = (RootBuilder) builderMaker.build();
         builderMaker.namespaces(configuration.getNamespaces());
@@ -80,10 +77,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     public void getBuilderFromJson(
-            String nodeName,
-            JsonNode node,
-            TemplateBuilder currentBuilder,
-            TemplateBuilderMaker maker) {
+            String nodeName, JsonNode node, TemplateBuilder currentBuilder, TemplateBuilderMaker maker) {
         if (node.isObject()) {
             getBuilderFromJsonObject(node, currentBuilder, maker);
         } else if (node.isArray()) {
@@ -93,8 +87,7 @@ public class JSONTemplateReader implements TemplateReader {
         }
     }
 
-    private void getBuilderFromJsonObject(
-            JsonNode node, TemplateBuilder currentBuilder, TemplateBuilderMaker maker) {
+    private void getBuilderFromJsonObject(JsonNode node, TemplateBuilder currentBuilder, TemplateBuilderMaker maker) {
         // check special node at beginning of arrays, controlling the array contents
         if (isArrayControlNode(node)) {
             if (node.has(SOURCEKEY)) {
@@ -113,10 +106,9 @@ public class JSONTemplateReader implements TemplateReader {
                 String strValueNode = valueNode.toString();
                 // These fields have to be jumped cause they got writed
                 // before feature evaluation starts
-                boolean jumpField =
-                        (entryName.equalsIgnoreCase("type")
-                                        && valueNode.asText().equals("FeatureCollection"))
-                                || entryName.equalsIgnoreCase("features");
+                boolean jumpField = (entryName.equalsIgnoreCase("type")
+                                && valueNode.asText().equals("FeatureCollection"))
+                        || entryName.equalsIgnoreCase("features");
                 if (entryName.equals(SOURCEKEY)) {
                     String source = valueNode.asText();
                     currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
@@ -133,9 +125,7 @@ public class JSONTemplateReader implements TemplateReader {
                     }
                 } else if (entryName.equals(VENDOROPTION)) {
                     setVendorOptions(valueNode, (RootBuilder) currentBuilder, maker);
-                } else if (!strValueNode.contains(EXPRSTART)
-                        && !strValueNode.contains(FILTERKEY)
-                        && !jumpField) {
+                } else if (!strValueNode.contains(EXPRSTART) && !strValueNode.contains(FILTERKEY) && !jumpField) {
                     currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                     maker.name(entryName).jsonNode(valueNode);
                     currentBuilder.addChild(maker.build());
@@ -145,28 +135,27 @@ public class JSONTemplateReader implements TemplateReader {
                     ObjectNode container = (ObjectNode) objectNode.remove(INCLUDE_FLAT_KEY);
                     JsonNode includingNode = container.remove(INCLUDING_NODE);
                     JsonNode exprNode = container.remove(INCLUDE_FLAT_EXPR);
-                    currentBuilder.addChild(
-                            maker.jsonNode(valueNode)
-                                    .dynamicIncludeFlatBuilder(true)
-                                    .baseNode(includingNode)
-                                    .textContent(exprNode.asText())
-                                    .build());
+                    currentBuilder.addChild(maker.jsonNode(valueNode)
+                            .dynamicIncludeFlatBuilder(true)
+                            .baseNode(includingNode)
+                            .textContent(exprNode.asText())
+                            .build());
                 } else {
                     if (valueNode.isObject()) {
                         if (entryName.startsWith(DYNAMIC_MERGE_KEY)) {
                             if (valueNode.fields().hasNext()) {
                                 currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
-                                Map.Entry<String, JsonNode> fieldNode = valueNode.fields().next();
+                                Map.Entry<String, JsonNode> fieldNode =
+                                        valueNode.fields().next();
                                 String key = fieldNode.getKey();
                                 JsonNode innerNode = fieldNode.getValue();
                                 JsonNode overlay = innerNode.get(DYNAMIC_MERGE_OVERLAY);
                                 JsonNode baseMergeNode = innerNode.get(DYNAMIC_MERGE_BASE);
 
-                                currentBuilder.addChild(
-                                        maker.overlayNode(overlay)
-                                                .name(key)
-                                                .baseNode(baseMergeNode)
-                                                .build());
+                                currentBuilder.addChild(maker.overlayNode(overlay)
+                                        .name(key)
+                                        .baseNode(baseMergeNode)
+                                        .build());
                             }
                         } else {
                             maker.name(entryName);
@@ -184,8 +173,7 @@ public class JSONTemplateReader implements TemplateReader {
                     } else {
                         if (!jumpField) {
                             currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
-                            getBuilderFromJsonAttribute(
-                                    entryName, valueNode, currentBuilder, maker);
+                            getBuilderFromJsonAttribute(entryName, valueNode, currentBuilder, maker);
                         }
                     }
                 }
@@ -194,10 +182,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private void getBuilderFromJsonArray(
-            String nodeName,
-            JsonNode node,
-            TemplateBuilder currentBuilder,
-            TemplateBuilderMaker maker) {
+            String nodeName, JsonNode node, TemplateBuilder currentBuilder, TemplateBuilderMaker maker) {
         if (!node.toString().contains(EXPRSTART) && !node.toString().contains(FILTERKEY)) {
             maker.name(nodeName).jsonNode(node);
             currentBuilder.addChild(maker.build());
@@ -213,15 +198,11 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private void buildIteratingBuilder(
-            String nodeName,
-            TemplateBuilder currentBuilder,
-            ArrayNode node,
-            TemplateBuilderMaker maker) {
-        TemplateBuilder iteratingBuilder =
-                maker.name(nodeName)
-                        .collection(true)
-                        .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
-                        .build();
+            String nodeName, TemplateBuilder currentBuilder, ArrayNode node, TemplateBuilderMaker maker) {
+        TemplateBuilder iteratingBuilder = maker.name(nodeName)
+                .collection(true)
+                .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
+                .build();
         currentBuilder.addChild(iteratingBuilder);
         Iterator<JsonNode> arrayIterator = node.elements();
         while (arrayIterator.hasNext()) {
@@ -233,8 +214,8 @@ public class JSONTemplateReader implements TemplateReader {
                     getBuilderFromJsonObject(childNode, iteratingBuilder, maker);
                 } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
                     // regular dynamic object/filtered object
-                    TemplateBuilder compositeBuilder =
-                            maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder)).build();
+                    TemplateBuilder compositeBuilder = maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
+                            .build();
                     iteratingBuilder.addChild(compositeBuilder);
                     getBuilderFromJsonObject(childNode, compositeBuilder, maker);
                 } else {
@@ -258,13 +239,12 @@ public class JSONTemplateReader implements TemplateReader {
             List<JsonNode> expressionNodes) {
         // the array include flat is a container
         // since might have multiple includeFlat directive.
-        TemplateBuilder arrayIncludeFlat =
-                maker.dynamicIncludeFlatBuilder(true)
-                        .baseNode(node)
-                        .name(nodeName)
-                        .textContent("${.}")
-                        .collection(true)
-                        .build();
+        TemplateBuilder arrayIncludeFlat = maker.dynamicIncludeFlatBuilder(true)
+                .baseNode(node)
+                .name(nodeName)
+                .textContent("${.}")
+                .collection(true)
+                .build();
 
         currentBuilder.addChild(arrayIncludeFlat);
         // here we add the actual expression of the includeFlat directive as children.
@@ -300,10 +280,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private void getBuilderFromJsonAttribute(
-            String nodeName,
-            JsonNode node,
-            TemplateBuilder currentBuilder,
-            TemplateBuilderMaker maker) {
+            String nodeName, JsonNode node, TemplateBuilder currentBuilder, TemplateBuilderMaker maker) {
         String strNode = node.asText();
         if (!node.asText().contains("FeatureCollection")) {
             maker.name(nodeName).contentAndFilter(strNode);
@@ -330,15 +307,10 @@ public class JSONTemplateReader implements TemplateReader {
             builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
         }
         Expression flatOutput =
-                builder.getVendorOptions()
-                        .get(FLAT_OUTPUT, Expression.class, new LiteralExpressionImpl(false));
+                builder.getVendorOptions().get(FLAT_OUTPUT, Expression.class, new LiteralExpressionImpl(false));
         boolean bFlatOutput = flatOutput.evaluate(null, Boolean.class).booleanValue();
-        Expression expression =
-                builder.getVendorOptions()
-                        .get(
-                                VendorOptions.SEPARATOR,
-                                Expression.class,
-                                new LiteralExpressionImpl("_"));
+        Expression expression = builder.getVendorOptions()
+                .get(VendorOptions.SEPARATOR, Expression.class, new LiteralExpressionImpl("_"));
         maker.flatOutput(bFlatOutput).separator(expression.evaluate(null, String.class));
     }
 
@@ -353,8 +325,7 @@ public class JSONTemplateReader implements TemplateReader {
     // create a composite as direct child of a Root builder
     // needed for the case where we have a template not defining the features array but only
     // the feature attributes template
-    private TemplateBuilder createCompositeIfNeeded(
-            TemplateBuilder currentParent, TemplateBuilderMaker maker) {
+    private TemplateBuilder createCompositeIfNeeded(TemplateBuilder currentParent, TemplateBuilderMaker maker) {
         TemplateBuilder builder;
         if (currentParent instanceof RootBuilder) {
             maker.topLevelFeature(true);

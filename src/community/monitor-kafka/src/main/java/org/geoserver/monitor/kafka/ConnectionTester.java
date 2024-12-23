@@ -34,18 +34,13 @@ public class ConnectionTester {
             return false;
         }
         try (AdminClient adminClient = AdminClient.create(properties)) {
-            Map<String, TopicDescription> topicDescribe =
-                    adminClient
-                            .describeTopics(
-                                    List.of(topic), new DescribeTopicsOptions().timeoutMs(10_000))
-                            .allTopicNames()
-                            .get();
+            Map<String, TopicDescription> topicDescribe = adminClient
+                    .describeTopics(List.of(topic), new DescribeTopicsOptions().timeoutMs(10_000))
+                    .allTopicNames()
+                    .get();
             boolean topicExists = topicDescribe.containsKey(topic);
-            LOGGER.info(
-                    "Kafka connection established"
-                            + (topicExists
-                                    ? " and topic " + topic + " exists"
-                                    : " but topic " + topic + " does not exist"));
+            LOGGER.info("Kafka connection established"
+                    + (topicExists ? " and topic " + topic + " exists" : " but topic " + topic + " does not exist"));
             return topicExists;
         } catch (ExecutionException | InterruptedException e) {
             LOGGER.warning("Kafka connection failed " + e.getMessage());

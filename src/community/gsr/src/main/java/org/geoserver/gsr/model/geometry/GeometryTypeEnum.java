@@ -53,13 +53,11 @@ public enum GeometryTypeEnum {
         } else if (jtsClass.equals(org.locationtech.jts.geom.Envelope.class)) {
             return ENVELOPE;
         } else {
-            throw new NoSuchElementException(
-                    "No GeoServices Geometry equivalent known for " + jtsClass);
+            throw new NoSuchElementException("No GeoServices Geometry equivalent known for " + jtsClass);
         }
     }
 
-    public static GeometryTypeEnum forResourceDefaultGeometry(ResourceInfo resource)
-            throws IOException {
+    public static GeometryTypeEnum forResourceDefaultGeometry(ResourceInfo resource) throws IOException {
         if (resource instanceof CoverageInfo) {
             return POLYGON;
         } else if (resource instanceof FeatureTypeInfo) {

@@ -21,14 +21,13 @@ import org.geotools.api.util.ProgressListener;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped {@link DataStoreInfo}. Subclasses will override selected
- * methods to perform their "decoration" job
+ * Delegates every method to the wrapped {@link DataStoreInfo}. Subclasses will override selected methods to perform
+ * their "decoration" job
  *
  * @author Andrea Aime
  */
 @SuppressWarnings("serial")
-public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo>
-        implements DataStoreInfo {
+public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo> implements DataStoreInfo {
 
     public DecoratingDataStoreInfo(DataStoreInfo delegate) {
         super(delegate);
@@ -45,8 +44,8 @@ public class DecoratingDataStoreInfo extends AbstractDecorator<DataStoreInfo>
     }
 
     @Override
-    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
-            ProgressListener listener) throws IOException {
+    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener)
+            throws IOException {
         return delegate.getDataStore(listener);
     }
 

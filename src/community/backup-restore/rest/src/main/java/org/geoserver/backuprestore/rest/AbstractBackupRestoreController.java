@@ -171,9 +171,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         ClassAliasingMapper optionsMapper = new ClassAliasingMapper(xStream.getMapper());
         optionsMapper.addClassAlias("option", String.class);
         xStream.registerLocalConverter(
-                AbstractExecutionAdapter.class,
-                "options",
-                new CollectionConverter(optionsMapper) {
+                AbstractExecutionAdapter.class, "options", new CollectionConverter(optionsMapper) {
 
                     @Override
                     public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
@@ -185,9 +183,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         warningsMapper.addClassAlias(Level.WARNING.getName(), RuntimeException.class);
         warningsMapper.addClassAlias(Level.WARNING.getName(), CatalogException.class);
         xStream.registerLocalConverter(
-                AbstractExecutionAdapter.class,
-                "warningsList",
-                new CollectionConverter(warningsMapper) {
+                AbstractExecutionAdapter.class, "warningsList", new CollectionConverter(warningsMapper) {
 
                     @Override
                     public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
@@ -195,7 +191,8 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                     }
                 });
 
-        Class<? extends Resource> resourceAdaptorType = Files.asResource(new File("/")).getClass();
+        Class<? extends Resource> resourceAdaptorType =
+                Files.asResource(new File("/")).getClass();
         xStream.alias("resource", resourceAdaptorType);
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class, "archiveFile", new ArchiveFileResourceConverter());
@@ -211,33 +208,27 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
                 "delegate",
-                new JobExecutionConverter(
-                        xStream.getMapper(), xStream.getReflectionProvider(), this.backupFacade));
+                new JobExecutionConverter(xStream.getMapper(), xStream.getReflectionProvider(), this.backupFacade));
 
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
                 "wsFilter",
-                new FilterConverter(
-                        "wsFilter", xStream.getMapper(), xStream.getReflectionProvider()));
+                new FilterConverter("wsFilter", xStream.getMapper(), xStream.getReflectionProvider()));
 
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
                 "siFilter",
-                new FilterConverter(
-                        "siFilter", xStream.getMapper(), xStream.getReflectionProvider()));
+                new FilterConverter("siFilter", xStream.getMapper(), xStream.getReflectionProvider()));
 
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class,
                 "liFilter",
-                new FilterConverter(
-                        "liFilter", xStream.getMapper(), xStream.getReflectionProvider()));
+                new FilterConverter("liFilter", xStream.getMapper(), xStream.getReflectionProvider()));
 
         ClassAliasingMapper stepExecutionsMapper = new ClassAliasingMapper(xStream.getMapper());
         stepExecutionsMapper.addClassAlias("step", StepExecution.class);
         xStream.registerLocalConverter(
-                JobExecution.class,
-                "stepExecutions",
-                new CollectionConverter(stepExecutionsMapper) {
+                JobExecution.class, "stepExecutions", new CollectionConverter(stepExecutionsMapper) {
 
                     @Override
                     public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
@@ -245,8 +236,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                     }
 
                     @Override
-                    public void marshal(
-                            Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
+                    public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext ctx) {
                         CopyOnWriteArraySet execs = (CopyOnWriteArraySet) obj;
                         Iterator iterator = execs.iterator();
 
@@ -275,8 +265,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
                             if (exec.getStartTime() != null) {
                                 writer.startNode("startTime");
-                                writer.setValue(
-                                        DateFormat.getInstance().format(exec.getStartTime()));
+                                writer.setValue(DateFormat.getInstance().format(exec.getStartTime()));
                                 writer.endNode();
                             }
 
@@ -288,16 +277,17 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
                             if (exec.getLastUpdated() != null) {
                                 writer.startNode("lastUpdated");
-                                writer.setValue(
-                                        DateFormat.getInstance().format(exec.getLastUpdated()));
+                                writer.setValue(DateFormat.getInstance().format(exec.getLastUpdated()));
                                 writer.endNode();
                             }
 
                             writer.startNode("parameters");
-                            for (Entry param : exec.getJobParameters().getParameters().entrySet()) {
+                            for (Entry param :
+                                    exec.getJobParameters().getParameters().entrySet()) {
                                 writer.startNode((String) param.getKey());
-                                writer.setValue(
-                                        ((JobParameter) param.getValue()).getValue().toString());
+                                writer.setValue(((JobParameter) param.getValue())
+                                        .getValue()
+                                        .toString());
                                 writer.endNode();
                             }
                             writer.endNode();
@@ -346,15 +336,13 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
 
         private Backup backupFacade;
 
-        JobExecutionConverter(
-                Mapper mapper, ReflectionProvider reflectionProvider, Backup backupFacade) {
+        JobExecutionConverter(Mapper mapper, ReflectionProvider reflectionProvider, Backup backupFacade) {
             super(mapper, reflectionProvider);
             this.backupFacade = backupFacade;
         }
 
         @Override
-        public void marshal(
-                Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
             super.marshal(obj, writer, context);
 
             JobExecution dl = (JobExecution) obj;
@@ -390,8 +378,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         private String fieldName;
 
         /** */
-        public FilterConverter(
-                String fieldName, Mapper mapper, ReflectionProvider reflectionProvider) {
+        public FilterConverter(String fieldName, Mapper mapper, ReflectionProvider reflectionProvider) {
             super(mapper, reflectionProvider);
             this.fieldName = fieldName;
         }
@@ -403,8 +390,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         }
 
         @Override
-        public void marshal(
-                Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
             Filter filter = (Filter) obj;
 
             writer.setValue(ECQL.toCQL(filter));

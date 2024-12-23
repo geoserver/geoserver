@@ -36,35 +36,32 @@ public class UserPasswordControllerTest extends GeoServerSystemTestSupport {
 
     protected static XpathEngine xp;
 
-    String xmlTemplate =
-            "<"
-                    + UserPasswordController.XML_ROOT_ELEM
-                    + ">"
-                    + "<"
-                    + UserPasswordController.UP_NEW_PW
-                    + ">{0}</"
-                    + UserPasswordController.UP_NEW_PW
-                    + ">"
-                    + "</"
-                    + UserPasswordController.XML_ROOT_ELEM
-                    + ">";
+    String xmlTemplate = "<"
+            + UserPasswordController.XML_ROOT_ELEM
+            + ">"
+            + "<"
+            + UserPasswordController.UP_NEW_PW
+            + ">{0}</"
+            + UserPasswordController.UP_NEW_PW
+            + ">"
+            + "</"
+            + UserPasswordController.XML_ROOT_ELEM
+            + ">";
 
-    String xmlBadTemplate =
-            "<"
-                    + UserPasswordController.XML_ROOT_ELEM
-                    + ">"
-                    + "<not_the_right_element>{0}</not_the_right_element>"
-                    + "</"
-                    + UserPasswordController.XML_ROOT_ELEM
-                    + ">";
+    String xmlBadTemplate = "<"
+            + UserPasswordController.XML_ROOT_ELEM
+            + ">"
+            + "<not_the_right_element>{0}</not_the_right_element>"
+            + "</"
+            + UserPasswordController.XML_ROOT_ELEM
+            + ">";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         // Create the test restuser if needed
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         if (service.getUserByUsername(USERNAME) == null) {
             GeoServerUser user = service.createUserObject(USERNAME, USERPW, true);
@@ -79,8 +76,7 @@ public class UserPasswordControllerTest extends GeoServerSystemTestSupport {
     }
 
     public void resetUserPassword() throws IOException, PasswordPolicyException {
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         GeoServerUser user = service.getUserByUsername(USERNAME);
         user.setPassword(USERPW);
@@ -153,8 +149,7 @@ public class UserPasswordControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void checkUpdatedPassword() throws Exception {
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         login();
 

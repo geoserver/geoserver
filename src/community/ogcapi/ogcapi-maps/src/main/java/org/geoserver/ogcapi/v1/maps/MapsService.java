@@ -54,22 +54,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@APIService(
-        service = "Maps",
-        version = "1.0.1",
-        landingPage = "ogc/maps/v1",
-        serviceClass = WMSInfo.class)
+@APIService(service = "Maps", version = "1.0.1", landingPage = "ogc/maps/v1", serviceClass = WMSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/maps/v1")
 public class MapsService {
 
-    public static final String CONF_CLASS_CORE =
-            "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core";
-    public static final String CONF_CLASS_GEODATA =
-            "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/geodata";
-    public static final String CONF_CLASS_BBOX =
-            "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/bbox";
-    public static final String CONF_CLASS_CRS =
-            "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/crs";
+    public static final String CONF_CLASS_CORE = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/core";
+    public static final String CONF_CLASS_GEODATA = "http://www.opengis.net/spec/ogcapi-maps-1/1.0/conf/geodata";
+    public static final String CONF_CLASS_BBOX = "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/bbox";
+    public static final String CONF_CLASS_CRS = "http://www.opengis.net/spec/ogcapi-maps-2/1.0/conf/crs";
 
     private static final String DISPLAY_NAME = "OGC API Maps";
     private TimeParser timeParser = new TimeParser();
@@ -106,14 +98,13 @@ public class MapsService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes =
-                Arrays.asList(
-                        ConformanceClass.CORE,
-                        ConformanceClass.COLLECTIONS,
-                        CONF_CLASS_CORE,
-                        CONF_CLASS_GEODATA,
-                        CONF_CLASS_BBOX,
-                        CONF_CLASS_CRS);
+        List<String> classes = Arrays.asList(
+                ConformanceClass.CORE,
+                ConformanceClass.COLLECTIONS,
+                CONF_CLASS_CORE,
+                CONF_CLASS_GEODATA,
+                CONF_CLASS_BBOX,
+                CONF_CLASS_CRS);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -127,8 +118,7 @@ public class MapsService {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId)
-            throws IOException {
+    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         PublishedInfo p = getPublished(collectionId);
         CollectionDocument collection = new CollectionDocument(geoServer, p);
 
@@ -157,9 +147,7 @@ public class MapsService {
 
         if (p == null)
             throw new ServiceException(
-                    "Unknown collection " + collectionId,
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "collectionId");
+                    "Unknown collection " + collectionId, ServiceException.INVALID_PARAMETER_VALUE, "collectionId");
 
         return p;
     }
@@ -175,28 +163,16 @@ public class MapsService {
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "width", required = false) Integer width,
             @RequestParam(name = "height", required = false) Integer height,
-            @RequestParam(name = "transparent", required = false, defaultValue = "true")
-                    boolean transparent,
+            @RequestParam(name = "transparent", required = false, defaultValue = "true") boolean transparent,
             @RequestParam(name = "bgcolor", required = false) String bgcolor
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException, ParseException {
-        GetMapRequest request =
-                toGetMapRequest(
-                        collectionId,
-                        styleId,
-                        format,
-                        bbox,
-                        crs,
-                        datetime,
-                        width,
-                        height,
-                        transparent,
-                        bgcolor);
+        GetMapRequest request = toGetMapRequest(
+                collectionId, styleId, format, bbox, crs, datetime, width, height, transparent, bgcolor);
 
         if ("text/html".equals(format) || "html".equals(format)) {
             DefaultWebMapService.autoSetBoundsAndSize(request);
-            if (request.getCrs() != null)
-                request.setSRS(ResourcePool.lookupIdentifier(request.getCrs(), false));
+            if (request.getCrs() != null) request.setSRS(ResourcePool.lookupIdentifier(request.getCrs(), false));
             request.getRawKvp().put("width", String.valueOf(request.getWidth()));
             request.getRawKvp().put("height", String.valueOf(request.getHeight()));
             if (height != null) request.setHeight(height);
@@ -223,21 +199,16 @@ public class MapsService {
         } else if (p instanceof LayerInfo) {
             LayerInfo l = (LayerInfo) p;
             if (l.getDefaultStyle().prefixedName().equals(styleId)
-                    || l.getStyles().stream().anyMatch(s -> s.prefixedName().equals(styleId)))
-                return;
+                    || l.getStyles().stream().anyMatch(s -> s.prefixedName().equals(styleId))) return;
         } else {
             throw new RuntimeException("Unexpected published object" + p);
         }
         // in any other case, the style was not recognized
         throw new APIException(
-                APIException.INVALID_PARAMETER_VALUE,
-                "Invalid style identifier: " + styleId,
-                HttpStatus.BAD_REQUEST);
+                APIException.INVALID_PARAMETER_VALUE, "Invalid style identifier: " + styleId, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping(
-            path = "collections/{collectionId}/styles/{styleId}/map/info",
-            name = "getCollectionInfo")
+    @GetMapping(path = "collections/{collectionId}/styles/{styleId}/map/info", name = "getCollectionInfo")
     @ResponseBody
     public FeatureInfoResponse info(
             @PathVariable(name = "collectionId") String collectionId,
@@ -248,25 +219,14 @@ public class MapsService {
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "width", required = false) Integer width,
             @RequestParam(name = "height", required = false) Integer height,
-            @RequestParam(name = "transparent", required = false, defaultValue = "true")
-                    boolean transparent,
+            @RequestParam(name = "transparent", required = false, defaultValue = "true") boolean transparent,
             @RequestParam(name = "bgcolor", required = false) String bgcolor,
             @RequestParam(name = "i") int i,
             @RequestParam(name = "j") int j
             // TODO: add all the vendor parameters we normally support in WMS
             ) throws IOException, FactoryException, ParseException {
-        GetMapRequest getMapRequest =
-                toGetMapRequest(
-                        collectionId,
-                        styleId,
-                        "image/png",
-                        bbox,
-                        crs,
-                        datetime,
-                        width,
-                        height,
-                        transparent,
-                        bgcolor);
+        GetMapRequest getMapRequest = toGetMapRequest(
+                collectionId, styleId, "image/png", bbox, crs, datetime, width, height, transparent, bgcolor);
         DefaultWebMapService.autoSetBoundsAndSize(getMapRequest);
 
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
@@ -332,8 +292,7 @@ public class MapsService {
         return request;
     }
 
-    private void setupTimeSubset(String datetime, PublishedInfo p, GetMapRequest request)
-            throws ParseException {
+    private void setupTimeSubset(String datetime, PublishedInfo p, GetMapRequest request) throws ParseException {
         if (!(p instanceof LayerInfo)) {
             throw new APIException(
                     APIException.INVALID_PARAMETER_VALUE,
@@ -341,13 +300,10 @@ public class MapsService {
                     HttpStatus.BAD_REQUEST);
         }
         LayerInfo layer = (LayerInfo) p;
-        DimensionInfo time =
-                layer.getResource().getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        DimensionInfo time = layer.getResource().getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
             throw new APIException(
-                    INVALID_PARAMETER_VALUE,
-                    "Time dimension is not enabled in this coverage",
-                    HttpStatus.BAD_REQUEST);
+                    INVALID_PARAMETER_VALUE, "Time dimension is not enabled in this coverage", HttpStatus.BAD_REQUEST);
         }
         @SuppressWarnings("unchecked")
         Collection<Object> times = timeParser.parse(datetime);

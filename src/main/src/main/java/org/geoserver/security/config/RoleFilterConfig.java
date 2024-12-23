@@ -22,8 +22,7 @@ public class RoleFilterConfig extends SecurityFilterConfig {
         return httpResponseHeaderAttrForIncludedRoles;
     }
 
-    public void setHttpResponseHeaderAttrForIncludedRoles(
-            String httpResponseHeaderAttrForIncludedRoles) {
+    public void setHttpResponseHeaderAttrForIncludedRoles(String httpResponseHeaderAttrForIncludedRoles) {
         this.httpResponseHeaderAttrForIncludedRoles = httpResponseHeaderAttrForIncludedRoles;
     }
 

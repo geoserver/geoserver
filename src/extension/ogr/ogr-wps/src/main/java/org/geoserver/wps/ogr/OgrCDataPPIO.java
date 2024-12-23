@@ -24,10 +24,7 @@ public class OgrCDataPPIO extends CDataPPIO {
     private Operation operation;
 
     public OgrCDataPPIO(
-            String mimeType,
-            String fileExtension,
-            Ogr2OgrOutputFormat ogr2OgrOutputFormat,
-            Operation operation) {
+            String mimeType, String fileExtension, Ogr2OgrOutputFormat ogr2OgrOutputFormat, Operation operation) {
         super(FeatureCollectionType.class, FeatureCollection.class, mimeType);
         this.fileExtension = fileExtension;
         this.ogr2OgrOutputFormat = ogr2OgrOutputFormat;

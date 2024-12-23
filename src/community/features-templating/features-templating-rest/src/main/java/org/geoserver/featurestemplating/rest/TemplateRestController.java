@@ -116,8 +116,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         TemplateInfoDAO dao = TemplateInfoDAO.get();
         if (dao.findByFullName(templateName) != null) {
-            throw new RestException(
-                    "Template " + templateName + " already exists.", HttpStatus.FORBIDDEN);
+            throw new RestException("Template " + templateName + " already exists.", HttpStatus.FORBIDDEN);
         }
         TemplateInfo info = new TemplateInfo();
         info.setTemplateName(templateName);
@@ -136,8 +135,7 @@ public class TemplateRestController extends AbstractCatalogController {
         String mediaType = getMimeTypeFromContentType(contentType);
         String extension = getExtensionByMediaType(mediaType);
         if (extension == null) {
-            throw new RestException(
-                    "Unable to determine the template file extension.", HttpStatus.BAD_REQUEST);
+            throw new RestException("Unable to determine the template file extension.", HttpStatus.BAD_REQUEST);
         }
         return extension;
     }
@@ -146,8 +144,8 @@ public class TemplateRestController extends AbstractCatalogController {
         if (mediaType != null) {
             if (mediaType.equals(MediaType.APPLICATION_JSON_VALUE)
                     || mediaType.equals(MediaTypeExtensions.TEXT_JSON_VALUE)) return "json";
-            else if (mediaType.equals(MediaType.APPLICATION_XML_VALUE)
-                    || mediaType.equals(MediaType.TEXT_XML_VALUE)) return "xml";
+            else if (mediaType.equals(MediaType.APPLICATION_XML_VALUE) || mediaType.equals(MediaType.TEXT_XML_VALUE))
+                return "xml";
             else if (mediaType.equals(MediaType.APPLICATION_XHTML_XML_VALUE)) return "xhtml";
         }
         return null;
@@ -191,21 +189,18 @@ public class TemplateRestController extends AbstractCatalogController {
         File directory = unzip(is);
         try {
             File templateFile = getTemplateFileFromDirectory(directory);
-            if (templateName == null)
-                templateName = FilenameUtils.removeExtension(templateFile.getName());
+            if (templateName == null) templateName = FilenameUtils.removeExtension(templateFile.getName());
             String extension = FilenameUtils.getExtension(templateFile.getName());
             TemplateInfoDAO dao = TemplateInfoDAO.get();
             if (dao.findByFullName(templateName) != null) {
-                throw new RestException(
-                        "Template " + templateName + " already exists.", HttpStatus.FORBIDDEN);
+                throw new RestException("Template " + templateName + " already exists.", HttpStatus.FORBIDDEN);
             }
             info.setTemplateName(templateName);
             info.setExtension(extension);
             try (InputStream inputStream = new FileInputStream(templateFile)) {
                 saveOrUpdateTemplate(info, inputStream);
             } catch (IOException e) {
-                throw new RestException(
-                        "Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+                throw new RestException("Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
         } finally {
             try {
@@ -297,8 +292,7 @@ public class TemplateRestController extends AbstractCatalogController {
             try (InputStream inputStream = new FileInputStream(templateFile)) {
                 saveOrUpdateTemplate(info, inputStream);
             } catch (IOException e) {
-                throw new RestException(
-                        "Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+                throw new RestException("Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
         } finally {
             try {
@@ -315,25 +309,20 @@ public class TemplateRestController extends AbstractCatalogController {
     private TemplateInfo checkTemplateInfo(String fullName) {
         TemplateInfoDAO dao = TemplateInfoDAO.get();
         TemplateInfo info = dao.findByFullName(fullName);
-        if (info == null)
-            throw new RestException(
-                    "Template " + fullName + " doesn't exist.", HttpStatus.FORBIDDEN);
+        if (info == null) throw new RestException("Template " + fullName + " doesn't exist.", HttpStatus.FORBIDDEN);
         return info;
     }
 
-    private URI getUri(
-            String name, String workspace, String featureType, UriComponentsBuilder builder) {
+    private URI getUri(String name, String workspace, String featureType, UriComponentsBuilder builder) {
         UriComponents uriComponents;
         builder = builder.cloneBuilder();
         if (featureType != null) {
-            uriComponents =
-                    builder.path(
-                                    "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}")
-                            .buildAndExpand(workspace, featureType, name);
+            uriComponents = builder.path(
+                            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}")
+                    .buildAndExpand(workspace, featureType, name);
         } else if (workspace != null) {
-            uriComponents =
-                    builder.path("/workspaces/{ws}/featurestemplates/{templateName}")
-                            .buildAndExpand(workspace, name);
+            uriComponents = builder.path("/workspaces/{ws}/featurestemplates/{templateName}")
+                    .buildAndExpand(workspace, name);
         } else {
             uriComponents = builder.path("/featurestemplates/{templateName}").buildAndExpand(name);
         }
@@ -346,8 +335,7 @@ public class TemplateRestController extends AbstractCatalogController {
             String content = new String(rawData, Charset.defaultCharset());
             new TemplateService().saveOrUpdate(info, content);
         } catch (IOException e) {
-            throw new RestException(
-                    "Error while writing the template", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException("Error while writing the template", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -412,8 +400,7 @@ public class TemplateRestController extends AbstractCatalogController {
         TemplateInfo info = TemplateInfoDAO.get().findByFullName(fullName);
         Resource resource = TemplateFileManager.get().getTemplateResource(info);
         if (resource.getType() != Resource.Type.RESOURCE) {
-            throw new ResourceNotFoundException(
-                    "Template with fullName " + info.getFullName() + "not found");
+            throw new ResourceNotFoundException("Template with fullName " + info.getFullName() + "not found");
         }
         byte[] bytes;
         try {
@@ -457,10 +444,9 @@ public class TemplateRestController extends AbstractCatalogController {
             ws = ft.getStore().getWorkspace().getName();
             featureType = ft.getName();
         }
-        List<TemplateInfo> infos =
-                TemplateInfoDAO.get().findAll().stream()
-                        .filter(getPredicate(ws, featureType))
-                        .collect(Collectors.toList());
+        List<TemplateInfo> infos = TemplateInfoDAO.get().findAll().stream()
+                .filter(getPredicate(ws, featureType))
+                .collect(Collectors.toList());
         return wrapObject(new TemplateInfoList(infos, builder), TemplateInfoList.class);
     }
 
@@ -469,11 +455,7 @@ public class TemplateRestController extends AbstractCatalogController {
         if (featureType != null) {
             predicate = t -> t.getFeatureType() != null && t.getFeatureType().equals(featureType);
         } else if (ws != null) {
-            predicate =
-                    t ->
-                            t.getWorkspace() != null
-                                    && t.getWorkspace().equals(ws)
-                                    && t.getFeatureType() == null;
+            predicate = t -> t.getWorkspace() != null && t.getWorkspace().equals(ws) && t.getFeatureType() == null;
         } else {
             predicate = t -> t.getWorkspace() == null && t.getFeatureType() == null;
         }
@@ -489,42 +471,32 @@ public class TemplateRestController extends AbstractCatalogController {
             return tempDir;
         } catch (Exception e) {
             LOGGER.severe("Error processing the template zip (PUT): " + e.getMessage());
-            throw new RestException(
-                    "Error processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new RestException("Error processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
     private File getTemplateFileFromDirectory(File directory) throws RestException {
         try {
-            File[] matchingFiles =
-                    directory.listFiles(
-                            (dir, name) ->
-                                    name.endsWith("json")
-                                            || name.endsWith("xml")
-                                            || name.endsWith("xhtml"));
+            File[] matchingFiles = directory.listFiles(
+                    (dir, name) -> name.endsWith("json") || name.endsWith("xml") || name.endsWith("xhtml"));
 
             if (matchingFiles == null || matchingFiles.length == 0) {
                 throw new RestException("No template file provided:", HttpStatus.FORBIDDEN);
             }
 
-            LOGGER.fine(
-                    "getting template file from directory: " + matchingFiles[0].getAbsolutePath());
+            LOGGER.fine("getting template file from directory: " + matchingFiles[0].getAbsolutePath());
 
             return matchingFiles[0];
         } catch (Exception e) {
-            LOGGER.severe(
-                    "Error while searching the template in unzipped directory (PUT): "
-                            + e.getMessage());
-            throw new RestException(
-                    "Error processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            LOGGER.severe("Error while searching the template in unzipped directory (PUT): " + e.getMessage());
+            throw new RestException("Error processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
     private String getMediaType(TemplateInfo info) {
         String result;
         if (info.getExtension().equals("json")) result = MediaType.APPLICATION_JSON_VALUE;
-        else if (info.getExtension().equals("xhtml"))
-            result = MediaType.APPLICATION_XHTML_XML_VALUE;
+        else if (info.getExtension().equals("xhtml")) result = MediaType.APPLICATION_XHTML_XML_VALUE;
         else result = MediaType.APPLICATION_XML_VALUE;
         return result;
     }
@@ -544,8 +516,7 @@ public class TemplateRestController extends AbstractCatalogController {
     }
 
     private FeatureTypeInfo checkFeatureType(String workspace, String featureTypeName) {
-        FeatureTypeInfo featureType =
-                catalog.getFeatureTypeByName(new NameImpl(workspace, featureTypeName));
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(new NameImpl(workspace, featureTypeName));
         if (featureType == null) {
             throw new ResourceNotFoundException("FeatureType " + featureTypeName + " not found");
         }
@@ -556,9 +527,7 @@ public class TemplateRestController extends AbstractCatalogController {
 
         @Override
         public void marshal(
-                Object o,
-                HierarchicalStreamWriter hierarchicalStreamWriter,
-                MarshallingContext marshallingContext) {
+                Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
             if (o instanceof TemplateInfoList) {
                 TemplateInfoList list = (TemplateInfoList) o;
                 for (TemplateInfo info : list.getInfos()) {
@@ -570,13 +539,12 @@ public class TemplateRestController extends AbstractCatalogController {
                     hierarchicalStreamWriter.setValue(info.getExtension());
                     hierarchicalStreamWriter.endNode();
                     hierarchicalStreamWriter.startNode("location");
-                    String uri =
-                            getUri(
-                                            info.getTemplateName(),
-                                            info.getWorkspace(),
-                                            info.getFeatureType(),
-                                            list.getUriBuilder())
-                                    .toString();
+                    String uri = getUri(
+                                    info.getTemplateName(),
+                                    info.getWorkspace(),
+                                    info.getFeatureType(),
+                                    list.getUriBuilder())
+                            .toString();
                     hierarchicalStreamWriter.setValue(uri);
                     hierarchicalStreamWriter.endNode();
                     hierarchicalStreamWriter.endNode();
@@ -586,8 +554,7 @@ public class TemplateRestController extends AbstractCatalogController {
 
         @Override
         public Object unmarshal(
-                HierarchicalStreamReader hierarchicalStreamReader,
-                UnmarshallingContext unmarshallingContext) {
+                HierarchicalStreamReader hierarchicalStreamReader, UnmarshallingContext unmarshallingContext) {
             return null;
         }
 

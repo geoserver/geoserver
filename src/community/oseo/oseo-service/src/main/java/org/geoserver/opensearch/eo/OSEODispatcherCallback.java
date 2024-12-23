@@ -37,8 +37,7 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
                     request.setRawKvp(kvp);
                 } else if ("search".equals(request.getRequest())) {
                     kvp.put("service", "oseo");
-                    if (!kvp.containsKey("httpAccept"))
-                        kvp.put("httpAccept", AtomSearchResponse.MIME);
+                    if (!kvp.containsKey("httpAccept")) kvp.put("httpAccept", AtomSearchResponse.MIME);
                 }
                 // make sure the raw kvp is not empty, ever (the current code
                 // leaves it empty if the request has no search params)
@@ -57,9 +56,7 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
             }
 
             // backwards compatibility, parentId got renamed to parentIdentifier
-            if (rawKvp != null
-                    && rawKvp.containsKey(PARENT_ID)
-                    && !rawKvp.containsKey(PARENT_IDENTIFIER)) {
+            if (rawKvp != null && rawKvp.containsKey(PARENT_ID) && !rawKvp.containsKey(PARENT_IDENTIFIER)) {
                 rawKvp.put(PARENT_IDENTIFIER, rawKvp.get(PARENT_ID));
             }
             if (kvp != null && kvp.containsKey(PARENT_ID) && !kvp.containsKey(PARENT_IDENTIFIER)) {

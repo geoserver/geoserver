@@ -58,8 +58,7 @@ public class DynamicComplexTypeImpl extends AttributeTypeImpl implements Dynamic
     @Override
     public PropertyDescriptor getDescriptor(Name name) {
         PropertyDescriptor propertyDescriptor = propertyMap.get(name);
-        if (propertyDescriptor == null)
-            propertyDescriptor = getDescriptorByLocalPart(name.getLocalPart());
+        if (propertyDescriptor == null) propertyDescriptor = getDescriptorByLocalPart(name.getLocalPart());
         return propertyDescriptor;
     }
 

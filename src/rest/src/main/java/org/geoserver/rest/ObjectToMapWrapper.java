@@ -28,8 +28,7 @@ import org.geotools.util.logging.Logging;
 /**
  * Wraps the object being serialized in a {@link SimpleHash} template model.
  *
- * <p>The method {@link #wrapInternal(Map, SimpleHash, Object)} may be overridden to customize the
- * returned model.
+ * <p>The method {@link #wrapInternal(Map, SimpleHash, Object)} may be overridden to customize the returned model.
  */
 public class ObjectToMapWrapper<T> extends BeansWrapper {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest");
@@ -45,8 +44,8 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     }
 
     /**
-     * Constructs an ObjectToMapWrapper for the provided clazz. Any child properties that match
-     * classesToExpand will be unwrapped to a map
+     * Constructs an ObjectToMapWrapper for the provided clazz. Any child properties that match classesToExpand will be
+     * unwrapped to a map
      */
     public ObjectToMapWrapper(Class<T> clazz, Collection<Class<?>> classesToExpand) {
         super(FM_VERSION);
@@ -57,20 +56,17 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     /**
      * Constructs a {@link SimpleHash} representing the passed object.
      *
-     * <p>If the object is already a SimpleHash, it is returned. If the object is a {@link
-     * Collection}, with contents matching {@link #clazz}, a SimpleHash with a single entry is
-     * returned:
+     * <p>If the object is already a SimpleHash, it is returned. If the object is a {@link Collection}, with contents
+     * matching {@link #clazz}, a SimpleHash with a single entry is returned:
      *
      * <p>"values", containing the collection, as a {@link CollectionModel}
      *
-     * <p>If the object is an {@link Object}, that matches {@link #clazz}, a SimpleHash with a two
-     * entries is returned:
+     * <p>If the object is an {@link Object}, that matches {@link #clazz}, a SimpleHash with a two entries is returned:
      *
-     * <p>"properties", containing a {@link MapModel} representing the object. Map entries are
-     * populated using reflection to get the property names and values. See {@link
-     * OwsUtils#get(Object, String)} for more details. If any values have a class assignable to any
-     * class included in {@link #classesToExpand}, those values are likewise extracted into a map.
-     * Otherwise the toString method of that object is called.
+     * <p>"properties", containing a {@link MapModel} representing the object. Map entries are populated using
+     * reflection to get the property names and values. See {@link OwsUtils#get(Object, String)} for more details. If
+     * any values have a class assignable to any class included in {@link #classesToExpand}, those values are likewise
+     * extracted into a map. Otherwise the toString method of that object is called.
      *
      * <p>If none of the above give a result, {@link BeansWrapper#wrap(Object)} is returned.
      *
@@ -110,8 +106,8 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     /**
      * Converts the provided object to a map using reflection on on clazz.
      *
-     * <p>If any values have a class assignable to any class included in {@link #classesToExpand},
-     * those values are likewise extracted into a map.
+     * <p>If any values have a class assignable to any class included in {@link #classesToExpand}, those values are
+     * likewise extracted into a map.
      *
      * @param object Object to convert.
      * @param clazz The advertized class of the object, from which the map keys are generated.
@@ -126,14 +122,8 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
             try {
                 value = OwsUtils.get(object, p);
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.WARNING, "Could not resolve property " + p + " of bean " + object, e);
-                value =
-                        "** Failed to retrieve value of property "
-                                + p
-                                + ". Error message is: "
-                                + e.getMessage()
-                                + "**";
+                LOGGER.log(Level.WARNING, "Could not resolve property " + p + " of bean " + object, e);
+                value = "** Failed to retrieve value of property " + p + ". Error message is: " + e.getMessage() + "**";
             }
             if (value == null) {
                 value = "null";

@@ -17,10 +17,9 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
     @Test
     public void testJsonLdResponseOGCAPI() throws Exception {
         setUpSimple("NamedPlaces.json");
-        StringBuilder sb =
-                new StringBuilder("ogc/features/v1/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items?f=application%2Fld%2Bjson");
+        StringBuilder sb = new StringBuilder("ogc/features/v1/collections/")
+                .append("cite:NamedPlaces")
+                .append("/items?f=application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
@@ -32,12 +31,11 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
     @Test
     public void testJsonLdResponseOGCAPIWithFilter() throws Exception {
         setUpSimple("NamedPlaces.json");
-        StringBuilder path =
-                new StringBuilder("ogc/features/v1/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter= features.id = '118'")
-                        .append("&filter-lang=cql-text");
+        StringBuilder path = new StringBuilder("ogc/features/v1/collections/")
+                .append("cite:NamedPlaces")
+                .append("/items?f=application%2Fld%2Bjson")
+                .append("&filter= features.id = '118'")
+                .append("&filter-lang=cql-text");
         JSONObject result = (JSONObject) getJsonLd(path.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
@@ -54,10 +52,9 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
     @Test
     public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
         setUpSimple("NamedPlaces.json");
-        StringBuilder path =
-                new StringBuilder("ogc/features/v1/collections/")
-                        .append("cite:NamedPlaces")
-                        .append("/items/NamedPlaces.1107531895891?f=application%2Fld%2Bjson");
+        StringBuilder path = new StringBuilder("ogc/features/v1/collections/")
+                .append("cite:NamedPlaces")
+                .append("/items/NamedPlaces.1107531895891?f=application%2Fld%2Bjson");
         JSONObject result = (JSONObject) getJsonLd(path.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);

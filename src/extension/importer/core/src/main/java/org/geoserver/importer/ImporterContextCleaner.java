@@ -30,26 +30,21 @@ public class ImporterContextCleaner extends TimerTask {
         double expiryMillis = expiryMinutes * 60 * 1000;
         long now = System.currentTimeMillis();
 
-        LOGGER.fine(
-                () ->
-                        "Cleaning up import contexts not updated in the last "
-                                + expiryMinutes
-                                + " minutes");
+        LOGGER.fine(() -> "Cleaning up import contexts not updated in the last " + expiryMinutes + " minutes");
 
-        store.query(
-                context -> {
-                    // skip RUNNING contexts
-                    if (context.getState() == ImportContext.State.RUNNING) return;
+        store.query(context -> {
+            // skip RUNNING contexts
+            if (context.getState() == ImportContext.State.RUNNING) return;
 
-                    // check if they have expired
-                    Date updated = context.getUpdated();
-                    if (updated != null) {
-                        long diffMilliseconds = now - updated.getTime();
-                        if (diffMilliseconds > expiryMillis) {
-                            LOGGER.fine(() -> "Cleaning up import context " + context.getId());
-                            store.remove(context);
-                        }
-                    }
-                });
+            // check if they have expired
+            Date updated = context.getUpdated();
+            if (updated != null) {
+                long diffMilliseconds = now - updated.getTime();
+                if (diffMilliseconds > expiryMillis) {
+                    LOGGER.fine(() -> "Cleaning up import context " + context.getId());
+                    store.remove(context);
+                }
+            }
+        });
     }
 }

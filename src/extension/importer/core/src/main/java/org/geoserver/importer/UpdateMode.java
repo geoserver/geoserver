@@ -13,15 +13,11 @@ package org.geoserver.importer;
 public enum UpdateMode {
 
     /**
-     * The target DataStore will be created regardless of any existing. If needed, an alternative
-     * name will be computed.
+     * The target DataStore will be created regardless of any existing. If needed, an alternative name will be computed.
      */
     CREATE,
 
-    /**
-     * The target DataStore will be removed and replaced with the specified input. This may result
-     * in a new schema.
-     */
+    /** The target DataStore will be removed and replaced with the specified input. This may result in a new schema. */
     REPLACE,
 
     /** All features in the input will be appended to the existing store. */

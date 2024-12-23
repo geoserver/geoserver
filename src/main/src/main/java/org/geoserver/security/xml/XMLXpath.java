@@ -84,8 +84,7 @@ public abstract class XMLXpath {
     }
 
     /** Creates a relatvie XPathExpression for a XML attribute, needs name space prefix */
-    protected XPathExpression compileRelativeAttribute(
-            XPath xpath, String attrName, String prefix) {
+    protected XPathExpression compileRelativeAttribute(XPath xpath, String attrName, String prefix) {
         // return compile(xpath,"@"+prefix+":"+attrName);
         return compile(xpath, "@" + attrName);
     }

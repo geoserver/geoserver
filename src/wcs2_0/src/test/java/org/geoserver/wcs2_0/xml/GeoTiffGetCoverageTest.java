@@ -26,9 +26,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffExtensionCompressionJPEGWrongQuality1() throws Exception {
-        final File xml =
-                new File(
-                        "./src/test/resources/geotiff/geotiffExtensionCompressionJPEGWrongQuality1.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionJPEGWrongQuality1.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -39,9 +37,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffExtensionCompressionJPEGWrongQuality2() throws Exception {
-        final File xml =
-                new File(
-                        "./src/test/resources/geotiff/geotiffExtensionCompressionJPEGWrongQuality2.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionJPEGWrongQuality2.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -52,8 +48,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffExtensionCompressionLZW() throws Exception {
-        final File xml =
-                new File("./src/test/resources/geotiff/geotiffExtensionCompressionLZW.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionLZW.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -63,8 +58,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
@@ -75,16 +69,15 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         //        System.out.println(IIOMetadataDumper.getMetadata());
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
                 "LZW",
                 field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals(
-                "5", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+                "5",
+                field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
 
         IIOMetadataNode node = metadata.getStandardDataNode();
         assertNotNull(node);
@@ -98,8 +91,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffExtensionCompressionDeflate() throws Exception {
-        final File xml =
-                new File("./src/test/resources/geotiff/geotiffExtensionCompressionDeflate.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionDeflate.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -110,8 +102,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
@@ -122,9 +113,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         //        System.out.println(IIOMetadataDumper.getMetadata());
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
@@ -147,8 +136,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     @Ignore // TODO
     public void testGeotiffExtensionCompressionHuffman() throws Exception {
-        final File xml =
-                new File("./src/test/resources/geotiff/geotiffExtensionCompressionHuffman.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionHuffman.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -159,8 +147,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
@@ -171,9 +158,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         //        System.out.println(IIOMetadataDumper.getMetadata());
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
@@ -196,8 +181,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     @Ignore
     public void testGeotiffExtensionCompressionPackBits() throws Exception {
-        final File xml =
-                new File("./src/test/resources/geotiff/geotiffExtensionCompressionPackBits.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionPackBits.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -208,8 +192,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
@@ -220,9 +203,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         //        System.out.println(IIOMetadataDumper.getMetadata());
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
@@ -244,9 +225,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffExtensionCompressionWrongCompression() throws Exception {
-        final File xml =
-                new File(
-                        "./src/test/resources/geotiff/geotiffExtensionCompressionWrongCompression.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionWrongCompression.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -255,8 +234,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testGeotiffExtensionCompressionJPEG() throws Exception {
-        final File xml =
-                new File("./src/test/resources/geotiff/geotiffExtensionCompressionJPEG.xml");
+        final File xml = new File("./src/test/resources/geotiff/geotiffExtensionCompressionJPEG.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
@@ -267,24 +245,22 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
         final TIFFImageMetadata metadata = (TIFFImageMetadata) reader.getImageMetadata(0);
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
                 "JPEG",
                 field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals(
-                "7", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+                "7",
+                field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
 
         IIOMetadataNode node = metadata.getStandardDataNode();
         assertNotNull(node);
@@ -309,8 +285,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // tiling
@@ -318,8 +293,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         assertEquals(368, reader.getTileHeight(0));
         assertEquals(368, reader.getTileWidth(0));
 
-        IIOMetadataNode node =
-                ((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        IIOMetadataNode node = ((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
         assertNotNull(node);
         assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
         assertEquals(
@@ -357,8 +331,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // tiling
@@ -366,8 +339,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         assertEquals(256, reader.getTileHeight(0));
         assertEquals(256, reader.getTileWidth(0));
 
-        IIOMetadataNode node =
-                ((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        IIOMetadataNode node = ((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
         assertNotNull(node);
         assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
         assertEquals(
@@ -380,24 +352,23 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
     @Test
     public void testGeotiffExtensionBanded() throws Exception {
 
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wcs:GetCoverage\n"
-                        + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
-                        + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
-                        + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
-                        + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                        + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
-                        + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd\"\n"
-                        + "  service=\"WCS\"\n"
-                        + "  version=\"2.0.1\">\n"
-                        + "  <wcs:Extension>\n"
-                        + "    <wcsgeotiff:compression>None</wcsgeotiff:compression>\n"
-                        + "    <wcsgeotiff:interleave>band</wcsgeotiff:interleave>\n"
-                        + "  </wcs:Extension>\n"
-                        + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
-                        + "  <wcs:format>image/tiff</wcs:format>\n"
-                        + "</wcs:GetCoverage>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wcs:GetCoverage\n"
+                + "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n"
+                + "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n"
+                + "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n"
+                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n"
+                + "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd\"\n"
+                + "  service=\"WCS\"\n"
+                + "  version=\"2.0.1\">\n"
+                + "  <wcs:Extension>\n"
+                + "    <wcsgeotiff:compression>None</wcsgeotiff:compression>\n"
+                + "    <wcsgeotiff:interleave>band</wcsgeotiff:interleave>\n"
+                + "  </wcs:Extension>\n"
+                + "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n"
+                + "  <wcs:format>image/tiff</wcs:format>\n"
+                + "</wcs:GetCoverage>";
 
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 

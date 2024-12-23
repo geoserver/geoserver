@@ -23,9 +23,8 @@ import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
 /**
- * Basic property file based {@link RemoteProcessFactoryConfigurationGenerator} implementation with
- * ability to reload config when the file changes. If property file is not present, a new one will
- * be created.
+ * Basic property file based {@link RemoteProcessFactoryConfigurationGenerator} implementation with ability to reload
+ * config when the file changes. If property file is not present, a new one will be created.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -36,12 +35,10 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
 
     public static final String PROPERTYFILENAME = "remoteProcess.properties";
 
-    public static final String DEFAULT_PROPERTY_PATH =
-            REMOTE_PROCESS_DIR + File.separator + PROPERTYFILENAME;
+    public static final String DEFAULT_PROPERTY_PATH = REMOTE_PROCESS_DIR + File.separator + PROPERTYFILENAME;
 
     /** The LOGGER */
-    public static final Logger LOGGER =
-            Logging.getLogger(RemoteProcessFactoryConfigurationWatcher.class);
+    public static final Logger LOGGER = Logging.getLogger(RemoteProcessFactoryConfigurationWatcher.class);
 
     /** {@link PropertyFileWatcher} used for loading the property file. */
     private PropertyFileWatcher watcher;
@@ -53,8 +50,7 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
     private long delay = 60 * 2;
 
     /**
-     * The new {@link RemoteProcessFactoryConfiguration} object containing the properties load from
-     * the properties file.
+     * The new {@link RemoteProcessFactoryConfiguration} object containing the properties load from the properties file.
      */
     private RemoteProcessFactoryConfiguration configuration;
 
@@ -84,20 +80,14 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
             }
             try {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Copying the default properties file inside the data directory");
+                    LOGGER.log(Level.FINE, "Copying the default properties file inside the data directory");
                 }
                 // Copy the default property file into the data directory
-                URL url =
-                        RemoteProcessFactoryConfigurationWatcher.class.getResource(
-                                DEFAULT_PROPERTY_PATH);
+                URL url = RemoteProcessFactoryConfigurationWatcher.class.getResource(DEFAULT_PROPERTY_PATH);
                 if (url != null) {
                     properties = loader.createFile(PROPERTYFILENAME);
                     loader.copyFromClassPath(
-                            DEFAULT_PROPERTY_PATH,
-                            properties,
-                            RemoteProcessFactoryConfigurationWatcher.class);
+                            DEFAULT_PROPERTY_PATH, properties, RemoteProcessFactoryConfigurationWatcher.class);
                 }
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
@@ -157,11 +147,10 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
                 newConfiguration = parseConfigurationValues(properties);
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(
-                            "Unable to read confguration file for remote process factory: "
-                                    + file.getAbsolutePath()
-                                    + " continuing with default configuration-->\n"
-                                    + configuration);
+                    LOGGER.info("Unable to read confguration file for remote process factory: "
+                            + file.getAbsolutePath()
+                            + " continuing with default configuration-->\n"
+                            + configuration);
                 }
             }
         } catch (Exception e) {
@@ -169,11 +158,10 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
                 LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
             }
             if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(
-                        "Unable to read confguration file for remote process factory: "
-                                + file.getAbsolutePath()
-                                + " continuing with default configuration-->\n"
-                                + configuration);
+                LOGGER.info("Unable to read confguration file for remote process factory: "
+                        + file.getAbsolutePath()
+                        + " continuing with default configuration-->\n"
+                        + configuration);
             }
         }
         // return
@@ -181,14 +169,13 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
     }
 
     /**
-     * Parses the properties file for the remote process factory configuration. When it runs into
-     * problems it uses default values
+     * Parses the properties file for the remote process factory configuration. When it runs into problems it uses
+     * default values
      *
      * @param remoteProcessFactoryProperties the {@link Properties} file to parse. Cannot be null.
      * @return an instance of {@link RemoteProcessFactoryConfiguration}.
      */
-    private RemoteProcessFactoryConfiguration parseConfigurationValues(
-            Properties remoteProcessFactoryProperties) {
+    private RemoteProcessFactoryConfiguration parseConfigurationValues(Properties remoteProcessFactoryProperties) {
         Utilities.ensureNonNull("remoteProcessFactoryProperties", remoteProcessFactoryProperties);
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Parsing the properties file");
@@ -206,10 +193,8 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
             // remote process sleep time
             if (prop.equalsIgnoreCase(RemoteProcessFactoryConfiguration.DEFAULT_SLEEP_TIME_NAME)) {
                 // get value
-                String value =
-                        (String)
-                                remoteProcessFactoryProperties.get(
-                                        RemoteProcessFactoryConfiguration.DEFAULT_SLEEP_TIME_NAME);
+                String value = (String)
+                        remoteProcessFactoryProperties.get(RemoteProcessFactoryConfiguration.DEFAULT_SLEEP_TIME_NAME);
 
                 // check and assign
                 try {
@@ -227,9 +212,7 @@ public class RemoteProcessFactoryConfigurationWatcher extends TimerTask
                     }
                 }
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "remoteProcessStubCycleSleepTime assigned to "
-                                    + remoteProcessStubCycleSleepTime);
+                    LOGGER.fine("remoteProcessStubCycleSleepTime assigned to " + remoteProcessStubCycleSleepTime);
                 }
             } else {
                 configKvPs.put(prop, remoteProcessFactoryProperties.getProperty(prop));

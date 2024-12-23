@@ -33,8 +33,7 @@ public class RangePatternsTest {
         assertPatternNotMatch(FULL_RANGE_PATTERN, "10,20,30");
     }
 
-    private void assertFullRangeMatch(
-            String testRange, String g1, String g2, String g3, String g4) {
+    private void assertFullRangeMatch(String testRange, String g1, String g2, String g3, String g4) {
         Matcher matcher = FULL_RANGE_PATTERN.matcher(testRange);
         assertTrue(matcher.matches());
         assertEquals(g1, matcher.group(1));

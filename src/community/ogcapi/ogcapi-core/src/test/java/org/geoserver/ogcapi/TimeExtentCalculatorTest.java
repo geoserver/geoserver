@@ -27,45 +27,27 @@ import org.junit.Test;
 
 public class TimeExtentCalculatorTest extends GeoServerSystemTestSupport {
 
-    protected QName V_TIME_ELEVATION =
-            new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
 
-    protected QName V_TIME_ELEVATION_EMPTY =
-            new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
 
-    protected static QName TIMESERIES =
-            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    protected static QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
 
         testData.addVectorLayer(
-                V_TIME_ELEVATION,
-                null,
-                "TimeElevation.properties",
-                TimeExtentCalculatorTest.class,
-                catalog);
+                V_TIME_ELEVATION, null, "TimeElevation.properties", TimeExtentCalculatorTest.class, catalog);
 
         testData.addVectorLayer(
-                V_TIME_ELEVATION_EMPTY,
-                null,
-                "TimeElevationEmpty.properties",
-                TimeExtentCalculatorTest.class,
-                catalog);
+                V_TIME_ELEVATION_EMPTY, null, "TimeElevationEmpty.properties", TimeExtentCalculatorTest.class, catalog);
     }
 
     @Before
     public void cleanupDimensions() throws Exception {
 
-        getTestData()
-                .addRasterLayer(
-                        TIMESERIES,
-                        "timeseries.zip",
-                        null,
-                        null,
-                        SystemTestData.class,
-                        getCatalog());
+        getTestData().addRasterLayer(TIMESERIES, "timeseries.zip", null, null, SystemTestData.class, getCatalog());
 
         Catalog catalog = getCatalog();
         List<ResourceInfo> resources = catalog.getResources(ResourceInfo.class);
@@ -113,8 +95,7 @@ public class TimeExtentCalculatorTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testVectorTimeEmpty() throws Exception {
-        setupVectorDimension(
-                getLayerId(V_TIME_ELEVATION_EMPTY), TIME, "time", LIST, null, null, null);
+        setupVectorDimension(getLayerId(V_TIME_ELEVATION_EMPTY), TIME, "time", LIST, null, null, null);
         Catalog catalog = getCatalog();
         FeatureTypeInfo ft = catalog.getFeatureTypeByName(getLayerId(V_TIME_ELEVATION_EMPTY));
         catalog.save(ft);

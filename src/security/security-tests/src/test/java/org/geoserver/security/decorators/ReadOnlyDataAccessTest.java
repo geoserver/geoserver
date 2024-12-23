@@ -22,8 +22,7 @@ import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ReadOnlyDataAccessTest<T extends FeatureType, F extends Feature>
-        extends SecureObjectsTest {
+public class ReadOnlyDataAccessTest<T extends FeatureType, F extends Feature> extends SecureObjectsTest {
 
     private DataAccess<T, F> da;
 
@@ -64,8 +63,7 @@ public class ReadOnlyDataAccessTest<T extends FeatureType, F extends Feature>
 
     @Test
     public void testChallenge() throws Exception {
-        ReadOnlyDataAccess<T, F> ro =
-                new ReadOnlyDataAccess<>(da, WrapperPolicy.readOnlyChallenge(null));
+        ReadOnlyDataAccess<T, F> ro = new ReadOnlyDataAccess<>(da, WrapperPolicy.readOnlyChallenge(null));
         SecuredFeatureSource fs = (SecuredFeatureSource) ro.getFeatureSource(name);
         assertTrue(fs.policy.isReadOnlyChallenge());
 
@@ -75,15 +73,13 @@ public class ReadOnlyDataAccessTest<T extends FeatureType, F extends Feature>
             ro.createSchema(null);
             fail("Should have failed with a security exception");
         } catch (Throwable e) {
-            if (SecurityUtils.isSecurityException(e) == false)
-                fail("Should have thrown a security exception...");
+            if (SecurityUtils.isSecurityException(e) == false) fail("Should have thrown a security exception...");
         }
         try {
             ro.updateSchema(null, null);
             fail("Should have failed with a security exception");
         } catch (Throwable e) {
-            if (SecurityUtils.isSecurityException(e) == false)
-                fail("Should have thrown a security exception...");
+            if (SecurityUtils.isSecurityException(e) == false) fail("Should have thrown a security exception...");
         }
     }
 }

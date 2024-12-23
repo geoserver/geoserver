@@ -40,16 +40,14 @@ public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSuppo
     public void testLayerRuleConfiguration() {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
         Model<LayerInfo> layerModel = new Model<>(layerInfo);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5907648151984337786L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new TemplateRulesTabPanel(id, layerModel);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new TemplateRulesTabPanel(id, layerModel);
+            }
+        }));
         FormTester form = tester.newFormTester("form:panel:ruleConfiguration:theForm");
         form.select("templateIdentifier", 0);
         form.select("outputFormats", 1);
@@ -78,30 +76,23 @@ public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSuppo
         layerConfig.addTemplateRule(templateRule);
         layerInfo.getResource().getMetadata().put(TemplateLayerConfig.METADATA_KEY, layerConfig);
         Model<LayerInfo> layerModel = new Model<>(layerInfo);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5907648151984337786L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new TemplateRulesTabPanel(id, layerModel);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new TemplateRulesTabPanel(id, layerModel);
+            }
+        }));
         tester.executeAjaxEvent(
-                "form:panel:rulesTable:table:listContainer:items:1:itemProperties:1:component:link",
-                "click");
-        tester.assertModelValue(
-                "form:panel:ruleConfiguration:theForm:priority", templateRule.getPriority());
+                "form:panel:rulesTable:table:listContainer:items:1:itemProperties:1:component:link", "click");
+        tester.assertModelValue("form:panel:ruleConfiguration:theForm:priority", templateRule.getPriority());
         @SuppressWarnings("unchecked")
-        DropDownChoice<TemplateInfo> templateDropDown =
-                (DropDownChoice<TemplateInfo>)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:ruleConfiguration:theForm:templateIdentifier");
+        DropDownChoice<TemplateInfo> templateDropDown = (DropDownChoice<TemplateInfo>)
+                tester.getComponentFromLastRenderedPage("form:panel:ruleConfiguration:theForm:templateIdentifier");
         assertEquals(
                 infos.get(0).getIdentifier(), templateDropDown.getModelObject().getIdentifier());
-        tester.assertModelValue(
-                "form:panel:ruleConfiguration:theForm:cqlFilter", templateRule.getCqlFilter());
+        tester.assertModelValue("form:panel:ruleConfiguration:theForm:cqlFilter", templateRule.getCqlFilter());
         FormTester form = tester.newFormTester("form:panel:ruleConfiguration:theForm");
         form.select("outputFormats", 2);
         form.setValue("cqlFilter", "requestParam('myParam')='use this template'");
@@ -113,16 +104,14 @@ public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSuppo
     public void testLayerRuleCQLValidation() {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
         Model<LayerInfo> layerModel = new Model<>(layerInfo);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5907648151984337786L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new TemplateRulesTabPanel(id, layerModel);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new TemplateRulesTabPanel(id, layerModel);
+            }
+        }));
         FormTester form = tester.newFormTester("form:panel:ruleConfiguration:theForm");
         form.select("templateIdentifier", 0);
         form.select("outputFormats", 1);
@@ -145,45 +134,37 @@ public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSuppo
         layerConfig.addTemplateRule(templateRule);
         layerInfo.getResource().getMetadata().put(TemplateLayerConfig.METADATA_KEY, layerConfig);
         Model<LayerInfo> layerModel = new Model<>(layerInfo);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5907648151984337786L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new TemplateRulesTabPanel(id, layerModel);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new TemplateRulesTabPanel(id, layerModel);
+            }
+        }));
         tester.executeAjaxEvent(
-                "form:panel:rulesTable:table:listContainer:items:1:itemProperties:1:component:link",
-                "click");
-        tester.assertModelValue(
-                "form:panel:ruleConfiguration:theForm:priority", templateRule.getPriority());
-        tester.assertModelValue(
-                "form:panel:ruleConfiguration:theForm:cqlFilter", templateRule.getCqlFilter());
+                "form:panel:rulesTable:table:listContainer:items:1:itemProperties:1:component:link", "click");
+        tester.assertModelValue("form:panel:ruleConfiguration:theForm:priority", templateRule.getPriority());
+        tester.assertModelValue("form:panel:ruleConfiguration:theForm:cqlFilter", templateRule.getCqlFilter());
         FormTester form = tester.newFormTester("form:panel:ruleConfiguration:theForm");
         form.select("outputFormats", 0);
         form.setValue("cqlFilter", "requestParam('myParam')='use this template'");
         form.submit("save");
-        tester.assertErrorMessages(
-                "The Template extension and the chosen output format are incompatible.");
+        tester.assertErrorMessages("The Template extension and the chosen output format are incompatible.");
     }
 
     @Test
     public void testLayerRuleProfileCQL() {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
         Model<LayerInfo> layerModel = new Model<>(layerInfo);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5907648151984337786L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new TemplateRulesTabPanel(id, layerModel);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new TemplateRulesTabPanel(id, layerModel);
+            }
+        }));
         FormTester form = tester.newFormTester("form:panel:ruleConfiguration:theForm");
         form.select("templateIdentifier", 0);
         form.select("outputFormats", 0);

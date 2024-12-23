@@ -55,8 +55,8 @@ public interface OSEOInfo extends ServiceInfo {
     void setAggregatesCacheTTLUnit(String aggregatesCacheTTLUnit);
 
     /**
-     * Live list of configured product classes. If none is configured, then a clone of {@link
-     * ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
+     * Live list of configured product classes. If none is configured, then a clone of
+     * {@link ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
      */
     List<ProductClass> getProductClasses();
 

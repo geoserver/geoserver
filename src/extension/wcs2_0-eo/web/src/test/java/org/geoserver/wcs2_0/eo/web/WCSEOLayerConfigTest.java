@@ -29,8 +29,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
-        testData.addRasterLayer(
-                WATTEMP, "watertemp.zip", null, null, SystemTestData.class, catalog);
+        testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, catalog);
     }
 
     @Override
@@ -41,9 +40,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
     @Test
     public void testEditPlainTiff() {
         final LayerInfo layer = getCatalog().getLayerByName(getLayerId(MockData.TASMANIA_DEM));
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder) id -> new WCSEOLayerConfig(id, new Model<>(layer))));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new WCSEOLayerConfig(id, new Model<>(layer))));
 
         // print(tester.getLastRenderedPage(), true, true);
         Component panel = tester.getLastRenderedPage().get("form:panel");
@@ -55,9 +52,7 @@ public class WCSEOLayerConfigTest extends GeoServerWicketTestSupport {
     public void testEditMosaic() {
         // setup the panel with a mosaic
         final LayerInfo layer = getCatalog().getLayerByName(getLayerId(WATTEMP));
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder) id -> new WCSEOLayerConfig(id, new Model<>(layer))));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new WCSEOLayerConfig(id, new Model<>(layer))));
 
         // print(tester.getLastRenderedPage(), true, true);
         Component panel = tester.getLastRenderedPage().get("form:panel");

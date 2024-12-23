@@ -219,8 +219,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
     }
 
     @Override
-    public void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword)
-            throws IOException {
+    public void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword) throws IOException {
         writeLock();
         try {
             provider.prepareForMasterPasswordChange(oldPassword, newPassword);

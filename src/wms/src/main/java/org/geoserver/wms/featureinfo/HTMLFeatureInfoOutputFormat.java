@@ -16,8 +16,8 @@ import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the
- * feature delegate to do most of the work, just implements an HTML based writeTo method.
+ * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the feature delegate to do
+ * most of the work, just implements an HTML based writeTo method.
  *
  * @author James Macgill, PSU
  * @author Andrea Aime, TOPP
@@ -35,8 +35,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         super(FORMAT);
         this.wms = wms;
         this.templateManager =
-                new HTMLTemplateManager(
-                        FreeMarkerTemplateManager.OutputFormat.HTML, wms, resourceLoader);
+                new HTMLTemplateManager(FreeMarkerTemplateManager.OutputFormat.HTML, wms, resourceLoader);
     }
 
     /**
@@ -47,8 +46,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * @throws java.io.IOException For problems writing the output.
      */
     @Override
-    public void write(
-            FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+    public void write(FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException {
         @SuppressWarnings("unchecked")
         List<FeatureCollection> collections = results.getFeature();

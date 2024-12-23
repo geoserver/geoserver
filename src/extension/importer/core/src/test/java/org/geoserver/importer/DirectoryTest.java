@@ -72,7 +72,8 @@ public class DirectoryTest {
         Assert.assertEquals("shp", FilenameUtils.getExtension(spatial.getFile().getName()));
 
         Assert.assertNotNull(spatial.getPrjFile().getName());
-        Assert.assertEquals("prj", FilenameUtils.getExtension(spatial.getPrjFile().getName()));
+        Assert.assertEquals(
+                "prj", FilenameUtils.getExtension(spatial.getPrjFile().getName()));
 
         Assert.assertEquals(2, spatial.getSuppFiles().size());
 

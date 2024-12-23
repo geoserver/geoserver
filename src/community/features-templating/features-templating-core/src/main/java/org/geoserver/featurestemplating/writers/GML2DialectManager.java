@@ -29,8 +29,7 @@ class GML2DialectManager extends GMLDialectManager {
     void writeNumberMatched(String numberMatched) throws XMLStreamException {}
 
     @Override
-    void writeBoundingBox(ReferencedEnvelope envelope, CoordinateReferenceSystem crs)
-            throws IOException {
+    void writeBoundingBox(ReferencedEnvelope envelope, CoordinateReferenceSystem crs) throws IOException {
         super.writeBoundingBox(envelope, crs, false);
     }
 

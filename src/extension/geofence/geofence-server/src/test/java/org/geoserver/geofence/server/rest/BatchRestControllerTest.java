@@ -37,8 +37,7 @@ public class BatchRestControllerTest extends GeofenceBaseTest {
     public void initGeoFenceControllers() {
         controller = (BatchRestController) applicationContext.getBean("batchRestController");
         ruleService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
-        ruleAdminService =
-                (AdminRuleAdminService) applicationContext.getBean("adminRuleAdminService");
+        ruleAdminService = (AdminRuleAdminService) applicationContext.getBean("adminRuleAdminService");
     }
 
     @Test
@@ -349,9 +348,7 @@ public class BatchRestControllerTest extends GeofenceBaseTest {
             message = e.getMessage();
         }
 
-        assertEquals(
-                "The operation service is mandatory but on or more operation elements doesn't have it",
-                message);
+        assertEquals("The operation service is mandatory but on or more operation elements doesn't have it", message);
     }
 
     @Test
@@ -377,9 +374,7 @@ public class BatchRestControllerTest extends GeofenceBaseTest {
             message = e.getMessage();
         }
 
-        assertEquals(
-                "The operation type is mandatory but on or more operation elements doesn't have it",
-                message);
+        assertEquals("The operation type is mandatory but on or more operation elements doesn't have it", message);
     }
 
     @Test

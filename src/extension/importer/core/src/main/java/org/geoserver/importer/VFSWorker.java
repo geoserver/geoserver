@@ -38,17 +38,7 @@ public class VFSWorker {
     private static final Logger LOGGER = Logging.getLogger(VFSWorker.class);
 
     private static final List<String> extensions =
-            Arrays.asList(
-                    ".zip",
-                    ".tar",
-                    ".tar.gz",
-                    ".tgz",
-                    ".tar.bz2",
-                    ".tbz2",
-                    ".gz",
-                    ".bz2",
-                    ".jar",
-                    ".kmz");
+            Arrays.asList(".zip", ".tar", ".tar.gz", ".tgz", ".tar.bz2", ".tbz2", ".gz", ".bz2", ".jar", ".kmz");
 
     public VFSWorker() {}
 
@@ -89,29 +79,24 @@ public class VFSWorker {
             String absolutePath = resolveArchiveURI(archiveFile);
             try (FileObject resolvedFile = fsManager.resolveFile(absolutePath)) {
 
-                FileSelector fileSelector =
-                        new FileSelector() {
-                            /**
-                             * @see
-                             *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
-                             */
-                            @Override
-                            public boolean traverseDescendents(FileSelectInfo folderInfo)
-                                    throws Exception {
-                                return true;
-                            }
+                FileSelector fileSelector = new FileSelector() {
+                    /**
+                     * @see
+                     *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
+                     */
+                    @Override
+                    public boolean traverseDescendents(FileSelectInfo folderInfo) throws Exception {
+                        return true;
+                    }
 
-                            /**
-                             * @see
-                             *     org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo)
-                             */
-                            @Override
-                            public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
-                                File folder = archiveFile.getParentFile();
-                                String name = fileInfo.getFile().getName().getFriendlyURI();
-                                return filter.accept(folder, name);
-                            }
-                        };
+                    /** @see org.apache.commons.vfs2.FileSelector#includeFile(org.apache.commons.vfs2.FileSelectInfo) */
+                    @Override
+                    public boolean includeFile(FileSelectInfo fileInfo) throws Exception {
+                        File folder = archiveFile.getParentFile();
+                        String name = fileInfo.getFile().getName().getFriendlyURI();
+                        return filter.accept(folder, name);
+                    }
+                };
 
                 FileObject fileSystem = null;
                 try {
@@ -131,12 +116,7 @@ public class VFSWorker {
                         }
                     }
                     LOGGER.fine(
-                            "Found "
-                                    + names.size()
-                                    + " spatial data files in "
-                                    + archiveFile.getName()
-                                    + ": "
-                                    + names);
+                            "Found " + names.size() + " spatial data files in " + archiveFile.getName() + ": " + names);
                     return names;
                 } finally {
                     if (fileSystem != null) {
@@ -185,24 +165,19 @@ public class VFSWorker {
         return null;
     }
 
-    /**
-     * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously
-     * exist.
-     */
+    /** Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously exist. */
     @SuppressWarnings("PMD.CloseResource")
     public void extractTo(File archiveFile, File targetFolder) throws IOException {
 
         FileSystemManager manager = VFS.getManager();
         String sourceURI = resolveArchiveURI(archiveFile);
-        FileSelector allFiles =
-                new AllFileSelector() {
-                    @Override
-                    public boolean includeFile(FileSelectInfo fileInfo) {
-                        LOGGER.fine(
-                                "Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
-                        return true;
-                    }
-                };
+        FileSelector allFiles = new AllFileSelector() {
+            @Override
+            public boolean includeFile(FileSelectInfo fileInfo) {
+                LOGGER.fine("Uncompressing " + fileInfo.getFile().getName().getFriendlyURI());
+                return true;
+            }
+        };
 
         try (FileObject source = manager.resolveFile(sourceURI);
                 FileObject target = manager.resolveFile(targetFolder.getAbsolutePath());
@@ -218,21 +193,19 @@ public class VFSWorker {
         }
     }
 
-    public Collection<File> listFilesInFolder(
-            final File targetFolder, final FilenameFilter fileNameFilter) {
-        IOFileFilter fileFilter =
-                new IOFileFilter() {
+    public Collection<File> listFilesInFolder(final File targetFolder, final FilenameFilter fileNameFilter) {
+        IOFileFilter fileFilter = new IOFileFilter() {
 
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return fileNameFilter.accept(dir, name);
-                    }
+            @Override
+            public boolean accept(File dir, String name) {
+                return fileNameFilter.accept(dir, name);
+            }
 
-                    @Override
-                    public boolean accept(File file) {
-                        return fileNameFilter.accept(file.getParentFile(), file.getName());
-                    }
-                };
+            @Override
+            public boolean accept(File file) {
+                return fileNameFilter.accept(file.getParentFile(), file.getName());
+            }
+        };
         IOFileFilter dirFilter = TrueFileFilter.INSTANCE;
         Collection<File> listFiles = FileUtils.listFiles(targetFolder, fileFilter, dirFilter);
         return listFiles;

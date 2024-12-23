@@ -25,8 +25,7 @@ import org.locationtech.jts.geom.Geometry;
 public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
         if (!(context.getService() instanceof WMSInfo)) {
             return null;
@@ -34,8 +33,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkLookAtDecorator();
-        } else if (Folder.class.isAssignableFrom(featureClass)
-                || NetworkLink.class.isAssignableFrom(featureClass)) {
+        } else if (Folder.class.isAssignableFrom(featureClass) || NetworkLink.class.isAssignableFrom(featureClass)) {
             return new LayerLookAtDecorator();
         } else if (Document.class.isAssignableFrom(featureClass)) {
             return new DocumentLookAtDecorator();
@@ -120,10 +118,8 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         double height = distance / (2 * Math.tan(VIEWER_WIDTH));
 
         final Double tilt = options.getTilt() == null ? Double.valueOf(0) : options.getTilt();
-        final Double heading =
-                options.getHeading() == null ? Double.valueOf(0) : options.getHeading();
-        final Double altitude =
-                options.getAltitude() == null ? Double.valueOf(height) : options.getAltitude();
+        final Double heading = options.getHeading() == null ? Double.valueOf(0) : options.getHeading();
+        final Double altitude = options.getAltitude() == null ? Double.valueOf(height) : options.getAltitude();
 
         // build the lookat
         LookAt lookAt = new LookAt();

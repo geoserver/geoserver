@@ -28,8 +28,7 @@ import org.geotools.util.SoftValueHashMap;
 import org.springframework.stereotype.Component;
 
 /**
- * Support class that locates the templates based on the current response and eventual {@link
- * LocalWorkspace}.
+ * Support class that locates the templates based on the current response and eventual {@link LocalWorkspace}.
  *
  * <p>Located in workspace using service landingPage prefix, or obtained from jar:
  *
@@ -40,53 +39,49 @@ import org.springframework.stereotype.Component;
 @Component
 public class FreemarkerTemplateSupport {
 
-    private static final Map<Class<?>, Configuration> configurationCache =
-            new SoftValueHashMap<>(10);
+    private static final Map<Class<?>, Configuration> configurationCache = new SoftValueHashMap<>(10);
 
     private final GeoServerResourceLoader resourceLoader;
 
     ClassTemplateLoader rootLoader = new ClassTemplateLoader(FreemarkerTemplateSupport.class, "");
 
-    static DirectTemplateFeatureCollectionFactory FC_FACTORY =
-            new DirectTemplateFeatureCollectionFactory();
+    static DirectTemplateFeatureCollectionFactory FC_FACTORY = new DirectTemplateFeatureCollectionFactory();
 
     public FreemarkerTemplateSupport(GeoServerResourceLoader loader) {
         this.resourceLoader = loader;
     }
 
     /**
-     * Returns the template for the specified feature type. Looking up templates is pretty
-     * expensive, so we cache templates by feature type and template.
+     * Returns the template for the specified feature type. Looking up templates is pretty expensive, so we cache
+     * templates by feature type and template.
      */
-    public Template getTemplate(ResourceInfo resource, String templateName, Class<?> clazz)
-            throws IOException {
-        GeoServerTemplateLoader templateLoader =
-                new GeoServerTemplateLoader(clazz, resourceLoader) {
-                    @Override
-                    public Object findTemplateSource(String path) throws IOException {
-                        Object source = null;
+    public Template getTemplate(ResourceInfo resource, String templateName, Class<?> clazz) throws IOException {
+        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(clazz, resourceLoader) {
+            @Override
+            public Object findTemplateSource(String path) throws IOException {
+                Object source = null;
 
-                        APIService service = clazz.getAnnotation(APIService.class);
-                        if (service != null) {
-                            source = super.findTemplateSource(service.landingPage() + "/" + path);
-                        }
+                APIService service = clazz.getAnnotation(APIService.class);
+                if (service != null) {
+                    source = super.findTemplateSource(service.landingPage() + "/" + path);
+                }
 
-                        if (source == null) {
-                            source = super.findTemplateSource(path);
-                        }
+                if (source == null) {
+                    source = super.findTemplateSource(path);
+                }
 
-                        if (source == null) {
-                            source = rootLoader.findTemplateSource(path);
+                if (source == null) {
+                    source = rootLoader.findTemplateSource(path);
 
-                            // wrap the source in a source that maintains the original path
-                            if (source != null) {
-                                return new ClassTemplateSource(path, source);
-                            }
-                        }
-
-                        return source;
+                    // wrap the source in a source that maintains the original path
+                    if (source != null) {
+                        return new ClassTemplateSource(path, source);
                     }
-                };
+                }
+
+                return source;
+            }
+        };
 
         if (resource != null) {
             templateLoader.setResource(resource);
@@ -107,15 +102,13 @@ public class FreemarkerTemplateSupport {
     }
 
     Configuration getTemplateConfiguration(Class<?> clazz) {
-        return configurationCache.computeIfAbsent(
-                clazz,
-                k -> {
-                    Configuration cfg = TemplateUtils.getSafeConfiguration();
-                    cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
-                    cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
-                    cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
-                    return cfg;
-                });
+        return configurationCache.computeIfAbsent(clazz, k -> {
+            Configuration cfg = TemplateUtils.getSafeConfiguration();
+            cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
+            cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
+            cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
+            return cfg;
+        });
     }
 
     /**
@@ -126,8 +119,7 @@ public class FreemarkerTemplateSupport {
      * @param writer The writer receiving the template output
      * @param charset The charset to use for the output
      */
-    public void processTemplate(
-            Template template, Map<String, Object> model, Writer writer, Charset charset)
+    public void processTemplate(Template template, Map<String, Object> model, Writer writer, Charset charset)
             throws IOException {
         try {
             Environment env = template.createProcessingEnvironment(model, writer, null);

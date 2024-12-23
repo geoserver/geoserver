@@ -12,7 +12,8 @@ public class Parameter {
     @JacksonXmlProperty(localName = "n", isAttribute = true)
     private String name;
 
-    @JacksonXmlText private String value;
+    @JacksonXmlText
+    private String value;
 
     public Parameter() {}
 

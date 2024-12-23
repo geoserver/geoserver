@@ -5,8 +5,8 @@
 package org.geoserver.wps;
 
 /**
- * A base ChainedProcessListener that does nothing, subclasses can extend to only implement the
- * methods they are interested into
+ * A base ChainedProcessListener that does nothing, subclasses can extend to only implement the methods they are
+ * interested into
  *
  * @author etj (Emanuele Tajariol @ GeoSolutions)
  */

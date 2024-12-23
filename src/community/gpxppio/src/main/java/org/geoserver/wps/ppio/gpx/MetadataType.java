@@ -16,9 +16,8 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Information about the GPX file, author, and copyright restrictions goes in the metadata section.
- * Providing rich, meaningful information about your GPX files allows others to search for and use
- * your GPS data.
+ * Information about the GPX file, author, and copyright restrictions goes in the metadata section. Providing rich,
+ * meaningful information about your GPX files allows others to search for and use your GPS data.
  *
  * <p>Java class for metadataType complex type.
  *
@@ -106,9 +105,9 @@ public class MetadataType {
     /**
      * Gets the value of the link property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the link property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the link property.
      *
      * <p>For example, to add a new item, do as follows:
      *

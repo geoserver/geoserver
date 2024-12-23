@@ -13,8 +13,8 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 
 /**
- * A {@link VTIterator} that merges the geometries of two or more subsequent {@link VTFeature} that
- * do share the same attributes
+ * A {@link VTIterator} that merges the geometries of two or more subsequent {@link VTFeature} that do share the same
+ * attributes
  */
 public class CoalescingVTIterator implements VTIterator {
     PushBackVTIterator delegate;
@@ -53,9 +53,7 @@ public class CoalescingVTIterator implements VTIterator {
                 merger.add(geometry);
                 @SuppressWarnings("unchecked")
                 List<LineString> merged = (List<LineString>) merger.getMergedLineStrings();
-                geometry =
-                        geometry.getFactory()
-                                .createMultiLineString(merged.toArray(n -> new LineString[n]));
+                geometry = geometry.getFactory().createMultiLineString(merged.toArray(n -> new LineString[n]));
             }
             curr.setGeometry(geometry);
         }

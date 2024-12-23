@@ -32,21 +32,18 @@ public final class GenericTasklet extends AbstractCatalogBackupRestoreTasklet {
     }
 
     @Override
-    public RepeatStatus doExecute(
-            StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
+    public RepeatStatus doExecute(StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
             throws Exception {
         // get the available generic handlers or the continuable ones
         List<GenericTaskletHandler> handlers = getHandlers(jobExecution);
         List<GenericTaskletHandler> continuable = new ArrayList<>();
         // execute each handler and store the continuable ones
-        handlers.forEach(
-                handler -> {
-                    RepeatStatus status =
-                            handler.handle(contribution, chunkContext, jobExecution, this);
-                    if (status == RepeatStatus.CONTINUABLE) {
-                        continuable.add(handler);
-                    }
-                });
+        handlers.forEach(handler -> {
+            RepeatStatus status = handler.handle(contribution, chunkContext, jobExecution, this);
+            if (status == RepeatStatus.CONTINUABLE) {
+                continuable.add(handler);
+            }
+        });
         // register the continuable ones overriding the existing ones
         putContinuableHandlers(jobExecution, continuable);
         if (continuable.isEmpty()) {
@@ -57,18 +54,14 @@ public final class GenericTasklet extends AbstractCatalogBackupRestoreTasklet {
         return RepeatStatus.CONTINUABLE;
     }
 
-    /**
-     * Put the provided continuable jobs in the job execution context overriding any existing ones.
-     */
-    private void putContinuableHandlers(
-            JobExecution jobExecution, List<GenericTaskletHandler> handlers) {
+    /** Put the provided continuable jobs in the job execution context overriding any existing ones. */
+    private void putContinuableHandlers(JobExecution jobExecution, List<GenericTaskletHandler> handlers) {
         jobExecution.getExecutionContext().put(GENERIC_CONTINUABLE_HANDLERS_KEY, handlers);
     }
 
     /**
-     * Helper method that return the handlers that should be executed. If there is any pending
-     * continuable handler we only run the pending continuable handlers otherwise we run all the
-     * available handlers.
+     * Helper method that return the handlers that should be executed. If there is any pending continuable handler we
+     * only run the pending continuable handlers otherwise we run all the available handlers.
      */
     @SuppressWarnings("unchecked")
     private List<GenericTaskletHandler> getHandlers(JobExecution jobExecution) {
@@ -88,10 +81,7 @@ public final class GenericTasklet extends AbstractCatalogBackupRestoreTasklet {
         return (List<GenericTaskletHandler>) values;
     }
 
-    /**
-     * Helper method that just retrieves all the available generic handlers contributed by
-     * extensions.
-     */
+    /** Helper method that just retrieves all the available generic handlers contributed by extensions. */
     private List<GenericTaskletHandler> getAllHandlers() {
         return GeoServerExtensions.extensions(GenericTaskletHandler.class);
     }

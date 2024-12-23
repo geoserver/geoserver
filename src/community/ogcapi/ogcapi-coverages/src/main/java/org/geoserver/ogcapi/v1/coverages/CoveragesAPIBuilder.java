@@ -19,16 +19,11 @@ import org.geoserver.wcs.WCSInfo;
 public class CoveragesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WCSInfo> {
 
     public CoveragesAPIBuilder() {
-        super(
-                CoveragesAPIBuilder.class,
-                "openapi.yaml",
-                "Coverages 1.0 server",
-                CoveragesService.class);
+        super(CoveragesAPIBuilder.class, "openapi.yaml", "Coverages 1.0 server", CoveragesService.class);
     }
 
     /**
-     * Build the document based on request, current WCS configuration, and list of available
-     * extensions
+     * Build the document based on request, current WCS configuration, and list of available extensions
      *
      * @param wcs The WCS configuration
      */
@@ -38,27 +33,23 @@ public class CoveragesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WCS
         OpenAPI api = super.build(wcs);
 
         // the external documentation
-        api.externalDocs(
-                new ExternalDocumentation()
-                        .description("Coverages specification")
-                        .url("https://github.com/opengeospatial/ogcapi-coverages"));
+        api.externalDocs(new ExternalDocumentation()
+                .description("Coverages specification")
+                .url("https://github.com/opengeospatial/ogcapi-coverages"));
 
         // adjust path output formats
         declareGetResponseFormats(api, "/", OpenAPI.class);
         declareGetResponseFormats(api, "/conformance", ConformanceDocument.class);
         declareGetResponseFormats(api, "/collections", CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionDocument.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/coverage", CoveragesResponse.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/coverage", CoveragesResponse.class);
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = wcs.getGeoServer().getCatalog();
         List<String> validCollectionIds =
-                catalog.getCoverages().stream()
-                        .map(ci -> ci.prefixedName())
-                        .collect(Collectors.toList());
+                catalog.getCoverages().stream().map(ci -> ci.prefixedName()).collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
         return api;

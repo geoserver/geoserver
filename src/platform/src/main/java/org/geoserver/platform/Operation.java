@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
 /**
  * An operation descriptor providing metadata about a service operation.
  *
- * <p>An operation is identified by an id,service pair. Two operation descriptors are considred
- * equal if they have the same id, service pair.
+ * <p>An operation is identified by an id,service pair. Two operation descriptors are considred equal if they have the
+ * same id, service pair.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */

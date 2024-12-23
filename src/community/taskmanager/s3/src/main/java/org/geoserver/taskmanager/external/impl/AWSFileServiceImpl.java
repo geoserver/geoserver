@@ -71,13 +71,12 @@ public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public URI getURI(String filePath) {
         try {
-            String uri =
-                    "s3://"
-                            + rootFolder
-                            + "/"
-                            + URLEncoder.encode(filePath.toString(), "UTF-8").replaceAll("%2F", "/")
-                            + "?useAnon="
-                            + anonymous;
+            String uri = "s3://"
+                    + rootFolder
+                    + "/"
+                    + URLEncoder.encode(filePath.toString(), "UTF-8").replaceAll("%2F", "/")
+                    + "?useAnon="
+                    + anonymous;
             if (awsRegion != null) {
                 uri += "&awsRegion=" + awsRegion;
             }
@@ -90,8 +89,7 @@ public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public AmazonS3 getS3Client() {
         if (rootFolder == null) {
-            throw new IllegalStateException(
-                    "The rootfolder is required, add a property: alias.s3.rootfolder");
+            throw new IllegalStateException("The rootfolder is required, add a property: alias.s3.rootfolder");
         }
         Regions region;
         if (awsRegion != null) {
@@ -100,9 +98,8 @@ public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
             } catch (IllegalArgumentException e) {
                 // probably not great to have a default, but we can't just blow up if this
                 // property isn't set
-                LOGGER.warning(
-                        "AWS_REGION property is set, but not set correctly. "
-                                + "Check that the AWS_REGION property matches the Regions enum");
+                LOGGER.warning("AWS_REGION property is set, but not set correctly. "
+                        + "Check that the AWS_REGION property matches the Regions enum");
                 region = Regions.US_EAST_1;
             }
         } else {

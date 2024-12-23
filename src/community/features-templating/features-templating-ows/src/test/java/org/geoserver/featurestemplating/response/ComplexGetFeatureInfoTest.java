@@ -94,14 +94,18 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
         assertEquals(1, doc.select("span.caret:contains(MappedFeature)").size());
         assertEquals(1, doc.select("li ul li:contains(mf2)").size());
 
-        assertEquals(1, doc.select("ul li ul li ul li:contains(MERCIA MUDSTONE GROUP)").size());
+        assertEquals(
+                1,
+                doc.select("ul li ul li ul li:contains(MERCIA MUDSTONE GROUP)").size());
 
         assertEquals(1, doc.select("span:contains(Shape)").size());
 
         assertEquals(1, doc.select("ul li ul li span:contains(Specifications)").size());
         assertEquals(1, doc.select("ul li ul li span:contains(Geologic Unit)").size());
         assertEquals(1, doc.select("ul li ul li span:contains(Purpose)").size());
-        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(instance)").size());
+        assertEquals(
+                1,
+                doc.select("ul li ul li ul li ul li ul li:contains(instance)").size());
 
         assertEquals(
                 1,
@@ -112,15 +116,21 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
                 doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group 2)")
                         .size());
 
-        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(-Py)").size());
         assertEquals(
-                2, doc.select("ul li ul li ul li ul li span:contains(Composition Parts)").size());
-        assertEquals(2, doc.select("ul li ul li ul li ul li ul li span:contains(Part)").size());
-        assertEquals(2, doc.select("ul li ul li ul li ul li ul li span:contains(Role)").size());
+                1, doc.select("ul li ul li ul li ul li ul li:contains(-Py)").size());
         assertEquals(
                 2,
-                doc.select(
-                                "ul li ul li ul li ul li ul li ul li ul li:contains(interbedded component)")
+                doc.select("ul li ul li ul li ul li span:contains(Composition Parts)")
+                        .size());
+        assertEquals(
+                2,
+                doc.select("ul li ul li ul li ul li ul li span:contains(Part)").size());
+        assertEquals(
+                2,
+                doc.select("ul li ul li ul li ul li ul li span:contains(Role)").size());
+        assertEquals(
+                2,
+                doc.select("ul li ul li ul li ul li ul li ul li ul li:contains(interbedded component)")
                         .size());
     }
 
@@ -169,17 +179,10 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
         assertXpathCount(1, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
 
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href",
-                doc);
+                1, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href", doc);
+        assertXpathCount(1, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent", doc);
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent",
-                doc);
-        assertXpathCount(
-                1,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title",
-                doc);
+                1, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title", doc);
 
         // filter on array element lithology
         assertXpathCount(1, "//gsml:lithology", doc);
@@ -188,18 +191,17 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
     }
 
     protected AbstractAppSchemaMockData createTestData() {
-        AbstractAppSchemaMockData mockData =
-                new FeatureChainingMockData() {
-                    @Override
-                    public Map<String, String> getNamespaces() {
-                        Map<String, String> namespaces = new HashMap<>();
-                        namespaces.put("gml", "http://www.opengis.net/gml/3.2");
-                        namespaces.put("wfs", "http://www.opengis.net/wfs/2.0");
-                        namespaces.put("gsml", "urn:cgi:xmlns:CGI:GeoSciML:2.0");
-                        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-                        return namespaces;
-                    }
-                };
+        AbstractAppSchemaMockData mockData = new FeatureChainingMockData() {
+            @Override
+            public Map<String, String> getNamespaces() {
+                Map<String, String> namespaces = new HashMap<>();
+                namespaces.put("gml", "http://www.opengis.net/gml/3.2");
+                namespaces.put("wfs", "http://www.opengis.net/wfs/2.0");
+                namespaces.put("gsml", "urn:cgi:xmlns:CGI:GeoSciML:2.0");
+                namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+                return namespaces;
+            }
+        };
         mockData.addStyle("Default", "styles/Default.sld");
         return mockData;
     }

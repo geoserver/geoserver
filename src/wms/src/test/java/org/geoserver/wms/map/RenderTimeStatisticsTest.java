@@ -25,40 +25,37 @@ public class RenderTimeStatisticsTest {
     @Before
     public void setUp() {
         layers = new ArrayList<>(2);
-        layers.add(
-                new Layer() {
+        layers.add(new Layer() {
 
-                    @Override
-                    public ReferencedEnvelope getBounds() {
-                        return null;
-                    }
+            @Override
+            public ReferencedEnvelope getBounds() {
+                return null;
+            }
 
-                    @Override
-                    public String getTitle() {
-                        return "Layer1";
-                    }
-                });
+            @Override
+            public String getTitle() {
+                return "Layer1";
+            }
+        });
 
-        layers.add(
-                new Layer() {
+        layers.add(new Layer() {
 
-                    @Override
-                    public ReferencedEnvelope getBounds() {
-                        return null;
-                    }
+            @Override
+            public ReferencedEnvelope getBounds() {
+                return null;
+            }
 
-                    @Override
-                    public String getTitle() {
-                        return "Layer2";
-                    }
-                });
+            @Override
+            public String getTitle() {
+                return "Layer2";
+            }
+        });
     }
 
     @Test
     public void testRenderingTimeStatistics() {
         RenderTimeStatistics statistics = new RenderTimeStatistics();
-        ServletRequestAttributes attrs =
-                new ServletRequestAttributes(createMockHttpRequest(statistics));
+        ServletRequestAttributes attrs = new ServletRequestAttributes(createMockHttpRequest(statistics));
         RequestContextHolder.setRequestAttributes(attrs);
         for (Layer l : layers) {
             statistics.layerStart(l);

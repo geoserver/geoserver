@@ -9,8 +9,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
 
-public class SecuredCoverageInfoTest
-        extends SecuredResourceInfoTest<CoverageInfo, SecuredCoverageInfo> {
+public class SecuredCoverageInfoTest extends SecuredResourceInfoTest<CoverageInfo, SecuredCoverageInfo> {
 
     @Override
     CoverageInfo createDelegate() {

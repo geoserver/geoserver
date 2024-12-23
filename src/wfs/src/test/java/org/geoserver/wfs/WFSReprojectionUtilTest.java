@@ -45,8 +45,7 @@ public class WFSReprojectionUtilTest {
 
     private static FeatureType createFeatureType() {
         try {
-            return DataUtilities.createType(
-                    "testType", "geom:Point:srid=4326,line:LineString,name:String,id:int");
+            return DataUtilities.createType("testType", "geom:Point:srid=4326,line:LineString,name:String,id:int");
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -63,8 +62,7 @@ public class WFSReprojectionUtilTest {
     @Test
     public void testNullCheck() {
         // used to throw an NPE if the feature type was null
-        CoordinateReferenceSystem crs =
-                WFSReprojectionUtil.getDeclaredCrs((FeatureType) null, "1.1.0");
+        CoordinateReferenceSystem crs = WFSReprojectionUtil.getDeclaredCrs((FeatureType) null, "1.1.0");
         assertNull(crs);
     }
 
@@ -77,8 +75,7 @@ public class WFSReprojectionUtilTest {
         BBOX clonedBbox = (BBOX) clone;
         assertEquals(bbox.getExpression1(), clonedBbox.getExpression1());
         ReferencedEnvelope expected =
-                new ReferencedEnvelope(
-                        1669792.36, 2782987.269831839, 1118889.97, 2273030.92, webMercator);
+                new ReferencedEnvelope(1669792.36, 2782987.269831839, 1118889.97, 2273030.92, webMercator);
         assertTrue(JTS.equals(expected, clonedBbox.getBounds(), 0.1)); // NOPMD
     }
 

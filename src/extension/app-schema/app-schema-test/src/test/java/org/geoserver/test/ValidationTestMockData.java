@@ -20,10 +20,8 @@ public class ValidationTestMockData extends AbstractAppSchemaMockData {
     @Override
     public void addContent() {
         addFeatureType(GSML_PREFIX, "GeologicUnit", "Nillable.xml", "Nillable.properties");
-        addFeatureType(
-                GSML_PREFIX, "MappedFeature", "NillableWithError.xml", "Nillable.properties");
+        addFeatureType(GSML_PREFIX, "MappedFeature", "NillableWithError.xml", "Nillable.properties");
         putNamespace(ER_PREFIX, ER_URI);
-        addFeatureType(
-                ER_PREFIX, "Commodity", "nillableSimpleContentInteger.xml", "Nillable.properties");
+        addFeatureType(ER_PREFIX, "Commodity", "nillableSimpleContentInteger.xml", "Nillable.properties");
     }
 }

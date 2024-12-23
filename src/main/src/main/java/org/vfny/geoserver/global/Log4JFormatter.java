@@ -33,8 +33,8 @@ import org.geotools.util.logging.Logging;
  * </blockquote>
  *
  * A formatter writting log message on a single line. This formatter is used by GeoServer instead of
- * {@link SimpleFormatter}. The main difference is that this formatter use only one line per message
- * instead of two. For example, a message formatted by
+ * {@link SimpleFormatter}. The main difference is that this formatter use only one line per message instead of two. For
+ * example, a message formatted by
  *
  * @author Martin Desruisseaux
  * @author Rob Hranac
@@ -45,14 +45,14 @@ public class Log4JFormatter extends Formatter {
     private static final String PREFIX = "[";
 
     /**
-     * The string to write at the end of every log header (e.g. "[FINE core]"). It should includes
-     * the spaces between the header and the message body.
+     * The string to write at the end of every log header (e.g. "[FINE core]"). It should includes the spaces between
+     * the header and the message body.
      */
     private static final String SUFFIX = "] ";
 
     /**
-     * The string to write at the end of every log header (e.g. "[FINE core]"). It should includes
-     * the spaces between the header and the message body.
+     * The string to write at the end of every log header (e.g. "[FINE core]"). It should includes the spaces between
+     * the header and the message body.
      */
     private static long startMillis;
 
@@ -63,30 +63,26 @@ public class Log4JFormatter extends Formatter {
     private final String lineSeparator = System.getProperty("line.separator", "\n");
 
     /**
-     * The line separator for the message body. This line always begin with {@link #lineSeparator},
-     * followed by some amount of spaces in order to align the message.
+     * The line separator for the message body. This line always begin with {@link #lineSeparator}, followed by some
+     * amount of spaces in order to align the message.
      */
     private String bodyLineSeparator = lineSeparator;
 
-    /**
-     * Buffer for formatting messages. We will reuse this buffer in order to reduce memory
-     * allocations.
-     */
+    /** Buffer for formatting messages. We will reuse this buffer in order to reduce memory allocations. */
     private final StringBuffer buffer;
 
     /**
-     * The line writer. This object transform all "\r", "\n" or "\r\n" occurences into a single line
-     * separator. This line separator will include space for the marging, if needed.
+     * The line writer. This object transform all "\r", "\n" or "\r\n" occurences into a single line separator. This
+     * line separator will include space for the marging, if needed.
      */
     private final LineWriter writer;
 
     /**
      * Construct a <code>Log4JFormatter</code>.
      *
-     * @param base The base logger name. This is used for shortening the logger name when formatting
-     *     message. For example, if the base logger name is "org.geotools" and a log record come
-     *     from the "org.geotools.core" logger, it will be formatted as "[LEVEL core]" (i.e. the
-     *     "org.geotools" part is ommited).
+     * @param base The base logger name. This is used for shortening the logger name when formatting message. For
+     *     example, if the base logger name is "org.geotools" and a log record come from the "org.geotools.core" logger,
+     *     it will be formatted as "[LEVEL core]" (i.e. the "org.geotools" part is ommited).
      */
     public Log4JFormatter(final String base) {
         Log4JFormatter.startMillis = System.currentTimeMillis();
@@ -167,12 +163,11 @@ public class Log4JFormatter extends Formatter {
     }
 
     /**
-     * Setup a <code>Log4JFormatter</code> for the specified logger and its children. This method
-     * search for all instances of {@link ConsoleHandler} using the {@link SimpleFormatter}. If such
-     * instances are found, they are replaced by a single instance of <code>Log4JFormatter</code>
-     * writting to the {@linkPlain System#out standard output stream} (instead of the {@linkPlain
-     * System#err standard error stream}). This action has no effect on any loggers outside the
-     * <code>base</code> namespace.
+     * Setup a <code>Log4JFormatter</code> for the specified logger and its children. This method search for all
+     * instances of {@link ConsoleHandler} using the {@link SimpleFormatter}. If such instances are found, they are
+     * replaced by a single instance of <code>Log4JFormatter</code> writting to the {@linkPlain System#out standard
+     * output stream} (instead of the {@linkPlain System#err standard error stream}). This action has no effect on any
+     * loggers outside the <code>base</code> namespace.
      *
      * @param base The base logger name to apply the change on (e.g. "org.geotools").
      * @param filterLevel The level to log at - overrides user prefs.
@@ -270,8 +265,8 @@ public class Log4JFormatter extends Formatter {
     }
 
     /**
-     * Set the header width. This is the default value to use for {@link #margin} for next {@link
-     * Log4JFormatter} to be created.
+     * Set the header width. This is the default value to use for {@link #margin} for next {@link Log4JFormatter} to be
+     * created.
      *
      * @param margin the size of the margin to set.
      */
@@ -280,12 +275,12 @@ public class Log4JFormatter extends Formatter {
     }
 
     /**
-     * A {@link ConsoleHandler} sending output to {@link System#out} instead of {@link System#err}
-     * This handler will use a {@link Log4JFormatter} writting log message on a single line.
+     * A {@link ConsoleHandler} sending output to {@link System#out} instead of {@link System#err} This handler will use
+     * a {@link Log4JFormatter} writting log message on a single line.
      *
-     * @task TODO: This class should subclass {@link ConsoleHandler}. Unfortunatly, this is
-     *     currently not possible because {@link ConsoleHandler#setOutputStream} close {@link
-     *     System#err}. If this bug get fixed, then {@link #close} no longer need to be overriden.
+     * @task TODO: This class should subclass {@link ConsoleHandler}. Unfortunatly, this is currently not possible
+     *     because {@link ConsoleHandler#setOutputStream} close {@link System#err}. If this bug get fixed, then
+     *     {@link #close} no longer need to be overriden.
      */
     private static final class Stdout extends StreamHandler {
         public Stdout() {
@@ -299,8 +294,7 @@ public class Log4JFormatter extends Formatter {
          * @param formatter The formatter to use.
          * @throws UnsupportedEncodingException if the encoding is not valid.
          */
-        public Stdout(final Handler handler, final Formatter formatter)
-                throws UnsupportedEncodingException {
+        public Stdout(final Handler handler, final Formatter formatter) throws UnsupportedEncodingException {
             super(System.out, formatter);
             setErrorManager(handler.getErrorManager());
             setFilter(handler.getFilter());
@@ -320,8 +314,8 @@ public class Log4JFormatter extends Formatter {
         }
 
         /**
-         * Override {@link StreamHandler#close} to do a flush but not to close the output stream.
-         * That is, we do <b>not</b> close {@link System#out}.
+         * Override {@link StreamHandler#close} to do a flush but not to close the output stream. That is, we do
+         * <b>not</b> close {@link System#out}.
          */
         @Override
         public void close() {

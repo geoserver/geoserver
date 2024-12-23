@@ -170,14 +170,13 @@ public class APIDispatcherTest {
     public void testDispatcherCallbackOperationName() throws Exception {
         APIDispatcher dispatcher = getDispatcher();
         AtomicReference<Request> requestReference = new AtomicReference<>();
-        TestDispatcherCallback callback =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Operation operationDispatched(Request request, Operation operation) {
-                        requestReference.set(request);
-                        return operation;
-                    }
-                };
+        TestDispatcherCallback callback = new TestDispatcherCallback() {
+            @Override
+            public Operation operationDispatched(Request request, Operation operation) {
+                requestReference.set(request);
+                return operation;
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -196,14 +195,13 @@ public class APIDispatcherTest {
 
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Request init(Request request) {
-                        dispatcherStatus.set(Status.INIT);
-                        throw new RuntimeException("TestDispatcherCallbackFailInit");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Request init(Request request) {
+                dispatcherStatus.set(Status.INIT);
+                throw new RuntimeException("TestDispatcherCallbackFailInit");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -214,9 +212,7 @@ public class APIDispatcherTest {
 
         dispatcher.handleRequest(request, response);
 
-        checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailInit\"}");
+        checkInternalError(response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailInit\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callbackFail.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
@@ -227,14 +223,13 @@ public class APIDispatcherTest {
         APIDispatcher dispatcher = getDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Service serviceDispatched(Request request, Service service) {
-                        dispatcherStatus.set(Status.SERVICE_DISPATCHED);
-                        throw new RuntimeException("TestDispatcherCallbackFailServiceDispatched");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Service serviceDispatched(Request request, Service service) {
+                dispatcherStatus.set(Status.SERVICE_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailServiceDispatched");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -246,8 +241,7 @@ public class APIDispatcherTest {
         dispatcher.handleRequest(request, response);
 
         checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailServiceDispatched\"}");
+                response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailServiceDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -257,14 +251,13 @@ public class APIDispatcherTest {
         APIDispatcher dispatcher = getDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Operation operationDispatched(Request request, Operation operation) {
-                        dispatcherStatus.set(Status.OPERATION_DISPATCHED);
-                        throw new RuntimeException("TestDispatcherCallbackFailOperationDispatched");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Operation operationDispatched(Request request, Operation operation) {
+                dispatcherStatus.set(Status.OPERATION_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailOperationDispatched");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -286,15 +279,13 @@ public class APIDispatcherTest {
         APIDispatcher dispatcher = getDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Object operationExecuted(
-                            Request request, Operation operation, Object result) {
-                        dispatcherStatus.set(Status.OPERATION_EXECUTED);
-                        throw new RuntimeException("TestDispatcherCallbackFailOperationExecuted");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                dispatcherStatus.set(Status.OPERATION_EXECUTED);
+                throw new RuntimeException("TestDispatcherCallbackFailOperationExecuted");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -306,8 +297,7 @@ public class APIDispatcherTest {
         dispatcher.handleRequest(request, response);
 
         checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailOperationExecuted\"}");
+                response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailOperationExecuted\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -317,18 +307,13 @@ public class APIDispatcherTest {
         APIDispatcher dispatcher = getDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Response responseDispatched(
-                            Request request,
-                            Operation operation,
-                            Object result,
-                            Response response) {
-                        dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
-                        throw new RuntimeException("TestDispatcherCallbackFailResponseDispatched");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
+                dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailResponseDispatched");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -340,8 +325,7 @@ public class APIDispatcherTest {
         dispatcher.handleRequest(request, response);
 
         checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailResponseDispatched\"}");
+                response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailResponseDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -351,23 +335,21 @@ public class APIDispatcherTest {
         APIDispatcher dispatcher = getDispatcher();
         final AtomicBoolean firedCallback = new AtomicBoolean(false);
         TestDispatcherCallback callback1 = new TestDispatcherCallback();
-        TestDispatcherCallback callback2 =
-                new TestDispatcherCallback() {
-                    @Override
-                    public void finished(Request request) {
-                        firedCallback.set(true);
-                        super.finished(request);
-                    }
-                };
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public void finished(Request request) {
-                        dispatcherStatus.set(Status.FINISHED);
-                        // cleanups must continue even if an error was thrown
-                        throw new Error("TestDispatcherCallbackFailFinished");
-                    }
-                };
+        TestDispatcherCallback callback2 = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                firedCallback.set(true);
+                super.finished(request);
+            }
+        };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                dispatcherStatus.set(Status.FINISHED);
+                // cleanups must continue even if an error was thrown
+                throw new Error("TestDispatcherCallbackFailFinished");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -402,13 +384,11 @@ public class APIDispatcherTest {
 
     @Test
     public void testHttpErrorCodeExceptionWithContentType() throws Exception {
-        CodeExpectingHttpServletResponse rsp =
-                assertHttpErrorCode("errorWithPayload", HttpServletResponse.SC_OK);
+        CodeExpectingHttpServletResponse rsp = assertHttpErrorCode("errorWithPayload", HttpServletResponse.SC_OK);
         assertEquals("application/json", rsp.getContentType());
     }
 
-    private CodeExpectingHttpServletResponse assertHttpErrorCode(String path, int expectedCode)
-            throws Exception {
+    private CodeExpectingHttpServletResponse assertHttpErrorCode(String path, int expectedCode) throws Exception {
         APIDispatcher dispatcher = getDispatcher();
 
         MockHttpServletRequest request = setupRequestBase();
@@ -416,8 +396,7 @@ public class APIDispatcherTest {
         request.setPathInfo("/geoserver/ogc/" + path);
         request.setRequestURI("/geoserver/ogc/" + path);
 
-        CodeExpectingHttpServletResponse response =
-                new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
+        CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
 
         dispatcher.handleRequest(request, response);
         assertEquals(expectedCode, response.getStatusCode());
@@ -471,25 +450,24 @@ public class APIDispatcherTest {
     }
 
     private MockHttpServletRequest setupRequestBase(String... params) {
-        MockHttpServletRequest request =
-                new MockHttpServletRequest() {
-                    String encoding;
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+            String encoding;
 
-                    @Override
-                    public int getServerPort() {
-                        return 8080;
-                    }
+            @Override
+            public int getServerPort() {
+                return 8080;
+            }
 
-                    @Override
-                    public String getCharacterEncoding() {
-                        return encoding;
-                    }
+            @Override
+            public String getCharacterEncoding() {
+                return encoding;
+            }
 
-                    @Override
-                    public void setCharacterEncoding(String encoding) {
-                        this.encoding = encoding;
-                    }
-                };
+            @Override
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
 
         request.setScheme("http");
         request.setServerName("localhost");
@@ -500,8 +478,7 @@ public class APIDispatcherTest {
         if (params != null) {
             Map<String, String> map = toMap(params);
             map.forEach((k, v) -> request.addParameter(k, v));
-            request.setQueryString(
-                    map.entrySet().stream().map(Object::toString).collect(Collectors.joining("&")));
+            request.setQueryString(map.entrySet().stream().map(Object::toString).collect(Collectors.joining("&")));
         }
 
         RequestContextHolder.setRequestAttributes(new DispatcherServletWebRequest(request));
@@ -514,8 +491,7 @@ public class APIDispatcherTest {
         return map;
     }
 
-    private void checkInternalError(MockHttpServletResponse response, String s)
-            throws UnsupportedEncodingException {
+    private void checkInternalError(MockHttpServletResponse response, String s) throws UnsupportedEncodingException {
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
         assertEquals(500, response.getStatus());
         assertEquals(s, response.getContentAsString());

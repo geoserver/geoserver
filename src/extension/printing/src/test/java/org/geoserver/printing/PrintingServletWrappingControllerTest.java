@@ -55,8 +55,7 @@ public class PrintingServletWrappingControllerTest {
         // Initialize GeoServerExtensionsHelper so that GeoServerExtensions finds our mock loader
         GeoServerExtensionsHelper.clear();
         GeoServerExtensionsHelper.init(null);
-        GeoServerExtensionsHelper.singleton(
-                "geoserverResourceLoader", loader, GeoServerResourceLoader.class);
+        GeoServerExtensionsHelper.singleton("geoserverResourceLoader", loader, GeoServerResourceLoader.class);
 
         controller = new PrintingServletWrappingController();
     }
@@ -75,9 +74,6 @@ public class PrintingServletWrappingControllerTest {
         controller.setInitParameters(initParameters);
 
         String updatedConfig = initParameters.getProperty("config");
-        assertEquals(
-                "Expected the config path to match our mocked file",
-                updatedConfig,
-                mockFile.getAbsolutePath());
+        assertEquals("Expected the config path to match our mocked file", updatedConfig, mockFile.getAbsolutePath());
     }
 }

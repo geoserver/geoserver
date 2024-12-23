@@ -5,8 +5,8 @@
 package org.geoserver.wps;
 
 /**
- * A base process listener that does nothing, subclasses can extend to only implement the methods
- * they are interested into
+ * A base process listener that does nothing, subclasses can extend to only implement the methods they are interested
+ * into
  *
  * @author Andrea Aime - GeoSolutions
  */

@@ -10,11 +10,10 @@ import org.apache.wicket.model.IModel;
 /**
  * Extension point for panels which appear in separate tabs on the style edit page.
  *
- * <p>Subclasses <b>must</b> override the {@link #StyleEditTabPanel(String, IModel)} constructor and
- * <b>not</b> change its signature.
+ * <p>Subclasses <b>must</b> override the {@link #StyleEditTabPanel(String, IModel)} constructor and <b>not</b> change
+ * its signature.
  *
- * <p>Instances of this class are described in a spring context with a {@link StyleEditTabPanelInfo}
- * bean.
+ * <p>Instances of this class are described in a spring context with a {@link StyleEditTabPanelInfo} bean.
  */
 public class StyleEditTabPanel extends Panel {
 
@@ -50,10 +49,9 @@ public class StyleEditTabPanel extends Panel {
     }
 
     public StyleEditTabPanel setInputEnabled(final boolean enabled) {
-        visitChildren(
-                (component, visit) -> {
-                    component.setEnabled(enabled);
-                });
+        visitChildren((component, visit) -> {
+            component.setEnabled(enabled);
+        });
         return this;
     }
 }

@@ -35,8 +35,7 @@ import org.junit.Test;
 public class WFSURIHandlerTest {
 
     @Rule
-    public PropertyRule aliases =
-            PropertyRule.system("org.geoserver.wfs.xml.WFSURIHandler.additionalHostnames");
+    public PropertyRule aliases = PropertyRule.system("org.geoserver.wfs.xml.WFSURIHandler.additionalHostnames");
 
     InitStrategy strategy;
 
@@ -51,13 +50,12 @@ public class WFSURIHandlerTest {
         WFSURIHandler.ADDRESSES.clear();
 
         // Suppress the network interface interrogation so it doesn't interfere with other tests
-        strategy =
-                new InitStrategy() {
-                    @Override
-                    public Collection<NetworkInterface> getNetworkInterfaces() {
-                        return Collections.emptyList();
-                    }
-                };
+        strategy = new InitStrategy() {
+            @Override
+            public Collection<NetworkInterface> getNetworkInterfaces() {
+                return Collections.emptyList();
+            }
+        };
 
         gs = EasyMock.createMock(GeoServer.class);
         config = EasyMock.createMock(GeoServerInfo.class);
@@ -124,14 +122,11 @@ public class WFSURIHandlerTest {
         WFSURIHandler handler = new WFSURIHandler(gs);
 
         final URI wrongHost =
-                URI.createURI(
-                        "http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         final URI notDFT =
-                URI.createURI(
-                        "http://localhost/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
+                URI.createURI("http://localhost/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
         final URI localDFT =
-                URI.createURI(
-                        "http://localhost/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://localhost/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         assertThat(handler.canHandle(wrongHost), is(false));
         assertThat(handler.canHandle(notDFT), is(false));
         assertThat(handler.canHandle(localDFT), is(true));
@@ -147,23 +142,16 @@ public class WFSURIHandlerTest {
         WFSURIHandler handler = new WFSURIHandler(gs);
 
         final URI wrongHost =
-                URI.createURI(
-                        "http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
-        final URI notDFT =
-                URI.createURI(
-                        "http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
+                URI.createURI("http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+        final URI notDFT = URI.createURI("http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
         final URI fooDFT =
-                URI.createURI(
-                        "http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         final URI barDFT =
-                URI.createURI(
-                        "http://bar/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://bar/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         final URI bazDFT =
-                URI.createURI(
-                        "http://baz/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://baz/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         final URI localhostDFT =
-                URI.createURI(
-                        "http://localhost/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://localhost/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         assertThat(handler.canHandle(wrongHost), is(false));
         assertThat(handler.canHandle(notDFT), is(false));
         assertThat(handler.canHandle(fooDFT), is(true));
@@ -182,17 +170,12 @@ public class WFSURIHandlerTest {
         WFSURIHandler handler = new WFSURIHandler(gs);
 
         final URI wrongHost =
-                URI.createURI(
-                        "http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
-        final URI notDFT =
-                URI.createURI(
-                        "http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
+                URI.createURI("http://example.com/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+        final URI notDFT = URI.createURI("http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=GetCapabilities");
         final URI fooDFT =
-                URI.createURI(
-                        "http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://foo/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         final URI uppercaseFooDFT =
-                URI.createURI(
-                        "http://FOO/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
+                URI.createURI("http://FOO/geoserver/wfs?service=wfs&version=2.0.0&request=DescribeFeatureType");
         assertThat(handler.canHandle(wrongHost), is(false));
         assertThat(handler.canHandle(notDFT), is(false));
         assertThat(handler.canHandle(fooDFT), is(true));

@@ -31,10 +31,9 @@ import org.geotools.image.util.ColorUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
- * Some code stolen from WMS RenderedImageMapOutputFormat to help build a transparent image, at
- * least for the RGB and indexed image case. the idea is that this hidden class can stay here for
- * backports, while main can be reconfigured to use the DirectRasterRenderer being factored out in
- * this PR: https://github.com/geoserver/geoserver/pull/5177
+ * Some code stolen from WMS RenderedImageMapOutputFormat to help build a transparent image, at least for the RGB and
+ * indexed image case. the idea is that this hidden class can stay here for backports, while main can be reconfigured to
+ * use the DirectRasterRenderer being factored out in this PR: https://github.com/geoserver/geoserver/pull/5177
  */
 class CoverageRenderSupport {
 
@@ -180,23 +179,21 @@ class CoverageRenderSupport {
                 || transparencyType != Transparency.OPAQUE
                 || iw.getNoData() != null
                 || roiCandidate instanceof ROI) {
-            image =
-                    applyBackgroundTransparency(
-                            mapRasterArea,
-                            image,
-                            mapRasterArea,
-                            layout,
-                            bgValues,
-                            alphaChannels,
-                            transparencyType,
-                            iw,
-                            roiCandidate,
-                            noDataTransparencyApplied);
+            image = applyBackgroundTransparency(
+                    mapRasterArea,
+                    image,
+                    mapRasterArea,
+                    layout,
+                    bgValues,
+                    alphaChannels,
+                    transparencyType,
+                    iw,
+                    roiCandidate,
+                    noDataTransparencyApplied);
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea)
-                    && !imageBounds.equals(
-                            mapRasterArea)) { // the produced image does not need a final mosaicking
+                    && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking
                 // operation but a crop!
                 iw.setBackground(bgValues);
                 iw.crop(0, 0, mapWidth, mapHeight);
@@ -214,15 +211,12 @@ class CoverageRenderSupport {
 
     private RenderedImage addAlphaChannel(RenderedImage image) {
         final ImageLayout tempLayout = new ImageLayout(image);
-        tempLayout
-                .unsetValid(ImageLayout.COLOR_MODEL_MASK)
-                .unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
-        RenderedImage alpha =
-                ConstantDescriptor.create(
-                        Float.valueOf(image.getWidth()),
-                        Float.valueOf(image.getHeight()),
-                        new Byte[] {Byte.valueOf((byte) 255)},
-                        new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+        tempLayout.unsetValid(ImageLayout.COLOR_MODEL_MASK).unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
+        RenderedImage alpha = ConstantDescriptor.create(
+                Float.valueOf(image.getWidth()),
+                Float.valueOf(image.getHeight()),
+                new Byte[] {Byte.valueOf((byte) 255)},
+                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
 
         // Using an ImageWorker
         ImageWorker iw = new ImageWorker(image);
@@ -266,8 +260,8 @@ class CoverageRenderSupport {
     }
 
     /**
-     * Given a one band (plus eventual alpha) color model and the red part of a gray color returns
-     * the appropriate background color to be used in the mosaic operation
+     * Given a one band (plus eventual alpha) color model and the red part of a gray color returns the appropriate
+     * background color to be used in the mosaic operation
      */
     double mapToGrayColor(Color gray, ComponentColorModel cm) {
         double[] rescaleFactors = new double[DataBuffer.TYPE_UNDEFINED + 1];
@@ -305,9 +299,7 @@ class CoverageRenderSupport {
                 // memory boundness concerns
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(
-                            Level.FINE,
-                            "Failed to intersect image ROI with target bounds, returning empty result",
-                            e);
+                            Level.FINE, "Failed to intersect image ROI with target bounds, returning empty result", e);
                 }
                 return null;
             }
@@ -317,12 +309,11 @@ class CoverageRenderSupport {
         ROI[] rois = (!preProcessedWithTransparency) ? new ROI[] {roi} : null;
 
         // build the transparency thresholds
-        double[][] thresholds =
-                (!preProcessedWithTransparency)
-                        ? new double[][] {
-                            {ColorUtilities.getThreshold(image.getSampleModel().getDataType())}
-                        }
-                        : null;
+        double[][] thresholds = (!preProcessedWithTransparency)
+                ? new double[][] {
+                    {ColorUtilities.getThreshold(image.getSampleModel().getDataType())}
+                }
+                : null;
         // apply the mosaic
         iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
         iw.setBackground(bgValues);

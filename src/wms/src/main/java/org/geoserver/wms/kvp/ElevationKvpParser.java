@@ -7,10 +7,7 @@ package org.geoserver.wms.kvp;
 import org.geoserver.ows.kvp.ElevationParser;
 import org.geoserver.wms.WMS;
 
-/**
- * A {@link ElevationKvpParser} picking the max number of values to be parsed from the WMS
- * configuration
- */
+/** A {@link ElevationKvpParser} picking the max number of values to be parsed from the WMS configuration */
 public class ElevationKvpParser extends org.geoserver.ows.kvp.ElevationKvpParser {
 
     private final WMS wms;

@@ -24,8 +24,8 @@ public interface VTIterator extends Closeable {
      * Retrieves an iterator optimized for the target GeoTools {@link FeatureIterator}
      *
      * @param delegate the delegate iterator
-     * @param coalesce whether features with the same attributes should be coalesced into one
-     *     (assumes features have been sorted already)
+     * @param coalesce whether features with the same attributes should be coalesced into one (assumes features have
+     *     been sorted already)
      * @return A {@link VTIterator} wrapping the provided {@link FeatureIterator}
      */
     static VTIterator getIterator(FeatureIterator<?> delegate, boolean coalesce) {

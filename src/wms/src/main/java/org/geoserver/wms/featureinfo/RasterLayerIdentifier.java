@@ -113,18 +113,14 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     }
 
     @Override
-    public List<FeatureCollection> identify(
-            FeatureInfoRequestParameters requestParams, int maxFeatures) throws Exception {
+    public List<FeatureCollection> identify(FeatureInfoRequestParameters requestParams, int maxFeatures)
+            throws Exception {
         final MapLayerInfo layer = requestParams.getLayer();
         final Filter filter = requestParams.getFilter();
         final SortBy[] sort = requestParams.getSort();
         final CoverageInfo cinfo = layer.getCoverage();
-        final GridCoverage2DReader reader =
-                handleClipParam(
-                        requestParams,
-                        (GridCoverage2DReader)
-                                cinfo.getGridCoverageReader(
-                                        new NullProgressListener(), GeoTools.getDefaultHints()));
+        final GridCoverage2DReader reader = handleClipParam(requestParams, (GridCoverage2DReader)
+                cinfo.getGridCoverageReader(new NullProgressListener(), GeoTools.getDefaultHints()));
         Position position = getQueryPosition(requestParams, cinfo, reader);
 
         // check that the provided point is inside the bbox for this coverage
@@ -154,8 +150,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 FeatureCollection fc = (FeatureCollection) info;
                 result.add((filterCollection(fc, requestParams)));
             } else {
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.fine("Unable to load raster data for this request.");
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Unable to load raster data for this request.");
             }
         }
 
@@ -169,13 +164,9 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     }
 
     @SuppressWarnings("unchecked")
-    private FeatureCollection filterCollection(
-            FeatureCollection fc, FeatureInfoRequestParameters params) {
+    private FeatureCollection filterCollection(FeatureCollection fc, FeatureInfoRequestParameters params) {
         // is it part of the request params?
-        int requestBuffer =
-                params.getBuffer() <= 0
-                        ? VectorBasicLayerIdentifier.MIN_BUFFER_SIZE
-                        : params.getBuffer();
+        int requestBuffer = params.getBuffer() <= 0 ? VectorBasicLayerIdentifier.MIN_BUFFER_SIZE : params.getBuffer();
         ReferencedEnvelope bbox = LayerIdentifier.getEnvelopeFilter(params, requestBuffer);
 
         FilterFactory ff = params.getFilterFactory();
@@ -205,25 +196,17 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             Style style = requestParams.getStyle();
             double scaleDenominator = requestParams.getScaleDenominator();
 
-            ColorMapLabelMatcherExtractor labelVisitor =
-                    new ColorMapLabelMatcherExtractor(scaleDenominator);
+            ColorMapLabelMatcherExtractor labelVisitor = new ColorMapLabelMatcherExtractor(scaleDenominator);
             style.accept(labelVisitor);
-            List<ColorMapLabelMatcher> colorMapLabelMatcherList =
-                    labelVisitor.getColorMapLabelMatcherList();
+            List<ColorMapLabelMatcher> colorMapLabelMatcherList = labelVisitor.getColorMapLabelMatcherList();
 
             RasterAttributeTableVisitor ratVisitor =
-                    new RasterAttributeTableVisitor(
-                            scaleDenominator, cinfo.getNativeCoverageName(), reader);
+                    new RasterAttributeTableVisitor(scaleDenominator, cinfo.getNativeCoverageName(), reader);
             style.accept(ratVisitor);
             AttributeTableEnricher ratEnricher = ratVisitor.getAttributeTableEnricher();
 
-            pixel =
-                    wrapPixelInFeatureCollection(
-                            coverage,
-                            pixelValues,
-                            cinfo.getQualifiedName(),
-                            colorMapLabelMatcherList,
-                            ratEnricher);
+            pixel = wrapPixelInFeatureCollection(
+                    coverage, pixelValues, cinfo.getQualifiedName(), colorMapLabelMatcherList, ratEnricher);
         } catch (PointOutsideCoverageException e) {
             // it's fine, users might legitimately query point outside, we just don't
             // return anything
@@ -252,8 +235,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         List<Object> elevations = requestParams.getElevations();
         wms.validateRasterDimensions(times, elevations, layer, requestParams.getGetMapRequest());
         GeneralParameterValue[] parameters =
-                wms.getWMSReadParameters(
-                        getMap, layer, filter, sort, times, elevations, reader, true);
+                wms.getWMSReadParameters(getMap, layer, filter, sort, times, elevations, reader, true);
 
         // now get the position in raster space using the world to grid related to
         // corner
@@ -271,9 +253,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         final Rectangle integerRasterArea = rasterArea.getBounds();
         final GridEnvelope gridEnvelope = reader.getOriginalGridRange();
         final Rectangle originalArea =
-                (gridEnvelope instanceof GridEnvelope2D)
-                        ? (GridEnvelope2D) gridEnvelope
-                        : new Rectangle();
+                (gridEnvelope instanceof GridEnvelope2D) ? (GridEnvelope2D) gridEnvelope : new Rectangle();
         XRectangle2D.intersect(integerRasterArea, originalArea, integerRasterArea);
         // paranoiac check, did we fall outside the coverage raster area? This should
         // never really happne if the request is well formed.
@@ -295,31 +275,25 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 // create a suitable geometry for this request reusing the getmap (we
                 // could probably optimize)
                 //
-                parameter.setValue(
-                        new GridGeometry2D(
-                                new GridEnvelope2D(integerRasterArea),
-                                reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
-                                reader.getCoordinateReferenceSystem()));
+                parameter.setValue(new GridGeometry2D(
+                        new GridEnvelope2D(integerRasterArea),
+                        reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
+                        reader.getCoordinateReferenceSystem()));
             } else if (propertyNames != null
                     && propertyNames.length > 0
                     && name.equals(AbstractGridFormat.BANDS.getName())) {
                 int[] bands = new int[propertyNames.length];
                 Set<String> requestedNames = new HashSet<>(Arrays.asList(propertyNames));
                 List<String> dimensionNames =
-                        cinfo.getDimensions().stream()
-                                .map(d -> d.getName())
-                                .collect(Collectors.toList());
-                for (int i = 0, j = 0;
-                        i < dimensionNames.size() && !requestedNames.isEmpty();
-                        i++) {
+                        cinfo.getDimensions().stream().map(d -> d.getName()).collect(Collectors.toList());
+                for (int i = 0, j = 0; i < dimensionNames.size() && !requestedNames.isEmpty(); i++) {
                     String dimensionName = dimensionNames.get(i);
                     if (requestedNames.remove(dimensionName)) {
                         bands[j++] = i;
                     }
                 }
                 if (!requestedNames.isEmpty() && !hasVectorTransformations(requestParams)) {
-                    String availableNames =
-                            dimensionNames.stream().collect(Collectors.joining(", "));
+                    String availableNames = dimensionNames.stream().collect(Collectors.joining(", "));
                     throw new ServiceException(
                             "Could not find the following requested properties "
                                     + requestedNames
@@ -337,8 +311,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     private boolean hasVectorTransformations(FeatureInfoRequestParameters params) {
         Style style = params.getStyle();
         RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(
-                        params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
+                new RasterSymbolizerVisitor(params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
         style.accept(visitor);
 
         // we could skip the reading altogether
@@ -359,13 +332,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         }
 
         // set the requested position in model space for this request
-        final Coordinate middle =
-                WMS.pixelToWorld(
-                        params.getX(),
-                        params.getY(),
-                        params.getRequestedBounds(),
-                        params.getWidth(),
-                        params.getHeight());
+        final Coordinate middle = WMS.pixelToWorld(
+                params.getX(), params.getY(), params.getRequestedBounds(), params.getWidth(), params.getHeight());
         double x = middle.x;
         double y = middle.y;
         // coverage median position in the coverage (target) CRS
@@ -377,16 +345,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             // for consistency, the transformation is exactly the same as below when preparing
             // the request, but in the inverse direction (coverage (target) CRS to requested CRS)
             // coverage median position transformed into the requested CRS
-            TransformedPosition coverageMedianPosition =
-                    new TransformedPosition(
-                            targetCRS,
-                            requestedCRS,
-                            new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+            TransformedPosition coverageMedianPosition = new TransformedPosition(
+                    targetCRS, requestedCRS, new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
             try {
                 coverageMedianPosition.transform(targetCoverageMedianPosition);
             } catch (TransformException exception) {
-                throw new CannotEvaluateException(
-                        "Cannot find coverage median position in requested CRS", exception);
+                throw new CannotEvaluateException("Cannot find coverage median position in requested CRS", exception);
             }
             if (CRS.getAxisOrder(requestedCRS) == CRS.AxisOrder.NORTH_EAST) {
                 // y and second ordinate are longitude
@@ -403,16 +367,12 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         // area,
         // TODO this code need to be made much more robust
         if (requestedCRS != null) {
-            final TransformedPosition arbitraryToInternal =
-                    new TransformedPosition(
-                            requestedCRS,
-                            targetCRS,
-                            new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+            final TransformedPosition arbitraryToInternal = new TransformedPosition(
+                    requestedCRS, targetCRS, new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
             try {
                 arbitraryToInternal.transform(position);
             } catch (TransformException exception) {
-                throw new CannotEvaluateException(
-                        "Unable to answer the geatfeatureinfo", exception);
+                throw new CannotEvaluateException("Unable to answer the geatfeatureinfo", exception);
             }
             position = arbitraryToInternal;
         }
@@ -441,8 +401,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             FeatureTypeStyle fts)
             throws IOException, SchemaException, TransformException, FactoryException {
         RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(
-                        params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
+                new RasterSymbolizerVisitor(params.getScaleDenominator(), null, this.wms.isTransformFeatureInfo());
         fts.accept(visitor);
 
         // we could skip the reading altogether
@@ -460,16 +419,14 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         GridCoverage2D coverage = reader.read(parameters);
 
         if (transformation != null) {
-            RenderingTransformationHelper helper =
-                    new RenderingTransformationHelper() {
-                        @Override
-                        protected GridCoverage2D readCoverage(
-                                GridCoverage2DReader reader, Object params, GridGeometry2D readGG)
-                                throws IOException {
-                            throw new UnsupportedOperationException(
-                                    "This helper is meant to be used with a coverage already read");
-                        }
-                    };
+            RenderingTransformationHelper helper = new RenderingTransformationHelper() {
+                @Override
+                protected GridCoverage2D readCoverage(GridCoverage2DReader reader, Object params, GridGeometry2D readGG)
+                        throws IOException {
+                    throw new UnsupportedOperationException(
+                            "This helper is meant to be used with a coverage already read");
+                }
+            };
             return helper.applyRenderingTransformation(
                     transformation,
                     DataUtilities.source(FeatureUtilities.wrapGridCoverage(coverage)),
@@ -525,8 +482,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         boolean isLabelReplacingValue = isLabelReplacingValue(colorMapLabelMatcherList);
 
         if (!isLabelReplacingValue) addBandNamesToFeatureType(sampleDimensions, builder);
-        if (isLabelActive)
-            addLabelAttributeNameToFeatureType(colorMapLabelMatcherList, builder, coverage);
+        if (isLabelActive) addLabelAttributeNameToFeatureType(colorMapLabelMatcherList, builder, coverage);
         if (ratEnricher != null) {
             ratEnricher.addAttributes(builder);
         }
@@ -536,8 +492,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         List<String> labels = new ArrayList<>();
         for (int i = 0; i < pixelValues.length; i++) {
             double pixelVal = Double.valueOf(pixelValues[i]);
-            if (isLabelActive)
-                addValueToLabelListByPixel(labels, colorMapLabelMatcherList, pixelVal, i);
+            if (isLabelActive) addValueToLabelListByPixel(labels, colorMapLabelMatcherList, pixelVal, i);
             if (!isLabelReplacingValue) {
                 values.add(pixelVal);
             }
@@ -551,11 +506,11 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         return DataUtilities.collection(SimpleFeatureBuilder.build(gridType, values, ""));
     }
 
-    private void addBandNamesToFeatureType(
-            GridSampleDimension[] sampleDimensions, SimpleFeatureTypeBuilder builder) {
+    private void addBandNamesToFeatureType(GridSampleDimension[] sampleDimensions, SimpleFeatureTypeBuilder builder) {
         final Set<String> bandNames = new HashSet<>();
         for (int i = 0; i < sampleDimensions.length; i++) {
-            String name = descriptionToNcName(sampleDimensions[i].getDescription().toString());
+            String name =
+                    descriptionToNcName(sampleDimensions[i].getDescription().toString());
             // GEOS-2518
             if (bandNames.contains(name)) {
                 // it might happen again that the name already exists but it pretty difficult I'd
@@ -581,10 +536,9 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 // LabelInFeatureInfo with the default attribute name
                 String labelIndexed = numLabel > 1 ? label + indexLabel : label;
                 indexLabel++;
-                GridSampleDimension sampleDimension =
-                        channelName != null
-                                ? coverage.getSampleDimension(channelName.intValue() - 1)
-                                : coverage.getSampleDimensions()[0];
+                GridSampleDimension sampleDimension = channelName != null
+                        ? coverage.getSampleDimension(channelName.intValue() - 1)
+                        : coverage.getSampleDimensions()[0];
                 String sampleDimDesc = sampleDimension.getDescription().toString();
                 label = labelIndexed + "_" + descriptionToNcName(sampleDimDesc);
             }
@@ -605,8 +559,8 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     }
 
     /**
-     * Convert sample dimension description to a valid XML NCName by replacing invalid characters
-     * with underscores (<code>'_'</code>).
+     * Convert sample dimension description to a valid XML NCName by replacing invalid characters with underscores (
+     * <code>'_'</code>).
      *
      * <p>If the description is null or has zero length, the NCName "Unknown" is returned.
      *
@@ -619,8 +573,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         } else {
             char[] result = description.toCharArray();
             for (int i = 0; i < result.length; i++) {
-                if ((i == 0 && !XMLChar.isNCNameStart(result[i]))
-                        || (i > 0 && !XMLChar.isNCName(result[i]))) {
+                if ((i == 0 && !XMLChar.isNCNameStart(result[i])) || (i > 0 && !XMLChar.isNCName(result[i]))) {
                     result[i] = '_';
                 }
             }
@@ -629,8 +582,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
     }
 
     @Override
-    public GridCoverage2DReader handleClipParam(
-            FeatureInfoRequestParameters params, GridCoverage2DReader reader) {
+    public GridCoverage2DReader handleClipParam(FeatureInfoRequestParameters params, GridCoverage2DReader reader) {
         Geometry roiGeom = params.getGetMapRequest().getClip();
         if (roiGeom == null) return reader;
         return new CroppedGridCoverage2DReader(reader, roiGeom);

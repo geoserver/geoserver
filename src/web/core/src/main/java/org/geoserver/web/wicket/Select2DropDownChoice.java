@@ -22,17 +22,14 @@ import org.wicketstuff.select2.Select2Behavior;
 public class Select2DropDownChoice<T> extends DropDownChoice<T> {
 
     private static final PackageResourceReference SELECT2_KEYBOARD_JS =
-            new PackageResourceReference(
-                    Select2DropDownChoice.class, "js/select2/select2-keyboard.js");
+            new PackageResourceReference(Select2DropDownChoice.class, "js/select2/select2-keyboard.js");
 
-    public Select2DropDownChoice(
-            String id, IModel<T> model, IModel<List<T>> choices, IChoiceRenderer<T> renderer) {
+    public Select2DropDownChoice(String id, IModel<T> model, IModel<List<T>> choices, IChoiceRenderer<T> renderer) {
         super(id, model, choices, renderer);
         initBehaviors();
     }
 
-    public Select2DropDownChoice(
-            String id, IModel<T> model, List<T> choices, IChoiceRenderer<T> renderer) {
+    public Select2DropDownChoice(String id, IModel<T> model, List<T> choices, IChoiceRenderer<T> renderer) {
         super(id, model, choices, renderer);
         initBehaviors();
     }
@@ -42,8 +39,7 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
         initBehaviors();
     }
 
-    public Select2DropDownChoice(
-            String id, List<? extends T> choices, IChoiceRenderer<? super T> renderer) {
+    public Select2DropDownChoice(String id, List<? extends T> choices, IChoiceRenderer<? super T> renderer) {
         super(id, choices, renderer);
         initBehaviors();
     }
@@ -58,16 +54,13 @@ public class Select2DropDownChoice<T> extends DropDownChoice<T> {
         initBehaviors();
     }
 
-    public Select2DropDownChoice(
-            String id, IModel<T> model, IModel<? extends List<? extends T>> choices) {
+    public Select2DropDownChoice(String id, IModel<T> model, IModel<? extends List<? extends T>> choices) {
         super(id, model, choices);
         initBehaviors();
     }
 
     public Select2DropDownChoice(
-            String id,
-            IModel<? extends List<? extends T>> choices,
-            IChoiceRenderer<? super T> renderer) {
+            String id, IModel<? extends List<? extends T>> choices, IChoiceRenderer<? super T> renderer) {
         super(id, choices, renderer);
         initBehaviors();
     }

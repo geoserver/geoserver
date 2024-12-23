@@ -24,8 +24,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
-public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo>
-        implements WMTSStoreInfo {
+public class DecoratingWMTSStoreInfo extends AbstractDecorator<WMTSStoreInfo> implements WMTSStoreInfo {
 
     public DecoratingWMTSStoreInfo(WMTSStoreInfo delegate) {
         super(delegate);

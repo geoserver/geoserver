@@ -43,8 +43,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     protected ResourceListener listener = notify -> loadConfiguration();
 
     /** @param formatConverter the format converter tool */
-    public AbstractToolConfigurator(
-            FormatConverter formatConverter, ToolWrapperFactory wrapperFactory) {
+    public AbstractToolConfigurator(FormatConverter formatConverter, ToolWrapperFactory wrapperFactory) {
         this.of = formatConverter;
         this.wrapperFactory = wrapperFactory;
 
@@ -72,10 +71,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error reading the " + getConfigurationFile() + " configuration file",
-                    e);
+            LOGGER.log(Level.SEVERE, "Error reading the " + getConfigurationFile() + " configuration file", e);
         }
 
         if (configuration == null) {
@@ -94,8 +90,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
 
         // let's load the configuration
         ToolWrapper wrapper =
-                wrapperFactory.createWrapper(
-                        configuration.getExecutable(), configuration.getEnvironment());
+                wrapperFactory.createWrapper(configuration.getExecutable(), configuration.getEnvironment());
         Set<String> supported = wrapper.getSupportedFormats();
         of.setExecutable(configuration.getExecutable());
         of.setEnvironment(configuration.getEnvironment());
@@ -104,13 +99,12 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
             if (supported.contains(format.getToolFormat())) {
                 toBeAdded.add(format);
             } else {
-                LOGGER.severe(
-                        "Skipping '"
-                                + format.getGeoserverFormat()
-                                + "' as its tool format '"
-                                + format.getToolFormat()
-                                + "' is not among the ones supported by "
-                                + configuration.getExecutable());
+                LOGGER.severe("Skipping '"
+                        + format.getGeoserverFormat()
+                        + "' as its tool format '"
+                        + format.getToolFormat()
+                        + "' is not among the ones supported by "
+                        + configuration.getExecutable());
             }
         }
         // update configured formats at once, potentially alleviating locking overhead
@@ -125,17 +119,16 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         xstream.allowTypes(new Class[] {ToolConfiguration.class, Format.class});
         xstream.allowTypeHierarchy(FormatAdapter.class);
         xstream.addImplicitCollection(Format.class, "options", "option", String.class);
-        NamedMapConverter environmentConverter =
-                new NamedMapConverter(
-                        xstream.getMapper(),
-                        "variable",
-                        "name",
-                        String.class,
-                        "value",
-                        String.class,
-                        true,
-                        true,
-                        xstream.getConverterLookup());
+        NamedMapConverter environmentConverter = new NamedMapConverter(
+                xstream.getMapper(),
+                "variable",
+                "name",
+                String.class,
+                "value",
+                String.class,
+                true,
+                true,
+                xstream.getConverterLookup());
         xstream.registerConverter(environmentConverter);
 
         return xstream;

@@ -56,10 +56,9 @@ public class WFSWorkspaceQualifierTest {
     }
 
     /**
-     * Test for {@link WFSWorkspaceQualifier#qualifyRequest(WorkspaceInfo,
-     * org.geoserver.catalog.LayerInfo, Operation, org.geoserver.ows.Request)} .Simulates a WFS-T
-     * Replace, having one Feature. The namespaceURI of the workspace and the feature match. Result:
-     * No exception.
+     * Test for {@link WFSWorkspaceQualifier#qualifyRequest(WorkspaceInfo, org.geoserver.catalog.LayerInfo, Operation,
+     * org.geoserver.ows.Request)} .Simulates a WFS-T Replace, having one Feature. The namespaceURI of the workspace and
+     * the feature match. Result: No exception.
      */
     @Test
     public void testQualifyRequestWithReplaceNamespaceValidationHavingMatchingNamespaces() {
@@ -68,10 +67,9 @@ public class WFSWorkspaceQualifierTest {
     }
 
     /**
-     * Test for {@link WFSWorkspaceQualifier#qualifyRequest(WorkspaceInfo,
-     * org.geoserver.catalog.LayerInfo, Operation, org.geoserver.ows.Request)} . Simulates a WFS-T
-     * Replace, having one Feature. The namespaceURI of the workspace and the feature do not match.
-     * Result: Exception.
+     * Test for {@link WFSWorkspaceQualifier#qualifyRequest(WorkspaceInfo, org.geoserver.catalog.LayerInfo, Operation,
+     * org.geoserver.ows.Request)} . Simulates a WFS-T Replace, having one Feature. The namespaceURI of the workspace
+     * and the feature do not match. Result: Exception.
      */
     @Test(expected = WFSException.class)
     public void testQualifyRequestWithReplaceNamespaceValidationHavingNonMatchingNamespaces() {
@@ -82,23 +80,15 @@ public class WFSWorkspaceQualifierTest {
     private void invokeQualifyRequest() {
         TransactionType transactionType = Wfs20Factory.eINSTANCE.createTransactionType();
         ReplaceType replaceType = Wfs20Factory.eINSTANCE.createReplaceType();
-        EList<AbstractTransactionActionType> action =
-                transactionType.getAbstractTransactionAction();
+        EList<AbstractTransactionActionType> action = transactionType.getAbstractTransactionAction();
         action.add(replaceType);
         replaceType.getAny().add(mockFeature);
 
         Version version = new Version("2.0.0");
-        Service service =
-                new Service("id", "service", version, Collections.singletonList("Transaction"));
+        Service service = new Service("id", "service", version, Collections.singletonList("Transaction"));
         Operation operation = new Operation("id", service, null, new Object[] {transactionType});
 
-        replay(
-                mockCatalog,
-                mockFeature,
-                mockFeatureType,
-                mockName,
-                mockNamespaceInfo,
-                mockWorkspaceInfo);
+        replay(mockCatalog, mockFeature, mockFeatureType, mockName, mockNamespaceInfo, mockWorkspaceInfo);
         sut.qualifyRequest(mockWorkspaceInfo, null, operation, null);
     }
 }

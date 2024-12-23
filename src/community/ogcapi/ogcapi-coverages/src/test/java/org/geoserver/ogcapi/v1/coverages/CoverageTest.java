@@ -31,32 +31,28 @@ public class CoverageTest extends CoveragesTestSupport {
 
     @Test
     public void testGetFullCoverage() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage");
+        MockHttpServletResponse response = getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage");
         assertBBOXDEM(response, 120, 240, 145, 146, -43, -41);
     }
 
     @Test
     public void testGetBBOX() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/coverages/v1/collections/rs:DEM/coverage?bbox=145.5,-42,146,-41.5");
+                getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage?bbox=145.5,-42,146,-41.5");
         assertBBOXDEM(response, 60, 60, 145.5, 146, -42, -41.5);
     }
 
     @Test
     public void testSpatialSubsetRange() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/coverages/v1/collections/rs:DEM/coverage?subset=Long(145.5:146),Lat(-42:-41.5)");
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/coverages/v1/collections/rs:DEM/coverage?subset=Long(145.5:146),Lat(-42:-41.5)");
         assertBBOXDEM(response, 60, 60, 145.5, 146, -42, -41.5);
     }
 
     @Test
     public void testSpatialSubsetSlice() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/coverages/v1/collections/rs:DEM/coverage?subset=Long(145.5),Lat(-41.5)");
+                getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage?subset=Long(145.5),Lat(-41.5)");
         // a one pixel raster
         assertBBOXDEM(response, 1, 1, 145.5, 145.508333, -41.508333, -41.5);
     }
@@ -64,8 +60,7 @@ public class CoverageTest extends CoveragesTestSupport {
     @Test
     public void testSpatialSubsetWrongAxis() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/coverages/v1/collections/rs:DEM/coverage?subset=CutIt(145.5)");
+                getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage?subset=CutIt(145.5)");
         assertEquals(400, response.getStatus());
         assertEquals("application/json", response.getContentType());
         DocumentContext error = getAsJSONPath(response);
@@ -84,9 +79,7 @@ public class CoverageTest extends CoveragesTestSupport {
             for (int i = 0; i < 6; i++) {
                 String date = (2014 + i) + suffix;
                 MockHttpServletResponse response =
-                        getAsServletResponse(
-                                "ogc/coverages/v1/collections/sf:timeseries/coverage?datetime="
-                                        + date);
+                        getAsServletResponse("ogc/coverages/v1/collections/sf:timeseries/coverage?datetime=" + date);
                 assertEquals(200, response.getStatus());
                 assertEquals(CoveragesService.GEOTIFF_MIME, response.getContentType());
 
@@ -101,19 +94,12 @@ public class CoverageTest extends CoveragesTestSupport {
 
     @Test
     public void testVersionHeader() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage");
+        MockHttpServletResponse response = getAsServletResponse("ogc/coverages/v1/collections/rs:DEM/coverage");
         assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 
     private void assertBBOXDEM(
-            MockHttpServletResponse response,
-            int width,
-            int height,
-            double xMin,
-            double xMax,
-            double yMin,
-            double yMax)
+            MockHttpServletResponse response, int width, int height, double xMin, double xMax, double yMin, double yMax)
             throws IOException, FactoryException {
         assertEquals(200, response.getStatus());
         assertEquals(CoveragesService.GEOTIFF_MIME, response.getContentType());
@@ -148,10 +134,7 @@ public class CoverageTest extends CoveragesTestSupport {
             try {
                 reader.dispose();
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Failed to dispose of the reader, unexpected but not necessarily serious",
-                        e);
+                LOGGER.log(Level.WARNING, "Failed to dispose of the reader, unexpected but not necessarily serious", e);
             }
             file.delete();
         }

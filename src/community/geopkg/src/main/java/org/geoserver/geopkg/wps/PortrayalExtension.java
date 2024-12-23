@@ -21,10 +21,10 @@ import org.geotools.jdbc.util.SqlUtil;
 import org.geotools.util.logging.Logging;
 
 /**
- * The portrayal extension allows to export styles and symbols. Style can then be associated to
- * tables via the semantic annotations extension, using the 'style' type. Specification at
- * https://gitlab.ogc.org/ogc/t16-d010-geopackage-er/-/blob/master/ER/extensions/5-portrayal.adoc
- * (closed repo for the time being)
+ * The portrayal extension allows to export styles and symbols. Style can then be associated to tables via the semantic
+ * annotations extension, using the 'style' type. Specification at
+ * https://gitlab.ogc.org/ogc/t16-d010-geopackage-er/-/blob/master/ER/extensions/5-portrayal.adoc (closed repo for the
+ * time being)
  */
 public class PortrayalExtension extends GeoPkgExtension {
 
@@ -40,8 +40,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     private static final String SYMBOL_CONTENTS_TABLE = "gpkgext_symbol_content";
     private static final String NAME = "im_portrayal";
     private static final String DEFINITION =
-            "https://gitlab.ogc.org/ogc/t16-d010-geopackage-er/-/blob/master/ER/extensions/5"
-                    + "-portrayal.adoc";
+            "https://gitlab.ogc.org/ogc/t16-d010-geopackage-er/-/blob/master/ER/extensions/5" + "-portrayal.adoc";
 
     public static class Factory implements GeoPkgExtensionFactory {
 
@@ -77,17 +76,13 @@ public class PortrayalExtension extends GeoPkgExtension {
         // ensure the necessary tables are there
         try (Connection cx = getConnection()) {
             if (!extensionExists(cx)) {
-                SqlUtil.runScript(
-                        PortrayalExtension.class.getResourceAsStream(
-                                "geopkg_portrayal_extension.sql"),
-                        cx);
+                SqlUtil.runScript(PortrayalExtension.class.getResourceAsStream("geopkg_portrayal_extension.sql"), cx);
             }
         }
     }
 
     private boolean extensionExists(Connection cx) throws SQLException {
-        try (ResultSet rs =
-                cx.getMetaData().getTables(null, null, STYLES_TABLE, new String[] {"TABLE"})) {
+        try (ResultSet rs = cx.getMetaData().getTables(null, null, STYLES_TABLE, new String[] {"TABLE"})) {
             return rs.next();
         }
     }
@@ -123,8 +118,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public void addStyle(GeoPkgStyle gs) throws SQLException {
-        String sql =
-                format("INSERT INTO %s(style, description, uri) VALUES(?, ?, ?)", STYLES_TABLE);
+        String sql = format("INSERT INTO %s(style, description, uri) VALUES(?, ?, ?)", STYLES_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, gs.getStyle());
@@ -147,10 +141,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public void addStylesheet(GeoPkgStyleSheet styleSheet) throws SQLException {
-        String sql =
-                format(
-                        "INSERT INTO %s(style_id, format, stylesheet) VALUES(?, ?, ?)",
-                        STYLESHEETS_TABLE);
+        String sql = format("INSERT INTO %s(style_id, format, stylesheet) VALUES(?, ?, ?)", STYLESHEETS_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setLong(1, styleSheet.getStyle().getId());
@@ -182,10 +173,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public GeoPkgSymbol getSymbol(String name) throws SQLException {
-        String sql =
-                format(
-                        "SELECT id, symbol, description, uri" + " FROM %s WHERE symbol = ?",
-                        SYMBOLS_TABLE);
+        String sql = format("SELECT id, symbol, description, uri" + " FROM %s WHERE symbol = ?", SYMBOLS_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
             ps.setString(1, name);
@@ -204,13 +192,12 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public List<GeoPkgSymbolImage> getImages(GeoPkgSymbol symbol) throws SQLException {
-        String sql =
-                format(
-                        "SELECT sc.id, sc.format, sc.content, sc.uri "
-                                + " FROM %s s JOIN %s si ON s.id = si.symbol_id "
-                                + " JOIN %s sc ON si.content_id = sc.id "
-                                + " WHERE s.symbol = ?",
-                        SYMBOLS_TABLE, SYMBOL_IMAGES_TABLE, SYMBOL_CONTENTS_TABLE);
+        String sql = format(
+                "SELECT sc.id, sc.format, sc.content, sc.uri "
+                        + " FROM %s s JOIN %s si ON s.id = si.symbol_id "
+                        + " JOIN %s sc ON si.content_id = sc.id "
+                        + " WHERE s.symbol = ?",
+                SYMBOLS_TABLE, SYMBOL_IMAGES_TABLE, SYMBOL_CONTENTS_TABLE);
         List<GeoPkgSymbolImage> result = new ArrayList<>();
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql); ) {
@@ -225,9 +212,7 @@ public class PortrayalExtension extends GeoPkgExtension {
     }
 
     public void addSymbol(GeoPkgSymbol symbol) throws SQLException {
-        String sql =
-                String.format(
-                        "INSERT INTO %s(symbol, description, uri) VALUES (?, ?, ?)", SYMBOLS_TABLE);
+        String sql = String.format("INSERT INTO %s(symbol, description, uri) VALUES (?, ?, ?)", SYMBOLS_TABLE);
         try (Connection cx = getConnection();
                 PreparedStatement ps = cx.prepareStatement(sql)) {
             ps.setString(1, symbol.getSymbol());
@@ -245,9 +230,7 @@ public class PortrayalExtension extends GeoPkgExtension {
 
             // add the content
             String contentSql =
-                    String.format(
-                            "INSERT INTO %s(format, content, uri) VALUES (?, ?, ?)",
-                            SYMBOL_CONTENTS_TABLE);
+                    String.format("INSERT INTO %s(format, content, uri) VALUES (?, ?, ?)", SYMBOL_CONTENTS_TABLE);
             try (PreparedStatement ps = cx.prepareStatement(contentSql)) {
                 ps.setString(1, image.getFormat());
                 ps.setBytes(2, image.getContent());
@@ -258,10 +241,7 @@ public class PortrayalExtension extends GeoPkgExtension {
             }
 
             // add the image entry (ignore the sprite support for the moment)
-            String imageSql =
-                    String.format(
-                            "INSERT INTO %s(symbol_id, content_id) VALUES (?, ?)",
-                            SYMBOL_IMAGES_TABLE);
+            String imageSql = String.format("INSERT INTO %s(symbol_id, content_id) VALUES (?, ?)", SYMBOL_IMAGES_TABLE);
             try (PreparedStatement ps = cx.prepareStatement(imageSql)) {
                 ps.setLong(1, image.getSymbol().getId());
                 ps.setLong(2, contentId);
@@ -270,9 +250,7 @@ public class PortrayalExtension extends GeoPkgExtension {
         }
     }
 
-    private GeoPkgSymbolImage mapSymbolImage(ResultSet rs, GeoPkgSymbol symbol)
-            throws SQLException {
-        return new GeoPkgSymbolImage(
-                rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), symbol);
+    private GeoPkgSymbolImage mapSymbolImage(ResultSet rs, GeoPkgSymbol symbol) throws SQLException {
+        return new GeoPkgSymbolImage(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4), symbol);
     }
 }

@@ -29,8 +29,7 @@ public class CredentialsFromRequestHeaderFilterPanel
 
     IModel<CredentialsFromRequestHeaderFilterConfig> model;
 
-    public CredentialsFromRequestHeaderFilterPanel(
-            String id, IModel<CredentialsFromRequestHeaderFilterConfig> model) {
+    public CredentialsFromRequestHeaderFilterPanel(String id, IModel<CredentialsFromRequestHeaderFilterConfig> model) {
         super(id, model);
 
         dialog = (GeoServerDialog) get("dialog");

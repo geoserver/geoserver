@@ -52,13 +52,12 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
 
     static Logger LOGGER = Logging.getLogger(ImporterTestSupport.class);
 
-    static final Set<String> DEFAULT_STYLEs =
-            Set.of(
-                    StyleInfo.DEFAULT_POINT,
-                    StyleInfo.DEFAULT_LINE,
-                    StyleInfo.DEFAULT_GENERIC,
-                    StyleInfo.DEFAULT_POLYGON,
-                    StyleInfo.DEFAULT_RASTER);
+    static final Set<String> DEFAULT_STYLEs = Set.of(
+            StyleInfo.DEFAULT_POINT,
+            StyleInfo.DEFAULT_LINE,
+            StyleInfo.DEFAULT_GENERIC,
+            StyleInfo.DEFAULT_POLYGON,
+            StyleInfo.DEFAULT_RASTER);
 
     protected Importer importer;
 
@@ -86,9 +85,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         File importerConfigLocation = dd.findOrCreateDir("importer");
         File importerConfigProps = new File(importerConfigLocation, "importer.properties");
         IOUtils.copy(
-                ImporterTestSupport.class
-                        .getClassLoader()
-                        .getResourceAsStream("importer.properties"),
+                ImporterTestSupport.class.getClassLoader().getResourceAsStream("importer.properties"),
                 importerConfigProps);
     }
 
@@ -124,11 +121,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
             }
         } catch (Exception e) {
             LOGGER.log(
-                    Level.WARNING,
-                    "Could not remove System ENV variable {"
-                            + ImporterInfoDAO.UPLOAD_ROOT_KEY
-                            + "}",
-                    e);
+                    Level.WARNING, "Could not remove System ENV variable {" + ImporterInfoDAO.UPLOAD_ROOT_KEY + "}", e);
         }
     }
 
@@ -138,8 +131,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Override this method in case a subclass has other @Before that need to run after {@link
-     * #setupImporterField()}
+     * Override this method in case a subclass has other @Before that need to run after {@link #setupImporterField()}
      */
     protected void setupImporterFieldInternal() {
         importer = (Importer) applicationContext.getBean("importer");
@@ -184,8 +176,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
             assertTrue(source.getCount(Query.ALL) > 0);
 
             // do a wfs request
-            Document dom =
-                    getAsDOM("wfs?request=getFeature&typename=" + featureType.prefixedName());
+            Document dom = getAsDOM("wfs?request=getFeature&typename=" + featureType.prefixedName());
             assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
             assertEquals(
                     source.getCount(Query.ALL),
@@ -202,8 +193,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         // create a datastore to import into
         Catalog cat = getCatalog();
 
-        WorkspaceInfo ws =
-                wsName != null ? cat.getWorkspaceByName(wsName) : cat.getDefaultWorkspace();
+        WorkspaceInfo ws = wsName != null ? cat.getWorkspaceByName(wsName) : cat.getDefaultWorkspace();
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setWorkspace(ws);
         ds.setName(dsName);
@@ -242,8 +232,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         if (databaseLocation != null) {
             final File dbFile = new File(databaseLocation);
             File container = dbFile.getParentFile();
-            File[] dbFiles =
-                    container.listFiles((dir, name1) -> name1.startsWith(dbFile.getName()));
+            File[] dbFiles = container.listFiles((dir, name1) -> name1.startsWith(dbFile.getName()));
             for (File f : dbFiles) {
                 assertTrue("Failed to remove file " + f.getPath(), FileUtils.deleteQuietly(f));
             }

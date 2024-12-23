@@ -19,10 +19,7 @@ public interface ConfigurationListener {
      * @param newValues The new values for the properties that were changed.
      */
     void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Handles the event fired post change to global configuration.
@@ -47,10 +44,7 @@ public interface ConfigurationListener {
      * @param newValues The new values for the properties that were changed.
      */
     void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Handles the event fired post change to a settings configuration.
@@ -75,10 +69,7 @@ public interface ConfigurationListener {
      * @param newValues The new values for the properties that were changed.
      */
     void handleLoggingChange(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /** Handles the event fired post change to logging configuration. */
     void handlePostLoggingChange(LoggingInfo logging);
@@ -92,10 +83,7 @@ public interface ConfigurationListener {
      * @param newValues The new values for the properties that were changed.
      */
     void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Handles the event fired post change to service configuration.

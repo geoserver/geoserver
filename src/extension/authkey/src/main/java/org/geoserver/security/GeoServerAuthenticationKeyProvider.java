@@ -29,8 +29,7 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
  *
  * @author mcr
  */
-public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
-        implements DisposableBean {
+public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider implements DisposableBean {
 
     // Use a counter to ensure a unique prefix for each pool.
     private static final AtomicInteger poolCounter = new AtomicInteger();
@@ -44,8 +43,7 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
      * @param securityManager the security manager
      * @param autoSyncDelaySeconds the delay in seconds between each synchronization
      */
-    public GeoServerAuthenticationKeyProvider(
-            GeoServerSecurityManager securityManager, int autoSyncDelaySeconds) {
+    public GeoServerAuthenticationKeyProvider(GeoServerSecurityManager securityManager, int autoSyncDelaySeconds) {
         this.securityManager = securityManager;
         this.autoSyncDelaySeconds = autoSyncDelaySeconds;
         this.scheduler = Executors.newScheduledThreadPool(1, getThreadFactory());
@@ -53,18 +51,13 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
         // schedule auto-sync thread
         Runnable authKeyMapperSyncTask = new AuthKeyMapperSyncRunnable();
         scheduler.scheduleAtFixedRate(
-                authKeyMapperSyncTask,
-                autoSyncDelaySeconds,
-                autoSyncDelaySeconds,
-                TimeUnit.SECONDS);
+                authKeyMapperSyncTask, autoSyncDelaySeconds, autoSyncDelaySeconds, TimeUnit.SECONDS);
     }
 
     /** @return a thread factory for the eviction thread */
     private ThreadFactory getThreadFactory() {
-        CustomizableThreadFactory tFactory =
-                new CustomizableThreadFactory(
-                        String.format(
-                                "GeoServerAuthenticationKey-%d-", poolCounter.getAndIncrement()));
+        CustomizableThreadFactory tFactory = new CustomizableThreadFactory(
+                String.format("GeoServerAuthenticationKey-%d-", poolCounter.getAndIncrement()));
         tFactory.setDaemon(true);
         return tFactory;
     }
@@ -87,20 +80,17 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new AuthenticationKeyFilterConfigValidator(securityManager);
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return new GeoServerRestRoleService(config);
     }
 
     @Override
-    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return super.createUserGroupService(config);
     }
 
@@ -159,17 +149,14 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
         private void doSync(String filter) {
             AuthenticationKeyFilterConfig config = null;
             try {
-                config =
-                        (AuthenticationKeyFilterConfig)
-                                securityManager.loadFilterConfig(filter, true);
+                config = (AuthenticationKeyFilterConfig) securityManager.loadFilterConfig(filter, true);
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Authentication key error ", e);
                 throw new RuntimeException(e);
             }
             if (config != null && config.isAllowMapperKeysAutoSync()) {
                 AuthenticationKeyMapper mapper =
-                        (AuthenticationKeyMapper)
-                                GeoServerExtensions.bean(config.getAuthKeyMapperName());
+                        (AuthenticationKeyMapper) GeoServerExtensions.bean(config.getAuthKeyMapperName());
                 mapper.setAuthenticationFilterName(filter);
                 mapper.setSecurityManager(securityManager);
                 mapper.setUserGroupServiceName(config.getUserGroupServiceName());
@@ -178,9 +165,7 @@ public class GeoServerAuthenticationKeyProvider extends AbstractFilterProvider
                     numberOfNewKeys = mapper.synchronize();
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine(
-                                "AuthenticationKey Mapper Sync task completed with "
-                                        + numberOfNewKeys
-                                        + " new keys");
+                                "AuthenticationKey Mapper Sync task completed with " + numberOfNewKeys + " new keys");
                     }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "Authentication key error ", e);

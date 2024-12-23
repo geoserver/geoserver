@@ -17,10 +17,7 @@ public class PropertyEncodingOrderMockData extends AbstractAppSchemaMockData {
     public void addContent() {
         putNamespace(ER_PREFIX, ER_URI);
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeaturePropertyfile.xml",
-                "MappedFeaturePropertyfile.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeaturePropertyfile.xml", "MappedFeaturePropertyfile.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",
@@ -41,10 +38,7 @@ public class PropertyEncodingOrderMockData extends AbstractAppSchemaMockData {
                 "CGI_PlanarOrientation.xml",
                 "CGI_PlanarOrientation.properties");
         addFeatureType(
-                GSML_PREFIX,
-                "CGI_PlanarOrientation",
-                "CGI_PlanarOrientation.xml",
-                "CGI_PlanarOrientation.properties");
+                GSML_PREFIX, "CGI_PlanarOrientation", "CGI_PlanarOrientation.xml", "CGI_PlanarOrientation.properties");
         addFeatureType(GSML_PREFIX, "Borehole", "Borehole.xml", "Borehole.properties");
     }
 }

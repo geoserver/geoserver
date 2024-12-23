@@ -96,7 +96,8 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
     public void testWorkspaces() throws Exception {
         assertEquals(
                 200,
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml")
+                        .getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(0, dom.getElementsByTagName("workspace").getLength());
 
@@ -109,7 +110,8 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         loginAsCite();
         assertEquals(
                 200,
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml")
+                        .getStatus());
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(1, dom.getElementsByTagName("workspace").getLength());
     }
@@ -125,7 +127,8 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         getGeoServer().save(ginfo);
         assertEquals(
                 200,
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml")
+                        .getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(0, dom.getElementsByTagName("workspace").getLength());
 
@@ -137,7 +140,8 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
 
         assertEquals(
                 200,
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml")
+                        .getStatus());
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(
                 getCatalog().getWorkspaces().size(),
@@ -177,34 +181,29 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/layergroups/global.xml");
         assertEquals("layerGroup", dom.getDocumentElement().getNodeName());
 
-        String xml =
-                "<layerGroup>"
-                        + "<styles>"
-                        + "<style>polygon</style>"
-                        + "<style>line</style>"
-                        + "</styles>"
-                        + "</layerGroup>";
+        String xml = "<layerGroup>"
+                + "<styles>"
+                + "<style>polygon</style>"
+                + "<style>line</style>"
+                + "</styles>"
+                + "</layerGroup>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/layergroups/global", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/global", xml, "text/xml");
         assertEquals(405, response.getStatus());
 
-        xml =
-                "<layerGroup>"
-                        + "<name>newLayerGroup</name>"
-                        + "<layers>"
-                        + "<layer>Ponds</layer>"
-                        + "<layer>Forests</layer>"
-                        + "</layers>"
-                        + "<styles>"
-                        + "<style>polygon</style>"
-                        + "<style>point</style>"
-                        + "</styles>"
-                        + "</layerGroup>";
-        response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/layergroups", xml, "text/xml");
+        xml = "<layerGroup>"
+                + "<name>newLayerGroup</name>"
+                + "<layers>"
+                + "<layer>Ponds</layer>"
+                + "<layer>Forests</layer>"
+                + "</layers>"
+                + "<styles>"
+                + "<style>polygon</style>"
+                + "<style>point</style>"
+                + "</styles>"
+                + "</layerGroup>";
+        response = postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml, "text/xml");
         assertEquals(405, response.getStatus());
     }
 
@@ -218,13 +217,10 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("global", "//layerGroup/name", dom);
 
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/cite/layergroups.xml");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite/layergroups.xml");
         assertEquals(404, response.getStatus());
 
-        response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/cite/layergroups.xml");
+        response = getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite/layergroups.xml");
         assertEquals(404, response.getStatus());
 
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/layergroups.xml");
@@ -251,8 +247,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         String xml = "<style>" + "<filename>foo.sld</filename>" + "</style>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/styles/point", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/point", xml, "text/xml");
         assertEquals(405, response.getStatus());
 
         xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";

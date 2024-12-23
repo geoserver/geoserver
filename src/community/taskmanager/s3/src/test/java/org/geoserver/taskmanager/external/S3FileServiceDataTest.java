@@ -22,13 +22,12 @@ public class S3FileServiceDataTest extends AbstractS3FileServiceDataTest {
 
     @Override
     protected S3FileServiceImpl getS3FileService() {
-        S3FileServiceImpl s3FileService =
-                new S3FileServiceImpl(
-                        "http://127.0.0.1:9000",
-                        "P3Z48TR2OZAZDP8C3P9E",
-                        "sCNEAhfGtlhA8Mjq1AReBcMl0oMGX1zE3vppQRXB",
-                        "alias",
-                        "source");
+        S3FileServiceImpl s3FileService = new S3FileServiceImpl(
+                "http://127.0.0.1:9000",
+                "P3Z48TR2OZAZDP8C3P9E",
+                "sCNEAhfGtlhA8Mjq1AReBcMl0oMGX1zE3vppQRXB",
+                "alias",
+                "source");
         List<String> folders = null;
         try {
             folders = s3FileService.listSubfolders();

@@ -17,8 +17,8 @@ public class AbstractSecurityException extends GeoServerException {
     private static final long serialVersionUID = 1L;
 
     /**
-     * errorid is a unique identifier, message is a default error description, args are message
-     * arguments to be used for an alternative message (i18n)
+     * errorid is a unique identifier, message is a default error description, args are message arguments to be used for
+     * an alternative message (i18n)
      */
     public AbstractSecurityException(String errorId, String message, Object... args) {
         super(message);

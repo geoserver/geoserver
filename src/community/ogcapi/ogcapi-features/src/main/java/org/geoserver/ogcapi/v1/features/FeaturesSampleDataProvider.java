@@ -29,20 +29,16 @@ public class FeaturesSampleDataProvider implements SampleDataProvider {
             String resourceId = layer.getResource().prefixedName();
             return APIRequestInfo.get()
                     .getLinksFor(
-                            "ogc/features/v1/collections/"
-                                    + ResponseUtils.urlEncode(resourceId)
-                                    + "/items",
+                            "ogc/features/v1/collections/" + ResponseUtils.urlEncode(resourceId) + "/items",
                             FeaturesResponse.class,
                             resourceId + " items as ",
                             "data",
                             false,
                             "data",
                             (media, link) -> {
-                                String href =
-                                        link.getHref()
-                                                + "&limit="
-                                                + service.getService()
-                                                        .getMaxNumberOfFeaturesForPreview();
+                                String href = link.getHref()
+                                        + "&limit="
+                                        + service.getService().getMaxNumberOfFeaturesForPreview();
                                 link.setHref(href);
                             });
         }

@@ -57,8 +57,7 @@ public class GridFormat extends RasterFormat {
     }
 
     @Override
-    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
-            throws IOException {
+    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException {
         File f = file(data);
         if (f == null) {
             return null;
@@ -75,8 +74,7 @@ public class GridFormat extends RasterFormat {
     }
 
     @Override
-    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
-            throws IOException {
+    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException {
         AbstractGridCoverage2DReader reader = null;
         try {
             reader = gridReader(data);
@@ -157,8 +155,7 @@ public class GridFormat extends RasterFormat {
                         gridFormat = gridFormatClass.getDeclaredConstructor().newInstance();
                     } catch (Exception e) {
                         throw new RuntimeException(
-                                "Unable to create instance of: " + gridFormatClass.getSimpleName(),
-                                e);
+                                "Unable to create instance of: " + gridFormatClass.getSimpleName(), e);
                     }
                 }
             }

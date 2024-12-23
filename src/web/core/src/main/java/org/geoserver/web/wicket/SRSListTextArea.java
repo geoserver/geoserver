@@ -71,21 +71,18 @@ public class SRSListTextArea extends TextArea<List<String>> {
         public void validate(IValidatable<List<String>> validatable) {
             List<String> srsList = validatable.getValue();
             List<String> invalid = new ArrayList<>();
-            srsList.stream()
-                    .forEach(
-                            (srs) -> {
-                                try {
-                                    CRS.decode("EPSG:" + srs);
-                                } catch (Exception e) {
-                                    invalid.add(srs);
-                                }
-                            });
+            srsList.stream().forEach((srs) -> {
+                try {
+                    CRS.decode("EPSG:" + srs);
+                } catch (Exception e) {
+                    invalid.add(srs);
+                }
+            });
 
             if (!invalid.isEmpty()) {
-                IValidationError err =
-                        new ValidationError("SRSListTextArea.unknownEPSGCodes")
-                                .addKey("SRSListTextArea.unknownEPSGCodes")
-                                .setVariable("codes", invalid.toString());
+                IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes")
+                        .addKey("SRSListTextArea.unknownEPSGCodes")
+                        .setVariable("codes", invalid.toString());
                 validatable.error(err);
             }
         }

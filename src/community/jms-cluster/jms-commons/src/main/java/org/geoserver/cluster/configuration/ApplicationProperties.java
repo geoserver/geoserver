@@ -30,8 +30,8 @@ public class ApplicationProperties implements ApplicationContextAware {
     /**
      * Sets the web application context to be used for looking up extensions.
      *
-     * <p>This method is called by the spring container, and should never be called by client code.
-     * If client needs to supply a particular context, methods which take a context are available.
+     * <p>This method is called by the spring container, and should never be called by client code. If client needs to
+     * supply a particular context, methods which take a context are available.
      *
      * <p>This is the context that is used for methods which dont supply their own context.
      */
@@ -48,11 +48,11 @@ public class ApplicationProperties implements ApplicationContextAware {
     }
 
     /**
-     * Looks up for a named string property in the order defined by {@link #getProperty(String,
-     * ApplicationContext)} using the internally cached spring application context.
+     * Looks up for a named string property in the order defined by {@link #getProperty(String, ApplicationContext)}
+     * using the internally cached spring application context.
      *
-     * <p>Care should be taken when using this method. It should not be called during startup or
-     * from tests cases as the internal context will not have been set.
+     * <p>Care should be taken when using this method. It should not be called during startup or from tests cases as the
+     * internal context will not have been set.
      *
      * @param propertyName The property name to lookup.
      * @return The property value, or null if not found
@@ -108,9 +108,7 @@ public class ApplicationProperties implements ApplicationContextAware {
         // than strictly necessary
 
         final String[] typeStrs = {
-            "Java environment variable ",
-            "Servlet context parameter ",
-            "System environment variable "
+            "Java environment variable ", "Servlet context parameter ", "System environment variable "
         };
 
         String result = null;

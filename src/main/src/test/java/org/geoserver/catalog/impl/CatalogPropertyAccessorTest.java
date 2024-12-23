@@ -25,6 +25,7 @@ public class CatalogPropertyAccessorTest {
 
         // support indexed getter as well
         assertEquals(
-                "m", fac.property("CRS.coordinateSystem.axis[1].unit").evaluate(fti).toString());
+                "m",
+                fac.property("CRS.coordinateSystem.axis[1].unit").evaluate(fti).toString());
     }
 }

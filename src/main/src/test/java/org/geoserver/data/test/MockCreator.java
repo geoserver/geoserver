@@ -119,7 +119,9 @@ public class MockCreator implements Callback {
         catalog.addListener(EasyMock.anyObject());
         expectLastCall().anyTimes();
 
-        expect(catalog.getResourcePool()).andAnswer(() -> ResourcePool.create(catalog)).anyTimes();
+        expect(catalog.getResourcePool())
+                .andAnswer(() -> ResourcePool.create(catalog))
+                .anyTimes();
         MockCatalogBuilder b = new MockCatalogBuilder(catalog, loader.getBaseDirectory());
         b.setCallback(this);
 
@@ -149,12 +151,7 @@ public class MockCreator implements Callback {
         createWorkspace(wsName, nsURI, typeNames, null, b);
     }
 
-    void createWorkspace(
-            String wsName,
-            String nsURI,
-            QName[] ftTypeNames,
-            QName[] covTypeNames,
-            MockCatalogBuilder b) {
+    void createWorkspace(String wsName, String nsURI, QName[] ftTypeNames, QName[] covTypeNames, MockCatalogBuilder b) {
         b.workspace(wsName, nsURI);
 
         if (ftTypeNames != null && ftTypeNames.length > 0) {
@@ -214,7 +211,9 @@ public class MockCreator implements Callback {
                 .anyTimes();
 
         final File mrPwdFolder = new File(testData.getDataDirectoryRoot(), "master-pwd");
-        expect(secMgr.masterPasswordProvider()).andReturn(Files.asResource(mrPwdFolder)).anyTimes();
+        expect(secMgr.masterPasswordProvider())
+                .andReturn(Files.asResource(mrPwdFolder))
+                .anyTimes();
 
         // password validators
         PasswordValidator passwdValidator = createNiceMock(PasswordValidator.class);
@@ -233,22 +232,17 @@ public class MockCreator implements Callback {
                 .andReturn(masterPasswdValidator)
                 .anyTimes();
         expect(secMgr.listPasswordValidators())
-                .andReturn(
-                        new TreeSet<>(
-                                Arrays.asList(
-                                        PasswordValidator.DEFAULT_NAME,
-                                        PasswordValidator.MASTERPASSWORD_NAME)))
+                .andReturn(new TreeSet<>(
+                        Arrays.asList(PasswordValidator.DEFAULT_NAME, PasswordValidator.MASTERPASSWORD_NAME)))
                 .anyTimes();
 
         // default user group store
-        GeoServerUserGroupStore ugStore =
-                createUserGroupStore(XMLUserGroupService.DEFAULT_NAME, secMgr);
+        GeoServerUserGroupStore ugStore = createUserGroupStore(XMLUserGroupService.DEFAULT_NAME, secMgr);
         expect(secMgr.listUserGroupServices())
                 .andReturn(new TreeSet<>(Arrays.asList(XMLUserGroupService.DEFAULT_NAME)))
                 .anyTimes();
 
-        SecurityUserGroupServiceConfig ugConfig =
-                createNiceMock(SecurityUserGroupServiceConfig.class);
+        SecurityUserGroupServiceConfig ugConfig = createNiceMock(SecurityUserGroupServiceConfig.class);
         expect(ugConfig.getName()).andReturn(XMLUserGroupService.DEFAULT_NAME).anyTimes();
         expect(ugConfig.getPasswordPolicyName())
                 .andReturn(PasswordValidator.DEFAULT_NAME)
@@ -265,22 +259,18 @@ public class MockCreator implements Callback {
         expect(secMgr.getActiveRoleService()).andReturn(roleStore).anyTimes();
 
         // auth providers
-        SecurityAuthProviderConfig authProviderConfig =
-                createNiceMock(SecurityAuthProviderConfig.class);
+        SecurityAuthProviderConfig authProviderConfig = createNiceMock(SecurityAuthProviderConfig.class);
         expect(authProviderConfig.getName())
                 .andReturn(GeoServerAuthenticationProvider.DEFAULT_NAME)
                 .anyTimes();
         expect(authProviderConfig.getUserGroupServiceName())
                 .andReturn(XMLUserGroupService.DEFAULT_NAME)
                 .anyTimes();
-        expect(
-                        secMgr.loadAuthenticationProviderConfig(
-                                GeoServerAuthenticationProvider.DEFAULT_NAME))
+        expect(secMgr.loadAuthenticationProviderConfig(GeoServerAuthenticationProvider.DEFAULT_NAME))
                 .andReturn(authProviderConfig)
                 .anyTimes();
 
-        GeoServerAuthenticationProvider authProvider =
-                createNiceMock(GeoServerAuthenticationProvider.class);
+        GeoServerAuthenticationProvider authProvider = createNiceMock(GeoServerAuthenticationProvider.class);
         expect(authProvider.getName())
                 .andReturn(GeoServerAuthenticationProvider.DEFAULT_NAME)
                 .anyTimes();
@@ -288,19 +278,15 @@ public class MockCreator implements Callback {
                 .andReturn(authProvider)
                 .anyTimes();
         expect(secMgr.listAuthenticationProviders())
-                .andReturn(
-                        new TreeSet<>(Arrays.asList(GeoServerAuthenticationProvider.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(GeoServerAuthenticationProvider.DEFAULT_NAME)))
                 .anyTimes();
         expect(secMgr.getAuthenticationProviders())
                 .andReturn(Arrays.asList(authProvider))
                 .anyTimes();
 
         // security filters
-        SecurityInterceptorFilterConfig filterConfig =
-                createNiceMock(SecurityInterceptorFilterConfig.class);
-        expect(
-                        secMgr.loadFilterConfig(
-                                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR, true))
+        SecurityInterceptorFilterConfig filterConfig = createNiceMock(SecurityInterceptorFilterConfig.class);
+        expect(secMgr.loadFilterConfig(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR, true))
                 .andReturn(filterConfig)
                 .anyTimes();
 
@@ -324,8 +310,7 @@ public class MockCreator implements Callback {
                 .andReturn(formFilter)
                 .anyTimes();
 
-        GeoServerBasicAuthenticationFilter basicFilter =
-                createNiceMock(GeoServerBasicAuthenticationFilter.class);
+        GeoServerBasicAuthenticationFilter basicFilter = createNiceMock(GeoServerBasicAuthenticationFilter.class);
         expect(basicFilter.applicableForServices()).andReturn(true).anyTimes();
         expect(secMgr.loadFilter(GeoServerSecurityFilterChain.BASIC_AUTH_FILTER))
                 .andReturn(basicFilter)
@@ -368,14 +353,12 @@ public class MockCreator implements Callback {
                 .andAnswer(() -> createDigestPasswordEncoder(secMgr))
                 .anyTimes();
         expect(secMgr.loadPasswordEncoders())
-                .andAnswer(
-                        () ->
-                                Arrays.asList(
-                                        createEmptyPasswordEncoder(secMgr),
-                                        createPlainTextPasswordEncoder(secMgr),
-                                        createPbePasswordEncoder(secMgr),
-                                        createStrongPbePasswordEncoder(secMgr),
-                                        createDigestPasswordEncoder(secMgr)))
+                .andAnswer(() -> Arrays.asList(
+                        createEmptyPasswordEncoder(secMgr),
+                        createPlainTextPasswordEncoder(secMgr),
+                        createPbePasswordEncoder(secMgr),
+                        createStrongPbePasswordEncoder(secMgr),
+                        createDigestPasswordEncoder(secMgr)))
                 .anyTimes();
 
         // keystore provider
@@ -423,24 +406,24 @@ public class MockCreator implements Callback {
         return secMgr;
     }
 
-    protected GeoServerEmptyPasswordEncoder createEmptyPasswordEncoder(
-            GeoServerSecurityManager secMgr) throws IOException {
+    protected GeoServerEmptyPasswordEncoder createEmptyPasswordEncoder(GeoServerSecurityManager secMgr)
+            throws IOException {
         GeoServerEmptyPasswordEncoder emptyPwe = new GeoServerEmptyPasswordEncoder();
         emptyPwe.setBeanName("emptyPasswordEncoder");
         emptyPwe.setPrefix("empty");
         return emptyPwe;
     }
 
-    protected GeoServerDigestPasswordEncoder createDigestPasswordEncoder(
-            GeoServerSecurityManager secMgr) throws IOException {
+    protected GeoServerDigestPasswordEncoder createDigestPasswordEncoder(GeoServerSecurityManager secMgr)
+            throws IOException {
         GeoServerDigestPasswordEncoder digestPwe = new GeoServerDigestPasswordEncoder();
         digestPwe.setBeanName("digestPasswordEncoder");
         digestPwe.setPrefix("digest1");
         return digestPwe;
     }
 
-    protected GeoServerPBEPasswordEncoder createStrongPbePasswordEncoder(
-            GeoServerSecurityManager secMgr) throws IOException {
+    protected GeoServerPBEPasswordEncoder createStrongPbePasswordEncoder(GeoServerSecurityManager secMgr)
+            throws IOException {
         GeoServerPBEPasswordEncoder strongPbePwe = new GeoServerPBEPasswordEncoder();
         strongPbePwe.setBeanName("strongPbePasswordEncoder");
         strongPbePwe.setPrefix("crypt2");
@@ -450,8 +433,7 @@ public class MockCreator implements Callback {
         return strongPbePwe;
     }
 
-    protected GeoServerPBEPasswordEncoder createPbePasswordEncoder(GeoServerSecurityManager secMgr)
-            throws IOException {
+    protected GeoServerPBEPasswordEncoder createPbePasswordEncoder(GeoServerSecurityManager secMgr) throws IOException {
         GeoServerPBEPasswordEncoder pbePwe = new GeoServerPBEPasswordEncoder();
         pbePwe.setBeanName("pbePasswordEncoder");
         pbePwe.setPrefix("crypt1");
@@ -460,8 +442,8 @@ public class MockCreator implements Callback {
         return pbePwe;
     }
 
-    protected GeoServerPlainTextPasswordEncoder createPlainTextPasswordEncoder(
-            GeoServerSecurityManager secMgr) throws IOException {
+    protected GeoServerPlainTextPasswordEncoder createPlainTextPasswordEncoder(GeoServerSecurityManager secMgr)
+            throws IOException {
 
         GeoServerPlainTextPasswordEncoder plainPwe = new GeoServerPlainTextPasswordEncoder();
         plainPwe.setBeanName("plainTextPasswordEncoder");
@@ -470,8 +452,8 @@ public class MockCreator implements Callback {
         return plainPwe;
     }
 
-    protected GeoServerUserGroupStore createUserGroupStore(
-            String name, GeoServerSecurityManager secMgr) throws IOException {
+    protected GeoServerUserGroupStore createUserGroupStore(String name, GeoServerSecurityManager secMgr)
+            throws IOException {
         GeoServerUserGroupStore ugStore = createNiceMock(GeoServerUserGroupStore.class);
         expect(ugStore.getName()).andReturn(name).anyTimes();
 
@@ -488,16 +470,15 @@ public class MockCreator implements Callback {
         }
     }
 
-    protected void addGroups(GeoServerUserGroupStore ugStore, String... groupNames)
-            throws IOException {
+    protected void addGroups(GeoServerUserGroupStore ugStore, String... groupNames) throws IOException {
         for (String groupName : groupNames) {
             GeoServerUserGroup grp = new GeoServerUserGroup(groupName);
             expect(ugStore.getGroupByGroupname(groupName)).andReturn(grp).anyTimes();
         }
     }
 
-    protected GeoServerRoleStore createRoleStore(
-            String name, GeoServerSecurityManager secMgr, String... roleNames) throws IOException {
+    protected GeoServerRoleStore createRoleStore(String name, GeoServerSecurityManager secMgr, String... roleNames)
+            throws IOException {
 
         GeoServerRoleStore roleStore = createNiceMock(GeoServerRoleStore.class);
         expect(roleStore.getSecurityManager()).andReturn(secMgr).anyTimes();
@@ -520,8 +501,7 @@ public class MockCreator implements Callback {
         return roleStore;
     }
 
-    protected void addRolesToCreate(GeoServerRoleStore roleStore, String... roleNames)
-            throws IOException {
+    protected void addRolesToCreate(GeoServerRoleStore roleStore, String... roleNames) throws IOException {
         for (String roleName : roleNames) {
             expect(roleStore.createRoleObject(roleName))
                     .andReturn(new GeoServerRole(roleName))

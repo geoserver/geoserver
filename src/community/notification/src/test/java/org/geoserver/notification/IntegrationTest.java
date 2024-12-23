@@ -100,9 +100,7 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         super.setUpTestData(testData);
         new File(testData.getDataDirectoryRoot(), "notifier").mkdir();
         testData.copyTo(
-                getClass()
-                        .getClassLoader()
-                        .getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
+                getClass().getClassLoader().getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
                 "notifier/" + NotifierInitializer.PROPERTYFILENAME);
     }
 
@@ -159,16 +157,15 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         rc.receive(service);
         String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
         postAsServletResponse("/rest/workspaces/cite/styles", xml);
-        xml =
-                "<layer>"
-                        + "<styles>"
-                        + "<style>"
-                        + "<name>foo</name>"
-                        + "<workspace>cite</workspace>"
-                        + "</style>"
-                        + "</styles>"
-                        + "<enabled>true</enabled>"
-                        + "</layer>";
+        xml = "<layer>"
+                + "<styles>"
+                + "<style>"
+                + "<name>foo</name>"
+                + "<workspace>cite</workspace>"
+                + "</style>"
+                + "</styles>"
+                + "<enabled>true</enabled>"
+                + "</layer>";
         putAsServletResponse("/rest/layers/cite:Buildings", xml, "application/xml");
         List<byte[]> ret = service.getMessages();
         assertEquals(1, ret.size());
@@ -239,14 +236,9 @@ public class IntegrationTest extends CatalogRESTTestSupport {
                 long waitedTime = threadInfo2.getWaitedTime();
                 long cpuTime = threadMXBean.getThreadCpuTime(threadInfo2.getThreadId());
                 long userTime = threadMXBean.getThreadUserTime(threadInfo2.getThreadId());
-                String msg =
-                        String.format(
-                                "%s: %d ms cpu time, %d ms user time, blocked for %d ms, waited %d ms",
-                                threadInfo2.getThreadName(),
-                                cpuTime / 1000000,
-                                userTime / 1000000,
-                                blockedTime,
-                                waitedTime);
+                String msg = String.format(
+                        "%s: %d ms cpu time, %d ms user time, blocked for %d ms, waited %d ms",
+                        threadInfo2.getThreadName(), cpuTime / 1000000, userTime / 1000000, blockedTime, waitedTime);
                 System.out.println(msg);
                 assertTrue(waitedTime > 0);
                 break;
@@ -316,54 +308,52 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         rc.receive(service);
 
         // 1. do a getFeature
-        String getFeature =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "> "
-                        + "<wfs:Query typeName=\"cgf:Lines\"> "
-                        + "<ogc:PropertyName>cite:id</ogc:PropertyName> "
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String getFeature = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "> "
+                + "<wfs:Query typeName=\"cgf:Lines\"> "
+                + "<ogc:PropertyName>cite:id</ogc:PropertyName> "
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", getFeature);
         assertEquals(1, dom.getElementsByTagName("gml:featureMember").getLength());
 
         // do a double insert
-        String xml =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\"> "
-                        + "<wfs:Insert handle='insert-1'> "
-                        + "<cgf:Lines>"
-                        + "<cgf:lineStringProperty>"
-                        + "<gml:LineString>"
-                        + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
-                        + "5,5 6,6"
-                        + "</gml:coordinates>"
-                        + "</gml:LineString>"
-                        + "</cgf:lineStringProperty>"
-                        + "<cgf:id>t0001</cgf:id>"
-                        + "</cgf:Lines>"
-                        + "</wfs:Insert>"
-                        + "<wfs:Insert handle='insert-2'> "
-                        + "<cgf:Lines>"
-                        + "<cgf:lineStringProperty>"
-                        + "<gml:LineString>"
-                        + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
-                        + "7,7 8,8"
-                        + "</gml:coordinates>"
-                        + "</gml:LineString>"
-                        + "</cgf:lineStringProperty>"
-                        + "<cgf:id>t0002</cgf:id>"
-                        + "</cgf:Lines>"
-                        + "</wfs:Insert>"
-                        + "</wfs:Transaction>";
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Insert handle='insert-1'> "
+                + "<cgf:Lines>"
+                + "<cgf:lineStringProperty>"
+                + "<gml:LineString>"
+                + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "5,5 6,6"
+                + "</gml:coordinates>"
+                + "</gml:LineString>"
+                + "</cgf:lineStringProperty>"
+                + "<cgf:id>t0001</cgf:id>"
+                + "</cgf:Lines>"
+                + "</wfs:Insert>"
+                + "<wfs:Insert handle='insert-2'> "
+                + "<cgf:Lines>"
+                + "<cgf:lineStringProperty>"
+                + "<gml:LineString>"
+                + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "7,7 8,8"
+                + "</gml:coordinates>"
+                + "</gml:LineString>"
+                + "</cgf:lineStringProperty>"
+                + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
 
         postAsDOM("wfs", xml);
 
@@ -375,12 +365,8 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         assertEquals(2, tMsg.getProperties().get(NotificationTransactionListener.INSERTED));
         assertNotNull(tMsg.getProperties().get(NotificationTransactionListener.BOUNDS));
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(
-                com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        Bounds b =
-                mapper.convertValue(
-                        tMsg.getProperties().get(NotificationTransactionListener.BOUNDS),
-                        Bounds.class);
+        mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        Bounds b = mapper.convertValue(tMsg.getProperties().get(NotificationTransactionListener.BOUNDS), Bounds.class);
         assertEquals(5d, b.getMinx().doubleValue(), 0);
         assertEquals(5d, b.getMiny().doubleValue(), 0);
         assertEquals(8d, b.getMaxx().doubleValue(), 0);

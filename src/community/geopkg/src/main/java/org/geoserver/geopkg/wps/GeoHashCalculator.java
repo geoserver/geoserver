@@ -17,8 +17,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Calculates GeoHashes for a geometry, in a spirit similar to PostGIS ST_GeoHash, but with
- * different results due to a different resolution calculation
+ * Calculates GeoHashes for a geometry, in a spirit similar to PostGIS ST_GeoHash, but with different results due to a
+ * different resolution calculation
  */
 class GeoHashCalculator {
 
@@ -51,13 +51,12 @@ class GeoHashCalculator {
 
         Point centroid = geom.getCentroid();
         int precision = getPrecision(geom);
-        return GeoHash.geoHashStringWithCharacterPrecision(
-                centroid.getY(), centroid.getX(), precision);
+        return GeoHash.geoHashStringWithCharacterPrecision(centroid.getY(), centroid.getX(), precision);
     }
 
     /**
-     * Precision detection is just based on the size, so it's a bit different than the PostGIS
-     * algorithm, but tolerant to geometries simmetrical to the Greenwitch meridian
+     * Precision detection is just based on the size, so it's a bit different than the PostGIS algorithm, but tolerant
+     * to geometries simmetrical to the Greenwitch meridian
      */
     private int getPrecision(Geometry geom) {
         Envelope envelope = geom.getEnvelopeInternal();

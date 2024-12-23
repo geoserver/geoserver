@@ -32,18 +32,17 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TransactionTest extends ImagesTestSupport {
 
-    protected static QName WATER_TEMP2 =
-            new QName(MockData.SF_URI, "watertemp2", MockData.SF_PREFIX);
+    protected static QName WATER_TEMP2 = new QName(MockData.SF_URI, "watertemp2", MockData.SF_PREFIX);
 
     @Before
     public void resetLayer() throws Exception {
         // wipe out everything under "mosaic"
-        CoverageInfo coverage =
-                getCatalog().getResourceByName(WATER_TEMP2.getLocalPart(), CoverageInfo.class);
+        CoverageInfo coverage = getCatalog().getResourceByName(WATER_TEMP2.getLocalPart(), CoverageInfo.class);
         if (coverage != null) {
             getCatalog().remove(coverage);
             removeStore(
-                    coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
+                    coverage.getStore().getWorkspace().getName(),
+                    coverage.getStore().getName());
         }
 
         // setup the mosaic by hand
@@ -52,8 +51,7 @@ public class TransactionTest extends ImagesTestSupport {
             watertemp2.delete();
         }
         watertemp2.dir();
-        try (ZipInputStream zis =
-                new ZipInputStream(TransactionTest.class.getResourceAsStream("watertemp2.zip"))) {
+        try (ZipInputStream zis = new ZipInputStream(TransactionTest.class.getResourceAsStream("watertemp2.zip"))) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
                 File newFile = new File(watertemp2.dir(), zipEntry.getName());
@@ -82,13 +80,12 @@ public class TransactionTest extends ImagesTestSupport {
     @Test
     public void testResetState() throws Exception {
         String waterTemp2 = getLayerId(WATER_TEMP2);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/images/v1/collections/"
-                                + waterTemp2
-                                + "/images?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/images/v1/collections/"
+                        + waterTemp2
+                        + "/images?f="
+                        + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
+                200);
 
         assertThat(json.read("features.size()"), equalTo(1));
     }
@@ -98,11 +95,8 @@ public class TransactionTest extends ImagesTestSupport {
         String waterTemp2 = getLayerId(WATER_TEMP2);
         String fileName = "NCOM_wattemp_100_20081101T0000000_12.tiff";
         byte[] payload = getBytes(fileName);
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        "ogc/images/v1/collections/" + waterTemp2 + "/images?filename=" + fileName,
-                        payload,
-                        "image/tiff");
+        MockHttpServletResponse response = postAsServletResponse(
+                "ogc/images/v1/collections/" + waterTemp2 + "/images?filename=" + fileName, payload, "image/tiff");
         assertThat(response.getStatus(), equalTo(201));
         assertThat(
                 response.getHeader("Location"),
@@ -110,19 +104,17 @@ public class TransactionTest extends ImagesTestSupport {
                         "http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp2/images/watertemp2.2"));
 
         // check it's really there
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/images/v1/collections/"
-                                + waterTemp2
-                                + "/images/watertemp2.2?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/images/v1/collections/"
+                        + waterTemp2
+                        + "/images/watertemp2.2?f="
+                        + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
+                200);
         assertThat(json.read("type"), equalTo("Feature"));
         assertThat(json.read("id"), equalTo("watertemp2.2"));
         assertThat(json.read("properties.datetime"), equalTo("2008-11-01T00:00:00Z"));
         assertThat(json.read("properties.elevation"), equalTo(100));
-        assertThat(
-                json.read("assets[0].href"), endsWith("NCOM_wattemp_100_20081101T0000000_12.tiff"));
+        assertThat(json.read("assets[0].href"), endsWith("NCOM_wattemp_100_20081101T0000000_12.tiff"));
     }
 
     @Test
@@ -134,17 +126,14 @@ public class TransactionTest extends ImagesTestSupport {
         String waterTemp2 = getLayerId(WATER_TEMP2);
 
         MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        "ogc/images/v1/collections/" + waterTemp2 + "/images/watertemp2.2");
+                deleteAsServletResponse("ogc/images/v1/collections/" + waterTemp2 + "/images/watertemp2.2");
         assertThat(response.getStatus(), equalTo(200));
 
         // check it's gone
-        response =
-                getAsServletResponse(
-                        "ogc/images/v1/collections/"
-                                + waterTemp2
-                                + "/images/watertemp2.2?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME));
+        response = getAsServletResponse("ogc/images/v1/collections/"
+                + waterTemp2
+                + "/images/watertemp2.2?f="
+                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME));
         assertThat(response.getStatus(), equalTo(404));
     }
 

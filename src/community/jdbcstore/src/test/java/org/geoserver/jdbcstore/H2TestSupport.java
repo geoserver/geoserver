@@ -42,31 +42,25 @@ public class H2TestSupport implements DatabaseTestSupport {
     @Override
     public void stubConfig(JDBCResourceStoreProperties config) {
         expect(config.getInitScript())
-                .andStubReturn(
-                        URIs.asResource(
-                                JDBCResourceStoreProperties.class.getResource("init.h2.sql")));
+                .andStubReturn(URIs.asResource(JDBCResourceStoreProperties.class.getResource("init.h2.sql")));
         expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:h2:mem:test"));
         expect(config.getJndiName()).andStubReturn(Optional.<String>absent());
         expect(config.getProperty(eq("driverClassName"))).andStubReturn("org.h2.Driver");
-        expect(config.getProperty(eq("driverClassName"), (String) anyObject()))
-                .andStubReturn("org.h2.Driver");
+        expect(config.getProperty(eq("driverClassName"), (String) anyObject())).andStubReturn("org.h2.Driver");
     }
 
     @Override
     public void initialize() throws Exception {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(ds);
 
-        try (InputStream in =
-                JDBCResourceStoreProperties.class.getResourceAsStream("init.h2.sql")) {
+        try (InputStream in = JDBCResourceStoreProperties.class.getResourceAsStream("init.h2.sql")) {
             Util.runScript(in, template.getJdbcOperations(), null);
         }
     }
 
     private PreparedStatement getInsert() throws SQLException {
         if (insert == null) {
-            insert =
-                    conn.prepareStatement(
-                            "INSERT INTO resources (name, parent, content) VALUES (?, ?, ?)");
+            insert = conn.prepareStatement("INSERT INTO resources (name, parent, content) VALUES (?, ?, ?)");
         }
         return insert;
     }
@@ -123,8 +117,7 @@ public class H2TestSupport implements DatabaseTestSupport {
         JdbcDataSource ds = new JdbcDataSource();
         ds.setURL("jdbc:h2:mem:test");
         try (Connection testConn = ds.getConnection()) {
-            try (ResultSet rs =
-                    testConn.getMetaData().getTables(null, null, null, new String[] {"TABLE"})) {
+            try (ResultSet rs = testConn.getMetaData().getTables(null, null, null, new String[] {"TABLE"})) {
                 boolean result = false;
                 while (rs.next()) {
                     result = true;

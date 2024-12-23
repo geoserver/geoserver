@@ -22,7 +22,8 @@ import org.junit.rules.TemporaryFolder;
 
 public abstract class AbstractS3FileServiceDataTest extends AbstractTaskManagerTest {
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     /**
      * This test assumes access to aws compatible service.
@@ -55,8 +56,7 @@ public abstract class AbstractS3FileServiceDataTest extends AbstractTaskManagerT
         }
 
         // is create in the root folder?
-        Assert.assertTrue(
-                service.getS3Client().doesObjectExist(service.getRootFolder(), filenamePath));
+        Assert.assertTrue(service.getS3Client().doesObjectExist(service.getRootFolder(), filenamePath));
 
         // delete action
         service.delete(filenamePath);

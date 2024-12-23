@@ -64,23 +64,21 @@ public class FeatureIteratorFactory implements IteratorFactory<Feature> {
 
         AtomicBoolean rulesFound = new AtomicBoolean(false);
         if (simplified != null) {
-            simplified.accept(
-                    new AbstractStyleVisitor() {
-                        @Override
-                        public void visit(org.geotools.api.style.Rule rule) {
-                            rulesFound.set(true);
-                            // no need to scan inside rules
-                        }
-                    });
+            simplified.accept(new AbstractStyleVisitor() {
+                @Override
+                public void visit(org.geotools.api.style.Rule rule) {
+                    rulesFound.set(true);
+                    // no need to scan inside rules
+                }
+            });
         }
         this.hasActiveRules = rulesFound.get();
     }
 
     private Style getSimplifiedStyle(WMSMapContent mc, Layer layer) {
         final double scaleDenominator = mc.getScaleDenominator();
-        ScaleStyleVisitor visitor =
-                new ScaleStyleVisitor(
-                        scaleDenominator, (SimpleFeatureType) layer.getFeatureSource().getSchema());
+        ScaleStyleVisitor visitor = new ScaleStyleVisitor(
+                scaleDenominator, (SimpleFeatureType) layer.getFeatureSource().getSchema());
         try {
             layer.getStyle().accept(visitor);
             return visitor.getCopy();

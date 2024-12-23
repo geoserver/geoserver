@@ -16,17 +16,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
- * Applies all {@link SampleDataProvider} found in the application context to the layer, returning
- * the required links
+ * Applies all {@link SampleDataProvider} found in the application context to the layer, returning the required links
  */
 @Component
 public class SampleDataSupport implements ApplicationContextAware {
     private List<SampleDataProvider> providers;
 
     public List<Link> getSampleDataFor(LayerInfo layer) {
-        return providers.stream()
-                .flatMap(p -> p.getSampleData(layer).stream())
-                .collect(Collectors.toList());
+        return providers.stream().flatMap(p -> p.getSampleData(layer).stream()).collect(Collectors.toList());
     }
 
     @Override

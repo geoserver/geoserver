@@ -168,8 +168,7 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         try {
             return featureSource.getCount(query);
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Failed to get the collection size. Exception is " + e.getMessage(), e);
+            throw new RuntimeException("Failed to get the collection size. Exception is " + e.getMessage(), e);
         }
     }
 
@@ -195,10 +194,7 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
     public <O> O[] toArray(O[] array) {
         int size = size();
         if (array.length < size) {
-            array =
-                    (O[])
-                            java.lang.reflect.Array.newInstance(
-                                    array.getClass().getComponentType(), size);
+            array = (O[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
         }
         FeatureIterator<Feature> it = features();
         try {

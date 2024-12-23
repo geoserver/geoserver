@@ -27,27 +27,21 @@ public interface CoverageResponseDelegate {
     String getMimeType(String outputFormat);
 
     /**
-     * Returns an appropriate file extension for the coverages encoded with this delegate (used
-     * mainly when storing the coverage on disk for later retrieval). For example a GeoTiff encoding
-     * delegate might return "tif" (no period, just extension).
+     * Returns an appropriate file extension for the coverages encoded with this delegate (used mainly when storing the
+     * coverage on disk for later retrieval). For example a GeoTiff encoding delegate might return "tif" (no period,
+     * just extension).
      */
     String getFileExtension(String outputFormat);
 
     /** Encodes the coverage in the specified output format onto the output stream */
     void encode(
-            GridCoverage2D coverage,
-            String outputFormat,
-            Map<String, String> econdingParameters,
-            OutputStream output)
+            GridCoverage2D coverage, String outputFormat, Map<String, String> econdingParameters, OutputStream output)
             throws ServiceException, IOException;
 
     /** Returns the list of output formats managed by this delegate */
     List<String> getOutputFormats();
 
-    /**
-     * True if the encoder is available, false otherwise (possibly due to missing libraries and the
-     * like)
-     */
+    /** True if the encoder is available, false otherwise (possibly due to missing libraries and the like) */
     boolean isAvailable();
 
     /** Returns the GML conformance class for this output format. */

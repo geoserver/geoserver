@@ -52,8 +52,7 @@ public class ResourceAccessManagerVectorTimeTest extends VectorTimeTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     /** Add the users */
@@ -76,17 +75,11 @@ public class ResourceAccessManagerVectorTimeTest extends VectorTimeTestSupport {
 
         // Give cite_high only records with higher elevation
         Filter elevationHigh = ff.greater(ff.property("startElevation"), ff.literal(2));
-        tam.putLimits(
-                "cite_high",
-                vector,
-                new VectorAccessLimits(CatalogMode.HIDE, null, elevationHigh, null, null));
+        tam.putLimits("cite_high", vector, new VectorAccessLimits(CatalogMode.HIDE, null, elevationHigh, null, null));
 
         // And cite_low the opposite
         Filter elevationLow = ff.lessOrEqual(ff.property("startElevation"), ff.literal(2));
-        tam.putLimits(
-                "cite_low",
-                vector,
-                new VectorAccessLimits(CatalogMode.HIDE, null, elevationLow, null, null));
+        tam.putLimits("cite_low", vector, new VectorAccessLimits(CatalogMode.HIDE, null, elevationLow, null, null));
     }
 
     @Test

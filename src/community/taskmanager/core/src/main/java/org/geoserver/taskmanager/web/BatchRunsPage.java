@@ -49,32 +49,26 @@ public class BatchRunsPage extends GeoServerSecuredPage {
     public void onInitialize() {
         super.onInitialize();
 
-        add(
-                new SimpleAjaxLink<String>(
-                        "nameLink", new PropertyModel<String>(batchModel, "fullName")) {
-                    private static final long serialVersionUID = -9184383036056499856L;
+        add(new SimpleAjaxLink<String>("nameLink", new PropertyModel<String>(batchModel, "fullName")) {
+            private static final long serialVersionUID = -9184383036056499856L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        setResponsePage(new BatchPage(batchModel, getPage()));
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(new BatchPage(batchModel, getPage()));
+            }
+        });
 
-        add(
-                new AjaxLink<Object>("refresh") {
+        add(new AjaxLink<Object>("refresh") {
 
-                    private static final long serialVersionUID = 3905640474193868255L;
+            private static final long serialVersionUID = 3905640474193868255L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        batchModel.setObject(
-                                TaskManagerBeans.get()
-                                        .getDao()
-                                        .initHistory(batchModel.getObject()));
-                        ((MarkupContainer) runsPanel.get("listContainer").get("items")).removeAll();
-                        target.add(runsPanel);
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                batchModel.setObject(TaskManagerBeans.get().getDao().initHistory(batchModel.getObject()));
+                ((MarkupContainer) runsPanel.get("listContainer").get("items")).removeAll();
+                target.add(runsPanel);
+            }
+        });
 
         // the tasks panel
         add(new Form<>("form").add(runsPanel = runPanel()));
@@ -82,20 +76,18 @@ public class BatchRunsPage extends GeoServerSecuredPage {
         runsPanel.setSelectable(false);
         runsPanel.getDataProvider().setSort(BatchRunsModel.START.getName(), SortOrder.DESCENDING);
 
-        add(
-                new AjaxLink<Object>("close") {
-                    private static final long serialVersionUID = -6892944747517089296L;
+        add(new AjaxLink<Object>("close") {
+            private static final long serialVersionUID = -6892944747517089296L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 
     protected GeoServerTablePanel<BatchRun> runPanel() {
-        return new GeoServerTablePanel<BatchRun>(
-                "runsPanel", new BatchRunsModel(batchModel), true) {
+        return new GeoServerTablePanel<BatchRun>("runsPanel", new BatchRunsModel(batchModel), true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
 
@@ -104,8 +96,7 @@ public class BatchRunsPage extends GeoServerSecuredPage {
             protected Component getComponentForProperty(
                     String id, IModel<BatchRun> runModel, Property<BatchRun> property) {
                 if (property.equals(BatchRunsModel.START)) {
-                    return new SimpleAjaxLink<String>(
-                            id, (IModel<String>) property.getModel(runModel)) {
+                    return new SimpleAjaxLink<String>(id, (IModel<String>) property.getModel(runModel)) {
                         private static final long serialVersionUID = -9184383036056499856L;
 
                         @Override
@@ -124,26 +115,17 @@ public class BatchRunsPage extends GeoServerSecuredPage {
                                             runModel.getObject().getBatch())) {
                         return new Label(id);
                     } else {
-                        SimpleAjaxSubmitLink link =
-                                new SimpleAjaxSubmitLink(id, null) {
-                                    private static final long serialVersionUID =
-                                            -9184383036056499856L;
+                        SimpleAjaxSubmitLink link = new SimpleAjaxSubmitLink(id, null) {
+                            private static final long serialVersionUID = -9184383036056499856L;
 
-                                    @Override
-                                    protected void onSubmit(
-                                            AjaxRequestTarget target, Form<?> form) {
-                                        TaskManagerBeans.get()
-                                                .getBjService()
-                                                .interrupt(runModel.getObject());
-                                        info(
-                                                new ParamResourceModel(
-                                                                "runInterrupted",
-                                                                BatchRunsPage.this)
-                                                        .getString());
+                            @Override
+                            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                                TaskManagerBeans.get().getBjService().interrupt(runModel.getObject());
+                                info(new ParamResourceModel("runInterrupted", BatchRunsPage.this).getString());
 
-                                        ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
-                                    }
-                                };
+                                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                            }
+                        };
                         link.getLink().add(new AttributeAppender("class", "stop-link", ","));
                         return link;
                     }

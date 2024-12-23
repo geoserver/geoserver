@@ -39,8 +39,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     }
 
     /**
-     * Generate the JDOM element needed to represent an access control rule and insert it into the
-     * parent element given.
+     * Generate the JDOM element needed to represent an access control rule and insert it into the parent element given.
      *
      * @param elem , the root elment
      */

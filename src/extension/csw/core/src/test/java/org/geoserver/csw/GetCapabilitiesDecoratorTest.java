@@ -28,8 +28,7 @@ public class GetCapabilitiesDecoratorTest extends CSWSimpleTestSupport {
     public void testRepeatedCapabilitiesCall() throws Exception {
         // repeat calls, make sure there is no accumulation of the text/xml extra format
         for (int i = 0; i < 2; i++) {
-            Document dom =
-                    getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
+            Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
             // print(dom);
             checkValidationErrors(dom);
 

@@ -26,9 +26,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 /**
- * Checks the polygon tagger is working as expected. For the moment it's not testing the coordinate
- * values as there is no written spec of how they should appear, interactive tests have so far
- * proven inconclusive.
+ * Checks the polygon tagger is working as expected. For the moment it's not testing the coordinate values as there is
+ * no written spec of how they should appear, interactive tests have so far proven inconclusive.
  */
 public class MapMLGeometryClipperTest {
 
@@ -47,10 +46,8 @@ public class MapMLGeometryClipperTest {
     @Before
     public void setupTestGeometries() throws Exception {
         world = getPolygon("POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))");
-        donut =
-                getPolygon(
-                        "POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90), "
-                                + "(-170 -80, -170 80, 170 80, 170 -80, -170 -80))");
+        donut = getPolygon("POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90), "
+                + "(-170 -80, -170 80, 170 80, 170 -80, -170 -80))");
         w = getPolygon("POLYGON((-10 0, 0 10, 10 0, 20 20, -20 20, -10 0))");
     }
 
@@ -198,8 +195,7 @@ public class MapMLGeometryClipperTest {
         assertCoordinates(cs2.get(1), false, 15, 10, 0, 10);
     }
 
-    protected void assertCoordinates(
-            TaggedCoordinateSequence cs, boolean visible, double... expected) {
+    protected void assertCoordinates(TaggedCoordinateSequence cs, boolean visible, double... expected) {
         assertEquals(visible, cs.isVisible());
         List<Coordinate> coordinates = cs.getCoordinates();
         assertEquals(expected.length / 2, coordinates.size());
@@ -223,8 +219,7 @@ public class MapMLGeometryClipperTest {
     @Test
     public void testClipMultiLineString() throws Exception {
         MultiLineString g =
-                (MultiLineString)
-                        wktReader.read("MULTILINESTRING((0 0, 15 15), (20 20, 30 30), (5 5, 7 5))");
+                (MultiLineString) wktReader.read("MULTILINESTRING((0 0, 15 15), (20 20, 30 30), (5 5, 7 5))");
         MapMLGeometryClipper tagger = new MapMLGeometryClipper(g, new Envelope(5, 15, -5, 15));
         Geometry geometry = tagger.clipAndTag();
         assertEquals(wktReader.read("MULTILINESTRING ((5 5, 15 15), (5 5, 7 5))"), geometry);
@@ -232,8 +227,7 @@ public class MapMLGeometryClipperTest {
 
     @Test
     public void testClipMultiPoint() throws Exception {
-        MultiPoint g =
-                (MultiPoint) wktReader.read("MULTIPOINT((0 0), (0 10), (10 10), (10 0), (0 0))");
+        MultiPoint g = (MultiPoint) wktReader.read("MULTIPOINT((0 0), (0 10), (10 10), (10 0), (0 0))");
         MapMLGeometryClipper tagger = new MapMLGeometryClipper(g, new Envelope(5, 15, -5, 15));
         Geometry geometry = tagger.clipAndTag();
         assertEquals(wktReader.read("MULTIPOINT((10 10), (10 0))"), geometry);
@@ -241,15 +235,13 @@ public class MapMLGeometryClipperTest {
 
     @Test
     public void testClipMultiPolygon() throws Exception {
-        MultiPolygon g =
-                (MultiPolygon)
-                        wktReader.read(
-                                "MULTIPOLYGON(((0 0, 0 20, 20 20, 20 0, 0 0)), ((5 5, 5 7, 7 7, 7 5, 5 5)),  ((25 25, 25 27, 27 27, 27 25, 25 25)))");
+        MultiPolygon g = (MultiPolygon)
+                wktReader.read(
+                        "MULTIPOLYGON(((0 0, 0 20, 20 20, 20 0, 0 0)), ((5 5, 5 7, 7 7, 7 5, 5 5)),  ((25 25, 25 27, 27 27, 27 25, 25 25)))");
         MapMLGeometryClipper tagger = new MapMLGeometryClipper(g, new Envelope(5, 15, -5, 15));
         Geometry geometry = tagger.clipAndTag();
         assertEquals(
-                wktReader.read(
-                        "MULTIPOLYGON (((5 0, 5 15, 15 15, 15 0, 5 0)), ((5 5, 5 7, 7 7, 7 5, 5 5)))"),
+                wktReader.read("MULTIPOLYGON (((5 0, 5 15, 15 15, 15 0, 5 0)), ((5 5, 5 7, 7 7, 7 5, 5 5)))"),
                 geometry);
     }
 }

@@ -36,8 +36,7 @@ import org.w3c.dom.Document;
 
 public class Transaction3DTest extends WFSTestSupport {
 
-    static final QName FULL3D =
-            new QName(SystemTestData.CITE_URI, "full3d", SystemTestData.CITE_PREFIX);
+    static final QName FULL3D = new QName(SystemTestData.CITE_URI, "full3d", SystemTestData.CITE_PREFIX);
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     private XpathEngine xpath;
     private WKTReader wkt = new WKTReader();
@@ -65,11 +64,8 @@ public class Transaction3DTest extends WFSTestSupport {
         Document featureDom = getFeature(fid);
         print(featureDom);
         assertEquals("New point", xpath.evaluate("//cite:full3d/gml:name", featureDom));
-        assertEquals(
-                "3", xpath.evaluate("//cite:full3d/cite:geom/gml:Point/@srsDimension", featureDom));
-        assertEquals(
-                "204330 491816 16",
-                xpath.evaluate("//cite:full3d/cite:geom/gml:Point/gml:pos", featureDom));
+        assertEquals("3", xpath.evaluate("//cite:full3d/cite:geom/gml:Point/@srsDimension", featureDom));
+        assertEquals("204330 491816 16", xpath.evaluate("//cite:full3d/cite:geom/gml:Point/gml:pos", featureDom));
         // check it's actually 3d as a geometry
         SimpleFeature feature = getFeatureFromStore(fid);
         Geometry g = (Geometry) feature.getDefaultGeometry();
@@ -83,9 +79,7 @@ public class Transaction3DTest extends WFSTestSupport {
         String fid = assertSuccesfulInsert(insertDom);
         Document featureDom = getFeature(fid);
         assertEquals("New line", xpath.evaluate("//cite:full3d/gml:name", featureDom));
-        assertEquals(
-                "3",
-                xpath.evaluate("//cite:full3d/cite:geom/gml:LineString/@srsDimension", featureDom));
+        assertEquals("3", xpath.evaluate("//cite:full3d/cite:geom/gml:LineString/@srsDimension", featureDom));
         assertEquals(
                 "204330 491816 16 204319 491814 16",
                 xpath.evaluate("//cite:full3d/cite:geom/gml:LineString/gml:posList", featureDom));
@@ -103,14 +97,11 @@ public class Transaction3DTest extends WFSTestSupport {
         Document featureDom = getFeature(fid);
         // print(featureDom);
         assertEquals("New polygon", xpath.evaluate("//cite:full3d/gml:name", featureDom));
-        assertEquals(
-                "3",
-                xpath.evaluate("//cite:full3d/cite:geom/gml:Polygon/@srsDimension", featureDom));
+        assertEquals("3", xpath.evaluate("//cite:full3d/cite:geom/gml:Polygon/@srsDimension", featureDom));
         assertEquals(
                 "94000 471000 10 94001 471000 11 94001 471001 12 94000 471001 13 94000 471000 10",
                 xpath.evaluate(
-                        "//cite:full3d/cite:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
-                        featureDom));
+                        "//cite:full3d/cite:geom/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList", featureDom));
         // check it's actually 3d as a geometry
         SimpleFeature feature = getFeatureFromStore(fid);
         Geometry g = (Geometry) feature.getDefaultGeometry();
@@ -184,26 +175,16 @@ public class Transaction3DTest extends WFSTestSupport {
     }
 
     private String assertSuccesfulInsert(Document dom) throws XpathException {
-        assertEquals(
-                "1",
-                xpath.evaluate(
-                        "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalInserted", dom));
-        return xpath.evaluate(
-                "/wfs:TransactionResponse/wfs:InsertResults/wfs:Feature/ogc:FeatureId/@fid", dom);
+        assertEquals("1", xpath.evaluate("/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalInserted", dom));
+        return xpath.evaluate("/wfs:TransactionResponse/wfs:InsertResults/wfs:Feature/ogc:FeatureId/@fid", dom);
     }
 
     private void assertSuccesfulDelete(Document dom) throws XpathException {
-        assertEquals(
-                "1",
-                xpath.evaluate(
-                        "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalDeleted", dom));
+        assertEquals("1", xpath.evaluate("/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalDeleted", dom));
     }
 
     private void assertSuccesfulUpdate(Document dom) throws XpathException {
-        assertEquals(
-                "1",
-                xpath.evaluate(
-                        "/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalUpdated", dom));
+        assertEquals("1", xpath.evaluate("/wfs:TransactionResponse/wfs:TransactionSummary/wfs:totalUpdated", dom));
     }
 
     private void assertEqualND(Geometry test, Geometry expected) {
@@ -213,8 +194,7 @@ public class Transaction3DTest extends WFSTestSupport {
                 CoordinateSequences.equalsND(expected, test));
     }
 
-    private Document postRequest(String requestFile, String... variableMap)
-            throws IOException, Exception {
+    private Document postRequest(String requestFile, String... variableMap) throws IOException, Exception {
         String xml = IOUtils.toString(getClass().getResourceAsStream(requestFile), UTF_8);
         if (variableMap != null) {
             for (int i = 0; i < variableMap.length; i += 2) {
@@ -228,20 +208,17 @@ public class Transaction3DTest extends WFSTestSupport {
     }
 
     private Document getFeature(String featureId) throws IOException, Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
-                                + getLayerId(FULL3D)
-                                + "&featureId="
-                                + featureId);
+        Document dom = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                + getLayerId(FULL3D)
+                + "&featureId="
+                + featureId);
         assertEquals("1", xpath.evaluate("count(//cite:full3d)", dom));
         return dom;
     }
 
     private SimpleFeature getFeatureFromStore(String fid) throws IOException {
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(getLayerId(FULL3D));
-        SimpleFeatureSource featureSource =
-                (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
+        SimpleFeatureSource featureSource = (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
         SimpleFeatureCollection fc = featureSource.getFeatures(FF.id(FF.featureId(fid)));
         SimpleFeature first = DataUtilities.first(fc);
         return first;
@@ -249,8 +226,7 @@ public class Transaction3DTest extends WFSTestSupport {
 
     private int getCountFromStore(Filter filter) throws IOException {
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(getLayerId(FULL3D));
-        SimpleFeatureSource featureSource =
-                (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
+        SimpleFeatureSource featureSource = (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
         SimpleFeatureCollection fc = featureSource.getFeatures(filter);
         return fc.size();
     }

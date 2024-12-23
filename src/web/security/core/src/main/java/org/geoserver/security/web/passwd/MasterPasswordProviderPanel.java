@@ -16,8 +16,7 @@ import org.geoserver.web.wicket.HelpLink;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class MasterPasswordProviderPanel<T extends MasterPasswordProviderConfig>
-        extends SecurityNamedServicePanel<T> {
+public class MasterPasswordProviderPanel<T extends MasterPasswordProviderConfig> extends SecurityNamedServicePanel<T> {
 
     public MasterPasswordProviderPanel(String id, IModel<T> model) {
         super(id, model);

@@ -17,32 +17,23 @@ public class QueryablesTest extends TilesTestSupport {
     public void queryablesOnCoverage() throws Exception {
         // queryables are not supported for coverages
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/tiles/v1/collections/" + getLayerId(TASMANIA_BM) + "/queryables", 404);
-        assertEquals(
-                "Collection 'wcs:BlueMarble' cannot be filtered, no queryables available",
-                json.read("title"));
+                getAsJSONPath("ogc/tiles/v1/collections/" + getLayerId(TASMANIA_BM) + "/queryables", 404);
+        assertEquals("Collection 'wcs:BlueMarble' cannot be filtered, no queryables available", json.read("title"));
     }
 
     @Test
     public void queryablesOnGroup() throws Exception {
         // queryables are not supported for coverages
-        DocumentContext json =
-                getAsJSONPath("ogc/tiles/v1/collections/" + NATURE_GROUP + "/queryables", 404);
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/collections/" + NATURE_GROUP + "/queryables", 404);
         assertEquals(
-                "Collection '" + NATURE_GROUP + "' cannot be filtered, no queryables available",
-                json.read("title"));
+                "Collection '" + NATURE_GROUP + "' cannot be filtered, no queryables available", json.read("title"));
     }
 
     @Test
     public void queryablesOnRoadSegements() throws Exception {
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/tiles/v1/collections/" + getLayerId(ROAD_SEGMENTS) + "/queryables",
-                        200);
-        assertEquals(
-                "https://geojson.org/schema/MultiLineString.json",
-                json.read("properties.the_geom.$ref"));
+                getAsJSONPath("ogc/tiles/v1/collections/" + getLayerId(ROAD_SEGMENTS) + "/queryables", 200);
+        assertEquals("https://geojson.org/schema/MultiLineString.json", json.read("properties.the_geom.$ref"));
         assertEquals("string", json.read("properties.FID.type"));
         assertEquals("string", json.read("properties.NAME.type"));
     }

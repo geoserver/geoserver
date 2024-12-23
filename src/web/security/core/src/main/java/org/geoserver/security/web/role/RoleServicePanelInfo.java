@@ -13,6 +13,5 @@ import org.geoserver.security.web.SecurityNamedServicePanelInfo;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class RoleServicePanelInfo<
-                C extends SecurityRoleServiceConfig, T extends RoleServicePanel<C>>
+public class RoleServicePanelInfo<C extends SecurityRoleServiceConfig, T extends RoleServicePanel<C>>
         extends SecurityNamedServicePanelInfo<C, T> {}

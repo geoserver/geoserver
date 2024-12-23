@@ -29,8 +29,7 @@ public class PointSeries extends Domain {
     }
 
     @Override
-    protected void buildGeoAxis(
-            CoordinateReferenceSystem crs, GridGeometry2D gridGeometry, Map<String, Axis> axes) {
+    protected void buildGeoAxis(CoordinateReferenceSystem crs, GridGeometry2D gridGeometry, Map<String, Axis> axes) {
         ReferencedEnvelope envelope = gridGeometry.getEnvelope2D();
         CoordinateSystem coordinateSystem = crs.getCoordinateSystem();
         for (int i = 0; i < coordinateSystem.getDimension(); i++) {

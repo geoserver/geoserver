@@ -28,8 +28,7 @@ public class WCS20ExceptionHandler extends DefaultAPIExceptionHandler {
     @Override
     public void handle(Throwable t, HttpServletResponse response) {
         WCS20Exception wc = (WCS20Exception) t;
-        if (WCS20Exception.WCS20ExceptionCode.NoSuchCoverage.getExceptionCode()
-                .equals(wc.getCode())) {
+        if (WCS20Exception.WCS20ExceptionCode.NoSuchCoverage.getExceptionCode().equals(wc.getCode())) {
             // the one and only valid 404 usage
             response.setStatus(404);
         } else if (wc.getHttpCode() == 404) {

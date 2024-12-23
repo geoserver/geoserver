@@ -31,7 +31,8 @@ import org.junit.rules.TemporaryFolder;
  */
 public abstract class AbstractJDBCResourceTheoryTest extends ResourceTheoryTest {
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     DatabaseTestSupport support;
 

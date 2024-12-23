@@ -46,11 +46,8 @@ public class OSEORestTestSupport extends OSEOTestSupport {
         DataStoreInfo ds = getCatalog().getDataStoreByName("oseo");
         OpenSearchAccess access = (OpenSearchAccess) ds.getDataStore(null);
         FeatureStore store = (FeatureStore) access.getCollectionSource();
-        store.removeFeatures(
-                FF.equal(
-                        FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
-                        FF.literal("TEST123"),
-                        true));
+        store.removeFeatures(FF.equal(
+                FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")), FF.literal("TEST123"), true));
     }
 
     @Before
@@ -63,8 +60,7 @@ public class OSEORestTestSupport extends OSEOTestSupport {
 
     private void removePublishing(
             Catalog catalog, CascadeDeleteVisitor visitor, String workspace, String resourceName) {
-        CoverageStoreInfo store =
-                catalog.getStoreByName(workspace, resourceName, CoverageStoreInfo.class);
+        CoverageStoreInfo store = catalog.getStoreByName(workspace, resourceName, CoverageStoreInfo.class);
         if (store != null) {
             visitor.visit(store);
         }
@@ -96,14 +92,9 @@ public class OSEORestTestSupport extends OSEOTestSupport {
 
     protected void createTest123Collection() throws Exception, IOException {
         // create the collection
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections",
-                        getTestData("/collection.json"),
-                        MediaType.APPLICATION_JSON_VALUE);
+        MockHttpServletResponse response = postAsServletResponse(
+                "rest/oseo/collections", getTestData("/collection.json"), MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
-        assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                response.getHeader("location"));
+        assertEquals("http://localhost:8080/geoserver/rest/oseo/collections/TEST123", response.getHeader("location"));
     }
 }

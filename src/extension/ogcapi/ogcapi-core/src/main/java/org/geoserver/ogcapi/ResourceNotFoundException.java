@@ -7,8 +7,8 @@ package org.geoserver.ogcapi;
 import org.springframework.http.HttpStatus;
 
 /**
- * APIException for resources that were not found in the system (statically available, but
- * dynamically discovered not to be there/not to be supportable
+ * APIException for resources that were not found in the system (statically available, but dynamically discovered not to
+ * be there/not to be supportable
  */
 public class ResourceNotFoundException extends APIException {
 

@@ -16,8 +16,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.springframework.security.core.Authentication;
 
 /**
- * A simple {@link ResourceAccessManager} that keeps all the limits in a in memory hash map. Useful
- * for testing purposes
+ * A simple {@link ResourceAccessManager} that keeps all the limits in a in memory hash map. Useful for testing purposes
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -31,8 +30,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         return defaultWorkspaceAccessLimits;
     }
 
-    public void setDefaultWorkspaceAccessLimits(
-            WorkspaceAccessLimits defaultWorkspaceAccessLimits) {
+    public void setDefaultWorkspaceAccessLimits(WorkspaceAccessLimits defaultWorkspaceAccessLimits) {
         this.defaultWorkspaceAccessLimits = defaultWorkspaceAccessLimits;
     }
 
@@ -96,9 +94,9 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
     }
 
     /**
-     * Saves the mock access limits for this user and secured item (this is meant only for testing,
-     * it's the caller care to make sure the appropriate user limits class is used). The CatalogInfo
-     * is required to have a valid and stable id.
+     * Saves the mock access limits for this user and secured item (this is meant only for testing, it's the caller care
+     * to make sure the appropriate user limits class is used). The CatalogInfo is required to have a valid and stable
+     * id.
      */
     public void putLimits(String userName, CatalogInfo securedItem, AccessLimits limits) {
         getUserMap(userName).put(securedItem.getId(), limits);

@@ -68,11 +68,10 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
     private volatile XStreamPersister persister;
 
     /**
-     * Creates and initializes a new {@link XStreamPersister} only if it wasn't created before or
-     * it's been called for a different {@link GeoServer} instance, and then caches it as an
-     * instance variable; thus avoiding the overhead on each call to load(), which can be
-     * significant when the number of services is large (e.g. 3 seconds instead of 35 seconds to
-     * load about 17k service files)
+     * Creates and initializes a new {@link XStreamPersister} only if it wasn't created before or it's been called for a
+     * different {@link GeoServer} instance, and then caches it as an instance variable; thus avoiding the overhead on
+     * each call to load(), which can be significant when the number of services is large (e.g. 3 seconds instead of 35
+     * seconds to load about 17k service files)
      */
     private XStreamPersister getXstreamPersister(GeoServer gs) {
         if (this.geoserver != gs) {
@@ -83,18 +82,15 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         return persister;
     }
 
-    /**
-     * Fills in all the bits that are normally not loaded automatically by XStream, such as empty
-     * collections
-     */
+    /** Fills in all the bits that are normally not loaded automatically by XStream, such as empty collections */
     public void initializeService(T info) {
         initialize(info);
     }
 
     /**
-     * Fills in the blanks of the service object loaded by XStream. This implementation makes sure
-     * all collections in {@link ServiceInfoImpl} are initialized, subclasses should override to add
-     * more specific initializations (such as the actual supported versions and so on)
+     * Fills in the blanks of the service object loaded by XStream. This implementation makes sure all collections in
+     * {@link ServiceInfoImpl} are initialized, subclasses should override to add more specific initializations (such as
+     * the actual supported versions and so on)
      */
     protected T initialize(T service) {
         if (service instanceof ServiceInfoImpl) {
@@ -128,8 +124,7 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
 
     public final void save(T service, GeoServer gs, Resource directory) throws Exception {
         String filename = getFilename();
-        Resource resource =
-                directory == null ? resourceLoader.get(filename) : directory.get(filename);
+        Resource resource = directory == null ? resourceLoader.get(filename) : directory.get(filename);
 
         // using resource output stream makes sure we write on a temp file and them move
         try (OutputStream out = resource.out()) {

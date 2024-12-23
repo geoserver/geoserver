@@ -50,16 +50,15 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo, Serializable
         container.add(AttributeModifier.replace("class", "default-node-info"));
         Map<String, String> properties = NODE_DATA.getIdStyle();
         if (properties != null && !properties.isEmpty()) {
-            container.add(
-                    new Behavior() {
-                        private static final long serialVersionUID = -7945010069411202354L;
+            container.add(new Behavior() {
+                private static final long serialVersionUID = -7945010069411202354L;
 
-                        @Override
-                        public void renderHead(Component component, IHeaderResponse response) {
-                            String script = toJavaScript(properties);
-                            response.render(OnLoadHeaderItem.forScript(script));
-                        }
-                    });
+                @Override
+                public void renderHead(Component component, IHeaderResponse response) {
+                    String script = toJavaScript(properties);
+                    response.render(OnLoadHeaderItem.forScript(script));
+                }
+            });
         }
         container.setVisible(isNodeIdVisible(container));
     }

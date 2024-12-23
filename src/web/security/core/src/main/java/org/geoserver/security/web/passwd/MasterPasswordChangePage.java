@@ -32,9 +32,7 @@ public class MasterPasswordChangePage extends AbstractSecurityPage {
         MasterPasswordConfig config = configModel.getObject();
         MasterPasswordProviderConfig providerConfig = null;
         try {
-            providerConfig =
-                    getSecurityManager()
-                            .loadMasterPassswordProviderConfig(config.getProviderName());
+            providerConfig = getSecurityManager().loadMasterPassswordProviderConfig(config.getProviderName());
         } catch (IOException e) {
             throw new WicketRuntimeException(e);
         }
@@ -45,50 +43,45 @@ public class MasterPasswordChangePage extends AbstractSecurityPage {
         // potentially look into a way to store as char or byte array so string never gets
         // created
         form.add(new PasswordTextField("currentPassword", new Model<>()));
-        form.add(
-                new PasswordTextField("newPassword", new Model<>())
-                        .setEnabled(!providerConfig.isReadOnly()));
+        form.add(new PasswordTextField("newPassword", new Model<>()).setEnabled(!providerConfig.isReadOnly()));
         form.add(new PasswordTextField("newPasswordConfirm", new Model<>()));
 
-        form.add(
-                new SubmitLink("save", form) {
-                    @Override
-                    public void onSubmit() {
-                        Form f = getForm();
-                        // @Justin, we cannot use getDefaultModelObjectAsString() because of special
-                        // chars.
-                        // example: The password "mcrmcr&1" is converted to "mcrmcr&amp;1".
-                        String currPasswd =
-                                // f.get("currentPassword").getDefaultModelObjectAsString();
-                                (String) f.get("currentPassword").getDefaultModelObject();
-                        String newPasswd =
-                                // f.get("newPassword").getDefaultModelObjectAsString();
-                                (String) f.get("newPassword").getDefaultModelObject();
-                        String newPasswdConfirm =
-                                // f.get("newPasswordConfirm").getDefaultModelObjectAsString();
-                                (String) f.get("newPasswordConfirm").getDefaultModelObject();
+        form.add(new SubmitLink("save", form) {
+            @Override
+            public void onSubmit() {
+                Form f = getForm();
+                // @Justin, we cannot use getDefaultModelObjectAsString() because of special
+                // chars.
+                // example: The password "mcrmcr&1" is converted to "mcrmcr&amp;1".
+                String currPasswd =
+                        // f.get("currentPassword").getDefaultModelObjectAsString();
+                        (String) f.get("currentPassword").getDefaultModelObject();
+                String newPasswd =
+                        // f.get("newPassword").getDefaultModelObjectAsString();
+                        (String) f.get("newPassword").getDefaultModelObject();
+                String newPasswdConfirm =
+                        // f.get("newPasswordConfirm").getDefaultModelObjectAsString();
+                        (String) f.get("newPasswordConfirm").getDefaultModelObject();
 
-                        MasterPasswordConfig mpConfig =
-                                (MasterPasswordConfig) getForm().getModelObject();
-                        try {
-                            getSecurityManager()
-                                    .saveMasterPasswordConfig(
-                                            mpConfig,
-                                            currPasswd.toCharArray(),
-                                            newPasswd != null ? newPasswd.toCharArray() : null,
-                                            newPasswdConfirm.toCharArray());
-                            doReturn();
-                        } catch (Exception e) {
-                            error(e);
-                        }
-                    }
-                });
-        form.add(
-                new AjaxLink<>("cancel") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+                MasterPasswordConfig mpConfig = (MasterPasswordConfig) getForm().getModelObject();
+                try {
+                    getSecurityManager()
+                            .saveMasterPasswordConfig(
+                                    mpConfig,
+                                    currPasswd.toCharArray(),
+                                    newPasswd != null ? newPasswd.toCharArray() : null,
+                                    newPasswdConfirm.toCharArray());
+                    doReturn();
+                } catch (Exception e) {
+                    error(e);
+                }
+            }
+        });
+        form.add(new AjaxLink<>("cancel") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 }

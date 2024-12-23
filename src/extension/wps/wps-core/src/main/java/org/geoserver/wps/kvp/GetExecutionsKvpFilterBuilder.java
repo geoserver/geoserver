@@ -35,8 +35,7 @@ public class GetExecutionsKvpFilterBuilder {
 
     protected void append(String propertyName, String propertyValue) {
         final PropertyName attribute = ff.property(propertyName);
-        final PropertyIsEqualTo propertyFilter =
-                ff.equal(attribute, ff.literal(propertyValue), true);
+        final PropertyIsEqualTo propertyFilter = ff.equal(attribute, ff.literal(propertyValue), true);
         if (filter == null) {
             filter = propertyFilter;
         } else {

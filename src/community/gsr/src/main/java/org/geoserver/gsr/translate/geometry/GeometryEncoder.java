@@ -9,10 +9,7 @@
  */
 package org.geoserver.gsr.translate.geometry;
 
-/**
- * Default implementation of {@link AbstractGeometryEncoder}. Encodes geometries as arrays of
- * doubles.
- */
+/** Default implementation of {@link AbstractGeometryEncoder}. Encodes geometries as arrays of doubles. */
 public final class GeometryEncoder extends AbstractGeometryEncoder<Double> {
 
     @Override

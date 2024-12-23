@@ -52,8 +52,7 @@ public class OseoGeoJSONFeatureConverter extends BaseMessageConverter<Object> {
             throws IOException, HttpMessageNotReadableException {
         try {
             return GeoJSONReader.parseFeature(
-                    new String(
-                            IOUtils.toByteArray(inputMessage.getBody()), StandardCharsets.UTF_8));
+                    new String(IOUtils.toByteArray(inputMessage.getBody()), StandardCharsets.UTF_8));
             // parser throws RuntimeException, however this changes the Spring response from
             // 400 (user's fault) to 500 (internal server error). Catching and re-wrapping instead.
         } catch (RuntimeException e) {

@@ -70,8 +70,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(
         path = {
             RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes"
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes"
         })
 public class FeatureTypeController extends AbstractCatalogController {
 
@@ -83,11 +82,7 @@ public class FeatureTypeController extends AbstractCatalogController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.TEXT_HTML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object featureTypesGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -108,8 +103,7 @@ public class FeatureTypeController extends AbstractCatalogController {
 
                 String[] featureTypeNames = ds.getTypeNames();
                 for (String featureTypeName : featureTypeNames) {
-                    FeatureTypeInfo ftinfo =
-                            catalog.getFeatureTypeByDataStore(info, featureTypeName);
+                    FeatureTypeInfo ftinfo = catalog.getFeatureTypeByDataStore(info, featureTypeName);
                     if (ftinfo == null) {
                         // The feature type is not in catalog, so add it to the return list.
                         // check whether to filter by geometry
@@ -122,9 +116,7 @@ public class FeatureTypeController extends AbstractCatalogController {
                                 }
                             } catch (IOException e) {
                                 LOGGER.log(
-                                        Level.WARNING,
-                                        "Unable to load schema for feature type " + featureTypeName,
-                                        e);
+                                        Level.WARNING, "Unable to load schema for feature type " + featureTypeName, e);
                             }
                         }
                         featureTypes.add(featureTypeName);
@@ -242,14 +234,12 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         // attempt to fill in metadata from underlying feature source
         try {
-            FeatureSource featureSource =
-                    dataAccess.getFeatureSource(ftInfo.getQualifiedNativeName());
+            FeatureSource featureSource = dataAccess.getFeatureSource(ftInfo.getQualifiedNativeName());
             if (featureSource != null) {
                 cb.setupMetadata(ftInfo, featureSource);
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING, "Unable to fill in metadata from underlying feature source", e);
+            LOGGER.log(Level.WARNING, "Unable to fill in metadata from underlying feature source", e);
         }
 
         if (ftInfo.getStore() == null) {
@@ -262,11 +252,7 @@ public class FeatureTypeController extends AbstractCatalogController {
             // TODO: change this once the two can be different and we untie namespace
             // from workspace
             LOGGER.warning(
-                    "Namespace: "
-                            + ns.getPrefix()
-                            + " does not match workspace: "
-                            + workspaceName
-                            + ", overriding.");
+                    "Namespace: " + ns.getPrefix() + " does not match workspace: " + workspaceName + ", overriding.");
             ns = null;
         }
 
@@ -287,14 +273,12 @@ public class FeatureTypeController extends AbstractCatalogController {
 
         UriComponents uriComponents;
         if (storeName == null) {
-            uriComponents =
-                    builder.path("/workspaces/{workspaceName}/featuretypes/{featureTypeName}")
-                            .buildAndExpand(workspaceName, ftInfo.getName());
+            uriComponents = builder.path("/workspaces/{workspaceName}/featuretypes/{featureTypeName}")
+                    .buildAndExpand(workspaceName, ftInfo.getName());
         } else {
-            uriComponents =
-                    builder.path(
-                                    "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}")
-                            .buildAndExpand(workspaceName, storeName, ftInfo.getName());
+            uriComponents = builder.path(
+                            "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}")
+                    .buildAndExpand(workspaceName, storeName, ftInfo.getName());
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -305,17 +289,12 @@ public class FeatureTypeController extends AbstractCatalogController {
 
     @GetMapping(
             path = "/{featureTypeName}",
-            produces = {
-                MediaType.TEXT_HTML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper featureTypeGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
             @PathVariable String featureTypeName,
-            @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false")
-                    Boolean quietOnNotFound) {
+            @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") Boolean quietOnNotFound) {
 
         FeatureTypeInfo ftInfo;
         if (storeName != null) {
@@ -332,11 +311,7 @@ public class FeatureTypeController extends AbstractCatalogController {
 
     @PutMapping(
             path = "/{featureTypeName}",
-            produces = {
-                MediaType.TEXT_HTML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public void featureTypePut(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -362,30 +337,16 @@ public class FeatureTypeController extends AbstractCatalogController {
         boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
         if (!virtual && parameters.equals(parametersCheck)) {
-            LOGGER.info(
-                    "PUT FeatureType"
-                            + storeName
-                            + ","
-                            + featureTypeName
-                            + " updated metadata only");
+            LOGGER.info("PUT FeatureType" + storeName + "," + featureTypeName + " updated metadata only");
         } else {
-            LOGGER.info(
-                    "PUT featureType"
-                            + storeName
-                            + ","
-                            + featureTypeName
-                            + " updated metadata and data access");
+            LOGGER.info("PUT featureType" + storeName + "," + featureTypeName + " updated metadata and data access");
             catalog.getResourcePool().clear(ftInfo.getStore());
         }
     }
 
     @DeleteMapping(
             path = "{featureTypeName}",
-            produces = {
-                MediaType.TEXT_HTML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public void featureTypeDelete(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -405,8 +366,7 @@ public class FeatureTypeController extends AbstractCatalogController {
             }
         } else {
             if (!layers.isEmpty()) {
-                throw new RestException(
-                        "feature type referenced by layer(s)", HttpStatus.FORBIDDEN);
+                throw new RestException("feature type referenced by layer(s)", HttpStatus.FORBIDDEN);
             }
         }
 
@@ -430,18 +390,13 @@ public class FeatureTypeController extends AbstractCatalogController {
 
     /** If the feature type doesn't exists throws a REST exception with HTTP 404 code. */
     private void checkFeatureTypeExists(
-            FeatureTypeInfo featureType,
-            String workspaceName,
-            String storeName,
-            String featureTypeName) {
+            FeatureTypeInfo featureType, String workspaceName, String storeName, String featureTypeName) {
         if (featureType == null && storeName == null) {
             throw new ResourceNotFoundException(
                     String.format("No such feature type: %s,%s", workspaceName, featureTypeName));
         } else if (featureType == null) {
             throw new ResourceNotFoundException(
-                    String.format(
-                            "No such feature type: %s,%s,%s",
-                            workspaceName, storeName, featureTypeName));
+                    String.format("No such feature type: %s,%s,%s", workspaceName, storeName, featureTypeName));
         }
     }
 
@@ -449,8 +404,7 @@ public class FeatureTypeController extends AbstractCatalogController {
     private DataStoreInfo getExistingDataStore(String workspaceName, String storeName) {
         DataStoreInfo original = catalog.getDataStoreByName(workspaceName, storeName);
         if (original == null) {
-            throw new ResourceNotFoundException(
-                    "No such data store: " + workspaceName + "," + storeName);
+            throw new ResourceNotFoundException("No such data store: " + workspaceName + "," + storeName);
         }
         return original;
     }
@@ -459,13 +413,11 @@ public class FeatureTypeController extends AbstractCatalogController {
         // basic checks
         if (fti.getName() == null) {
             throw new RestException(
-                    "Trying to create new feature type inside the store, "
-                            + "but no feature type name was specified",
+                    "Trying to create new feature type inside the store, " + "but no feature type name was specified",
                     HttpStatus.BAD_REQUEST);
         } else if (fti.getAttributes() == null || fti.getAttributes().isEmpty()) {
             throw new RestException(
-                    "Trying to create new feature type inside the store, "
-                            + "but no attributes were specified",
+                    "Trying to create new feature type inside the store, " + "but no attributes were specified",
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -494,9 +446,7 @@ public class FeatureTypeController extends AbstractCatalogController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return FeatureTypeInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -510,75 +460,70 @@ public class FeatureTypeController extends AbstractCatalogController {
             persister.setHideFeatureTypeAttributes();
         }
 
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<FeatureTypeInfo> getObjectClass() {
-                        return FeatureTypeInfo.class;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<FeatureTypeInfo> getObjectClass() {
+                return FeatureTypeInfo.class;
+            }
 
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspace = uriTemplateVars.get("workspaceName");
-                        String featuretype = uriTemplateVars.get("featureTypeName");
-                        String datastore = uriTemplateVars.get("storeName");
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspace = uriTemplateVars.get("workspaceName");
+                String featuretype = uriTemplateVars.get("featureTypeName");
+                String datastore = uriTemplateVars.get("storeName");
 
-                        if (workspace == null || datastore == null || featuretype == null) {
-                            return null;
-                        }
-                        DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
-                        if (ds == null) {
-                            return null;
-                        }
-                        return catalog.getFeatureTypeByDataStore(ds, featuretype);
-                    }
+                if (workspace == null || datastore == null || featuretype == null) {
+                    return null;
+                }
+                DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
+                if (ds == null) {
+                    return null;
+                }
+                return catalog.getFeatureTypeByDataStore(ds, featuretype);
+            }
 
-                    @Override
-                    protected void postEncodeReference(
-                            Object obj,
-                            String ref,
-                            String prefix,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        if (obj instanceof NamespaceInfo) {
-                            NamespaceInfo ns = (NamespaceInfo) obj;
-                            converter.encodeLink(
-                                    "/namespaces/" + converter.encode(ns.getPrefix()), writer);
-                        }
-                        if (obj instanceof DataStoreInfo) {
-                            DataStoreInfo ds = (DataStoreInfo) obj;
-                            converter.encodeLink(
-                                    "/workspaces/"
-                                            + converter.encode(ds.getWorkspace().getName())
-                                            + "/datastores/"
-                                            + converter.encode(ds.getName()),
-                                    writer);
-                        }
-                    }
+            @Override
+            protected void postEncodeReference(
+                    Object obj,
+                    String ref,
+                    String prefix,
+                    HierarchicalStreamWriter writer,
+                    MarshallingContext context) {
+                if (obj instanceof NamespaceInfo) {
+                    NamespaceInfo ns = (NamespaceInfo) obj;
+                    converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
+                }
+                if (obj instanceof DataStoreInfo) {
+                    DataStoreInfo ds = (DataStoreInfo) obj;
+                    converter.encodeLink(
+                            "/workspaces/"
+                                    + converter.encode(ds.getWorkspace().getName())
+                                    + "/datastores/"
+                                    + converter.encode(ds.getName()),
+                            writer);
+                }
+            }
 
-                    @Override
-                    protected void postEncodeFeatureType(
-                            FeatureTypeInfo ft,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        try {
-                            writer.startNode("attributes");
-                            context.convertAnother(ft.attributes());
-                            writer.endNode();
-                        } catch (IOException e) {
-                            throw new RuntimeException("Could not get native attributes", e);
-                        }
-                    }
-                });
+            @Override
+            protected void postEncodeFeatureType(
+                    FeatureTypeInfo ft, HierarchicalStreamWriter writer, MarshallingContext context) {
+                try {
+                    writer.startNode("attributes");
+                    context.convertAnother(ft.attributes());
+                    writer.endNode();
+                } catch (IOException e) {
+                    throw new RuntimeException("Could not get native attributes", e);
+                }
+            }
+        });
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<>(FeatureTypeInfo.class) {
             @Override
-            protected void wrapInternal(
-                    Map<String, Object> properties, SimpleHash model, FeatureTypeInfo object) {
+            protected void wrapInternal(Map<String, Object> properties, SimpleHash model, FeatureTypeInfo object) {
                 try {
                     properties.put("boundingBox", object.boundingBox());
                 } catch (Exception e) {

@@ -12,8 +12,7 @@
 package org.geoserver.wps.ppio.gpx;
 
 /**
- * A link to an external resource (Web page, digital photo, video clip, etc) with additional
- * information.
+ * A link to an external resource (Web page, digital photo, video clip, etc) with additional information.
  *
  * <p>Java class for linkType complex type.
  *

@@ -48,8 +48,7 @@ public class ClickHouseFilterToSQLTest {
                 "WHERE myDateField = parseDateTimeBestEffort('2023-04-01T00:00:00.000+02:00')");
     }
 
-    private void testDateComparison(String timeZoneId, String dateString, String expectedSql)
-            throws Exception {
+    private void testDateComparison(String timeZoneId, String dateString, String expectedSql) throws Exception {
         // Set up the specified time zone
         TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
 

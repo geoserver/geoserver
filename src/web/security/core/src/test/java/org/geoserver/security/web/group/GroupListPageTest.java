@@ -33,24 +33,19 @@ public class GroupListPageTest extends AbstractTabbedListPageTest<GeoServerUserG
 
     @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
-        if (params.length == 0)
-            return new NewGroupPage(getUserGroupServiceName()).setReturnPage(page);
+        if (params.length == 0) return new NewGroupPage(getUserGroupServiceName()).setReturnPage(page);
         else return new NewGroupPage((String) params[0]).setReturnPage(page);
     }
 
     @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
-            return new EditGroupPage(
-                            getUserGroupServiceName(), new GeoServerUserGroup("dummygroup"))
+            return new EditGroupPage(getUserGroupServiceName(), new GeoServerUserGroup("dummygroup"))
                     .setReturnPage(page);
         }
         if (params.length == 1)
-            return new EditGroupPage(getUserGroupServiceName(), (GeoServerUserGroup) params[0])
-                    .setReturnPage(page);
-        else
-            return new EditGroupPage((String) params[0], (GeoServerUserGroup) params[1])
-                    .setReturnPage(page);
+            return new EditGroupPage(getUserGroupServiceName(), (GeoServerUserGroup) params[0]).setReturnPage(page);
+        else return new EditGroupPage((String) params[0], (GeoServerUserGroup) params[1]).setReturnPage(page);
     }
 
     @Override
@@ -98,12 +93,8 @@ public class GroupListPageTest extends AbstractTabbedListPageTest<GeoServerUserG
     @Override
     protected void simulateDeleteSubmit() throws Exception {
         SelectionGroupRemovalLink link =
-                (SelectionGroupRemovalLink)
-                        (withRoles ? getRemoveLinkWithRoles() : getRemoveLink());
-        Method m =
-                link.delegate
-                        .getClass()
-                        .getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
+                (SelectionGroupRemovalLink) (withRoles ? getRemoveLinkWithRoles() : getRemoveLink());
+        Method m = link.delegate.getClass().getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
         m.invoke(link.delegate, null, null);
 
         SortedSet<GeoServerUserGroup> groups = ugService.getUserGroups();

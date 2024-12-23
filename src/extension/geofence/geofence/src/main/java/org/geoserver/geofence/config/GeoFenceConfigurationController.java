@@ -26,11 +26,10 @@ public class GeoFenceConfigurationController {
     /**
      * Updates the configuration.
      *
-     * <p>Sets the config into the manager and forces the classes needing to refresh to do so. Then
-     * stores the config to disk.
+     * <p>Sets the config into the manager and forces the classes needing to refresh to do so. Then stores the config to
+     * disk.
      */
-    public void storeConfiguration(GeoFenceConfiguration gfConfig, CacheConfiguration cacheConfig)
-            throws IOException {
+    public void storeConfiguration(GeoFenceConfiguration gfConfig, CacheConfiguration cacheConfig) throws IOException {
 
         // set the probe configuration. the access manager performs a getCOnfiguration wheneven
         // needed

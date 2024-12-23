@@ -36,8 +36,7 @@ import org.geotools.referencing.CRS;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class CompositeFeatureCollection<T extends FeatureType, F extends Feature>
-        implements FeatureCollection<T, F> {
+public class CompositeFeatureCollection<T extends FeatureType, F extends Feature> implements FeatureCollection<T, F> {
     /** wrapped collecitons */
     List<? extends FeatureCollection<T, F>> collections;
 
@@ -47,8 +46,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
         this.collections = collections;
     }
 
-    public CompositeFeatureCollection(
-            List<? extends FeatureCollection<T, F>> collections, T schema) {
+    public CompositeFeatureCollection(List<? extends FeatureCollection<T, F>> collections, T schema) {
         this.collections = collections;
         this.schema = schema;
     }
@@ -83,11 +81,9 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
     @SuppressWarnings("unchecked")
     public FeatureCollection<T, F> sort(SortBy order) {
         if (schema instanceof SimpleFeatureCollection) {
-            return (FeatureCollection<T, F>)
-                    new SortedSimpleFeatureCollection(
-                            DataUtilities.simple(
-                                    (FeatureCollection<SimpleFeatureType, SimpleFeature>) this),
-                            new SortBy[] {order});
+            return (FeatureCollection<T, F>) new SortedSimpleFeatureCollection(
+                    DataUtilities.simple((FeatureCollection<SimpleFeatureType, SimpleFeature>) this),
+                    new SortBy[] {order});
         }
         throw new UnsupportedOperationException("Cannot perform sorting on complex features");
     }
@@ -95,32 +91,29 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
     @Override
     public ReferencedEnvelope getBounds() {
         // crazy, this same mapper inlined in the stream does not compile...
-        Function<FeatureCollection<T, F>, ReferencedEnvelope> mapper =
-                c -> {
-                    final ReferencedEnvelope envelope = c.getBounds();
-                    if (envelope == null) {
-                        return DataUtilities.bounds(c);
-                    } else {
-                        return envelope;
-                    }
-                };
+        Function<FeatureCollection<T, F>, ReferencedEnvelope> mapper = c -> {
+            final ReferencedEnvelope envelope = c.getBounds();
+            if (envelope == null) {
+                return DataUtilities.bounds(c);
+            } else {
+                return envelope;
+            }
+        };
         return collections.stream()
                 .map(mapper)
-                .reduce(
-                        (e1, e2) -> {
-                            CoordinateReferenceSystem crs1 = e1.getCoordinateReferenceSystem();
-                            CoordinateReferenceSystem crs2 = e2.getCoordinateReferenceSystem();
-                            if (crs1 != crs2 && !CRS.equalsIgnoreMetadata(crs1, crs2)) {
-                                throw new RuntimeException(
-                                        "Two collections are returning different CRSs, cannot perform this "
-                                                + "accumulation (yet): \n"
-                                                + crs1
-                                                + "\n"
-                                                + crs2);
-                            }
-                            e1.expandToInclude(e2);
-                            return e1;
-                        })
+                .reduce((e1, e2) -> {
+                    CoordinateReferenceSystem crs1 = e1.getCoordinateReferenceSystem();
+                    CoordinateReferenceSystem crs2 = e2.getCoordinateReferenceSystem();
+                    if (crs1 != crs2 && !CRS.equalsIgnoreMetadata(crs1, crs2)) {
+                        throw new RuntimeException("Two collections are returning different CRSs, cannot perform this "
+                                + "accumulation (yet): \n"
+                                + crs1
+                                + "\n"
+                                + crs2);
+                    }
+                    e1.expandToInclude(e2);
+                    return e1;
+                })
                 .orElse(null);
     }
 
@@ -142,14 +135,13 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
     @Override
     public int size() {
         return collections.stream()
-                .mapToInt(
-                        c -> {
-                            int size = c.size();
-                            if (size < 0) {
-                                size = DataUtilities.count(c);
-                            }
-                            return size;
-                        })
+                .mapToInt(c -> {
+                    int size = c.size();
+                    if (size < 0) {
+                        size = DataUtilities.count(c);
+                    }
+                    return size;
+                })
                 .sum();
     }
 
@@ -251,9 +243,8 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
     }
 
     /**
-     * Forcefully casts this to a SimpleFeatureCollection, since it cannot be done directly with
-     * DataUtilities.simple if the target feature type is null (due to mixing heterogeneous
-     * collections)
+     * Forcefully casts this to a SimpleFeatureCollection, since it cannot be done directly with DataUtilities.simple if
+     * the target feature type is null (due to mixing heterogeneous collections)
      *
      * @return
      */
@@ -264,7 +255,6 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
                     (FeatureCollection<SimpleFeatureType, SimpleFeature>) this;
             return new SimpleFeatureCollectionBridge(cast);
         }
-        throw new ClassCastException(
-                "This collection cannot be coerced to SimpleFeatureCollection");
+        throw new ClassCastException("This collection cannot be coerced to SimpleFeatureCollection");
     }
 }

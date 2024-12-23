@@ -22,12 +22,11 @@ import org.geotools.util.Utilities;
  */
 public class FilterFunction_bandStats extends FunctionExpressionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "bandStats",
-                    parameter("value", Number.class),
-                    parameter("bandIndex", Number.class),
-                    parameter("property", String.class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "bandStats",
+            parameter("value", Number.class),
+            parameter("bandIndex", Number.class),
+            parameter("property", String.class));
 
     public FilterFunction_bandStats() {
         super(NAME);
@@ -53,8 +52,7 @@ public class FilterFunction_bandStats extends FunctionExpressionImpl {
                             + feature.getClass());
         } catch (Exception e) {
             // probably a type error
-            throw new IllegalArgumentException(
-                    "Filter Function problem for function gridCoverageStats", e);
+            throw new IllegalArgumentException("Filter Function problem for function gridCoverageStats", e);
         }
     }
 
@@ -67,19 +65,15 @@ public class FilterFunction_bandStats extends FunctionExpressionImpl {
             return ensureNotNull(sd, bandIndex, statName, getMaximum(sd));
         } else {
             throw new IllegalArgumentException(
-                    "Invalid property "
-                            + statName
-                            + ", supported values are 'minimum' and 'maximum'");
+                    "Invalid property " + statName + ", supported values are 'minimum' and 'maximum'");
         }
     }
 
-    private double ensureNotNull(
-            GridSampleDimension sd, int bandIndex, String statName, Double value) {
+    private double ensureNotNull(GridSampleDimension sd, int bandIndex, String statName, Double value) {
         if (value != null) {
             return value;
         } else {
-            throw new RuntimeException(
-                    "Could not find the " + statName + " from " + sd + " of band " + bandIndex);
+            throw new RuntimeException("Could not find the " + statName + " from " + sd + " of band " + bandIndex);
         }
     }
 

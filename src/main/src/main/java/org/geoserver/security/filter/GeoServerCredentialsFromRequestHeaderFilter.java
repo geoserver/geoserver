@@ -33,9 +33,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 /**
- * Security filter to extract user credentials (username and password) from Request Headers. It is
- * quite flexible through the capability to extract username and password from the same or different
- * request headers, using regular expressions to capture them in a structured header content.
+ * Security filter to extract user credentials (username and password) from Request Headers. It is quite flexible
+ * through the capability to extract username and password from the same or different request headers, using regular
+ * expressions to capture them in a structured header content.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
@@ -59,8 +59,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
 
         aep = new Http403ForbiddenEntryPoint();
 
-        CredentialsFromRequestHeaderFilterConfig authConfig =
-                (CredentialsFromRequestHeaderFilterConfig) config;
+        CredentialsFromRequestHeaderFilterConfig authConfig = (CredentialsFromRequestHeaderFilterConfig) config;
 
         userNameHeaderName = authConfig.getUserNameHeaderName();
         passwordHeaderName = authConfig.getPasswordHeaderName();
@@ -89,9 +88,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
                     SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager()
-                            .getAuthenticationCache()
-                            .put(getName(), cacheKey, postAuthentication);
+                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey, postAuthentication);
                 }
             }
         }
@@ -101,8 +98,8 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
     }
 
     /**
-     * Parse an header string to extract the credential. The regular expression must contain a
-     * group, that will represent the credential to be extracted.
+     * Parse an header string to extract the credential. The regular expression must contain a group, that will
+     * represent the credential to be extracted.
      *
      * @param header the String to parse
      * @param pattern the pattern to use. This must contain one group
@@ -118,11 +115,10 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
     }
 
     /**
-     * Try to authenticate. If credentials are found in the configured header(s), then
-     * authentication is delegated to the AuthenticationProvider chain.
+     * Try to authenticate. If credentials are found in the configured header(s), then authentication is delegated to
+     * the AuthenticationProvider chain.
      */
-    protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String usHeader = request.getHeader(userNameHeaderName);
         String pwHeader = request.getHeader(passwordHeaderName);
@@ -141,8 +137,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
             pw = java.net.URLDecoder.decode(pw, "UTF-8");
         }
 
-        UsernamePasswordAuthenticationToken result =
-                new UsernamePasswordAuthenticationToken(us, pw, new ArrayList<>());
+        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(us, pw, new ArrayList<>());
         Authentication auth = null;
         try {
             auth = getSecurityManager().authenticationManager().authenticate(result);
@@ -162,8 +157,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         response.addHeader("X-GeoServer-Auth-User", us);
 
         UsernamePasswordAuthenticationToken newResult =
-                new UsernamePasswordAuthenticationToken(
-                        auth.getPrincipal(), auth.getCredentials(), roles);
+                new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), roles);
         newResult.setDetails(auth.getDetails());
         // Set the authentication with the roles injected
         SecurityContextHolder.getContext().setAuthentication(newResult);
@@ -209,10 +203,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         String digestString = null;
         try {
             MessageDigest md = (MessageDigest) digest.clone();
-            digestString =
-                    String.valueOf(
-                            Hex.encode(
-                                    md.digest(buff.toString().getBytes(StandardCharsets.UTF_8))));
+            digestString = String.valueOf(Hex.encode(md.digest(buff.toString().getBytes(StandardCharsets.UTF_8))));
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }

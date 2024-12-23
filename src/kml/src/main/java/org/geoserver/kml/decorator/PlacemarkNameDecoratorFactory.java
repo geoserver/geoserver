@@ -25,8 +25,7 @@ import org.geotools.util.logging.Logging;
 public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass) && context.isDescriptionEnabled()) {
             return new PlacemarkNameDecorator();
         } else {

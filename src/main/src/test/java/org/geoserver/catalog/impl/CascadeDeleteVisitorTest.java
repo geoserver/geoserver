@@ -111,8 +111,8 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
     @Test
     public void testCascadeStore() {
         Catalog catalog = getCatalog();
-        DataStoreInfo store =
-                (DataStoreInfo) catalog.getLayerByName(getLayerId(LAKES)).getResource().getStore();
+        DataStoreInfo store = (DataStoreInfo)
+                catalog.getLayerByName(getLayerId(LAKES)).getResource().getStore();
         new CascadeDeleteVisitor(catalog).visit(store);
 
         // that store actually holds all layers, so check we got empty

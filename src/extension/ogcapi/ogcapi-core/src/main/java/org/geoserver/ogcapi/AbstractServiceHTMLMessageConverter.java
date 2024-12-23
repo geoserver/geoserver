@@ -11,13 +11,12 @@ import org.geoserver.config.ServiceInfo;
 import org.geotools.util.logging.Logging;
 
 /**
- * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML
- * document based on a Freemarker template
+ * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML document based on a
+ * Freemarker template
  *
  * @param <T>
  */
-public abstract class AbstractServiceHTMLMessageConverter<T>
-        extends AbstractHTMLMessageConverter<T> {
+public abstract class AbstractServiceHTMLMessageConverter<T> extends AbstractHTMLMessageConverter<T> {
     static final Logger LOGGER = Logging.getLogger(AbstractServiceHTMLMessageConverter.class);
     protected final Class<?> binding;
     protected final Class<? extends ServiceInfo> serviceConfigurationClass;

@@ -34,7 +34,8 @@ import org.jivesoftware.smack.packet.Packet;
 public class XMPPRegisterMessage implements XMPPMessage {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPMessage.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPMessage.class.getPackage().getName());
 
     @Override
     public boolean canHandle(Map<String, String> signalArgs) {
@@ -44,8 +45,7 @@ public class XMPPRegisterMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String serviceName[] = signalArgs.get("service").split("\\.");
 
@@ -55,8 +55,7 @@ public class XMPPRegisterMessage implements XMPPMessage {
 
         try {
             String serviceDescriptorString = URLDecoder.decode(signalArgs.get("message"), "UTF-8");
-            JSONObject serviceDescriptorJSON =
-                    (JSONObject) JSONSerializer.toJSON(serviceDescriptorString);
+            JSONObject serviceDescriptorJSON = (JSONObject) JSONSerializer.toJSON(serviceDescriptorString);
 
             final String title = (String) serviceDescriptorJSON.get("title");
             final String description = (String) serviceDescriptorJSON.get("description");
@@ -83,18 +82,16 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         }
                         final String className = (String) paramType.get("type");
 
-                        final ParameterTemplate paramTemplate =
-                                xmppClient.convertToJavaClass(
-                                        className,
-                                        XMPPClient.class.getClassLoader(),
-                                        paramType.get("default"));
+                        final ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(
+                                className, XMPPClient.class.getClassLoader(), paramType.get("default"));
 
-                        if (paramTemplate.getMeta() != null
-                                && (paramType.get("input_mime_type") instanceof String)) {
+                        if (paramTemplate.getMeta() != null && (paramType.get("input_mime_type") instanceof String)) {
                             // mimeTypes=application/x-netcdf, chosenMimeType=application/x-netcdf
                             paramTemplate
                                     .getMeta()
-                                    .put("mimeTypes", paramType.get("input_mime_type").toString());
+                                    .put(
+                                            "mimeTypes",
+                                            paramType.get("input_mime_type").toString());
                             paramTemplate
                                     .getMeta()
                                     .put(
@@ -103,13 +100,11 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         }
 
                         final InternationalString inputTitle =
-                                (paramType.get("title") != null
-                                                && paramType.get("title") instanceof String
+                                (paramType.get("title") != null && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
                                         : Text.text(paramName));
                         final InternationalString inputDescription =
-                                (paramType.get("description") != null
-                                                && paramType.get("description") instanceof String
+                                (paramType.get("description") != null && paramType.get("description") instanceof String
                                         ? Text.text((String) paramType.get("description"))
                                         : Text.text(paramName));
 
@@ -120,14 +115,9 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                         paramTemplate.getClazz(),
                                         inputTitle,
                                         inputDescription,
-                                        paramType.get("min") == null
-                                                || (Integer) paramType.get("min") > 0,
-                                        paramType.get("min") != null
-                                                ? (Integer) paramType.get("min")
-                                                : 1,
-                                        paramType.get("max") != null
-                                                ? (Integer) paramType.get("max")
-                                                : -1,
+                                        paramType.get("min") == null || (Integer) paramType.get("min") > 0,
+                                        paramType.get("min") != null ? (Integer) paramType.get("min") : 1,
+                                        paramType.get("max") != null ? (Integer) paramType.get("max") : -1,
                                         paramTemplate.getDefaultValue(),
                                         paramTemplate.getMeta()));
                     }
@@ -153,18 +143,16 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         }
                         final String className = (String) paramType.get("type");
 
-                        ParameterTemplate paramTemplate =
-                                xmppClient.convertToJavaClass(
-                                        className,
-                                        XMPPClient.class.getClassLoader(),
-                                        paramType.get("default"));
+                        ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(
+                                className, XMPPClient.class.getClassLoader(), paramType.get("default"));
 
-                        if (paramTemplate.getMeta() != null
-                                && (paramType.get("output_mime_type") instanceof String)) {
+                        if (paramTemplate.getMeta() != null && (paramType.get("output_mime_type") instanceof String)) {
                             // mimeTypes=application/x-netcdf, chosenMimeType=application/x-netcdf
                             paramTemplate
                                     .getMeta()
-                                    .put("mimeTypes", paramType.get("output_mime_type").toString());
+                                    .put(
+                                            "mimeTypes",
+                                            paramType.get("output_mime_type").toString());
                             paramTemplate
                                     .getMeta()
                                     .put(
@@ -173,13 +161,11 @@ public class XMPPRegisterMessage implements XMPPMessage {
                         }
 
                         final InternationalString outputTitle =
-                                (paramType.get("title") != null
-                                                && paramType.get("title") instanceof String
+                                (paramType.get("title") != null && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
                                         : Text.text(paramName));
                         final InternationalString outputDescription =
-                                (paramType.get("description") != null
-                                                && paramType.get("description") instanceof String
+                                (paramType.get("description") != null && paramType.get("description") instanceof String
                                         ? Text.text((String) paramType.get("description"))
                                         : Text.text(paramName));
 
@@ -190,14 +176,9 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                         paramTemplate.getClazz(),
                                         outputTitle,
                                         outputDescription,
-                                        paramType.get("min") == null
-                                                || (Integer) paramType.get("min") > 0,
-                                        paramType.get("min") != null
-                                                ? (Integer) paramType.get("min")
-                                                : 1,
-                                        paramType.get("max") != null
-                                                ? (Integer) paramType.get("max")
-                                                : 0,
+                                        paramType.get("min") == null || (Integer) paramType.get("min") > 0,
+                                        paramType.get("min") != null ? (Integer) paramType.get("min") : 1,
+                                        paramType.get("max") != null ? (Integer) paramType.get("max") : 0,
                                         paramTemplate.getDefaultValue(),
                                         paramTemplate.getMeta()));
                     }
@@ -209,15 +190,13 @@ public class XMPPRegisterMessage implements XMPPMessage {
             metadata.put("serviceJID", packet.getFrom());
             for (RemoteProcessFactoryListener listener : xmppClient.getRemoteFactoryListeners()) {
                 listener.registerProcess(
-                        new RemoteServiceDescriptor(
-                                name, title, description, inputs, outputs, metadata));
+                        new RemoteServiceDescriptor(name, title, description, inputs, outputs, metadata));
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
 
             // NOTIFY LISTENERS
-            final Set<RemoteProcessClientListener> remoteClientListeners =
-                    xmppClient.getRemoteClientListeners();
+            final Set<RemoteProcessClientListener> remoteClientListeners = xmppClient.getRemoteClientListeners();
             synchronized (remoteClientListeners) {
                 for (RemoteProcessClientListener listener : remoteClientListeners) {
 

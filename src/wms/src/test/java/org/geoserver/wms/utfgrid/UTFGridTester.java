@@ -83,10 +83,7 @@ class UTFGridTester {
     /** Check the specified code can be found in the grid at row/col */
     void assertGridPixel(char code, int row, int col) {
         String gridRow = grid.getString(row);
-        assertEquals(
-                "Expected '" + code + "' but was '" + gridRow.charAt(col) + "'.",
-                code,
-                gridRow.charAt(col));
+        assertEquals("Expected '" + code + "' but was '" + gridRow.charAt(col) + "'.", code, gridRow.charAt(col));
     }
 
     private char gridToKey(char code) {

@@ -47,11 +47,10 @@ public class ScaleAxesKvpParser extends AbstractAxisValueKvpParser<ScaleAxisType
 
     @Override
     protected void throwInvalidSyntaxException(Exception e) {
-        WCS20Exception ex =
-                new WCS20Exception(
-                        "Invalid ScaleAxes syntax, expecting a comma separate list of axisName(scale)*",
-                        WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
-                        "scaleAxes");
+        WCS20Exception ex = new WCS20Exception(
+                "Invalid ScaleAxes syntax, expecting a comma separate list of axisName(scale)*",
+                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
+                "scaleAxes");
         if (e != null) {
             ex.initCause(e);
         }

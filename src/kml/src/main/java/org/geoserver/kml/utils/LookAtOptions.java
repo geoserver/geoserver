@@ -21,11 +21,10 @@ import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  * Data object to hold the KML <a
- * href="http://code.google.com/apis/kml/documentation/kmlreference.html#lookat">lookAt<a>
- * properties as they come from the WMS GetMap's FORMAT_OPTIONS vendor specific parameter.
+ * href="http://code.google.com/apis/kml/documentation/kmlreference.html#lookat">lookAt<a> properties as they come from
+ * the WMS GetMap's FORMAT_OPTIONS vendor specific parameter.
  *
- * <p>The following parameters are parsed at construction time and held by an instance of this
- * class:
+ * <p>The following parameters are parsed at construction time and held by an instance of this class:
  *
  * <ul>
  *   <li>LOOKATBBOX: {@code xmin,ymin,xmax,ymax}
@@ -37,13 +36,11 @@ import org.locationtech.jts.geom.GeometryFactory;
  *   <li>ALTITUDEMODE: String literal. One of <clampToGround|relativeToGround|absolute>
  * </ul>
  *
- * All of them are optional, and {@code null} will be returned by it's matching accessor method if
- * not provided. LOOKATBBOX and LOOKATGEOM are mutually exclusive, and LOOKATBBOX takes precedence
- * over LOOKATGEOM.
+ * All of them are optional, and {@code null} will be returned by it's matching accessor method if not provided.
+ * LOOKATBBOX and LOOKATGEOM are mutually exclusive, and LOOKATBBOX takes precedence over LOOKATGEOM.
  *
- * <p>Both LOOKATBBOX and LOOKATGEOM allow to define the area where the KML lookAt should be
- * pointing at. If none is provided, GeoServer will use the aggregated lat lon bounding box of all
- * the requested layers as it normally does.
+ * <p>Both LOOKATBBOX and LOOKATGEOM allow to define the area where the KML lookAt should be pointing at. If none is
+ * provided, GeoServer will use the aggregated lat lon bounding box of all the requested layers as it normally does.
  *
  * @author Gabriel Roldan
  */
@@ -84,8 +81,8 @@ public class LookAtOptions {
     }
 
     /**
-     * Creates a new KMLLookAt object by parsing the vendor specific parameters out of the provided
-     * map, using the properties defined in the class javadoc above as Map keys.
+     * Creates a new KMLLookAt object by parsing the vendor specific parameters out of the provided map, using the
+     * properties defined in the class javadoc above as Map keys.
      */
     public LookAtOptions(final Map<String, Object> options) {
 
@@ -124,14 +121,13 @@ public class LookAtOptions {
                 geom = reader.read(geomWKT);
             } catch (Exception e) {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(
-                            "Error parsing "
-                                    + KEY_LOOKAT
-                                    + " KML format option: "
-                                    + e.getMessage()
-                                    + ". Argument WKT: '"
-                                    + geomWKT
-                                    + "'");
+                    LOGGER.info("Error parsing "
+                            + KEY_LOOKAT
+                            + " KML format option: "
+                            + e.getMessage()
+                            + ". Argument WKT: '"
+                            + geomWKT
+                            + "'");
                 }
             }
         }
@@ -159,11 +155,10 @@ public class LookAtOptions {
                 mode = AltitudeMode.fromValue(String.valueOf(object));
             } catch (IllegalArgumentException ignore) {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(
-                            "Illegal value for KML format option 'altitudeMode': '"
-                                    + object
-                                    + "'. Expected one of "
-                                    + Arrays.toString(AltitudeMode.values()));
+                    LOGGER.info("Illegal value for KML format option 'altitudeMode': '"
+                            + object
+                            + "'. Expected one of "
+                            + Arrays.toString(AltitudeMode.values()));
                 }
             }
         }

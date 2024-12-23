@@ -201,73 +201,72 @@ public class ModificationProxyTest {
 
         AtomicReference<CatalogInfo> captured = new AtomicReference<>();
 
-        CatalogVisitor visitor =
-                new CatalogVisitorAdapter() {
-                    @Override
-                    public void visit(WorkspaceInfo workspace) {
-                        captured.set(workspace);
-                    }
+        CatalogVisitor visitor = new CatalogVisitorAdapter() {
+            @Override
+            public void visit(WorkspaceInfo workspace) {
+                captured.set(workspace);
+            }
 
-                    @Override
-                    public void visit(NamespaceInfo namespace) {
-                        captured.set(namespace);
-                    }
+            @Override
+            public void visit(NamespaceInfo namespace) {
+                captured.set(namespace);
+            }
 
-                    @Override
-                    public void visit(DataStoreInfo dataStore) {
-                        captured.set(dataStore);
-                    }
+            @Override
+            public void visit(DataStoreInfo dataStore) {
+                captured.set(dataStore);
+            }
 
-                    @Override
-                    public void visit(CoverageStoreInfo coverageStore) {
-                        captured.set(coverageStore);
-                    }
+            @Override
+            public void visit(CoverageStoreInfo coverageStore) {
+                captured.set(coverageStore);
+            }
 
-                    @Override
-                    public void visit(WMSStoreInfo wmsStore) {
-                        captured.set(wmsStore);
-                    }
+            @Override
+            public void visit(WMSStoreInfo wmsStore) {
+                captured.set(wmsStore);
+            }
 
-                    @Override
-                    public void visit(WMTSStoreInfo wmtsStore) {
-                        captured.set(wmtsStore);
-                    }
+            @Override
+            public void visit(WMTSStoreInfo wmtsStore) {
+                captured.set(wmtsStore);
+            }
 
-                    @Override
-                    public void visit(FeatureTypeInfo featureType) {
-                        captured.set(featureType);
-                    }
+            @Override
+            public void visit(FeatureTypeInfo featureType) {
+                captured.set(featureType);
+            }
 
-                    @Override
-                    public void visit(CoverageInfo coverage) {
-                        captured.set(coverage);
-                    }
+            @Override
+            public void visit(CoverageInfo coverage) {
+                captured.set(coverage);
+            }
 
-                    @Override
-                    public void visit(WMSLayerInfo wmsLayer) {
-                        captured.set(wmsLayer);
-                    }
+            @Override
+            public void visit(WMSLayerInfo wmsLayer) {
+                captured.set(wmsLayer);
+            }
 
-                    @Override
-                    public void visit(WMTSLayerInfo wmtsLayer) {
-                        captured.set(wmtsLayer);
-                    }
+            @Override
+            public void visit(WMTSLayerInfo wmtsLayer) {
+                captured.set(wmtsLayer);
+            }
 
-                    @Override
-                    public void visit(LayerInfo layer) {
-                        captured.set(layer);
-                    }
+            @Override
+            public void visit(LayerInfo layer) {
+                captured.set(layer);
+            }
 
-                    @Override
-                    public void visit(StyleInfo style) {
-                        captured.set(style);
-                    }
+            @Override
+            public void visit(StyleInfo style) {
+                captured.set(style);
+            }
 
-                    @Override
-                    public void visit(LayerGroupInfo layerGroup) {
-                        captured.set(layerGroup);
-                    }
-                };
+            @Override
+            public void visit(LayerGroupInfo layerGroup) {
+                captured.set(layerGroup);
+            }
+        };
         proxy.accept(visitor);
         return type.cast(captured.get());
     }
@@ -287,9 +286,7 @@ public class ModificationProxyTest {
 
             @Override
             public void describeTo(Description description) {
-                description
-                        .appendText("ModificationProxy wrapping ")
-                        .appendDescriptionOf(objectMatcher);
+                description.appendText("ModificationProxy wrapping ").appendDescriptionOf(objectMatcher);
             }
         };
     }

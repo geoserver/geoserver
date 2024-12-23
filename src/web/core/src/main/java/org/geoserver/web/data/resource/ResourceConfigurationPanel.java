@@ -16,11 +16,11 @@ import org.geotools.util.logging.Logging;
 /**
  * A panel created to configure one aspect of a {@link ResourceInfo} object.
  *
- * <p>Typically there will be one panel dealing generically with {@link ResourceInfo} and one extra
- * panel to deal with the specifics of each subclass.
+ * <p>Typically there will be one panel dealing generically with {@link ResourceInfo} and one extra panel to deal with
+ * the specifics of each subclass.
  *
- * <p>All the components in the panel must be contained in a {@link Form} to make sure the whole tab
- * switch and page submit workflow function properly
+ * <p>All the components in the panel must be contained in a {@link Form} to make sure the whole tab switch and page
+ * submit workflow function properly
  */
 @SuppressWarnings("serial")
 public class ResourceConfigurationPanel extends Panel {
@@ -35,8 +35,8 @@ public class ResourceConfigurationPanel extends Panel {
     }
 
     /**
-     * Called when the resource gets updated in the main page. The ajax request target might be null
-     * in case there is none.
+     * Called when the resource gets updated in the main page. The ajax request target might be null in case there is
+     * none.
      */
     public void resourceUpdated(AjaxRequestTarget target) {
         // nothing to do;

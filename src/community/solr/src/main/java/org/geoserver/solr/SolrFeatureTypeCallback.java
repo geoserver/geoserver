@@ -35,8 +35,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     public SolrFeatureTypeCallback() {}
 
     @Override
-    public boolean canHandle(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public boolean canHandle(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         if (dataAccess instanceof SolrDataStore) {
             return true;
         } else {
@@ -46,9 +45,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
 
     @Override
     public boolean initialize(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName)
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
             throws IOException {
         SolrLayerConfiguration configuration =
                 (SolrLayerConfiguration) info.getMetadata().get(SolrLayerConfiguration.KEY);
@@ -62,9 +59,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
 
     @Override
     public void dispose(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName)
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
             throws IOException {
         SolrLayerConfiguration configuration =
                 (SolrLayerConfiguration) info.getMetadata().get(SolrLayerConfiguration.KEY);
@@ -73,8 +68,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     @Override
-    public void flush(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
+    public void flush(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
             throws IOException {
         // nothing to do
     }
@@ -107,8 +101,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
                         solr.getSolrConfigurations().remove(slc.getLayerName());
                     }
                 } catch (IOException e) {
-                    throw new CatalogException(
-                            "Failed to remove layer configuration from data store", e);
+                    throw new CatalogException("Failed to remove layer configuration from data store", e);
                 }
             }
         }
@@ -165,8 +158,8 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     /**
-     * Spring bean used for doing initializing logic with beans Catalog and SolrFeatureTypeCallback
-     * available and loaded.
+     * Spring bean used for doing initializing logic with beans Catalog and SolrFeatureTypeCallback available and
+     * loaded.
      *
      * @author Fernando Mino - Geosolutions
      */
@@ -177,8 +170,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         private Catalog catalog;
         private SolrFeatureTypeCallback solrFeatureTypeCallback;
 
-        public CatalogInitializer(
-                Catalog catalog, SolrFeatureTypeCallback solrFeatureTypeCallback) {
+        public CatalogInitializer(Catalog catalog, SolrFeatureTypeCallback solrFeatureTypeCallback) {
             super();
             this.catalog = catalog;
             this.solrFeatureTypeCallback = solrFeatureTypeCallback;

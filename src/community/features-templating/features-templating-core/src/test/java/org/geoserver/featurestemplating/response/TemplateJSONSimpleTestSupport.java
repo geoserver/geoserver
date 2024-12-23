@@ -33,35 +33,27 @@ public abstract class TemplateJSONSimpleTestSupport extends GeoServerSystemTestS
     public void before() {
         catalog = getCatalog();
 
-        typeInfo =
-                catalog.getFeatureTypeByName(
-                        MockData.CITE_PREFIX, MockData.NAMED_PLACES.getLocalPart());
+        typeInfo = catalog.getFeatureTypeByName(MockData.CITE_PREFIX, MockData.NAMED_PLACES.getLocalPart());
         dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
     }
 
     protected void setUpSimple(String fileName) throws IOException {
-        File file =
-                dd.getResourceLoader()
-                        .createFile(
-                                "workspaces/cite/"
-                                        + typeInfo.getStore().getName()
-                                        + "/"
-                                        + typeInfo.getName(),
-                                getTemplateFileName());
+        File file = dd.getResourceLoader()
+                .createFile(
+                        "workspaces/cite/" + typeInfo.getStore().getName() + "/" + typeInfo.getName(),
+                        getTemplateFileName());
         dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
     }
 
     @After
     public void cleanup() {
-        Resource res =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/cite/"
-                                        + typeInfo.getStore().getName()
-                                        + "/"
-                                        + typeInfo.getName()
-                                        + "/"
-                                        + getTemplateFileName());
+        Resource res = dd.getResourceLoader()
+                .get("workspaces/cite/"
+                        + typeInfo.getStore().getName()
+                        + "/"
+                        + typeInfo.getName()
+                        + "/"
+                        + getTemplateFileName());
         if (res != null) res.delete();
     }
 

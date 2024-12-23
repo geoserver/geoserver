@@ -42,7 +42,8 @@ public class NewGroupPage extends AbstractGroupPage {
         GeoServerRoleStore gaStore = null;
         try {
             if (hasRoleStore(getSecurityManager().getActiveRoleService().getName())) {
-                gaStore = getRoleStore(getSecurityManager().getActiveRoleService().getName());
+                gaStore =
+                        getRoleStore(getSecurityManager().getActiveRoleService().getName());
                 gaStore = new RoleStoreValidationWrapper(gaStore);
 
                 for (GeoServerRole role : rolePalette.getSelectedRoles()) {

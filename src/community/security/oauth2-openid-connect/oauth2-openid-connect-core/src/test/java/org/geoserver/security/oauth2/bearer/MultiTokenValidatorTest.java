@@ -13,23 +13,19 @@ import org.junit.Test;
 
 public class MultiTokenValidatorTest {
 
-    TokenValidator alwaysThrows =
-            new TokenValidator() {
-                @Override
-                public void verifyToken(
-                        OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
-                        throws Exception {
-                    throw new Exception("bad");
-                }
-            };
+    TokenValidator alwaysThrows = new TokenValidator() {
+        @Override
+        public void verifyToken(OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
+                throws Exception {
+            throw new Exception("bad");
+        }
+    };
 
-    TokenValidator neverThrows =
-            new TokenValidator() {
-                @Override
-                public void verifyToken(
-                        OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
-                        throws Exception {}
-            };
+    TokenValidator neverThrows = new TokenValidator() {
+        @Override
+        public void verifyToken(OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
+                throws Exception {}
+    };
 
     // null - should run fine
     @Test
@@ -48,8 +44,7 @@ public class MultiTokenValidatorTest {
     // doesn't throw
     @Test
     public void testRunsGood() throws Exception {
-        List<TokenValidator> validators =
-                Arrays.asList(new TokenValidator[] {neverThrows, neverThrows});
+        List<TokenValidator> validators = Arrays.asList(new TokenValidator[] {neverThrows, neverThrows});
         MultiTokenValidator validator = new MultiTokenValidator(validators);
         validator.verifyToken(null, null, null);
     }
@@ -57,8 +52,7 @@ public class MultiTokenValidatorTest {
     //  throws on first
     @Test(expected = Exception.class)
     public void testRunsBad1() throws Exception {
-        List<TokenValidator> validators =
-                Arrays.asList(new TokenValidator[] {alwaysThrows, neverThrows});
+        List<TokenValidator> validators = Arrays.asList(new TokenValidator[] {alwaysThrows, neverThrows});
         MultiTokenValidator validator = new MultiTokenValidator(validators);
         validator.verifyToken(null, null, null);
     }
@@ -66,8 +60,7 @@ public class MultiTokenValidatorTest {
     //  throws on last
     @Test(expected = Exception.class)
     public void testRunsBad2() throws Exception {
-        List<TokenValidator> validators =
-                Arrays.asList(new TokenValidator[] {neverThrows, alwaysThrows});
+        List<TokenValidator> validators = Arrays.asList(new TokenValidator[] {neverThrows, alwaysThrows});
         MultiTokenValidator validator = new MultiTokenValidator(validators);
         validator.verifyToken(null, null, null);
     }

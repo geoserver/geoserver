@@ -86,9 +86,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     }
 
     public void setupChooser(final File file) {
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder) id -> new GeoServerFileChooser(id, new Model<>(file))));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new GeoServerFileChooser(id, new Model<>(file))));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
@@ -100,13 +98,10 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
 
-        tester.assertLabel(
-                "form:panel:fileTable:fileTable:fileContent:files:1:nameLink:name", "child/");
+        tester.assertLabel("form:panel:fileTable:fileTable:fileContent:files:1:nameLink:name", "child/");
         assertEquals(
                 1,
-                ((DataView)
-                                tester.getComponentFromLastRenderedPage(
-                                        "form:panel:fileTable:fileTable:fileContent:files"))
+                ((DataView) tester.getComponentFromLastRenderedPage("form:panel:fileTable:fileTable:fileContent:files"))
                         .size());
     }
 
@@ -131,35 +126,29 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
         tester.debugComponentTrees();
 
-        GeoServerDialog dialog =
-                (GeoServerDialog) tester.getComponentFromLastRenderedPage("form:panel");
+        GeoServerDialog dialog = (GeoServerDialog) tester.getComponentFromLastRenderedPage("form:panel");
         assertNotNull(dialog);
 
-        dialog.showOkCancel(
-                new AjaxRequestHandler(tester.getLastRenderedPage()),
-                new DialogDelegate() {
-                    @Override
-                    protected Component getContents(String id) {
-                        return new GeoServerFileChooser(id, new Model<>(root));
-                    }
+        dialog.showOkCancel(new AjaxRequestHandler(tester.getLastRenderedPage()), new DialogDelegate() {
+            @Override
+            protected Component getContents(String id) {
+                return new GeoServerFileChooser(id, new Model<>(root));
+            }
 
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        assertNotNull(contents);
-                        assertTrue(contents instanceof GeoServerFileChooser);
-                        return true;
-                    }
-                });
+            @Override
+            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                assertNotNull(contents);
+                assertTrue(contents instanceof GeoServerFileChooser);
+                return true;
+            }
+        });
 
         dialog.submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
     }
 
     @Test
     public void testHideFileSystem() throws Exception {
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> new GeoServerFileChooser(id, new Model<>(), true)));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new GeoServerFileChooser(id, new Model<>(), true)));
 
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
@@ -178,19 +167,16 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
         // looking for a match on basic polygons
         List<String> values =
-                rootsFinder
-                        .getMatches(MockData.CITE_PREFIX + "/poly", null)
-                        .collect(Collectors.toList());
+                rootsFinder.getMatches(MockData.CITE_PREFIX + "/poly", null).collect(Collectors.toList());
         assertEquals(1, values.size());
         assertEquals("file:cite/BasicPolygons.properties", values.get(0));
 
         // for the sake of checking, find a specific style with a file extension filter (the dd
         // contains both
         // raster.sld and raster.xml
-        values =
-                rootsFinder
-                        .getMatches("/styles/raster", new ExtensionFileFilter(".sld"))
-                        .collect(Collectors.toList());
+        values = rootsFinder
+                .getMatches("/styles/raster", new ExtensionFileFilter(".sld"))
+                .collect(Collectors.toList());
         assertEquals(1, values.size());
         assertEquals("file:styles/raster.sld", values.get(0));
     }
@@ -204,16 +190,11 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         // we should still get directories
         String rootPath = dir.getCanonicalFile().getAbsolutePath() + File.separator;
         ExtensionFileFilter fileFilter = new ExtensionFileFilter(".properties");
-        List<String> values =
-                rootsFinder.getMatches(rootPath, fileFilter).collect(Collectors.toList());
+        List<String> values = rootsFinder.getMatches(rootPath, fileFilter).collect(Collectors.toList());
         assertThat(values.size(), greaterThan(0));
         assertEquals(new HashSet<>(values).size(), values.size());
-        assertThat(
-                values,
-                hasItem("file://" + new File(rootPath, MockData.CITE_PREFIX).getAbsolutePath()));
-        assertThat(
-                values,
-                hasItem("file://" + new File(rootPath, MockData.SF_PREFIX).getAbsolutePath()));
+        assertThat(values, hasItem("file://" + new File(rootPath, MockData.CITE_PREFIX).getAbsolutePath()));
+        assertThat(values, hasItem("file://" + new File(rootPath, MockData.SF_PREFIX).getAbsolutePath()));
     }
 
     @Test
@@ -226,8 +207,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         sfFolder.mkdirs();
 
         // configure security, make sure the file access manager pays attention
-        System.setProperty(
-                DefaultFileAccessManager.GEOSERVER_DATA_SANDBOX, systemSandbox.getAbsolutePath());
+        System.setProperty(DefaultFileAccessManager.GEOSERVER_DATA_SANDBOX, systemSandbox.getAbsolutePath());
         fam.reload();
 
         // roots finder limits to that directory
@@ -237,15 +217,10 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         assertEquals(List.of(systemSandbox), files);
 
         // check autocomplete
-        List<String> values =
-                rootsFinder
-                        .getMatches(systemSandbox.getAbsolutePath() + File.separator, null)
-                        .collect(Collectors.toList());
-        assertEquals(
-                List.of(
-                        "file://" + citeFolder.getAbsoluteFile(),
-                        "file://" + sfFolder.getAbsoluteFile()),
-                values);
+        List<String> values = rootsFinder
+                .getMatches(systemSandbox.getAbsolutePath() + File.separator, null)
+                .collect(Collectors.toList());
+        assertEquals(List.of("file://" + citeFolder.getAbsoluteFile(), "file://" + sfFolder.getAbsoluteFile()), values);
     }
 
     @Test
@@ -279,14 +254,9 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         assertEquals(List.of(citeFolder, sfFolder), files);
 
         // check autocomplete
-        List<String> values =
-                rootsFinder
-                        .getMatches(sandbox.getAbsolutePath() + File.separator, null)
-                        .collect(Collectors.toList());
-        assertEquals(
-                List.of(
-                        "file://" + citeFolder.getAbsoluteFile(),
-                        "file://" + sfFolder.getAbsoluteFile()),
-                values);
+        List<String> values = rootsFinder
+                .getMatches(sandbox.getAbsolutePath() + File.separator, null)
+                .collect(Collectors.toList());
+        assertEquals(List.of("file://" + citeFolder.getAbsoluteFile(), "file://" + sfFolder.getAbsoluteFile()), values);
     }
 }

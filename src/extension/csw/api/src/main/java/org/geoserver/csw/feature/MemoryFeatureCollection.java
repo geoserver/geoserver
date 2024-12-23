@@ -40,8 +40,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
                 if (!f.getType().equals(memberType)) {
                     // TODO: handle inheritance
                     throw new IllegalArgumentException(
-                            "Found a feature whose feature type is not equal to the declared one: "
-                                    + f);
+                            "Found a feature whose feature type is not equal to the declared one: " + f);
                 }
                 this.features.add(f);
             }
@@ -85,28 +84,25 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
     }
 
     /**
-     * Removes a single instance of the specified element from this collection, if it is present
-     * (optional operation).
+     * Removes a single instance of the specified element from this collection, if it is present (optional operation).
      *
      * @param o element to be removed from this collection, if present.
      * @return <tt>true</tt> if the collection contained the specified element.
-     * @throws UnsupportedOperationException if the <tt>remove</tt> method is not supported by this
-     *     collection.
+     * @throws UnsupportedOperationException if the <tt>remove</tt> method is not supported by this collection.
      */
     public boolean remove(Object o) {
         return features.remove(o);
     }
 
     /**
-     * Removes from this collection all of its elements that are contained in the specified
-     * collection (optional operation).
+     * Removes from this collection all of its elements that are contained in the specified collection (optional
+     * operation).
      *
      * <p>
      *
      * @param c elements to be removed from this collection.
      * @return <tt>true</tt> if this collection changed as a result of the call.
-     * @throws UnsupportedOperationException if the <tt>removeAll</tt> method is not supported by
-     *     this collection.
+     * @throws UnsupportedOperationException if the <tt>removeAll</tt> method is not supported by this collection.
      * @throws NullPointerException if the specified collection is null.
      * @see #remove(Object)
      * @see #contains(Object)
@@ -116,13 +112,11 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
     }
 
     /**
-     * Retains only the elements in this collection that are contained in the specified collection
-     * (optional operation).
+     * Retains only the elements in this collection that are contained in the specified collection (optional operation).
      *
      * @param c elements to be retained in this collection.
      * @return <tt>true</tt> if this collection changed as a result of the call.
-     * @throws UnsupportedOperationException if the <tt>retainAll</tt> method is not supported by
-     *     this Collection.
+     * @throws UnsupportedOperationException if the <tt>retainAll</tt> method is not supported by this Collection.
      * @throws NullPointerException if the specified collection is null.
      * @see #remove(Object)
      * @see #contains(Object)
@@ -136,14 +130,11 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
      *
      * @param o element whose presence in this collection is to be ensured.
      * @return <tt>true</tt> if the collection changed as a result of the call.
-     * @throws UnsupportedOperationException if the <tt>add</tt> method is not supported by this
-     *     collection.
-     * @throws NullPointerException if this collection does not permit <tt>null</tt> elements, and
-     *     the specified element is <tt>null</tt>.
-     * @throws ClassCastException if the class of the specified element prevents it from being added
-     *     to this collection.
-     * @throws IllegalArgumentException if some aspect of this element prevents it from being added
-     *     to this collection.
+     * @throws UnsupportedOperationException if the <tt>add</tt> method is not supported by this collection.
+     * @throws NullPointerException if this collection does not permit <tt>null</tt> elements, and the specified element
+     *     is <tt>null</tt>.
+     * @throws ClassCastException if the class of the specified element prevents it from being added to this collection.
+     * @throws IllegalArgumentException if some aspect of this element prevents it from being added to this collection.
      */
     public boolean add(Feature o) {
         return features.add(o);
@@ -154,8 +145,7 @@ public class MemoryFeatureCollection extends AbstractFeatureCollection<FeatureTy
      *
      * @param c collection whose elements are to be added to this collection.
      * @return <tt>true</tt> if this collection changed as a result of the call.
-     * @throws UnsupportedOperationException if this collection does not support the <tt>addAll</tt>
-     *     method.
+     * @throws UnsupportedOperationException if this collection does not support the <tt>addAll</tt> method.
      * @throws NullPointerException if the specified collection is null.
      * @see #add(Feature)
      */

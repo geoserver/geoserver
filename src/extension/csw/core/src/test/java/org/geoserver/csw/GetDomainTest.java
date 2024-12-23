@@ -76,15 +76,9 @@ public class GetDomainTest extends CSWSimpleTestSupport {
 
     @Test
     public void testXMLReaderParameter() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "GetDomain",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        GetDomainType gd =
-                (GetDomainType)
-                        reader.read(null, getResourceAsReader("GetDomainParameter.xml"), null);
+        CSWXmlReader reader = new CSWXmlReader(
+                "GetDomain", "2.0.2", new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        GetDomainType gd = (GetDomainType) reader.read(null, getResourceAsReader("GetDomainParameter.xml"), null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("GetRecords.resultType", gd.getParameterName());
@@ -92,15 +86,9 @@ public class GetDomainTest extends CSWSimpleTestSupport {
 
     @Test
     public void testXMLReaderProperty() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "GetDomain",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        GetDomainType gd =
-                (GetDomainType)
-                        reader.read(null, getResourceAsReader("GetDomainProperty.xml"), null);
+        CSWXmlReader reader = new CSWXmlReader(
+                "GetDomain", "2.0.2", new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        GetDomainType gd = (GetDomainType) reader.read(null, getResourceAsReader("GetDomainProperty.xml"), null);
         assertEquals("CSW", gd.getService());
         assertEquals("2.0.2", gd.getVersion());
         assertEquals("dc:title", gd.getPropertyName());
@@ -109,31 +97,23 @@ public class GetDomainTest extends CSWSimpleTestSupport {
     @Test
     public void testGETReaderParameter() throws Exception {
         Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetDomain&parameterName=GetRecords.resultType");
+                getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetDomain&parameterName=GetRecords.resultType");
         // print(dom);
         // checkValidationErrors(dom);
 
         assertXpathEvaluatesTo(
-                "GetRecords.resultType",
-                "/csw:GetDomainResponse/csw:DomainValues/csw:ParameterName",
-                dom);
+                "GetRecords.resultType", "/csw:GetDomainResponse/csw:DomainValues/csw:ParameterName", dom);
         assertXpathEvaluatesTo("3", "count(//csw:Value)", dom);
     }
 
     @Test
     public void testGETReaderProperty() throws Exception {
         Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title",
-                        "ISO-8859-1");
+                getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title", "ISO-8859-1");
         print(dom);
         // checkValidationErrors(dom);
 
-        assertXpathEvaluatesTo(
-                "dc:title", "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);
+        assertXpathEvaluatesTo("dc:title", "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);
         assertXpathEvaluatesTo("9", "count(//csw:Value)", dom);
     }
 }

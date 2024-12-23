@@ -34,9 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class FileServiceDataTest extends AbstractTaskManagerTest {
 
-    @Autowired LookupService<FileService> fileServiceRegistry;
+    @Autowired
+    LookupService<FileService> fileServiceRegistry;
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testFileRegistry() {
@@ -144,8 +146,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     @Test
     public void testListSubFolders() throws IOException {
         FileServiceImpl service = new FileServiceImpl();
-        service.setRootFolder(
-                FileUtils.getTempDirectoryPath() + "/folder-" + System.currentTimeMillis() + "/");
+        service.setRootFolder(FileUtils.getTempDirectoryPath() + "/folder-" + System.currentTimeMillis() + "/");
 
         InputStream content = IOUtils.toInputStream("test the file service", "UTF-8");
 
@@ -162,7 +163,8 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         Assert.assertTrue(folders.contains("foo"));
         Assert.assertTrue(folders.contains(Paths.get("foo", "bar").toString()));
         Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar").toString()));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar", "barfoo").toString()));
+        Assert.assertTrue(
+                folders.contains(Paths.get("foo", "bar", "foobar", "barfoo").toString()));
         Assert.assertTrue(folders.contains("hello"));
     }
 

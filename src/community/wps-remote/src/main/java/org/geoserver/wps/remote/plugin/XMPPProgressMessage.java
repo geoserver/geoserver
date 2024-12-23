@@ -19,7 +19,8 @@ import org.jivesoftware.smack.packet.Packet;
 public class XMPPProgressMessage implements XMPPMessage {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPMessage.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPMessage.class.getPackage().getName());
 
     @Override
     public boolean canHandle(Map<String, String> signalArgs) {
@@ -29,8 +30,7 @@ public class XMPPProgressMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String pID = signalArgs.get("id");
         final Double progress = Double.parseDouble(signalArgs.get("message"));

@@ -31,11 +31,10 @@ public abstract class WebMap {
     /**
      * Disposes any resource held by this Map.
      *
-     * <p>This method is meant to be called right after the map is no longer needed. That generally
-     * happens at the end of a {@link Response#write} operation, and is meant to free any resource
-     * the map implementation might be holding, specially if it contains a refrerence to {@link
-     * WMSMapContent}, in which case it's mandatory that the map context's {@link
-     * WMSMapContent#dispose()} method is called.
+     * <p>This method is meant to be called right after the map is no longer needed. That generally happens at the end
+     * of a {@link Response#write} operation, and is meant to free any resource the map implementation might be holding,
+     * specially if it contains a refrerence to {@link WMSMapContent}, in which case it's mandatory that the map
+     * context's {@link WMSMapContent#dispose()} method is called.
      */
     public final void dispose() {
         if (mapContent != null) {
@@ -44,9 +43,7 @@ public abstract class WebMap {
         disposeInternal();
     }
 
-    /**
-     * Hook for Map concrete subclasses to dispose any other resource than the {@link WMSMapContent}
-     */
+    /** Hook for Map concrete subclasses to dispose any other resource than the {@link WMSMapContent} */
     protected void disposeInternal() {
         // default implementation does nothing
     }
@@ -83,25 +80,24 @@ public abstract class WebMap {
     /**
      * Utility method to build a standard content disposition header.
      *
-     * <p>It will concatenate the titles of the various layers in the map context, or generate
-     * "geoserver" instead (in the event no layer title is set).
+     * <p>It will concatenate the titles of the various layers in the map context, or generate "geoserver" instead (in
+     * the event no layer title is set).
      *
-     * <p>The file name will be followed by the extension provided, for example, to generate
-     * layer.pdf extension will be ".pdf"
+     * <p>The file name will be followed by the extension provided, for example, to generate layer.pdf extension will be
+     * ".pdf"
      */
-    public void setContentDispositionHeader(
-            final WMSMapContent mapContent, final String extension) {
+    public void setContentDispositionHeader(final WMSMapContent mapContent, final String extension) {
         setContentDispositionHeader(mapContent, extension, true);
     }
 
     /**
      * Utility method to build a standard content disposition header.
      *
-     * <p>It will concatenate the titles of the various layers in the map context, or generate
-     * "geoserver" instead (in the event no layer title is set).
+     * <p>It will concatenate the titles of the various layers in the map context, or generate "geoserver" instead (in
+     * the event no layer title is set).
      *
-     * <p>The file name will be followed by the extension provided, for example, to generate
-     * layer.pdf extension will be ".pdf"
+     * <p>The file name will be followed by the extension provided, for example, to generate layer.pdf extension will be
+     * ".pdf"
      */
     public void setContentDispositionHeader(
             final WMSMapContent mapContent, final String extension, boolean attachment) {

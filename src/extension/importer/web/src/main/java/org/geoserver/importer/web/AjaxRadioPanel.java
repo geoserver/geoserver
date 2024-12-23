@@ -41,14 +41,13 @@ public abstract class AjaxRadioPanel<T extends Serializable> extends Panel {
     private Component buildContents(List<T> items, T currentSelection) {
 
         final RadioGroup<T> group = new RadioGroup<>("radioGroup", new Model<>(currentSelection));
-        group.add(
-                new ListView<>("radioButtons", items) {
-                    @Override
-                    protected void populateItem(ListItem<T> item) {
-                        item.add(newRadioCell(group, item));
-                        item.add(createLabel("label", item));
-                    }
-                });
+        group.add(new ListView<>("radioButtons", items) {
+            @Override
+            protected void populateItem(ListItem<T> item) {
+                item.add(newRadioCell(group, item));
+                item.add(createLabel("label", item));
+            }
+        });
         return group;
     }
 

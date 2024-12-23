@@ -72,54 +72,32 @@ public class GeoserverRequestMatcherTest extends GeoServerMockTestSupport {
 
     @Test
     public void testMacherWithQueryString() {
-        VariableFilterChain chain =
-                new ServiceLoginFilterChain("/wms/**|.*request=getcapabilities.*");
+        VariableFilterChain chain = new ServiceLoginFilterChain("/wms/**|.*request=getcapabilities.*");
         RequestMatcher matcher = proxy.matcherForChain(chain);
 
         assertFalse(matcher.matches(createRequest(HTTPMethod.GET, "/wms")));
-        assertTrue(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET,
-                                "/wms?service=WMS&version=1.1.1&request=GetCapabilities")));
-        assertFalse(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&request=GetMap")));
+        assertTrue(matcher.matches(
+                createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&request=GetCapabilities")));
+        assertFalse(matcher.matches(createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&request=GetMap")));
 
         // regex for parameters in any order
         chain = new ServiceLoginFilterChain("/wms/**|(?=.*request=getmap)(?=.*format=image/png).*");
         matcher = proxy.matcherForChain(chain);
 
-        assertTrue(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET,
-                                "/wms?service=WMS&version=1.1.1&request=GetMap&format=image/png")));
-        assertTrue(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET,
-                                "/wms?service=WMS&version=1.1.1&format=image/png&request=GetMap")));
-        assertFalse(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET,
-                                "/wms?service=WMS&version=1.1.1&format=image/jpg&request=GetMap")));
+        assertTrue(matcher.matches(
+                createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&request=GetMap&format=image/png")));
+        assertTrue(matcher.matches(
+                createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&format=image/png&request=GetMap")));
+        assertFalse(matcher.matches(
+                createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&format=image/jpg&request=GetMap")));
 
         // regex for parameters not contained
         chain = new ServiceLoginFilterChain("/wms/**|(?=.*request=getmap)(?!.*format=image/png).*");
         matcher = proxy.matcherForChain(chain);
-        assertTrue(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET,
-                                "/wms?service=WMS&version=1.1.1&format=image/jpg&request=GetMap")));
-        assertFalse(
-                matcher.matches(
-                        createRequest(
-                                HTTPMethod.GET,
-                                "/wms?service=WMS&version=1.1.1&format=image/png&request=GetMap")));
+        assertTrue(matcher.matches(
+                createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&format=image/jpg&request=GetMap")));
+        assertFalse(matcher.matches(
+                createRequest(HTTPMethod.GET, "/wms?service=WMS&version=1.1.1&format=image/png&request=GetMap")));
     }
 
     MockHttpServletRequest createRequest(HTTPMethod method, String pathInfo) {

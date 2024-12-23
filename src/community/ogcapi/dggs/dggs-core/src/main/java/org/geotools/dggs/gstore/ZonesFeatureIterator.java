@@ -35,15 +35,12 @@ class ZonesFeatureIterator implements SimpleFeatureReader {
     List<Boolean> includeExtraProperties;
 
     public ZonesFeatureIterator(
-            Iterator<Zone> iterator,
-            SimpleFeatureType schema,
-            List<AttributeDescriptor> extraProperties) {
+            Iterator<Zone> iterator, SimpleFeatureType schema, List<AttributeDescriptor> extraProperties) {
         this.iterator = iterator;
         fb = new SimpleFeatureBuilder(schema);
-        requestedProperties =
-                schema.getAttributeDescriptors().stream()
-                        .map(ad -> ad.getLocalName())
-                        .collect(Collectors.toList());
+        requestedProperties = schema.getAttributeDescriptors().stream()
+                .map(ad -> ad.getLocalName())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -52,8 +49,7 @@ class ZonesFeatureIterator implements SimpleFeatureReader {
     }
 
     @Override
-    public SimpleFeature next()
-            throws IOException, IllegalArgumentException, NoSuchElementException {
+    public SimpleFeature next() throws IOException, IllegalArgumentException, NoSuchElementException {
         Zone zone = iterator.next();
         String id = zone.getId();
         for (String p : requestedProperties) {

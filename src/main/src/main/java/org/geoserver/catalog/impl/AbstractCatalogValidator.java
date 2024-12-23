@@ -15,8 +15,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 
 /**
- * A convenience implementation of InfoValidator with all methods implemented as a no-op. You can
- * override individual methods without having to provide your own stubs.
+ * A convenience implementation of InfoValidator with all methods implemented as a no-op. You can override individual
+ * methods without having to provide your own stubs.
  *
  * @author David Winslow, OpenGeo
  */

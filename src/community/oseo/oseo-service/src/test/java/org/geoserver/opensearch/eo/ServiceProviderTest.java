@@ -31,20 +31,16 @@ public class ServiceProviderTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHideServiceConfigVector() {
-        final ServiceResourceProvider provider =
-                GeoServerExtensions.bean(ServiceResourceProvider.class);
-        final List<String> services =
-                provider.getServicesForLayerName(getLayerId(SystemTestData.POLYGONS));
+        final ServiceResourceProvider provider = GeoServerExtensions.bean(ServiceResourceProvider.class);
+        final List<String> services = provider.getServicesForLayerName(getLayerId(SystemTestData.POLYGONS));
         assertThat(services, not(contains("OSEO")));
         assertThat(services, containsInAnyOrder("WMS", "WFS"));
     }
 
     @Test
     public void testHideServiceConfigRaster() {
-        final ServiceResourceProvider provider =
-                GeoServerExtensions.bean(ServiceResourceProvider.class);
-        final List<String> services =
-                provider.getServicesForLayerName(getLayerId(SystemTestData.TASMANIA_DEM));
+        final ServiceResourceProvider provider = GeoServerExtensions.bean(ServiceResourceProvider.class);
+        final List<String> services = provider.getServicesForLayerName(getLayerId(SystemTestData.TASMANIA_DEM));
         assertThat(services, not(contains("OSEO")));
         assertThat(services, containsInAnyOrder("WCS", "WMS"));
     }

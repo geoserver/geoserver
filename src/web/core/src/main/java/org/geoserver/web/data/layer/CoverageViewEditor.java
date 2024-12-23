@@ -70,32 +70,24 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
         this.availableCoverages = availableCoverages;
 
-        coveragesChoice =
-                new ListMultipleChoice<>(
-                        "coveragesChoice",
-                        new Model<>(),
-                        new ArrayList<>(coverages.getObject()),
-                        new ChoiceRenderer<>() {
-                            @Override
-                            public Object getDisplayValue(String coverage) {
-                                return coverage;
-                            }
-                        });
+        coveragesChoice = new ListMultipleChoice<>(
+                "coveragesChoice", new Model<>(), new ArrayList<>(coverages.getObject()), new ChoiceRenderer<>() {
+                    @Override
+                    public Object getDisplayValue(String coverage) {
+                        return coverage;
+                    }
+                });
         coveragesChoice.setOutputMarkupId(true);
         add(coveragesChoice);
 
         new ArrayList<CoverageBand>();
-        outputBandsChoice =
-                new ListMultipleChoice<>(
-                        "outputBandsChoice",
-                        new Model<>(),
-                        new ArrayList<>(outputBands.getObject()),
-                        new ChoiceRenderer<>() {
-                            @Override
-                            public Object getDisplayValue(CoverageBand vcb) {
-                                return vcb.getDefinition();
-                            }
-                        });
+        outputBandsChoice = new ListMultipleChoice<>(
+                "outputBandsChoice", new Model<>(), new ArrayList<>(outputBands.getObject()), new ChoiceRenderer<>() {
+                    @Override
+                    public Object getDisplayValue(CoverageBand vcb) {
+                        return vcb.getDefinition();
+                    }
+                });
         outputBandsChoice.setOutputMarkupId(true);
         add(outputBandsChoice);
 
@@ -110,30 +102,27 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         // TODO Uncomment this row when it can be used
         // add(definition);
         compositionType = CompositionType.getDefault();
-        compositionChoice =
-                new DropDownChoice<>(
-                        "compositionType",
-                        new PropertyModel<>(this, "compositionType"),
-                        List.of(CompositionType.BAND_SELECT),
-                        new CompositionTypeRenderer());
+        compositionChoice = new DropDownChoice<>(
+                "compositionType",
+                new PropertyModel<>(this, "compositionType"),
+                List.of(CompositionType.BAND_SELECT),
+                new CompositionTypeRenderer());
 
         compositionChoice.setOutputMarkupId(true);
-        compositionChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    private static final long serialVersionUID = 1L;
+        compositionChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        compositionType = compositionChoice.getModelObject();
-                        // TODO Uncomment these rows when they can be used
-                        // definition.setEnabled(compositionType != CompositionType.BAND_SELECT);
-                        // target.add(definition);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                compositionType = compositionChoice.getModelObject();
+                // TODO Uncomment these rows when they can be used
+                // definition.setEnabled(compositionType != CompositionType.BAND_SELECT);
+                // target.add(definition);
+            }
+        });
 
         // heterogeneous coverage controls
-        WebMarkupContainer heterogeneousControlsContainer =
-                new WebMarkupContainer("heterogeneousControlsContainer");
+        WebMarkupContainer heterogeneousControlsContainer = new WebMarkupContainer("heterogeneousControlsContainer");
         heterogeneousControlsContainer.setOutputMarkupId(true);
         add(heterogeneousControlsContainer);
         WebMarkupContainer heterogeneousControls = new WebMarkupContainer("heterogeneousControls");
@@ -142,15 +131,13 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         heterogeneousControls.setVisible(JAIExt.isJAIExtOperation("BandMerge"));
 
         DropDownChoice<EnvelopeCompositionType> envelopePolicy =
-                new DropDownChoice<>(
-                        "envelopeCompositionType", Arrays.asList(EnvelopeCompositionType.values()));
+                new DropDownChoice<>("envelopeCompositionType", Arrays.asList(EnvelopeCompositionType.values()));
         envelopePolicy.setModel(envelopeCompositionType);
         envelopePolicy.setChoiceRenderer(new EnumChoiceRenderer<>(this));
         heterogeneousControls.add(envelopePolicy);
 
         DropDownChoice<SelectedResolution> resolutionPolicy =
-                new DropDownChoice<>(
-                        "selectedResolution", Arrays.asList(SelectedResolution.values()));
+                new DropDownChoice<>("selectedResolution", Arrays.asList(SelectedResolution.values()));
         resolutionPolicy.setModel(selectedResolution);
         resolutionPolicy.setChoiceRenderer(new EnumChoiceRenderer<>(this));
         heterogeneousControls.add(resolutionPolicy);
@@ -160,87 +147,81 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
     }
 
     private AjaxButton addBandButton() {
-        AjaxButton button =
-                new AjaxButton("addBand") {
+        AjaxButton button = new AjaxButton("addBand") {
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        List<String> selection = (List<String>) coveragesChoice.getModelObject();
-                        compositionType = compositionChoice.getModelObject();
-                        List<CoverageBand> bandsList = new ArrayList<>();
-                        int i = currentOutputBands.size();
-                        for (String coverage : selection) {
-                            final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
-                            String coverageName = coverage;
-                            String bandIndex = null;
-                            if (bandIndexChar != -1) {
-                                coverageName = coverage.substring(0, bandIndexChar);
-                                bandIndex = coverage.substring(bandIndexChar + 1);
-                            }
-                            CoverageBand band =
-                                    new CoverageBand(
-                                            Collections.singletonList(
-                                                    new InputCoverageBand(coverageName, bandIndex)),
-                                            coverage,
-                                            i++,
-                                            compositionType);
-                            bandsList.add(band);
-                        }
-                        currentOutputBands.addAll(bandsList);
-                        outputBandsChoice.setChoices(currentOutputBands);
-                        outputBandsChoice.modelChanged();
-                        coveragesChoice.setChoices(availableCoverages);
-                        coveragesChoice.modelChanged();
-
-                        // TODO: Reset choice
-                        target.add(coveragesChoice);
-                        target.add(outputBandsChoice);
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                List<String> selection = (List<String>) coveragesChoice.getModelObject();
+                compositionType = compositionChoice.getModelObject();
+                List<CoverageBand> bandsList = new ArrayList<>();
+                int i = currentOutputBands.size();
+                for (String coverage : selection) {
+                    final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
+                    String coverageName = coverage;
+                    String bandIndex = null;
+                    if (bandIndexChar != -1) {
+                        coverageName = coverage.substring(0, bandIndexChar);
+                        bandIndex = coverage.substring(bandIndexChar + 1);
                     }
-                };
+                    CoverageBand band = new CoverageBand(
+                            Collections.singletonList(new InputCoverageBand(coverageName, bandIndex)),
+                            coverage,
+                            i++,
+                            compositionType);
+                    bandsList.add(band);
+                }
+                currentOutputBands.addAll(bandsList);
+                outputBandsChoice.setChoices(currentOutputBands);
+                outputBandsChoice.modelChanged();
+                coveragesChoice.setChoices(availableCoverages);
+                coveragesChoice.modelChanged();
+
+                // TODO: Reset choice
+                target.add(coveragesChoice);
+                target.add(outputBandsChoice);
+            }
+        };
         return button;
     }
 
     private AjaxButton addRemoveAllButton() {
-        AjaxButton button =
-                new AjaxButton("removeAllBands") {
+        AjaxButton button = new AjaxButton("removeAllBands") {
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        List<CoverageBand> outputBands =
-                                (List<CoverageBand>) outputBandsChoice.getModelObject();
-                        outputBands.clear();
-                        currentOutputBands.clear();
-                        outputBandsChoice.setChoices(currentOutputBands);
-                        outputBandsChoice.modelChanged();
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                List<CoverageBand> outputBands = (List<CoverageBand>) outputBandsChoice.getModelObject();
+                outputBands.clear();
+                currentOutputBands.clear();
+                outputBandsChoice.setChoices(currentOutputBands);
+                outputBandsChoice.modelChanged();
 
-                        // TODO: Reset choice
-                        target.add(outputBandsChoice);
-                    }
-                };
+                // TODO: Reset choice
+                target.add(outputBandsChoice);
+            }
+        };
         return button;
     }
 
     private AjaxButton addRemoveButton() {
-        AjaxButton button =
-                new AjaxButton("removeBands") {
+        AjaxButton button = new AjaxButton("removeBands") {
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
 
-                        List<CoverageBand> removedBands =
-                                (List<CoverageBand>) outputBandsChoice.getModel().getObject();
+                List<CoverageBand> removedBands =
+                        (List<CoverageBand>) outputBandsChoice.getModel().getObject();
 
-                        for (Object band : removedBands) {
-                            currentOutputBands.remove(band);
-                        }
+                for (Object band : removedBands) {
+                    currentOutputBands.remove(band);
+                }
 
-                        outputBandsChoice.setChoices(currentOutputBands);
-                        outputBandsChoice.modelChanged();
+                outputBandsChoice.setChoices(currentOutputBands);
+                outputBandsChoice.modelChanged();
 
-                        // TODO: Reset choice
-                        target.add(outputBandsChoice);
-                    }
-                };
+                // TODO: Reset choice
+                target.add(outputBandsChoice);
+            }
+        };
         return button;
     }
 

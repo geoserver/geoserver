@@ -14,8 +14,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class RelationshipClass
-        implements Comparable<RelationshipClass>, Serializable, RelationshipModel {
+public class RelationshipClass implements Comparable<RelationshipClass>, Serializable, RelationshipModel {
     private Long relationshipId;
     private String workspaceName;
     private String originTable;
@@ -144,10 +143,9 @@ public class RelationshipClass
     }
 
     /**
-     * Returns a positive number if the RelationshipClass is less than this one, 0 if they are
-     * equal, and a negative number if it is less than. In order to prevent more than one
-     * RelationshipClass from being defined for each set of source and destination fields this is
-     * defined using (workspaceName, originTable,
+     * Returns a positive number if the RelationshipClass is less than this one, 0 if they are equal, and a negative
+     * number if it is less than. In order to prevent more than one RelationshipClass from being defined for each set of
+     * source and destination fields this is defined using (workspaceName, originTable,
      * destinationTable,originPrimaryKey,originForeignKey) instead of the relationshipId
      *
      * @param o
@@ -164,9 +162,8 @@ public class RelationshipClass
     }
 
     /**
-     * Returns true if the RelationshipClass equals this one. In order to prevent more than one
-     * RelationshipClass from being defined for each set of source and destination fields this is
-     * defined using (workspaceName, originTable,
+     * Returns true if the RelationshipClass equals this one. In order to prevent more than one RelationshipClass from
+     * being defined for each set of source and destination fields this is defined using (workspaceName, originTable,
      * destinationTable,originPrimaryKey,originForeignKey) instead of the relationshipId
      *
      * @param obj
@@ -187,17 +184,16 @@ public class RelationshipClass
     }
 
     /**
-     * Returns a hashcode that allows for a simple way to determine if a RelationshipClass is
-     * unique. In order to prevent more than one RelationshipClass from being defined for each set
-     * of source and destination fields this is defined using (workspaceName, originTable,
-     * destinationTable,originPrimaryKey,originForeignKey) instead of the relationshipId
+     * Returns a hashcode that allows for a simple way to determine if a RelationshipClass is unique. In order to
+     * prevent more than one RelationshipClass from being defined for each set of source and destination fields this is
+     * defined using (workspaceName, originTable, destinationTable,originPrimaryKey,originForeignKey) instead of the
+     * relationshipId
      *
      * @return
      */
     @Override
     public int hashCode() {
-        return Objects.hash(
-                workspaceName, originTable, destinationTable, originPrimaryKey, originForeignKey);
+        return Objects.hash(workspaceName, originTable, destinationTable, originPrimaryKey, originForeignKey);
     }
 
     @Override

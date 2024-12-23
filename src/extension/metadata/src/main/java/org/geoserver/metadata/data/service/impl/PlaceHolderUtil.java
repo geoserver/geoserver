@@ -20,10 +20,9 @@ public class PlaceHolderUtil {
     public static String replacePlaceHolders(String pattern, Map<String, String> map) {
         Matcher matcher = PATTERN_PLACEHOLDER.matcher(pattern);
         while (matcher.find()) {
-            pattern =
-                    pattern.substring(0, matcher.start())
-                            + map.get(matcher.group(1))
-                            + pattern.substring(matcher.end());
+            pattern = pattern.substring(0, matcher.start())
+                    + map.get(matcher.group(1))
+                    + pattern.substring(matcher.end());
             matcher = PATTERN_PLACEHOLDER.matcher(pattern);
         }
         return pattern;
@@ -37,10 +36,7 @@ public class PlaceHolderUtil {
         List<String> list = new ArrayList<>();
         while (matcher.find()) {
             list.add(matcher.group(1));
-            pattern =
-                    pattern.substring(0, matcher.start())
-                            + "\\E(.*)\\Q"
-                            + pattern.substring(matcher.end());
+            pattern = pattern.substring(0, matcher.start()) + "\\E(.*)\\Q" + pattern.substring(matcher.end());
             matcher = PATTERN_PLACEHOLDER.matcher(pattern);
         }
         matcher = Pattern.compile("\\Q" + pattern + "\\E").matcher(value == null ? "" : value);
@@ -73,10 +69,7 @@ public class PlaceHolderUtil {
                     if (item == null) {
                         list.add(null);
                     } else {
-                        list.add(
-                                pattern.substring(0, matcher.start())
-                                        + item
-                                        + pattern.substring(matcher.end()));
+                        list.add(pattern.substring(0, matcher.start()) + item + pattern.substring(matcher.end()));
                     }
                 }
             }

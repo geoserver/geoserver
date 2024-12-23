@@ -77,9 +77,7 @@ public class DataDirectoryLoaderConfigurationTest {
     private void assertEnabled() {
         ApplicationContext context = lodAppContext();
         assertTrue(context.containsBean("dataDirectoryGeoServerLoader"));
-        assertThat(
-                context.getBean("dataDirectoryGeoServerLoader"),
-                instanceOf(DataDirectoryGeoServerLoader.class));
+        assertThat(context.getBean("dataDirectoryGeoServerLoader"), instanceOf(DataDirectoryGeoServerLoader.class));
     }
 
     @Test
@@ -113,11 +111,9 @@ public class DataDirectoryLoaderConfigurationTest {
             theEnvironmentField.setAccessible(true);
             Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
             env.putAll(newenv);
-            Field theCaseInsensitiveEnvironmentField =
-                    envClass.getDeclaredField("theCaseInsensitiveEnvironment");
+            Field theCaseInsensitiveEnvironmentField = envClass.getDeclaredField("theCaseInsensitiveEnvironment");
             theCaseInsensitiveEnvironmentField.setAccessible(true);
-            Map<String, String> cienv =
-                    (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
+            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
             cienv.putAll(newenv);
         } catch (NoSuchFieldException e) {
             Class[] classes = Collections.class.getDeclaredClasses();

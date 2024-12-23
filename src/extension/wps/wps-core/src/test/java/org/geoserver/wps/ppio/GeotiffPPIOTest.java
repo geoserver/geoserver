@@ -81,8 +81,7 @@ public class GeotiffPPIOTest {
     private GridCoverage2D getCoverage() throws IOException {
         coverage = reader.read(null);
         Map<String, Object> properties = new HashMap<>(coverage.getProperties());
-        properties.put(
-                AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY, geotiff.getCanonicalPath());
+        properties.put(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY, geotiff.getCanonicalPath());
         return new GridCoverageFactory()
                 .create(
                         coverage.getName(),
@@ -120,11 +119,10 @@ public class GeotiffPPIOTest {
     @Test
     public void testDecodeValidGeoTIFF() throws Exception {
         try (InputStream is = SystemTestData.class.getResourceAsStream("tazbm.tiff")) {
-            doAnswer(
-                            inv -> {
-                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
-                                return null;
-                            })
+            doAnswer(inv -> {
+                        resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                        return null;
+                    })
                     .when(resources)
                     .addResource(any(GridCoverageReaderResource.class));
             Object result = ppio.decode(is);
@@ -143,14 +141,11 @@ public class GeotiffPPIOTest {
         GeoTiffReader reader = new GeoTiffReader(target);
         GeoTiffIIOMetadataDecoder metadata = reader.getMetadata();
         IIOMetadataNode rootNode = metadata.getRootNode();
-        assertEquals(
-                "Deflate", getAttributeContent(rootNode, BaselineTIFFTagSet.TAG_COMPRESSION, true));
+        assertEquals("Deflate", getAttributeContent(rootNode, BaselineTIFFTagSet.TAG_COMPRESSION, true));
 
         // With compression, tile size is multiple of 16
-        assertEquals(
-                "368", getAttributeContent(rootNode, BaselineTIFFTagSet.TAG_TILE_WIDTH, false));
-        assertEquals(
-                "16", getAttributeContent(rootNode, BaselineTIFFTagSet.TAG_TILE_LENGTH, false));
+        assertEquals("368", getAttributeContent(rootNode, BaselineTIFFTagSet.TAG_TILE_WIDTH, false));
+        assertEquals("16", getAttributeContent(rootNode, BaselineTIFFTagSet.TAG_TILE_LENGTH, false));
     }
 
     private IIOMetadataNode getTiffField(Node rootNode, final int tag) {
@@ -169,11 +164,10 @@ public class GeotiffPPIOTest {
 
     private String getAttributeContent(Node rootNode, int tifTag, boolean isDescription) {
         IIOMetadataNode metadataNode = getTiffField(rootNode, tifTag);
-        Node node =
-                ((IIOMetadataNode) metadataNode.getFirstChild())
-                        .getElementsByTagName("TIFFShorts")
-                        .item(0)
-                        .getFirstChild();
+        Node node = ((IIOMetadataNode) metadataNode.getFirstChild())
+                .getElementsByTagName("TIFFShorts")
+                .item(0)
+                .getFirstChild();
         return node.getAttributes()
                 .getNamedItem(isDescription ? "description" : "value")
                 .getNodeValue();
@@ -182,11 +176,10 @@ public class GeotiffPPIOTest {
     @Test
     public void testDecodeValidArcGrid() throws Exception {
         try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
-            doAnswer(
-                            inv -> {
-                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
-                                return null;
-                            })
+            doAnswer(inv -> {
+                        resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                        return null;
+                    })
                     .when(resources)
                     .addResource(any(GridCoverageReaderResource.class));
             Object result = ppio.decode(is);

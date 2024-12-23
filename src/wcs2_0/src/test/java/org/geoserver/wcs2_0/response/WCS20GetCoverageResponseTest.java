@@ -24,7 +24,6 @@ public class WCS20GetCoverageResponseTest extends GeoServerSystemTestSupport {
         WCS20GetCoverageResponse response =
                 GeoServerExtensions.bean(WCS20GetCoverageResponse.class, applicationContext);
         assertThat(
-                response.getOutputFormats(),
-                Matchers.hasItems("image/geotiff", "text/debug", "application/gml+xml"));
+                response.getOutputFormats(), Matchers.hasItems("image/geotiff", "text/debug", "application/gml+xml"));
     }
 }

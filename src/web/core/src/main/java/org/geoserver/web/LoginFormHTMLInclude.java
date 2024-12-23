@@ -65,8 +65,7 @@ public class LoginFormHTMLInclude extends Include {
                 Template template = templateConfig.getTemplate(this.resourceReference.getName());
                 Map<String, Object> params = new HashMap<>();
 
-                String autocompleteValue =
-                        GeoServerExtensions.getProperty(GEOSERVER_LOGIN_AUTOCOMPLETE);
+                String autocompleteValue = GeoServerExtensions.getProperty(GEOSERVER_LOGIN_AUTOCOMPLETE);
                 if (autocompleteValue == null) {
                     autocompleteValue = DEFAULT_AUTOCOMPLETE_VALUE;
                 }

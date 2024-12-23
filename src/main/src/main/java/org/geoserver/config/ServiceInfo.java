@@ -29,14 +29,12 @@ public interface ServiceInfo extends Info {
     String getId();
 
     /**
-     * Service type, used to identify services for availability (example {@code WMS}, {@code WFS},
-     * ...).
+     * Service type, used to identify services for availability (example {@code WMS}, {@code WFS}, ...).
      *
-     * <p>Service type is used internally by GeoServer, and is not subject to change by user like
-     * {@link #getName()} and {@link #getTitle()}.
+     * <p>Service type is used internally by GeoServer, and is not subject to change by user like {@link #getName()} and
+     * {@link #getTitle()}.
      *
-     * <p>See {@link
-     * org.geoserver.catalog.ServiceResourceProvider#getServicesForResource(ResourceInfo)} and
+     * <p>See {@link org.geoserver.catalog.ServiceResourceProvider#getServicesForResource(ResourceInfo)} and
      * {@link ResourceInfo#getDisabledServices()} for example use.
      *
      * @return Service type.
@@ -44,11 +42,11 @@ public interface ServiceInfo extends Info {
     String getType();
 
     /**
-     * Name of the service, unique within all instances of ServiceInfo within global services (or
-     * within workspace services).
+     * Name of the service, unique within all instances of ServiceInfo within global services (or within workspace
+     * services).
      *
-     * <p>The name is used in GetCapabilities output and may user supplied (do not assume this to be
-     * {@code WMS}, {@code WFS}, {@code WCS} - an example may be {@code GeoServer WMS}.
+     * <p>The name is used in GetCapabilities output and may user supplied (do not assume this to be {@code WMS},
+     * {@code WFS}, {@code WCS} - an example may be {@code GeoServer WMS}.
      *
      * @return Name of service
      * @uml.property name="name"
@@ -62,10 +60,7 @@ public interface ServiceInfo extends Info {
      */
     void setName(String name);
 
-    /**
-     * The workspace the service is specific or local to, or <code>null</code> if the service is
-     * global.
-     */
+    /** The workspace the service is specific or local to, or <code>null</code> if the service is global. */
     WorkspaceInfo getWorkspace();
 
     /** Sets the workspace the service is specific or local to. */
@@ -190,9 +185,8 @@ public interface ServiceInfo extends Info {
     /**
      * Sets the output strategy used by the service.
      *
-     * <p>This value is an identifier which indicates how the output of a response should behave. An
-     * example might be "performance", indicating that the response should be encoded as quickly as
-     * possible.
+     * <p>This value is an identifier which indicates how the output of a response should behave. An example might be
+     * "performance", indicating that the response should be encoded as quickly as possible.
      */
     String getOutputStrategy();
 

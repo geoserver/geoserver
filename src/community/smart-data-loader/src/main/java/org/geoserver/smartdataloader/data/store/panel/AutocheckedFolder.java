@@ -17,9 +17,7 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
-/**
- * CheckedFolder that includes javascript code that allows to autocheck nodes based on hierarchy.
- */
+/** CheckedFolder that includes javascript code that allows to autocheck nodes based on hierarchy. */
 @SuppressWarnings("serial")
 public class AutocheckedFolder<T> extends CheckedFolder<T> {
 
@@ -27,8 +25,7 @@ public class AutocheckedFolder<T> extends CheckedFolder<T> {
     private IModel<Set<T>> checkedNodes;
     private IModel<Boolean> checkboxModel;
 
-    public AutocheckedFolder(
-            String id, AbstractTree<T> tree, IModel<T> model, IModel<Set<T>> checkedNodes) {
+    public AutocheckedFolder(String id, AbstractTree<T> tree, IModel<T> model, IModel<Set<T>> checkedNodes) {
         super(id, tree, model);
         this.treeProvider = tree.getProvider();
         this.checkedNodes = checkedNodes;
@@ -56,24 +53,15 @@ public class AutocheckedFolder<T> extends CheckedFolder<T> {
 
     protected void updateNodeOnClientSide(AjaxRequestTarget target, boolean nodeChecked) {
         target.appendJavaScript(
-                ";CheckAncestorsAndChildren.checkChildren('"
-                        + getMarkupId()
-                        + "',"
-                        + nodeChecked
-                        + ");");
+                ";CheckAncestorsAndChildren.checkChildren('" + getMarkupId() + "'," + nodeChecked + ");");
 
         target.appendJavaScript(
-                ";CheckAncestorsAndChildren.checkAncestors('"
-                        + getMarkupId()
-                        + "',"
-                        + nodeChecked
-                        + ");");
+                ";CheckAncestorsAndChildren.checkAncestors('" + getMarkupId() + "'," + nodeChecked + ");");
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        PackageResourceReference scriptFile =
-                new PackageResourceReference(this.getClass(), "autocheckedFolder.js");
+        PackageResourceReference scriptFile = new PackageResourceReference(this.getClass(), "autocheckedFolder.js");
         response.render(JavaScriptHeaderItem.forReference(scriptFile));
     }
 

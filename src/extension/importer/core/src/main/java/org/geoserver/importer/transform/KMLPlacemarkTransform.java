@@ -62,8 +62,7 @@ public class KMLPlacemarkTransform extends AbstractTransform implements InlineVe
             newFeature.setAttribute("Folder", serializedFolders);
         }
         @SuppressWarnings("unchecked")
-        Map<String, String> untypedExtendedData =
-                (Map<String, String>) userData.get("UntypedExtendedData");
+        Map<String, String> untypedExtendedData = (Map<String, String>) userData.get("UntypedExtendedData");
         if (untypedExtendedData != null) {
             for (Entry<String, String> entry : untypedExtendedData.entrySet()) {
                 if (targetFeatureType.getDescriptor(entry.getKey()) != null) {
@@ -89,14 +88,13 @@ public class KMLPlacemarkTransform extends AbstractTransform implements InlineVe
     }
 
     @Override
-    public SimpleFeatureType apply(
-            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(ImportTask task, DataStore dataStore, SimpleFeatureType featureType)
+            throws Exception {
         return convertFeatureType(featureType);
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         SimpleFeatureType targetFeatureType = feature.getFeatureType();
         SimpleFeature newFeature = convertFeature(oldFeature, targetFeatureType);

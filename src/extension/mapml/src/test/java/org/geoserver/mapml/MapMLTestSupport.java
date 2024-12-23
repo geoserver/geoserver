@@ -40,8 +40,7 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @throws JAXBException if an error occurs
      * @throws UnsupportedEncodingException if an error occurs
      */
-    protected Mapml mapml(MockHttpServletResponse response)
-            throws JAXBException, UnsupportedEncodingException {
+    protected Mapml mapml(MockHttpServletResponse response) throws JAXBException, UnsupportedEncodingException {
         MapMLEncoder encoder = new MapMLEncoder();
         StringReader reader = new StringReader(response.getContentAsString());
         Mapml mapml = null;
@@ -180,39 +179,33 @@ public class MapMLTestSupport extends WMSTestSupport {
             String path = null;
             cql(getCql() != null ? getCql() : "");
             MockHttpServletRequest httpRequest = null;
-            String formatOptions =
-                    isFeature()
-                            ? MapMLConstants.MAPML_FEATURE_FO + ":true"
-                            : getFormat() != null
-                                    ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png"
-                                    : "";
+            String formatOptions = isFeature()
+                    ? MapMLConstants.MAPML_FEATURE_FO + ":true"
+                    : getFormat() != null ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png" : "";
             if (getKvp() != null) {
                 path = "wms";
                 httpRequest = createRequest(path, getKvp());
             } else {
-                path =
-                        "wms?LAYERS="
-                                + getName()
-                                + "&STYLES="
-                                + (getStyles() != null ? getStyles() : "")
-                                + "&FORMAT="
-                                + (getFormat() != null
-                                        ? getFormat()
-                                        : MapMLConstants.MAPML_MIME_TYPE)
-                                + "&SERVICE=WMS&VERSION=1.3.0"
-                                + "&REQUEST=GetMap"
-                                + "&SRS="
-                                + getSrs()
-                                + "&BBOX="
-                                + (getBbox() != null ? getBbox() : "0,0,1,1")
-                                + "&WIDTH="
-                                + (getWidth() != null ? getWidth() : "150")
-                                + "&HEIGHT="
-                                + (getHeight() != null ? getHeight() : "150")
-                                + "&cql_filter="
-                                + getCql()
-                                + "&format_options="
-                                + formatOptions;
+                path = "wms?LAYERS="
+                        + getName()
+                        + "&STYLES="
+                        + (getStyles() != null ? getStyles() : "")
+                        + "&FORMAT="
+                        + (getFormat() != null ? getFormat() : MapMLConstants.MAPML_MIME_TYPE)
+                        + "&SERVICE=WMS&VERSION=1.3.0"
+                        + "&REQUEST=GetMap"
+                        + "&SRS="
+                        + getSrs()
+                        + "&BBOX="
+                        + (getBbox() != null ? getBbox() : "0,0,1,1")
+                        + "&WIDTH="
+                        + (getWidth() != null ? getWidth() : "150")
+                        + "&HEIGHT="
+                        + (getHeight() != null ? getHeight() : "150")
+                        + "&cql_filter="
+                        + getCql()
+                        + "&format_options="
+                        + formatOptions;
                 httpRequest = createRequest(path);
             }
 

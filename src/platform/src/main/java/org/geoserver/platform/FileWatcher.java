@@ -15,9 +15,8 @@ import org.geoserver.platform.resource.Resource.Type;
 /**
  * Watches a files last modified date to determine when a file has been changed.
  *
- * <p>Client code using this class should call {@link #isModified()} to determine if the file has
- * changed since the last check, and {@link #read()} to read the contents of the file and update the
- * last check timestamp.
+ * <p>Client code using this class should call {@link #isModified()} to determine if the file has changed since the last
+ * check, and {@link #read()} to read the contents of the file and update the last check timestamp.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -46,8 +45,7 @@ public class FileWatcher<T> {
     /**
      * Reads the file updating the last check timestamp.
      *
-     * <p>Subclasses can override {@link #parseFileContents(InputStream)} to do something when the
-     * file is read.
+     * <p>Subclasses can override {@link #parseFileContents(InputStream)} to do something when the file is read.
      *
      * @return parsed file contents
      */
@@ -82,16 +80,14 @@ public class FileWatcher<T> {
         long now = System.currentTimeMillis();
         if ((now - lastCheck) > 1000) {
             lastCheck = now;
-            stale =
-                    (resource.getType() != Type.UNDEFINED)
-                            && (resource.lastmodified() != lastModified);
+            stale = (resource.getType() != Type.UNDEFINED) && (resource.lastmodified() != lastModified);
         }
         return stale;
     }
 
     /**
-     * Method to set the last modified time stamp. Clients synchronized with the actual file content
-     * and knowing the last modified time stamp can avoid unnecessary reload operations
+     * Method to set the last modified time stamp. Clients synchronized with the actual file content and knowing the
+     * last modified time stamp can avoid unnecessary reload operations
      *
      * @param lastModified last modified time
      */

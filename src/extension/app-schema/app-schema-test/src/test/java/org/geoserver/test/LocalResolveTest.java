@@ -27,16 +27,13 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testResolveDepth2() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=2");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=2");
 
         LOGGER.info("WFS testResolveDepth2 response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo(
-                "gu.25699",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25699", "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:role/@xlink:href",
@@ -49,16 +46,13 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testResolveDepth1() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=1");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=1");
 
         LOGGER.info("WFS testResolveDepth1 response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo(
-                "gu.25699",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25699", "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         assertXpathEvaluatesTo(
                 "urn:x-test:CompositionPart:cp.167775491936278899",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gsml:composition/@xlink:href",
@@ -71,9 +65,8 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testResolveDepth0() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=0");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=0");
 
         LOGGER.info("WFS testResolveDepth0 response:\n" + prettyString(doc));
 
@@ -89,9 +82,7 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testNoResolve() {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=none");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=none");
 
         LOGGER.info("WFS testNoResolve response:\n" + prettyString(doc));
 
@@ -110,9 +101,8 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
         if (!SystemUtils.IS_OS_MAC) {
 
             // the only thing we can test with 100% certainty is resolve time out = 0
-            Document doc =
-                    getAsDOM(
-                            "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=2&resolveTimeOut=0");
+            Document doc = getAsDOM(
+                    "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=2&resolveTimeOut=0");
 
             LOGGER.info("WFS testResolveTimeOut 0 response:\n" + prettyString(doc));
 
@@ -125,16 +115,13 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
         }
 
         // now do the same with a great time out, shoudl return
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=2&resolveTimeOut=100000");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=local&resolveDepth=2&resolveTimeOut=100000");
 
         LOGGER.info("WFS testResolveTimeOut 100000 response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo(
-                "gu.25699",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25699", "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:role/@xlink:href",
@@ -148,9 +135,7 @@ public class LocalResolveTest extends AbstractAppSchemaTestSupport {
     public void testRemoteResolve() {
 
         // the only thing we can test with 100% certainty is resolve time out = 0
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=remote");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=2.0.0&typename=gsml:MappedFeature&resolve=remote");
 
         LOGGER.info("WFS testRemoteResolve response:\n" + prettyString(doc));
 

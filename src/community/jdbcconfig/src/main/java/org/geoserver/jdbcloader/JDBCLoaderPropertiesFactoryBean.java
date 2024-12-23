@@ -100,9 +100,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
 
         // copy over default config to data dir
         saveConfig(
-                config,
-                "Default GeoServer JDBC loader driver and connection pool options."
-                        + " Edit as appropriate.");
+                config, "Default GeoServer JDBC loader driver and connection pool options." + " Edit as appropriate.");
         copySampleConfigsToDataDir();
         copyScriptsToDataDir();
 
@@ -124,8 +122,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
             config.setImport(Boolean.getBoolean(replacePrefix(IMPORT_SYSPROP)));
 
             if (LOGGER.isLoggable(Level.INFO)) {
-                StringBuilder msg =
-                        new StringBuilder("Configuring jdbcloader from system properties:\n");
+                StringBuilder msg = new StringBuilder("Configuring jdbcloader from system properties:\n");
                 msg.append("  ")
                         .append(replacePrefix(JDBCURL_SYSPROP))
                         .append("=")
@@ -181,12 +178,11 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
             return true;
         }
 
-        LOGGER.severe(
-                "System property "
-                        + replacePrefix(CONFIG_SYSPROP)
-                        + " specified "
-                        + propUrl
-                        + " but could not be read, ignoring.");
+        LOGGER.severe("System property "
+                + replacePrefix(CONFIG_SYSPROP)
+                + " specified "
+                + propUrl
+                + " but could not be read, ignoring.");
         return false;
     }
 
@@ -221,10 +217,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
             }
 
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Error saving jdbc loader properties to file " + propFile.path(),
-                    e);
+            LOGGER.log(Level.WARNING, "Error saving jdbc loader properties to file " + propFile.path(), e);
             propFile.delete();
         }
     }
@@ -246,10 +239,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
             Resource target = baseDirectory.get(sampleConfig);
             if (!Resources.exists(target)) {
                 IOUtils.copy(
-                        Thread.currentThread()
-                                .getContextClassLoader()
-                                .getResourceAsStream(sampleConfig),
-                        target.out());
+                        Thread.currentThread().getContextClassLoader().getResourceAsStream(sampleConfig), target.out());
             }
         }
     }
@@ -257,10 +247,9 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
     protected String getDataDirStr() {
         if (dataDirectory == null) {
             if (resourceStore instanceof GeoServerResourceLoader) {
-                dataDirectory =
-                        ((GeoServerResourceLoader) resourceStore)
-                                .getBaseDirectory()
-                                .getAbsolutePath();
+                dataDirectory = ((GeoServerResourceLoader) resourceStore)
+                        .getBaseDirectory()
+                        .getAbsolutePath();
             } else {
                 throw new IllegalStateException("Data directory could not be determined.");
             }

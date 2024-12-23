@@ -8,9 +8,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.wcs.WCSInfo;
 
-/**
- * A {@link TimeKvpParser} picking the max number of values to be parsed from the WCS configuration
- */
+/** A {@link TimeKvpParser} picking the max number of values to be parsed from the WCS configuration */
 public class TimeKvpParser extends org.geoserver.ows.kvp.TimeKvpParser {
 
     private final GeoServer geoServer;

@@ -18,17 +18,15 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 
 /**
- * Given a {@link DataAccess} subclass makes sure no write operations can be performed through it.
- * Regardless of the policy the data access is kept read only as services are supposed to perform
- * writes via {@link FeatureStore} instances returned by {@link FeatureTypeInfo} and not via direct
- * calls to data access.
+ * Given a {@link DataAccess} subclass makes sure no write operations can be performed through it. Regardless of the
+ * policy the data access is kept read only as services are supposed to perform writes via {@link FeatureStore}
+ * instances returned by {@link FeatureTypeInfo} and not via direct calls to data access.
  *
  * @author Andrea Aime - TOPP
  * @param <T>
  * @param <F>
  */
-public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature>
-        extends DecoratingDataAccess<T, F> {
+public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature> extends DecoratingDataAccess<T, F> {
 
     static final String READ_ONLY = "This data access is read only";
     private WrapperPolicy policy;
@@ -62,10 +60,9 @@ public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature>
         throw notifyUnsupportedOperation();
     }
     /**
-     * Notifies the caller the requested operation is not supported, using a plain {@link
-     * UnsupportedOperationException} in case we have to conceal the fact the data is actually
-     * writable, using an Spring Security security exception otherwise to force an authentication
-     * from the user
+     * Notifies the caller the requested operation is not supported, using a plain {@link UnsupportedOperationException}
+     * in case we have to conceal the fact the data is actually writable, using an Spring Security security exception
+     * otherwise to force an authentication from the user
      */
     RuntimeException notifyUnsupportedOperation() {
         if (policy.response == Response.CHALLENGE) {

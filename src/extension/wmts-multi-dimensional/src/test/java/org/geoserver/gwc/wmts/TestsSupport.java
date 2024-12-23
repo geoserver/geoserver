@@ -50,22 +50,17 @@ public abstract class TestsSupport extends WMSTestSupport {
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("ows", "http://www.opengis.net/ows/1.1");
         namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
-        namespaces.put(
-                "md",
-                "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd");
+        namespaces.put("md", "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd");
         namespaces.put("gml", "http://www.opengis.net/gml");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
     }
 
-    protected static final QName RASTER_ELEVATION_TIME =
-            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-    protected static final QName RASTER_ELEVATION =
-            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName RASTER_ELEVATION_TIME = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName RASTER_ELEVATION = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static final QName RASTER_TIME =
             new QName(MockData.SF_URI, "watertemp_future_generated", MockData.SF_PREFIX);
-    protected static final QName RASTER_CUSTOM =
-            new QName(MockData.SF_URI, "watertemp_custom", MockData.SF_PREFIX);
+    protected static final QName RASTER_CUSTOM = new QName(MockData.SF_URI, "watertemp_custom", MockData.SF_PREFIX);
 
     protected static final QName VECTOR_ELEVATION_TIME =
             new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
@@ -73,10 +68,8 @@ public abstract class TestsSupport extends WMSTestSupport {
             new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
     public static final QName SIDECAR_VECTOR_ET =
             new QName(MockData.SF_URI, "SidecarTimeElevationWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_TIME =
-            new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_CUSTOM =
-            new QName(MockData.SF_URI, "TimeElevationCustom", MockData.SF_PREFIX);
+    protected static final QName VECTOR_TIME = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName VECTOR_CUSTOM = new QName(MockData.SF_URI, "TimeElevationCustom", MockData.SF_PREFIX);
 
     protected WMS wms;
     protected Catalog catalog;
@@ -159,17 +152,13 @@ public abstract class TestsSupport extends WMSTestSupport {
             int expandLimit, boolean useEndAttribute, String... expectedDomainValues) {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension =
-                useEndAttribute
-                        ? buildDimensionWithEndAttribute(dimensionInfo)
-                        : buildDimension(dimensionInfo);
-        List<String> valuesAsStrings =
-                dimension.getDomainValuesAsStrings(Query.ALL, expandLimit).second;
+                useEndAttribute ? buildDimensionWithEndAttribute(dimensionInfo) : buildDimension(dimensionInfo);
+        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Query.ALL, expandLimit).second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }
 
-    protected void testDomainsValuesRepresentation(
-            int expandLimit, String... expectedDomainValues) {
+    protected void testDomainsValuesRepresentation(int expandLimit, String... expectedDomainValues) {
         testDomainsValuesRepresentation(expandLimit, false, expectedDomainValues);
     }
 
@@ -188,8 +177,7 @@ public abstract class TestsSupport extends WMSTestSupport {
         assertThat(defaultValue, is(expectedDefaultValue));
     }
 
-    protected static DimensionInfo createDimension(
-            boolean enable, DimensionDefaultValueSetting defaultValueStrategy) {
+    protected static DimensionInfo createDimension(boolean enable, DimensionDefaultValueSetting defaultValueStrategy) {
         DimensionInfo dimension = new DimensionInfoImpl();
         dimension.setEnabled(enable);
         dimension.setPresentation(DimensionPresentation.LIST);
@@ -198,25 +186,23 @@ public abstract class TestsSupport extends WMSTestSupport {
     }
 
     /**
-     * Helper method that simply extracts the result of a request to a string and builds a document.
-     * Also checks that the content type is 'text/xml'.
+     * Helper method that simply extracts the result of a request to a string and builds a document. Also checks that
+     * the content type is 'text/xml'.
      */
     protected Document getResultAsDocument(MockHttpServletResponse response) throws Exception {
         return getResultAsDocument(response, "text/xml");
     }
 
     /**
-     * Helper method that simply extracts the result of a request to a string and build a document.
-     * Also checks the content type of the response.
+     * Helper method that simply extracts the result of a request to a string and build a document. Also checks the
+     * content type of the response.
      */
-    protected Document getResultAsDocument(MockHttpServletResponse response, String contentType)
-            throws Exception {
+    protected Document getResultAsDocument(MockHttpServletResponse response, String contentType) throws Exception {
         return getResultAsDocument(response, getBaseMimeType(contentType), HttpStatus.OK);
     }
 
     protected Document getResultAsDocument(
-            MockHttpServletResponse response, String contentType, HttpStatus expectedStatus)
-            throws Exception {
+            MockHttpServletResponse response, String contentType, HttpStatus expectedStatus) throws Exception {
         String result = response.getContentAsString();
         assertThat(response.getStatus(), is(expectedStatus.value()));
         assertThat(getBaseMimeType(response.getContentType()), is(contentType));
@@ -235,8 +221,7 @@ public abstract class TestsSupport extends WMSTestSupport {
             String attributeName,
             DimensionPresentation presentation,
             DimensionDefaultValueSetting defaultValue) {
-        registerLayerDimension(
-                info, dimensionName, attributeName, null, presentation, defaultValue);
+        registerLayerDimension(info, dimensionName, attributeName, null, presentation, defaultValue);
     }
 
     /** Helper method that will register a dimension for some layer. */

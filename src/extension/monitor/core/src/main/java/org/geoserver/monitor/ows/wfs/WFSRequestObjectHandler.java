@@ -27,39 +27,35 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
     static final Logger LOGGER = Logging.getLogger(WFSRequestObjectHandler.class);
 
     // TODO: this should probably be handled as an update or extension to ExtractBoundsFilterVisitor
-    ExtractBoundsFilterVisitor visitor =
-            new ExtractBoundsFilterVisitor() {
-                @Override
-                public Object visit(BBOX filter, Object data) {
-                    if (data == null) {
-                        return null;
-                    }
+    ExtractBoundsFilterVisitor visitor = new ExtractBoundsFilterVisitor() {
+        @Override
+        public Object visit(BBOX filter, Object data) {
+            if (data == null) {
+                return null;
+            }
 
-                    BoundingBox bbox = (BoundingBox) data;
+            BoundingBox bbox = (BoundingBox) data;
 
-                    BoundingBox bounds;
-                    try {
-                        bounds = filter.getBounds();
-                        if (bounds.getCoordinateReferenceSystem() == null) {
-                            bounds =
-                                    ReferencedEnvelope.create(
-                                            bounds, bbox.getCoordinateReferenceSystem());
-                        }
-                        bounds.toBounds(monitorConfig.getBboxCrs());
-                    } catch (TransformException ex) {
-                        // We're stuck so give up.
-                        return null;
-                    }
-
-                    bbox.include(bounds);
-                    return bbox;
+            BoundingBox bounds;
+            try {
+                bounds = filter.getBounds();
+                if (bounds.getCoordinateReferenceSystem() == null) {
+                    bounds = ReferencedEnvelope.create(bounds, bbox.getCoordinateReferenceSystem());
                 }
-            };
+                bounds.toBounds(monitorConfig.getBboxCrs());
+            } catch (TransformException ex) {
+                // We're stuck so give up.
+                return null;
+            }
+
+            bbox.include(bounds);
+            return bbox;
+        }
+    };
 
     Catalog catalog;
 
-    protected WFSRequestObjectHandler(
-            String reqObjClassName, MonitorConfig config, Catalog catalog) {
+    protected WFSRequestObjectHandler(String reqObjClassName, MonitorConfig config, Catalog catalog) {
         super(reqObjClassName, config);
         this.catalog = catalog;
     }
@@ -83,8 +79,7 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
 
     /** Look up the CRS of the specified FeatureType */
     protected CoordinateReferenceSystem crsFromTypeName(QName typeName) {
-        FeatureTypeInfo featureType =
-                catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
         return featureType.getCRS();
     }
@@ -132,8 +127,7 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
                         continue;
                     }
 
-                    Filter f =
-                            OwsUtils.has(e, "filter") ? (Filter) OwsUtils.get(e, "filter") : null;
+                    Filter f = OwsUtils.has(e, "filter") ? (Filter) OwsUtils.get(e, "filter") : null;
                     if (f != null) {
                         ReferencedEnvelope startingBbox = new ReferencedEnvelope(defaultCrs);
                         bbox = (ReferencedEnvelope) f.accept(visitor, startingBbox);

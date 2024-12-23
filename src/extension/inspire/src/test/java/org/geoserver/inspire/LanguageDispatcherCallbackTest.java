@@ -20,7 +20,8 @@ public class LanguageDispatcherCallbackTest extends GeoServerSystemTestSupport {
         request.setRawKvp(kvp);
         request.setKvp(kvp);
         new LanguagesDispatcherCallback().init(request);
-        String acceptLanguagesRawKvp = request.getRawKvp().get("ACCEPTLANGUAGES").toString();
+        String acceptLanguagesRawKvp =
+                request.getRawKvp().get("ACCEPTLANGUAGES").toString();
         String acceptLanguagesKvp = request.getKvp().get("ACCEPTLANGUAGES").toString();
         assertEquals("it", acceptLanguagesRawKvp);
         assertEquals("it", acceptLanguagesKvp);

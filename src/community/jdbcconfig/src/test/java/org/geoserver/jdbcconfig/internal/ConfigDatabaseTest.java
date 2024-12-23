@@ -115,15 +115,13 @@ public class ConfigDatabaseTest {
         final Capture<ConfigurationListener> cap = Capture.newInstance(CaptureType.LAST);
         geoServer.addListener(capture(cap));
         expectLastCall().asStub();
-        expect(geoServer.getListeners())
-                .andStubAnswer(
-                        new IAnswer<Collection<ConfigurationListener>>() {
+        expect(geoServer.getListeners()).andStubAnswer(new IAnswer<Collection<ConfigurationListener>>() {
 
-                            @Override
-                            public Collection<ConfigurationListener> answer() throws Throwable {
-                                return cap.getValues();
-                            }
-                        });
+            @Override
+            public Collection<ConfigurationListener> answer() throws Throwable {
+                return cap.getValues();
+            }
+        });
         replay(geoServer);
 
         database.setGeoServer(geoServer);
@@ -240,8 +238,7 @@ public class ConfigDatabaseTest {
         Info saved = database.save(info);
         assertNotSame(info, saved);
         if (info instanceof DataStoreInfo) {
-            assertEquals(
-                    ((DataStoreInfo) info).getWorkspace(), ((DataStoreInfo) saved).getWorkspace());
+            assertEquals(((DataStoreInfo) info).getWorkspace(), ((DataStoreInfo) saved).getWorkspace());
         }
         assertEquals(info, saved);
     }
@@ -319,14 +316,12 @@ public class ConfigDatabaseTest {
         // Notify of update
         testSupport
                 .getCatalog()
-                .fireModified(
-                        ws2, Arrays.asList("name"), Arrays.asList("name1"), Arrays.asList("name2"));
+                .fireModified(ws2, Arrays.asList("name"), Arrays.asList("name1"), Arrays.asList("name2"));
         ws2.setName("name2");
         ModificationProxy.handler(ws2).commit();
         testSupport
                 .getCatalog()
-                .firePostModified(
-                        ws2, Arrays.asList("name"), Arrays.asList("name1"), Arrays.asList("name2"));
+                .firePostModified(ws2, Arrays.asList("name"), Arrays.asList("name1"), Arrays.asList("name2"));
 
         // Should show the new value
         WorkspaceInfo ws3 = database.getById(ws.getId(), WorkspaceInfo.class);
@@ -342,8 +337,7 @@ public class ConfigDatabaseTest {
     public void testCacheResourceLayer() throws Exception {
         // check that saving a resource updates the layer cache
         LayerInfo layer = addLayer();
-        ResourceInfo resourceInfo =
-                database.getById(layer.getResource().getId(), ResourceInfo.class);
+        ResourceInfo resourceInfo = database.getById(layer.getResource().getId(), ResourceInfo.class);
         resourceInfo.setName("rs2");
         testSaved(resourceInfo);
         layer = database.getById(layer.getId(), LayerInfo.class);
@@ -354,36 +348,28 @@ public class ConfigDatabaseTest {
     public void testCacheResourceLayerLocked() throws Exception {
         // check that saving a resource updates the layer cache
         LayerInfo layer = addLayer();
-        ResourceInfo resourceInfo =
-                database.getById(layer.getResource().getId(), ResourceInfo.class);
+        ResourceInfo resourceInfo = database.getById(layer.getResource().getId(), ResourceInfo.class);
         resourceInfo.setName("rs2");
-        testSupport
-                .getCatalog()
-                .addListener(
-                        new CatalogListener() {
+        testSupport.getCatalog().addListener(new CatalogListener() {
 
-                            @Override
-                            public void handleAddEvent(CatalogAddEvent event)
-                                    throws CatalogException {}
+            @Override
+            public void handleAddEvent(CatalogAddEvent event) throws CatalogException {}
 
-                            @Override
-                            public void handleRemoveEvent(CatalogRemoveEvent event)
-                                    throws CatalogException {}
+            @Override
+            public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {}
 
-                            @Override
-                            public void handleModifyEvent(CatalogModifyEvent event)
-                                    throws CatalogException {
-                                // this shouldn't cause re-caching because of lock
-                                database.getById(layer.getId(), LayerInfo.class);
-                            }
+            @Override
+            public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
+                // this shouldn't cause re-caching because of lock
+                database.getById(layer.getId(), LayerInfo.class);
+            }
 
-                            @Override
-                            public void handlePostModifyEvent(CatalogPostModifyEvent event)
-                                    throws CatalogException {}
+            @Override
+            public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {}
 
-                            @Override
-                            public void reloaded() {}
-                        });
+            @Override
+            public void reloaded() {}
+        });
         testSupport.getFacade().save(resourceInfo);
         LayerInfo layer2 = database.getById(layer.getId(), LayerInfo.class);
         assertEquals("rs2", layer2.getResource().getName());
@@ -500,13 +486,8 @@ public class ConfigDatabaseTest {
         assertEquals(store, byId);
 
         database.clearCache(store);
-        StoreInfo storeByName =
-                database.getByIdentity(
-                        StoreInfo.class,
-                        "workspace.id",
-                        store.getWorkspace().getId(),
-                        "name",
-                        store.getName());
+        StoreInfo storeByName = database.getByIdentity(
+                StoreInfo.class, "workspace.id", store.getWorkspace().getId(), "name", store.getName());
         assertEquals(store, storeByName);
 
         WebMapTileServer wmts = store.getWebMapTileServer((ProgressListener) null);
@@ -534,8 +515,7 @@ public class ConfigDatabaseTest {
 
         database.clearCache(added);
         ResourceInfo resourceByName =
-                database.getByIdentity(
-                        ResourceInfo.class, "namespace.id", ns.getId(), "name", name);
+                database.getByIdentity(ResourceInfo.class, "namespace.id", ns.getId(), "name", name);
         assertEquals(added, resourceByName);
     }
 
@@ -545,10 +525,9 @@ public class ConfigDatabaseTest {
         final Catalog catalog = database.getCatalog();
         WMTSLayerInfo wmtsResource = catalog.getFactory().createWMTSLayer();
 
-        WMTSLayer layer =
-                store.getWebMapTileServer((ProgressListener) null)
-                        .getCapabilities()
-                        .getLayer("topp:tasmania_cities");
+        WMTSLayer layer = store.getWebMapTileServer((ProgressListener) null)
+                .getCapabilities()
+                .getLayer("topp:tasmania_cities");
         assertNotNull(layer);
 
         OwsUtils.set(wmtsResource, "id", "wmtsResource");

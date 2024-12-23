@@ -12,8 +12,7 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 
 /**
- * A support class containing the old feature type name, the new one, the old feature type, and the
- * new one
+ * A support class containing the old feature type name, the new one, the old feature type, and the new one
  *
  * @author Andrea Aime
  */

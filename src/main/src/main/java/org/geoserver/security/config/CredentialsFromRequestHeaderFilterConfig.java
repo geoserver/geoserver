@@ -10,8 +10,7 @@ package org.geoserver.security.config;
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
  */
-public class CredentialsFromRequestHeaderFilterConfig extends SecurityFilterConfig
-        implements SecurityAuthFilterConfig {
+public class CredentialsFromRequestHeaderFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
 

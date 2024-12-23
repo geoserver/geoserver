@@ -46,11 +46,7 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
     protected void doTestFill() throws Exception {
         insertValues();
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
-        tester.startPage(
-                page =
-                        (NewGroupPage)
-                                new NewGroupPage(getUserGroupServiceName())
-                                        .setReturnPage(returnPage));
+        tester.startPage(page = (NewGroupPage) new NewGroupPage(getUserGroupServiceName()).setReturnPage(returnPage));
         tester.assertRenderedPage(NewGroupPage.class);
 
         FormTester form = tester.newFormTester("form");
@@ -72,7 +68,8 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
         // assign the new role to the new group
         form = tester.newFormTester("form");
         tester.assertRenderedPage(NewGroupPage.class);
-        form.setValue("roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
+        form.setValue(
+                "roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
 
         // reopen new role dialog again to ensure that the current state is not lost
         form.submit("roles:addRole");
@@ -99,11 +96,7 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
     public void testGroupNameConflict() throws Exception {
         insertValues();
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
-        tester.startPage(
-                page =
-                        (NewGroupPage)
-                                new NewGroupPage(getUserGroupServiceName())
-                                        .setReturnPage(returnPage));
+        tester.startPage(page = (NewGroupPage) new NewGroupPage(getUserGroupServiceName()).setReturnPage(returnPage));
 
         FormTester form = tester.newFormTester("form");
         form.setValue("groupname", "group1");
@@ -121,10 +114,7 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
         boolean fail = true;
         try {
             tester.startPage(
-                    page =
-                            (NewGroupPage)
-                                    new NewGroupPage(getROUserGroupServiceName())
-                                            .setReturnPage(returnPage));
+                    page = (NewGroupPage) new NewGroupPage(getROUserGroupServiceName()).setReturnPage(returnPage));
         } catch (RuntimeException ex) {
             fail = false;
         }
@@ -135,11 +125,7 @@ public class NewGroupPageTest extends AbstractSecurityWicketTestSupport {
     public void testReadOnlyRoleService() throws Exception {
         activateRORoleService();
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
-        tester.startPage(
-                page =
-                        (NewGroupPage)
-                                new NewGroupPage(getUserGroupServiceName())
-                                        .setReturnPage(returnPage));
+        tester.startPage(page = (NewGroupPage) new NewGroupPage(getUserGroupServiceName()).setReturnPage(returnPage));
         assertFalse(page.rolePalette.isEnabled());
 
         FormTester form = tester.newFormTester("form");

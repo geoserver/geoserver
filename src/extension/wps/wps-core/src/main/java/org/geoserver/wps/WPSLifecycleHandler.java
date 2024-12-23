@@ -13,8 +13,7 @@ import org.geoserver.config.impl.GeoServerLifecycleHandler;
 /**
  * Life cycle listener for WPS.
  *
- * <p>Currently this instance will reload the process group list, registering new factories if
- * required on reload/reset.
+ * <p>Currently this instance will reload the process group list, registering new factories if required on reload/reset.
  *
  * @author Justin Deoliveira, OpenGeo
  */

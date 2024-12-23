@@ -29,11 +29,9 @@ public interface LayerIdentifier<T> {
      *
      * @param params The request parameters
      * @param maxFeatures Max number of features to be returned for this identify
-     * @return A list of FeatureCollection objects, each feature in them represent an item the user
-     *     clicked on
+     * @return A list of FeatureCollection objects, each feature in them represent an item the user clicked on
      */
-    List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
-            throws Exception;
+    List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures) throws Exception;
 
     /**
      * Returns a clipped feature or grid source
@@ -43,12 +41,8 @@ public interface LayerIdentifier<T> {
      */
     T handleClipParam(FeatureInfoRequestParameters params, T fs);
 
-    /**
-     * Utility for implementors, allows to find a search area around the middle of the requested
-     * area
-     */
-    static ReferencedEnvelope getEnvelopeFilter(
-            FeatureInfoRequestParameters params, double radius) {
+    /** Utility for implementors, allows to find a search area around the middle of the requested area */
+    static ReferencedEnvelope getEnvelopeFilter(FeatureInfoRequestParameters params, double radius) {
         final int x = params.getX();
         final int y = params.getY();
         final ReferencedEnvelope bbox = params.getRequestedBounds();
@@ -58,10 +52,6 @@ public interface LayerIdentifier<T> {
         Coordinate lowerRight = WMS.pixelToWorld(x + radius, y + radius, bbox, width, height);
 
         return new ReferencedEnvelope(
-                upperLeft.x,
-                lowerRight.x,
-                lowerRight.y,
-                upperLeft.y,
-                bbox.getCoordinateReferenceSystem());
+                upperLeft.x, lowerRight.x, lowerRight.y, upperLeft.y, bbox.getCoordinateReferenceSystem());
     }
 }

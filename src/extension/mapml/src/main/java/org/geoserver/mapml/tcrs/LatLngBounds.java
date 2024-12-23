@@ -84,7 +84,6 @@ public class LatLngBounds {
 
     /** @return */
     public LatLng getCentre() {
-        return new LatLng(
-                this.northEast.lat - this.southWest.lat, this.northEast.lng - this.southWest.lng);
+        return new LatLng(this.northEast.lat - this.southWest.lat, this.northEast.lng - this.southWest.lng);
     }
 }

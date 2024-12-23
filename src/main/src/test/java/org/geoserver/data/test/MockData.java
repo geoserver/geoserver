@@ -50,17 +50,10 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-@SuppressWarnings({
-    "unchecked",
-    "PMD.JUnit4TestShouldUseBeforeAnnotation",
-    "PMD.JUnit4TestShouldUseAfterAnnotation"
-})
+@SuppressWarnings({"unchecked", "PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class MockData implements TestData {
     // Extra configuration keys for vector data
-    /**
-     * Use FeatureTypeInfo constants for srs handling as values or use {@link ProjectionPolicy}
-     * values straight
-     */
+    /** Use FeatureTypeInfo constants for srs handling as values or use {@link ProjectionPolicy} values straight */
     public static final String KEY_SRS_HANDLINGS = "srsHandling";
     /** The feature type alias, a string */
     public static final String KEY_ALIAS = "alias";
@@ -251,8 +244,8 @@ public class MockData implements TestData {
 
     /** List of wfs 1.0 type names. */
     public static QName[] WFS10_TYPENAMES = {
-        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS,
-        MPOLYGONS, POINTS, POLYGONS
+        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS, MPOLYGONS, POINTS,
+        POLYGONS
     };
 
     /** List of wfs 1.1 type names. */
@@ -335,8 +328,7 @@ public class MockData implements TestData {
         styles = new File(data, "styles");
         styles.mkdir();
         // copy over the minimal style
-        IOUtils.copy(
-                MockData.class.getResourceAsStream("Default.sld"), new File(styles, "Default.sld"));
+        IOUtils.copy(MockData.class.getResourceAsStream("Default.sld"), new File(styles, "Default.sld"));
 
         // plugins
         plugIns = new File(data, "plugIns");
@@ -398,8 +390,7 @@ public class MockData implements TestData {
     }
 
     /**
-     * Copies some content to a file udner a specific feature type directory of the data directory.
-     * Example:
+     * Copies some content to a file udner a specific feature type directory of the data directory. Example:
      *
      * <p><code>
      *    dd.copyToFeautreTypeDirectory(input,MockData.PrimitiveGeoFeature,"info.xml");
@@ -409,8 +400,8 @@ public class MockData implements TestData {
      * @param featureTypeName The name of the feature type.
      * @param location The resulting location to copy to relative to the feautre type directory.
      */
-    public void copyToFeatureTypeDirectory(
-            InputStream input, QName featureTypeName, String location) throws IOException {
+    public void copyToFeatureTypeDirectory(InputStream input, QName featureTypeName, String location)
+            throws IOException {
 
         copyTo(
                 input,
@@ -424,9 +415,8 @@ public class MockData implements TestData {
     }
 
     /**
-     * Adds the list of well known types to the data directory. Well known types are listed as
-     * constants in the MockData class header, and are organized as arrays based on the cite test
-     * they do come from
+     * Adds the list of well known types to the data directory. Well known types are listed as constants in the MockData
+     * class header, and are organized as arrays based on the cite test they do come from
      */
     public void addWellKnownTypes(QName[] names) throws IOException {
         for (QName name : names) {
@@ -462,17 +452,14 @@ public class MockData implements TestData {
         String type = typeName.getLocalPart();
         File featureTypeDir = new File(featureTypes, prefix + "_" + type);
         if (!featureTypeDir.exists()) {
-            throw new FileNotFoundException(
-                    "Type directory not found: " + featureTypeDir.getAbsolutePath());
+            throw new FileNotFoundException("Type directory not found: " + featureTypeDir.getAbsolutePath());
         }
         File info = new File(featureTypeDir, "info.xml");
         if (!info.exists()) {
-            throw new FileNotFoundException(
-                    "FeatureType file not found: " + featureTypeDir.getAbsolutePath());
+            throw new FileNotFoundException("FeatureType file not found: " + featureTypeDir.getAbsolutePath());
         }
         if (!IOUtils.delete(featureTypeDir)) {
-            throw new IOException(
-                    "FetureType directory not deleted: " + featureTypeDir.getAbsolutePath());
+            throw new IOException("FetureType directory not deleted: " + featureTypeDir.getAbsolutePath());
         }
     }
 
@@ -515,11 +502,10 @@ public class MockData implements TestData {
     /**
      * Adds a property file as a feature type in a property datastore.
      *
-     * @param name the fully qualified name of the feature type. The prefix and namespace URI will
-     *     be used to create a namespace, the prefix will be used as the datastore name, the local
-     *     name will become the feature type name
-     * @param properties a URL to the property file backing the feature type. If null, an emtpy
-     *     property file will be used
+     * @param name the fully qualified name of the feature type. The prefix and namespace URI will be used to create a
+     *     namespace, the prefix will be used as the datastore name, the local name will become the feature type name
+     * @param properties a URL to the property file backing the feature type. If null, an emtpy property file will be
+     *     used
      * @param extraParams a map from extra configurable keys to their values (see for example
      */
     public void addPropertiesType(QName name, URL properties, Map extraParams) throws IOException {
@@ -537,9 +523,7 @@ public class MockData implements TestData {
 
         // copy over the contents
         try (InputStream propertiesContents =
-                properties == null
-                        ? new ByteArrayInputStream("-=".getBytes())
-                        : properties.openStream()) {
+                properties == null ? new ByteArrayInputStream("-=".getBytes()) : properties.openStream()) {
             IOUtils.copy(propertiesContents, f);
         }
 
@@ -558,16 +542,14 @@ public class MockData implements TestData {
     /**
      * Adds a new coverage.
      *
-     * <p>Note that callers of this code should call <code>applicationContext.refresh()</code> in
-     * order to force the catalog to reload.
+     * <p>Note that callers of this code should call <code>applicationContext.refresh()</code> in order to force the
+     * catalog to reload.
      *
-     * <p>The <tt>coverage</tt> parameter is an input stream containing a single uncompressed file
-     * that's supposed to be a coverage (e.g., a GeoTiff).
+     * <p>The <tt>coverage</tt> parameter is an input stream containing a single uncompressed file that's supposed to be
+     * a coverage (e.g., a GeoTiff).
      */
-    public void addCoverage(QName name, URL coverage, String extension, String styleName)
-            throws Exception {
-        if (extension == null)
-            throw new IllegalArgumentException("Use addCoverageFromZip instead of passing NULL");
+    public void addCoverage(QName name, URL coverage, String extension, String styleName) throws Exception {
+        if (extension == null) throw new IllegalArgumentException("Use addCoverageFromZip instead of passing NULL");
 
         File directory = new File(data, name.getPrefix());
         if (!directory.exists()) {
@@ -580,14 +562,10 @@ public class MockData implements TestData {
         IOUtils.copy(coverage.openStream(), f);
 
         addCoverageFromPath(
-                name,
-                f,
-                "file:" + name.getPrefix() + "/" + name.getLocalPart() + "." + extension,
-                styleName);
+                name, f, "file:" + name.getPrefix() + "/" + name.getLocalPart() + "." + extension, styleName);
     }
 
-    public void addCoverageFromZip(QName name, URL coverage, String extension, String styleName)
-            throws Exception {
+    public void addCoverageFromZip(QName name, URL coverage, String extension, String styleName) throws Exception {
         File directory = new File(data, name.getPrefix());
         if (!directory.exists()) {
             directory.mkdir();
@@ -618,13 +596,11 @@ public class MockData implements TestData {
                             + extension,
                     styleName);
         } else {
-            addCoverageFromPath(
-                    name, f, "file:" + name.getPrefix() + "/" + name.getLocalPart(), styleName);
+            addCoverageFromPath(name, f, "file:" + name.getPrefix() + "/" + name.getLocalPart(), styleName);
         }
     }
 
-    private void addCoverageFromPath(QName name, File coverage, String relpath, String styleName)
-            throws Exception {
+    private void addCoverageFromPath(QName name, File coverage, String relpath, String styleName) throws Exception {
         coverageInfo(name, coverage, styleName);
 
         // setup the meta information to be written in the catalog
@@ -694,8 +670,7 @@ public class MockData implements TestData {
         try (FileWriter writer = new FileWriter(info)) {
             writer.write("<featureType datastore=\"" + prefix + "\">");
             writer.write("<name>" + type + "</name>");
-            if (params.get(KEY_ALIAS) != null)
-                writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+            if (params.get(KEY_ALIAS) != null) writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
             writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
             // this mock type may have wrong SRS compared to the actual one in the property files...
             // let's configure SRS handling not to alter the original one, and have 4326 used only
@@ -716,29 +691,27 @@ public class MockData implements TestData {
             writer.write("<keywords>" + type + "</keywords>");
             Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
             if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-            writer.write(
-                    "<latLonBoundingBox dynamic=\"false\" minx=\""
-                            + llEnvelope.getMinX()
-                            + "\" miny=\""
-                            + llEnvelope.getMinY()
-                            + "\" maxx=\""
-                            + llEnvelope.getMaxX()
-                            + "\" maxy=\""
-                            + llEnvelope.getMaxY()
-                            + "\"/>");
+            writer.write("<latLonBoundingBox dynamic=\"false\" minx=\""
+                    + llEnvelope.getMinX()
+                    + "\" miny=\""
+                    + llEnvelope.getMinY()
+                    + "\" maxx=\""
+                    + llEnvelope.getMaxX()
+                    + "\" maxy=\""
+                    + llEnvelope.getMaxY()
+                    + "\"/>");
 
             Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
             if (nativeEnvelope != null)
-                writer.write(
-                        "<nativeBBox dynamic=\"false\" minx=\""
-                                + nativeEnvelope.getMinX()
-                                + "\" miny=\""
-                                + nativeEnvelope.getMinY()
-                                + "\" maxx=\""
-                                + nativeEnvelope.getMaxX()
-                                + "\" maxy=\""
-                                + nativeEnvelope.getMaxY()
-                                + "\"/>");
+                writer.write("<nativeBBox dynamic=\"false\" minx=\""
+                        + nativeEnvelope.getMinX()
+                        + "\" miny=\""
+                        + nativeEnvelope.getMinY()
+                        + "\" maxx=\""
+                        + nativeEnvelope.getMaxX()
+                        + "\" maxy=\""
+                        + nativeEnvelope.getMaxY()
+                        + "\"/>");
 
             String style = (String) params.get(KEY_STYLE);
             if (style == null) style = "Default";
@@ -754,8 +727,7 @@ public class MockData implements TestData {
         coverageInfo(name, coverageFile, null, styleName);
     }
 
-    void coverageInfo(QName name, Object coverageFile, String gridFormat, String styleName)
-            throws Exception {
+    void coverageInfo(QName name, Object coverageFile, String gridFormat, String styleName) throws Exception {
         String coverage = name.getLocalPart();
 
         File coverageDir = new File(coverages, coverage);
@@ -765,29 +737,21 @@ public class MockData implements TestData {
         info.createNewFile();
 
         // let's grab the necessary metadata
-        AbstractGridFormat format =
-                (AbstractGridFormat)
-                        (gridFormat != null
-                                ? CoverageStoreUtils.acquireFormat(gridFormat)
-                                : GridFormatFinder.findFormat(coverageFile));
+        AbstractGridFormat format = (AbstractGridFormat)
+                (gridFormat != null
+                        ? CoverageStoreUtils.acquireFormat(gridFormat)
+                        : GridFormatFinder.findFormat(coverageFile));
         GridCoverage2DReader reader;
         try {
             reader = format.getReader(coverageFile);
         } catch (Exception e) {
             String message =
-                    "Exception while trying to read "
-                            + coverageFile.toString()
-                            + " with format"
-                            + format.getName();
+                    "Exception while trying to read " + coverageFile.toString() + " with format" + format.getName();
             throw new RuntimeException(message, e);
         }
 
         if (reader == null) {
-            throw new RuntimeException(
-                    "No reader for "
-                            + coverageFile.toString()
-                            + " with format "
-                            + format.getName());
+            throw new RuntimeException("No reader for " + coverageFile.toString() + " with format " + format.getName());
         }
         // basic info
         try (FileWriter writer = new FileWriter(info)) {
@@ -806,45 +770,30 @@ public class MockData implements TestData {
             GeneralBounds envelope = reader.getOriginalEnvelope();
             GeneralBounds wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
             final String nativeCrsName = ResourcePool.lookupIdentifier(crs, false);
-            writer.write(
-                    "<envelope crs=\""
-                            + crs.toString().replaceAll("\"", "'")
-                            + "\" srsName=\""
-                            + nativeCrsName
-                            + "\">\n");
-            writer.write(
-                    "<pos>"
-                            + wgs84envelope.getMinimum(0)
-                            + " "
-                            + wgs84envelope.getMinimum(1)
-                            + "</pos>\n");
-            writer.write(
-                    "<pos>"
-                            + wgs84envelope.getMaximum(0)
-                            + " "
-                            + wgs84envelope.getMaximum(1)
-                            + "</pos>\n");
+            writer.write("<envelope crs=\""
+                    + crs.toString().replaceAll("\"", "'")
+                    + "\" srsName=\""
+                    + nativeCrsName
+                    + "\">\n");
+            writer.write("<pos>" + wgs84envelope.getMinimum(0) + " " + wgs84envelope.getMinimum(1) + "</pos>\n");
+            writer.write("<pos>" + wgs84envelope.getMaximum(0) + " " + wgs84envelope.getMaximum(1) + "</pos>\n");
             writer.write("</envelope>\n");
 
             /**
-             * Now reading a fake small GridCoverage just to retrieve meta information: -
-             * calculating a new envelope which is 1/20 of the original one - reading the
-             * GridCoverage subset
+             * Now reading a fake small GridCoverage just to retrieve meta information: - calculating a new envelope
+             * which is 1/20 of the original one - reading the GridCoverage subset
              */
             final ParameterValueGroup readParams = reader.getFormat().getReadParameters();
             final Map parameters = CoverageUtils.getParametersKVP(readParams);
             double[] minCP = envelope.getLowerCorner().getCoordinate();
-            double[] maxCP = {
-                minCP[0] + (envelope.getSpan(0) / 20.0), minCP[1] + (envelope.getSpan(1) / 20.0)
-            };
+            double[] maxCP = {minCP[0] + (envelope.getSpan(0) / 20.0), minCP[1] + (envelope.getSpan(1) / 20.0)};
             final GeneralBounds subEnvelope = new GeneralBounds(minCP, maxCP);
             subEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
 
             parameters.put(
                     AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                     new GridGeometry2D(reader.getOriginalGridRange(), subEnvelope));
-            GridCoverage2D gc =
-                    reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+            GridCoverage2D gc = reader.read(CoverageUtils.getParameters(readParams, parameters, true));
 
             // grid geometry
             final GridGeometry geometry = gc.getGridGeometry();
@@ -879,8 +828,7 @@ public class MockData implements TestData {
             final GridSampleDimension[] sd = gc.getSampleDimensions();
             for (GridSampleDimension gridSampleDimension : sd) {
                 writer.write("<CoverageDimension>\n");
-                writer.write(
-                        "<name>" + gridSampleDimension.getDescription().toString() + "</name>\n");
+                writer.write("<name>" + gridSampleDimension.getDescription().toString() + "</name>\n");
                 writer.write("<interval>\n");
                 writer.write("<min>" + gridSampleDimension.getMinimumValue() + "</min>\n");
                 writer.write("<max>" + gridSampleDimension.getMaximumValue() + "</max>\n");

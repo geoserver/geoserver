@@ -22,7 +22,8 @@ import org.jivesoftware.smack.packet.Packet;
 public class XMPPLogMessage implements XMPPMessage {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPMessage.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPMessage.class.getPackage().getName());
 
     @Override
     public boolean canHandle(Map<String, String> signalArgs) {
@@ -32,8 +33,7 @@ public class XMPPLogMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         Map<String, Object> metadata = new HashMap<String, Object>();
         metadata.put("serviceJID", packet.getFrom());
@@ -45,11 +45,9 @@ public class XMPPLogMessage implements XMPPMessage {
             try {
                 logLevel = Level.parse(signalArgs.get("level"));
             } catch (Exception e) {
-                LOGGER.fine(
-                        "Could not correctly parse the Log level; using the default one 'INFO'.");
+                LOGGER.fine("Could not correctly parse the Log level; using the default one 'INFO'.");
             }
-            String logMessage =
-                    "[" + pID + "]" + URLDecoder.decode(signalArgs.get("message"), "UTF-8");
+            String logMessage = "[" + pID + "]" + URLDecoder.decode(signalArgs.get("message"), "UTF-8");
             LOGGER.log(logLevel, logMessage);
 
             // NOTIFY LISTENERS
@@ -58,10 +56,7 @@ public class XMPPLogMessage implements XMPPMessage {
                 listener.progress(pID, listener.getProgress(pID));
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error while trying to decode Log message: " + message.getBody(),
-                    e);
+            LOGGER.log(Level.SEVERE, "Error while trying to decode Log message: " + message.getBody(), e);
         }
     }
 }

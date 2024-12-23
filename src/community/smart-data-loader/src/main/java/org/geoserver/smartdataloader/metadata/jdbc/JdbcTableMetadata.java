@@ -86,8 +86,7 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
         try {
             // Lazy load in case not loaded before
             if (attributes.isEmpty()) {
-                attributes.addAll(
-                        JdbcHelper.getInstance().getColumnsByTable(connection.getMetaData(), this));
+                attributes.addAll(JdbcHelper.getInstance().getColumnsByTable(connection.getMetaData(), this));
             }
             return attributes;
         } catch (Exception e) {
@@ -112,9 +111,7 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
     public List<RelationMetadata> getRelations() {
         try {
             if (relations.isEmpty()) {
-                relations.addAll(
-                        JdbcHelper.getInstance()
-                                .getRelationsByTable(connection.getMetaData(), this));
+                relations.addAll(JdbcHelper.getInstance().getRelationsByTable(connection.getMetaData(), this));
             }
             return relations;
         } catch (Exception e) {

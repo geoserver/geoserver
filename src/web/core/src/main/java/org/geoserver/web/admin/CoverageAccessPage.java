@@ -61,7 +61,10 @@ public class CoverageAccessPage extends ServerAdminPage {
             if (maxPoolField != null && corePoolField != null) {
                 final String mp = maxPoolField.getValue();
                 final String cp = corePoolField.getValue();
-                if (!(mp == null || cp == null || mp.trim().isEmpty() || cp.trim().isEmpty())) {
+                if (!(mp == null
+                        || cp == null
+                        || mp.trim().isEmpty()
+                        || cp.trim().isEmpty())) {
                     try {
                         maxPool = Integer.valueOf(mp);
                     } catch (NumberFormatException nfe) {
@@ -93,13 +96,11 @@ public class CoverageAccessPage extends ServerAdminPage {
         coverageModel = getCoverageAccessModel();
 
         // form and submit
-        Form<CoverageAccessInfo> form =
-                new Form<>("form", new CompoundPropertyModel<>(coverageModel));
+        Form<CoverageAccessInfo> form = new Form<>("form", new CompoundPropertyModel<>(coverageModel));
         add(form);
         form.add(new PoolSizeValidator());
         // All the fields
-        NumberTextField<Integer> corePoolSize =
-                new NumberTextField<>("corePoolSize", Integer.class);
+        NumberTextField<Integer> corePoolSize = new NumberTextField<>("corePoolSize", Integer.class);
         corePoolSize.setMinimum(1);
         form.add(corePoolSize);
 
@@ -107,44 +108,38 @@ public class CoverageAccessPage extends ServerAdminPage {
         maxPoolSize.add(RangeValidator.minimum(1));
         form.add(maxPoolSize);
 
-        NumberTextField<Integer> keepAliveTime =
-                new NumberTextField<>("keepAliveTime", Integer.class);
+        NumberTextField<Integer> keepAliveTime = new NumberTextField<>("keepAliveTime", Integer.class);
         keepAliveTime.add(RangeValidator.minimum(1));
         form.add(keepAliveTime);
 
-        final DropDownChoice<QueueType> queueType =
-                new DropDownChoice<>(
-                        "queueType",
-                        Arrays.asList(CoverageAccessInfo.QueueType.values()),
-                        new QueueTypeRenderer());
+        final DropDownChoice<QueueType> queueType = new DropDownChoice<>(
+                "queueType", Arrays.asList(CoverageAccessInfo.QueueType.values()), new QueueTypeRenderer());
         form.add(queueType);
 
         TextField<String> imageIOCacheThreshold = new TextField<>("imageIOCacheThreshold");
         imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
 
-        Button submit =
-                new Button("submit") {
-                    private static final long serialVersionUID = 4149741045073254811L;
+        Button submit = new Button("submit") {
+            private static final long serialVersionUID = 4149741045073254811L;
 
-                    @Override
-                    public void onSubmit() {
-                        save(true);
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                save(true);
+            }
+        };
         form.add(submit);
 
         form.add(applyLink(form));
 
-        Button cancel =
-                new Button("cancel") {
-                    private static final long serialVersionUID = -57093747603810865L;
+        Button cancel = new Button("cancel") {
+            private static final long serialVersionUID = -57093747603810865L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
     }
 

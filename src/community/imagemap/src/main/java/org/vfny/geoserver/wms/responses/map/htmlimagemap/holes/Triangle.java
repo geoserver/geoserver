@@ -41,15 +41,12 @@ public class Triangle {
     }
 
     static boolean checkPointToSegment(Vertex sA, Vertex sB, Vertex point) {
-        if ((sA.getPosition().y < point.getPosition().y
-                        && sB.getPosition().y >= point.getPosition().y)
-                || (sB.getPosition().y < point.getPosition().y
-                        && sA.getPosition().y >= point.getPosition().y)) {
-            double x =
-                    sA.getPosition().x
-                            + (point.getPosition().y - sA.getPosition().y)
-                                    / (sB.getPosition().y - sA.getPosition().y)
-                                    * (sB.getPosition().x - sA.getPosition().x);
+        if ((sA.getPosition().y < point.getPosition().y && sB.getPosition().y >= point.getPosition().y)
+                || (sB.getPosition().y < point.getPosition().y && sA.getPosition().y >= point.getPosition().y)) {
+            double x = sA.getPosition().x
+                    + (point.getPosition().y - sA.getPosition().y)
+                            / (sB.getPosition().y - sA.getPosition().y)
+                            * (sB.getPosition().x - sA.getPosition().x);
 
             if (x < point.getPosition().x) return true;
         }

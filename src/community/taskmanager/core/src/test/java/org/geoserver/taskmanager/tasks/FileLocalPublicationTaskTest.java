@@ -59,21 +59,29 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_LAYER = "layer";
     private static final String ATT_FAIL = "fail";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     private Configuration config;
 
@@ -126,12 +134,9 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         task1.setType(FileLocalPublicationTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(
                 task1, FileLocalPublicationTaskTypeImpl.PARAM_FILE_SERVICE, ATT_FILE_SERVICE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileLocalPublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileLocalPublicationTaskTypeImpl.PARAM_WORKSPACE, ATT_WORKSPACE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileLocalPublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
+        dataUtil.setTaskParameterToAttribute(task1, FileLocalPublicationTaskTypeImpl.PARAM_WORKSPACE, ATT_WORKSPACE);
+        dataUtil.setTaskParameterToAttribute(task1, FileLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -162,18 +167,18 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, COVERAGE_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertNotNull(catalog.getLayerByName(COVERAGE_NAME));
-        CoverageStoreInfo csi =
-                catalog.getStoreByName(RASTER_WS, COVERAGE_NAME, CoverageStoreInfo.class);
+        CoverageStoreInfo csi = catalog.getStoreByName(RASTER_WS, COVERAGE_NAME, CoverageStoreInfo.class);
         assertNotNull(csi);
-        assertEquals(
-                fileServices.get(FILE_SERVICE).getURI(RASTER_LOCATION).toString(), csi.getURL());
+        assertEquals(fileServices.get(FILE_SERVICE).getURI(RASTER_LOCATION).toString(), csi.getURL());
         assertNotNull(catalog.getResourceByName(COVERAGE_NAME, CoverageInfo.class));
 
         taskUtil.cleanup(config);
@@ -191,8 +196,10 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, VECTOR_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -230,8 +237,10 @@ public class FileLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

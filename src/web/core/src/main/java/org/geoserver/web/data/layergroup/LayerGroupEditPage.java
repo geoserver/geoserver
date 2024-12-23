@@ -70,15 +70,12 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
         String groupName = parameters.get(GROUP).toString();
         String wsName = parameters.get(WORKSPACE).toOptionalString();
 
-        LayerGroupInfo lg =
-                wsName != null
-                        ? getCatalog().getLayerGroupByName(wsName, groupName)
-                        : getCatalog().getLayerGroupByName(groupName);
+        LayerGroupInfo lg = wsName != null
+                ? getCatalog().getLayerGroupByName(wsName, groupName)
+                : getCatalog().getLayerGroupByName(groupName);
 
         if (lg == null) {
-            error(
-                    new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName)
-                            .getString());
+            error(new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName).getString());
             doReturn(LayerGroupPage.class);
             return;
         }
@@ -115,14 +112,12 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
         @SuppressWarnings("serial")
         private void initUI() {
 
-            final WebMarkupContainer rootLayerPanelContainer =
-                    new WebMarkupContainer("rootLayerContainer");
+            final WebMarkupContainer rootLayerPanelContainer = new WebMarkupContainer("rootLayerContainer");
             rootLayerPanelContainer.setOutputMarkupId(true);
             add(rootLayerPanelContainer);
 
             rootLayerPanel =
-                    new RootLayerEntryPanel(
-                            "rootLayer", getPublishedInfo().getWorkspace(), myModel);
+                    new RootLayerEntryPanel("rootLayer", getPublishedInfo().getWorkspace(), myModel);
             rootLayerPanelContainer.add(rootLayerPanel);
 
             updateRootLayerPanel(getPublishedInfo().getMode());
@@ -135,25 +130,22 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             add(new CheckBox("enabled"));
             add(new CheckBox("advertised"));
             final DropDownChoice<LayerGroupInfo.Mode> modeChoice =
-                    new DropDownChoice<>(
-                            "mode", new LayerGroupModeModel(), new LayerGroupModeChoiceRenderer());
+                    new DropDownChoice<>("mode", new LayerGroupModeModel(), new LayerGroupModeChoiceRenderer());
             modeChoice.setNullValid(false);
             modeChoice.setRequired(true);
-            modeChoice.add(
-                    new OnChangeAjaxBehavior() {
-                        private static final long serialVersionUID = 8819356789334465887L;
+            modeChoice.add(new OnChangeAjaxBehavior() {
+                private static final long serialVersionUID = 8819356789334465887L;
 
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            LayerGroupInfo.Mode mode = modeChoice.getModelObject();
-                            updateRootLayerPanel(mode);
-                            if (mode.equals(LayerGroupInfo.Mode.SINGLE)
-                                    || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER))
-                                groupStyleConfig.setVisible(true);
-                            else groupStyleConfig.setVisible(false);
-                            target.add(rootLayerPanelContainer, groupStyleConfig);
-                        }
-                    });
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    LayerGroupInfo.Mode mode = modeChoice.getModelObject();
+                    updateRootLayerPanel(mode);
+                    if (mode.equals(LayerGroupInfo.Mode.SINGLE) || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER))
+                        groupStyleConfig.setVisible(true);
+                    else groupStyleConfig.setVisible(false);
+                    target.add(rootLayerPanelContainer, groupStyleConfig);
+                }
+            });
 
             add(modeChoice);
 
@@ -161,24 +153,20 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                     new CheckBox("queryable", new Model<>(!getPublishedInfo().isQueryDisabled()));
             add(queryableCheckBox);
 
-            add(
-                    new TitleAndAbstractPanel(
-                            "titleAndAbstract", myModel, "layerGroupTitle", "abstract", this));
+            add(new TitleAndAbstractPanel("titleAndAbstract", myModel, "layerGroupTitle", "abstract", this));
 
             DropDownChoice<WorkspaceInfo> wsChoice =
-                    new DropDownChoice<>(
-                            "workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
+                    new DropDownChoice<>("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
             wsChoice.setNullValid(true);
-            wsChoice.add(
-                    new OnChangeAjaxBehavior() {
+            wsChoice.add(new OnChangeAjaxBehavior() {
 
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            // nothing to do really, just wanted to get the state back on the server
-                            // side
-                            // for the chooser dialogs to use
-                        }
-                    });
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    // nothing to do really, just wanted to get the state back on the server
+                    // side
+                    // for the chooser dialogs to use
+                }
+            });
             if (!isAuthenticatedAsAdmin()) {
                 wsChoice.setNullValid(false);
                 wsChoice.setRequired(true);
@@ -193,77 +181,69 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             envelopePanel.setCrsRequired(true);
             envelopePanel.setOutputMarkupId(true);
 
+            add(new GeoServerAjaxFormLink("generateBounds") {
+                private static final long serialVersionUID = -5290731459036222837L;
+
+                @Override
+                public void onClick(AjaxRequestTarget target, Form<?> form) {
+                    // build a layer group with the current contents of the group
+                    LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
+                    for (LayerGroupEntry entry : lgEntryPanel.getEntries()) {
+                        lg.getLayers().add(entry.getLayer());
+                        lg.getStyles().add(entry.getStyle());
+                    }
+
+                    try {
+                        // grab the eventually manually inserted
+                        CoordinateReferenceSystem crs = envelopePanel.getCoordinateReferenceSystem();
+
+                        if (crs != null) {
+                            // ensure the bounds calculated in terms of the user specified
+                            // crs
+                            new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg, crs);
+                        } else {
+                            // calculate from scratch
+                            new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
+                        }
+
+                        envelopePanel.setModelObject(lg.getBounds());
+                        target.add(envelopePanel);
+
+                    } catch (Exception e) {
+                        throw new WicketRuntimeException(e);
+                    }
+                }
+            });
+
+            add(new GeoServerAjaxFormLink("generateBoundsFromCRS") {
+
+                private static final long serialVersionUID = -7907583302556368270L;
+
+                @Override
+                protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                    LOGGER.log(Level.FINE, "Computing bounds for LG based off CRS");
+                    LayerGroupInfo lg = getPublishedInfo();
+                    CoordinateReferenceSystem crs = envelopePanel.getCoordinateReferenceSystem();
+                    new CatalogBuilder(getCatalog()).calculateLayerGroupBoundsFromCRS(lg, crs);
+
+                    envelopePanel.modelChanged();
+                    target.add(envelopePanel);
+                }
+            });
+
             add(
-                    new GeoServerAjaxFormLink("generateBounds") {
-                        private static final long serialVersionUID = -5290731459036222837L;
+                    lgEntryPanel = new LayerGroupEntryPanel<>("layers", getPublishedInfo(), wsChoice.getModel()) {
 
                         @Override
-                        public void onClick(AjaxRequestTarget target, Form<?> form) {
-                            // build a layer group with the current contents of the group
-                            LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
-                            for (LayerGroupEntry entry : lgEntryPanel.getEntries()) {
-                                lg.getLayers().add(entry.getLayer());
-                                lg.getStyles().add(entry.getStyle());
-                            }
-
-                            try {
-                                // grab the eventually manually inserted
-                                CoordinateReferenceSystem crs =
-                                        envelopePanel.getCoordinateReferenceSystem();
-
-                                if (crs != null) {
-                                    // ensure the bounds calculated in terms of the user specified
-                                    // crs
-                                    new CatalogBuilder(getCatalog())
-                                            .calculateLayerGroupBounds(lg, crs);
-                                } else {
-                                    // calculate from scratch
-                                    new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
-                                }
-
-                                envelopePanel.setModelObject(lg.getBounds());
-                                target.add(envelopePanel);
-
-                            } catch (Exception e) {
-                                throw new WicketRuntimeException(e);
-                            }
+                        protected List<PublishedInfo> getLayers(LayerGroupInfo object) {
+                            return object.getLayers();
                         }
-                    });
-
-            add(
-                    new GeoServerAjaxFormLink("generateBoundsFromCRS") {
-
-                        private static final long serialVersionUID = -7907583302556368270L;
 
                         @Override
-                        protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                            LOGGER.log(Level.FINE, "Computing bounds for LG based off CRS");
-                            LayerGroupInfo lg = getPublishedInfo();
-                            CoordinateReferenceSystem crs =
-                                    envelopePanel.getCoordinateReferenceSystem();
-                            new CatalogBuilder(getCatalog())
-                                    .calculateLayerGroupBoundsFromCRS(lg, crs);
-
-                            envelopePanel.modelChanged();
-                            target.add(envelopePanel);
+                        protected List<StyleInfo> getStyles(LayerGroupInfo object) {
+                            return object.getStyles();
                         }
                     });
-
-            add(
-                    lgEntryPanel =
-                            new LayerGroupEntryPanel<>(
-                                    "layers", getPublishedInfo(), wsChoice.getModel()) {
-
-                                @Override
-                                protected List<PublishedInfo> getLayers(LayerGroupInfo object) {
-                                    return object.getLayers();
-                                }
-
-                                @Override
-                                protected List<StyleInfo> getStyles(LayerGroupInfo object) {
-                                    return object.getStyles();
-                                }
-                            });
 
             add(groupStyleConfig = new LayerGroupStyleConfig("layerGroupStyles", myModel));
             groupStyleConfig.setOutputMarkupId(true);
@@ -271,10 +251,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             add(new MetadataLinkEditor("metadataLinks", myModel));
 
             // add keywords editor
-            add(
-                    new KeywordsEditor(
-                            "keywords",
-                            LiveCollectionModel.list(new PropertyModel<>(myModel, "keywords"))));
+            add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(myModel, "keywords"))));
 
             if (!isAuthenticatedAsAdmin()) {
                 if (isNew) {
@@ -304,11 +281,11 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             public void validate(IValidatable<String> validatable) {
                 String name = validatable.getValue();
                 LayerGroupInfo other = getCatalog().getLayerGroupByName(name);
-                if (other != null && (isNew || !other.getId().equals(getPublishedInfo().getId()))) {
-                    IValidationError err =
-                            new ValidationError("duplicateGroupNameError")
-                                    .addKey("duplicateGroupNameError")
-                                    .setVariable("name", name);
+                if (other != null
+                        && (isNew || !other.getId().equals(getPublishedInfo().getId()))) {
+                    IValidationError err = new ValidationError("duplicateGroupNameError")
+                            .addKey("duplicateGroupNameError")
+                            .setVariable("name", name);
                     validatable.error(err);
                 }
             }

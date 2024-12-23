@@ -49,76 +49,50 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
     public CoverageBandsConfigurationPanel(String id, final IModel model) {
         super(id, model);
-        bands =
-                new GeoServerTablePanel<>("bands", new CoverageDimensionsProvider(), true) {
+        bands = new GeoServerTablePanel<>("bands", new CoverageDimensionsProvider(), true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<CoverageDimensionInfo> itemModel,
-                            Property<CoverageDimensionInfo> property) {
-                        if ("band".equals(property.getName())) {
-                            Fragment f =
-                                    new Fragment(
-                                            id, "bandtext", CoverageBandsConfigurationPanel.this);
-                            @SuppressWarnings("unchecked")
-                            Component text =
-                                    new TextField<>(
-                                            "bandtext",
-                                            (IModel<String>) property.getModel(itemModel));
-                            f.add(text);
-                            return f;
-                        }
-                        if ("nullValues".equals(property.getName())) {
-                            Fragment f =
-                                    new Fragment(
-                                            id, "nulltext", CoverageBandsConfigurationPanel.this);
-                            @SuppressWarnings("unchecked")
-                            Component text =
-                                    new DecimalListTextField(
-                                            "nulltext",
-                                            (IModel<List>) property.getModel(itemModel));
-                            f.add(text);
-                            return f;
-                        }
-                        if ("unit".equals(property.getName())) {
-                            Fragment f =
-                                    new Fragment(id, "text", CoverageBandsConfigurationPanel.this);
-                            @SuppressWarnings("unchecked")
-                            Component text =
-                                    buildUnitField(
-                                            "text", (IModel<String>) property.getModel(itemModel));
-                            f.add(text);
-                            return f;
-                        }
-                        if ("minRange".equals(property.getName())) {
-                            Fragment f =
-                                    new Fragment(
-                                            id, "minRange", CoverageBandsConfigurationPanel.this);
-                            @SuppressWarnings("unchecked")
-                            Component min =
-                                    new DecimalTextField(
-                                            "minRange",
-                                            (IModel<Double>) property.getModel(itemModel));
-                            f.add(min);
-                            return f;
-                        }
-                        if ("maxRange".equals(property.getName())) {
-                            Fragment f =
-                                    new Fragment(
-                                            id, "maxRange", CoverageBandsConfigurationPanel.this);
-                            @SuppressWarnings("unchecked")
-                            Component max =
-                                    new DecimalTextField(
-                                            "maxRange",
-                                            (IModel<Double>) property.getModel(itemModel));
-                            f.add(max);
-                            return f;
-                        }
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<CoverageDimensionInfo> itemModel, Property<CoverageDimensionInfo> property) {
+                if ("band".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "bandtext", CoverageBandsConfigurationPanel.this);
+                    @SuppressWarnings("unchecked")
+                    Component text = new TextField<>("bandtext", (IModel<String>) property.getModel(itemModel));
+                    f.add(text);
+                    return f;
+                }
+                if ("nullValues".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "nulltext", CoverageBandsConfigurationPanel.this);
+                    @SuppressWarnings("unchecked")
+                    Component text = new DecimalListTextField("nulltext", (IModel<List>) property.getModel(itemModel));
+                    f.add(text);
+                    return f;
+                }
+                if ("unit".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "text", CoverageBandsConfigurationPanel.this);
+                    @SuppressWarnings("unchecked")
+                    Component text = buildUnitField("text", (IModel<String>) property.getModel(itemModel));
+                    f.add(text);
+                    return f;
+                }
+                if ("minRange".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "minRange", CoverageBandsConfigurationPanel.this);
+                    @SuppressWarnings("unchecked")
+                    Component min = new DecimalTextField("minRange", (IModel<Double>) property.getModel(itemModel));
+                    f.add(min);
+                    return f;
+                }
+                if ("maxRange".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "maxRange", CoverageBandsConfigurationPanel.this);
+                    @SuppressWarnings("unchecked")
+                    Component max = new DecimalTextField("maxRange", (IModel<Double>) property.getModel(itemModel));
+                    f.add(max);
+                    return f;
+                }
 
-                        return null;
-                    }
-                };
+                return null;
+            }
+        };
         bands.setFilterVisible(false);
         bands.setSortable(false);
         bands.setPageable(false);
@@ -128,19 +102,18 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         bands.setSelectable(false);
         add(bands);
 
-        GeoServerAjaxFormLink reload =
-                new GeoServerAjaxFormLink("reload") {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        try {
-                            reloadBands();
-                            target.add(bands);
-                        } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Failure updating the bands list", e);
-                            error(e.toString());
-                        }
-                    }
-                };
+        GeoServerAjaxFormLink reload = new GeoServerAjaxFormLink("reload") {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                try {
+                    reloadBands();
+                    target.add(bands);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure updating the bands list", e);
+                    error(e.toString());
+                }
+            }
+        };
         add(reload);
     }
 
@@ -191,116 +164,104 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         protected List<Property<CoverageDimensionInfo>> getProperties() {
             List<Property<CoverageDimensionInfo>> result = new ArrayList<>();
             result.add(new BeanProperty<>("band", "name"));
-            result.add(
-                    new AbstractProperty<>("dimensionType") {
+            result.add(new AbstractProperty<>("dimensionType") {
+
+                @Override
+                public Object getPropertyValue(CoverageDimensionInfo item) {
+                    SampleDimensionType type = item.getDimensionType();
+                    if (type == null) {
+                        return "-";
+                    } else {
+                        String name = type.name();
+                        try {
+                            String key = CoverageBandsConfigurationPanel.class.getSimpleName() + "." + name;
+                            ParamResourceModel rm = new ParamResourceModel(key, null);
+                            return rm.getString();
+                        } catch (Exception e) {
+                            return name;
+                        }
+                    }
+                }
+            });
+            result.add(new AbstractProperty<>("nullValues") {
+
+                @Override
+                public Object getPropertyValue(CoverageDimensionInfo item) {
+                    return new IModel<List<Double>>() {
 
                         @Override
-                        public Object getPropertyValue(CoverageDimensionInfo item) {
-                            SampleDimensionType type = item.getDimensionType();
-                            if (type == null) {
-                                return "-";
-                            } else {
-                                String name = type.name();
-                                try {
-                                    String key =
-                                            CoverageBandsConfigurationPanel.class.getSimpleName()
-                                                    + "."
-                                                    + name;
-                                    ParamResourceModel rm = new ParamResourceModel(key, null);
-                                    return rm.getString();
-                                } catch (Exception e) {
-                                    return name;
-                                }
+                        public List<Double> getObject() {
+                            return item.getNullValues();
+                        }
+
+                        @Override
+                        public void setObject(List<Double> object) {
+                            List<Double> values = item.getNullValues();
+                            values.clear();
+                            values.addAll(object);
+                        }
+                    };
+                }
+            });
+            result.add(new AbstractProperty<>("minRange") {
+
+                @Override
+                public Object getPropertyValue(final CoverageDimensionInfo item) {
+                    return new IModel<Double>() {
+
+                        @Override
+                        public Double getObject() {
+                            if (item.getRange() == null) {
+                                return null;
+                            }
+                            return item.getRange().getMinimum(true);
+                        }
+
+                        @Override
+                        public void setObject(Double min) {
+                            if (min != null) {
+                                NumberRange range = item.getRange();
+                                NumberRange<Double> newRange =
+                                        NumberRange.create(min, range != null ? range.getMaximum() : min);
+                                item.setRange(newRange);
                             }
                         }
-                    });
-            result.add(
-                    new AbstractProperty<>("nullValues") {
+                    };
+                }
+            });
+            result.add(new AbstractProperty<>("maxRange") {
+
+                @Override
+                public Object getPropertyValue(final CoverageDimensionInfo item) {
+                    return new IModel<Double>() {
 
                         @Override
-                        public Object getPropertyValue(CoverageDimensionInfo item) {
-                            return new IModel<List<Double>>() {
-
-                                @Override
-                                public List<Double> getObject() {
-                                    return item.getNullValues();
-                                }
-
-                                @Override
-                                public void setObject(List<Double> object) {
-                                    List<Double> values = item.getNullValues();
-                                    values.clear();
-                                    values.addAll(object);
-                                }
-                            };
+                        public Double getObject() {
+                            if (item.getRange() == null) {
+                                return null;
+                            }
+                            return item.getRange().getMaximum();
                         }
-                    });
-            result.add(
-                    new AbstractProperty<>("minRange") {
 
                         @Override
-                        public Object getPropertyValue(final CoverageDimensionInfo item) {
-                            return new IModel<Double>() {
-
-                                @Override
-                                public Double getObject() {
-                                    if (item.getRange() == null) {
-                                        return null;
-                                    }
-                                    return item.getRange().getMinimum(true);
-                                }
-
-                                @Override
-                                public void setObject(Double min) {
-                                    if (min != null) {
-                                        NumberRange range = item.getRange();
-                                        NumberRange<Double> newRange =
-                                                NumberRange.create(
-                                                        min,
-                                                        range != null ? range.getMaximum() : min);
-                                        item.setRange(newRange);
-                                    }
-                                }
-                            };
+                        public void setObject(Double max) {
+                            if (max != null) {
+                                NumberRange range = item.getRange();
+                                NumberRange<Double> newRange =
+                                        NumberRange.create(range != null ? range.getMinimum() : max, max);
+                                item.setRange(newRange);
+                            }
                         }
-                    });
-            result.add(
-                    new AbstractProperty<>("maxRange") {
-
-                        @Override
-                        public Object getPropertyValue(final CoverageDimensionInfo item) {
-                            return new IModel<Double>() {
-
-                                @Override
-                                public Double getObject() {
-                                    if (item.getRange() == null) {
-                                        return null;
-                                    }
-                                    return item.getRange().getMaximum();
-                                }
-
-                                @Override
-                                public void setObject(Double max) {
-                                    if (max != null) {
-                                        NumberRange range = item.getRange();
-                                        NumberRange<Double> newRange =
-                                                NumberRange.create(
-                                                        range != null ? range.getMinimum() : max,
-                                                        max);
-                                        item.setRange(newRange);
-                                    }
-                                }
-                            };
-                        }
-                    });
+                    };
+                }
+            });
             result.add(new BeanProperty<>("unit", "unit"));
             return result;
         }
 
         @Override
         protected List<CoverageDimensionInfo> getItems() {
-            CoverageInfo ci =
-                    (CoverageInfo) CoverageBandsConfigurationPanel.this.getDefaultModelObject();
+            CoverageInfo ci = (CoverageInfo) CoverageBandsConfigurationPanel.this.getDefaultModelObject();
             if (ci.getDimensions() != null) {
                 return ci.getDimensions();
             } else {

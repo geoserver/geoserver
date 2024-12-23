@@ -26,8 +26,8 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.feature.NameImpl;
 
 /**
- * A store returning DGGS zones as GeoTools {@link org.geotools.api.feature.simple.SimpleFeature},
- * without any actal data associated to them. It's pure DGGS structure description.
+ * A store returning DGGS zones as GeoTools {@link org.geotools.api.feature.simple.SimpleFeature}, without any actal
+ * data associated to them. It's pure DGGS structure description.
  */
 public class DGGSGeometryStore extends ContentDataStore implements DGGSStore {
 

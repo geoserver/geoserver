@@ -41,27 +41,20 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
     @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0)
-            return new NewRolePage(getSecurityManager().getActiveRoleService().getName())
-                    .setReturnPage(page);
+            return new NewRolePage(getSecurityManager().getActiveRoleService().getName()).setReturnPage(page);
         else return new NewRolePage((String) params[0]).setReturnPage(page);
     }
 
     @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
-            return new EditRolePage(
-                            getSecurityManager().getActiveRoleService().getName(),
-                            GeoServerRole.ADMIN_ROLE)
+            return new EditRolePage(getSecurityManager().getActiveRoleService().getName(), GeoServerRole.ADMIN_ROLE)
                     .setReturnPage(page);
         }
         if (params.length == 1)
-            return new EditRolePage(
-                            getSecurityManager().getActiveRoleService().getName(),
-                            (GeoServerRole) params[0])
+            return new EditRolePage(getSecurityManager().getActiveRoleService().getName(), (GeoServerRole) params[0])
                     .setReturnPage(page);
-        else
-            return new EditRolePage((String) params[0], (GeoServerRole) params[1])
-                    .setReturnPage(page);
+        else return new EditRolePage((String) params[0], (GeoServerRole) params[1]).setReturnPage(page);
     }
 
     @Override
@@ -81,8 +74,7 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
 
         GeoServerRole role = gaService.getRoleByName("ROLE_AUTHENTICATED");
         assertNotNull(role);
-        List<Property<GeoServerRole>> props =
-                new RoleListProvider(getRoleServiceName()).getProperties();
+        List<Property<GeoServerRole>> props = new RoleListProvider(getRoleServiceName()).getProperties();
         Property<GeoServerRole> parentProp = null;
         for (Property<GeoServerRole> prop : props) {
             if (RoleListProvider.ParentPropertyName.equals(prop.getName())) {
@@ -133,10 +125,7 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
     protected void simulateDeleteSubmit() throws Exception {
 
         SelectionRoleRemovalLink link = (SelectionRoleRemovalLink) getRemoveLink();
-        Method m =
-                link.delegate
-                        .getClass()
-                        .getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
+        Method m = link.delegate.getClass().getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
         m.invoke(link.delegate, null, null);
 
         SortedSet<GeoServerRole> roles = gaService.getRoles();

@@ -17,8 +17,7 @@ public class AuthenticatedComponentAuthorizer implements ComponentAuthorizer {
 
     @Override
     public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
-        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest() == false)
-            return true;
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest() == false) return true;
         return authentication != null && authentication.isAuthenticated();
     }
 }

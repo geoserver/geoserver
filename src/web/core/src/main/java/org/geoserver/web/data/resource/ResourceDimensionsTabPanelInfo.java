@@ -39,8 +39,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Alessio
  */
-public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo>
-        implements MetadataMapValidator {
+public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerInfo> implements MetadataMapValidator {
 
     private static final long serialVersionUID = 4702596541385329270L;
 
@@ -56,16 +55,14 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "resource.metadata");
 
         // time
-        IModel<DimensionInfo> time =
-                new MetadataMapModel<>(metadata, ResourceInfo.TIME, DimensionInfo.class);
+        IModel<DimensionInfo> time = new MetadataMapModel<>(metadata, ResourceInfo.TIME, DimensionInfo.class);
         if (time.getObject() == null) {
             time.setObject(new DimensionInfoImpl());
         }
         add(new DimensionEditor("time", time, resource, Date.class, true, true));
 
         // elevation
-        IModel<DimensionInfo> elevation =
-                new MetadataMapModel<>(metadata, ResourceInfo.ELEVATION, DimensionInfo.class);
+        IModel<DimensionInfo> elevation = new MetadataMapModel<>(metadata, ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevation.getObject() == null) {
             elevation.setObject(new DimensionInfoImpl());
         }
@@ -76,16 +73,14 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         if (resource instanceof CoverageInfo) {
             CoverageInfo ci = (CoverageInfo) resource;
             try {
-                GridCoverage2DReader reader =
-                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+                GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
                 ReaderDimensionsAccessor ra = new ReaderDimensionsAccessor(reader);
 
                 for (String domain : ra.getCustomDomains()) {
                     boolean hasRange = ra.hasRange(domain);
                     boolean hasResolution = ra.hasResolution(domain);
                     RasterDimensionModel mm =
-                            new RasterDimensionModel(
-                                    metadata, domain, DimensionInfo.class, hasRange, hasResolution);
+                            new RasterDimensionModel(metadata, domain, DimensionInfo.class, hasRange, hasResolution);
                     if (mm.getObject() == null) {
                         mm.setObject(new DimensionInfoImpl());
                     }
@@ -95,35 +90,27 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
                 LOGGER.log(Level.SEVERE, "Failed to access coverage reader custom dimensions", e);
             }
         }
-        RefreshingView customDimensionsEditor =
-                new RefreshingView("customDimensions") {
+        RefreshingView customDimensionsEditor = new RefreshingView("customDimensions") {
 
-                    @Override
-                    protected Iterator getItemModels() {
-                        return customDimensionModels.iterator();
-                    }
+            @Override
+            protected Iterator getItemModels() {
+                return customDimensionModels.iterator();
+            }
 
-                    @Override
-                    protected void populateItem(Item item) {
-                        RasterDimensionModel model = (RasterDimensionModel) item.getModel();
-                        ParamResourceModel customDimension =
-                                new ParamResourceModel(
-                                        "customDimension", ResourceDimensionsTabPanelInfo.this);
-                        item.add(
-                                new Label(
-                                        "dimensionName",
-                                        customDimension.getString()
-                                                + ": "
-                                                + model.getExpression()));
-                        DimensionEditor editor =
-                                new DimensionEditor("dimension", model, resource, String.class);
-                        editor.disablePresentationMode(DimensionPresentation.CONTINUOUS_INTERVAL);
-                        if (!model.hasRange && !model.hasResolution) {
-                            editor.disablePresentationMode(DimensionPresentation.DISCRETE_INTERVAL);
-                        }
-                        item.add(editor);
-                    }
-                };
+            @Override
+            protected void populateItem(Item item) {
+                RasterDimensionModel model = (RasterDimensionModel) item.getModel();
+                ParamResourceModel customDimension =
+                        new ParamResourceModel("customDimension", ResourceDimensionsTabPanelInfo.this);
+                item.add(new Label("dimensionName", customDimension.getString() + ": " + model.getExpression()));
+                DimensionEditor editor = new DimensionEditor("dimension", model, resource, String.class);
+                editor.disablePresentationMode(DimensionPresentation.CONTINUOUS_INTERVAL);
+                if (!model.hasRange && !model.hasResolution) {
+                    editor.disablePresentationMode(DimensionPresentation.DISCRETE_INTERVAL);
+                }
+                item.add(editor);
+            }
+        };
         add(customDimensionsEditor);
         customDimensionsEditor.setVisible(!customDimensionModels.isEmpty());
 
@@ -131,15 +118,12 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         buildVectorCustomDimensionsPanel(model, resource);
     }
 
-    private void buildVectorCustomDimensionsPanel(
-            IModel<LayerInfo> model, final ResourceInfo resource) {
+    private void buildVectorCustomDimensionsPanel(IModel<LayerInfo> model, final ResourceInfo resource) {
         WebMarkupContainer vectorCustomDimPanel;
         // vector custom dimensions panel
         if (resource instanceof FeatureTypeInfo) {
-            final PropertyModel<FeatureTypeInfo> typeInfoModel =
-                    new PropertyModel<>(model, "resource");
-            vectorCustomDimPanel =
-                    new VectorCustomDimensionsPanel("vectorCustomDimPanel", typeInfoModel);
+            final PropertyModel<FeatureTypeInfo> typeInfoModel = new PropertyModel<>(model, "resource");
+            vectorCustomDimPanel = new VectorCustomDimensionsPanel("vectorCustomDimPanel", typeInfoModel);
         } else {
             vectorCustomDimPanel = new WebMarkupContainer("vectorCustomDimPanel");
             vectorCustomDimPanel.setVisible(false);
@@ -149,8 +133,7 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
 
     @Override
     public void validate(MetadataMap map) {
-        if (metadataContainsRepeatedDimension("time", map)
-                || metadataContainsRepeatedDimension("elevation", map)) {
+        if (metadataContainsRepeatedDimension("time", map) || metadataContainsRepeatedDimension("elevation", map)) {
             throw new IllegalArgumentException("Repeated dimensions names not allowed.");
         }
     }
@@ -185,15 +168,12 @@ public class ResourceDimensionsTabPanelInfo extends PublishedEditTabPanel<LayerI
         @Override
         @SuppressWarnings("unchecked")
         public T getObject() {
-            return (T)
-                    (model.getObject())
-                            .get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
+            return (T) (model.getObject()).get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, target);
         }
 
         @Override
         public void setObject(T object) {
-            (model.getObject())
-                    .put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, (Serializable) object);
+            (model.getObject()).put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + expression, (Serializable) object);
         }
     }
 }

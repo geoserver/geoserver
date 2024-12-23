@@ -13,7 +13,8 @@ public class BatchJobServiceStarter implements ApplicationListener<ContextRefres
 
     private static final Logger LOGGER = Logging.getLogger(BatchJobServiceStarter.class);
 
-    @Autowired private BatchJobService batchJobService;
+    @Autowired
+    private BatchJobService batchJobService;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {

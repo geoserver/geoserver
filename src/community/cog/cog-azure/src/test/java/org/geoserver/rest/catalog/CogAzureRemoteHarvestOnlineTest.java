@@ -81,40 +81,30 @@ public class CogAzureRemoteHarvestOnlineTest extends CatalogRESTTestSupport {
         }
 
         // setup store
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/file.imagemosaic?configure=none",
-                        zipData,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                ROOT_PATH + "/workspaces/gs/coveragestores/empty/file.imagemosaic?configure=none",
+                zipData,
+                "application/zip");
         assertEquals(201, response.getStatus());
 
         // Harvesting
-        response =
-                postAsServletResponse(
-                        ROOT_PATH + "/workspaces/gs/coveragestores/empty/remote.imagemosaic",
-                        HTTPS_COG_URI,
-                        "text/plain");
+        response = postAsServletResponse(
+                ROOT_PATH + "/workspaces/gs/coveragestores/empty/remote.imagemosaic", HTTPS_COG_URI, "text/plain");
         assertEquals(202, response.getStatus());
 
         // Getting the list of available coverages
-        Document dom =
-                getAsDOM(ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages.xml?list=all");
+        Document dom = getAsDOM(ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages.xml?list=all");
         XMLAssert.assertXpathEvaluatesTo("emptycog", "/list/coverageName", dom);
 
         // Configuring the coverage
-        response =
-                postAsServletResponse(
-                        ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages",
-                        "<coverage><name>emptyhttpscog</name><nativeName>emptycog</nativeName></coverage>",
-                        "text/xml");
+        response = postAsServletResponse(
+                ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages",
+                "<coverage><name>emptyhttpscog</name><nativeName>emptycog</nativeName></coverage>",
+                "text/xml");
         assertEquals(201, response.getStatus());
 
         // Checking granules
-        dom =
-                getAsDOM(
-                        ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/coverages/emptyhttpscog/index/granules");
+        dom = getAsDOM(ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages/emptyhttpscog/index/granules");
         XMLAssert.assertXpathEvaluatesTo(HTTPS_COG_URI, "//gf:emptycog/gf:location", dom);
     }
 

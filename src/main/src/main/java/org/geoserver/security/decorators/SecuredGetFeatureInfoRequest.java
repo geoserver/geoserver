@@ -73,8 +73,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
                         if (policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
                             SecureCatalogImpl.unauthorizedAccess(layer.getName());
                         } else {
-                            throw new IllegalArgumentException(
-                                    "Layer " + layer.getName() + " is not queriable");
+                            throw new IllegalArgumentException("Layer " + layer.getName() + " is not queriable");
                         }
                     }
                 }

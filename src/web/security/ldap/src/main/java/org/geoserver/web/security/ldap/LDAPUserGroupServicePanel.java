@@ -67,21 +67,19 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
         hierarchicalGroupsInit();
 
         /** privileged account for querying the LDAP server (if needed) */
-        add(
-                new AjaxCheckBox("bindBeforeGroupSearch") {
-                    private static final long serialVersionUID = -6388847010436939988L;
+        add(new AjaxCheckBox("bindBeforeGroupSearch") {
+            private static final long serialVersionUID = -6388847010436939988L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        // reset any values that were set
-                        LDAPAuthenticationPanel ldapAuthenticationPanel =
-                                (LDAPAuthenticationPanel)
-                                        LDAPUserGroupServicePanel.this.get("authenticationPanel");
-                        ldapAuthenticationPanel.resetModel();
-                        ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
-                        target.add(ldapAuthenticationPanel);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                // reset any values that were set
+                LDAPAuthenticationPanel ldapAuthenticationPanel =
+                        (LDAPAuthenticationPanel) LDAPUserGroupServicePanel.this.get("authenticationPanel");
+                ldapAuthenticationPanel.resetModel();
+                ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
+                target.add(ldapAuthenticationPanel);
+            }
+        });
         LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");
         authPanel.setVisible(model.getObject().isBindBeforeGroupSearch());
         authPanel.setOutputMarkupPlaceholderTag(true);
@@ -91,33 +89,29 @@ public class LDAPUserGroupServicePanel extends UserGroupServicePanel<LDAPUserGro
     private void hierarchicalGroupsInit() {
         // hierarchical groups configurations
         // create fields objects
-        final WebMarkupContainer nestedSearchFieldsContainer =
-                new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
+        final WebMarkupContainer nestedSearchFieldsContainer = new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
         nestedSearchFieldsContainer.setOutputMarkupPlaceholderTag(true);
         nestedSearchFieldsContainer.setOutputMarkupId(true);
         add(nestedSearchFieldsContainer);
         Optional<LDAPUserGroupServiceConfig> useNestedOpt =
                 Optional.of(this).map(x -> x.configModel).map(IModel::getObject);
         // get initial value for use_nested checkbox
-        boolean useNestedActivated =
-                useNestedOpt.map(LDAPUserGroupServiceConfig::isUseNestedParentGroups).orElse(false);
+        boolean useNestedActivated = useNestedOpt
+                .map(LDAPUserGroupServiceConfig::isUseNestedParentGroups)
+                .orElse(false);
         nestedSearchFieldsContainer.setVisible(useNestedActivated);
 
-        final AjaxCheckBox useNestedCheckbox =
-                new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
-                    private static final long serialVersionUID = 1L;
+        final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        AjaxCheckBox cb =
-                                (AjaxCheckBox)
-                                        LDAPUserGroupServicePanel.this.get(
-                                                USE_NESTED_PARENT_GROUPS);
-                        boolean value = cb.getModelObject();
-                        nestedSearchFieldsContainer.setVisible(value);
-                        target.add(nestedSearchFieldsContainer);
-                    }
-                };
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                AjaxCheckBox cb = (AjaxCheckBox) LDAPUserGroupServicePanel.this.get(USE_NESTED_PARENT_GROUPS);
+                boolean value = cb.getModelObject();
+                nestedSearchFieldsContainer.setVisible(value);
+                target.add(nestedSearchFieldsContainer);
+            }
+        };
         add(useNestedCheckbox);
         nestedSearchFieldsContainer.add(new TextField<>(MAX_GROUP_SEARCH_LEVEL));
         nestedSearchFieldsContainer.add(new TextField<>(NESTED_GROUP_SEARCH_FILTER));

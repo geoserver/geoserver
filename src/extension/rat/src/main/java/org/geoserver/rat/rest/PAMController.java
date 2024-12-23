@@ -60,46 +60,37 @@ public class PAMController extends AbstractCatalogController {
 
     @GetMapping(produces = {MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String getRasterAttributeTable(
-            @PathVariable String workspaceName,
-            @PathVariable String storeName,
-            @PathVariable String coverageName)
+            @PathVariable String workspaceName, @PathVariable String storeName, @PathVariable String coverageName)
             throws Exception {
         CoverageRATs ratSupport = getRATSupport(workspaceName, storeName, coverageName);
 
         return ratSupport.toXML();
     }
 
-    private CoverageRATs getRATSupport(
-            String workspaceName, String storeName, String coverageName) {
+    private CoverageRATs getRATSupport(String workspaceName, String storeName, String coverageName) {
         CoverageInfo coverage = getCoverageInfo(workspaceName, storeName, coverageName);
 
         CoverageRATs rats = new CoverageRATs(catalog, coverage);
         if (rats.getPAMDataset() == null) {
             throw new ResourceNotFoundException(
-                    format(
-                            "No PAMDataset found for coverage: '%s:%s'",
-                            workspaceName, coverageName));
+                    format("No PAMDataset found for coverage: '%s:%s'", workspaceName, coverageName));
         }
         return rats;
     }
 
-    private CoverageInfo getCoverageInfo(
-            String workspaceName, String storeName, String coverageName) {
+    private CoverageInfo getCoverageInfo(String workspaceName, String storeName, String coverageName) {
         WorkspaceInfo wsInfo = catalog.getWorkspaceByName(workspaceName);
         if (wsInfo == null) {
             // could not find the namespace associated with the desired workspace
-            throw new ResourceNotFoundException(
-                    format("Workspace not found: '%s'.", workspaceName));
+            throw new ResourceNotFoundException(format("Workspace not found: '%s'.", workspaceName));
         }
         CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(workspaceName, storeName);
         if (storeInfo == null) {
-            throw new ResourceNotFoundException(
-                    format("No such coverage store: '%s:%s'", workspaceName, storeName));
+            throw new ResourceNotFoundException(format("No such coverage store: '%s:%s'", workspaceName, storeName));
         }
         CoverageInfo coverage = catalog.getCoverageByName(workspaceName, coverageName);
         if (coverage == null) {
-            throw new ResourceNotFoundException(
-                    format("No such coverage: '%s:%s'", workspaceName, coverageName));
+            throw new ResourceNotFoundException(format("No such coverage: '%s:%s'", workspaceName, coverageName));
         }
         if (!storeInfo.equals(coverage.getStore())) {
             throw new ResourceNotFoundException(
@@ -122,9 +113,7 @@ public class PAMController extends AbstractCatalogController {
         List<PAMDataset.PAMRasterBand> bands = ratSupport.getPAMDataset().getPAMRasterBand();
         if (band < 0 || band >= bands.size()) {
             throw new RestException(
-                    format(
-                            "Band index %d out of range for coverage '%s:%s'",
-                            band, workspaceName, coverageName),
+                    format("Band index %d out of range for coverage '%s:%s'", band, workspaceName, coverageName),
                     HttpStatus.BAD_REQUEST);
         }
         RasterAttributeTable rat = ratSupport.getRasterAttributeTable(band);
@@ -138,9 +127,7 @@ public class PAMController extends AbstractCatalogController {
         Set<String> classifications = rat.getClassifications();
         if (!classifications.contains(classification)) {
             throw new RestException(
-                    format(
-                            "Raster attribute table found, but has no classification field named: '%s'",
-                            classification),
+                    format("Raster attribute table found, but has no classification field named: '%s'", classification),
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -162,30 +149,23 @@ public class PAMController extends AbstractCatalogController {
 
         // prepare the response
         UriComponents uriComponents =
-                uris.path("/workspaces/{workspaceName}/styles/{styleName}")
-                        .buildAndExpand(workspaceName, styleName);
+                uris.path("/workspaces/{workspaceName}/styles/{styleName}").buildAndExpand(workspaceName, styleName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity<>(
-                "", headers, exists ? HttpStatus.SEE_OTHER : HttpStatus.CREATED);
+        return new ResponseEntity<>("", headers, exists ? HttpStatus.SEE_OTHER : HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/reload")
     public void reload(
-            @PathVariable String workspaceName,
-            @PathVariable String storeName,
-            @PathVariable String coverageName)
+            @PathVariable String workspaceName, @PathVariable String storeName, @PathVariable String coverageName)
             throws IOException {
         CoverageInfo ci = getCoverageInfo(workspaceName, storeName, coverageName);
-        GridCoverage2DReader reader =
-                (GridCoverage2DReader) ci.getStore().getGridCoverageReader(null, null);
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getStore().getGridCoverageReader(null, null);
         ResourceInfo resourceInfo = reader.getInfo(ci.getNativeCoverageName());
         if (!(resourceInfo instanceof PAMResourceInfo)) {
             throw new RestException(
-                    format(
-                            "No Raster Attribute Table found for coverage '%s:%s'",
-                            workspaceName, coverageName),
+                    format("No Raster Attribute Table found for coverage '%s:%s'", workspaceName, coverageName),
                     HttpStatus.BAD_REQUEST);
         }
         PAMResourceInfo pamInfo = (PAMResourceInfo) resourceInfo;

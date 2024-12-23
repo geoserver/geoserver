@@ -31,20 +31,15 @@ public class WFSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         // check the identifiers are indeed unique
         Set<String> identifiers = new HashSet<>();
-        tester.getLastRenderedPage()
-                .visitChildren(
-                        Select2DropDownChoice.class,
-                        (component, visit) -> {
-                            String markupId = component.getMarkupId();
-                            if (!identifiers.add(markupId))
-                                fail("Duplicate identifier " + markupId);
-                        });
+        tester.getLastRenderedPage().visitChildren(Select2DropDownChoice.class, (component, visit) -> {
+            String markupId = component.getMarkupId();
+            if (!identifiers.add(markupId)) fail("Duplicate identifier " + markupId);
+        });
 
         // and are in the expected number
-        long parametersWithOptions =
-                Arrays.stream(factory.getParametersInfo())
-                        .filter(p -> new ParamInfo(p).getOptions() != null)
-                        .count();
+        long parametersWithOptions = Arrays.stream(factory.getParametersInfo())
+                .filter(p -> new ParamInfo(p).getOptions() != null)
+                .count();
         assertEquals(parametersWithOptions, identifiers.size());
     }
 }

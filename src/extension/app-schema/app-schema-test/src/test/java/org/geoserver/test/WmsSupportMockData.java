@@ -32,19 +32,14 @@ public class WmsSupportMockData extends AbstractAppSchemaMockData {
     protected static final String OM_URI = "http://www.opengis.net/om/1.0";
 
     /** Schema URL for observation and measurements */
-    protected static final String OM_SCHEMA_LOCATION_URL =
-            "http://schemas.opengis.net/om/1.0.0/observation.xsd";
+    protected static final String OM_SCHEMA_LOCATION_URL = "http://schemas.opengis.net/om/1.0.0/observation.xsd";
 
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
         putNamespace(EX_PREFIX, EX_URI);
         putNamespace(OM_PREFIX, OM_URI);
-        addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeatureWms.xml",
-                "MappedFeatureWms.properties");
+        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureWms.xml", "MappedFeatureWms.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",

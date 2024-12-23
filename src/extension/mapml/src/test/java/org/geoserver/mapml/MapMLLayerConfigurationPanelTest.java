@@ -50,8 +50,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         testData.addVectorLayer(PONDS, getCatalog());
         Map<SystemTestData.LayerProperty, Object> props = new HashMap<>();
 
-        testData.addRasterLayer(
-                MOSAIC, "raster-filter-test.zip", null, props, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, props, SystemTestData.class, getCatalog());
         testData.addVectorLayer(BASIC_POLYGONS, getCatalog());
     }
 
@@ -60,9 +59,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // get a test layer and instantiate the model
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -113,9 +110,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // get a test layer and instantiate the model
         final LayerInfo layer = getCatalog().getLayerByName(MOSAIC.getLocalPart());
         Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -167,9 +162,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         layer.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, true);
         Model<LayerInfo> model = new Model<>(layer);
 
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
 
@@ -181,9 +174,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertDisabled("form:panel:mime");
         layer.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, false);
         Model<LayerInfo> model2 = new Model<>(layer);
-        page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model2));
+        page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model2));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         // check that the "mime" checkbox is enabled as expected when mapML useFeatures is disabled
@@ -214,14 +205,11 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         Model<LayerInfo> modelTile = new Model<>(layerInfo);
 
         FormTestPage pageTile =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, modelTile));
+                new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, modelTile));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(pageTile);
         DropDownChoice<String> dropDownChoiceTile =
                 (DropDownChoice) tester.getComponentFromLastRenderedPage("form:panel:mime");
-        assertThat(
-                dropDownChoiceTile.getChoices(),
-                Matchers.containsInAnyOrder("image/jpeg", "image/png"));
+        assertThat(dropDownChoiceTile.getChoices(), Matchers.containsInAnyOrder("image/jpeg", "image/png"));
     }
 }

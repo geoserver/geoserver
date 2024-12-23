@@ -54,8 +54,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         }
     }
 
-    static final TiffTagTest JPEG_TAG =
-            new TiffTagTest("JPEG", Integer.toString(BaselineTIFFTagSet.COMPRESSION_JPEG));
+    static final TiffTagTest JPEG_TAG = new TiffTagTest("JPEG", Integer.toString(BaselineTIFFTagSet.COMPRESSION_JPEG));
 
     static final TiffTagTest DEFLATE_TAG =
             new TiffTagTest("Deflate", Integer.toString(BaselineTIFFTagSet.COMPRESSION_DEFLATE));
@@ -63,11 +62,9 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
     @Test
     public void extensionGeotiff() throws Exception {
         // complete
-        GetCoverageType gc =
-                parse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=theCoverage&compression=JPEG&jpeg_quality=75&predictor=None"
-                                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=theCoverage&compression=JPEG&jpeg_quality=75&predictor=None"
+                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
 
         Map<String, Object> extensions = getExtensionsMap(gc);
 
@@ -82,16 +79,14 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void extensionGeotiff2() throws Exception {
-        String request =
-                "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                        + "&coverageId=wcs__BlueMarble&compression=Deflate"
-                        + "&interleave=Pixel&tiling=true&tileheight=256&tilewidth=256";
+        String request = "wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=Deflate"
+                + "&interleave=Pixel&tiling=true&tileheight=256&tilewidth=256";
         GetCoverageType gc = parse(request);
 
         Map<String, Object> extensions = getExtensionsMap(gc);
 
-        assertEquals(
-                "Deflate", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:compression"));
+        assertEquals("Deflate", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:compression"));
         assertEquals("Pixel", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:interleave"));
         assertEquals("true", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tiling"));
         assertEquals("256", extensions.get("http://www.opengis.net/wcs/geotiff/1.0:tileheight"));
@@ -106,11 +101,9 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
     @Test
     public void extensionGeotiffPrefixed() throws Exception {
         // complete
-        GetCoverageType gc =
-                parse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=theCoverage&geotiff:compression=JPEG&geotiff:jpeg_quality=75&geotiff:predictor=None"
-                                + "&geotiff:interleave=pixel&geotiff:tiling=true&geotiff:tileheight=256&geotiff:tilewidth=256");
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=theCoverage&geotiff:compression=JPEG&geotiff:jpeg_quality=75&geotiff:predictor=None"
+                + "&geotiff:interleave=pixel&geotiff:tiling=true&geotiff:tileheight=256&geotiff:tilewidth=256");
 
         Map<String, Object> extensions = getExtensionsMap(gc);
 
@@ -125,29 +118,23 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void wrongJPEGQuality() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=-2&predictor=None"
-                                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=-2&predictor=None"
+                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.JpegQualityInvalid.toString(), "-2");
 
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=101&predictor=None"
-                                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=101&predictor=None"
+                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.JpegQualityInvalid.toString(), "101");
 
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=101&predictor=aaa"
-                                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=101&predictor=aaa"
+                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.JpegQualityInvalid.toString(), "101");
@@ -168,11 +155,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         if (prefix) {
             params = "geotiff:compression=JPEG&geotiff:jpeg_quality=75";
         }
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&"
-                                + params);
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=wcs__BlueMarble&" + params);
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -181,10 +165,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void jpegMediaType() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=75&mediaType=multipart/related");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=75&mediaType=multipart/related");
 
         assertEquals("multipart/related", response.getContentType());
 
@@ -198,20 +180,14 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         // print(gml);
 
         // check the gml part refers to the file as its range
+        assertXpathEvaluatesTo("fileReference", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:arcrole", gml);
         assertXpathEvaluatesTo(
-                "fileReference", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:arcrole", gml);
-        assertXpathEvaluatesTo(
-                "cid:/coverages/wcs__BlueMarble.tif",
-                "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:href",
-                gml);
+                "cid:/coverages/wcs__BlueMarble.tif", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:href", gml);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage",
                 "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:role",
                 gml);
-        assertXpathEvaluatesTo(
-                "cid:/coverages/wcs__BlueMarble.tif",
-                "//gml:rangeSet/gml:File/gml:fileReference",
-                gml);
+        assertXpathEvaluatesTo("cid:/coverages/wcs__BlueMarble.tif", "//gml:rangeSet/gml:File/gml:fileReference", gml);
         assertXpathEvaluatesTo("image/tiff", "//gml:rangeSet/gml:File/gml:mimeType", gml);
 
         BodyPart coveragePart = multipart.getBodyPart(1);
@@ -229,17 +205,14 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
         final TIFFImageMetadata metadata = (TIFFImageMetadata) reader.getImageMetadata(0);
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
@@ -261,10 +234,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void interleaving() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&interleave=pixel");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=wcs__BlueMarble&interleave=pixel");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -272,8 +243,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
@@ -290,19 +260,14 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         reader.dispose();
 
         // unsupported or wrong
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&interleave=band");
+        response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=wcs__BlueMarble&interleave=band");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WcsExceptionCode.InterleavingNotSupported.toString(), "band");
+        checkOws20Exception(response, 404, WcsExceptionCode.InterleavingNotSupported.toString(), "band");
 
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&interleave=asds");
+        response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=wcs__BlueMarble&interleave=asds");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.InterleavingInvalid.toString(), "asds");
@@ -310,10 +275,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void deflate() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=DEFLATE");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=DEFLATE");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -321,17 +284,14 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
         final TIFFImageMetadata metadata = (TIFFImageMetadata) reader.getImageMetadata(0);
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
@@ -353,10 +313,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void lzw() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=LZW&jpeg_quality=75");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=LZW&jpeg_quality=75");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -364,24 +322,22 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // compression
         final TIFFImageMetadata metadata = (TIFFImageMetadata) reader.getImageMetadata(0);
         assertNotNull(metadata);
         IIOMetadataNode root =
-                (IIOMetadataNode)
-                        reader.getImageMetadata(0)
-                                .getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+                (IIOMetadataNode) reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
         IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals(
                 "LZW",
                 field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals(
-                "5", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+                "5",
+                field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
 
         IIOMetadataNode node = metadata.getStandardDataNode();
         assertNotNull(node);
@@ -395,10 +351,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void tiling() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&tiling=true&tileheight=256&tilewidth=256");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&tiling=true&tileheight=256&tilewidth=256");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -406,8 +360,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
 
         // tiling
@@ -415,37 +368,30 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         assertEquals(256, reader.getTileHeight(0));
         assertEquals(256, reader.getTileWidth(0));
 
-        IIOMetadataNode node =
-                ((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        IIOMetadataNode node = ((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
         assertNotNull(node);
         assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
         assertEquals(
                 "PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
 
         // wrong values
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble"
-                                + "&interleave=pixel&tiling=true&tileheight=13&tilewidth=256");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble"
+                + "&interleave=pixel&tiling=true&tileheight=13&tilewidth=256");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "13");
 
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble"
-                                + "&interleave=pixel&tiling=true&tileheight=13&tilewidth=11");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble"
+                + "&interleave=pixel&tiling=true&tileheight=13&tilewidth=11");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "11");
 
         // default
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&tiling=true");
+        response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1" + "&coverageId=wcs__BlueMarble&tiling=true");
 
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
@@ -479,12 +425,10 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         // //
 
         // Reading native resolution
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www"
-                                + ".opengis.net/def/axis/OGC/1/i(180),"
-                                + "http://www.opengis.net/def/axis/OGC/1/j(180)");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www"
+                + ".opengis.net/def/axis/OGC/1/i(180),"
+                + "http://www.opengis.net/def/axis/OGC/1/j(180)");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -492,26 +436,20 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         FileUtils.writeByteArrayToFile(fileNative, tiffContents);
 
         // Reading using overview and TargetSize
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&overviewPolicy=NEAREST&scalesize=http://www.opengis.net/def/axis/OGC/1/i(180),"
-                                + "http://www.opengis.net/def/axis/OGC/1/j(180)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&overviewPolicy=NEAREST&scalesize=http://www.opengis.net/def/axis/OGC/1/i(180),"
+                + "http://www.opengis.net/def/axis/OGC/1/j(180)");
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
-        File fileOverviewTS =
-                File.createTempFile("overviewTS", "overviewTS.tiff", new File("./target"));
+        File fileOverviewTS = File.createTempFile("overviewTS", "overviewTS.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(fileOverviewTS, tiffContents);
 
         // Reading using overview and ScaleFactor
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&overviewPolicy=NEAREST&SCALEFACTOR=0.5");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&overviewPolicy=NEAREST&SCALEFACTOR=0.5");
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
-        File fileOverviewSF =
-                File.createTempFile("overviewSF", "overviewSF.tiff", new File("./target"));
+        File fileOverviewSF = File.createTempFile("overviewSF", "overviewSF.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(fileOverviewSF, tiffContents);
 
         TIFFImageReaderSpi spi = new TIFFImageReaderSpi();
@@ -598,11 +536,9 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void wrongCompression() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&compression=aaaG&predictor=None"
-                                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&compression=aaaG&predictor=None"
+                + "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
 
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WcsExceptionCode.CompressionInvalid.toString(), "aaaG");
@@ -611,8 +547,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
     @Test
     public void getFullCoverageKVP() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+                getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -623,20 +558,16 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange(),
                     targetCoverage.getGridGeometry().getGridRange());
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
         } finally {
             try {
@@ -667,8 +598,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
         // execute
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+                getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -682,27 +612,20 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange(),
                     targetCoverage.getGridGeometry().getGridRange());
-            assertEquals(
-                    CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()),
-                    AxisOrder.NORTH_EAST);
+            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()), AxisOrder.NORTH_EAST);
 
             final GeneralBounds transformedEnvelope =
-                    CRS.transform(
-                            (AffineTransform2D) CoverageUtilities.AXES_SWAP,
-                            targetCoverage.getEnvelope());
-            transformedEnvelope.setCoordinateReferenceSystem(
-                    sourceCoverage.getCoordinateReferenceSystem());
+                    CRS.transform((AffineTransform2D) CoverageUtilities.AXES_SWAP, targetCoverage.getEnvelope());
+            transformedEnvelope.setCoordinateReferenceSystem(sourceCoverage.getCoordinateReferenceSystem());
             assertEquals(sourceCoverage.getEnvelope(), transformedEnvelope);
         } finally {
             // reinforce old settings
@@ -737,8 +660,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
         // execute
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+                getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -752,20 +674,16 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange(),
                     targetCoverage.getGridGeometry().getGridRange());
-            assertEquals(
-                    CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()),
-                    AxisOrder.EAST_NORTH);
+            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()), AxisOrder.EAST_NORTH);
 
             assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
         } finally {

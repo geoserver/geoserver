@@ -48,11 +48,8 @@ public class DocumentFileTest {
         // instantiating a document file representing the style file
         DocumentFile documentFile = new DocumentFile(resource);
         // serialising the file document
-        DocumentFileHandlerSPI handler =
-                new DocumentFileHandlerSPI(
-                        0,
-                        new JMSXStreamFactory(new XStreamPersisterFactory(), new GeoServerImpl())
-                                .createXStream());
+        DocumentFileHandlerSPI handler = new DocumentFileHandlerSPI(
+                0, new JMSXStreamFactory(new XStreamPersisterFactory(), new GeoServerImpl()).createXStream());
         String result = handler.createHandler().serialize(documentFile);
         // checking the serialization result
         assertThat(result, notNullValue());
@@ -63,8 +60,7 @@ public class DocumentFileTest {
     }
 
     /** Creates a resource path in the data directory and write the provided content in it. */
-    private Resource addResourceToDataDir(String resourcePath, String resourceContent)
-            throws Exception {
+    private Resource addResourceToDataDir(String resourcePath, String resourceContent) throws Exception {
         XMLUnit.setIgnoreWhitespace(true);
         File resourceFile = new File(rootDirectory, resourcePath);
         resourceFile.getParentFile().mkdirs();
@@ -74,10 +70,7 @@ public class DocumentFileTest {
 
     /** Helper method that will read the content of a resource file and return it as a String. */
     private String readResourceFileContent(String resourceFileName) throws Exception {
-        try (InputStream input =
-                        DocumentFileTest.class
-                                .getClassLoader()
-                                .getResourceAsStream(resourceFileName);
+        try (InputStream input = DocumentFileTest.class.getClassLoader().getResourceAsStream(resourceFileName);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
             return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         }

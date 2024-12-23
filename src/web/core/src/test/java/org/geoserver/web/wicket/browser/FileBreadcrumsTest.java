@@ -31,20 +31,15 @@ public class FileBreadcrumsTest {
         root = new File("target/test-breadcrumbs");
         leaf = new File("target/test-breadcrumbs/one/two/three");
         if (!leaf.exists()) leaf.mkdirs();
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id ->
-                                        new FileBreadcrumbs(
-                                                id, new Model<>(root), new Model<>(leaf)) {
+        tester.startPage(new FormTestPage(
+                (ComponentBuilder) id -> new FileBreadcrumbs(id, new Model<>(root), new Model<>(leaf)) {
 
-                                            @Override
-                                            protected void pathItemClicked(
-                                                    File file, Optional<AjaxRequestTarget> target) {
-                                                lastClicked = file;
-                                                setSelection(file);
-                                            }
-                                        }));
+                    @Override
+                    protected void pathItemClicked(File file, Optional<AjaxRequestTarget> target) {
+                        lastClicked = file;
+                        setSelection(file);
+                    }
+                }));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }

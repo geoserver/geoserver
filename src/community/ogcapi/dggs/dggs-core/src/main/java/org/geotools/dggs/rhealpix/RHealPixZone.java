@@ -82,29 +82,27 @@ public class RHealPixZone implements Zone {
 
     @Override
     public Point getCenter() {
-        return dggs.runtime.runSafe(
-                interpreter -> {
-                    setCellId(interpreter, "id", id);
-                    interpreter.exec("c = Cell(dggs, id)");
-                    double[] points = interpreter.getValue("c.centroid(False)", double[].class);
-                    return dggs.gf.createPoint(new Coordinate(points[0], points[1]));
-                });
+        return dggs.runtime.runSafe(interpreter -> {
+            setCellId(interpreter, "id", id);
+            interpreter.exec("c = Cell(dggs, id)");
+            double[] points = interpreter.getValue("c.centroid(False)", double[].class);
+            return dggs.gf.createPoint(new Coordinate(points[0], points[1]));
+        });
     }
 
     @Override
     public Polygon getBoundary() {
         // boundary computation is expensive, cache the result
         if (boundary == null) {
-            boundary =
-                    dggs.runtime.runSafe(
-                            interpreter -> {
-                                setCellId(interpreter, "id", id);
-                                interpreter.exec("c = Cell(dggs, id)");
-                                double[][] vertices = getShape().getVertices(interpreter);
+            boundary = dggs.runtime.runSafe(
+                    interpreter -> {
+                        setCellId(interpreter, "id", id);
+                        interpreter.exec("c = Cell(dggs, id)");
+                        double[][] vertices = getShape().getVertices(interpreter);
 
-                                return getPolygon(vertices);
-                            },
-                            e -> new RuntimeException("Failed to compute boundary for " + id, e));
+                        return getPolygon(vertices);
+                    },
+                    e -> new RuntimeException("Failed to compute boundary for " + id, e));
         }
         return boundary;
     }
@@ -112,33 +110,30 @@ public class RHealPixZone implements Zone {
     @Override
     public Object getExtraProperty(String name) {
         if ("shape".equals(name)) {
-            return dggs.runtime.runSafe(
-                    si -> {
-                        setCellId(si, "id", id);
-                        si.exec("c = Cell(dggs, id)");
-                        return si.getValue("c.ellipsoidal_shape()", String.class);
-                    });
+            return dggs.runtime.runSafe(si -> {
+                setCellId(si, "id", id);
+                si.exec("c = Cell(dggs, id)");
+                return si.getValue("c.ellipsoidal_shape()", String.class);
+            });
         } else if ("color".equals(name)) {
-            return dggs.runtime.runSafe(
-                    si -> {
-                        setCellId(si, "id", id);
-                        si.exec("c = Cell(dggs, id)");
-                        @SuppressWarnings("unchecked")
-                        List<Number> definition = si.getValue("c.color()", List.class);
-                        int red = (int) Math.round(definition.get(0).doubleValue() * 255);
-                        int green = (int) Math.round(definition.get(1).doubleValue() * 255);
-                        int blue = (int) Math.round(definition.get(2).doubleValue() * 255);
-                        return Converters.convert(new Color(red, green, blue), String.class);
-                    });
+            return dggs.runtime.runSafe(si -> {
+                setCellId(si, "id", id);
+                si.exec("c = Cell(dggs, id)");
+                @SuppressWarnings("unchecked")
+                List<Number> definition = si.getValue("c.color()", List.class);
+                int red = (int) Math.round(definition.get(0).doubleValue() * 255);
+                int green = (int) Math.round(definition.get(1).doubleValue() * 255);
+                int blue = (int) Math.round(definition.get(2).doubleValue() * 255);
+                return Converters.convert(new Color(red, green, blue), String.class);
+            });
         }
         throw new IllegalArgumentException("Invalid extra property value " + name);
     }
 
     private CellType getShape() {
-        return dggs.runtime.runSafe(
-                si -> {
-                    return CellType.valueOf(si.getValue("c.ellipsoidal_shape()", String.class));
-                });
+        return dggs.runtime.runSafe(si -> {
+            return CellType.valueOf(si.getValue("c.ellipsoidal_shape()", String.class));
+        });
     }
 
     private Polygon getPolygon(double[][] vertices) {

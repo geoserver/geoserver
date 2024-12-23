@@ -38,24 +38,23 @@ public class FeatureEncoderTest extends GeoServerSystemTestSupport {
         Double doubleValue = Double.valueOf(2.54565);
         Date dateValue = new Date();
 
-        final SimpleFeatureType TYPE =
-                DataUtilities.createType(
-                        "Location",
-                        "the_geom:Point:srid=4326,"
-                                + // <- the geometry attribute: Point type
-                                "stringfield:String,"
-                                + // <- a String attribute
-                                "intfield:Integer,"
-                                + // <- a Integer attribute
-                                "floatfield:Float,"
-                                + // <- a Float attribute
-                                "doublefield:Double,"
-                                + // <- a Double attribute
-                                "datefield:Date,"
-                                + // <- a Date attribute
-                                "booleanfield:Boolean"
-                        // <- a boolean attribute
-                        );
+        final SimpleFeatureType TYPE = DataUtilities.createType(
+                "Location",
+                "the_geom:Point:srid=4326,"
+                        + // <- the geometry attribute: Point type
+                        "stringfield:String,"
+                        + // <- a String attribute
+                        "intfield:Integer,"
+                        + // <- a Integer attribute
+                        "floatfield:Float,"
+                        + // <- a Float attribute
+                        "doublefield:Double,"
+                        + // <- a Double attribute
+                        "datefield:Date,"
+                        + // <- a Date attribute
+                        "booleanfield:Boolean"
+                // <- a boolean attribute
+                );
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
 
@@ -69,8 +68,7 @@ public class FeatureEncoderTest extends GeoServerSystemTestSupport {
         featureBuilder.add(true);
         SimpleFeature feature = featureBuilder.buildFeature(null);
 
-        Feature encodedFeature =
-                FeatureEncoder.feature(feature, true, new SpatialReferenceWKID(32615), "id");
+        Feature encodedFeature = FeatureEncoder.feature(feature, true, new SpatialReferenceWKID(32615), "id");
         String featureJson = mapper.writeValueAsString(encodedFeature);
 
         System.out.println(featureJson);

@@ -12,9 +12,9 @@ import org.geoserver.config.ServiceInfo;
 import org.springframework.stereotype.Component;
 
 /**
- * Marks a class as a OGC API service provider. Behaves in a way similar to {@link
- * org.springframework.stereotype.Controller}, the {@link APIDispatcher } assumes the methods are
- * annotated in the same way.
+ * Marks a class as a OGC API service provider. Behaves in a way similar to
+ * {@link org.springframework.stereotype.Controller}, the {@link APIDispatcher } assumes the methods are annotated in
+ * the same way.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -28,21 +28,17 @@ public @interface APIService {
     public String version();
 
     /**
-     * Set the flag false to indicate this bean provides and extension instead of the core of the
-     * service. This is going to be used to set the "service object" in the legacy OWS service data
-     * model.
+     * Set the flag false to indicate this bean provides and extension instead of the core of the service. This is going
+     * to be used to set the "service object" in the legacy OWS service data model.
      */
     public boolean core() default true;
 
     /**
-     * Path of the landing page for this service (from a "/api" base path? or freeform? what about
-     * ws specific services?)
+     * Path of the landing page for this service (from a "/api" base path? or freeform? what about ws specific
+     * services?)
      */
     public String landingPage();
 
-    /**
-     * GeoServer {@link org.geoserver.config.ServiceInfo} subclass used to locate the service
-     * configuration
-     */
+    /** GeoServer {@link org.geoserver.config.ServiceInfo} subclass used to locate the service configuration */
     public Class<? extends ServiceInfo> serviceClass();
 }

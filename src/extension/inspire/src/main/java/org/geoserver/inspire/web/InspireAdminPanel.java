@@ -51,13 +51,10 @@ public class InspireAdminPanel extends AdminPagePanel {
         MetadataMap serviceMetadata = model.getObject().getMetadata();
 
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
-        boolean isDownloadService =
-                model.getObject() instanceof WFSInfo || model.getObject() instanceof WCSInfo;
+        boolean isDownloadService = model.getObject() instanceof WFSInfo || model.getObject() instanceof WCSInfo;
         UniqueResourceIdentifiers ids = null;
         if (isDownloadService) {
-            ids =
-                    serviceMetadata.get(
-                            SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
+            ids = serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         }
         if (!serviceMetadata.containsKey(CREATE_EXTENDED_CAPABILITIES.key)) {
             if (metadataURL == null || isDownloadService && (ids == null || ids.isEmpty())) {
@@ -69,11 +66,9 @@ public class InspireAdminPanel extends AdminPagePanel {
 
         PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
-        final CheckBox createInspireExtendedCapabilities =
-                new CheckBox(
-                        "createExtendedCapabilities",
-                        new MetadataMapModel<>(
-                                metadata, CREATE_EXTENDED_CAPABILITIES.key, Boolean.class));
+        final CheckBox createInspireExtendedCapabilities = new CheckBox(
+                "createExtendedCapabilities",
+                new MetadataMapModel<>(metadata, CREATE_EXTENDED_CAPABILITIES.key, Boolean.class));
         add(createInspireExtendedCapabilities);
 
         final WebMarkupContainer container = new WebMarkupContainer("container");
@@ -85,25 +80,22 @@ public class InspireAdminPanel extends AdminPagePanel {
         configs.setVisible(createInspireExtendedCapabilities.getModelObject());
         container.add(configs);
 
-        createInspireExtendedCapabilities.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+        createInspireExtendedCapabilities.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        configs.setVisible(createInspireExtendedCapabilities.getModelObject());
-                        target.add(container);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                configs.setVisible(createInspireExtendedCapabilities.getModelObject());
+                target.add(container);
+            }
+        });
 
         if (!model.getObject().getMetadata().containsKey(LANGUAGE.key)) {
             model.getObject().getMetadata().put(LANGUAGE.key, "eng");
         }
 
         configs.add(new LanguageDropDownChoice("language", new MapModel<>(metadata, LANGUAGE.key)));
-        configs.add(
-                new LanguagesEditor(
-                        "otherLanguages", new MapModel<>(metadata, OTHER_LANGUAGES.key)));
+        configs.add(new LanguagesEditor("otherLanguages", new MapModel<>(metadata, OTHER_LANGUAGES.key)));
 
         TextField<URL> metadataUrlField =
                 new TextField<>("metadataURL", new MapModel<>(metadata, SERVICE_METADATA_URL.key));
@@ -111,56 +103,45 @@ public class InspireAdminPanel extends AdminPagePanel {
         FormComponentFeedbackBorder metadataURLBorder = new FormComponentFeedbackBorder("border");
         metadataURLBorder.add(metadataUrlField);
         configs.add(metadataURLBorder);
-        metadataUrlField.add(
-                new AttributeModifier(
-                        "title", new ResourceModel("InspireAdminPanel.metadataURL.title")));
+        metadataUrlField.add(new AttributeModifier("title", new ResourceModel("InspireAdminPanel.metadataURL.title")));
 
         final Map<String, String> mdUrlTypes = new HashMap<>();
-        mdUrlTypes.put(
-                "application/vnd.ogc.csw.GetRecordByIdResponse_xml", "CSW GetRecordById Response");
+        mdUrlTypes.put("application/vnd.ogc.csw.GetRecordByIdResponse_xml", "CSW GetRecordById Response");
         mdUrlTypes.put("application/vnd.iso.19139+xml", "ISO 19139 ServiceMetadata record");
 
         IModel<String> urlTypeModel = new MapModel<>(metadata, SERVICE_METADATA_TYPE.key);
 
-        IChoiceRenderer<String> urlTypeChoiceRenderer =
-                new ChoiceRenderer<>() {
-                    private static final long serialVersionUID = 1L;
+        IChoiceRenderer<String> urlTypeChoiceRenderer = new ChoiceRenderer<>() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public Object getDisplayValue(final String key) {
-                        final String resourceKey =
-                                "InspireAdminPanel.metadataURLType." + key; // as found in
-                        // GeoServerApplication.properties
-                        final String defaultValue = key;
-                        final String displayValue =
-                                new ResourceModel(resourceKey, defaultValue).getObject();
-                        return displayValue;
-                    }
+            @Override
+            public Object getDisplayValue(final String key) {
+                final String resourceKey = "InspireAdminPanel.metadataURLType." + key; // as found in
+                // GeoServerApplication.properties
+                final String defaultValue = key;
+                final String displayValue = new ResourceModel(resourceKey, defaultValue).getObject();
+                return displayValue;
+            }
 
-                    @Override
-                    public String getIdValue(final String key, int index) {
-                        return key;
-                    }
-                };
+            @Override
+            public String getIdValue(final String key, int index) {
+                return key;
+            }
+        };
         List<String> urlTypeChoices = new ArrayList<>(mdUrlTypes.keySet());
         DropDownChoice<String> serviceMetadataRecordType =
-                new DropDownChoice<>(
-                        "metadataURLType", urlTypeModel, urlTypeChoices, urlTypeChoiceRenderer);
+                new DropDownChoice<>("metadataURLType", urlTypeModel, urlTypeChoices, urlTypeChoiceRenderer);
         serviceMetadataRecordType.setNullValid(true);
 
         configs.add(serviceMetadataRecordType);
 
         // this is download service specific, will appear only if the service is
         // WFS or WCS
-        WebMarkupContainer identifiersContainer =
-                new WebMarkupContainer("datasetIdentifiersContainer");
+        WebMarkupContainer identifiersContainer = new WebMarkupContainer("datasetIdentifiersContainer");
         identifiersContainer.setVisible(isDownloadService);
         configs.add(identifiersContainer);
         IModel<UniqueResourceIdentifiers> sdiModel =
-                new MetadataMapModel<>(
-                        metadata,
-                        SPATIAL_DATASET_IDENTIFIER_TYPE.key,
-                        UniqueResourceIdentifiers.class);
+                new MetadataMapModel<>(metadata, SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         UniqueResourceIdentifiersEditor identifiersEditor =
                 new UniqueResourceIdentifiersEditor("spatialDatasetIdentifiers", sdiModel);
         identifiersContainer.add(identifiersEditor);

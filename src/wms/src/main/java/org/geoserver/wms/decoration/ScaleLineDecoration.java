@@ -28,8 +28,7 @@ import org.geotools.api.filter.expression.Expression;
 
 public class ScaleLineDecoration implements MapDecoration {
     /** A logger for this class. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
     private static Map<String, Double> INCHES_PER_UNIT = new HashMap<>();
 
@@ -113,13 +112,10 @@ public class ScaleLineDecoration implements MapDecoration {
 
         if (options.get("measurement-system") != null) {
             try {
-                this.measurementSystem =
-                        MeasurementSystem.mapToEnum(getOption(options, "measurement-system"));
+                this.measurementSystem = MeasurementSystem.mapToEnum(getOption(options, "measurement-system"));
             } catch (Exception e) {
                 this.LOGGER.log(
-                        Level.WARNING,
-                        "'measurement-system' must be one of 'metric', 'imperial' or 'both'.",
-                        e);
+                        Level.WARNING, "'measurement-system' must be one of 'metric', 'imperial' or 'both'.", e);
             }
         }
     }
@@ -150,8 +146,7 @@ public class ScaleLineDecoration implements MapDecoration {
     }
 
     @Override
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
-            throws Exception {
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) throws Exception {
         Color oldColor = g2d.getColor();
         Stroke oldStroke = g2d.getStroke();
         Font oldFont = g2d.getFont();
@@ -164,8 +159,7 @@ public class ScaleLineDecoration implements MapDecoration {
 
         String curMapUnits = "m";
 
-        double normalizedScale =
-                (scaleDenominator > 1.0) ? (1.0 / scaleDenominator) : scaleDenominator;
+        double normalizedScale = (scaleDenominator > 1.0) ? (1.0 / scaleDenominator) : scaleDenominator;
 
         double resolution = 1 / (normalizedScale * INCHES_PER_UNIT.get(curMapUnits) * this.dpi);
 
@@ -197,16 +191,13 @@ public class ScaleLineDecoration implements MapDecoration {
         int bottomRounded = this.getBarLength(bottomMax);
 
         topMax = topRounded / INCHES_PER_UNIT.get(curMapUnits) * INCHES_PER_UNIT.get(topUnits);
-        bottomMax =
-                bottomRounded / INCHES_PER_UNIT.get(curMapUnits) * INCHES_PER_UNIT.get(bottomUnits);
+        bottomMax = bottomRounded / INCHES_PER_UNIT.get(curMapUnits) * INCHES_PER_UNIT.get(bottomUnits);
 
         int topPx = (int) (topMax / resolution);
         int bottomPx = (int) (bottomMax / resolution);
 
         int centerY = (int) paintArea.getCenterY();
-        int leftX =
-                (int) paintArea.getMinX()
-                        + ((int) paintArea.getWidth() - Math.max(topPx, bottomPx)) / 2;
+        int leftX = (int) paintArea.getMinX() + ((int) paintArea.getWidth() - Math.max(topPx, bottomPx)) / 2;
 
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
         int prongHeight = metrics.getHeight() + metrics.getDescent();
@@ -216,12 +207,8 @@ public class ScaleLineDecoration implements MapDecoration {
 
         // Creates a rectangle only if is defined, if not is "transparent" like Google Maps
         if (!this.transparent) {
-            Rectangle frame =
-                    new Rectangle(
-                            leftX - 4,
-                            centerY - prongHeight - 4,
-                            Math.max(topPx, bottomPx) + 8,
-                            8 + prongHeight * 2);
+            Rectangle frame = new Rectangle(
+                    leftX - 4, centerY - prongHeight - 4, Math.max(topPx, bottomPx) + 8, 8 + prongHeight * 2);
 
             // fill the rectangle
             g2d.setColor(bgcolor);
@@ -264,8 +251,7 @@ public class ScaleLineDecoration implements MapDecoration {
         if (measurementSystem == IMPERIAL || measurementSystem == BOTH) {
 
             // Do not antialias scaleline lines
-            g2d.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
             // Left vertical bottom bar
             g2d.drawLine(leftX, centerY + prongHeight, leftX, centerY);

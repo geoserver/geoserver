@@ -45,9 +45,7 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
     }
 
     protected Properties getFixture() {
-        File fixtureFile =
-                FixtureUtilities.getFixtureFile(
-                        getFixtureDirectory(), fixtureHelper.getFixtureId());
+        File fixtureFile = FixtureUtilities.getFixtureFile(getFixtureDirectory(), fixtureHelper.getFixtureId());
         if (fixtureFile.exists()) {
             return FixtureUtilities.loadProperties(fixtureFile);
         } else {
@@ -97,17 +95,15 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
 
     protected DataStoreMetadata getDataStoreMetadata(DatabaseMetaData metaData) throws Exception {
         DataStoreMetadataConfig config =
-                new JdbcDataStoreMetadataConfig(
-                        ONLINE_DB_SCHEMA, metaData.getConnection(), null, ONLINE_DB_SCHEMA);
+                new JdbcDataStoreMetadataConfig(ONLINE_DB_SCHEMA, metaData.getConnection(), null, ONLINE_DB_SCHEMA);
         DataStoreMetadata dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config);
         return dsm;
     }
 
     /**
-     * Helper method that allows to remove sourceDataStore node from AppSchema xml doc. Useful to
-     * clean xml docs when required to compare assertXML (since those sections of documents contains
-     * specific information from dataStores based on JDBC Connection, it's required to avoid the
-     * comparision.
+     * Helper method that allows to remove sourceDataStore node from AppSchema xml doc. Useful to clean xml docs when
+     * required to compare assertXML (since those sections of documents contains specific information from dataStores
+     * based on JDBC Connection, it's required to avoid the comparision.
      *
      * @param appSchemaDoc
      */

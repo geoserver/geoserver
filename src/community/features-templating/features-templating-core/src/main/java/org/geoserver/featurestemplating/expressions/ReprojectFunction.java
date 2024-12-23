@@ -19,12 +19,11 @@ import org.locationtech.jts.geom.Geometry;
 
 /** Cql function that allows to reproject geometry towards targetCRS */
 public class ReprojectFunction extends FunctionExpressionImpl {
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "reproject",
-                    parameter("reprojected", Geometry.class),
-                    parameter("targetCRS", String.class),
-                    parameter("geometry", Geometry.class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "reproject",
+            parameter("reprojected", Geometry.class),
+            parameter("targetCRS", String.class),
+            parameter("geometry", Geometry.class));
 
     public ReprojectFunction() {
         super(NAME);

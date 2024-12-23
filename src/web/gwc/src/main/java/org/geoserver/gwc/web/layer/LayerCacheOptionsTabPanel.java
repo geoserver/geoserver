@@ -29,9 +29,7 @@ public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedIn
     private GeoServerTileLayerEditor editor;
 
     public LayerCacheOptionsTabPanel(
-            String id,
-            IModel<? extends PublishedInfo> layerModel,
-            IModel<GeoServerTileLayerInfo> tileLayerModel) {
+            String id, IModel<? extends PublishedInfo> layerModel, IModel<GeoServerTileLayerInfo> tileLayerModel) {
         super(id, layerModel);
 
         if (!(layerModel.getObject() instanceof LayerInfo)

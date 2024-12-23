@@ -18,8 +18,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 
 /**
- * Import data that will be fetched from a remote location during the init phase, similar to an
- * upload, but operated by GeoServer, and turned into another type of import data
+ * Import data that will be fetched from a remote location during the init phase, similar to an upload, but operated by
+ * GeoServer, and turned into another type of import data
  *
  * @author Andrea Aime - GeoSolutions
  */

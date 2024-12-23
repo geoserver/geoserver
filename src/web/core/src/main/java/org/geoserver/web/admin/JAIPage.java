@@ -86,28 +86,26 @@ public class JAIPage extends ServerAdminPage {
         }
         form.add(jaiExtPanel);
 
-        Button submit =
-                new Button("submit") {
-                    private static final long serialVersionUID = -2842881187264147131L;
+        Button submit = new Button("submit") {
+            private static final long serialVersionUID = -2842881187264147131L;
 
-                    @Override
-                    public void onSubmit() {
-                        save(true);
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                save(true);
+            }
+        };
         form.add(submit);
 
         form.add(applyLink(form));
 
-        Button cancel =
-                new Button("cancel") {
-                    private static final long serialVersionUID = 7917847596581898225L;
+        Button cancel = new Button("cancel") {
+            private static final long serialVersionUID = 7917847596581898225L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
     }
 
@@ -142,31 +140,25 @@ public class JAIPage extends ServerAdminPage {
 
     private void addPngEncoderEditor(Form<JAIInfo> form) {
         // get the list of available encoders
-        List<PngEncoderType> encoders =
-                new ArrayList<>(Arrays.asList(JAIInfo.PngEncoderType.values()));
+        List<PngEncoderType> encoders = new ArrayList<>(Arrays.asList(JAIInfo.PngEncoderType.values()));
         if (!PackageUtil.isCodecLibAvailable()) {
             encoders.remove(PngEncoderType.NATIVE);
         }
         // create the editor, eventually set a default value
         DropDownChoice<JAIInfo.PngEncoderType> editor =
-                new DropDownChoice<>(
-                        "pngEncoderType",
-                        encoders,
-                        new ChoiceRenderer<>() {
-                            private static final long serialVersionUID = 1L;
+                new DropDownChoice<>("pngEncoderType", encoders, new ChoiceRenderer<>() {
+                    private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Object getDisplayValue(PngEncoderType type) {
-                                return new ParamResourceModel(
-                                                "pngEncoder." + type.name(), JAIPage.this)
-                                        .getString();
-                            }
+                    @Override
+                    public Object getDisplayValue(PngEncoderType type) {
+                        return new ParamResourceModel("pngEncoder." + type.name(), JAIPage.this).getString();
+                    }
 
-                            @Override
-                            public String getIdValue(PngEncoderType type, int index) {
-                                return type.name();
-                            }
-                        });
+                    @Override
+                    public String getIdValue(PngEncoderType type, int index) {
+                        return type.name();
+                    }
+                });
         form.add(editor);
         if (!encoders.contains(editor.getModelObject())) {
             editor.setModelObject(PngEncoderType.PNGJ);

@@ -12,8 +12,8 @@ import java.util.Collection;
 /**
  * Custom collection converter.
  *
- * <p>Used because because the basic only handles a handlful of collection implementations. And
- * things like hibernate have there own implementation which leads to problems.
+ * <p>Used because because the basic only handles a handlful of collection implementations. And things like hibernate
+ * have there own implementation which leads to problems.
  *
  * @author Justin Deoliveira, OpenGeo
  */

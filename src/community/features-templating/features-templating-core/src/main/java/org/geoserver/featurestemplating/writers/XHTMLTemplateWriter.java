@@ -68,8 +68,7 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
         }
     }
 
-    private void injectJSONLD(EncodingHints encodingHints)
-            throws ExecutionException, IOException, XMLStreamException {
+    private void injectJSONLD(EncodingHints encodingHints) throws ExecutionException, IOException, XMLStreamException {
         List injectJSONLD = encodingHints.get(JSON_LD_SCRIPT, List.class, Collections.emptyList());
         if (!injectJSONLD.isEmpty()) {
             List<FeatureCollection> collections = (List<FeatureCollection>) injectJSONLD;

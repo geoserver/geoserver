@@ -53,13 +53,12 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
     @Test
     public void testBreakRequest() throws Exception {
         final String message = "This layer is not allowed";
-        TestCallback callback =
-                new TestCallback() {
-                    @Override
-                    public Layer beforeLayer(WMSMapContent content, Layer layer) {
-                        throw new RuntimeException(message);
-                    }
-                };
+        TestCallback callback = new TestCallback() {
+            @Override
+            public Layer beforeLayer(WMSMapContent content, Layer layer) {
+                throw new RuntimeException(message);
+            }
+        };
         getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers
@@ -79,19 +78,17 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
     @Test
     public void testAddLayer() throws Exception {
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(getLayerId(MockData.BRIDGES));
-        FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                ft.getFeatureSource(null, null);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = ft.getFeatureSource(null, null);
         Style style = getCatalog().getStyleByName("point").getStyle();
         final FeatureLayer layer = new FeatureLayer(fs, style);
         layer.setTitle("extra");
-        TestCallback callback =
-                new TestCallback() {
-                    @Override
-                    public WMSMapContent beforeRender(WMSMapContent mapContent) {
-                        mapContent.addLayer(layer);
-                        return super.beforeRender(mapContent);
-                    }
-                };
+        TestCallback callback = new TestCallback() {
+            @Override
+            public WMSMapContent beforeRender(WMSMapContent mapContent) {
+                mapContent.addLayer(layer);
+                return super.beforeRender(mapContent);
+            }
+        };
         getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers
@@ -111,17 +108,16 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testRemoveLayer() throws Exception {
-        TestCallback callback =
-                new TestCallback() {
-                    @Override
-                    public Layer beforeLayer(WMSMapContent content, Layer layer) {
-                        if ("cite:Lakes".equals(layer.getTitle())) {
-                            return null;
-                        } else {
-                            return super.beforeLayer(content, layer);
-                        }
-                    }
-                };
+        TestCallback callback = new TestCallback() {
+            @Override
+            public Layer beforeLayer(WMSMapContent content, Layer layer) {
+                if ("cite:Lakes".equals(layer.getTitle())) {
+                    return null;
+                } else {
+                    return super.beforeLayer(content, layer);
+                }
+            }
+        };
         getMap.setGetMapCallbacks(Arrays.asList(callback));
 
         // request a layer group with two layers

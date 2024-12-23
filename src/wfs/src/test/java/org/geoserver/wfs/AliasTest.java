@@ -36,8 +36,7 @@ public class AliasTest extends WFSTestSupport {
 
     @Test
     public void testAliasFifteen() throws Exception {
-        Document doc =
-                getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&service=wfs");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertTrue(doc.getElementsByTagName("gml:featureMember").getLength() > 0);
@@ -46,8 +45,7 @@ public class AliasTest extends WFSTestSupport {
 
     @Test
     public void testGetByFeatureId() throws Exception {
-        Document doc =
-                getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&featureId=ft15.1");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:ft15&version=1.0.0&featureId=ft15.1");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         assertEquals(1, doc.getElementsByTagName("gml:featureMember").getLength());

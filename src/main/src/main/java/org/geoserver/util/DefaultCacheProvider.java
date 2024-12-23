@@ -30,13 +30,12 @@ public class DefaultCacheProvider implements CacheProvider {
     @Override
     public <K extends Serializable, V extends Serializable> Cache<K, V> getCache(String cacheName) {
 
-        Cache<K, V> cache =
-                CacheBuilder.newBuilder()
-                        .weakValues()
-                        .concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL)
-                        .expireAfterAccess(DEFAULT_EXPIRATION_MINUTES, TimeUnit.MINUTES)
-                        .maximumSize(DEFAULT_MAX_ENTRIES)
-                        .build();
+        Cache<K, V> cache = CacheBuilder.newBuilder()
+                .weakValues()
+                .concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL)
+                .expireAfterAccess(DEFAULT_EXPIRATION_MINUTES, TimeUnit.MINUTES)
+                .maximumSize(DEFAULT_MAX_ENTRIES)
+                .build();
 
         return cache;
     }
@@ -54,10 +53,7 @@ public class DefaultCacheProvider implements CacheProvider {
                 }
             }
             if (cacheProvider == null) {
-                LOGGER.log(
-                        Level.INFO,
-                        "{0} was specified but no beans matched it.",
-                        BEAN_NAME_PROPERTY);
+                LOGGER.log(Level.INFO, "{0} was specified but no beans matched it.", BEAN_NAME_PROPERTY);
             }
         }
         // Find a bean by interface

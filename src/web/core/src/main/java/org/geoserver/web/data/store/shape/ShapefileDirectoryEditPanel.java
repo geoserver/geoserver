@@ -33,17 +33,10 @@ public class ShapefileDirectoryEditPanel extends ShapefileStoreEditPanel {
 
     @Override
     protected Panel buildFileParamPanel(final IModel<Map<String, Object>> paramsModel) {
-        DirectoryParamPanel file =
-                new DirectoryParamPanel(
-                        "url",
-                        new MapModel<>(paramsModel, URLP.key),
-                        new ParamResourceModel("shapefile", this),
-                        true);
-        add(
-                new CheckBoxParamPanel(
-                        "skipScan",
-                        new MapModel<>(paramsModel, SKIP_SCAN.key),
-                        new ParamResourceModel("skipScan", this)));
+        DirectoryParamPanel file = new DirectoryParamPanel(
+                "url", new MapModel<>(paramsModel, URLP.key), new ParamResourceModel("shapefile", this), true);
+        add(new CheckBoxParamPanel(
+                "skipScan", new MapModel<>(paramsModel, SKIP_SCAN.key), new ParamResourceModel("skipScan", this)));
         file.setFileFilter(new Model<>(new ExtensionFileFilter(".shp")));
         return file;
     }

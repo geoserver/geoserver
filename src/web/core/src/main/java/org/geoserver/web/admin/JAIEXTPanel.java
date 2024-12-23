@@ -31,8 +31,7 @@ public class JAIEXTPanel extends Panel {
                 new Palette<>(
                         "jaiextOps",
                         LiveCollectionModel.set(new PropertyModel<>(jaiextModel, "JAIOperations")),
-                        LiveCollectionModel.set(
-                                new PropertyModel<>(jaiextModel, "JAIEXTOperations")),
+                        LiveCollectionModel.set(new PropertyModel<>(jaiextModel, "JAIEXTOperations")),
                         new JAChoiceRenderer(),
                         7,
                         false) {
@@ -41,15 +40,13 @@ public class JAIEXTPanel extends Panel {
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newSelectedHeader(final String componentId) {
-                        return new Label(
-                                componentId, new ResourceModel("JAIEXTPanel.selectedHeader"));
+                        return new Label(componentId, new ResourceModel("JAIEXTPanel.selectedHeader"));
                     }
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newAvailableHeader(final String componentId) {
-                        return new Label(
-                                componentId, new ResourceModel("JAIEXTPanel.availableHeader"));
+                        return new Label(componentId, new ResourceModel("JAIEXTPanel.availableHeader"));
                     }
                 };
         jaiextSelector.add(new DefaultTheme());
@@ -68,8 +65,7 @@ public class JAIEXTPanel extends Panel {
             if (object.equalsIgnoreCase(STATS)) {
                 return new ParamResourceModel("JAIEXTPanel." + STATS, null, "").getString();
             } else if (object.equalsIgnoreCase(OPERATION_CONST)) {
-                return new ParamResourceModel("JAIEXTPanel." + OPERATION_CONST, null, "")
-                        .getString();
+                return new ParamResourceModel("JAIEXTPanel." + OPERATION_CONST, null, "").getString();
             } else if (object.equalsIgnoreCase(ALGEBRIC)) {
                 return new ParamResourceModel("JAIEXTPanel." + ALGEBRIC, null, "").getString();
             } else {

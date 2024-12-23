@@ -101,11 +101,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 
 /** Implementation of OGC Features API service */
-@APIService(
-        service = "STAC",
-        version = "1.0.0",
-        landingPage = "ogc/stac/v1",
-        serviceClass = OSEOInfo.class)
+@APIService(service = "STAC", version = "1.0.0", landingPage = "ogc/stac/v1", serviceClass = OSEOInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/stac/v1")
 public class STACService {
 
@@ -117,14 +113,10 @@ public class STACService {
     public static final String STAC_AUTHORITY = "https://api.stacspec.org/";
     public static final String STAC_CONFORMANCE_ROOT = STAC_AUTHORITY + STAC_CONFORMANCE_VERSION;
 
-    public static final String FEATURE_CORE =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
-    public static final String FEATURE_HTML =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
-    public static final String FEATURE_GEOJSON =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
-    public static final String FEATURE_OAS30 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
+    public static final String FEATURE_CORE = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
+    public static final String FEATURE_HTML = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
+    public static final String FEATURE_GEOJSON = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
+    public static final String FEATURE_OAS30 = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
     public static final String STAC_CORE = STAC_CONFORMANCE_ROOT + "/core";
     public static final String STAC_SEARCH = STAC_CONFORMANCE_ROOT + "/item-search";
     public static final String STAC_SEARCH_SORT = STAC_CONFORMANCE_ROOT + "/item-search#sort";
@@ -188,42 +180,40 @@ public class STACService {
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public STACLandingPage getLandingPage() throws IOException {
-        return new STACLandingPage(
-                getService(), "ogc/stac/v1", conformance().getConformsTo(), getCollectionIds());
+        return new STACLandingPage(getService(), "ogc/stac/v1", conformance().getConformsTo(), getCollectionIds());
     }
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes =
-                Arrays.asList(
-                        FEATURE_CORE,
-                        FEATURE_OAS30,
-                        FEATURE_HTML,
-                        FEATURE_GEOJSON,
-                        STAC_COLLECTIONS,
-                        STAC_CORE,
-                        STAC_FEATURES,
-                        STAC_SEARCH,
-                        STAC_SEARCH_FILTER,
-                        STAC_SEARCH_SORT,
-                        STAC_SEARCH_FIELDS,
-                        FEATURES_FILTER,
-                        FILTER,
-                        ECQL,
-                        ECQL_TEXT,
-                        CQL2_BASIC,
-                        CQL2_ADVANCED,
-                        CQL2_ARITHMETIC,
-                        CQL2_PROPERTY_PROPERTY,
-                        CQL2_BASIC_SPATIAL,
-                        CQL2_SPATIAL,
-                        CQL2_FUNCTIONS,
-                        /* CQL2_TEMPORAL excluded for now, no support for all operators */
-                        /* CQL2_ARRAY excluded, no support for array operations now */
-                        CQL2_TEXT
-                        /* CQL2_JSON very different from the binding we have */ );
+        List<String> classes = Arrays.asList(
+                FEATURE_CORE,
+                FEATURE_OAS30,
+                FEATURE_HTML,
+                FEATURE_GEOJSON,
+                STAC_COLLECTIONS,
+                STAC_CORE,
+                STAC_FEATURES,
+                STAC_SEARCH,
+                STAC_SEARCH_FILTER,
+                STAC_SEARCH_SORT,
+                STAC_SEARCH_FIELDS,
+                FEATURES_FILTER,
+                FILTER,
+                ECQL,
+                ECQL_TEXT,
+                CQL2_BASIC,
+                CQL2_ADVANCED,
+                CQL2_ARITHMETIC,
+                CQL2_PROPERTY_PROPERTY,
+                CQL2_BASIC_SPATIAL,
+                CQL2_SPATIAL,
+                CQL2_FUNCTIONS,
+                /* CQL2_TEMPORAL excluded for now, no support for all operators */
+                /* CQL2_ARRAY excluded, no support for array operations now */
+                CQL2_TEXT
+                /* CQL2_JSON very different from the binding we have */ );
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -255,8 +245,7 @@ public class STACService {
     @GetMapping(path = "collections/{collectionId}", name = "getCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionResponse collection(@PathVariable("collectionId") String collectionId)
-            throws IOException {
+    public CollectionResponse collection(@PathVariable("collectionId") String collectionId) throws IOException {
         Feature collection = getCollection(collectionId);
         return new CollectionResponse(collection);
     }
@@ -265,22 +254,16 @@ public class STACService {
         return getCollection(collectionId, Query.ALL_PROPERTIES);
     }
 
-    private Feature getCollection(String collectionId, List<PropertyName> selectedFields)
-            throws IOException {
+    private Feature getCollection(String collectionId, List<PropertyName> selectedFields) throws IOException {
         Query q = new Query();
-        q.setFilter(
-                FF.and(
-                        getEnabledFilter(),
-                        FF.equals(FF.property(EO_IDENTIFIER), FF.literal(collectionId))));
+        q.setFilter(FF.and(getEnabledFilter(), FF.equals(FF.property(EO_IDENTIFIER), FF.literal(collectionId))));
         q.setProperties(selectedFields);
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
         if (collection == null)
             throw new APIException(
-                    APIException.NOT_FOUND,
-                    "Collection not found: " + collectionId,
-                    HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND, "Collection not found: " + collectionId, HttpStatus.NOT_FOUND);
         return collection;
     }
 
@@ -293,20 +276,19 @@ public class STACService {
         FeatureType schema = collections.getSchema();
         // for unique visitor to work against complex features, full namespace has to be provided
         Name name = new NameImpl(schema.getName().getNamespaceURI(), "name");
-        UniqueVisitor unique = new UniqueVisitor(FF.property(schema.getDescriptor(name).getName()));
+        UniqueVisitor unique =
+                new UniqueVisitor(FF.property(schema.getDescriptor(name).getName()));
         collections.accepts(unique, null);
         Set values = unique.getUnique();
-        return (Set<String>)
-                values.stream()
-                        .map(
-                                a -> {
-                                    if (a instanceof Attribute) {
-                                        return ((Attribute) a).getValue();
-                                    } else {
-                                        return a.toString();
-                                    }
-                                })
-                        .collect(Collectors.toSet());
+        return (Set<String>) values.stream()
+                .map(a -> {
+                    if (a instanceof Attribute) {
+                        return ((Attribute) a).getValue();
+                    } else {
+                        return a.toString();
+                    }
+                })
+                .collect(Collectors.toSet());
     }
 
     @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getItem")
@@ -324,8 +306,7 @@ public class STACService {
         Query q = new Query();
         Filter collectionFilter = getCollectionsFilter(Collections.singletonList(collectionId));
         // make sure the item is in the collection
-        Filter collectionAndItem =
-                FF.and(collectionFilter, FF.equals(FF.property("identifier"), FF.literal(itemId)));
+        Filter collectionAndItem = FF.and(collectionFilter, FF.equals(FF.property("identifier"), FF.literal(itemId)));
         // make sure the item is enabled
         q.setFilter(FF.and(getEnabledFilter(), collectionAndItem));
 
@@ -336,8 +317,7 @@ public class STACService {
         if (supportsFieldsSelection(request) && hasField) {
             rootBuilder = templates.getItemTemplate(collectionId);
             PropertySelectionVisitor propertySelectionVisitor =
-                    new PropertySelectionVisitor(
-                            new STACPropertySelection(fields), products.getSchema());
+                    new PropertySelectionVisitor(new STACPropertySelection(fields), products.getSchema());
             rootBuilder = (RootBuilder) rootBuilder.accept(propertySelectionVisitor, null);
             q.setPropertyNames(new ArrayList<>(propertySelectionVisitor.getQueryProperties()));
         } else {
@@ -348,9 +328,7 @@ public class STACService {
         Feature item = DataUtilities.first(items);
         if (item == null) {
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "Could not locate item " + itemId,
-                    HttpStatus.NOT_FOUND);
+                    ServiceException.INVALID_PARAMETER_VALUE, "Could not locate item " + itemId, HttpStatus.NOT_FOUND);
         }
         ItemResponse response = new ItemResponse(collectionId, item);
         response.setTemplate(rootBuilder);
@@ -377,8 +355,7 @@ public class STACService {
         collectionAvailableAndEnabled(collectionId);
         boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
         QueryResultBuilder resultBuilder =
-                new QueryResultBuilder(
-                        templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
+                new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
         resultBuilder
                 .collectionIds(Arrays.asList(collectionId))
                 .startIndex(startIndex)
@@ -398,16 +375,14 @@ public class STACService {
 
         // build the links
         ItemsResponse response =
-                new ItemsResponse(
-                        collectionId, qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+                new ItemsResponse(collectionId, qr.getItems(), qr.getNumberMatched(), qr.getReturned());
         String path = "ogc/stac/v1/collections/" + urlEncode(collectionId) + "/items";
-        PaginationLinksBuilder linksBuilder =
-                new PaginationLinksBuilder(
-                        path,
-                        startIndex,
-                        qr.getQuery().getMaxFeatures(),
-                        qr.getReturned(),
-                        qr.getNumberMatched().longValue());
+        PaginationLinksBuilder linksBuilder = new PaginationLinksBuilder(
+                path,
+                startIndex,
+                qr.getQuery().getMaxFeatures(),
+                qr.getReturned(),
+                qr.getNumberMatched().longValue());
         response.setPrevious(linksBuilder.getPrevious());
         response.setNext(linksBuilder.getNext());
         response.setSelf(linksBuilder.getSelf());
@@ -449,8 +424,7 @@ public class STACService {
             throws Exception {
         boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
         QueryResultBuilder resultBuilder =
-                new QueryResultBuilder(
-                        templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
+                new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
         resultBuilder
                 .collectionIds(collectionIds)
                 .startIndex(startIndex)
@@ -470,17 +444,15 @@ public class STACService {
         QueryResult qr = resultBuilder.build();
 
         // build the links
-        SearchResponse response =
-                new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+        SearchResponse response = new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
         response.setTemplateMap(qr.getTemplateMap());
         String path = "ogc/stac/v1/search";
-        PaginationLinksBuilder linksBuilder =
-                new PaginationLinksBuilder(
-                        path,
-                        startIndex,
-                        qr.getQuery().getMaxFeatures(),
-                        qr.getReturned(),
-                        qr.getNumberMatched().longValue());
+        PaginationLinksBuilder linksBuilder = new PaginationLinksBuilder(
+                path,
+                startIndex,
+                qr.getQuery().getMaxFeatures(),
+                qr.getReturned(),
+                qr.getNumberMatched().longValue());
         response.setPrevious(linksBuilder.getPrevious());
         response.setNext(linksBuilder.getNext());
         response.setSelf(linksBuilder.getSelf());
@@ -494,8 +466,7 @@ public class STACService {
     public SearchResponse searchPost(@RequestBody STACSearchQuery sq) throws Exception {
 
         QueryResultBuilder resultBuilder =
-                new QueryResultBuilder(
-                        templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
+                new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
         resultBuilder
                 .collectionIds(sq.getCollections())
                 .intersects(sq.getIntersects())
@@ -512,18 +483,16 @@ public class STACService {
         QueryResult qr = resultBuilder.build();
 
         // build the links
-        SearchResponse response =
-                new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
+        SearchResponse response = new SearchResponse(qr.getItems(), qr.getNumberMatched(), qr.getReturned());
         String path = "ogc/stac/v1/search";
-        PaginationLinksBuilder linksBuilder =
-                new PaginationLinksBuilder(
-                        path,
-                        Optional.ofNullable(sq.getStartIndex())
-                                .orElse(BigInteger.valueOf(0))
-                                .longValue(),
-                        qr.getQuery().getMaxFeatures(),
-                        qr.getReturned(),
-                        qr.getNumberMatched().longValue());
+        PaginationLinksBuilder linksBuilder = new PaginationLinksBuilder(
+                path,
+                Optional.ofNullable(sq.getStartIndex())
+                        .orElse(BigInteger.valueOf(0))
+                        .longValue(),
+                qr.getQuery().getMaxFeatures(),
+                qr.getReturned(),
+                qr.getNumberMatched().longValue());
         response.setSelf(linksBuilder.getSelf());
         response.setPost(true);
         response.setPreviousBody(linksBuilder.getPreviousMap(false));
@@ -533,12 +502,9 @@ public class STACService {
     }
 
     private void addCollectionsFilter(
-            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection)
-            throws IOException {
+            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection) throws IOException {
         List<String> disabledIds =
-                excludeDisabledCollection
-                        ? getDisabledCollections(collectionIds)
-                        : Collections.emptyList();
+                excludeDisabledCollection ? getDisabledCollections(collectionIds) : Collections.emptyList();
 
         if (collectionIds != null && !collectionIds.isEmpty()) {
             collectionIds.removeAll(disabledIds);
@@ -561,16 +527,11 @@ public class STACService {
         return filters.or();
     }
 
-    public Filter parseFilter(List<String> collectionIds, String filter, String filterLang)
-            throws IOException {
+    public Filter parseFilter(List<String> collectionIds, String filter, String filterLang) throws IOException {
         Filter parsed = filterParser.parse(filter, filterLang);
-        Filter templateMapped =
-                new TemplatePropertyMapper(
-                                templates,
-                                sampleFeatures,
-                                collectionsCache,
-                                geoServer.getService(OSEOInfo.class))
-                        .mapProperties(collectionIds, parsed);
+        Filter templateMapped = new TemplatePropertyMapper(
+                        templates, sampleFeatures, collectionsCache, geoServer.getService(OSEOInfo.class))
+                .mapProperties(collectionIds, parsed);
         STACIndexOptimizerVisitor stacIndexOptimizerVisitor = new STACIndexOptimizerVisitor();
         return (Filter) templateMapped.accept(stacIndexOptimizerVisitor, null);
     }
@@ -622,8 +583,7 @@ public class STACService {
         return queryItems(source, q);
     }
 
-    private SortBy[] mapSortProperties(List<String> collectionIds, SortBy[] sortby)
-            throws IOException {
+    private SortBy[] mapSortProperties(List<String> collectionIds, SortBy[] sortby) throws IOException {
         // nothing to map, easy way out
         if (sortby == null) return null;
 
@@ -639,14 +599,8 @@ public class STACService {
             // sortables are generic
             collectionId = collectionIds.get(0);
         }
-        mapper =
-                STACSortablesMapper.getSortablesMapper(
-                        collectionId,
-                        templates,
-                        sampleFeatures,
-                        collectionsCache,
-                        itemsSchema,
-                        geoServer);
+        mapper = STACSortablesMapper.getSortablesMapper(
+                collectionId, templates, sampleFeatures, collectionsCache, itemsSchema, geoServer);
         return mapper.map(sortby);
     }
 
@@ -657,10 +611,9 @@ public class STACService {
             List<Filter> filters = new ArrayList<>();
             filters.add(filter);
 
-            filters.addAll(
-                    collectionIds.stream()
-                            .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
-                            .collect(Collectors.toList()));
+            filters.addAll(collectionIds.stream()
+                    .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
+                    .collect(Collectors.toList()));
             filter = FF.and(filters);
         }
         q.setFilter(filter);
@@ -672,8 +625,7 @@ public class STACService {
                 .collect(Collectors.toList());
     }
 
-    private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q)
-            throws IOException {
+    private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q) throws IOException {
         // get the items
         FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
 
@@ -725,8 +677,7 @@ public class STACService {
 
         if (timeSpec instanceof Date) {
             // range containment
-            return FF.between(
-                    FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
+            return FF.between(FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
         } else if (timeSpec instanceof DateRange) {
             // range overlap filter
             DateRange dateRange = (DateRange) timeSpec;
@@ -750,21 +701,19 @@ public class STACService {
             throws IOException {
         // check the collection is there
         getCollection(collectionId);
-        String id =
-                buildURL(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/stac/v1/collections/" + urlEncode(collectionId) + "/queryables",
-                        null,
-                        RESOURCE);
-        Queryables queryables =
-                new STACQueryablesBuilder(
-                                id,
-                                templates.getItemTemplate(collectionId),
-                                sampleFeatures.getSchema(),
-                                sampleFeatures.getSample(collectionId),
-                                collectionsCache.getCollection(collectionId),
-                                geoServer.getService(OSEOInfo.class))
-                        .getQueryables();
+        String id = buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/stac/v1/collections/" + urlEncode(collectionId) + "/queryables",
+                null,
+                RESOURCE);
+        Queryables queryables = new STACQueryablesBuilder(
+                        id,
+                        templates.getItemTemplate(collectionId),
+                        sampleFeatures.getSchema(),
+                        sampleFeatures.getSample(collectionId),
+                        collectionsCache.getCollection(collectionId),
+                        geoServer.getService(OSEOInfo.class))
+                .getQueryables();
         queryables.setCollectionId(collectionId);
         return queryables;
     }
@@ -775,29 +724,19 @@ public class STACService {
             produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "sortables-collection.ftl", fileName = "sortables.html")
-    public Sortables collectionSortables(@PathVariable(name = "collectionId") String collectionId)
-            throws IOException {
+    public Sortables collectionSortables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         // check the collection is there
         getCollection(collectionId);
-        String id =
-                buildURL(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/stac/v1/collections/" + urlEncode(collectionId) + "/sortables",
-                        null,
-                        RESOURCE);
+        String id = buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/stac/v1/collections/" + urlEncode(collectionId) + "/sortables",
+                null,
+                RESOURCE);
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         RootBuilder template = this.templates.getItemTemplate(collectionId);
-        STACSortablesMapper sortablesMapper =
-                STACSortablesMapper.getSortablesMapper(
-                        collectionId,
-                        templates,
-                        sampleFeatures,
-                        collectionsCache,
-                        itemsSchema,
-                        geoServer,
-                        template,
-                        id);
+        STACSortablesMapper sortablesMapper = STACSortablesMapper.getSortablesMapper(
+                collectionId, templates, sampleFeatures, collectionsCache, itemsSchema, geoServer, template, id);
         Sortables sortables = sortablesMapper.getSortables();
         sortables.setCollectionId(collectionId);
         return sortables;
@@ -814,15 +753,14 @@ public class STACService {
         String id = buildURL(baseURL, "ogc/stac/v1/queryables", null, RESOURCE);
         LOGGER.severe(
                 "Should consider the various collection specific templates here, and decide what to do for queriables that are in one collection but not in others (replace with null and simplify filter?)");
-        Queryables queryables =
-                new STACQueryablesBuilder(
-                                id,
-                                templates.getItemTemplate(null),
-                                sampleFeatures.getSchema(),
-                                sampleFeatures.getSample(null),
-                                collectionsCache.getCollection(null),
-                                geoServer.getService(OSEOInfo.class))
-                        .getQueryables();
+        Queryables queryables = new STACQueryablesBuilder(
+                        id,
+                        templates.getItemTemplate(null),
+                        sampleFeatures.getSchema(),
+                        sampleFeatures.getSample(null),
+                        collectionsCache.getCollection(null),
+                        geoServer.getService(OSEOInfo.class))
+                .getQueryables();
         return queryables;
     }
 
@@ -840,21 +778,12 @@ public class STACService {
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         RootBuilder template = this.templates.getItemTemplate(null);
-        STACSortablesMapper sortablesMapper =
-                STACSortablesMapper.getSortablesMapper(
-                        null,
-                        templates,
-                        sampleFeatures,
-                        collectionsCache,
-                        itemsSchema,
-                        geoServer,
-                        template,
-                        id);
+        STACSortablesMapper sortablesMapper = STACSortablesMapper.getSortablesMapper(
+                null, templates, sampleFeatures, collectionsCache, itemsSchema, geoServer, template, id);
         return sortablesMapper.getSortables();
     }
 
-    private boolean supportsFieldsSelection(HttpServletRequest request)
-            throws HttpMediaTypeNotAcceptableException {
+    private boolean supportsFieldsSelection(HttpServletRequest request) throws HttpMediaTypeNotAcceptableException {
         // if neither accept, neither f are present geo+json is the default.
 
         String strMediaType = request.getParameter("f");
@@ -867,8 +796,7 @@ public class STACService {
 
         // use the APIContentNegotiationManager then
         APIContentNegotiationManager contentNegotiationManager = new APIContentNegotiationManager();
-        List<MediaType> mediaTypes =
-                contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
+        List<MediaType> mediaTypes = contentNegotiationManager.resolveMediaTypes(new ServletWebRequest(request));
         if (mediaTypes == null || mediaTypes.isEmpty()) {
             return false;
         } else {

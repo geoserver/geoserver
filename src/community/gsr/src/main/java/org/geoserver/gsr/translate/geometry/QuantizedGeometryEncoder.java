@@ -22,8 +22,8 @@ import org.locationtech.jts.geom.Envelope;
 /**
  * Geometry encoder used to quantize geometries.
  *
- * <p>Encodes geometries as {@link Long} arrays representing pixel coordinates on a screen, and
- * performs simplification based on the resolution.
+ * <p>Encodes geometries as {@link Long} arrays representing pixel coordinates on a screen, and performs simplification
+ * based on the resolution.
  */
 public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
 
@@ -40,20 +40,18 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
      * Initializes the geometry encoder.
      *
      * @param mode {@link Mode#view}
-     * @param originPosition Integer coordinates will be returned relative to the origin position
-     *     defined by this property value. Defaults to {@link OriginPosition#upperLeft}
-     * @param tolerance The tolerance is the size of one pixel in the units of the output geometry,
-     *     as described in the spatialReference parameter of {@link
-     *     #toRepresentation(org.locationtech.jts.geom.Geometry, SpatialReference)}. This number is
-     *     used to convert the coordinates to integers by building a grid with resolution matching
-     *     the tolerance. Each coordinate is then snapped to one pixel on the grid. Consecutive
+     * @param originPosition Integer coordinates will be returned relative to the origin position defined by this
+     *     property value. Defaults to {@link OriginPosition#upperLeft}
+     * @param tolerance The tolerance is the size of one pixel in the units of the output geometry, as described in the
+     *     spatialReference parameter of {@link #toRepresentation(org.locationtech.jts.geom.Geometry,
+     *     SpatialReference)}. This number is used to convert the coordinates to integers by building a grid with
+     *     resolution matching the tolerance. Each coordinate is then snapped to one pixel on the grid. Consecutive
      *     coordinates snapped to the same pixel are removed to reduce the overall response size.
-     * @param envelope An extent defining the quantization grid bounds. Its SpatialReference matches
-     *     the output geometry spatial reference, as supplied to {@link
-     *     #toRepresentation(org.locationtech.jts.geom.Geometry, SpatialReference)}.
+     * @param envelope An extent defining the quantization grid bounds. Its SpatialReference matches the output geometry
+     *     spatial reference, as supplied to {@link #toRepresentation(org.locationtech.jts.geom.Geometry,
+     *     SpatialReference)}.
      */
-    public QuantizedGeometryEncoder(
-            Mode mode, OriginPosition originPosition, double tolerance, Envelope envelope) {
+    public QuantizedGeometryEncoder(Mode mode, OriginPosition originPosition, double tolerance, Envelope envelope) {
         super();
         this.mode = mode == null ? Mode.view : mode;
         this.originPosition = originPosition == null ? OriginPosition.upperLeft : originPosition;
@@ -95,21 +93,14 @@ public class QuantizedGeometryEncoder extends AbstractGeometryEncoder<Long> {
     @Override
     protected Long[] embeddedCoordinate(Coordinate coord) {
         // delta from origin
-        double[] transformedCoords =
-                new double[] {coord.x - originCoords[0], originCoords[1] - coord.y};
+        double[] transformedCoords = new double[] {coord.x - originCoords[0], originCoords[1] - coord.y};
 
         // divide by tolerance and round to nearest whole number
         Long[] longCoords =
-                new Long[] {
-                    Math.round(transformedCoords[0] / tolerance),
-                    Math.round(transformedCoords[1] / tolerance)
-                };
+                new Long[] {Math.round(transformedCoords[0] / tolerance), Math.round(transformedCoords[1] / tolerance)};
         if (startingCoords != null) {
             // return the delta from last point in the feature
-            Long[] deltaCoords =
-                    new Long[] {
-                        longCoords[0] - startingCoords[0], longCoords[1] - startingCoords[1]
-                    };
+            Long[] deltaCoords = new Long[] {longCoords[0] - startingCoords[0], longCoords[1] - startingCoords[1]};
             startingCoords = longCoords;
             return deltaCoords;
         }

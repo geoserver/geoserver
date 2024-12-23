@@ -39,10 +39,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     public void init() throws IOException {
         login();
 
-        coverageStore =
-                getCatalog()
-                        .getStoreByName(
-                                MockData.TASMANIA_BM.getLocalPart(), CoverageStoreInfo.class);
+        coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(), CoverageStoreInfo.class);
         if (coverageStore == null) {
             // revert the bluemable modified change
             Catalog cat = getCatalog();
@@ -51,10 +48,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
                 c.setName("BlueMarble");
                 cat.save(c);
             }
-            coverageStore =
-                    getCatalog()
-                            .getStoreByName(
-                                    MockData.TASMANIA_BM.getLocalPart(), CoverageStoreInfo.class);
+            coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(), CoverageStoreInfo.class);
         }
         tester.startPage(new CoverageStoreEditPage(coverageStore.getId()));
     }
@@ -65,8 +59,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertLabel("rasterStoreForm:storeType", "GeoTIFF");
-        tester.assertModelValue(
-                "rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
+        tester.assertModelValue("rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
     }
 
     @Test
@@ -104,8 +97,8 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * Test that changing a datastore's workspace updates the datastore's "namespace" parameter as
-     * well as the namespace of its previously configured resources
+     * Test that changing a datastore's workspace updates the datastore's "namespace" parameter as well as the namespace
+     * of its previously configured resources
      */
     @Test
     public void testWorkspaceSyncsUpWithNamespace() {
@@ -113,8 +106,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
-        final String wsDropdownPath =
-                "rasterStoreForm:workspacePanel:border:border_body:paramValue";
+        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:border_body:paramValue";
 
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.WCS_PREFIX));
 
@@ -137,8 +129,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         assertNotEquals(MockData.WCS_PREFIX, workspace.getName());
 
         // was the namespace for the datastore resources updated?
-        List<CoverageInfo> resourcesByStore =
-                catalog.getResourcesByStore(store, CoverageInfo.class);
+        List<CoverageInfo> resourcesByStore = catalog.getResourcesByStore(store, CoverageInfo.class);
 
         assertFalse(resourcesByStore.isEmpty());
 

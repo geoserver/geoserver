@@ -17,21 +17,20 @@ import org.geotools.renderer.RenderListener;
 import org.geotools.util.logging.Logging;
 
 /**
- * A {@link RenderListener} that knows which rendering exceptions are ignorable and stops rendering
- * if not.
+ * A {@link RenderListener} that knows which rendering exceptions are ignorable and stops rendering if not.
  *
- * <p>This map producer should register an instance of this listener to the renderer in order to get
- * notified of an unexpected rendering exception through the {@link #getException()} method.
+ * <p>This map producer should register an instance of this listener to the renderer in order to get notified of an
+ * unexpected rendering exception through the {@link #getException()} method.
  *
  * <p>The following exception causes are going to be ignored, any other one will stop the rendering:
  *
  * <ul>
- *   <li>{@link IllegalAttributeException}: known to be thrown when a Feature attribute does not
- *       validate against it's schema.
- *   <li>{@link TransformException}: a geometry can't be transformed to the target CRS, usually
- *       because of being outside the target CRS area of validity.
- *   <li>{@link FactoryException}: the transform from source CRS to destination CRS and from there
- *       to the display failed.
+ *   <li>{@link IllegalAttributeException}: known to be thrown when a Feature attribute does not validate against it's
+ *       schema.
+ *   <li>{@link TransformException}: a geometry can't be transformed to the target CRS, usually because of being outside
+ *       the target CRS area of validity.
+ *   <li>{@link FactoryException}: the transform from source CRS to destination CRS and from there to the display
+ *       failed.
  *   <li>{@link NoninvertibleTransformException}: a transformation error for geometry decimation
  * </ul>
  */
@@ -43,11 +42,9 @@ public class RenderExceptionStrategy implements RenderListener {
     private Exception renderException;
 
     /**
-     * Creates a render listener to stop the given {@code renderer} when a non ignorable exception
-     * is notified
+     * Creates a render listener to stop the given {@code renderer} when a non ignorable exception is notified
      *
-     * @param renderer the renderer to {@link GTRenderer#stopRendering() stop} if a non ignorable
-     *     exception occurs
+     * @param renderer the renderer to {@link GTRenderer#stopRendering() stop} if a non ignorable exception occurs
      */
     public RenderExceptionStrategy(final GTRenderer renderer) {
         this.renderer = renderer;
@@ -64,16 +61,16 @@ public class RenderExceptionStrategy implements RenderListener {
     }
 
     /**
-     * @return the non ignorable exception occurred on the rendering loop, or {@code null} if the
-     *     renderer finished successfully.
+     * @return the non ignorable exception occurred on the rendering loop, or {@code null} if the renderer finished
+     *     successfully.
      */
     public Exception getException() {
         return renderException;
     }
 
     /**
-     * Upon a render exception check if its cause is one that we actually want to ignore, and if not
-     * abort the rendering process so the map producer can fail.
+     * Upon a render exception check if its cause is one that we actually want to ignore, and if not abort the rendering
+     * process so the map producer can fail.
      */
     @Override
     public void errorOccurred(final Exception renderException) {

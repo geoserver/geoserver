@@ -51,9 +51,8 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * To run this test you should have a geoserver running on http://localhost:9090/geoserver +
- * postgres running on localhost with database 'mydb' (or configure in application context),
- * initiated with create-source.sql.
+ * To run this test you should have a geoserver running on http://localhost:9090/geoserver + postgres running on
+ * localhost with database 'mydb' (or configure in application context), initiated with create-source.sql.
  *
  * @author Niels Charlier
  */
@@ -75,21 +74,29 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_FAIL = "fail";
     private static final String ATT_DB_NAME = "dbName";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private LookupService<DbSource> dbSources;
+    @Autowired
+    private LookupService<DbSource> dbSources;
 
     private Configuration config;
 
@@ -131,12 +138,9 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(DbRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, DbRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, DbRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.setTaskParameterToAttribute(
-                task1, DbRemotePublicationTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, DbRemotePublicationTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -164,8 +168,7 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
     }
 
     @Test
-    public void testSuccessAndCleanup()
-            throws SchedulerException, SQLException, MalformedURLException {
+    public void testSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
         // set additional style
         LayerInfo li = geoServer.getCatalog().getLayerByName(MY_TYPE.getLocalPart());
         li.getStyles().add(geoServer.getCatalog().getStyleByName(SECOND_STYLE));
@@ -176,8 +179,10 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -220,8 +225,10 @@ public class DbRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

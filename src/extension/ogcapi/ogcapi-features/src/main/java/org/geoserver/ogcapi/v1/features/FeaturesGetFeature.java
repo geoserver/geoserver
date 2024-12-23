@@ -51,12 +51,9 @@ public class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
         }
         QName typeName = queries.get(0).getTypeNames().get(0);
         FeatureTypeInfo typeInfo =
-                getCatalog()
-                        .getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+                getCatalog().getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
         if (typeInfo == null) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Cannot build prev/next links, the target typename was not found: " + typeName);
+            LOGGER.log(Level.INFO, "Cannot build prev/next links, the target typename was not found: " + typeName);
             return;
         }
         String collectionName = typeInfo.prefixedName();
@@ -90,7 +87,6 @@ public class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
     }
 
     private String buildURL(String itemsPath, Map<String, String> kvp) {
-        return ResponseUtils.buildURL(
-                APIRequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
+        return ResponseUtils.buildURL(APIRequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
     }
 }

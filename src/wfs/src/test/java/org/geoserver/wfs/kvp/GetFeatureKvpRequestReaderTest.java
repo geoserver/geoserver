@@ -31,11 +31,8 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData data) throws Exception {
-        reader =
-                new GetFeatureKvpRequestReader(
-                        GetFeatureType.class,
-                        getGeoServer(),
-                        CommonFactoryFinder.getFilterFactory(null));
+        reader = new GetFeatureKvpRequestReader(
+                GetFeatureType.class, getGeoServer(), CommonFactoryFinder.getFilterFactory(null));
     }
 
     /** https://osgeo-org.atlassian.net/browse/GEOS-1875 */
@@ -166,14 +163,8 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
-        raw.put(
-                "typeName",
-                getLayerId(SystemTestData.STREAMS)
-                        + ","
-                        + getLayerId(SystemTestData.BASIC_POLYGONS));
-        raw.put(
-                "viewParams",
-                "where:WHERE PERSONS > 1000000;str:ABCD,where:WHERE PERSONS > 10;str:FOO");
+        raw.put("typeName", getLayerId(SystemTestData.STREAMS) + "," + getLayerId(SystemTestData.BASIC_POLYGONS));
+        raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD,where:WHERE PERSONS > 10;str:FOO");
 
         Map<String, Object> parsed = parseKvp(raw);
 
@@ -198,11 +189,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
-        raw.put(
-                "typeName",
-                getLayerId(SystemTestData.STREAMS)
-                        + ","
-                        + getLayerId(SystemTestData.BASIC_POLYGONS));
+        raw.put("typeName", getLayerId(SystemTestData.STREAMS) + "," + getLayerId(SystemTestData.BASIC_POLYGONS));
         raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD");
 
         Map<String, Object> parsed = parseKvp(raw);
@@ -247,11 +234,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
         raw.put("request", "GetFeature");
-        raw.put(
-                "typeName",
-                getLayerId(SystemTestData.STREAMS)
-                        + ","
-                        + getLayerId(SystemTestData.BASIC_POLYGONS));
+        raw.put("typeName", getLayerId(SystemTestData.STREAMS) + "," + getLayerId(SystemTestData.BASIC_POLYGONS));
         raw.put(
                 "viewParams",
                 "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"
@@ -304,11 +287,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
             raw.put("service", "WFS");
             raw.put("version", "1.1.0");
             raw.put("request", "GetFeature");
-            raw.put(
-                    "typeName",
-                    getLayerId(SystemTestData.STREAMS)
-                            + ","
-                            + getLayerId(SystemTestData.BASIC_POLYGONS));
+            raw.put("typeName", getLayerId(SystemTestData.STREAMS) + "," + getLayerId(SystemTestData.BASIC_POLYGONS));
             raw.put(
                     "viewParams",
                     "<VP><PS><P n=\"where\">WHERE PERSONS &gt; 1000000</P><P n=\"str\">ABCD</P></PS>"

@@ -12,8 +12,8 @@ import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 
 /**
- * A Features response that contains both the WFS request and response, to help reusing the
- * traditional WFS output formats
+ * A Features response that contains both the WFS request and response, to help reusing the traditional WFS output
+ * formats
  */
 @JsonIgnoreType // not meant for jackson serialization
 @XmlTransient

@@ -57,8 +57,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
     }
 
     @Override
-    protected RestWrapper<?> readInternal(
-            Class<? extends RestWrapper<?>> clazz, HttpInputMessage inputMessage)
+    protected RestWrapper<?> readInternal(Class<? extends RestWrapper<?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new UnsupportedOperationException();
     }
@@ -83,16 +82,12 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
             Object object = wrapper.getObject();
             Template template = wrapper.getTemplate();
             OutputStream outputStream = outputMessage.getBody();
-            Charset charSet =
-                    contentType != null ? contentType.getCharset() : getGeoServerDefaultCharset();
+            Charset charSet = contentType != null ? contentType.getCharset() : getGeoServerDefaultCharset();
 
             if (charSet != null) {
-                templateWriter =
-                        new BufferedWriter(new OutputStreamWriter(outputStream, charSet.name()));
+                templateWriter = new BufferedWriter(new OutputStreamWriter(outputStream, charSet.name()));
             } else {
-                templateWriter =
-                        new BufferedWriter(
-                                new OutputStreamWriter(outputStream, template.getEncoding()));
+                templateWriter = new BufferedWriter(new OutputStreamWriter(outputStream, template.getEncoding()));
             }
 
             template.process(object, templateWriter);
@@ -103,8 +98,10 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
     }
 
     private Charset getGeoServerDefaultCharset() {
-        return Charset.forName(
-                GeoServerExtensions.bean(GeoServer.class).getGlobal().getSettings().getCharset());
+        return Charset.forName(GeoServerExtensions.bean(GeoServer.class)
+                .getGlobal()
+                .getSettings()
+                .getCharset());
     }
 
     @Override

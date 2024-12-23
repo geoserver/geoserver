@@ -54,8 +54,7 @@ public class ExceptionHandlingTest extends GeoServerSystemTestSupport {
     @Test
     public void testRestException() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/exception?code=400&message=error");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/exception?code=400&message=error");
         assertEquals(400, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         String txt = response.getContentAsString();

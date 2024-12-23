@@ -67,10 +67,7 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
 
     @Override
     public void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // we use the post event
 
     }
@@ -82,10 +79,7 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
 
     @Override
     public void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // we use post event
     }
 
@@ -101,10 +95,7 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
 
     @Override
     public void handleLoggingChange(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // we don't update the sequence for a logging change, the client cannot notice it
     }
 
@@ -125,10 +116,7 @@ class UpdateSequenceListener implements CatalogListener, ConfigurationListener {
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // we use the post version
     }
 

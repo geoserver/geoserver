@@ -52,9 +52,8 @@ public class TiledCRSConstants {
     /**
      * Represents the type of level naming used in a {@link GridSet}.
      *
-     * <p>This class encapsulates properties of the level naming scheme, which can either be
-     * numeric, prefixed, or both. It includes methods to query the type and retrieve additional
-     * details about the prefix if applicable.
+     * <p>This class encapsulates properties of the level naming scheme, which can either be numeric, prefixed, or both.
+     * It includes methods to query the type and retrieve additional details about the prefix if applicable.
      */
     public static class GridSetLevelType {
         boolean numeric = true;
@@ -68,10 +67,7 @@ public class TiledCRSConstants {
             return numeric;
         }
 
-        /**
-         * Returns whether the level names are prefixed, e.g.: (EPSG:4326:0, EPSG:4326:1,
-         * EPSG:4326:2, ...).
-         */
+        /** Returns whether the level names are prefixed, e.g.: (EPSG:4326:0, EPSG:4326:1, EPSG:4326:2, ...). */
         public boolean isPrefixed() {
             return prefixed;
         }
@@ -97,11 +93,9 @@ public class TiledCRSConstants {
 
     private static final Logger LOGGER = Logging.getLogger(TiledCRSConstants.class);
 
-    private static final HashMap<String, TiledCRSParams> BUILT_IN_TILED_CRS_DEFINITIONS =
-            new HashMap<>();
+    private static final HashMap<String, TiledCRSParams> BUILT_IN_TILED_CRS_DEFINITIONS = new HashMap<>();
 
-    private static final HashMap<String, TiledCRSParams> BUILT_IN_TILED_CRS_BY_SRS_NAME =
-            new HashMap<>();
+    private static final HashMap<String, TiledCRSParams> BUILT_IN_TILED_CRS_BY_SRS_NAME = new HashMap<>();
 
     private static final String NUMERIC_PATTERN = "-?\\d+(\\.\\d+)?";
 
@@ -113,13 +107,11 @@ public class TiledCRSConstants {
 
     public static final HashMap<String, TiledCRS> BUILT_IN_TILED_CRS = new HashMap<>();
 
-    public static final List<String> FIXED_NAMES =
-            Arrays.asList("APSTILE", "CBMTILE", "OSMTILE", "WGS84");
+    public static final List<String> FIXED_NAMES = Arrays.asList("APSTILE", "CBMTILE", "OSMTILE", "WGS84");
 
     /**
-     * This map contains TiledCRS definitions in any variation (EPSG:CODE, MAPML:NAME, NAME,
-     * URN:CODE) so that we can always retrieve the related TiledCRS no matter which
-     * name/representation/alias is used for the lookup
+     * This map contains TiledCRS definitions in any variation (EPSG:CODE, MAPML:NAME, NAME, URN:CODE) so that we can
+     * always retrieve the related TiledCRS no matter which name/representation/alias is used for the lookup
      */
     public static final HashMap<String, TiledCRS> TILED_CRS = new HashMap<>();
 
@@ -178,8 +170,7 @@ public class TiledCRSConstants {
             WGS84_SRSNAME = CRS.toSRS(CRS_WGS84);
         } catch (Exception e) {
         }
-        final Bounds WGS84_BOUNDS =
-                new Bounds(new Point(-180.0D, -90.0D), new Point(180.0D, 90.0D));
+        final Bounds WGS84_BOUNDS = new Bounds(new Point(-180.0D, -90.0D), new Point(180.0D, 90.0D));
         final int WGS84_TILE_SIZE = 256;
         final double[] WGS84_SCALES = {
             /* "scale" is the reciprocal of "resolution", per Proj4Leaflet.js */
@@ -207,14 +198,8 @@ public class TiledCRSConstants {
             1 / 0.0000003352761269D
         };
         final Point WGS84_TILE_ORIGIN = new Point(-180.0D, 90.0D);
-        TiledCRSParams wgs84TiledCrsParams =
-                new TiledCRSParams(
-                        WGS84_NAME,
-                        WGS84_CODE,
-                        WGS84_BOUNDS,
-                        WGS84_TILE_SIZE,
-                        WGS84_TILE_ORIGIN,
-                        WGS84_SCALES);
+        TiledCRSParams wgs84TiledCrsParams = new TiledCRSParams(
+                WGS84_NAME, WGS84_CODE, WGS84_BOUNDS, WGS84_TILE_SIZE, WGS84_TILE_ORIGIN, WGS84_SCALES);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(WGS84_NAME, wgs84TiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(WGS84_SRSNAME, wgs84TiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(WGS84_CODE, wgs84TiledCrsParams);
@@ -233,10 +218,8 @@ public class TiledCRSConstants {
         Projection proj = new Projection(OSMTILE_CODE);
         final Bounds OSMTILE_BOUNDS;
         try {
-            OSMTILE_BOUNDS =
-                    new Bounds(
-                            proj.project(new LatLng(-85.0511287798, -180)),
-                            proj.project(new LatLng(85.0511287798, 180)));
+            OSMTILE_BOUNDS = new Bounds(
+                    proj.project(new LatLng(-85.0511287798, -180)), proj.project(new LatLng(85.0511287798, 180)));
         } catch (MismatchedDimensionException | TransformException ex) {
             throw new RuntimeException(ex);
         }
@@ -264,14 +247,8 @@ public class TiledCRSConstants {
             1 / 0.59716428337097D
         };
         final Point OSMTILE_TILE_ORIGIN = new Point(-20037508.342787D, 20037508.342787D);
-        TiledCRSParams osmTiledCrsParams =
-                new TiledCRSParams(
-                        OSMTILE_NAME,
-                        OSMTILE_CODE,
-                        OSMTILE_BOUNDS,
-                        OSMTILE_TILE_SIZE,
-                        OSMTILE_TILE_ORIGIN,
-                        OSMTILE_SCALES);
+        TiledCRSParams osmTiledCrsParams = new TiledCRSParams(
+                OSMTILE_NAME, OSMTILE_CODE, OSMTILE_BOUNDS, OSMTILE_TILE_SIZE, OSMTILE_TILE_ORIGIN, OSMTILE_SCALES);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(OSMTILE_NAME, osmTiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(OSMTILE_SRSNAME, osmTiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(OSMTILE_CODE, osmTiledCrsParams);
@@ -287,8 +264,7 @@ public class TiledCRSConstants {
             CBMTILE_SRSNAME = CRS.toSRS(CRS_CBMTILE);
         } catch (Exception e) {
         }
-        final Bounds CBMTILE_BOUNDS =
-                new Bounds(new Point(-3.46558E7D, -3.9E7D), new Point(1.0E7D, 3.931E7D));
+        final Bounds CBMTILE_BOUNDS = new Bounds(new Point(-3.46558E7D, -3.9E7D), new Point(1.0E7D, 3.931E7D));
         //                new Bounds(new Point(-4282638.06150141,-5153821.09213678),new
         // Point(4852210.1755664,4659267.000000001));
         final int CBMTILE_TILE_SIZE = 256;
@@ -321,14 +297,8 @@ public class TiledCRSConstants {
             1 / 0.066145965625264591D
         };
         final Point CBMTILE_TILE_ORIGIN = new Point(-34655800D, 39310000D);
-        TiledCRSParams cbmTiledCrsParams =
-                new TiledCRSParams(
-                        CBMTILE_NAME,
-                        CBMTILE_CODE,
-                        CBMTILE_BOUNDS,
-                        CBMTILE_TILE_SIZE,
-                        CBMTILE_TILE_ORIGIN,
-                        CBMTILE_SCALES);
+        TiledCRSParams cbmTiledCrsParams = new TiledCRSParams(
+                CBMTILE_NAME, CBMTILE_CODE, CBMTILE_BOUNDS, CBMTILE_TILE_SIZE, CBMTILE_TILE_ORIGIN, CBMTILE_SCALES);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(CBMTILE_NAME, cbmTiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(CBMTILE_SRSNAME, cbmTiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(CBMTILE_CODE, cbmTiledCrsParams);
@@ -345,10 +315,9 @@ public class TiledCRSConstants {
             APSTILE_SRSNAME = CRS.toSRS(CRS_APSTILE);
         } catch (Exception e) {
         }
-        final Bounds APSTILE_BOUNDS =
-                new Bounds(
-                        new Point(-28567784.109254867D, -28567784.109254755D),
-                        new Point(32567784.109255023D, 32567784.10925506D));
+        final Bounds APSTILE_BOUNDS = new Bounds(
+                new Point(-28567784.109254867D, -28567784.109254755D),
+                new Point(32567784.109255023D, 32567784.10925506D));
         final int APSTILE_TILE_SIZE = 256;
         final double[] APSTILE_SCALES = {
             /* "scale" is the reciprocal of "resolution", per Proj4Leaflet.js */
@@ -374,39 +343,22 @@ public class TiledCRSConstants {
             1 / 0.45549547826179D
         };
         final Point APSTILE_TILE_ORIGIN = new Point(-28567784.109255D, 32567784.109255D);
-        TiledCRSParams apsTiledCrsParams =
-                new TiledCRSParams(
-                        APSTILE_NAME,
-                        APSTILE_CODE,
-                        APSTILE_BOUNDS,
-                        APSTILE_TILE_SIZE,
-                        APSTILE_TILE_ORIGIN,
-                        APSTILE_SCALES);
+        TiledCRSParams apsTiledCrsParams = new TiledCRSParams(
+                APSTILE_NAME, APSTILE_CODE, APSTILE_BOUNDS, APSTILE_TILE_SIZE, APSTILE_TILE_ORIGIN, APSTILE_SCALES);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(APSTILE_NAME, apsTiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(APSTILE_SRSNAME, apsTiledCrsParams);
         BUILT_IN_TILED_CRS_DEFINITIONS.put(APSTILE_CODE, apsTiledCrsParams);
         BUILT_IN_TILED_CRS_BY_SRS_NAME.put(APSTILE_SRSNAME, apsTiledCrsParams);
         BUILT_IN_TILED_CRS.put(APSTILE_NAME, new TiledCRS(APSTILE_NAME, apsTiledCrsParams));
 
+        BUILT_IN_CRS_MAPPERS.add(new CRSMapper(
+                Set.of("EPSG:4326", "URN:OGC:DEF:CRS:EPSG::4326", "URN:OGC:DEF:CRS:MapML::WGS84"), "EPSG:4326"));
         BUILT_IN_CRS_MAPPERS.add(
-                new CRSMapper(
-                        Set.of(
-                                "EPSG:4326",
-                                "URN:OGC:DEF:CRS:EPSG::4326",
-                                "URN:OGC:DEF:CRS:MapML::WGS84"),
-                        "EPSG:4326"));
+                new CRSMapper(Set.of("EPSG:3857", "URN:OGC:DEF:CRS:EPSG::3857", "MAPML:OSMTILE"), "EPSG:3857"));
         BUILT_IN_CRS_MAPPERS.add(
-                new CRSMapper(
-                        Set.of("EPSG:3857", "URN:OGC:DEF:CRS:EPSG::3857", "MAPML:OSMTILE"),
-                        "EPSG:3857"));
+                new CRSMapper(Set.of("EPSG:5936", "URN:OGC:DEF:CRS:EPSG::5936", "MAPML:APSTILE"), "EPSG:5936"));
         BUILT_IN_CRS_MAPPERS.add(
-                new CRSMapper(
-                        Set.of("EPSG:5936", "URN:OGC:DEF:CRS:EPSG::5936", "MAPML:APSTILE"),
-                        "EPSG:5936"));
-        BUILT_IN_CRS_MAPPERS.add(
-                new CRSMapper(
-                        Set.of("EPSG:3978", "URN:OGC:DEF:CRS:EPSG::3978", "MAPML:CBMTILE"),
-                        "EPSG:3978"));
+                new CRSMapper(Set.of("EPSG:3978", "URN:OGC:DEF:CRS:EPSG::3978", "MAPML:CBMTILE"), "EPSG:3978"));
     }
 
     /**
@@ -446,8 +398,8 @@ public class TiledCRSConstants {
     }
 
     /**
-     * Reload the TileCRS definition by setting up BuiltIN TCRS and setting up the ones matching the
-     * gridsets defined in the dedicated Settings.
+     * Reload the TileCRS definition by setting up BuiltIN TCRS and setting up the ones matching the gridsets defined in
+     * the dedicated Settings.
      */
     @SuppressWarnings("unchecked")
     public static void reloadDefinitions() {
@@ -476,10 +428,7 @@ public class TiledCRSConstants {
                     presentGridSet -> {
                         addGridSet(additionalTiledCRS, presentGridSet);
                     },
-                    () ->
-                            LOGGER.warning(
-                                    "Requested gridset doesn't exist. Skipping it: "
-                                            + gridsetName));
+                    () -> LOGGER.warning("Requested gridset doesn't exist. Skipping it: " + gridsetName));
         }
         List<GridSet> gwcGridsets = readGWCGridSets();
         for (GridSet gs : gwcGridsets) {
@@ -494,26 +443,23 @@ public class TiledCRSConstants {
     /**
      * Determines whether the specified {@link GridSet} can be supported as a TiledCRS.
      *
-     * <p>This method checks the {@code GridSet} against specific criteria to evaluate its
-     * compatibility:
+     * <p>This method checks the {@code GridSet} against specific criteria to evaluate its compatibility:
      *
      * <ul>
      *   <li>If the grid set's name contains a colon (":"), it is not supported.
-     *   <li>Analyzes the type of level names in the grid set (numeric or with a common prefix) to
-     *       determine compatibility.
+     *   <li>Analyzes the type of level names in the grid set (numeric or with a common prefix) to determine
+     *       compatibility.
      * </ul>
      *
      * @param gridSet the {@link GridSet} to evaluate.
-     * @return {@code true} if the grid set can be supported as a tiled CRS, {@code false}
-     *     otherwise.
+     * @return {@code true} if the grid set can be supported as a tiled CRS, {@code false} otherwise.
      */
     public static boolean canBeSupportedAsTiledCRS(GridSet gridSet) {
         String name = gridSet.getName();
         if (FIXED_NAMES.contains(name) || name.contains(":")) {
             return false;
         }
-        TiledCRSConstants.GridSetLevelType levelType =
-                getLevelType(getLevelNamesFromGridSet(gridSet));
+        TiledCRSConstants.GridSetLevelType levelType = getLevelType(getLevelNamesFromGridSet(gridSet));
         return levelType.isNumeric() || levelType.isPrefixed();
     }
 
@@ -530,16 +476,15 @@ public class TiledCRSConstants {
     /**
      * Determines the type of levels from a given list of level strings.
      *
-     * <p>If the levels are all numeric, it returns a {@link GridSetLevelType} with the {@code
-     * numeric} flag set to {@code true}. If a common prefix exists, it sets the {@code prefixed}
-     * flag to {@code true} and assigns the common prefix to the {@code prefix} field.
+     * <p>If the levels are all numeric, it returns a {@link GridSetLevelType} with the {@code numeric} flag set to
+     * {@code true}. If a common prefix exists, it sets the {@code prefixed} flag to {@code true} and assigns the common
+     * prefix to the {@code prefix} field.
      *
      * @param levels a list of level identifiers to process; can be {@code null} or empty.
      * @return a {@link GridSetLevelType} object indicating the level type:
      *     <ul>
      *       <li>{@code numeric = true} if all levels are numeric.
-     *       <li>{@code prefixed = true} with a {@code prefix} value if levels share a common
-     *           prefix.
+     *       <li>{@code prefixed = true} with a {@code prefix} value if levels share a common prefix.
      *     </ul>
      *     Returns {@code null} if the input list is {@code null} or empty.
      */
@@ -592,8 +537,7 @@ public class TiledCRSConstants {
         return levelType;
     }
 
-    private static void addGridSet(
-            Map<String, TiledCRSParams> additionalTiledCRS, GridSet gridSet) {
+    private static void addGridSet(Map<String, TiledCRSParams> additionalTiledCRS, GridSet gridSet) {
         TiledCRS tiledCRS = convertToTiledCRS(gridSet);
         additionalTiledCRS.putIfAbsent(tiledCRS.getName(), tiledCRS.getParams());
     }
@@ -602,8 +546,7 @@ public class TiledCRSConstants {
         List<String> mapMLTCRSList = new ArrayList<>();
         try {
             // Path to global.xml in the GeoServer data directory
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             File globalConfig = loader.get("global.xml").file();
 
             // Set up XML parser
@@ -625,9 +568,7 @@ public class TiledCRSConstants {
                     if (keyNode != null && "MapMLTCRSList.Key".equals(keyNode.getTextContent())) {
                         // Found the entry with MapMLTCRSList.Key, now get the list of strings
                         NodeList listNodes = entryElement.getElementsByTagName("string");
-                        for (int j = 1;
-                                j < listNodes.getLength();
-                                j++) { // Start from index 1 to skip the key itself
+                        for (int j = 1; j < listNodes.getLength(); j++) { // Start from index 1 to skip the key itself
                             mapMLTCRSList.add(listNodes.item(j).getTextContent());
                         }
                         break;
@@ -644,8 +585,7 @@ public class TiledCRSConstants {
         List<GridSet> gridSets = new ArrayList<>();
         try {
             // Path to global.xml in the GeoServer data directory
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             File globalConfig = loader.get("gwc/geowebcache.xml").file();
 
             // Set up XML parser
@@ -665,30 +605,24 @@ public class TiledCRSConstants {
                 if (BUILT_IN_TILED_CRS.containsKey(name)) continue;
                 gridSets.add(parseGridSetElement(gridSetElement));
             }
-        } catch (ParserConfigurationException
-                | IOException
-                | SAXException
-                | XPathExpressionException e) {
+        } catch (ParserConfigurationException | IOException | SAXException | XPathExpressionException e) {
             throw new RuntimeException(e);
         }
         return gridSets;
     }
 
     /**
-     * Parses an XML {@link org.w3c.dom.Element} representing a GridSet and constructs a {@link
-     * GridSet} object.
+     * Parses an XML {@link org.w3c.dom.Element} representing a GridSet and constructs a {@link GridSet} object.
      *
-     * <p>The provided {@code gridSetElement} should conform to the expected XML structure for a
-     * GridSet, containing elements such as:
+     * <p>The provided {@code gridSetElement} should conform to the expected XML structure for a GridSet, containing
+     * elements such as:
      *
      * <ul>
      *   <li><code>name</code>: The name of the GridSet.
      *   <li><code>srs/number</code>: The spatial reference system identifier (e.g., EPSG code).
      *   <li><code>extent/coords</code>: Bounding box coordinates (minX, minY, maxX, maxY).
-     *   <li><code>alignTopLeft</code>: Boolean indicating if the grid aligns with the top-left
-     *       corner.
-     *   <li><code>scaleDenominators</code>: An optional list of double values representing scale
-     *       denominators.
+     *   <li><code>alignTopLeft</code>: Boolean indicating if the grid aligns with the top-left corner.
+     *   <li><code>scaleDenominators</code>: An optional list of double values representing scale denominators.
      *   <li><code>resolutions</code>: An optional list of double values representing resolutions.
      *   <li><code>metersPerUnit</code>: Conversion factor from grid units to meters.
      *   <li><code>pixelSize</code>: Pixel size for the grid.
@@ -697,16 +631,14 @@ public class TiledCRSConstants {
      *   <li><code>yCoordinateFirst</code>: Boolean indicating the coordinate order for tiles.
      * </ul>
      *
-     * <p>The method uses XPath expressions to extract values from the XML structure and map them to
-     * the corresponding properties of the {@link GridSet} object.
+     * <p>The method uses XPath expressions to extract values from the XML structure and map them to the corresponding
+     * properties of the {@link GridSet} object.
      *
      * @param gridSetElement the {@link org.w3c.dom.Element} representing the GridSet in XML format.
      * @return a {@link GridSet} object constructed from the provided XML element.
-     * @throws XPathExpressionException if there is an error evaluating an XPath expression while
-     *     parsing the XML.
+     * @throws XPathExpressionException if there is an error evaluating an XPath expression while parsing the XML.
      */
-    public static GridSet parseGridSetElement(Element gridSetElement)
-            throws XPathExpressionException {
+    public static GridSet parseGridSetElement(Element gridSetElement) throws XPathExpressionException {
 
         // Extract each field from the XML
         int srsNumber = Integer.parseInt(XPATH.evaluate("srs/number", gridSetElement));
@@ -714,9 +646,7 @@ public class TiledCRSConstants {
 
         // Parse <extent>/<coords>/<double> values
         NodeList extentCoordsNodes =
-                (NodeList)
-                        XPATH.evaluate(
-                                "extent/coords/double", gridSetElement, XPathConstants.NODESET);
+                (NodeList) XPATH.evaluate("extent/coords/double", gridSetElement, XPathConstants.NODESET);
         double[] coords = new double[extentCoordsNodes.getLength()];
         for (int j = 0; j < extentCoordsNodes.getLength(); j++) {
             coords[j] = Double.parseDouble(extentCoordsNodes.item(j).getTextContent());
@@ -728,9 +658,7 @@ public class TiledCRSConstants {
         double[] scaleDenoms = null;
         String[] scaleNames = null;
         NodeList resolutionsNodes =
-                (NodeList)
-                        XPATH.evaluate(
-                                "resolutions/double", gridSetElement, XPathConstants.NODESET);
+                (NodeList) XPATH.evaluate("resolutions/double", gridSetElement, XPathConstants.NODESET);
         int resolutionsLevels = resolutionsNodes.getLength();
         if (resolutionsLevels > 0) {
             resolutions = new double[resolutionsNodes.getLength()];
@@ -740,11 +668,7 @@ public class TiledCRSConstants {
             }
         } else {
             NodeList scaleNodes =
-                    (NodeList)
-                            XPATH.evaluate(
-                                    "scaleDenominators/double",
-                                    gridSetElement,
-                                    XPathConstants.NODESET);
+                    (NodeList) XPATH.evaluate("scaleDenominators/double", gridSetElement, XPathConstants.NODESET);
             int scaleLevels = scaleNodes.getLength();
             if (scaleLevels > 0) {
                 scaleDenoms = new double[scaleLevels];
@@ -758,8 +682,7 @@ public class TiledCRSConstants {
 
         // Parse <scaleNames> values
         NodeList scaleNamesNodes =
-                (NodeList)
-                        XPATH.evaluate("scaleNames/string", gridSetElement, XPathConstants.NODESET);
+                (NodeList) XPATH.evaluate("scaleNames/string", gridSetElement, XPathConstants.NODESET);
         int scaleNamesLength = scaleNamesNodes.getLength();
         if (scaleNamesLength > 0) {
             scaleNames = new String[scaleNamesLength];
@@ -773,8 +696,7 @@ public class TiledCRSConstants {
         double pixelSize = Double.parseDouble(XPATH.evaluate("pixelSize", gridSetElement));
         int tileHeight = Integer.parseInt(XPATH.evaluate("tileHeight", gridSetElement));
         int tileWidth = Integer.parseInt(XPATH.evaluate("tileWidth", gridSetElement));
-        boolean yCoordinateFirst =
-                Boolean.parseBoolean(XPATH.evaluate("yCoordinateFirst", gridSetElement));
+        boolean yCoordinateFirst = Boolean.parseBoolean(XPATH.evaluate("yCoordinateFirst", gridSetElement));
 
         return GridSetFactory.createGridSet(
                 name,
@@ -831,9 +753,7 @@ public class TiledCRSConstants {
         int tileWidth = gridSet.getTileWidth();
         BoundingBox bbox = gridSet.getBounds();
         Bounds bounds =
-                new Bounds(
-                        new Point(bbox.getMinX(), bbox.getMinY()),
-                        new Point(bbox.getMaxX(), bbox.getMaxY()));
+                new Bounds(new Point(bbox.getMinX(), bbox.getMinY()), new Point(bbox.getMaxX(), bbox.getMaxY()));
         Point origin = new Point(bounds.getMin().getX(), bounds.getMax().getY());
 
         // Map resolutions to zoom levels
@@ -845,8 +765,7 @@ public class TiledCRSConstants {
             Grid grid = gridSet.getGrid(i);
             scales[i] = 1d / grid.getResolution();
         }
-        TiledCRSParams tiledCRSParams =
-                new TiledCRSParams(crsName, projection, bounds, tileWidth, origin, scales);
+        TiledCRSParams tiledCRSParams = new TiledCRSParams(crsName, projection, bounds, tileWidth, origin, scales);
         return new TiledCRS(crsName, tiledCRSParams);
     }
 }

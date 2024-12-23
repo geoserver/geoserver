@@ -14,9 +14,9 @@ import org.geoserver.catalog.CatalogException;
  *
  * <h4>Exceptions</h4>
  *
- * In general the catalog protects itself against misbehaved listeners that throw exceptions.
- * However sometimes it is the case in which a listener must report an error via exception. For such
- * purposes {@link CatalogException} should be thrown.
+ * In general the catalog protects itself against misbehaved listeners that throw exceptions. However sometimes it is
+ * the case in which a listener must report an error via exception. For such purposes {@link CatalogException} should be
+ * thrown.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

@@ -12,13 +12,11 @@ public class ModuleStatusTest {
     @Test
     public void test() {
 
-        try (ClassPathXmlApplicationContext context =
-                new ClassPathXmlApplicationContext("applicationContext.xml")) {
+        try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml")) {
 
-            Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-app-schema-core"))
-                            .findFirst();
+            Optional<ModuleStatus> status = GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
+                    .filter(s -> s.getModule().equalsIgnoreCase("gs-app-schema-core"))
+                    .findFirst();
             assertTrue(status.isPresent());
         }
     }

@@ -27,15 +27,13 @@ public class CheckpointCallback extends AbstractDispatcherCallback {
     private final ChangesetTilesService checkpointService;
     private final ChangesetIndexProvider index;
 
-    public CheckpointCallback(
-            ChangesetIndexProvider index, @Lazy ChangesetTilesService checkpointService) {
+    public CheckpointCallback(ChangesetIndexProvider index, @Lazy ChangesetTilesService checkpointService) {
         this.index = index;
         this.checkpointService = checkpointService;
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         if (request.getServiceDescriptor().getService() instanceof ChangesetTilesService
                 && GET_RENDERED_COLLECTION_TILES.equals(request.getRequest())) {
             String collectionId = (String) operation.getParameters()[0];
@@ -44,10 +42,7 @@ public class CheckpointCallback extends AbstractDispatcherCallback {
                 String checkpoint = index.getLatestCheckpoint(ci);
                 request.getHttpResponse().setHeader(X_CHECKPOINT, checkpoint);
             } catch (IOException e) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "Failed to compute checkpoint for collection: " + collectionId,
-                        e);
+                LOGGER.log(Level.SEVERE, "Failed to compute checkpoint for collection: " + collectionId, e);
             }
         }
         return super.responseDispatched(request, operation, result, response);

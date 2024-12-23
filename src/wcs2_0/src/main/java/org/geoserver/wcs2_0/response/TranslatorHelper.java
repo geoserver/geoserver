@@ -10,16 +10,14 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * A helper object factoring out common methods used in Translators, we might want to add these to
- * TranslatorSupport later
+ * A helper object factoring out common methods used in Translators, we might want to add these to TranslatorSupport
+ * later
  *
  * @author Andrea Aime - GeoSolutions
  */
 class TranslatorHelper {
 
-    /**
-     * Register all namespaces as xmlns:xxx attributes for the top level element of a xml document
-     */
+    /** Register all namespaces as xmlns:xxx attributes for the top level element of a xml document */
     void registerNamespaces(NamespaceSupport ns, AttributesImpl attributes) {
         Enumeration declaredPrefixes = ns.getDeclaredPrefixes();
         while (declaredPrefixes.hasMoreElements()) {
@@ -52,10 +50,7 @@ class TranslatorHelper {
         try {
             for (int i = 0; i < schemaLocations.length - 1; i += 2) {
                 schemaLocation.append(" ");
-                schemaLocation
-                        .append(schemaLocations[i])
-                        .append(" ")
-                        .append(schemaLocations[i + 1]);
+                schemaLocation.append(schemaLocations[i]).append(" ").append(schemaLocations[i + 1]);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new ServiceException(

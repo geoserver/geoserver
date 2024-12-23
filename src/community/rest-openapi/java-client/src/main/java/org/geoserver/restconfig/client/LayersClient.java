@@ -36,8 +36,8 @@ public class LayersClient {
         try {
             // tell the server not to flood the logs if not found, as odd as it seems
             Boolean quietOnNotFound = Boolean.TRUE;
-            return Optional.of(
-                    api().getLayerByWorkspace(workspace, layerName, quietOnNotFound).getLayer());
+            return Optional.of(api().getLayerByWorkspace(workspace, layerName, quietOnNotFound)
+                    .getLayer());
         } catch (ServerException.NotFound nf) {
             return Optional.empty();
         }
@@ -68,8 +68,8 @@ public class LayersClient {
     }
 
     /**
-     * Recursively removes the layer from all layer groups which reference it. If this results in an
-     * empty layer group, also deletes the layer group.
+     * Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group,
+     * also deletes the layer group.
      *
      * <p>Adapter for {@link LayersApi#deleteLayer(String, Boolean)} with {@code recurse = true}
      */
@@ -82,21 +82,17 @@ public class LayersClient {
         api().deleteLayer(qualifiedLayerName, recurse);
     }
 
-    /**
-     * Adapter for {@link LayersApi#deleteLayerByWorkspace(String, String, Boolean)} with {@code
-     * recurse = false}
-     */
+    /** Adapter for {@link LayersApi#deleteLayerByWorkspace(String, String, Boolean)} with {@code recurse = false} */
     public void deleteLayer(@NonNull String workspaceName, @NonNull String layerName) {
         boolean recurse = false;
         api().deleteLayerByWorkspace(workspaceName, layerName, recurse);
     }
 
     /**
-     * Recursively removes the layer from all layer groups which reference it. If this results in an
-     * empty layer group, also deletes the layer group.
+     * Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group,
+     * also deletes the layer group.
      *
-     * <p>Adapter for {@link LayersApi#deleteLayerByWorkspace(String, String, Boolean)} with {@code
-     * recurse = true}
+     * <p>Adapter for {@link LayersApi#deleteLayerByWorkspace(String, String, Boolean)} with {@code recurse = true}
      */
     public void deleteLayerRecursively(@NonNull String workspaceName, @NonNull String layerName) {
         boolean recurse = true;
@@ -106,11 +102,7 @@ public class LayersClient {
     /**
      * Adapter for {@link LayersApi#updateLayerByWorkspace(String, String, LayerInfoWrapper))
      */
-    public void updateLayer(
-            @NonNull String workspaceName,
-            @NonNull String layerName,
-            @NonNull LayerInfo layerInfo) {
-        api().updateLayerByWorkspace(
-                        workspaceName, layerName, new LayerInfoWrapper().layer(layerInfo));
+    public void updateLayer(@NonNull String workspaceName, @NonNull String layerName, @NonNull LayerInfo layerInfo) {
+        api().updateLayerByWorkspace(workspaceName, layerName, new LayerInfoWrapper().layer(layerInfo));
     }
 }

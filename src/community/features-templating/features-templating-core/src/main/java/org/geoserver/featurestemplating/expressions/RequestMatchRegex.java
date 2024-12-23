@@ -17,11 +17,8 @@ import org.geotools.filter.capability.FunctionNameImpl;
 /** Check if the current {@link Request} matches the regex passed as an argument of the Function. */
 public class RequestMatchRegex extends RequestFunction {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "requestMatchRegex",
-                    parameter("result", Boolean.class),
-                    parameter("regex", String.class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "requestMatchRegex", parameter("result", Boolean.class), parameter("regex", String.class));
 
     public RequestMatchRegex() {
         super(NAME);

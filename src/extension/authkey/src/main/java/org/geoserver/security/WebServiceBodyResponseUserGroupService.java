@@ -29,16 +29,14 @@ import org.springframework.util.StringUtils;
 /**
  * Extracts Roles from the {@linkplain WebServiceAuthenticationKeyMapper} Response Body.
  *
- * <p>This {@linkplain GeoServerUserGroupService} can also be used to re-map Roles to internal
- * Security Groups.
+ * <p>This {@linkplain GeoServerUserGroupService} can also be used to re-map Roles to internal Security Groups.
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSecurityService
         implements GeoServerUserGroupService {
 
-    static final SortedSet<GeoServerUser> emptyUserSet =
-            Collections.unmodifiableSortedSet(new TreeSet<>());
+    static final SortedSet<GeoServerUser> emptyUserSet = Collections.unmodifiableSortedSet(new TreeSet<>());
 
     private boolean convertToUpperCase = true;
 
@@ -54,15 +52,13 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     Pattern searchRolesRegex = null;
 
     // optional static list of available Groups from the webservice response
-    protected SortedSet<GeoServerUserGroup> availableGroups =
-            Collections.synchronizedSortedSet(new TreeSet<>());
+    protected SortedSet<GeoServerUserGroup> availableGroups = Collections.synchronizedSortedSet(new TreeSet<>());
 
     private String roleServiceName;
 
     private GeoServerRoleService defaultSecurityService;
 
-    public WebServiceBodyResponseUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public WebServiceBodyResponseUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         initializeFromConfig(config);
     }
 
@@ -86,8 +82,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         if (StringUtils.hasLength(webServiceBodyConfig.getAvailableGroups())) {
             for (String role : webServiceBodyConfig.getAvailableGroups().split(",")) {
                 availableGroups.add(
-                        new GeoServerUserGroup(
-                                convertToUpperCase ? role.trim().toUpperCase() : role.trim()));
+                        new GeoServerUserGroup(convertToUpperCase ? role.trim().toUpperCase() : role.trim()));
             }
         }
 
@@ -143,8 +138,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
         return user;
     }
 
-    private Set<? extends GrantedAuthority> extractRoles(final String responseBody)
-            throws IOException {
+    private Set<? extends GrantedAuthority> extractRoles(final String responseBody) throws IOException {
         final Set<GrantedAuthority> authorities = new HashSet<>();
 
         Matcher matcher = searchRolesRegex.matcher(responseBody);
@@ -219,8 +213,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
                 return group;
             }
         }
-        return new GeoServerUserGroup(
-                convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim());
+        return new GeoServerUserGroup(convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim());
     }
 
     @Override
@@ -229,22 +222,16 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     }
 
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         return null;
     }
 
     @Override
-    public GeoServerUserGroup createGroupObject(final String groupname, boolean isEnabled)
-            throws IOException {
-        String theGroupName =
-                convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim();
+    public GeoServerUserGroup createGroupObject(final String groupname, boolean isEnabled) throws IOException {
+        String theGroupName = convertToUpperCase ? groupname.trim().toUpperCase() : groupname.trim();
         if (!theGroupName.contains(groupPrefix)) {
             if (theGroupName.equals(GeoServerRole.ADMIN_ROLE.getAuthority())) {
-                theGroupName =
-                        GeoServerRole.GROUP_ADMIN_ROLE
-                                .getAuthority()
-                                .substring(rolePrefix.length());
+                theGroupName = GeoServerRole.GROUP_ADMIN_ROLE.getAuthority().substring(rolePrefix.length());
             } else {
                 // remove standard role prefix
                 theGroupName = theGroupName.substring(rolePrefix.length());
@@ -317,8 +304,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
                 try {
                     for (String roleService : securityManager.listRoleServices()) {
                         if (roleService.equals(roleServiceName)) {
-                            defaultSecurityService =
-                                    securityManager.loadRoleService(roleServiceName);
+                            defaultSecurityService = securityManager.loadRoleService(roleServiceName);
                             break;
                         }
                     }
@@ -370,14 +356,12 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
     }
 
     @Override
-    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException {
         return emptyUserSet;
     }
 
     @Override
-    public int getUserCountHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException {
         return 0;
     }
 }

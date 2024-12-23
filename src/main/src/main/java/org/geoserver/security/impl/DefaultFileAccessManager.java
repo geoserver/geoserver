@@ -27,13 +27,12 @@ import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
 /**
- * Default implementation of the {@link FileAccessManager} interface, that uses the {@link
- * DataAccessRuleDAO} to determine the file system sandbox and the {@link SecureCatalogImpl} to
- * determine the workspaces that can be accessed. In case the GEOSERVER_FILESYSTEM_SANDBOX system
- * property is set, the sandbox is imposed by the system administrator and even the GeoServer
- * administrator will be limited to it, otherwise it is imposed by GeoServer administrator throught
- * the security subsystem and the full administrator will be able to see the whole file system while
- * workspace administrators will be limited to their own workspace directories.
+ * Default implementation of the {@link FileAccessManager} interface, that uses the {@link DataAccessRuleDAO} to
+ * determine the file system sandbox and the {@link SecureCatalogImpl} to determine the workspaces that can be accessed.
+ * In case the GEOSERVER_FILESYSTEM_SANDBOX system property is set, the sandbox is imposed by the system administrator
+ * and even the GeoServer administrator will be limited to it, otherwise it is imposed by GeoServer administrator
+ * throught the security subsystem and the full administrator will be able to see the whole file system while workspace
+ * administrators will be limited to their own workspace directories.
  */
 public class DefaultFileAccessManager implements FileAccessManager {
 
@@ -48,9 +47,7 @@ public class DefaultFileAccessManager implements FileAccessManager {
     private String systemSandbox;
 
     public DefaultFileAccessManager(
-            DataAccessRuleDAO dao,
-            SecureCatalogImpl catalog,
-            GeoServerSecurityManager securityManager) {
+            DataAccessRuleDAO dao, SecureCatalogImpl catalog, GeoServerSecurityManager securityManager) {
         this.dao = dao;
         this.systemSandbox = GeoServerExtensions.getProperty(GEOSERVER_DATA_SANDBOX);
         this.catalog = catalog;
@@ -74,12 +71,10 @@ public class DefaultFileAccessManager implements FileAccessManager {
 
         // it's a workspace admin then
         List<String> accessibleWorkspaces = new ArrayList<>();
-        try (CloseableIterator<WorkspaceInfo> workspaces =
-                catalog.list(WorkspaceInfo.class, Filter.INCLUDE)) {
+        try (CloseableIterator<WorkspaceInfo> workspaces = catalog.list(WorkspaceInfo.class, Filter.INCLUDE)) {
             while (workspaces.hasNext()) {
                 WorkspaceInfo ws = workspaces.next();
-                WorkspaceAccessLimits accessLimits =
-                        resourceAccessManager.getAccessLimits(auth, ws);
+                WorkspaceAccessLimits accessLimits = resourceAccessManager.getAccessLimits(auth, ws);
                 if (accessLimits != null && accessLimits.isAdminable()) {
                     accessibleWorkspaces.add(ws.getName());
                 }
@@ -89,10 +84,9 @@ public class DefaultFileAccessManager implements FileAccessManager {
         // maps the workspace names to actual directories
         // and creates them if they are missing, as the rest of GeoServer needs file system
         // roots that are actually there
-        List<File> roots =
-                accessibleWorkspaces.stream()
-                        .map(ws -> new File(sandboxPath, ws))
-                        .collect(Collectors.toList());
+        List<File> roots = accessibleWorkspaces.stream()
+                .map(ws -> new File(sandboxPath, ws))
+                .collect(Collectors.toList());
         roots.forEach(File::mkdirs);
         return roots;
     }
@@ -119,9 +113,7 @@ public class DefaultFileAccessManager implements FileAccessManager {
         if (fullAdmin) {
             if (systemSandbox != null) {
                 if (!path.startsWith(sandbox)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            () -> "Checked path " + path + " does not start with " + sandbox);
+                    LOGGER.log(Level.FINE, () -> "Checked path " + path + " does not start with " + sandbox);
                     return false;
                 }
             }
@@ -139,21 +131,14 @@ public class DefaultFileAccessManager implements FileAccessManager {
             return false;
         }
         WorkspaceAccessLimits accessLimits = resourceAccessManager.getAccessLimits(auth, wi);
-        LOGGER.log(
-                Level.FINE,
-                () ->
-                        "Sandbox auth check, workspace "
-                                + workspace
-                                + " access limits "
-                                + accessLimits);
+        LOGGER.log(Level.FINE, () -> "Sandbox auth check, workspace " + workspace + " access limits " + accessLimits);
         return accessLimits != null && accessLimits.isAdminable();
     }
 
     /** Forces reloading the DAO and the system sandbox definitions */
     public void reload() {
         this.systemSandbox = GeoServerExtensions.getProperty(GEOSERVER_DATA_SANDBOX);
-        if (systemSandbox != null)
-            LOGGER.log(Level.FINE, () -> "System sandbox property found: " + systemSandbox);
+        if (systemSandbox != null) LOGGER.log(Level.FINE, () -> "System sandbox property found: " + systemSandbox);
         dao.reload();
         ResourceAccessManager ram = this.resourceAccessManager;
         while (ram instanceof ResourceAccessManagerWrapper) {
@@ -173,8 +158,8 @@ public class DefaultFileAccessManager implements FileAccessManager {
     }
 
     /**
-     * Returns true if a system sandbox is imposed via system properties, false if the sanbox is
-     * defined in the security subsystem instead.
+     * Returns true if a system sandbox is imposed via system properties, false if the sanbox is defined in the security
+     * subsystem instead.
      */
     public boolean isSystemSanboxEnabled() {
         return systemSandbox != null;

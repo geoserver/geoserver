@@ -30,19 +30,16 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
- * DGGS specific HTML output format. TODO: we should be linking back to the cell that generates the
- * parents, the children, neighbors, the link should probably be something added in DGGSService and
- * retrieved by role, or something like that, to make everything more extensible (so, to be done in
- * GetFeatureHTMLMessageConverter)
+ * DGGS specific HTML output format. TODO: we should be linking back to the cell that generates the parents, the
+ * children, neighbors, the link should probably be something added in DGGSService and retrieved by role, or something
+ * like that, to make everything more extensible (so, to be done in GetFeatureHTMLMessageConverter)
  */
 @Component
-public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConverter
-        implements Ordered {
+public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConverter implements Ordered {
 
     ISO8601Formatter dateFormatter = new ISO8601Formatter();
 
-    public DGGSFeatureHTMLMessageConverter(
-            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+    public DGGSFeatureHTMLMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(templateSupport, geoServer);
     }
 
@@ -61,14 +58,12 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
 
     @Override
     protected Template getContentTemplate(FeatureTypeInfo typeInfo) throws IOException {
-        return templateSupport.getTemplate(
-                typeInfo, "zones-content.ftl", DGGSFeatureHTMLMessageConverter.class);
+        return templateSupport.getTemplate(typeInfo, "zones-content.ftl", DGGSFeatureHTMLMessageConverter.class);
     }
 
     @Override
     protected Template getEmptyTemplate(FeatureTypeInfo typeInfo) throws IOException {
-        return templateSupport.getTemplate(
-                typeInfo, "getfeature-empty.ftl", GetFeatureHTMLMessageConverter.class);
+        return templateSupport.getTemplate(typeInfo, "getfeature-empty.ftl", GetFeatureHTMLMessageConverter.class);
     }
 
     @Override
@@ -80,17 +75,13 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
     @Override
     protected Template getFooterTemplate(FeatureTypeInfo referenceFeatureType) throws IOException {
         return templateSupport.getTemplate(
-                referenceFeatureType,
-                "getfeature-footer.ftl",
-                GetFeatureHTMLMessageConverter.class);
+                referenceFeatureType, "getfeature-footer.ftl", GetFeatureHTMLMessageConverter.class);
     }
 
     @Override
     protected Template getHeaderTemplate(FeatureTypeInfo referenceFeatureType) throws IOException {
         return templateSupport.getTemplate(
-                referenceFeatureType,
-                "getfeature-header.ftl",
-                GetFeatureHTMLMessageConverter.class);
+                referenceFeatureType, "getfeature-header.ftl", GetFeatureHTMLMessageConverter.class);
     }
 
     @Override
@@ -125,19 +116,16 @@ public class DGGSFeatureHTMLMessageConverter extends GetFeatureHTMLMessageConver
         return ResponseUtils.buildURL(
                 requestInfo.getBaseURL(),
                 ResponseUtils.appendPath(
-                        requestInfo.getServiceLandingPage(),
-                        "/collections/" + feature.get("typeName") + "/zone/"),
+                        requestInfo.getServiceLandingPage(), "/collections/" + feature.get("typeName") + "/zone/"),
                 kvp,
                 URLMangler.URLType.SERVICE);
     }
 
-    private Date getDateAttribute(SimpleHash feature, String attribute)
-            throws TemplateModelException {
+    private Date getDateAttribute(SimpleHash feature, String attribute) throws TemplateModelException {
         return ((SimpleDate) ((SimpleHash) feature.get(attribute)).get("rawValue")).getAsDate();
     }
 
-    private Object getAttribute(SimpleHash feature, String attribute)
-            throws TemplateModelException {
+    private Object getAttribute(SimpleHash feature, String attribute) throws TemplateModelException {
         SimpleHash hash = (SimpleHash) feature.get(attribute);
         if (hash == null) return null;
         return hash.get("rawValue").toString();

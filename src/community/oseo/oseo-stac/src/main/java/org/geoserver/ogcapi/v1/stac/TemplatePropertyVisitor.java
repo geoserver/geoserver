@@ -34,10 +34,7 @@ import org.geotools.api.feature.Feature;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.Literal;
 
-/**
- * Class visiting a feature template and performing some action on the properties mapped via dynamic
- * builders
- */
+/** Class visiting a feature template and performing some action on the properties mapped via dynamic builders */
 class TemplatePropertyVisitor {
 
     public static final String JSON_PROPERTY_TYPE = "jsonPropertyType";
@@ -117,17 +114,9 @@ class TemplatePropertyVisitor {
                             || nodeType == JsonNodeType.STRING
                             || nodeType == JsonNodeType.BOOLEAN) {
                         String path = parentPath != null ? parentPath + "." + key : key;
-                        String cql =
-                                "$${jsonPointer("
-                                        + dyn.getXpath().getPropertyName()
-                                        + ", '"
-                                        + key
-                                        + "')}";
+                        String cql = "$${jsonPointer(" + dyn.getXpath().getPropertyName() + ", '" + key + "')}";
                         DynamicValueBuilder fakeBuilder =
-                                new DynamicValueBuilder(
-                                        key,
-                                        cql,
-                                        ((CompositeBuilder) parentBuilder).getNamespaces());
+                                new DynamicValueBuilder(key, cql, ((CompositeBuilder) parentBuilder).getNamespaces());
                         fakeBuilder.addEncodingHint(JSON_PROPERTY_TYPE, getClass(value));
                         propertyConsumer.accept(path, fakeBuilder);
                     }
@@ -170,8 +159,7 @@ class TemplatePropertyVisitor {
 
     private JSONObject evaluate(Expression exp) {
         Object result = exp.evaluate(sampleFeature);
-        if (!(result instanceof JSONObject))
-            result = JSONFieldSupport.parseWhenJSON(exp, null, result);
+        if (!(result instanceof JSONObject)) result = JSONFieldSupport.parseWhenJSON(exp, null, result);
         if (result instanceof JSONObject) return (JSONObject) result;
 
         return null;

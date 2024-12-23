@@ -30,11 +30,10 @@ import org.w3c.dom.Document;
 
 public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport {
 
-    static final String BASE_URL_NO_COUNT =
-            "wms?service=WMS&version=1.1.0&request=GetFeatureInfo"
-                    + "&layers=watertemp&styles=&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
-                    + "&srs=EPSG:4326&format=image/png"
-                    + "&query_layers=watertemp";
+    static final String BASE_URL_NO_COUNT = "wms?service=WMS&version=1.1.0&request=GetFeatureInfo"
+            + "&layers=watertemp&styles=&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
+            + "&srs=EPSG:4326&format=image/png"
+            + "&query_layers=watertemp";
 
     static final String BASE_URL = BASE_URL_NO_COUNT + "&feature_count=50";
     static final String BASE_URL_ONE = BASE_URL_NO_COUNT + "&feature_count=1";
@@ -56,14 +55,10 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
      */
     Double getFeatureAt(String baseFeatureInfo, int x, int y, String layerName) throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        baseFeatureInfo
-                                + "&info_format=application/vnd.ogc.gml&x="
-                                + x
-                                + "&y="
-                                + y);
+                getAsServletResponse(baseFeatureInfo + "&info_format=application/vnd.ogc.gml&x=" + x + "&y=" + y);
         assertEquals("application/vnd.ogc.gml", response.getContentType());
-        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        Document doc =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         String sCount = xpath.evaluate("count(//" + layerName + ")", doc);
         int count = Integer.valueOf(sCount);
 
@@ -94,15 +89,9 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
 
         // this one should be medium
-        assertEquals(
-                14.51,
-                getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D", 36, 31, "sf:watertemp"),
-                EPS);
+        assertEquals(14.51, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D", 36, 31, "sf:watertemp"), EPS);
         // this one hot
-        assertEquals(
-                19.15,
-                getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D", 68, 72, "sf:watertemp"),
-                EPS);
+        assertEquals(19.15, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D", 68, 72, "sf:watertemp"), EPS);
     }
 
     @Test
@@ -110,17 +99,9 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         // do not setup anything, only sort
 
         // this one should be medium
-        assertEquals(
-                14.51,
-                getFeatureAt(
-                        BASE_URL_ONE + "&sortBy=ingestion D,elevation", 36, 31, "sf:watertemp"),
-                EPS);
+        assertEquals(14.51, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D,elevation", 36, 31, "sf:watertemp"), EPS);
         // this one hot
-        assertEquals(
-                19.15,
-                getFeatureAt(
-                        BASE_URL_ONE + "&sortBy=ingestion D,elevation", 68, 72, "sf:watertemp"),
-                EPS);
+        assertEquals(19.15, getFeatureAt(BASE_URL_ONE + "&sortBy=ingestion D,elevation", 68, 72, "sf:watertemp"), EPS);
     }
 
     @Test
@@ -154,10 +135,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
         // invalid elevation, no value found, but also no exception
         Document dom =
-                getAsDOM(
-                        String.format(
-                                "%s&elevation=%d&info_format=text/plain&x=%d&y=%d",
-                                BASE_URL, -100, 36, 31));
+                getAsDOM(String.format("%s&elevation=%d&info_format=text/plain&x=%d&y=%d", BASE_URL, -100, 36, 31));
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "elevation");
         assertThat(message, containsString("Could not find a match for 'elevation' value: '-100'"));
     }
@@ -291,17 +269,15 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     public void testTimeRange() throws Exception {
         setupRasterDimension(TIMERANGES, TIME, LIST, null, null, null);
         setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
         setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "date", LIST, null, null, null);
 
         String layer = getLayerId(TIMERANGES);
-        String baseUrl =
-                "wms?LAYERS="
-                        + layer
-                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG:4326"
-                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
-                        + layer;
+        String baseUrl = "wms?LAYERS="
+                + layer
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
+                + layer;
 
         // last range
         String url = baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z";
@@ -333,18 +309,16 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     public void testTimeRangeNearestMatch() throws Exception {
         setupRasterDimension(TIMERANGES, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
         setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
         setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "date", LIST, null, null, null);
         setupNearestMatch(TIMERANGES, TIME, true);
 
         String layer = getLayerId(TIMERANGES);
-        String baseUrl =
-                "wms?LAYERS="
-                        + layer
-                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG:4326"
-                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
-                        + layer;
+        String baseUrl = "wms?LAYERS="
+                + layer
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
+                + layer;
 
         // after last range, as a range
         String url = baseUrl + "&TIME=2018-11-05/2018-11-06";
@@ -452,8 +426,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         // setup time ranges
         setupRasterDimension(TIMERANGES, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
         setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
         setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "date", LIST, null, null, null);
         setupNearestMatch(TIMERANGES, TIME, true);
 
@@ -465,14 +438,13 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         String timeRangesId = getLayerId(TIMERANGES);
         String waterTempId = getLayerId(WATTEMP);
         String layers = timeRangesId + "," + waterTempId;
-        String baseUrl =
-                "wms?LAYERS="
-                        + layers
-                        + "&STYLES=,&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo"
-                        + "&SRS=EPSG:4326&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941"
-                        + "&WIDTH=200&HEIGHT=80&query_layers="
-                        + layers
-                        + "&FEATURE_COUNT=50";
+        String baseUrl = "wms?LAYERS="
+                + layers
+                + "&STYLES=,&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo"
+                + "&SRS=EPSG:4326&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941"
+                + "&WIDTH=200&HEIGHT=80&query_layers="
+                + layers
+                + "&FEATURE_COUNT=50";
 
         // run time before both (don't care about results, just check the headers)
         String url = baseUrl + "&TIME=2000-01-01";

@@ -20,8 +20,8 @@ public class FeedbackMessageCleaner<C extends Component, R> implements IVisitor<
     int level;
 
     /**
-     * Builds a cleaner removing all messages at or above the specified level. See {@link
-     * FeedbackMessage} for a list of levels
+     * Builds a cleaner removing all messages at or above the specified level. See {@link FeedbackMessage} for a list of
+     * levels
      */
     public FeedbackMessageCleaner(int level) {
         this.level = level;

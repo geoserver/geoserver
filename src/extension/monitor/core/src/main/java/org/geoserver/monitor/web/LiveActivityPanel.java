@@ -34,9 +34,7 @@ public class LiveActivityPanel extends Panel {
 
                     @Override
                     protected Component getComponentForProperty(
-                            String id,
-                            IModel<RequestData> itemModel,
-                            Property<RequestData> property) {
+                            String id, IModel<RequestData> itemModel, Property<RequestData> property) {
                         Object prop = property.getPropertyValue(itemModel.getObject());
 
                         String value = prop != null ? prop.toString() : "";
@@ -57,13 +55,8 @@ public class LiveActivityPanel extends Panel {
         @Override
         protected List<RequestData> getItems() {
             MonitorDAO dao = getApplication().getBeanOfType(Monitor.class).getDAO();
-            Query q =
-                    new Query()
-                            .filter(
-                                    "status",
-                                    Arrays.asList(
-                                            Status.RUNNING, Status.WAITING, Status.CANCELLING),
-                                    Comparison.IN);
+            Query q = new Query()
+                    .filter("status", Arrays.asList(Status.RUNNING, Status.WAITING, Status.CANCELLING), Comparison.IN);
 
             return dao.getRequests(q);
         }

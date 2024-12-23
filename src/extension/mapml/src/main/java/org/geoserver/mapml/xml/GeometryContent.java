@@ -37,21 +37,17 @@ import javax.xml.bind.annotation.XmlType;
         propOrder = {"geometryContent"})
 public class GeometryContent {
 
-    @XmlElementRef(
-            name = "GeometryContent",
-            type = JAXBElement.class,
-            namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElementRef(name = "GeometryContent", type = JAXBElement.class, namespace = "http://www.w3.org/1999/xhtml")
     protected JAXBElement<?> geometryContent;
 
     /**
      * Gets the value of the geometryContent property.
      *
-     * @return possible object is {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >} {@link
-     *     JAXBElement }{@code <}{@link LineString }{@code >} {@link JAXBElement }{@code <}{@link
-     *     GeometryCollection }{@code >} {@link JAXBElement }{@code <}{@link MultiPoint }{@code >}
-     *     {@link JAXBElement }{@code <}{@link Object }{@code >} {@link JAXBElement }{@code <}{@link
-     *     Point }{@code >} {@link JAXBElement }{@code <}{@link MultiLineString }{@code >} {@link
-     *     JAXBElement }{@code <}{@link Polygon }{@code >}
+     * @return possible object is {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >} {@link JAXBElement
+     *     }{@code <}{@link LineString }{@code >} {@link JAXBElement }{@code <}{@link GeometryCollection }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiPoint }{@code >} {@link JAXBElement }{@code <}{@link Object
+     *     }{@code >} {@link JAXBElement }{@code <}{@link Point }{@code >} {@link JAXBElement
+     *     }{@code <}{@link MultiLineString }{@code >} {@link JAXBElement }{@code <}{@link Polygon }{@code >}
      */
     public JAXBElement<?> getGeometryContent() {
         return geometryContent;
@@ -60,12 +56,11 @@ public class GeometryContent {
     /**
      * Sets the value of the geometryContent property.
      *
-     * @param value allowed object is {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >}
-     *     {@link JAXBElement }{@code <}{@link LineString }{@code >} {@link JAXBElement }{@code
-     *     <}{@link GeometryCollection }{@code >} {@link JAXBElement }{@code <}{@link MultiPoint
-     *     }{@code >} {@link JAXBElement }{@code <}{@link Object }{@code >} {@link JAXBElement
-     *     }{@code <}{@link Point }{@code >} {@link JAXBElement }{@code <}{@link MultiLineString
-     *     }{@code >} {@link JAXBElement }{@code <}{@link Polygon }{@code >}
+     * @param value allowed object is {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >} {@link JAXBElement
+     *     }{@code <}{@link LineString }{@code >} {@link JAXBElement }{@code <}{@link GeometryCollection }{@code >}
+     *     {@link JAXBElement }{@code <}{@link MultiPoint }{@code >} {@link JAXBElement }{@code <}{@link Object
+     *     }{@code >} {@link JAXBElement }{@code <}{@link Point }{@code >} {@link JAXBElement
+     *     }{@code <}{@link MultiLineString }{@code >} {@link JAXBElement }{@code <}{@link Polygon }{@code >}
      */
     public void setGeometryContent(JAXBElement<?> value) {
         this.geometryContent = value;

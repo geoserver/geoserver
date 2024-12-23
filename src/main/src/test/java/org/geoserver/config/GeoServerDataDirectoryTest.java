@@ -51,9 +51,7 @@ public class GeoServerDataDirectoryTest {
 
     @Before
     public void setUp() throws Exception {
-        ctx =
-                new ClassPathXmlApplicationContext(
-                        "GeoServerDataDirectoryTest-applicationContext.xml", getClass());
+        ctx = new ClassPathXmlApplicationContext("GeoServerDataDirectoryTest-applicationContext.xml", getClass());
         ctx.refresh();
 
         dataDir = new GeoServerDataDirectory(Files.createTempDirectory("data").toFile());
@@ -67,7 +65,9 @@ public class GeoServerDataDirectoryTest {
 
     @Test
     public void testNullWorkspace() {
-        assertEquals(dataDir.get((WorkspaceInfo) null, "test").path(), dataDir.get("test").path());
+        assertEquals(
+                dataDir.get((WorkspaceInfo) null, "test").path(),
+                dataDir.get("test").path());
         assertEquals(
                 dataDir.getStyles((WorkspaceInfo) null, "test").path(),
                 dataDir.getStyles("test").path());
@@ -97,7 +97,8 @@ public class GeoServerDataDirectoryTest {
 
         Style s = dataDir.parsedStyle(si);
         // Verify style is actually parsed correctly
-        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        Symbolizer symbolizer =
+                s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
         assertTrue(symbolizer instanceof PointSymbolizer);
         GraphicalSymbol graphic =
                 ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);
@@ -115,9 +116,7 @@ public class GeoServerDataDirectoryTest {
 
         // Copy the sld to the temp style dir
         File styleFile = new File(styleDir, "external_with_params.sld");
-        Files.copy(
-                this.getClass().getResourceAsStream("external_with_params.sld"),
-                styleFile.toPath());
+        Files.copy(this.getClass().getResourceAsStream("external_with_params.sld"), styleFile.toPath());
 
         File iconFile = new File(styleDir, "icon.png");
         assertFalse(iconFile.exists());
@@ -131,7 +130,8 @@ public class GeoServerDataDirectoryTest {
 
         Style s = dataDir.parsedStyle(si);
         // Verify style is actually parsed correctly
-        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        Symbolizer symbolizer =
+                s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
         assertTrue(symbolizer instanceof PointSymbolizer);
         GraphicalSymbol graphic =
                 ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);
@@ -147,8 +147,8 @@ public class GeoServerDataDirectoryTest {
     }
 
     /**
-     * Test loading a parsed style with an external graphic URL that contains both ?queryParams and
-     * a URL #fragment, and assert that those URL components are preserved.
+     * Test loading a parsed style with an external graphic URL that contains both ?queryParams and a URL #fragment, and
+     * assert that those URL components are preserved.
      */
     @Test
     public void testParsedStyleExternalWithParamsAndFragment() throws IOException {
@@ -157,9 +157,7 @@ public class GeoServerDataDirectoryTest {
 
         // Copy the sld to the temp style dir
         File styleFile = new File(styleDir, "external_with_params_and_fragment.sld");
-        Files.copy(
-                this.getClass().getResourceAsStream("external_with_params_and_fragment.sld"),
-                styleFile.toPath());
+        Files.copy(this.getClass().getResourceAsStream("external_with_params_and_fragment.sld"), styleFile.toPath());
 
         File iconFile = new File(styleDir, "icon.png");
         assertFalse(iconFile.exists());
@@ -173,7 +171,8 @@ public class GeoServerDataDirectoryTest {
 
         Style s = dataDir.parsedStyle(si);
         // Verify style is actually parsed correctly
-        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        Symbolizer symbolizer =
+                s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
         assertTrue(symbolizer instanceof PointSymbolizer);
         GraphicalSymbol graphic =
                 ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);

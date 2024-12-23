@@ -103,8 +103,7 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
             8530.918335399136, 4265.459167699568, 2132.729583849784
         };
         String[] scaleNames = {
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",
-            "17", "18"
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
         };
         return createGridSet(
                 "WorldCRS84Quad",
@@ -297,19 +296,18 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
 
     @Test
     public void testTiledCRSOutput() throws Exception {
-        String path =
-                "wms?LAYERS=cite:RoadSegments"
-                        + "&STYLES=&FORMAT="
-                        + MapMLConstants.MAPML_MIME_TYPE
-                        + "&SERVICE=WMS&VERSION=1.3.0"
-                        + "&REQUEST=GetMap"
-                        + "&SRS=MapML:UTM31WGS84Quad"
-                        + "&BBOX=166021.44308054057, 0.0, 277438.26352113695, 110597.97252381293"
-                        + "&WIDTH=150"
-                        + "&HEIGHT=150"
-                        + "&format_options="
-                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                        + ":image/png";
+        String path = "wms?LAYERS=cite:RoadSegments"
+                + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_MIME_TYPE
+                + "&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetMap"
+                + "&SRS=MapML:UTM31WGS84Quad"
+                + "&BBOX=166021.44308054057, 0.0, 277438.26352113695, 110597.97252381293"
+                + "&WIDTH=150"
+                + "&HEIGHT=150"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                + ":image/png";
         Document doc = getMapML(path);
         print(doc);
         String url = xpath.evaluate("//html:map-link[@rel='" + "image" + "']/@tref", doc);
@@ -318,19 +316,18 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
 
     @Test
     public void testTiledCRSYXOutput() throws Exception {
-        String path =
-                "wms?LAYERS=cite:RoadSegments"
-                        + "&STYLES=&FORMAT="
-                        + MapMLConstants.MAPML_MIME_TYPE
-                        + "&SERVICE=WMS&VERSION=1.3.0"
-                        + "&REQUEST=GetMap"
-                        + "&SRS=MapML:Test3035"
-                        + "&BBOX=3086656.974771753,-2292253.8117892854,3214455.5231642732,-2192552.9770669416"
-                        + "&WIDTH=150"
-                        + "&HEIGHT=150"
-                        + "&format_options="
-                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                        + ":image/png";
+        String path = "wms?LAYERS=cite:RoadSegments"
+                + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_MIME_TYPE
+                + "&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetMap"
+                + "&SRS=MapML:Test3035"
+                + "&BBOX=3086656.974771753,-2292253.8117892854,3214455.5231642732,-2192552.9770669416"
+                + "&WIDTH=150"
+                + "&HEIGHT=150"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                + ":image/png";
         Document doc = getMapML(path);
         print(doc);
         String url = xpath.evaluate("//html:map-link[@rel='" + "image" + "']/@tref", doc);
@@ -339,19 +336,18 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
 
     @Test
     public void testTiledCRSOutputHTMLContainsProjectionDefinition() throws Exception {
-        String path =
-                "wms?LAYERS=cite:RoadSegments"
-                        + "&STYLES=&FORMAT="
-                        + MapMLConstants.MAPML_HTML_MIME_TYPE
-                        + "&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap"
-                        + "&SRS=MapML:UTM31WGS84Quad"
-                        + "&BBOX=166021.44308054057, 0.0, 277438.26352113695, 110597.97252381293"
-                        + "&WIDTH=150"
-                        + "&HEIGHT=150"
-                        + "&format_options="
-                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                        + ":image/png";
+        String path = "wms?LAYERS=cite:RoadSegments"
+                + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_HTML_MIME_TYPE
+                + "&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap"
+                + "&SRS=MapML:UTM31WGS84Quad"
+                + "&BBOX=166021.44308054057, 0.0, 277438.26352113695, 110597.97252381293"
+                + "&WIDTH=150"
+                + "&HEIGHT=150"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                + ":image/png";
         MockHttpServletRequest request = createRequest(path, false);
         request.setMethod("GET");
         request.setContent(new byte[] {});
@@ -379,11 +375,16 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
         String proj4stringPattern = "\"proj4string\"\\s*:\\s*\"([^\"]+)\"";
 
         // Check for the presence of each field
-        boolean hasProjection = Pattern.compile(projectionPattern).matcher(scriptContent).find();
-        boolean hasResolutions = Pattern.compile(resolutionsPattern).matcher(scriptContent).find();
-        boolean hasBounds = Pattern.compile(boundsPattern).matcher(scriptContent).find();
-        boolean hasOrigin = Pattern.compile(originPattern).matcher(scriptContent).find();
-        boolean hasProj4String = Pattern.compile(proj4stringPattern).matcher(scriptContent).find();
+        boolean hasProjection =
+                Pattern.compile(projectionPattern).matcher(scriptContent).find();
+        boolean hasResolutions =
+                Pattern.compile(resolutionsPattern).matcher(scriptContent).find();
+        boolean hasBounds =
+                Pattern.compile(boundsPattern).matcher(scriptContent).find();
+        boolean hasOrigin =
+                Pattern.compile(originPattern).matcher(scriptContent).find();
+        boolean hasProj4String =
+                Pattern.compile(proj4stringPattern).matcher(scriptContent).find();
         assertTrue(hasProjection);
         assertTrue(hasResolutions);
         assertTrue(hasBounds);

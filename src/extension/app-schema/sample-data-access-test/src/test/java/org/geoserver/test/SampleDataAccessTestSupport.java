@@ -9,8 +9,7 @@ package org.geoserver.test;
 import org.geotools.appschema.resolver.data.SampleDataAccess;
 
 /**
- * Abstract base class for test cases that test integration of {@link SampleDataAccess} with
- * GeoServer.
+ * Abstract base class for test cases that test integration of {@link SampleDataAccess} with GeoServer.
  *
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */

@@ -30,10 +30,8 @@ public class GetCapabilities {
     private WCSInfo wcs;
     private CoverageResponseDelegateFinder responseFactory;
 
-    public static final List<String> PROVIDED_VERSIONS =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            WCS20Const.V201, WCS20Const.V20, WCS20Const.V111, WCS20Const.V110));
+    public static final List<String> PROVIDED_VERSIONS = Collections.unmodifiableList(
+            Arrays.asList(WCS20Const.V201, WCS20Const.V20, WCS20Const.V111, WCS20Const.V110));
 
     public GetCapabilities(WCSInfo wcs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = wcs;
@@ -41,23 +39,19 @@ public class GetCapabilities {
     }
 
     TransformerBase run(GetCapabilitiesType request) throws WCS20Exception {
-        List<String> acceptedVersions =
-                request.getAcceptVersions() == null
-                        ? null
-                        : request.getAcceptVersions().getVersion();
+        List<String> acceptedVersions = request.getAcceptVersions() == null
+                ? null
+                : request.getAcceptVersions().getVersion();
 
-        String negotiatedVersion =
-                RequestUtils.getVersionOws20(PROVIDED_VERSIONS, acceptedVersions);
+        String negotiatedVersion = RequestUtils.getVersionOws20(PROVIDED_VERSIONS, acceptedVersions);
 
-        if (WCS20Const.V110.equals(negotiatedVersion)
-                || WCS20Const.V111.equals(negotiatedVersion)) {
+        if (WCS20Const.V110.equals(negotiatedVersion) || WCS20Const.V111.equals(negotiatedVersion)) {
             LOGGER.warning("GetCapa2.0 Dispatching to 1.1"); // next code should be tested a bit
             WCSCapsTransformer capsTransformer = new WCSCapsTransformer(wcs.getGeoServer());
             capsTransformer.setEncoding(
                     Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;
-        } else if (WCS20Const.V20.equals(negotiatedVersion)
-                || WCS20Const.V201.equals(negotiatedVersion)) {
+        } else if (WCS20Const.V20.equals(negotiatedVersion) || WCS20Const.V201.equals(negotiatedVersion)) {
             WCS20GetCapabilitiesTransformer capsTransformer =
                     new WCS20GetCapabilitiesTransformer(wcs.getGeoServer(), responseFactory);
             capsTransformer.setEncoding(

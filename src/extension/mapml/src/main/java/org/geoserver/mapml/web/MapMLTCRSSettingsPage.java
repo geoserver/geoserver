@@ -25,30 +25,27 @@ public class MapMLTCRSSettingsPage extends ServerAdminPage {
         Form<GeoServerInfo> form = new Form<>("form", new CompoundPropertyModel<>(globalInfoModel));
         add(form);
 
-        PropertyModel<SettingsInfo> settingsModel =
-                new PropertyModel<>(globalInfoModel, "settings");
+        PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalInfoModel, "settings");
 
         MapMLTCRSSettingsPanel panel = new MapMLTCRSSettingsPanel("mapMLTCRS", settingsModel);
         form.add(panel);
 
-        Button submit =
-                new Button("submit") {
+        Button submit = new Button("submit") {
 
-                    @Override
-                    public void onSubmit() {
-                        save(true);
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                save(true);
+            }
+        };
         form.add(submit);
 
-        Button cancel =
-                new Button("cancel") {
+        Button cancel = new Button("cancel") {
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
     }
 

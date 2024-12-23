@@ -28,50 +28,48 @@ import org.junit.rules.TemporaryFolder;
 
 public class IOUtilsTest {
 
-    @Rule public TemporaryFolder temp = new TemporaryFolder(new File("target"));
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder(new File("target"));
 
     /** URLCheck used to restrict content to schemas.opengis.net. */
-    private static URLChecker opengisChecker =
-            new URLChecker() {
-                @Override
-                public String getName() {
-                    return "schemas.opengis.net";
-                }
+    private static URLChecker opengisChecker = new URLChecker() {
+        @Override
+        public String getName() {
+            return "schemas.opengis.net";
+        }
 
-                @Override
-                public boolean isEnabled() {
-                    return true;
-                }
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
 
-                @Override
-                public boolean confirm(String s) {
-                    return s.startsWith("https://schemas.opengis.net/");
-                }
-            };
+        @Override
+        public boolean confirm(String s) {
+            return s.startsWith("https://schemas.opengis.net/");
+        }
+    };
 
-    private static URLChecker tmpChecker =
-            new URLChecker() {
-                String tmpDir =
-                        new File(System.getProperty("java.io.tmpdir"))
-                                .getAbsoluteFile()
-                                .toURI()
-                                .toString();
+    private static URLChecker tmpChecker = new URLChecker() {
+        String tmpDir = new File(System.getProperty("java.io.tmpdir"))
+                .getAbsoluteFile()
+                .toURI()
+                .toString();
 
-                @Override
-                public String getName() {
-                    return "java.io.tmpdir";
-                }
+        @Override
+        public String getName() {
+            return "java.io.tmpdir";
+        }
 
-                @Override
-                public boolean isEnabled() {
-                    return true;
-                }
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
 
-                @Override
-                public boolean confirm(String s) {
-                    return s.startsWith(tmpDir);
-                }
-            };
+        @Override
+        public boolean confirm(String s) {
+            return s.startsWith(tmpDir);
+        }
+    };
 
     @BeforeClass
     public static void setupURLCheckers() throws Exception {
@@ -116,8 +114,7 @@ public class IOUtilsTest {
         destDir.mkdirs();
         Resource newFile = new GeoServerResourceLoader(destDir).get("vehicles.xml");
 
-        URL uploadURL =
-                new URL("https://schemas.opengis.net/movingfeatures/1.0/examples/vehicles.xml");
+        URL uploadURL = new URL("https://schemas.opengis.net/movingfeatures/1.0/examples/vehicles.xml");
         IOUtils.upload(uploadURL, newFile);
         assertSame("uploaded", newFile.getType(), Resource.Type.RESOURCE);
 

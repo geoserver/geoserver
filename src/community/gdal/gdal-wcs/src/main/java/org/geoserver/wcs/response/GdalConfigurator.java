@@ -30,17 +30,12 @@ public class GdalConfigurator extends AbstractToolConfigurator {
         Format pdfFormat = new Format("PDF", "GDAL-PDF", ".pdf", true, "application/pdf");
         pdfFormat.getFormatAdapters().add(new GrayAlphaToRGBA());
         pdfFormat.getFormatAdapters().add(new PalettedToRGB());
-        DEFAULT =
-                new ToolConfiguration(
-                        "gdal_translate",
-                        new HashMap<String, String>(),
-                        new Format[] {
-                            new Format("JPEG2000", "GDAL-JPEG2000", ".jp2", true, "image/jp2"),
-                            pdfFormat,
-                            new Format("AAIGrid", "GDAL-ArcInfoGrid", ".asc", false, null),
-                            new Format(
-                                    "XYZ", "GDAL-XYZ", ".txt", true, "text/plain", OutputType.TEXT)
-                        });
+        DEFAULT = new ToolConfiguration("gdal_translate", new HashMap<String, String>(), new Format[] {
+            new Format("JPEG2000", "GDAL-JPEG2000", ".jp2", true, "image/jp2"),
+            pdfFormat,
+            new Format("AAIGrid", "GDAL-ArcInfoGrid", ".asc", false, null),
+            new Format("XYZ", "GDAL-XYZ", ".txt", true, "text/plain", OutputType.TEXT)
+        });
     }
 
     public GdalConfigurator(FormatConverter format, ToolWrapperFactory wrapperFactory) {

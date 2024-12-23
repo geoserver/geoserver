@@ -18,10 +18,6 @@ public class MultivaluedXlinkHrefMockData extends AbstractAppSchemaMockData {
 
     @Override
     public void addContent() {
-        addFeatureType(
-                GSML_PREFIX,
-                "GeologicUnit",
-                "MultivaluedXlinkHref.xml",
-                "MultivaluedXlinkHref.properties");
+        addFeatureType(GSML_PREFIX, "GeologicUnit", "MultivaluedXlinkHref.xml", "MultivaluedXlinkHref.properties");
     }
 }

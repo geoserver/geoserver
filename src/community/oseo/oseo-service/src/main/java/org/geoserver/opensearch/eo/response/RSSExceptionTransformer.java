@@ -19,9 +19,8 @@ import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 
 /**
- * Based on the indications at
- * http://www.opensearch.org/Documentation/Developer_how_to_guide#How_to_indicate_errors encodes the
- * exception into a RSS document, e.g.
+ * Based on the indications at http://www.opensearch.org/Documentation/Developer_how_to_guide#How_to_indicate_errors
+ * encodes the exception into a RSS document, e.g.
  *
  * <pre>{@code
  * <rss version="2.0" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/">
@@ -88,16 +87,14 @@ public class RSSExceptionTransformer extends LambdaTransformerBase {
         }
 
         private void channel(ServiceException e) {
-            element(
-                    "channel",
-                    () -> {
-                        element("title", "OpenSearch for EO Error report");
-                        element("link", buildSelfUrl());
-                        element("opensearch:totalResults", "1");
-                        element("opensearch:startIndex", "1");
-                        element("opensearch:itemsPerPage", "1");
-                        element("item", () -> itemContents(e));
-                    });
+            element("channel", () -> {
+                element("title", "OpenSearch for EO Error report");
+                element("link", buildSelfUrl());
+                element("opensearch:totalResults", "1");
+                element("opensearch:startIndex", "1");
+                element("opensearch:itemsPerPage", "1");
+                element("item", () -> itemContents(e));
+            });
         }
 
         private void itemContents(ServiceException e) {

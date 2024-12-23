@@ -90,8 +90,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
     @Test
     public void testUnitReplacementsOnReset() throws Exception {
         // reconfigure units with something funny
-        Resource replacementsResource =
-                getDataDirectory().get(NetCDFUnitFormat.NETCDF_UNIT_REPLACEMENTS);
+        Resource replacementsResource = getDataDirectory().get(NetCDFUnitFormat.NETCDF_UNIT_REPLACEMENTS);
         Properties p = new Properties();
         p.put("celsius", "g*(m/s)^2");
         try (OutputStreamWriter osw = new OutputStreamWriter(replacementsResource.out(), UTF_8)) {
@@ -112,9 +111,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
 
     private CoverageDimensionInfo getSSTCoverageDimensionInfo() throws Exception {
         CoverageStoreInfo store =
-                getCatalog()
-                        .getStoreByName(
-                                MockData.SF_PREFIX, "analyzed_sst", CoverageStoreInfo.class);
+                getCatalog().getStoreByName(MockData.SF_PREFIX, "analyzed_sst", CoverageStoreInfo.class);
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         cb.setStore(store);
         CoverageInfo coverage = cb.buildCoverage();

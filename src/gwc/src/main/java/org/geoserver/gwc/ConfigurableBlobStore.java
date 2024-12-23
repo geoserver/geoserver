@@ -36,9 +36,8 @@ import org.geowebcache.storage.blobstore.memory.NullBlobStore;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 
 /**
- * {@link MemoryBlobStore} implementation used for changing {@link CacheProvider} and wrapped {@link
- * BlobStore} at runtime. An instance of this class requires to call the setChanged() method for
- * modifying its configuration.
+ * {@link MemoryBlobStore} implementation used for changing {@link CacheProvider} and wrapped {@link BlobStore} at
+ * runtime. An instance of this class requires to call the setChanged() method for modifying its configuration.
  *
  * @author Nicola Lagomarsini Geosolutions
  */
@@ -80,8 +79,7 @@ public class ConfigurableBlobStore implements BlobStore {
     /** Save the listeners to re-apply them to the delegate blobstore upon config changes */
     private BlobStoreListenerList listeners = new BlobStoreListenerList();
 
-    public ConfigurableBlobStore(
-            BlobStore defaultStore, MemoryBlobStore memoryStore, NullBlobStore nullStore) {
+    public ConfigurableBlobStore(BlobStore defaultStore, MemoryBlobStore memoryStore, NullBlobStore nullStore) {
         // Initialization
         configured = new AtomicBoolean(false);
         actualOperations = new AtomicLong(0);
@@ -467,8 +465,7 @@ public class ConfigurableBlobStore implements BlobStore {
     }
 
     /**
-     * Returns a map of all the cache provider instances, where the key is the {@link CacheProvider}
-     * class.
+     * Returns a map of all the cache provider instances, where the key is the {@link CacheProvider} class.
      *
      * @return a Map containing all the CacheProvider instances
      */
@@ -477,8 +474,7 @@ public class ConfigurableBlobStore implements BlobStore {
     }
 
     /**
-     * Returns a map of all the cache provider description, where the key is the {@link
-     * CacheProvider} class.
+     * Returns a map of all the cache provider description, where the key is the {@link CacheProvider} class.
      *
      * @return a Map containing all the CacheProvider descriptions
      */
@@ -487,8 +483,8 @@ public class ConfigurableBlobStore implements BlobStore {
     }
 
     /**
-     * This method changes the {@link ConfigurableBlobStore} configuration. It can be used for
-     * changing cache configuration or the blobstore used.
+     * This method changes the {@link ConfigurableBlobStore} configuration. It can be used for changing cache
+     * configuration or the blobstore used.
      */
     public synchronized void setChanged(GWCConfig gwcConfig, boolean initialization) {
         // Change the blobstore configuration
@@ -564,8 +560,7 @@ public class ConfigurableBlobStore implements BlobStore {
             // layers in order to check
             // which must not be cached
             if (!initialization) {
-                Iterable<GeoServerTileLayer> geoServerTileLayers =
-                        GWC.get().getGeoServerTileLayers();
+                Iterable<GeoServerTileLayer> geoServerTileLayers = GWC.get().getGeoServerTileLayers();
 
                 for (GeoServerTileLayer layer : geoServerTileLayers) {
                     if (layer.getInfo().isEnabled() && !layer.getInfo().isInMemoryCached()) {
@@ -620,8 +615,7 @@ public class ConfigurableBlobStore implements BlobStore {
     }
 
     @Override
-    public boolean deleteByParameters(String layerName, Map<String, String> parameters)
-            throws StorageException {
+    public boolean deleteByParameters(String layerName, Map<String, String> parameters) throws StorageException {
         // Check if the blobstore has already been configured
         if (configured.get()) {
             // Increment the number of current operations
@@ -641,8 +635,7 @@ public class ConfigurableBlobStore implements BlobStore {
     }
 
     @Override
-    public boolean deleteByParametersId(String layerName, String parametersId)
-            throws StorageException {
+    public boolean deleteByParametersId(String layerName, String parametersId) throws StorageException {
         // Check if the blobstore has already been configured
         if (configured.get()) {
             // Increment the number of current operations

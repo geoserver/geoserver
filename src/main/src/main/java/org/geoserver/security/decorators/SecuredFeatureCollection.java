@@ -16,9 +16,9 @@ import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.util.logging.Logging;
 
 /**
- * Secures a feature collection according to the given policy. The implementation assumes all of the
- * attributes that should not be read have been shaved off already, and similarly, that the read
- * filters have been applied already in the delegate, and adds control over writes
+ * Secures a feature collection according to the given policy. The implementation assumes all of the attributes that
+ * should not be read have been shaved off already, and similarly, that the read filters have been applied already in
+ * the delegate, and adds control over writes
  *
  * @author Andrea Aime - GeoSolutions
  * @param <T>

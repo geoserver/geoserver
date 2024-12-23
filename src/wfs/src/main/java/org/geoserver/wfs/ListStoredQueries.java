@@ -53,12 +53,10 @@ public class ListStoredQueries {
                 // in order to support both versions for the time being we'll have to list them
                 // all...
                 catalog.getFeatureTypes().stream()
-                        .map(
-                                ft ->
-                                        new QName(
-                                                ft.getNamespace().getURI(),
-                                                ft.getName(),
-                                                ft.getNamespace().getPrefix()))
+                        .map(ft -> new QName(
+                                ft.getNamespace().getURI(),
+                                ft.getName(),
+                                ft.getNamespace().getPrefix()))
                         .forEach(qn -> item.getReturnFeatureType().add(qn));
             }
 

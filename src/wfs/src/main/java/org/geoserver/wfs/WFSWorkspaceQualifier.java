@@ -45,10 +45,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     @SuppressWarnings("unchecked")
     @Override
     protected void qualifyRequest(
-            WorkspaceInfo localWorkspace,
-            PublishedInfo localLayer,
-            Service service,
-            Request request) {
+            WorkspaceInfo localWorkspace, PublishedInfo localLayer, Service service, Request request) {
         Objects.requireNonNull(localWorkspace);
         Objects.requireNonNull(service);
         Objects.requireNonNull(request);
@@ -71,20 +68,17 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             List<QName> qualifiedNames = qualifyTypeNames(request, ns, typeNames);
             kvp.put("TYPENAME", qualifiedNames);
         } else if (kvp.containsKey("TYPENAMES")) { // WFS 2.0
-            Collection<Collection<QName>> nestedTypeNames =
-                    (Collection<Collection<QName>>) kvp.get("TYPENAMES");
+            Collection<Collection<QName>> nestedTypeNames = (Collection<Collection<QName>>) kvp.get("TYPENAMES");
 
-            List<List<QName>> qualifiedNames =
-                    nestedTypeNames.stream()
-                            .map(l -> qualifyTypeNames(request, ns, l))
-                            .collect(Collectors.toList());
+            List<List<QName>> qualifiedNames = nestedTypeNames.stream()
+                    .map(l -> qualifyTypeNames(request, ns, l))
+                    .collect(Collectors.toList());
 
             kvp.put("TYPENAMES", qualifiedNames);
         }
     }
 
-    private List<QName> qualifyTypeNames(
-            Request request, NamespaceInfo ns, Collection<QName> typeNames) {
+    private List<QName> qualifyTypeNames(Request request, NamespaceInfo ns, Collection<QName> typeNames) {
         return typeNames.stream()
                 .map(name -> qualifyTypeName(request, ns, name))
                 .collect(Collectors.toList());
@@ -106,8 +100,8 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     /**
-     * Checks if the typeName default namespace is present in the original request, or it has been
-     * overridden by parser. If it's been overridden we can qualify with the given namespace.
+     * Checks if the typeName default namespace is present in the original request, or it has been overridden by parser.
+     * If it's been overridden we can qualify with the given namespace.
      *
      * @param request the request context information
      * @param ns the current LocalWorkspace namespace
@@ -131,29 +125,24 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     @Override
-    protected void qualifyRequest(
-            WorkspaceInfo workspace, PublishedInfo layer, Operation operation, Request request) {
+    protected void qualifyRequest(WorkspaceInfo workspace, PublishedInfo layer, Operation operation, Request request) {
         NamespaceInfo ns = catalog.getNamespaceByPrefix(workspace.getName());
 
         GetCapabilitiesRequest caps =
-                GetCapabilitiesRequest.adapt(
-                        OwsUtils.parameter(operation.getParameters(), EObject.class));
+                GetCapabilitiesRequest.adapt(OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (caps != null) {
             caps.setNamespace(workspace.getName());
             return;
         }
 
         DescribeFeatureTypeRequest dft =
-                DescribeFeatureTypeRequest.adapt(
-                        OwsUtils.parameter(operation.getParameters(), EObject.class));
+                DescribeFeatureTypeRequest.adapt(OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (dft != null) {
             qualifyTypeNames(dft.getTypeNames(), workspace, ns);
             return;
         }
 
-        GetFeatureRequest gf =
-                GetFeatureRequest.adapt(
-                        OwsUtils.parameter(operation.getParameters(), EObject.class));
+        GetFeatureRequest gf = GetFeatureRequest.adapt(OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (gf != null) {
             for (Query q : gf.getQueries()) {
                 // in case of stored query usage the typenames might be null
@@ -164,9 +153,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             return;
         }
 
-        LockFeatureRequest lf =
-                LockFeatureRequest.adapt(
-                        OwsUtils.parameter(operation.getParameters(), EObject.class));
+        LockFeatureRequest lf = LockFeatureRequest.adapt(OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (lf != null) {
             for (Lock lock : lf.getLocks()) {
                 lock.setTypeName(qualifyTypeName(lock.getTypeName(), workspace, ns));
@@ -174,9 +161,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
             return;
         }
 
-        TransactionRequest t =
-                TransactionRequest.adapt(
-                        OwsUtils.parameter(operation.getParameters(), EObject.class));
+        TransactionRequest t = TransactionRequest.adapt(OwsUtils.parameter(operation.getParameters(), EObject.class));
         if (t != null) {
             for (TransactionElement el : t.getElements()) {
                 if (el instanceof Insert) {
@@ -199,8 +184,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     /** Iterates the given features and ensures their namespaceURI matches the given namespace */
-    private void ensureFeatureNamespaceUriMatches(
-            List features, NamespaceInfo ns, TransactionRequest t) {
+    private void ensureFeatureNamespaceUriMatches(List features, NamespaceInfo ns, TransactionRequest t) {
         for (Object next : features) {
             if (next instanceof Feature) {
                 Feature f = (Feature) next;

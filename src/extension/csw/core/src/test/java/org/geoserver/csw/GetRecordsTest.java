@@ -140,15 +140,9 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testXMLReaderParameter() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "GetRecords",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        GetRecordsType gr =
-                (GetRecordsType)
-                        reader.read(null, getResourceAsReader("GetRecordsBrief.xml"), null);
+        CSWXmlReader reader = new CSWXmlReader(
+                "GetRecords", "2.0.2", new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        GetRecordsType gr = (GetRecordsType) reader.read(null, getResourceAsReader("GetRecordsBrief.xml"), null);
         // check the attributes
         assertEquals("application/xml", gr.getOutputFormat());
         assertEquals("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", gr.getOutputSchema());
@@ -210,10 +204,9 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     private void assertGMLTimestamp(String timeStamp) throws Exception {
         assertNotNull(timeStamp);
-        Calendar cal =
-                new XmlConverterFactory()
-                        .createConverter(String.class, Calendar.class, null)
-                        .convert(timeStamp, Calendar.class);
+        Calendar cal = new XmlConverterFactory()
+                .createConverter(String.class, Calendar.class, null)
+                .convert(timeStamp, Calendar.class);
         assertNotNull(cal);
         assertEquals(TimeZone.getTimeZone("GMT"), cal.getTimeZone());
     }
@@ -241,8 +234,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testInvalidStartPosition() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=0";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&startPosition=0";
         Document d = getAsDOM(request);
         // print(d);
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "startPosition");
@@ -259,8 +251,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testAllRecordsDefaultElementSet() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results";
         Document d = getAsDOM(request, "ISO-8859-1");
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());
@@ -364,13 +355,9 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
         // verify we got the records we expected
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:BriefRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])",
-                d);
+                "1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:BriefRecord[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])",
-                d);
+                "1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])", d);
     }
 
     @Test
@@ -391,25 +378,16 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         // verify we got the records we expected
         // this one has 'sed' in the abstract
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:BriefRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])",
-                d);
+                "1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", d);
         // this one in the abstract
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:BriefRecord[dc:identifier='urn:uuid:66ae76b7-54ba-489b-a582-0f0633d96493'])",
-                d);
+                "1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:66ae76b7-54ba-489b-a582-0f0633d96493'])", d);
         // and this one in the title
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:BriefRecord[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])",
-                d);
+                "1", "count(//csw:BriefRecord[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
     }
 
-    /**
-     * This one comes from the CITE tests, like filters are to be applied in a case insensitive
-     * fashion
-     */
+    /** This one comes from the CITE tests, like filters are to be applied in a case insensitive fashion */
     @Test
     public void testFullTextSearchCaseInsensitive() throws Exception {
         String request =
@@ -427,25 +405,15 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
         // verify we got the records we expected
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a'])", d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:88247b56-4cbc-4df9-9860-db3f8042e357'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:88247b56-4cbc-4df9-9860-db3f8042e357'])", d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2'])", d);
     }
 
     @Test
@@ -477,9 +445,8 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testSortByDateSelectElements() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
-                        + "&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
+                + "&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
         // print(d);
@@ -505,9 +472,8 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testFilterBBox() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
-                        + "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(ows:BoundingBox, 47.0, -4.5, 52.0, 1.0)";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
+                + "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(ows:BoundingBox, 47.0, -4.5, 52.0, 1.0)";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
         print(d);
@@ -521,23 +487,16 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
         // verify we got the expected records
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc'])", d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:Record[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])",
-                d);
+                "1", "count(//csw:Record[dc:identifier='urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63'])", d);
     }
 
-    /**
-     * From CITE compliance, throw an error if a non spatial property is used in a spatial filter
-     */
+    /** From CITE compliance, throw an error if a non spatial property is used in a spatial filter */
     @Test
     public void testSpatialFilterNonGeomProperty() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
-                        + "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(dct:spatial, 47.0, -4.5, 52.0, 1.0)";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
+                + "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(dct:spatial, 47.0, -4.5, 52.0, 1.0)";
         Document d = getAsDOM(request);
         // print(d);
         checkOws10Exception(d);
@@ -555,8 +514,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test
     public void testValidateGet() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=validate";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=validate";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
         // print(d);

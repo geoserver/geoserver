@@ -73,18 +73,16 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
                 int statusCode = httpResponse.getStatusLine().getStatusCode();
 
                 if (statusCode != HttpServletResponse.SC_OK)
-                    throw new AuthenticationServiceException(
-                            "Web Service Authentication failed for "
-                                    + authentication.getPrincipal().toString()
-                                    + ". Response code is "
-                                    + statusCode);
+                    throw new AuthenticationServiceException("Web Service Authentication failed for "
+                            + authentication.getPrincipal().toString()
+                            + ". Response code is "
+                            + statusCode);
 
                 HttpEntity entity = httpResponse.getEntity();
                 responseBody = IOUtils.toString(entity.getContent());
                 if (responseBody == null)
-                    throw new AuthenticationServiceException(
-                            "Web Service Authentication Failed for "
-                                    + authentication.getPrincipal().toString());
+                    throw new AuthenticationServiceException("Web Service Authentication Failed for "
+                            + authentication.getPrincipal().toString());
                 verboseLog("External authentication service response:" + responseBody);
                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
             }
@@ -99,9 +97,8 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         // authenticated but did find any roles..mark as anonymous
         if (roles.isEmpty()) roles.add(GeoServerRole.ANONYMOUS_ROLE);
 
-        UsernamePasswordAuthenticationToken result =
-                new UsernamePasswordAuthenticationToken(
-                        authentication.getPrincipal(), authentication.getCredentials(), roles);
+        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(
+                authentication.getPrincipal(), authentication.getCredentials(), roles);
         if (LOGGER.isLoggable(Level.FINER)) {
             String logMessage = "user : " + authentication.getPrincipal() + "| roles: ";
             for (GrantedAuthority role : roles) {
@@ -114,19 +111,16 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
     }
 
     /* extract roles for USER from default or configured service*/
-    private Set<GeoServerRole> authorize(String userName, GeoServerRoleService roleService)
-            throws Exception {
+    private Set<GeoServerRole> authorize(String userName, GeoServerRoleService roleService) throws Exception {
 
-        if (LOGGER.isLoggable(Level.FINE))
-            LOGGER.fine("Using Role Service" + roleService.getName());
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Using Role Service" + roleService.getName());
 
         Set<GeoServerRole> rolesFromService = roleService.getRolesForUser(userName);
 
         return rolesFromService;
     }
 
-    private GeoServerRoleService getRoleService(String userName, WebAuthenticationConfig config)
-            throws Exception {
+    private GeoServerRoleService getRoleService(String userName, WebAuthenticationConfig config) throws Exception {
         GeoServerRoleService roleService;
 
         if (config.getRoleServiceName() == null || config.getRoleServiceName().isEmpty())
@@ -168,11 +162,9 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
     }
 
     private void addHeaders(HttpGet httpGet, Authentication authentication) {
-        String credentials =
-                encode(
-                        authentication.getPrincipal().toString()
-                                + ":"
-                                + authentication.getCredentials().toString());
+        String credentials = encode(authentication.getPrincipal().toString()
+                + ":"
+                + authentication.getCredentials().toString());
         httpGet.addHeader(HTTP_AUTHORIZATION_HEADER, credentials);
     }
 
@@ -182,8 +174,7 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         }
     }
 
-    private Set<GrantedAuthority> checkAdminRoles(
-            Set<GrantedAuthority> userRoles, GeoServerRoleService roleService) {
+    private Set<GrantedAuthority> checkAdminRoles(Set<GrantedAuthority> userRoles, GeoServerRoleService roleService) {
         // checking if role assigned to user are confgured as ADMIN or Group Admin in selected role
         // service
 
@@ -201,12 +192,7 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         // Admin
         if (isAdmin) adminAuthorities.add(GeoServerRole.ADMIN_ROLE);
         if (isGroupAdmin) adminAuthorities.add(GeoServerRole.GROUP_ADMIN_ROLE);
-        verboseLog(
-                roleService.getName()
-                        + ":User is Admin:"
-                        + isAdmin
-                        + "| User is GroupAdmin: "
-                        + isGroupAdmin);
+        verboseLog(roleService.getName() + ":User is Admin:" + isAdmin + "| User is GroupAdmin: " + isGroupAdmin);
         return adminAuthorities;
     }
 
@@ -215,11 +201,10 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
     }
 
     private CloseableHttpClient buildHttpClient() {
-        RequestConfig clientConfig =
-                RequestConfig.custom()
-                        .setConnectTimeout(this.config.getConnectionTimeOut() * 1000)
-                        .setSocketTimeout(this.config.getReadTimeoutOut() * 1000)
-                        .build();
+        RequestConfig clientConfig = RequestConfig.custom()
+                .setConnectTimeout(this.config.getConnectionTimeOut() * 1000)
+                .setSocketTimeout(this.config.getReadTimeoutOut() * 1000)
+                .build();
         return HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).build();
     }
 
@@ -228,17 +213,14 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         HttpGet httpGet = new HttpGet(authenticationURL);
         if (config.isUseHeader()) addHeaders(httpGet, authentication);
 
-        verboseLog(
-                "External authentication call URL:"
-                        + authenticationURL
-                        + " with headers:"
-                        + Stream.of(httpGet.getAllHeaders())
-                                .collect(Collectors.toMap(Header::getName, Header::getValue)));
+        verboseLog("External authentication call URL:"
+                + authenticationURL
+                + " with headers:"
+                + Stream.of(httpGet.getAllHeaders()).collect(Collectors.toMap(Header::getName, Header::getValue)));
         return httpGet;
     }
 
-    private void addRoles(
-            Set<GrantedAuthority> roles, String responseBody, Authentication authentication) {
+    private void addRoles(Set<GrantedAuthority> roles, String responseBody, Authentication authentication) {
         // if a regex is set extract roles from it
         if (config.getRoleRegex() != null && !config.getRoleRegex().isEmpty()) {
             roles.addAll(extractRoles(responseBody, config.getRoleRegex()));
@@ -252,11 +234,10 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
             roles.addAll(authorize(authentication.getPrincipal().toString(), roleService));
             roles.addAll(checkAdminRoles(roles, roleService));
         } catch (Exception e) {
-            LOGGER.severe(
-                    "Error getting roles from "
-                            + config.getRoleServiceName()
-                            + " Role Servie for user: "
-                            + authentication.getPrincipal().toString());
+            LOGGER.severe("Error getting roles from "
+                    + config.getRoleServiceName()
+                    + " Role Servie for user: "
+                    + authentication.getPrincipal().toString());
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }

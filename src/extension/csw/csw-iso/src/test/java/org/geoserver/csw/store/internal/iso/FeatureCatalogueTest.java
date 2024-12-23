@@ -41,16 +41,19 @@ public class FeatureCatalogueTest extends MDTestSupport {
                     .add("definition for " + descr.getName().getLocalPart());
             ((ArrayList<String>) custom.get("object-catalog/type"))
                     .add(descr.getType().getBinding().getSimpleName());
-            ((ArrayList<Integer>) custom.get("object-catalog/min-occurence"))
-                    .add(descr.getMinOccurs());
-            ((ArrayList<Integer>) custom.get("object-catalog/max-occurence"))
-                    .add(descr.getMaxOccurs());
-            ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value"))
-                    .add(new ArrayList<>());
+            ((ArrayList<Integer>) custom.get("object-catalog/min-occurence")).add(descr.getMinOccurs());
+            ((ArrayList<Integer>) custom.get("object-catalog/max-occurence")).add(descr.getMaxOccurs());
+            ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value")).add(new ArrayList<>());
         }
-        ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value")).get(0).add("a");
-        ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value")).get(0).add("b");
-        ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value")).get(0).add("c");
+        ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value"))
+                .get(0)
+                .add("a");
+        ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value"))
+                .get(0)
+                .add("b");
+        ((ArrayList<ArrayList<String>>) custom.get("object-catalog/domain/value"))
+                .get(0)
+                .add("c");
         custom.put("object-catalog/version", "1.1");
         custom.put("object-catalog/date", "01/01/2018");
         custom.put("object-catalog/uuid", uuid);
@@ -61,10 +64,9 @@ public class FeatureCatalogueTest extends MDTestSupport {
 
     @Test
     public void testGetRecords() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
-                        + "&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                + "&maxRecords=100";
 
         Document d = getAsDOM(request);
         // print(d);
@@ -86,10 +88,9 @@ public class FeatureCatalogueTest extends MDTestSupport {
 
     @Test
     public void testGetRecordsSummary() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=summary&outputSchema=http://www.isotc211.org/2005/gmd"
-                        + "&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=summary&outputSchema=http://www.isotc211.org/2005/gmd"
+                + "&maxRecords=100";
 
         Document d = getAsDOM(request);
         // print(d);
@@ -99,10 +100,9 @@ public class FeatureCatalogueTest extends MDTestSupport {
 
     @Test
     public void testGetRecordsPaged() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
-                        + "&maxRecords=20&startPosition=21";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                + "&maxRecords=20&startPosition=21";
 
         Document d = getAsDOM(request);
         // print(d);
@@ -124,11 +124,10 @@ public class FeatureCatalogueTest extends MDTestSupport {
 
     @Test
     public void testGetRecordById() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
-                        + "&id="
-                        + uuid;
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                + "&id="
+                + uuid;
 
         Document d = getAsDOM(request);
         print(d);
@@ -147,14 +146,10 @@ public class FeatureCatalogueTest extends MDTestSupport {
                 "ForestsType",
                 "//gfc:FC_FeatureCatalogue/gfc:featureType/gfc:FC_FeatureType/gfc:typeName/gco:LocalName",
                 d);
+        assertXpathEvaluatesTo("01/01/2018", "//gfc:FC_FeatureCatalogue/gmx:versionDate/gco:DateTime", d);
+        assertXpathEvaluatesTo("1.1", "//gfc:FC_FeatureCatalogue/gmx:versionNumber/gco:CharacterString", d);
         assertXpathEvaluatesTo(
-                "01/01/2018", "//gfc:FC_FeatureCatalogue/gmx:versionDate/gco:DateTime", d);
-        assertXpathEvaluatesTo(
-                "1.1", "//gfc:FC_FeatureCatalogue/gmx:versionNumber/gco:CharacterString", d);
-        assertXpathEvaluatesTo(
-                "Forests (feature catalogue)",
-                "//gfc:FC_FeatureCatalogue/gmx:name/gco:CharacterString",
-                d);
+                "Forests (feature catalogue)", "//gfc:FC_FeatureCatalogue/gmx:name/gco:CharacterString", d);
 
         assertXpathEvaluatesTo(
                 "3",

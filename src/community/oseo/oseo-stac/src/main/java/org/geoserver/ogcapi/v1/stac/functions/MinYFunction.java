@@ -14,8 +14,7 @@ import org.locationtech.jts.geom.Geometry;
 /** Returns the minimum Y value of the given geometry */
 public class MinYFunction extends FunctionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl("miny", Double.class, parameter("geometry", Geometry.class));
+    public static FunctionName NAME = new FunctionNameImpl("miny", Double.class, parameter("geometry", Geometry.class));
 
     public MinYFunction() {
         this.functionName = NAME;

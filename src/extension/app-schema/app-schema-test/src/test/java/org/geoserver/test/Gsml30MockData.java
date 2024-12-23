@@ -23,7 +23,6 @@ public class Gsml30MockData extends AbstractAppSchemaMockData {
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(
-                GSML_PREFIX, "MappedFeature", "Gsml30WfsTest.xml", "Gsml30WfsTest.properties");
+        addFeatureType(GSML_PREFIX, "MappedFeature", "Gsml30WfsTest.xml", "Gsml30WfsTest.properties");
     }
 }

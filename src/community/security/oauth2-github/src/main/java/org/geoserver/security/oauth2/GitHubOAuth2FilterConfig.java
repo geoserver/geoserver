@@ -19,5 +19,6 @@ public class GitHubOAuth2FilterConfig extends GeoServerOAuth2FilterConfig {
         this.forceUserAuthorizationUriHttps = true;
         this.loginEndpoint = "/j_spring_oauth2_github_login";
         this.logoutEndpoint = "/j_spring_oauth2_github_logout";
-    };
+    }
+    ;
 }

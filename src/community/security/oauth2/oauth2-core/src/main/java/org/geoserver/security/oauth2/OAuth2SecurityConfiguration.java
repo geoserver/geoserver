@@ -22,8 +22,8 @@ public interface OAuth2SecurityConfiguration {
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource();
 
     /**
-     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of
-     * the provided resource.
+     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of the provided
+     * resource.
      *
      * @return {@link OAuth2RestTemplate} geoServerOauth2RestTemplate
      */

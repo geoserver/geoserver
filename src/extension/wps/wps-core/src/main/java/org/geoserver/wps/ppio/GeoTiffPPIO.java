@@ -90,8 +90,7 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
             FileUtils.copyInputStreamToFile(input, f);
             AbstractGridFormat format = GridFormatFinder.findFormat(f);
             if (format instanceof UnknownFormat) {
-                throw new WPSException(
-                        "Could not find the GeoTIFF GT2 format, please check it's in the classpath");
+                throw new WPSException("Could not find the GeoTIFF GT2 format, please check it's in the classpath");
             }
             AbstractGridCoverage2DReader reader = format.getReader(f);
             resource = new GridCoverageReaderResource(reader, f);
@@ -132,8 +131,7 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
     }
 
     @Override
-    public void encode(Object value, Map<String, Object> encodingParameters, OutputStream os)
-            throws Exception {
+    public void encode(Object value, Map<String, Object> encodingParameters, OutputStream os) throws Exception {
         GridCoverage2D coverage = (GridCoverage2D) value;
         GeoTiffWriterHelper helper = new GeoTiffWriterHelper(coverage);
         setEncodingParams(helper, encodingParameters);
@@ -145,17 +143,15 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
         }
     }
 
-    private void setEncodingParams(
-            GeoTiffWriterHelper helper, Map<String, Object> encodingParameters) {
+    private void setEncodingParams(GeoTiffWriterHelper helper, Map<String, Object> encodingParameters) {
         if (encodingParameters != null && !encodingParameters.isEmpty()) {
             for (String encodingParam : encodingParameters.keySet()) {
                 if (!SUPPORTED_PARAMS.contains(encodingParam)) {
                     if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.warning(
-                                "The specified parameter will be ignored: "
-                                        + encodingParam
-                                        + " Supported parameters are in the list: "
-                                        + SUPPORTED_PARAMS_LIST);
+                        LOGGER.warning("The specified parameter will be ignored: "
+                                + encodingParam
+                                + " Supported parameters are in the list: "
+                                + SUPPORTED_PARAMS_LIST);
                     }
                 }
             }
@@ -164,8 +160,7 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
             if (writeParams != null) {
 
                 // Inner Tiling Settings
-                if (encodingParameters.containsKey(TILE_WIDTH_KEY)
-                        && encodingParameters.containsKey(TILE_HEIGHT_KEY)) {
+                if (encodingParameters.containsKey(TILE_WIDTH_KEY) && encodingParameters.containsKey(TILE_HEIGHT_KEY)) {
                     String tileWidth = (String) encodingParameters.get(TILE_WIDTH_KEY);
                     String tileHeight = (String) encodingParameters.get(TILE_HEIGHT_KEY);
                     try {
@@ -176,11 +171,10 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
 
                     } catch (NumberFormatException nfe) {
                         if (LOGGER.isLoggable(Level.INFO)) {
-                            LOGGER.info(
-                                    "Specified tiling parameters are not valid. tileWidth = "
-                                            + tileWidth
-                                            + " tileHeight = "
-                                            + tileHeight);
+                            LOGGER.info("Specified tiling parameters are not valid. tileWidth = "
+                                    + tileWidth
+                                    + " tileHeight = "
+                                    + tileHeight);
                         }
                     }
                 }
@@ -197,10 +191,9 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
 
                         } catch (NumberFormatException nfe) {
                             if (LOGGER.isLoggable(Level.INFO)) {
-                                LOGGER.info(
-                                        "Specified quality is not valid (it should be in the range [0,1])."
-                                                + " compressionQuality = "
-                                                + compressionQuality);
+                                LOGGER.info("Specified quality is not valid (it should be in the range [0,1])."
+                                        + " compressionQuality = "
+                                        + compressionQuality);
                             }
                         }
                     }
@@ -210,9 +203,7 @@ public class GeoTiffPPIO extends BinaryPPIO implements ExtensionPriority {
             if (geotoolsWriteParams != null && encodingParameters.containsKey(WRITENODATA_KEY)) {
                 geotoolsWriteParams
                         .parameter(GeoTiffFormat.WRITE_NODATA.getName().toString())
-                        .setValue(
-                                Boolean.parseBoolean(
-                                        (String) encodingParameters.get(WRITENODATA_KEY)));
+                        .setValue(Boolean.parseBoolean((String) encodingParameters.get(WRITENODATA_KEY)));
             }
         }
     }

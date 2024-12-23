@@ -58,9 +58,8 @@ public class GeoServerMetaTile extends MetaTile {
     }
 
     /**
-     * Creates the {@link RenderedImage} corresponding to the tile at index {@code tileIdx} and uses
-     * a {@link RenderedImageMapResponse} to encode it into the {@link #getResponseFormat() response
-     * format}.
+     * Creates the {@link RenderedImage} corresponding to the tile at index {@code tileIdx} and uses a
+     * {@link RenderedImageMapResponse} to encode it into the {@link #getResponseFormat() response format}.
      *
      * @see org.geowebcache.layer.MetaTile#writeTileToStream(int, org.geowebcache.io.Resource)
      * @see RenderedImageMapResponse#write
@@ -77,17 +76,15 @@ public class GeoServerMetaTile extends MetaTile {
             return true;
         }
         if (!(metaTileMap instanceof RenderedImageMap)) {
-            throw new IllegalArgumentException(
-                    "Only RenderedImageMaps are supported so far: "
-                            + metaTileMap.getClass().getName());
+            throw new IllegalArgumentException("Only RenderedImageMaps are supported so far: "
+                    + metaTileMap.getClass().getName());
         }
 
         final RenderedImageMap metaTileMap = (RenderedImageMap) this.metaTileMap;
         final RenderedImageMapResponse mapEncoder;
         {
             final GWC mediator = GWC.get();
-            final Response responseEncoder =
-                    mediator.getResponseEncoder(responseFormat, metaTileMap);
+            final Response responseEncoder = mediator.getResponseEncoder(responseFormat, metaTileMap);
             mapEncoder = (RenderedImageMapResponse) responseEncoder;
         }
 
@@ -112,13 +109,8 @@ public class GeoServerMetaTile extends MetaTile {
                 tileContext.setTransparent(tileContext.isTransparent());
                 long[][] tileIndexes = getTilesGridPositions();
                 BoundingBox tileBounds = gridSubset.boundsFromIndex(tileIndexes[tileIdx]);
-                ReferencedEnvelope tilebbox =
-                        new ReferencedEnvelope(metaTileContext.getCoordinateReferenceSystem());
-                tilebbox.init(
-                        tileBounds.getMinX(),
-                        tileBounds.getMaxX(),
-                        tileBounds.getMinY(),
-                        tileBounds.getMaxY());
+                ReferencedEnvelope tilebbox = new ReferencedEnvelope(metaTileContext.getCoordinateReferenceSystem());
+                tilebbox.init(tileBounds.getMinX(), tileBounds.getMaxX(), tileBounds.getMinY(), tileBounds.getMaxY());
                 tileContext.getViewport().setBounds(tilebbox);
             }
         }
@@ -148,15 +140,14 @@ public class GeoServerMetaTile extends MetaTile {
     }
 
     /**
-     * Overrides to use the same method to slice the tiles than {@code MetatileMapOutputFormat} so
-     * the GeoServer settings such as use native accel are leveraged in the same way when calling
+     * Overrides to use the same method to slice the tiles than {@code MetatileMapOutputFormat} so the GeoServer
+     * settings such as use native accel are leveraged in the same way when calling
      * {@link RenderedImageMapResponse#formatImageOutputStream},
      *
      * @see org.geowebcache.layer.MetaTile#createTile(int, int, int, int)
      */
     @Override
-    public RenderedImage createTile(
-            final int x, final int y, final int tileWidth, final int tileHeight) {
+    public RenderedImage createTile(final int x, final int y, final int tileWidth, final int tileHeight) {
         // check image type
         final int type;
         if (metaTileImage instanceof PlanarImage) {
@@ -174,40 +165,31 @@ public class GeoServerMetaTile extends MetaTile {
                 // do a crop, and then turn it into a buffered image so that we can release
                 // the image chain
                 ImageWorker w = new ImageWorker(metaTileImage);
-                w.crop(
-                        Float.valueOf(x),
-                        Float.valueOf(y),
-                        Float.valueOf(tileWidth),
-                        Float.valueOf(tileHeight));
+                w.crop(Float.valueOf(x), Float.valueOf(y), Float.valueOf(tileWidth), Float.valueOf(tileHeight));
                 tile = w.getBufferedImage();
                 disposeLater(w.getRenderedImage());
                 break;
             case 1:
                 final PlanarImage pImage = (PlanarImage) metaTileImage;
-                final WritableRaster wTile =
-                        WritableRaster.createWritableRaster(
-                                pImage.getSampleModel()
-                                        .createCompatibleSampleModel(tileWidth, tileHeight),
-                                new Point(x, y));
+                final WritableRaster wTile = WritableRaster.createWritableRaster(
+                        pImage.getSampleModel().createCompatibleSampleModel(tileWidth, tileHeight), new Point(x, y));
                 Rectangle sourceArea = new Rectangle(x, y, tileWidth, tileHeight);
                 sourceArea = sourceArea.intersection(pImage.getBounds());
 
                 // copying the data to ensure we don't have side effects when we clean the cache
                 pImage.copyData(wTile);
                 if (wTile.getMinX() != 0 || wTile.getMinY() != 0) {
-                    tile =
-                            new BufferedImage(
-                                    pImage.getColorModel(),
-                                    (WritableRaster) wTile.createTranslatedChild(0, 0),
-                                    pImage.getColorModel().isAlphaPremultiplied(),
-                                    null);
+                    tile = new BufferedImage(
+                            pImage.getColorModel(),
+                            (WritableRaster) wTile.createTranslatedChild(0, 0),
+                            pImage.getColorModel().isAlphaPremultiplied(),
+                            null);
                 } else {
-                    tile =
-                            new BufferedImage(
-                                    pImage.getColorModel(),
-                                    wTile,
-                                    pImage.getColorModel().isAlphaPremultiplied(),
-                                    null);
+                    tile = new BufferedImage(
+                            pImage.getColorModel(),
+                            wTile,
+                            pImage.getColorModel().isAlphaPremultiplied(),
+                            null);
                 }
                 break;
             case 2:
@@ -215,11 +197,10 @@ public class GeoServerMetaTile extends MetaTile {
                 tile = image.getSubimage(x, y, tileWidth, tileHeight);
                 break;
             default:
-                throw new IllegalStateException(
-                        MessageFormat.format(
-                                ErrorKeys.ILLEGAL_ARGUMENT_$2,
-                                "metaTile class",
-                                metaTileImage.getClass().toString()));
+                throw new IllegalStateException(MessageFormat.format(
+                        ErrorKeys.ILLEGAL_ARGUMENT_$2,
+                        "metaTile class",
+                        metaTileImage.getClass().toString()));
         }
 
         return tile;

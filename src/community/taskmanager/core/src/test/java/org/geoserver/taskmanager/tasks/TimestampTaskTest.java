@@ -39,15 +39,20 @@ public class TimestampTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_LAYER = "layer";
     private static final String ATT_FAIL = "fail";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
     private Configuration config;
 
@@ -99,8 +104,10 @@ public class TimestampTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -133,8 +140,10 @@ public class TimestampTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

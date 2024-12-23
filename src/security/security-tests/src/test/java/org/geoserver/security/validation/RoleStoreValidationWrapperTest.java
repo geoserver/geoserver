@@ -55,29 +55,24 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
     @Test
     public void testRoleStoreWrapper() throws Exception {
-        setMockCreator(
-                new MockCreator() {
-                    @Override
-                    public GeoServerSecurityManager createSecurityManager(MockTestData testData)
-                            throws Exception {
-                        GeoServerSecurityManager secMgr =
-                                createMock(GeoServerSecurityManager.class);
+        setMockCreator(new MockCreator() {
+            @Override
+            public GeoServerSecurityManager createSecurityManager(MockTestData testData) throws Exception {
+                GeoServerSecurityManager secMgr = createMock(GeoServerSecurityManager.class);
 
-                        GeoServerRoleStore roleStore1 =
-                                createRoleStore("test", secMgr, "role1", "parent1");
-                        addRolesToCreate(roleStore1, "", "duplicated", "xxx");
+                GeoServerRoleStore roleStore1 = createRoleStore("test", secMgr, "role1", "parent1");
+                addRolesToCreate(roleStore1, "", "duplicated", "xxx");
 
-                        GeoServerRoleStore roleStore2 =
-                                createRoleStore("test1", secMgr, "duplicated");
+                GeoServerRoleStore roleStore2 = createRoleStore("test1", secMgr, "duplicated");
 
-                        expect(secMgr.listRoleServices())
-                                .andReturn(new TreeSet<>(Arrays.asList("test", "test1")))
-                                .anyTimes();
+                expect(secMgr.listRoleServices())
+                        .andReturn(new TreeSet<>(Arrays.asList("test", "test1")))
+                        .anyTimes();
 
-                        replay(roleStore1, roleStore2, secMgr);
-                        return secMgr;
-                    }
-                });
+                replay(roleStore1, roleStore2, secMgr);
+                return secMgr;
+            }
+        });
 
         GeoServerSecurityManager secMgr = getSecurityManager();
         GeoServerRoleStore roleStore = (GeoServerRoleStore) secMgr.loadRoleService("test");
@@ -130,8 +125,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
             store.addRole(store.createRoleObject(authRole));
             fail(authRole + " is reserved and should throw exception");
         } catch (IOException ex) {
-            assertSecurityException(
-                    ex, RESERVED_NAME, GeoServerRole.AUTHENTICATED_ROLE.getAuthority());
+            assertSecurityException(ex, RESERVED_NAME, GeoServerRole.AUTHENTICATED_ROLE.getAuthority());
         }
 
         try {
@@ -193,52 +187,46 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
     @Test
     @SuppressWarnings("SelfComparison")
     public void testRoleServiceWrapperAccessRules() throws Exception {
-        setMockCreator(
-                new MockCreator() {
-                    @Override
-                    public GeoServerSecurityManager createSecurityManager(MockTestData testData)
-                            throws Exception {
-                        GeoServerSecurityManager secMgr =
-                                createNiceMock(GeoServerSecurityManager.class);
+        setMockCreator(new MockCreator() {
+            @Override
+            public GeoServerSecurityManager createSecurityManager(MockTestData testData) throws Exception {
+                GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
 
-                        GeoServerRoleStore roleStore =
-                                createRoleStore("test", secMgr, "role1", "parent1");
-                        expect(roleStore.removeRole(new GeoServerRole("unused"))).andReturn(true);
+                GeoServerRoleStore roleStore = createRoleStore("test", secMgr, "role1", "parent1");
+                expect(roleStore.removeRole(new GeoServerRole("unused"))).andReturn(true);
 
-                        DataAccessRule dataAccessRule = createNiceMock(DataAccessRule.class);
-                        expect(dataAccessRule.compareTo(dataAccessRule)).andReturn(0).anyTimes();
-                        expect(dataAccessRule.getKey()).andReturn("foo").anyTimes();
-                        expect(dataAccessRule.getRoles())
-                                .andReturn(new TreeSet<>(Arrays.asList("role1")))
-                                .anyTimes();
-                        replay(dataAccessRule);
+                DataAccessRule dataAccessRule = createNiceMock(DataAccessRule.class);
+                expect(dataAccessRule.compareTo(dataAccessRule)).andReturn(0).anyTimes();
+                expect(dataAccessRule.getKey()).andReturn("foo").anyTimes();
+                expect(dataAccessRule.getRoles())
+                        .andReturn(new TreeSet<>(Arrays.asList("role1")))
+                        .anyTimes();
+                replay(dataAccessRule);
 
-                        DataAccessRuleDAO dataAccessDAO = createNiceMock(DataAccessRuleDAO.class);
-                        expect(dataAccessDAO.getRulesAssociatedWithRole("role1"))
-                                .andReturn(new TreeSet<>(Arrays.asList(dataAccessRule)))
-                                .anyTimes();
-                        expect(dataAccessDAO.getRulesAssociatedWithRole("parent1"))
-                                .andReturn(new TreeSet<>())
-                                .anyTimes();
-                        expect(secMgr.getDataAccessRuleDAO()).andReturn(dataAccessDAO).anyTimes();
+                DataAccessRuleDAO dataAccessDAO = createNiceMock(DataAccessRuleDAO.class);
+                expect(dataAccessDAO.getRulesAssociatedWithRole("role1"))
+                        .andReturn(new TreeSet<>(Arrays.asList(dataAccessRule)))
+                        .anyTimes();
+                expect(dataAccessDAO.getRulesAssociatedWithRole("parent1"))
+                        .andReturn(new TreeSet<>())
+                        .anyTimes();
+                expect(secMgr.getDataAccessRuleDAO()).andReturn(dataAccessDAO).anyTimes();
 
-                        ServiceAccessRuleDAO serviceAccessDAO =
-                                createNiceMock(ServiceAccessRuleDAO.class);
-                        expect(serviceAccessDAO.getRulesAssociatedWithRole(anyObject()))
-                                .andReturn(new TreeSet<>())
-                                .anyTimes();
-                        expect(secMgr.getServiceAccessRuleDAO())
-                                .andReturn(serviceAccessDAO)
-                                .anyTimes();
+                ServiceAccessRuleDAO serviceAccessDAO = createNiceMock(ServiceAccessRuleDAO.class);
+                expect(serviceAccessDAO.getRulesAssociatedWithRole(anyObject()))
+                        .andReturn(new TreeSet<>())
+                        .anyTimes();
+                expect(secMgr.getServiceAccessRuleDAO())
+                        .andReturn(serviceAccessDAO)
+                        .anyTimes();
 
-                        replay(dataAccessDAO, serviceAccessDAO, roleStore, secMgr);
-                        return secMgr;
-                    }
-                });
+                replay(dataAccessDAO, serviceAccessDAO, roleStore, secMgr);
+                return secMgr;
+            }
+        });
 
-        RoleStoreValidationWrapper store =
-                new RoleStoreValidationWrapper(
-                        (GeoServerRoleStore) getSecurityManager().loadRoleService("test"), true);
+        RoleStoreValidationWrapper store = new RoleStoreValidationWrapper(
+                (GeoServerRoleStore) getSecurityManager().loadRoleService("test"), true);
         GeoServerRole role = store.getRoleByName("role1");
         GeoServerRole parent = store.getRoleByName("parent1");
 
@@ -253,41 +241,35 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
     @Test
     public void testRoleStoreWrapperWithUGServices() throws Exception {
-        setMockCreator(
-                new MockCreator() {
-                    @Override
-                    public GeoServerSecurityManager createSecurityManager(MockTestData testData)
-                            throws Exception {
-                        GeoServerSecurityManager secMgr =
-                                createNiceMock(GeoServerSecurityManager.class);
+        setMockCreator(new MockCreator() {
+            @Override
+            public GeoServerSecurityManager createSecurityManager(MockTestData testData) throws Exception {
+                GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
 
-                        GeoServerUserGroupStore ugStore1 = createUserGroupStore("test1", secMgr);
-                        addUsers(ugStore1, "user1", "abc");
-                        addGroups(ugStore1, "group1");
+                GeoServerUserGroupStore ugStore1 = createUserGroupStore("test1", secMgr);
+                addUsers(ugStore1, "user1", "abc");
+                addGroups(ugStore1, "group1");
 
-                        GeoServerUserGroupStore ugStore2 = createUserGroupStore("test2", secMgr);
-                        addUsers(ugStore1, "user2", "abc");
-                        addGroups(ugStore1, "group2");
+                GeoServerUserGroupStore ugStore2 = createUserGroupStore("test2", secMgr);
+                addUsers(ugStore1, "user2", "abc");
+                addGroups(ugStore1, "group2");
 
-                        GeoServerRoleStore roleStore = createRoleStore("test", secMgr, "role1");
-                        expect(roleStore.getGroupNamesForRole(new GeoServerRole("role1")))
-                                .andReturn(new TreeSet<>(Arrays.asList("group1", "group2")))
-                                .anyTimes();
+                GeoServerRoleStore roleStore = createRoleStore("test", secMgr, "role1");
+                expect(roleStore.getGroupNamesForRole(new GeoServerRole("role1")))
+                        .andReturn(new TreeSet<>(Arrays.asList("group1", "group2")))
+                        .anyTimes();
 
-                        replay(ugStore1, ugStore2, roleStore, secMgr);
-                        return secMgr;
-                    }
-                });
+                replay(ugStore1, ugStore2, roleStore, secMgr);
+                return secMgr;
+            }
+        });
 
         GeoServerSecurityManager secMgr = getSecurityManager();
-        GeoServerUserGroupStore ugStore1 =
-                (GeoServerUserGroupStore) secMgr.loadUserGroupService("test1");
-        GeoServerUserGroupStore ugStore2 =
-                (GeoServerUserGroupStore) secMgr.loadUserGroupService("test2");
+        GeoServerUserGroupStore ugStore1 = (GeoServerUserGroupStore) secMgr.loadUserGroupService("test1");
+        GeoServerUserGroupStore ugStore2 = (GeoServerUserGroupStore) secMgr.loadUserGroupService("test2");
 
         RoleStoreValidationWrapper store =
-                new RoleStoreValidationWrapper(
-                        (GeoServerRoleStore) secMgr.loadRoleService("test"), ugStore1, ugStore2);
+                new RoleStoreValidationWrapper((GeoServerRoleStore) secMgr.loadRoleService("test"), ugStore1, ugStore2);
 
         GeoServerRole role1 = store.getRoleByName("role1");
         try {
@@ -340,28 +322,24 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
     @Test
     public void testMappedRoles() throws Exception {
-        setMockCreator(
-                new MockCreator() {
-                    @Override
-                    public GeoServerSecurityManager createSecurityManager(MockTestData testData)
-                            throws Exception {
-                        GeoServerSecurityManager secMgr =
-                                createNiceMock(GeoServerSecurityManager.class);
+        setMockCreator(new MockCreator() {
+            @Override
+            public GeoServerSecurityManager createSecurityManager(MockTestData testData) throws Exception {
+                GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
 
-                        GeoServerRoleStore roleStore =
-                                createRoleStore("test", secMgr, "admin", "groupAdmin", "role1");
-                        addRolesToCreate(roleStore, "admin", "groupAdmin");
-                        expect(roleStore.getAdminRole())
-                                .andReturn(new GeoServerRole("admin"))
-                                .anyTimes();
-                        expect(roleStore.getGroupAdminRole())
-                                .andReturn(new GeoServerRole("groupAdmin"))
-                                .anyTimes();
+                GeoServerRoleStore roleStore = createRoleStore("test", secMgr, "admin", "groupAdmin", "role1");
+                addRolesToCreate(roleStore, "admin", "groupAdmin");
+                expect(roleStore.getAdminRole())
+                        .andReturn(new GeoServerRole("admin"))
+                        .anyTimes();
+                expect(roleStore.getGroupAdminRole())
+                        .andReturn(new GeoServerRole("groupAdmin"))
+                        .anyTimes();
 
-                        replay(roleStore, secMgr);
-                        return secMgr;
-                    }
-                });
+                replay(roleStore, secMgr);
+                return secMgr;
+            }
+        });
 
         GeoServerSecurityManager secMgr = getSecurityManager();
         RoleStoreValidationWrapper store =

@@ -44,8 +44,7 @@ import org.apache.http.protocol.HttpContext;
  */
 @SuppressWarnings("deprecation")
 public class MockHttpClientConnectionManager implements HttpClientConnectionManager {
-    static SimpleDateFormat dateFormat =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
 
     static {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -68,12 +67,10 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
     public void closeIdleConnections(long arg0, TimeUnit arg1) {}
 
     @Override
-    public void connect(HttpClientConnection arg0, HttpRoute arg1, int arg2, HttpContext arg3)
-            throws IOException {}
+    public void connect(HttpClientConnection arg0, HttpRoute arg1, int arg2, HttpContext arg3) throws IOException {}
 
     @Override
-    public void releaseConnection(
-            HttpClientConnection arg0, Object arg1, long arg2, TimeUnit arg3) {}
+    public void releaseConnection(HttpClientConnection arg0, Object arg1, long arg2, TimeUnit arg3) {}
 
     public int getConnections() {
         return connections;
@@ -90,8 +87,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
 
             @Override
             public HttpClientConnection get(long arg0, TimeUnit arg1)
-                    throws InterruptedException, ExecutionException,
-                            ConnectionPoolTimeoutException {
+                    throws InterruptedException, ExecutionException, ConnectionPoolTimeoutException {
                 connections++;
                 return new HttpClientConnection() {
 
@@ -125,12 +121,10 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                     public void close() throws IOException {}
 
                     @Override
-                    public void sendRequestHeader(HttpRequest arg0)
-                            throws HttpException, IOException {}
+                    public void sendRequestHeader(HttpRequest arg0) throws HttpException, IOException {}
 
                     @Override
-                    public void sendRequestEntity(HttpEntityEnclosingRequest arg0)
-                            throws HttpException, IOException {}
+                    public void sendRequestEntity(HttpEntityEnclosingRequest arg0) throws HttpException, IOException {}
 
                     @Override
                     public HttpResponse receiveResponseHeader() throws HttpException, IOException {
@@ -161,12 +155,10 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                                 if ("date".equalsIgnoreCase(header)) {
 
                                     return new BasicHeader(
-                                            header,
-                                            dateFormat.format(new GregorianCalendar().getTime()));
+                                            header, dateFormat.format(new GregorianCalendar().getTime()));
                                 }
                                 if ("cache-control".equalsIgnoreCase(header)) {
-                                    return new BasicHeader(
-                                            header, enableCache ? "public" : "no-cache");
+                                    return new BasicHeader(header, enableCache ? "public" : "no-cache");
                                 }
                                 if ("content-length".equalsIgnoreCase(header)) {
                                     return new BasicHeader(header, response.length() + "");
@@ -180,8 +172,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                                 if ("expires".equalsIgnoreCase(header) && enableCache) {
                                     GregorianCalendar expires = new GregorianCalendar();
                                     expires.add(GregorianCalendar.MINUTE, 30);
-                                    return new BasicHeader(
-                                            header, dateFormat.format(expires.getTime()));
+                                    return new BasicHeader(header, dateFormat.format(expires.getTime()));
                                 }
                                 return new BasicHeader(header, "");
                             }
@@ -217,14 +208,12 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
 
                             @Override
                             public HeaderIterator headerIterator() {
-                                return new BasicHeaderIterator(
-                                        headers.toArray(new Header[] {}), "mock");
+                                return new BasicHeaderIterator(headers.toArray(new Header[] {}), "mock");
                             }
 
                             @Override
                             public HeaderIterator headerIterator(String header) {
-                                return new BasicHeaderIterator(
-                                        headers.toArray(new Header[] {}), "mock");
+                                return new BasicHeaderIterator(headers.toArray(new Header[] {}), "mock");
                             }
 
                             @Override
@@ -249,9 +238,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                             public HttpEntity getEntity() {
                                 BasicHttpEntity entity = new BasicHttpEntity();
                                 entity.setContentLength(response.length());
-                                entity.setContent(
-                                        new ByteArrayInputStream(
-                                                response.getBytes(StandardCharsets.UTF_8)));
+                                entity.setContent(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
                                 return entity;
                             }
 
@@ -284,14 +271,12 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
                             public void setStatusLine(ProtocolVersion arg0, int arg1) {}
 
                             @Override
-                            public void setStatusLine(
-                                    ProtocolVersion arg0, int arg1, String arg2) {}
+                            public void setStatusLine(ProtocolVersion arg0, int arg1, String arg2) {}
                         };
                     }
 
                     @Override
-                    public void receiveResponseEntity(HttpResponse arg0)
-                            throws HttpException, IOException {}
+                    public void receiveResponseEntity(HttpResponse arg0) throws HttpException, IOException {}
 
                     @Override
                     public boolean isResponseAvailable(int arg0) throws IOException {
@@ -306,13 +291,11 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
     }
 
     @Override
-    public void routeComplete(HttpClientConnection arg0, HttpRoute arg1, HttpContext arg2)
-            throws IOException {}
+    public void routeComplete(HttpClientConnection arg0, HttpRoute arg1, HttpContext arg2) throws IOException {}
 
     @Override
     public void shutdown() {}
 
     @Override
-    public void upgrade(HttpClientConnection arg0, HttpRoute arg1, HttpContext arg2)
-            throws IOException {}
+    public void upgrade(HttpClientConnection arg0, HttpRoute arg1, HttpContext arg2) throws IOException {}
 }

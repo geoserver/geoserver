@@ -13,8 +13,7 @@ import org.geoserver.wms.describelayer.XMLDescribeLayerResponse;
 /**
  * Holds the pre-validated parameters of a <code>DescribeLayer</code> request.
  *
- * <p>This pre-validation must to be done by the request reader, so the content of this object is
- * assumed to be valid.
+ * <p>This pre-validation must to be done by the request reader, so the content of this object is assumed to be valid.
  *
  * @author Gabriel Roldan
  * @author Carlo Cancellieri
@@ -26,8 +25,8 @@ public class DescribeLayerRequest extends WMSRequest {
     private List<MapLayerInfo> layers = new ArrayList<>(2);
 
     /**
-     * Holds the GetMap part of the GetFeatureInfo request, which is meant to provide enough context
-     * information about the map over the DescribeLayer request is being made.
+     * Holds the GetMap part of the GetFeatureInfo request, which is meant to provide enough context information about
+     * the map over the DescribeLayer request is being made.
      */
     private GetMapRequest getMapRequest;
 

@@ -76,20 +76,19 @@ public class WCSMultipartResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         GridCoverage[] coverages = (GridCoverage[]) value;
 
         // grab the delegate for coverage encoding
         GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = request.getOutput().getFormat();
         CoverageResponseDelegate delegate = responseFactory.encoderFor(outputFormat);
-        if (delegate == null)
-            throw new WcsException("Could not find encoder for output format " + outputFormat);
+        if (delegate == null) throw new WcsException("Could not find encoder for output format " + outputFormat);
 
         // grab the coverage info for Coverages document encoding
         final GridCoverage2D coverage = (GridCoverage2D) coverages[0];
-        CoverageInfo coverageInfo = catalog.getCoverageByName(request.getIdentifier().getValue());
+        CoverageInfo coverageInfo =
+                catalog.getCoverageByName(request.getIdentifier().getValue());
 
         // use javamail classes to actually encode the document
         try {
@@ -105,8 +104,7 @@ public class WCSMultipartResponse extends Response {
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            CoverageEncoder encoder =
-                    new CoverageEncoder(delegate, coverage, outputFormat, new HashMap<>());
+            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat, new HashMap<>());
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", "<theCoverage>");
             coveragePart.setHeader("Content-Type", delegate.getMimeType(outputFormat));

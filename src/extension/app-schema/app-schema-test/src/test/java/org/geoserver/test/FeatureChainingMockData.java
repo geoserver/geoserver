@@ -31,8 +31,7 @@ public class FeatureChainingMockData extends AbstractAppSchemaMockData {
     protected static final String OM_URI = "http://www.opengis.net/om/1.0";
 
     /** Schema URL for observation and measurements */
-    protected static final String OM_SCHEMA_LOCATION_URL =
-            "http://schemas.opengis.net/om/1.0.0/observation.xsd";
+    protected static final String OM_SCHEMA_LOCATION_URL = "http://schemas.opengis.net/om/1.0.0/observation.xsd";
 
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
@@ -40,10 +39,7 @@ public class FeatureChainingMockData extends AbstractAppSchemaMockData {
         putNamespace(EX_PREFIX, EX_URI);
         putNamespace(OM_PREFIX, OM_URI);
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeaturePropertyfile.xml",
-                "MappedFeaturePropertyfile.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeaturePropertyfile.xml", "MappedFeaturePropertyfile.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",
@@ -81,10 +77,6 @@ public class FeatureChainingMockData extends AbstractAppSchemaMockData {
                 "NonValidNestedGML.xsd",
                 "SimpleContent.properties");
         // test anyType encoding with om:result in om:observation type
-        addFeatureType(
-                OM_PREFIX,
-                "Observation",
-                "ObservationAnyTypeTest.xml",
-                "MappedFeaturePropertyfile.properties");
+        addFeatureType(OM_PREFIX, "Observation", "ObservationAnyTypeTest.xml", "MappedFeaturePropertyfile.properties");
     }
 }

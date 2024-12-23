@@ -36,10 +36,7 @@ import org.springframework.util.ClassUtils;
  */
 @SuppressWarnings({"rawtypes"})
 public abstract class CatalogReader<T> extends BackupRestoreItem<T>
-        implements ItemStream,
-                ItemStreamReader<T>,
-                ResourceAwareItemReaderItemStream<T>,
-                InitializingBean {
+        implements ItemStream, ItemStreamReader<T>, ResourceAwareItemReaderItemStream<T>, InitializingBean {
 
     protected Class clazz;
 
@@ -60,13 +57,11 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
 
     private boolean saveState = true;
 
-    private final ExecutionContextUserSupport executionContextUserSupport =
-            new ExecutionContextUserSupport();
+    private final ExecutionContextUserSupport executionContextUserSupport = new ExecutionContextUserSupport();
 
     /**
-     * The name of the component which will be used as a stem for keys in the {@link
-     * ExecutionContext}. Subclasses should provide a default value, e.g. the short form of the
-     * class name.
+     * The name of the component which will be used as a stem for keys in the {@link ExecutionContext}. Subclasses
+     * should provide a default value, e.g. the short form of the class name.
      *
      * @param name the name for the component
      */
@@ -86,34 +81,30 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
      * Read next item from input.
      *
      * @return item
-     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the
-     *     framework
+     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the framework
      */
     protected abstract T doRead() throws Exception;
 
     /**
      * Open resources necessary to start reading input.
      *
-     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the
-     *     framework
+     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the framework
      */
     protected abstract void doOpen() throws Exception;
 
     /**
      * Close the resources opened in {@link #doOpen()}.
      *
-     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the
-     *     framework
+     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the framework
      */
     protected abstract void doClose() throws Exception;
 
     /**
-     * Move to the given item index. Subclasses should override this method if there is a more
-     * efficient way of moving to given index than re-reading the input using {@link #doRead()}.
+     * Move to the given item index. Subclasses should override this method if there is a more efficient way of moving
+     * to given index than re-reading the input using {@link #doRead()}.
      *
      * @param itemIndex index of item (0 based) to jump to.
-     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the
-     *     framework
+     * @throws Exception Allows subclasses to throw checked exceptions for interpretation by the framework
      */
     protected void jumpToItem(int itemIndex) throws Exception {
         for (int i = 0; i < itemIndex; i++) {
@@ -139,9 +130,9 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
     }
 
     /**
-     * The index of the item to start reading from. If the {@link ExecutionContext} contains a key
-     * <code>[name].read.count</code> (where <code>[name]</code> is the name of this component) the
-     * value from the {@link ExecutionContext} will be used in preference.
+     * The index of the item to start reading from. If the {@link ExecutionContext} contains a key <code>
+     * [name].read.count</code> (where <code>[name]</code> is the name of this component) the value from the
+     * {@link ExecutionContext} will be used in preference.
      *
      * @see #setName(String)
      * @param count the value of the current item count
@@ -151,9 +142,9 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
     }
 
     /**
-     * The maximum index of the items to be read. If the {@link ExecutionContext} contains a key
-     * <code>[name].read.count.max</code> (where <code>[name]</code> is the name of this component)
-     * the value from the {@link ExecutionContext} will be used in preference.
+     * The maximum index of the items to be read. If the {@link ExecutionContext} contains a key <code>
+     * [name].read.count.max</code> (where <code>[name]</code> is the name of this component) the value from the
+     * {@link ExecutionContext} will be used in preference.
      *
      * @see #setName(String)
      * @param count the value of the maximum item count
@@ -223,17 +214,15 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T>
 
         for (CatalogAdditionalResourcesReader rd : additionalResourceReaders) {
             if (rd.canHandle(item)) {
-                rd.readAdditionalResources(
-                        backupFacade, Files.asResource(resource.getFile()), item);
+                rd.readAdditionalResources(backupFacade, Files.asResource(resource.getFile()), item);
             }
         }
     }
 
     /**
-     * Set the flag that determines whether to save internal data for {@link ExecutionContext}. Only
-     * switch this to false if you don't want to save any state from this stream, and you don't need
-     * it to be restartable. Always set it to false if the reader is being used in a concurrent
-     * environment.
+     * Set the flag that determines whether to save internal data for {@link ExecutionContext}. Only switch this to
+     * false if you don't want to save any state from this stream, and you don't need it to be restartable. Always set
+     * it to false if the reader is being used in a concurrent environment.
      *
      * @param saveState flag value (default true).
      */

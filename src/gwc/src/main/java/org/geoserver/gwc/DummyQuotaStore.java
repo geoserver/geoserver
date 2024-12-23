@@ -83,13 +83,11 @@ public class DummyQuotaStore implements QuotaStore {
     }
 
     @Override
-    public void addToQuotaAndTileCounts(
-            TileSet tileSet, Quota quotaDiff, Collection<PageStatsPayload> tileCountDiffs)
+    public void addToQuotaAndTileCounts(TileSet tileSet, Quota quotaDiff, Collection<PageStatsPayload> tileCountDiffs)
             throws InterruptedException {}
 
     @Override
-    public Future<List<PageStats>> addHitsAndSetAccesTime(
-            Collection<PageStatsPayload> statsUpdates) {
+    public Future<List<PageStats>> addHitsAndSetAccesTime(Collection<PageStatsPayload> statsUpdates) {
         return new Future<>() {
 
             @Override

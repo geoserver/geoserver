@@ -16,9 +16,7 @@ public class GetRecordByIdTest extends CSWInternalTestSupport {
     public void test() throws Exception {
         String forestId = getCatalog().getLayerByName("Forests").getResource().getId();
 
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=csw:Record&id="
-                        + forestId;
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=csw:Record&id=" + forestId;
         Document d = getAsDOM(request);
         print(d);
         checkValidationErrors(d);
@@ -27,31 +25,18 @@ public class GetRecordByIdTest extends CSWInternalTestSupport {
         // we have the right kind of document
         assertXpathEvaluatesTo("1", "count(/csw:GetRecordByIdResponse)", d);
         // check contents Forests record
-        assertXpathEvaluatesTo(
-                "abstract about Forests",
-                "//csw:SummaryRecord[dc:title='Forests']/dct:abstract",
-                d);
+        assertXpathEvaluatesTo("abstract about Forests", "//csw:SummaryRecord[dc:title='Forests']/dct:abstract", d);
         assertXpathEvaluatesTo("Forests", "//csw:SummaryRecord[dc:title='Forests']/dc:subject", d);
         assertXpathEvaluatesTo(
-                "http://purl.org/dc/dcmitype/Dataset",
-                "//csw:SummaryRecord[dc:title='Forests']/dc:type",
-                d);
+                "http://purl.org/dc/dcmitype/Dataset", "//csw:SummaryRecord[dc:title='Forests']/dc:type", d);
         assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:6.11:4326",
-                "//csw:SummaryRecord[dc:title='Forests']/ows:BoundingBox/@crs",
-                d);
+                "urn:x-ogc:def:crs:EPSG:6.11:4326", "//csw:SummaryRecord[dc:title='Forests']/ows:BoundingBox/@crs", d);
         assertXpathEvaluatesTo(
-                "-90.0 -180.0",
-                "//csw:SummaryRecord[dc:title='Forests']/ows:BoundingBox/ows:LowerCorner",
-                d);
+                "-90.0 -180.0", "//csw:SummaryRecord[dc:title='Forests']/ows:BoundingBox/ows:LowerCorner", d);
         assertXpathEvaluatesTo(
-                "90.0 180.0",
-                "//csw:SummaryRecord[dc:title='Forests']/ows:BoundingBox/ows:UpperCorner",
-                d);
+                "90.0 180.0", "//csw:SummaryRecord[dc:title='Forests']/ows:BoundingBox/ows:UpperCorner", d);
         // scheme attribute
         assertXpathEvaluatesTo(
-                "http://www.digest.org/2.1",
-                "//csw:SummaryRecord[dc:title='Forests']/dc:subject/@scheme",
-                d);
+                "http://www.digest.org/2.1", "//csw:SummaryRecord[dc:title='Forests']/dc:subject/@scheme", d);
     }
 }

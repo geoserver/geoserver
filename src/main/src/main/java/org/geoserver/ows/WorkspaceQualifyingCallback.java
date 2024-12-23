@@ -15,13 +15,12 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * A dispatcher callback used to "qualify" requests based on the presence of {@link LocalWorkspace}
- * and {@link LocalPublished}.
+ * A dispatcher callback used to "qualify" requests based on the presence of {@link LocalWorkspace} and
+ * {@link LocalPublished}.
  *
- * <p>The term "qualifying" in this sense means fill in any information that can be derived from the
- * the local workspace or layer. For example, if a client specifies a local workspace then they
- * should not have to namespace qualify every layer or feature type name. A subclass of this
- * callback can do that automatically.
+ * <p>The term "qualifying" in this sense means fill in any information that can be derived from the the local workspace
+ * or layer. For example, if a client specifies a local workspace then they should not have to namespace qualify every
+ * layer or feature type name. A subclass of this callback can do that automatically.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -61,8 +60,7 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         return null;
     }
 

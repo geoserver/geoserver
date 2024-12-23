@@ -28,8 +28,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class SecuredSimpleFeatureLocking
-        extends SecuredFeatureLocking<SimpleFeatureType, SimpleFeature>
+public class SecuredSimpleFeatureLocking extends SecuredFeatureLocking<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureLocking {
 
     protected SecuredSimpleFeatureLocking(
@@ -53,8 +52,7 @@ public class SecuredSimpleFeatureLocking
     }
 
     @Override
-    public void modifyFeatures(String name, Object attributeValue, Filter filter)
-            throws IOException {
+    public void modifyFeatures(String name, Object attributeValue, Filter filter) throws IOException {
         modifyFeatures(new String[] {name}, new Object[] {attributeValue}, filter);
     }
 
@@ -64,8 +62,7 @@ public class SecuredSimpleFeatureLocking
         Query writeQuery = getWriteQuery(policy);
         if (writeQuery == Query.ALL) {
             ((SimpleFeatureStore) storeDelegate).modifyFeatures(names, values, filter);
-        } else if (writeQuery.getFilter() == Filter.EXCLUDE
-                || writeQuery.getPropertyNames() == Query.NO_NAMES) {
+        } else if (writeQuery.getFilter() == Filter.EXCLUDE || writeQuery.getPropertyNames() == Query.NO_NAMES) {
             throw unsupportedOperation();
         }
 

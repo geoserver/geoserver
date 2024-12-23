@@ -19,8 +19,8 @@ import org.geoserver.web.GeoServerBasePage;
  *   <li>automatically adds the {@link GeoServerBasePage} feedback panel in the ajax target
  * </ul>
  *
- * When using it remember that you have to invoke {@link FormComponent#processInput()} on each
- * component you need input from as the standard form processing has been skipped
+ * When using it remember that you have to invoke {@link FormComponent#processInput()} on each component you need input
+ * from as the standard form processing has been skipped
  *
  * @author Andrea Aime
  */

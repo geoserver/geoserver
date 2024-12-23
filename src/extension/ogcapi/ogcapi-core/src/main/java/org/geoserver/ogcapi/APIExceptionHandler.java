@@ -8,10 +8,9 @@ package org.geoserver.ogcapi;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A class that handles exceptions caught by {@link APIDispatcher}. Only the first handler able to
- * process the request will handle it. A {@link DefaultAPIExceptionHandler} is provided as a catch
- * all, lowest priority (see {@link org.geoserver.platform.ExtensionPriority} one that simply
- * encodes the exception in JSON
+ * A class that handles exceptions caught by {@link APIDispatcher}. Only the first handler able to process the request
+ * will handle it. A {@link DefaultAPIExceptionHandler} is provided as a catch all, lowest priority (see
+ * {@link org.geoserver.platform.ExtensionPriority} one that simply encodes the exception in JSON
  */
 public interface APIExceptionHandler {
 

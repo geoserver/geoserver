@@ -21,8 +21,7 @@ public class ProcessEvent implements Cloneable {
         this.inputs = inputs;
     }
 
-    public ProcessEvent(
-            ExecutionStatus status, Map<String, Object> inputs, Map<String, Object> outputs) {
+    public ProcessEvent(ExecutionStatus status, Map<String, Object> inputs, Map<String, Object> outputs) {
         this.status = status;
         this.inputs = inputs;
         this.outputs = outputs;

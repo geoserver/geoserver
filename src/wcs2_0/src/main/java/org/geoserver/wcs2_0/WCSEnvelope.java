@@ -15,8 +15,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
 
 /**
- * A custom {@link Envelope} that allows to set a min value of longitude higher than the max one in
- * selected methods to deal with the dateline crossing case
+ * A custom {@link Envelope} that allows to set a min value of longitude higher than the max one in selected methods to
+ * deal with the dateline crossing case
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -35,8 +35,7 @@ public class WCSEnvelope extends AbstractBounds {
     /** Creates an empty envelope based on the given coordinate reference system */
     public WCSEnvelope(CoordinateReferenceSystem crs) {
         if (crs == null) {
-            throw new IllegalArgumentException(
-                    "WCSEnvelope coordinate reference system cannot be null");
+            throw new IllegalArgumentException("WCSEnvelope coordinate reference system cannot be null");
         }
         this.crs = crs;
 
@@ -62,13 +61,11 @@ public class WCSEnvelope extends AbstractBounds {
     }
 
     /**
-     * Sets the range for the given dimension. If the dimension is the longitude, it is allowed to
-     * set a minimum greater than the maximum, this envelope will be assumed to span the dateline
+     * Sets the range for the given dimension. If the dimension is the longitude, it is allowed to set a minimum greater
+     * than the maximum, this envelope will be assumed to span the dateline
      */
-    public void setRange(int dimension, double minimum, double maximum)
-            throws IndexOutOfBoundsException {
-        if (minimum > maximum
-                && (longitudeDimension != LONGIDUTE_NOT_FOUND && dimension != longitudeDimension)) {
+    public void setRange(int dimension, double minimum, double maximum) throws IndexOutOfBoundsException {
+        if (minimum > maximum && (longitudeDimension != LONGIDUTE_NOT_FOUND && dimension != longitudeDimension)) {
             // Make an empty envelope (min == max)
             // while keeping it legal (min <= max).
             minimum = maximum = 0.5 * (minimum + maximum);
@@ -90,9 +87,9 @@ public class WCSEnvelope extends AbstractBounds {
     }
 
     /**
-     * Returns true if the envelope has a empty span on at least one dimension. A span is empty if
-     * its zero or negative, but in case a dimension is the longitude, a negative span will be
-     * treated as a dateline crossing, and thus treated as non empty
+     * Returns true if the envelope has a empty span on at least one dimension. A span is empty if its zero or negative,
+     * but in case a dimension is the longitude, a negative span will be treated as a dateline crossing, and thus
+     * treated as non empty
      */
     public boolean isEmpty() {
         for (int i = 0; i < dimensions; i++) {
@@ -158,9 +155,8 @@ public class WCSEnvelope extends AbstractBounds {
     }
 
     /**
-     * Returns a list of envelopes that avoid the dateline crossing "odd" representation, that is,
-     * in that case two envelopes will be returned covering the portion before and after the
-     * dateline
+     * Returns a list of envelopes that avoid the dateline crossing "odd" representation, that is, in that case two
+     * envelopes will be returned covering the portion before and after the dateline
      */
     public GeneralBounds[] getNormalizedEnvelopes() {
         if (!isCrossingDateline()) {
@@ -186,10 +182,7 @@ public class WCSEnvelope extends AbstractBounds {
         }
     }
 
-    /**
-     * Checks if this envelope intersects the provided one, taking into account the case of dateline
-     * crossing.
-     */
+    /** Checks if this envelope intersects the provided one, taking into account the case of dateline crossing. */
     public void intersect(GeneralBounds other) {
         assert other.getDimension() == dimensions : other;
         assert CRS.equalsIgnoreMetadata(crs, other.getCoordinateReferenceSystem()) : other;
@@ -237,8 +230,7 @@ public class WCSEnvelope extends AbstractBounds {
         // crossing the dateline (e.g. polar, or mercator centered around the dateline)
         return longitudeDimension != LONGIDUTE_NOT_FOUND
                 && (getSpan(longitudeDimension) < 0
-                        || (getMinimum(longitudeDimension) < 180
-                                && getMaximum(longitudeDimension) > 180));
+                        || (getMinimum(longitudeDimension) < 180 && getMaximum(longitudeDimension) > 180));
     }
 
     /** Returns true if the specified dimension index is matching the longitude axis */

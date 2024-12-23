@@ -18,8 +18,7 @@ import org.geoserver.web.util.MetadataMapModel;
  * <ul>
  *   <li>Built-in keys and type, isolating unchecked warnings issues
  *   <li>Built-in null handling and key removal
- *   <li>Ensures that original objects are not modified until full form is submitted (no proxy
- *       around the objects here)
+ *   <li>Ensures that original objects are not modified until full form is submitted (no proxy around the objects here)
  * </ul>
  */
 @SuppressWarnings("unchecked")

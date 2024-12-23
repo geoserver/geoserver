@@ -45,8 +45,7 @@ public class TestDispatcherCallback implements DispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
         return response;
     }

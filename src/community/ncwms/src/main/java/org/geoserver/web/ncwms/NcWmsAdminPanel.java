@@ -18,19 +18,10 @@ public class NcWmsAdminPanel extends AdminPagePanel {
     public NcWmsAdminPanel(String id, IModel<?> model) {
         super(id, model);
 
-        IModel<NcWmsInfo> ncWmsModel =
-                new MetadataMapModel<>(
-                        new PropertyModel<>(model, "metadata"),
-                        NcWmsService.WMS_CONFIG_KEY,
-                        NcWmsInfo.class);
+        IModel<NcWmsInfo> ncWmsModel = new MetadataMapModel<>(
+                new PropertyModel<>(model, "metadata"), NcWmsService.WMS_CONFIG_KEY, NcWmsInfo.class);
         if (ncWmsModel.getObject() == null) ncWmsModel.setObject(new NcWMSInfoImpl());
-        add(
-                new TextField<Integer>(
-                        "timeSeriesPoolSize",
-                        new PropertyModel<>(ncWmsModel, "timeSeriesPoolSize")));
-        add(
-                new TextField<Integer>(
-                        "maxTimeSeriesValues",
-                        new PropertyModel<>(ncWmsModel, "maxTimeSeriesValues")));
+        add(new TextField<Integer>("timeSeriesPoolSize", new PropertyModel<>(ncWmsModel, "timeSeriesPoolSize")));
+        add(new TextField<Integer>("maxTimeSeriesValues", new PropertyModel<>(ncWmsModel, "maxTimeSeriesValues")));
     }
 }

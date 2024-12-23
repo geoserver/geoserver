@@ -36,15 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>Also includes all endpoints from {@link QueryController}
  */
-@APIService(
-        service = "Feature",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WFSInfo.class)
+@APIService(service = "Feature", version = "1.0", landingPage = "/gsr/services", serviceClass = WFSInfo.class)
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName:.*}/FeatureServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName:.*}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureServiceController extends QueryController {
 
     @Autowired
@@ -74,15 +68,12 @@ public class FeatureServiceController extends QueryController {
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
         FeatureServiceRoot root =
-                new FeatureServiceRoot(
-                        service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
+                new FeatureServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
         root.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")));
-        root.getInterfaces()
-                .add(new Link(workspaceName + "/" + "FeatureServer?f=json&pretty=true", "REST"));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")));
+        root.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer?f=json&pretty=true", "REST"));
         return root;
     }
 
@@ -98,49 +89,43 @@ public class FeatureServiceController extends QueryController {
             @RequestParam(name = "relationPattern", required = false) String relatePattern,
             @RequestParam(name = "time", required = false) String time,
             @RequestParam(name = "text", required = false) String text,
-            @RequestParam(name = "maxAllowableOffsets", required = false)
-                    String maxAllowableOffsets,
+            @RequestParam(name = "maxAllowableOffsets", required = false) String maxAllowableOffsets,
             @RequestParam(name = "where", required = false) String whereClause,
-            @RequestParam(name = "returnGeometry", required = false, defaultValue = "true")
-                    Boolean returnGeometry,
-            @RequestParam(name = "outFields", required = false, defaultValue = "*")
-                    String outFieldsText,
-            @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false")
-                    boolean returnIdsOnly)
+            @RequestParam(name = "returnGeometry", required = false, defaultValue = "true") Boolean returnGeometry,
+            @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
+            @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly)
             throws IOException {
         LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
 
         FeatureServiceQueryResult queryResult = new FeatureServiceQueryResult(layersAndTables);
 
         for (LayerOrTable layerOrTable : layersAndTables.layers) {
-            FeatureServiceQueryResult.FeatureLayer layer =
-                    new FeatureServiceQueryResult.FeatureLayer(layerOrTable);
+            FeatureServiceQueryResult.FeatureLayer layer = new FeatureServiceQueryResult.FeatureLayer(layerOrTable);
             LayerInfo l = layerOrTable.layer;
 
             if (l.getType() != PublishedType.VECTOR) {
                 break;
             }
-            FeatureList features =
-                    new FeatureList(
-                            FeatureDAO.getFeatureCollectionForLayer(
-                                    workspaceName,
-                                    layerOrTable.getId(),
-                                    geometryTypeName,
-                                    geometryText,
-                                    inSRText,
-                                    outSRText,
-                                    spatialRelText,
-                                    objectIdsText,
-                                    relatePattern,
-                                    time,
-                                    text,
-                                    maxAllowableOffsets,
-                                    whereClause,
-                                    returnGeometry,
-                                    outFieldsText,
-                                    l),
+            FeatureList features = new FeatureList(
+                    FeatureDAO.getFeatureCollectionForLayer(
+                            workspaceName,
+                            layerOrTable.getId(),
+                            geometryTypeName,
+                            geometryText,
+                            inSRText,
+                            outSRText,
+                            spatialRelText,
+                            objectIdsText,
+                            relatePattern,
+                            time,
+                            text,
+                            maxAllowableOffsets,
+                            whereClause,
                             returnGeometry,
-                            outSRText);
+                            outFieldsText,
+                            l),
+                    returnGeometry,
+                    outSRText);
             if (features.features.size() > 0) {
                 layer.setFeatures(features);
                 queryResult.getLayers().add(layer);

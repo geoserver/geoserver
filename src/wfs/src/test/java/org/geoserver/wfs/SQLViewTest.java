@@ -53,8 +53,7 @@ public class SQLViewTest extends WFSTestSupport {
 
         Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
-        File dbFile =
-                new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
+        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
         params.put("database", dbFile.getAbsolutePath());
         cat.add(ds);
 
@@ -80,10 +79,9 @@ public class SQLViewTest extends WFSTestSupport {
 
         // create the sql view
         JDBCDataStore jds = (JDBCDataStore) ds.getDataStore(null);
-        VirtualTable vt =
-                new VirtualTable(
-                        "pgeo_view",
-                        "select \"name\", \"pointProperty\" from \"pgeo\" where \"booleanProperty\" = %bool% and \"name\" = '%name%'");
+        VirtualTable vt = new VirtualTable(
+                "pgeo_view",
+                "select \"name\", \"pointProperty\" from \"pgeo\" where \"booleanProperty\" = %bool% and \"name\" = '%name%'");
         vt.addParameter(new VirtualTableParameter("bool", "true"));
         vt.addParameter(new VirtualTableParameter("name", "name-f001"));
         vt.addGeometryMetadatata("pointProperty", Point.class, 4326);
@@ -108,11 +106,9 @@ public class SQLViewTest extends WFSTestSupport {
 
     @Test
     public void testViewParamsGet() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&request=GetFeature&typename="
-                                + viewTypeName
-                                + "&version=1.1&viewparams=bool:true;name:name-f003");
+        Document dom = getAsDOM("wfs?service=WFS&request=GetFeature&typename="
+                + viewTypeName
+                + "&version=1.1&viewparams=bool:true;name:name-f003");
         // print(dom);
 
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", dom);
@@ -121,11 +117,9 @@ public class SQLViewTest extends WFSTestSupport {
 
     @Test
     public void testViewParamsJsonGet() throws Exception {
-        JSON json =
-                getAsJSON(
-                        "wfs?service=WFS&request=GetFeature&typename="
-                                + viewTypeName
-                                + "&version=1.1&viewparams=bool:true;name:name-f003&outputFormat=application/json");
+        JSON json = getAsJSON("wfs?service=WFS&request=GetFeature&typename="
+                + viewTypeName
+                + "&version=1.1&viewparams=bool:true;name:name-f003&outputFormat=application/json");
         // print(json);
 
         assertEquals(1, ((JSONObject) json).getInt("totalFeatures"));
@@ -133,16 +127,15 @@ public class SQLViewTest extends WFSTestSupport {
 
     @Test
     public void testPostWithViewParams_v100() throws Exception {
-        String xml =
-                "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" "
-                        + "viewParams=\"bool:true;name:name-f003\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
-                        + "<wfs:Query typeName=\""
-                        + viewTypeName
-                        + "\"> "
-                        + "</wfs:Query></wfs:GetFeature>";
+        String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" "
+                + "viewParams=\"bool:true;name:name-f003\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
+                + "<wfs:Query typeName=\""
+                + viewTypeName
+                + "\"> "
+                + "</wfs:Query></wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -156,16 +149,15 @@ public class SQLViewTest extends WFSTestSupport {
     @Test
     public void testPostWithViewParams_110() throws Exception {
 
-        String xml =
-                "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" "
-                        + "viewParams=\"bool:true;name:name-f003\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
-                        + "<wfs:Query typeName=\""
-                        + viewTypeName
-                        + "\"> "
-                        + "</wfs:Query></wfs:GetFeature>";
+        String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" "
+                + "viewParams=\"bool:true;name:name-f003\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
+                + "<wfs:Query typeName=\""
+                + viewTypeName
+                + "\"> "
+                + "</wfs:Query></wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -178,14 +170,13 @@ public class SQLViewTest extends WFSTestSupport {
 
     @Test
     public void testPostWithViewParams_200() throws Exception {
-        String xml =
-                "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" "
-                        + "viewParams=\"bool:true;name:name-f003\"> "
-                        + "<wfs:Query typeNames=\""
-                        + viewTypeName
-                        + "\">"
-                        + "</wfs:Query></wfs:GetFeature>";
+        String xml = "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" "
+                + "viewParams=\"bool:true;name:name-f003\"> "
+                + "<wfs:Query typeNames=\""
+                + viewTypeName
+                + "\">"
+                + "</wfs:Query></wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -198,11 +189,10 @@ public class SQLViewTest extends WFSTestSupport {
 
     @Test
     public void testXMLViewParamsGet() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&request=GetFeature&typename="
-                                + viewTypeName
-                                + "&version=1.1&viewParamsFormat=XML&viewparams=<VP><PS><P n=\"bool\">true</P><P n=\"name\">name-f003</P></PS></VP>");
+        Document dom = getAsDOM(
+                "wfs?service=WFS&request=GetFeature&typename="
+                        + viewTypeName
+                        + "&version=1.1&viewParamsFormat=XML&viewparams=<VP><PS><P n=\"bool\">true</P><P n=\"name\">name-f003</P></PS></VP>");
         // print(dom);
 
         assertXpathEvaluatesTo("name-f003", "//gs:pgeo_view/gml:name", dom);
@@ -212,18 +202,16 @@ public class SQLViewTest extends WFSTestSupport {
     @Test
     public void testPostWithXMLViewParams_200() throws Exception {
         String xmlViewParams =
-                StringEscapeUtils.escapeXml10(
-                        "<VP><PS><P n=\"bool\">true</P><P n=\"name\">name-f003</P></PS></VP>");
-        String xml =
-                "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" "
-                        + "viewParams=\""
-                        + xmlViewParams
-                        + "\"> "
-                        + "<wfs:Query typeNames=\""
-                        + viewTypeName
-                        + "\">"
-                        + "</wfs:Query></wfs:GetFeature>";
+                StringEscapeUtils.escapeXml10("<VP><PS><P n=\"bool\">true</P><P n=\"name\">name-f003</P></PS></VP>");
+        String xml = "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" "
+                + "viewParams=\""
+                + xmlViewParams
+                + "\"> "
+                + "<wfs:Query typeNames=\""
+                + viewTypeName
+                + "\">"
+                + "</wfs:Query></wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs?viewParamsFormat=XML", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());

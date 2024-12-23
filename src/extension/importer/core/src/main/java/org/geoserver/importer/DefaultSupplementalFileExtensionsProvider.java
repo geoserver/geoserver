@@ -10,8 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 /** Default implementation of a SupplementalFileExtensionsProvider */
-public class DefaultSupplementalFileExtensionsProvider
-        implements SupplementalFileExtensionsProvider {
+public class DefaultSupplementalFileExtensionsProvider implements SupplementalFileExtensionsProvider {
     private Set<String> acceptedInputExtensions;
     private Set<String> supplementalExtensions;
     private Set<String> upperCaseSupplementalExtensions;
@@ -31,8 +30,7 @@ public class DefaultSupplementalFileExtensionsProvider
 
     @Override
     public boolean canHandle(String baseExtension) {
-        return baseExtension != null
-                && acceptedInputExtensions.contains(baseExtension.toLowerCase());
+        return baseExtension != null && acceptedInputExtensions.contains(baseExtension.toLowerCase());
     }
 
     @Override
@@ -41,8 +39,6 @@ public class DefaultSupplementalFileExtensionsProvider
         // some data providers produce tiff files being stored as .TIF
         // we can reasonably suppose that supplemental files will be upper case too
         // i.e. .PRJ, .XML
-        return StringUtils.isAllUpperCase(baseExtension)
-                ? upperCaseSupplementalExtensions
-                : supplementalExtensions;
+        return StringUtils.isAllUpperCase(baseExtension) ? upperCaseSupplementalExtensions : supplementalExtensions;
     }
 }

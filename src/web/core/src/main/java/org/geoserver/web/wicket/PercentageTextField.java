@@ -21,35 +21,34 @@ public class PercentageTextField extends TextField<Double> {
 
     private int maximumFractionDigits = 1;
 
-    private IConverter<Double> percentConverter =
-            new IConverter<>() {
-                private static final long serialVersionUID = -8409029711658542273L;
+    private IConverter<Double> percentConverter = new IConverter<>() {
+        private static final long serialVersionUID = -8409029711658542273L;
 
-                @Override
-                public String convertToString(Double value, Locale locale) {
-                    NumberFormat format = formatter(locale);
-                    return value == null ? null : format.format(value);
-                }
+        @Override
+        public String convertToString(Double value, Locale locale) {
+            NumberFormat format = formatter(locale);
+            return value == null ? null : format.format(value);
+        }
 
-                @Override
-                public Double convertToObject(String value, Locale locale) {
-                    if (value == null || value.trim().isEmpty()) {
-                        return null;
-                    }
-                    if (!value.endsWith("%")) {
-                        value += "%";
-                    }
-                    NumberFormat format = formatter(locale);
-                    Number parsed;
-                    try {
-                        parsed = format.parse(value);
-                    } catch (ParseException e) {
-                        error(e.getMessage());
-                        return null;
-                    }
-                    return Double.valueOf(parsed.doubleValue());
-                }
-            };
+        @Override
+        public Double convertToObject(String value, Locale locale) {
+            if (value == null || value.trim().isEmpty()) {
+                return null;
+            }
+            if (!value.endsWith("%")) {
+                value += "%";
+            }
+            NumberFormat format = formatter(locale);
+            Number parsed;
+            try {
+                parsed = format.parse(value);
+            } catch (ParseException e) {
+                error(e.getMessage());
+                return null;
+            }
+            return Double.valueOf(parsed.doubleValue());
+        }
+    };
 
     public PercentageTextField(String id) {
         super(id, Double.class);

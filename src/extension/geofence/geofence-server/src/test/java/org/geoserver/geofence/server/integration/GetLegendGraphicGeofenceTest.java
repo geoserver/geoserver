@@ -46,12 +46,11 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
             logout();
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
-            String url =
-                    "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                            + "&layer="
-                            + group.getName()
-                            + "&style="
-                            + "&format=image/png&width=20&height=20";
+            String url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                    + "&layer="
+                    + group.getName()
+                    + "&style="
+                    + "&format=image/png&width=20&height=20";
             MockHttpServletResponse response = getAsServletResponse(url);
             assertEquals(response.getContentType(), "image/png");
 
@@ -71,17 +70,7 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
         String layerGroupName = "lakes_and_places_legend";
         try {
             ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
-            ruleId2 =
-                    addRule(
-                            GrantType.ALLOW,
-                            null,
-                            "ROLE_ANONYMOUS",
-                            "WMS",
-                            null,
-                            "cite",
-                            "Forests",
-                            0,
-                            ruleService);
+            ruleId2 = addRule(GrantType.ALLOW, null, "ROLE_ANONYMOUS", "WMS", null, "cite", "Forests", 0, ruleService);
 
             List<String> allowedStyles = Arrays.asList("Lakes", "NamedPlaces");
             addLayerDetails(
@@ -110,27 +99,24 @@ public class GetLegendGraphicGeofenceTest extends GeofenceWMSTestSupport {
             logout();
 
             login("anonymousUser", "", "ROLE_ANONYMOUS");
-            String url =
-                    "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                            + "&layer="
-                            + group.getName()
-                            + "&style="
-                            + "&format=image/png&width=20&height=20";
+            String url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                    + "&layer="
+                    + group.getName()
+                    + "&style="
+                    + "&format=image/png&width=20&height=20";
             MockHttpServletResponse response = getAsServletResponse(url);
             // default lg style should not fail
             assertEquals(response.getContentType(), "image/png");
 
-            url =
-                    "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                            + "&layer="
-                            + group.getName()
-                            + "&style=forests_style"
-                            + "&format=image/png&width=20&height=20";
+            url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                    + "&layer="
+                    + group.getName()
+                    + "&style=forests_style"
+                    + "&format=image/png&width=20&height=20";
             response = getAsServletResponse(url);
             // should fail the forests_style contains the not allowed polygon style
             assertEquals(getBaseMimeType(response.getContentType()), "application/vnd.ogc.se_xml");
-            assertTrue(
-                    response.getContentAsString().contains("style is not available on this layer"));
+            assertTrue(response.getContentAsString().contains("style is not available on this layer"));
         } finally {
             deleteRules(ruleService, ruleId1, ruleId2);
             logout();

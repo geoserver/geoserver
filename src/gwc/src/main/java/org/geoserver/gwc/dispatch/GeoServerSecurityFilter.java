@@ -32,13 +32,12 @@ public class GeoServerSecurityFilter implements SecurityFilter {
             try {
                 ReferencedEnvelope env;
                 if (Objects.nonNull(extent)) {
-                    env =
-                            new ReferencedEnvelope(
-                                    extent.getMinX(),
-                                    extent.getMaxX(),
-                                    extent.getMinY(),
-                                    extent.getMaxY(),
-                                    CRS.decode(srs.toString()));
+                    env = new ReferencedEnvelope(
+                            extent.getMinX(),
+                            extent.getMaxX(),
+                            extent.getMinY(),
+                            extent.getMaxY(),
+                            CRS.decode(srs.toString()));
                 } else {
                     env = null;
                 }

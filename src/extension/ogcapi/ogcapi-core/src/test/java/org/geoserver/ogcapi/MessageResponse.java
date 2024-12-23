@@ -10,10 +10,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.springframework.stereotype.Component;
 
-/**
- * A response that writes a message to the output stream, used to test the bridge between OWS
- * responses and OGC APIs
- */
+/** A response that writes a message to the output stream, used to test the bridge between OWS responses and OGC APIs */
 @Component
 public class MessageResponse extends Response {
     public MessageResponse() {

@@ -40,9 +40,7 @@ public class CollectionTest extends CoveragesTestSupport {
         assertEquals(-43, json.read("$.extent.spatial.bbox[0][1]", Double.class), EPS);
         assertEquals(146, json.read("$.extent.spatial.bbox[0][2]", Double.class), EPS);
         assertEquals(-41, json.read("$.extent.spatial.bbox[0][3]", Double.class), EPS);
-        assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                json.read("$.extent.spatial.crs", String.class));
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.extent.spatial.crs", String.class));
 
         // check we have the expected number of links and they all use the right "rel"
         Collection<MediaType> formats = getCoverageFormats();
@@ -91,21 +89,21 @@ public class CollectionTest extends CoveragesTestSupport {
 
     @Test
     public void testCollectionHTML() throws Exception {
-        org.jsoup.nodes.Document document =
-                getAsJSoup("ogc/coverages/v1/collections/rs:DEM?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/coverages/v1/collections/rs:DEM?f=html");
 
         String tazDemName = "rs:DEM";
         String tazDemHtmlId = tazDemName.replace(":", "__");
 
         // check title and description
-        assertEquals(TAZDEM_TITLE, document.select("#" + tazDemHtmlId + "_title").text());
         assertEquals(
-                TAZDEM_DESCRIPTION, document.select("#" + tazDemHtmlId + "_description").text());
+                TAZDEM_TITLE, document.select("#" + tazDemHtmlId + "_title").text());
+        assertEquals(
+                TAZDEM_DESCRIPTION,
+                document.select("#" + tazDemHtmlId + "_description").text());
 
         // check coverage links
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/coverages/v1/collections/rs:DEM"
-                        + "/coverage?f=image%2Fgeotiff",
+                "http://localhost:8080/geoserver/ogc/coverages/v1/collections/rs:DEM" + "/coverage?f=image%2Fgeotiff",
                 document.select("#html_" + tazDemHtmlId + "_link").attr("href"));
 
         // check temporal and spatial extent (time should not be there)
@@ -118,8 +116,7 @@ public class CollectionTest extends CoveragesTestSupport {
     @Test
     public void testTemporalCollectionHTML() throws Exception {
         setupRasterDimension(TIMESERIES, TIME, DimensionPresentation.LIST, null, null, null);
-        org.jsoup.nodes.Document document =
-                getAsJSoup("ogc/coverages/v1/collections/sf:timeseries?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/coverages/v1/collections/sf:timeseries?f=html");
 
         String id = getLayerId(TIMESERIES).replace(":", "__");
 

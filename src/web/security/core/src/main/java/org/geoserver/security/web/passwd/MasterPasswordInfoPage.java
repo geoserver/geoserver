@@ -33,38 +33,34 @@ class MasterPasswordInfoPage extends AbstractSecurityPage {
         add(form);
         form.add(new TextField<>("fileName"));
 
-        form.add(
-                new SubmitLink("save", form) {
-                    private static final long serialVersionUID = 1L;
+        form.add(new SubmitLink("save", form) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit() {
-                        if (StringUtils.hasLength(fileName) == false) {
-                            error(new StringResourceModel("fileNameEmpty", this, null).getString());
-                            return;
-                        }
-                        try {
-                            if (dumpMasterPassword()) {
-                                info(
-                                        new StringResourceModel("dumpInfo", this)
-                                                .setParameters(
-                                                        new File(fileName).getCanonicalFile())
-                                                .getString());
-                            } else error(new StringResourceModel("unauthorized", this).getString());
-                        } catch (Exception e) {
-                            error(e);
-                        }
-                    }
-                });
-        form.add(
-                new AjaxLink<>("back") {
-                    private static final long serialVersionUID = 1L;
+            @Override
+            public void onSubmit() {
+                if (StringUtils.hasLength(fileName) == false) {
+                    error(new StringResourceModel("fileNameEmpty", this, null).getString());
+                    return;
+                }
+                try {
+                    if (dumpMasterPassword()) {
+                        info(new StringResourceModel("dumpInfo", this)
+                                .setParameters(new File(fileName).getCanonicalFile())
+                                .getString());
+                    } else error(new StringResourceModel("unauthorized", this).getString());
+                } catch (Exception e) {
+                    error(e);
+                }
+            }
+        });
+        form.add(new AjaxLink<>("back") {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 
     boolean dumpMasterPassword() throws IOException {

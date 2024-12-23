@@ -9,8 +9,8 @@ import java.util.Optional;
 /**
  * Report status of installed modules and extensions.
  *
- * <p>Reporting static information such as module name and version, and dynamic information like
- * configuration and drivers.
+ * <p>Reporting static information such as module name and version, and dynamic information like configuration and
+ * drivers.
  *
  * @author Morgan Thompson - Boundless
  */
@@ -25,8 +25,8 @@ public interface ModuleStatus {
     Optional<String> getComponent();
 
     /**
-     * Human readable name (from GeoServer documentation), or as defined in the extension pom.xml,
-     * ie. <name>PostGIS DataStore Extensions</name>
+     * Human readable name (from GeoServer documentation), or as defined in the extension pom.xml, ie. <name>PostGIS
+     * DataStore Extensions</name>
      */
     String getName();
 
@@ -40,8 +40,8 @@ public interface ModuleStatus {
     boolean isEnabled();
 
     /**
-     * Optional status message such as what Java rendering engine is in use, or the library path if
-     * the module/driver is unavailable
+     * Optional status message such as what Java rendering engine is in use, or the library path if the module/driver is
+     * unavailable
      */
     Optional<String> getMessage();
 

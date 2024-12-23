@@ -28,8 +28,8 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
- * GSR and OGC API are pretty similar, so it makes sense to base dispatching GSR on the OGC API
- * dispatcher. The benefits are major, including:
+ * GSR and OGC API are pretty similar, so it makes sense to base dispatching GSR on the OGC API dispatcher. The benefits
+ * are major, including:
  *
  * <ul>
  *   <li>Proper integration with dispatcher subsystem (e.g., control flow, monitoring)
@@ -37,8 +37,8 @@ import org.springframework.web.context.request.NativeWebRequest;
  *   <li>Shared machinery for generating HTML output, including shared look and feel
  * </ul>
  *
- * <p>However, the GRS behaves differently in terms of request format handling and error reporting,
- * so a subclass is needed
+ * <p>However, the GRS behaves differently in terms of request format handling and error reporting, so a subclass is
+ * needed
  */
 public class GSRDispatcher extends APIDispatcher {
 
@@ -59,8 +59,7 @@ public class GSRDispatcher extends APIDispatcher {
         }
 
         @Override
-        public List<MediaType> resolveMediaTypes(NativeWebRequest request)
-                throws HttpMediaTypeNotAcceptableException {
+        public List<MediaType> resolveMediaTypes(NativeWebRequest request) throws HttpMediaTypeNotAcceptableException {
             List<MediaType> mediaTypes = super.resolveMediaTypes(request);
             if (mediaTypes == MEDIA_TYPE_ALL_LIST) {
                 return mediaTypes;
@@ -74,8 +73,7 @@ public class GSRDispatcher extends APIDispatcher {
         }
 
         /** Uses the "f" and "format" parameter in the request */
-        private static class FormatContentNegotiationStrategy
-                implements ContentNegotiationStrategy {
+        private static class FormatContentNegotiationStrategy implements ContentNegotiationStrategy {
 
             @Override
             public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) {
@@ -83,11 +81,9 @@ public class GSRDispatcher extends APIDispatcher {
                 if ("json".equals(f) || "pjson".equals(f)) {
                     return Collections.singletonList(MediaType.APPLICATION_JSON);
                 } else if ("geojson".equals(f)) {
-                    return Collections.singletonList(
-                            MediaType.parseMediaType("application/geo+json"));
+                    return Collections.singletonList(MediaType.parseMediaType("application/geo+json"));
                 } else if ("kmz".equals(f)) {
-                    return Collections.singletonList(
-                            MediaType.parseMediaType(KMZMapOutputFormat.MIME_TYPE));
+                    return Collections.singletonList(MediaType.parseMediaType(KMZMapOutputFormat.MIME_TYPE));
                 } else if ("xml".equals(f)) {
                     return Arrays.asList(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
                 } else if ("html".equals(f)) {
@@ -105,8 +101,7 @@ public class GSRDispatcher extends APIDispatcher {
                             new ServiceError(
                                     HttpStatus.BAD_REQUEST.value(),
                                     "Output format not " + "supported",
-                                    Collections.singletonList(
-                                            "Format " + f + " is " + "not supported")));
+                                    Collections.singletonList("Format " + f + " is " + "not supported")));
                 } else {
                     return MEDIA_TYPE_ALL_LIST;
                 }

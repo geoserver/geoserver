@@ -44,13 +44,10 @@ public class RasterAttributeTableConfigTest extends GeoServerWicketTestSupport {
 
     @Before
     public void startComponent() {
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> {
-                                    LayerInfo layer = getCatalog().getLayerByName(getLayerId(RAT));
-                                    return new RasterAttributeTableConfig(id, new Model<>(layer));
-                                });
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> {
+            LayerInfo layer = getCatalog().getLayerByName(getLayerId(RAT));
+            return new RasterAttributeTableConfig(id, new Model<>(layer));
+        });
 
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);

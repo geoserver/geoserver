@@ -45,9 +45,8 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
     private static final String XPATH_STATION_WITH_MEASUREMENTS_FAKE_GEOM =
             XPATH_STATION_WITH_MEASUREMENTS + "/st_${GML_PREFIX}:" + DEFAULT_GEOMETRY_LOCAL_NAME;
 
-    private static final String XPATH_STATION_WITH_MEASUREMENTS_GEOM =
-            XPATH_STATION_WITH_MEASUREMENTS
-                    + "/st_${GML_PREFIX}:measurements/ms_${GML_PREFIX}:Measurement_${GML_PREFIX}/ms_${GML_PREFIX}:sampledArea/ms_${GML_PREFIX}:SampledArea/ms_${GML_PREFIX}:geometry";
+    private static final String XPATH_STATION_WITH_MEASUREMENTS_GEOM = XPATH_STATION_WITH_MEASUREMENTS
+            + "/st_${GML_PREFIX}:measurements/ms_${GML_PREFIX}:Measurement_${GML_PREFIX}/ms_${GML_PREFIX}:sampledArea/ms_${GML_PREFIX}:SampledArea/ms_${GML_PREFIX}:geometry";
 
     // xpath engines used to check WFS responses
     private XpathEngine WFS11_XPATH_ENGINE;
@@ -57,23 +56,21 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
     @Before
     public void beforeTest() {
         // instantiate WFS 1.1 xpath engine
-        WFS11_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs",
-                        "gml",
-                        "http://www.opengis.net/gml");
+        WFS11_XPATH_ENGINE = StationsMockData.buildXpathEngine(
+                getTestData().getNamespaces(),
+                "wfs",
+                "http://www.opengis.net/wfs",
+                "gml",
+                "http://www.opengis.net/gml");
         // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "ows",
-                        "http://www.opengis.net/ows/1.1",
-                        "wfs",
-                        "http://www.opengis.net/wfs/2.0",
-                        "gml",
-                        "http://www.opengis.net/gml/3.2");
+        WFS20_XPATH_ENGINE = StationsMockData.buildXpathEngine(
+                getTestData().getNamespaces(),
+                "ows",
+                "http://www.opengis.net/ows/1.1",
+                "wfs",
+                "http://www.opengis.net/wfs/2.0",
+                "gml",
+                "http://www.opengis.net/gml/3.2");
     }
 
     @Override
@@ -99,8 +96,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             Map<String, String> gml31Parameters = new HashMap<>();
             gml31Parameters.put("GML_PREFIX", "gml31");
             gml31Parameters.put("GML_NAMESPACE", "http://www.opengis.net/gml");
-            gml31Parameters.put(
-                    "GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
+            gml31Parameters.put("GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
             addStationFeatureType(
                     STATIONS_PREFIX_GML31,
                     "gml31",
@@ -163,21 +159,14 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File stationsMappings =
-                    new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
-            File stationsProperties =
-                    new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
-            File stationsSchema =
-                    new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
+            File stationsMappings = new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
+            File stationsProperties = new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
+            File stationsSchema = new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
             // perform the parameterization
+            substituteParameters("/test-data/stations/" + mappingsPath, parameters, stationsMappings);
             substituteParameters(
-                    "/test-data/stations/" + mappingsPath, parameters, stationsMappings);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/stations.properties",
-                    parameters,
-                    stationsProperties);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
+                    "/test-data/stations/defaultGeometry/stations.properties", parameters, stationsProperties);
+            substituteParameters("/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
             // create station feature type
             addFeatureType(
                     namespacePrefix,
@@ -187,10 +176,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
                     stationsSchema.getAbsolutePath());
         }
 
-        /**
-         * Helper method that will add the station feature type customizing it for the desired GML
-         * version.
-         */
+        /** Helper method that will add the station feature type customizing it for the desired GML version. */
         protected void addStationFeatureType(
                 String namespacePrefix,
                 String gmlPrefix,
@@ -204,29 +190,17 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File stationsMappings =
-                    new File(
-                            gmlDirectory,
-                            String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
-            File stationsProperties =
-                    new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
-            File stationsSchema =
-                    new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
-            File measurementsSchema =
-                    new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
+            File stationsMappings = new File(gmlDirectory, String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
+            File stationsProperties = new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
+            File stationsSchema = new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
+            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
             // perform the parameterization
+            substituteParameters("/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
             substituteParameters(
-                    "/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
+                    "/test-data/stations/defaultGeometry/stations.properties", parameters, stationsProperties);
+            substituteParameters("/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
             substituteParameters(
-                    "/test-data/stations/defaultGeometry/stations.properties",
-                    parameters,
-                    stationsProperties);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/measurements.xsd",
-                    parameters,
-                    measurementsSchema);
+                    "/test-data/stations/defaultGeometry/measurements.xsd", parameters, measurementsSchema);
             // create station feature type
             addFeatureType(
                     namespacePrefix,
@@ -248,23 +222,16 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File measurementsMappings =
-                    new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
+            File measurementsMappings = new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
             File measurementsProperties =
                     new File(gmlDirectory, String.format("measurements_%s.properties", gmlPrefix));
-            File measurementsSchema =
-                    new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
+            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
             // perform the parameterization
+            substituteParameters("/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
             substituteParameters(
-                    "/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
+                    "/test-data/stations/defaultGeometry/measurements.properties", parameters, measurementsProperties);
             substituteParameters(
-                    "/test-data/stations/defaultGeometry/measurements.properties",
-                    parameters,
-                    measurementsProperties);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/measurements.xsd",
-                    parameters,
-                    measurementsSchema);
+                    "/test-data/stations/defaultGeometry/measurements.xsd", parameters, measurementsSchema);
             // create measurements feature type
             addFeatureType(
                     namespacePrefix,
@@ -277,12 +244,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testWfs11GetFeatureDefaultGeometry() throws Exception {
-        testWfsGetFeature(
-                "1.1.0",
-                STATION_FEATURE,
-                XPATH_STATION,
-                XPATH_STATION_FAKE_GEOM,
-                XPATH_STATION_GEOM);
+        testWfsGetFeature("1.1.0", STATION_FEATURE, XPATH_STATION, XPATH_STATION_FAKE_GEOM, XPATH_STATION_GEOM);
         testWfsGetFeature(
                 "1.1.0",
                 STATION_WITH_MEASUREMENTS_FEATURE,
@@ -293,8 +255,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testWfs20GetFeatureDefaultGeometry() throws Exception {
-        testWfsGetFeature(
-                "2.0", STATION_FEATURE, XPATH_STATION, XPATH_STATION_FAKE_GEOM, XPATH_STATION_GEOM);
+        testWfsGetFeature("2.0", STATION_FEATURE, XPATH_STATION, XPATH_STATION_FAKE_GEOM, XPATH_STATION_GEOM);
         testWfsGetFeature(
                 "2.0",
                 STATION_WITH_MEASUREMENTS_FEATURE,
@@ -304,11 +265,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
     }
 
     protected void testWfsGetFeature(
-            String wfsVersion,
-            String featureType,
-            String xpathFeature,
-            String xpathFakeGeom,
-            String xpathActualGeom)
+            String wfsVersion, String featureType, String xpathFeature, String xpathFakeGeom, String xpathActualGeom)
             throws Exception {
         String gmlPrefix;
         String xpathBase;
@@ -324,8 +281,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
             xpathEngine = WFS11_XPATH_ENGINE;
         }
 
-        String getFeatureUrl =
-                buildGetFeatureUrl(wfsVersion, featureType.replace("${GML_PREFIX}", gmlPrefix));
+        String getFeatureUrl = buildGetFeatureUrl(wfsVersion, featureType.replace("${GML_PREFIX}", gmlPrefix));
         Document document = getAsDOM(getFeatureUrl);
 
         String xpath = null;
@@ -353,8 +309,7 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
         }
 
         layer = STATION_FEATURE.replace("${GML_PREFIX}", GML32_PREFIX);
-        try (InputStream is =
-                getBinary(buildGetMapUrl("st_gml32:Station_gml32", "Default_Point"))) {
+        try (InputStream is = getBinary(buildGetMapUrl("st_gml32:Station_gml32", "Default_Point"))) {
             BufferedImage imageBuffer = ImageIO.read(is);
             assertNotBlank("app-schema test getmap nested default geom", imageBuffer, Color.WHITE);
         }
@@ -365,32 +320,20 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
         String layer = STATION_WITH_MEASUREMENTS_FEATURE.replace("${GML_PREFIX}", GML31_PREFIX);
         try (InputStream is = getBinary(buildGetMapUrl(layer, "Default_Polygon"))) {
             BufferedImage imageBuffer = ImageIO.read(is);
-            assertNotBlank(
-                    "app-schema test getmap nested default geom feature chaining",
-                    imageBuffer,
-                    Color.WHITE);
+            assertNotBlank("app-schema test getmap nested default geom feature chaining", imageBuffer, Color.WHITE);
         }
 
         layer = STATION_WITH_MEASUREMENTS_FEATURE.replace("${GML_PREFIX}", GML32_PREFIX);
         try (InputStream is = getBinary(buildGetMapUrl(layer, "Default_Polygon"))) {
             BufferedImage imageBuffer = ImageIO.read(is);
-            assertNotBlank(
-                    "app-schema test getmap nested default geom feature chaining",
-                    imageBuffer,
-                    Color.WHITE);
+            assertNotBlank("app-schema test getmap nested default geom feature chaining", imageBuffer, Color.WHITE);
         }
     }
 
     @Test
     public void testWmsGetFeatureInfoDefaultGeometry() throws Exception {
         testWmsGetFeatureInfo(
-                STATION_FEATURE,
-                "Default_Point",
-                89,
-                114,
-                XPATH_STATION,
-                XPATH_STATION_FAKE_GEOM,
-                XPATH_STATION_GEOM);
+                STATION_FEATURE, "Default_Point", 89, 114, XPATH_STATION, XPATH_STATION_FAKE_GEOM, XPATH_STATION_GEOM);
     }
 
     @Test
@@ -406,22 +349,11 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
     }
 
     protected void testWmsGetFeatureInfo(
-            String layer,
-            String style,
-            int x,
-            int y,
-            String xpathFeature,
-            String xpathFakeGeom,
-            String xpathActualGeom)
+            String layer, String style, int x, int y, String xpathFeature, String xpathFakeGeom, String xpathActualGeom)
             throws Exception {
         XpathEngine xpathEngine = WFS11_XPATH_ENGINE;
-        String getFeatureUrl =
-                buildGetFeatureInfoUrl(
-                        layer.replace("${GML_PREFIX}", GML31_PREFIX),
-                        style,
-                        "application/vnd.ogc.gml/3.1.1",
-                        x,
-                        y);
+        String getFeatureUrl = buildGetFeatureInfoUrl(
+                layer.replace("${GML_PREFIX}", GML31_PREFIX), style, "application/vnd.ogc.gml/3.1.1", x, y);
         Document document = getAsDOM(getFeatureUrl);
         // print(document);
 
@@ -442,76 +374,73 @@ public class DefaultGeometryTest extends AbstractAppSchemaTestSupport {
     }
 
     public String buildGetFeatureUrl(String wfsVersion, String featureType) {
-        String getFeatureUrl =
-                new StringBuilder()
-                        .append("wfs?request=GetFeature")
-                        .append("&")
-                        .append("version=")
-                        .append(wfsVersion)
-                        .append("&")
-                        .append("typename=")
-                        .append(featureType)
-                        .toString();
+        String getFeatureUrl = new StringBuilder()
+                .append("wfs?request=GetFeature")
+                .append("&")
+                .append("version=")
+                .append(wfsVersion)
+                .append("&")
+                .append("typename=")
+                .append(featureType)
+                .toString();
 
         return getFeatureUrl;
     }
 
     public String buildGetMapUrl(String layers, String style) {
-        String getMapUrl =
-                new StringBuilder()
-                        .append("wms?request=GetMap")
-                        .append("&")
-                        .append("SRS=EPSG:4326")
-                        .append("&")
-                        .append("layers=")
-                        .append(layers)
-                        .append("&")
-                        .append("styles=")
-                        .append(style)
-                        .append("&")
-                        .append("BBOX=-10,-10,10,10")
-                        .append("&")
-                        .append("WIDTH=256")
-                        .append("&")
-                        .append("HEIGHT=256")
-                        .append("&")
-                        .append("FORMAT=image/png")
-                        .toString();
+        String getMapUrl = new StringBuilder()
+                .append("wms?request=GetMap")
+                .append("&")
+                .append("SRS=EPSG:4326")
+                .append("&")
+                .append("layers=")
+                .append(layers)
+                .append("&")
+                .append("styles=")
+                .append(style)
+                .append("&")
+                .append("BBOX=-10,-10,10,10")
+                .append("&")
+                .append("WIDTH=256")
+                .append("&")
+                .append("HEIGHT=256")
+                .append("&")
+                .append("FORMAT=image/png")
+                .toString();
 
         return getMapUrl;
     }
 
     public String buildGetFeatureInfoUrl(String layers, String style, String format, int x, int y) {
-        String getInfoUrl =
-                new StringBuilder()
-                        .append("wms?request=GetFeatureInfo")
-                        .append("&")
-                        .append("SRS=EPSG:4326")
-                        .append("&")
-                        .append("BBOX=-10,-10,10,10")
-                        .append("&")
-                        .append("STYLES=")
-                        .append(style)
-                        .append("&")
-                        .append("LAYERS=")
-                        .append(layers)
-                        .append("&")
-                        .append("QUERY_LAYERS=")
-                        .append(layers)
-                        .append("&")
-                        .append("X=")
-                        .append(x)
-                        .append("&")
-                        .append("Y=")
-                        .append(y)
-                        .append("&")
-                        .append("WIDTH=256")
-                        .append("&")
-                        .append("HEIGHT=256")
-                        .append("&")
-                        .append("INFO_FORMAT=")
-                        .append(format)
-                        .toString();
+        String getInfoUrl = new StringBuilder()
+                .append("wms?request=GetFeatureInfo")
+                .append("&")
+                .append("SRS=EPSG:4326")
+                .append("&")
+                .append("BBOX=-10,-10,10,10")
+                .append("&")
+                .append("STYLES=")
+                .append(style)
+                .append("&")
+                .append("LAYERS=")
+                .append(layers)
+                .append("&")
+                .append("QUERY_LAYERS=")
+                .append(layers)
+                .append("&")
+                .append("X=")
+                .append(x)
+                .append("&")
+                .append("Y=")
+                .append(y)
+                .append("&")
+                .append("WIDTH=256")
+                .append("&")
+                .append("HEIGHT=256")
+                .append("&")
+                .append("INFO_FORMAT=")
+                .append(format)
+                .toString();
 
         return getInfoUrl;
     }

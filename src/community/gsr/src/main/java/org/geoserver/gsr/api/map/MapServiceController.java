@@ -51,13 +51,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for the root Map Service endpoint */
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName}/MapServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MapServiceController extends AbstractGSRController {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(MapServiceController.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(MapServiceController.class);
 
     @Autowired
     public MapServiceController(@Qualifier("geoServer") GeoServer geoServer) {
@@ -84,15 +81,12 @@ public class MapServiceController extends AbstractGSRController {
         }
         layersInWorkspace.sort(LayerNameComparator.INSTANCE);
         MapServiceRoot root =
-                new MapServiceRoot(
-                        service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
+                new MapServiceRoot(service, workspaceName, Collections.unmodifiableList(layersInWorkspace));
         root.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "MapServer", "MapServer")));
-        root.getInterfaces()
-                .add(new Link(workspaceName + "/" + "MapServer?f=json&pretty=true", "REST"));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "MapServer", "MapServer")));
+        root.getInterfaces().add(new Link(workspaceName + "/" + "MapServer?f=json&pretty=true", "REST"));
         return root;
     }
 
@@ -100,32 +94,21 @@ public class MapServiceController extends AbstractGSRController {
             path = {"/{layerId}"},
             name = "MapServerGetLayer")
     @HTMLResponseBody(templateName = "maplayer.ftl", fileName = "maplayer.html")
-    public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId)
-            throws IOException {
+    public LayerOrTable getLayer(@PathVariable String workspaceName, @PathVariable Integer layerId) throws IOException {
         LayerOrTable layer = LayerDAO.find(catalog, workspaceName, layerId);
         layer.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "MapServer", "MapServer"),
-                                new Link(
-                                        workspaceName + "/" + "MapServer/" + layerId,
-                                        layerId + "")));
-        layer.getInterfaces()
-                .add(
-                        new Link(
-                                workspaceName + "/MapServer/" + layerId + "?f=json&pretty=true",
-                                "REST"));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "MapServer", "MapServer"),
+                        new Link(workspaceName + "/" + "MapServer/" + layerId, layerId + "")));
+        layer.getInterfaces().add(new Link(workspaceName + "/MapServer/" + layerId + "?f=json&pretty=true", "REST"));
         return layer;
     }
 
     @GetMapping(path = "/identify", name = "MapServerIdentify")
     public IdentifyServiceResult identify(
             @PathVariable String workspaceName,
-            @RequestParam(
-                            name = "geometryType",
-                            required = false,
-                            defaultValue = "esriGeometryPoint")
+            @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryPoint")
                     String geometryTypeName,
             @RequestParam(name = "geometry", required = false) String geometryText,
             @RequestParam(name = "sr", required = false) String srCode,
@@ -133,40 +116,32 @@ public class MapServiceController extends AbstractGSRController {
 
         IdentifyServiceResult result = new IdentifyServiceResult();
 
-        LayerDAO.find(catalog, workspaceName)
-                .layers
-                .forEach(
-                        layer -> {
-                            try {
-                                FeatureCollection collection =
-                                        FeatureDAO.getFeatureCollectionForLayer(
-                                                workspaceName,
-                                                layer.getId(),
-                                                geometryTypeName,
-                                                geometryText,
-                                                srCode,
-                                                srCode,
-                                                SpatialRelationship.INTERSECTS.getName(),
-                                                null,
-                                                null,
-                                                time,
-                                                null,
-                                                null,
-                                                null,
-                                                true,
-                                                null,
-                                                layer.layer);
+        LayerDAO.find(catalog, workspaceName).layers.forEach(layer -> {
+            try {
+                FeatureCollection collection = FeatureDAO.getFeatureCollectionForLayer(
+                        workspaceName,
+                        layer.getId(),
+                        geometryTypeName,
+                        geometryText,
+                        srCode,
+                        srCode,
+                        SpatialRelationship.INTERSECTS.getName(),
+                        null,
+                        null,
+                        time,
+                        null,
+                        null,
+                        null,
+                        true,
+                        null,
+                        layer.layer);
 
-                                result.getResults()
-                                        .addAll(IdentifyServiceResult.encode(collection, layer));
-                            } catch (IOException e) {
-                                LOGGER.log(
-                                        Level.FINE,
-                                        "Exception generated getting features for layer: " + layer,
-                                        e);
-                                throw new RuntimeException(e);
-                            }
-                        });
+                result.getResults().addAll(IdentifyServiceResult.encode(collection, layer));
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Exception generated getting features for layer: " + layer, e);
+                throw new RuntimeException(e);
+            }
+        });
 
         return result;
     }
@@ -192,36 +167,32 @@ public class MapServiceController extends AbstractGSRController {
             try {
                 LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, layerId);
                 if (layerOrTable != null && layerOrTable.layer != null) {
-                    FeatureTypeInfo featureTypeInfo =
-                            (FeatureTypeInfo) layerOrTable.layer.getResource();
+                    FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerOrTable.layer.getResource();
                     FeatureType featureType = featureTypeInfo.getFeatureType();
                     Filter filter = Filter.EXCLUDE;
 
                     for (PropertyDescriptor propertyDescriptor : featureType.getDescriptors()) {
                         if (searchFields == null
-                                || searchFields.contains(propertyDescriptor.getName().toString())) {
+                                || searchFields.contains(
+                                        propertyDescriptor.getName().toString())) {
                             Class<?> binding = propertyDescriptor.getType().getBinding();
                             if (binding.equals(String.class)) {
                                 if (contains) {
-                                    filter =
-                                            FILTERS.or(
-                                                    filter,
-                                                    FILTERS.like(
-                                                            FILTERS.property(
-                                                                    propertyDescriptor.getName()),
-                                                            "%" + searchText + "%",
-                                                            "%",
-                                                            "?",
-                                                            "\\"));
+                                    filter = FILTERS.or(
+                                            filter,
+                                            FILTERS.like(
+                                                    FILTERS.property(propertyDescriptor.getName()),
+                                                    "%" + searchText + "%",
+                                                    "%",
+                                                    "?",
+                                                    "\\"));
 
                                 } else {
-                                    filter =
-                                            FILTERS.or(
-                                                    filter,
-                                                    FILTERS.equal(
-                                                            FILTERS.property(
-                                                                    propertyDescriptor.getName()),
-                                                            FILTERS.literal(searchText)));
+                                    filter = FILTERS.or(
+                                            filter,
+                                            FILTERS.equal(
+                                                    FILTERS.property(propertyDescriptor.getName()),
+                                                    FILTERS.literal(searchText)));
                                 }
                             }
                         }
@@ -229,8 +200,7 @@ public class MapServiceController extends AbstractGSRController {
                     Query query = new Query(featureTypeInfo.getName(), filter);
                     FeatureSource source = featureTypeInfo.getFeatureSource(null, null);
                     FeatureCollection features = source.getFeatures(query);
-                    result.getResults()
-                            .addAll(IdentifyServiceResult.encode(features, layerOrTable));
+                    result.getResults().addAll(IdentifyServiceResult.encode(features, layerOrTable));
                 }
 
             } catch (IOException e) {

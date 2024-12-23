@@ -25,8 +25,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * This class extends the JSONBuilder to be able to write out geometric types. It is coded against
- * the draft 5 version of the spec on http://geojson.org
+ * This class extends the JSONBuilder to be able to write out geometric types. It is coded against the draft 5 version
+ * of the spec on http://geojson.org
  *
  * @author Chris Holmes, The Open Planning Project
  * @version $Id$
@@ -44,8 +44,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     /**
-     * Writes any geometry object. This class figures out which geometry representation to write and
-     * calls subclasses to actually write the object.
+     * Writes any geometry object. This class figures out which geometry representation to write and calls subclasses to
+     * actually write the object.
      *
      * @param geometry The geometry to be encoded
      * @return The JSONBuilder with the new geometry
@@ -85,8 +85,7 @@ public class GeoJSONBuilder extends JSONBuilder {
                     this.array();
 
                     for (int i = 0, n = geometry.getNumGeometries(); i < n; i++) {
-                        writeCoordinates(
-                                ((LineString) geometry.getGeometryN(i)).getCoordinateSequence());
+                        writeCoordinates(((LineString) geometry.getGeometryN(i)).getCoordinateSequence());
                     }
 
                     this.endArray();
@@ -123,9 +122,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     /**
-     * Helper method that encodes a {@see Point} coordinate to the JSON output. This method will
-     * respect the configured axis order. If activated, coordinates measures (M) will be encoded,
-     * otherwise measures will be ignored.
+     * Helper method that encodes a {@see Point} coordinate to the JSON output. This method will respect the configured
+     * axis order. If activated, coordinates measures (M) will be encoded, otherwise measures will be ignored.
      *
      * @param point the point whose coordinate will be encoded
      * @return the JSON builder instance, this allow chained calls
@@ -138,9 +136,9 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     /**
-     * Helper method that encodes a sequence of coordinates to the JSON output as an array. This
-     * method will respect the configured axis order. If activated, coordinates measures (M) will be
-     * encoded, otherwise measures will be ignored.
+     * Helper method that encodes a sequence of coordinates to the JSON output as an array. This method will respect the
+     * configured axis order. If activated, coordinates measures (M) will be encoded, otherwise measures will be
+     * ignored.
      *
      * @param coordinates the coordinates sequence that will be encoded
      * @return the JSON builder instance, this allow chained calls
@@ -160,12 +158,11 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     /**
-     * Helper method that will encode the provided coordinate values. The order the {@code X} and
-     * {@code Y} coordinates will be encoded will depend on the configured axis order.
+     * Helper method that will encode the provided coordinate values. The order the {@code X} and {@code Y} coordinates
+     * will be encoded will depend on the configured axis order.
      *
-     * <p>If both provided {@code Z} or {@code M} values are {@code NaN} they will not be encoded.
-     * If a valid {@code M} value was provided but {@code Z} is {@code NaN}, zero (0) will be used
-     * for {@code Z}.
+     * <p>If both provided {@code Z} or {@code M} values are {@code NaN} they will not be encoded. If a valid {@code M}
+     * value was provided but {@code Z} is {@code NaN}, zero (0) will be used for {@code Z}.
      *
      * @param x X ordinate
      * @param y X ordinate
@@ -201,9 +198,9 @@ public class GeoJSONBuilder extends JSONBuilder {
      *
      * <p>If the value is {@link Double#NaN} then the value will not be written.
      *
-     * <p>If the value is {@link Double#POSITIVE_INFINITY} or {@link Double#NEGATIVE_INFINITY} then
-     * it will be encoded as {@code "Infinity"} or {@code "-Infinity"}, respectively, this avoids a
-     * {@link JSONException} in case the value is infinite.
+     * <p>If the value is {@link Double#POSITIVE_INFINITY} or {@link Double#NEGATIVE_INFINITY} then it will be encoded
+     * as {@code "Infinity"} or {@code "-Infinity"}, respectively, this avoids a {@link JSONException} in case the value
+     * is infinite.
      *
      * @param value value to encode
      * @see #setNumberOfDecimals(int)
@@ -335,15 +332,14 @@ public class GeoJSONBuilder extends JSONBuilder {
         } else if (geometry instanceof GeometryCollection) {
             return MULTIGEOMETRY;
         } else {
-            throw new IllegalArgumentException(
-                    "Unable to determine geometry type " + geometry.getClass());
+            throw new IllegalArgumentException("Unable to determine geometry type " + geometry.getClass());
         }
     }
 
     /**
-     * Write a java.util.List out as a JSON Array. The values of the array will be converted using
-     * ike standard primitive conversions. If the list contains List or Map objects, they will be
-     * serialized as JSON Arrays and JSON Objects respectively.
+     * Write a java.util.List out as a JSON Array. The values of the array will be converted using ike standard
+     * primitive conversions. If the list contains List or Map objects, they will be serialized as JSON Arrays and JSON
+     * Objects respectively.
      *
      * @param list a java.util.List to be serialized as JSON Array
      */
@@ -356,9 +352,9 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     /**
-     * Write a java.util.Map out as a JSON Object. Keys are serialized using the toString method of
-     * the object and values are serialized using primitives conversions. If a value in the map is a
-     * List or Map object, it will be serialized as JSON Array or JSON Object respectively.
+     * Write a java.util.Map out as a JSON Object. Keys are serialized using the toString method of the object and
+     * values are serialized using primitives conversions. If a value in the map is a List or Map object, it will be
+     * serialized as JSON Array or JSON Object respectively.
      *
      * @param map a java.util.Map object to be serialized as a JSON Object
      */
@@ -374,9 +370,9 @@ public class GeoJSONBuilder extends JSONBuilder {
     /**
      * Overrides handling of specialized types.
      *
-     * <p>Overrides the encoding {@code java.util.Date} and its date/time/timestamp descendants, as
-     * well as {@code java.util.Calendar} instances as ISO 8601 strings. In addition handles
-     * rounding numbers to the specified number of decimal points.
+     * <p>Overrides the encoding {@code java.util.Date} and its date/time/timestamp descendants, as well as
+     * {@code java.util.Calendar} instances as ISO 8601 strings. In addition handles rounding numbers to the specified
+     * number of decimal points.
      *
      * <p>Overrides the handling of java.util.Map, java.util.List, and Geometry objects as well.
      *
@@ -402,8 +398,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     /**
-     * Set the axis order to assume all input will be provided in. Has no effect on geometries that
-     * have already been written.
+     * Set the axis order to assume all input will be provided in. Has no effect on geometries that have already been
+     * written.
      */
     public void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;

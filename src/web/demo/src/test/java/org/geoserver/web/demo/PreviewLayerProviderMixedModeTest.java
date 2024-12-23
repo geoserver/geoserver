@@ -26,15 +26,13 @@ public class PreviewLayerProviderMixedModeTest extends GeoServerWicketTestSuppor
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                "classpath:/org/geoserver/web/demo/ResourceAccessManagerContext.xml");
+        springContextLocations.add("classpath:/org/geoserver/web/demo/ResourceAccessManagerContext.xml");
     }
 
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     /** Add the users */
@@ -49,15 +47,13 @@ public class PreviewLayerProviderMixedModeTest extends GeoServerWicketTestSuppor
         TestResourceAccessManager tam =
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
-        FeatureTypeInfo buildings =
-                catalog.getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
+        FeatureTypeInfo buildings = catalog.getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
 
         // user in mixed mode
         tam.putLimits(
                 "cite_mixed",
                 buildings,
-                new VectorAccessLimits(
-                        CatalogMode.MIXED, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+                new VectorAccessLimits(CatalogMode.MIXED, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
     }
 
     @Test

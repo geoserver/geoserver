@@ -83,17 +83,15 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     private void logDoubleWrap(Object unwrapped, Object orig) {
-        String msg =
-                String.format("Tried to double secure: %s already securing %s", orig, unwrapped);
+        String msg = String.format("Tried to double secure: %s already securing %s", orig, unwrapped);
         LOGGER.warning(msg);
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link WMTSLayerInfo} to check.
      * @return The original object to be checked.
@@ -107,11 +105,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link WMSLayerInfo} to check.
      * @return The original object to be checked.
@@ -125,11 +122,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link LayerInfo} to check.
      * @return The original object to be checked.
@@ -143,11 +139,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link FeatureTypeInfo} to check.
      * @return The original object to be checked.
@@ -161,11 +156,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link CoverageStoreInfo} to check.
      * @return The original object to be checked.
@@ -179,11 +173,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link CoverageInfo} to check.
      * @return The original object to be checked.
@@ -197,11 +190,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link DataStoreInfo} to check.
      * @return The original object to be checked.
@@ -215,11 +207,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link WMSStoreInfo} to check.
      * @return The original object to be checked.
@@ -233,11 +224,10 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     }
 
     /**
-     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This
-     * method is only intended to log a situation where a Catalog Info object is being secured, but
-     * is already secured. Repeated calls to this will keep adding additional wrapper layers and may
-     * eventually cause a StackOverflowError. The log generated is merely to aid in finding the real
-     * issue, as opposed to masking it here.
+     * Generates a warning log if the Info object is already wrapped with a Secured decorator. This method is only
+     * intended to log a situation where a Catalog Info object is being secured, but is already secured. Repeated calls
+     * to this will keep adding additional wrapper layers and may eventually cause a StackOverflowError. The log
+     * generated is merely to aid in finding the real issue, as opposed to masking it here.
      *
      * @param object {@link WMTSStoreInfo} to check.
      * @return The original object to be checked.

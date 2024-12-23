@@ -65,8 +65,7 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testForce() throws Exception {
-        FeatureTypeInfo fti =
-                getCatalog().getFeatureTypeByName(MockData.BASIC_POLYGONS.getLocalPart());
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("EPSG:4269", fti.getSRS());
         assertEquals(ProjectionPolicy.FORCE_DECLARED, fti.getProjectionPolicy());
         SimpleFeatureCollection fc =
@@ -88,10 +87,8 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
 
         // test that geometry was actually reprojected
         Geometry g = (Geometry) f.getDefaultGeometryProperty().getValue();
-        assertFalse(
-                g.equalsExact(
-                        WKT.read(
-                                "POLYGON((500225 500025,500225 500075,500275 500050,500275 500025,500225 500025))")));
+        assertFalse(g.equalsExact(
+                WKT.read("POLYGON((500225 500025,500225 500075,500275 500050,500275 500025,500225 500025))")));
         assertEquals(CRS.decode("EPSG:4326"), f.getType().getCoordinateReferenceSystem());
     }
 
@@ -142,25 +139,18 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
         assertEquals("EPSG:3857", ci.getSRS());
 
         // now get the reader via the coverage info
-        GridCoverage2DReader r =
-                (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        CRS.decode("EPSG:3857"), r.getCoordinateReferenceSystem()));
+        GridCoverage2DReader r = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:3857"), r.getCoordinateReferenceSystem()));
 
         // and again without any hint
         r = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        CRS.decode("EPSG:3857"), r.getCoordinateReferenceSystem()));
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:3857"), r.getCoordinateReferenceSystem()));
 
         // get the reader straight: we should get back the native projection
         CoverageStoreInfo store = catalog.getCoverageStoreByName("usa");
         final ResourcePool rpool = catalog.getResourcePool();
         r = (GridCoverage2DReader) rpool.getGridCoverageReader(store, GeoTools.getDefaultHints());
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        CRS.decode("EPSG:4326"), r.getCoordinateReferenceSystem()));
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), r.getCoordinateReferenceSystem()));
     }
 
     @Test
@@ -184,9 +174,7 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
 
         // verify that feature source is configured to make queries using EPSG:4326 and not the
         // native EPSG:3004
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        requestCRS,
-                        gsFL.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem()));
+        assertTrue(CRS.equalsIgnoreMetadata(
+                requestCRS, gsFL.getSchema().getGeometryDescriptor().getCoordinateReferenceSystem()));
     }
 }

@@ -38,7 +38,8 @@ import org.vfny.geoserver.util.Requests;
 
 public class ContentSecurityPolicyTest {
 
-    @ClassRule public static TemporaryFolder folder = new TemporaryFolder();
+    @ClassRule
+    public static TemporaryFolder folder = new TemporaryFolder();
 
     private static XStreamPersisterFactory xpf = null;
 
@@ -58,8 +59,7 @@ public class ContentSecurityPolicyTest {
         when(geoServer.getSettings()).thenReturn(settings);
         dao = new CSPHeaderDAO(geoServer, dd, xpf);
         GeoServerExtensionsHelper.singleton("cspHeaderDAO", dao);
-        GeoServerExtensionsHelper.singleton(
-                "proxyfier", new ProxifyingURLMangler(geoServer), URLMangler.class);
+        GeoServerExtensionsHelper.singleton("proxyfier", new ProxifyingURLMangler(geoServer), URLMangler.class);
     }
 
     @AfterClass
@@ -390,11 +390,7 @@ public class ContentSecurityPolicyTest {
     }
 
     private static void assertHeader(
-            String expected,
-            String method,
-            String pathInfo,
-            String queryString,
-            Map<String, ?> parameters)
+            String expected, String method, String pathInfo, String queryString, Map<String, ?> parameters)
             throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest(method, "");
         request.setPathInfo(pathInfo);

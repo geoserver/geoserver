@@ -8,8 +8,8 @@ package org.geoserver.wms.web.data;
 import org.geoserver.web.ComponentInfo;
 
 /**
- * Extend this class in your extensions applicationContext to get instantiated in the
- * `AbstractStylePage` and get access to the style edit pages.
+ * Extend this class in your extensions applicationContext to get instantiated in the `AbstractStylePage` and get access
+ * to the style edit pages.
  */
 public class StyleComponentInfo extends ComponentInfo {
     public StyleComponentInfo(String id, AbstractStylePage parent) {}

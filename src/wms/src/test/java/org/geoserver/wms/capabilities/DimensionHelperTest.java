@@ -39,19 +39,18 @@ public class DimensionHelperTest {
     @Before
     public void setUp() {
 
-        dimensionHelper =
-                new DimensionHelper(Mode.WMS13, WMS.get()) {
+        dimensionHelper = new DimensionHelper(Mode.WMS13, WMS.get()) {
 
-                    @Override
-                    protected void element(String element, String content, Attributes atts) {
-                        // Capabilities_1_3_0_Translator.this.element(element, content, atts);
-                    }
+            @Override
+            protected void element(String element, String content, Attributes atts) {
+                // Capabilities_1_3_0_Translator.this.element(element, content, atts);
+            }
 
-                    @Override
-                    protected void element(String element, String content) {
-                        // Capabilities_1_3_0_Translator.this.element(element, content);
-                    }
-                };
+            @Override
+            protected void element(String element, String content) {
+                // Capabilities_1_3_0_Translator.this.element(element, content);
+            }
+        };
     }
 
     @Test
@@ -95,9 +94,8 @@ public class DimensionHelperTest {
     }
 
     /**
-     * The goal if this test is to verify behavior of a similar, but not complete, format provided
-     * by the standard libraries. The incomplete pattern does not support BC dates properly, so we
-     * will not test compliance here.
+     * The goal if this test is to verify behavior of a similar, but not complete, format provided by the standard
+     * libraries. The incomplete pattern does not support BC dates properly, so we will not test compliance here.
      *
      * <p>The random seed is not specified to allow various test runs broader coverage.
      */

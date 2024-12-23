@@ -29,8 +29,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 /**
  * Abstract base class for Excel WFS output format
  *
- * @author Sebastian Benthall, OpenGeo, seb@opengeo.org and Shane StClair, Axiom Consulting,
- *     shane@axiomalaska.com
+ * @author Sebastian Benthall, OpenGeo, seb@opengeo.org and Shane StClair, Axiom Consulting, shane@axiomalaska.com
  */
 public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
 
@@ -70,8 +69,7 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
 
     /** @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation) */
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
 
         // Create the workbook
@@ -79,8 +77,7 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
             CreationHelper helper = wb.getCreationHelper();
             ExcelCellStyles styles = new ExcelCellStyles(wb);
 
-            for (org.geotools.feature.FeatureCollection collection :
-                    featureCollection.getFeature()) {
+            for (org.geotools.feature.FeatureCollection collection : featureCollection.getFeature()) {
                 SimpleFeatureCollection fc = (SimpleFeatureCollection) collection;
 
                 // create the sheet for this feature collection
@@ -112,14 +109,8 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                         if (r == (rowLimit - 1) && i.hasNext()) {
                             // there are more features than rows available in this
                             // Excel format. write out a warning line and break
-                            RichTextString rowWarning =
-                                    helper.createRichTextString(
-                                            TRUNCATE_WARNING
-                                                    + ": ROWS "
-                                                    + r
-                                                    + " - "
-                                                    + fc.size()
-                                                    + " NOT SHOWN");
+                            RichTextString rowWarning = helper.createRichTextString(
+                                    TRUNCATE_WARNING + ": ROWS " + r + " - " + fc.size() + " NOT SHOWN");
                             cell.setCellValue(rowWarning);
                             cell.setCellStyle(styles.getWarningStyle());
                             break;
@@ -137,8 +128,7 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
-    private void writeFeature(
-            CreationHelper helper, ExcelCellStyles styles, Row row, SimpleFeature f) {
+    private void writeFeature(CreationHelper helper, ExcelCellStyles styles, Row row, SimpleFeature f) {
         for (int j = 0; j < f.getAttributeCount() && j < colLimit; j++) {
             Object att = f.getAttribute(j);
             if (att != null) {
@@ -160,11 +150,9 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                     // if string length > excel cell limit, truncate it and warn the
                     // user, otherwise excel workbook will be corrupted
                     if (stringVal.length() > CELL_CHAR_LIMIT) {
-                        stringVal =
-                                TRUNCATE_WARNING
-                                        + " "
-                                        + stringVal.substring(
-                                                0, CELL_CHAR_LIMIT - TRUNCATE_WARNING.length() - 1);
+                        stringVal = TRUNCATE_WARNING
+                                + " "
+                                + stringVal.substring(0, CELL_CHAR_LIMIT - TRUNCATE_WARNING.length() - 1);
                         cell.setCellStyle(styles.getWarningStyle());
                     }
                     cell.setCellValue(helper.createRichTextString(stringVal));

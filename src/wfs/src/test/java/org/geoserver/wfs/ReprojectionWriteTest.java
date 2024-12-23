@@ -28,8 +28,7 @@ public class ReprojectionWriteTest extends WFSTestSupport {
     private static final String TARGET_CRS_CODE = "EPSG:900913";
     public static QName NULL_GEOMETRIES =
             new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
-    public static QName GOOGLE =
-            new QName(SystemTestData.CITE_URI, "GoogleFeatures", SystemTestData.CITE_PREFIX);
+    public static QName GOOGLE = new QName(SystemTestData.CITE_URI, "GoogleFeatures", SystemTestData.CITE_PREFIX);
     MathTransform tx;
 
     @Before
@@ -44,8 +43,7 @@ public class ReprojectionWriteTest extends WFSTestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
-        dataDirectory.addVectorLayer(
-                NULL_GEOMETRIES, Collections.emptyMap(), getClass(), getCatalog());
+        dataDirectory.addVectorLayer(NULL_GEOMETRIES, Collections.emptyMap(), getClass(), getCatalog());
         Map<LayerProperty, Object> extra = new HashMap<>();
         extra.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         extra.put(LayerProperty.SRS, 900913);
@@ -55,8 +53,7 @@ public class ReprojectionWriteTest extends WFSTestSupport {
     @Test
     public void testInsertSrsName() throws Exception {
         String q =
-                "wfs?request=getfeature&service=wfs&version=1.0.0&typeName="
-                        + SystemTestData.POLYGONS.getLocalPart();
+                "wfs?request=getfeature&service=wfs&version=1.0.0&typeName=" + SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM(q);
 
         Element polygonProperty = getFirstElementByTagName(dom, "cgf:polygonProperty");
@@ -66,37 +63,35 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         double[] cr = new double[c.length];
         tx.transform(c, 0, cr, 0, cr.length / 2);
 
-        String xml =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + " xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + " xmlns:cgf=\""
-                        + SystemTestData.CGF_URI
-                        + "\">"
-                        + "<wfs:Insert handle=\"insert-1\" srsName=\""
-                        + TARGET_CRS_CODE
-                        + "\">"
-                        + " <cgf:Polygons>"
-                        + "<cgf:polygonProperty>"
-                        + "<gml:Polygon >"
-                        + "<gml:outerBoundaryIs>"
-                        + "<gml:LinearRing>"
-                        + "<gml:coordinates>";
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                + " xmlns:cgf=\""
+                + SystemTestData.CGF_URI
+                + "\">"
+                + "<wfs:Insert handle=\"insert-1\" srsName=\""
+                + TARGET_CRS_CODE
+                + "\">"
+                + " <cgf:Polygons>"
+                + "<cgf:polygonProperty>"
+                + "<gml:Polygon >"
+                + "<gml:outerBoundaryIs>"
+                + "<gml:LinearRing>"
+                + "<gml:coordinates>";
         for (int i = 0; i < cr.length; ) {
             xml += cr[i++] + "," + cr[i++];
             if (i < cr.length - 1) {
                 xml += " ";
             }
         }
-        xml +=
-                "</gml:coordinates>"
-                        + "</gml:LinearRing>"
-                        + "</gml:outerBoundaryIs>"
-                        + "</gml:Polygon>"
-                        + "</cgf:polygonProperty>"
-                        + " </cgf:Polygons>"
-                        + "</wfs:Insert>"
-                        + "</wfs:Transaction>";
+        xml += "</gml:coordinates>"
+                + "</gml:LinearRing>"
+                + "</gml:outerBoundaryIs>"
+                + "</gml:Polygon>"
+                + "</cgf:polygonProperty>"
+                + " </cgf:Polygons>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
         postAsDOM("wfs", xml);
 
         dom = getAsDOM(q);
@@ -104,17 +99,13 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         assertEquals(
                 2,
                 dom.getElementsByTagName(
-                                SystemTestData.POLYGONS.getPrefix()
-                                        + ":"
-                                        + SystemTestData.POLYGONS.getLocalPart())
+                                SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart())
                         .getLength());
     }
 
     @Test
     public void testInsertGeomSrsName() throws Exception {
-        String q =
-                "wfs?request=getfeature&service=wfs&version=1.0&typeName="
-                        + SystemTestData.POLYGONS.getLocalPart();
+        String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + SystemTestData.POLYGONS.getLocalPart();
         Document dom = getAsDOM(q);
 
         Element polygonProperty = getFirstElementByTagName(dom, "cgf:polygonProperty");
@@ -124,37 +115,35 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         double[] cr = new double[c.length];
         tx.transform(c, 0, cr, 0, cr.length / 2);
 
-        String xml =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + " xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + " xmlns:cgf=\""
-                        + SystemTestData.CGF_URI
-                        + "\">"
-                        + "<wfs:Insert handle=\"insert-1\">"
-                        + " <cgf:Polygons>"
-                        + "<cgf:polygonProperty>"
-                        + "<gml:Polygon srsName=\""
-                        + TARGET_CRS_CODE
-                        + "\">"
-                        + "<gml:outerBoundaryIs>"
-                        + "<gml:LinearRing>"
-                        + "<gml:coordinates>";
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                + " xmlns:cgf=\""
+                + SystemTestData.CGF_URI
+                + "\">"
+                + "<wfs:Insert handle=\"insert-1\">"
+                + " <cgf:Polygons>"
+                + "<cgf:polygonProperty>"
+                + "<gml:Polygon srsName=\""
+                + TARGET_CRS_CODE
+                + "\">"
+                + "<gml:outerBoundaryIs>"
+                + "<gml:LinearRing>"
+                + "<gml:coordinates>";
         for (int i = 0; i < cr.length; ) {
             xml += cr[i++] + "," + cr[i++];
             if (i < cr.length - 1) {
                 xml += " ";
             }
         }
-        xml +=
-                "</gml:coordinates>"
-                        + "</gml:LinearRing>"
-                        + "</gml:outerBoundaryIs>"
-                        + "</gml:Polygon>"
-                        + "</cgf:polygonProperty>"
-                        + " </cgf:Polygons>"
-                        + "</wfs:Insert>"
-                        + "</wfs:Transaction>";
+        xml += "</gml:coordinates>"
+                + "</gml:LinearRing>"
+                + "</gml:outerBoundaryIs>"
+                + "</gml:Polygon>"
+                + "</cgf:polygonProperty>"
+                + " </cgf:Polygons>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
         postAsDOM("wfs", xml);
 
         dom = getAsDOM(q);
@@ -162,17 +151,13 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         assertEquals(
                 2,
                 dom.getElementsByTagName(
-                                SystemTestData.POLYGONS.getPrefix()
-                                        + ":"
-                                        + SystemTestData.POLYGONS.getLocalPart())
+                                SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart())
                         .getLength());
     }
 
     @Test
     public void testUpdate() throws Exception {
-        String q =
-                "wfs?request=getfeature&service=wfs&version=1.0&typeName="
-                        + SystemTestData.POLYGONS.getLocalPart();
+        String q = "wfs?request=getfeature&service=wfs&version=1.0&typeName=" + SystemTestData.POLYGONS.getLocalPart();
 
         Document dom = getAsDOM(q);
 
@@ -184,43 +169,41 @@ public class ReprojectionWriteTest extends WFSTestSupport {
         tx.transform(c, 0, cr, 0, cr.length / 2);
 
         // perform an update
-        String xml =
-                "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
-                        + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\"> "
-                        + "<wfs:Update typeName=\"cgf:Polygons\" > "
-                        + "<wfs:Property>"
-                        + "<wfs:Name>polygonProperty</wfs:Name>"
-                        + "<wfs:Value>"
-                        + "<gml:Polygon srsName=\""
-                        + TARGET_CRS_CODE
-                        + "\">"
-                        + "<gml:outerBoundaryIs>"
-                        + "<gml:LinearRing>"
-                        + "<gml:coordinates>";
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Update typeName=\"cgf:Polygons\" > "
+                + "<wfs:Property>"
+                + "<wfs:Name>polygonProperty</wfs:Name>"
+                + "<wfs:Value>"
+                + "<gml:Polygon srsName=\""
+                + TARGET_CRS_CODE
+                + "\">"
+                + "<gml:outerBoundaryIs>"
+                + "<gml:LinearRing>"
+                + "<gml:coordinates>";
         for (int i = 0; i < cr.length; ) {
             xml += cr[i++] + "," + cr[i++];
             if (i < cr.length - 1) {
                 xml += " ";
             }
         }
-        xml +=
-                "</gml:coordinates>"
-                        + "</gml:LinearRing>"
-                        + "</gml:outerBoundaryIs>"
-                        + "</gml:Polygon>"
-                        + "</wfs:Value>"
-                        + "</wfs:Property>"
-                        + "<ogc:Filter>"
-                        + "<ogc:PropertyIsEqualTo>"
-                        + "<ogc:PropertyName>id</ogc:PropertyName>"
-                        + "<ogc:Literal>t0002</ogc:Literal>"
-                        + "</ogc:PropertyIsEqualTo>"
-                        + "</ogc:Filter>"
-                        + "</wfs:Update>"
-                        + "</wfs:Transaction>";
+        xml += "</gml:coordinates>"
+                + "</gml:LinearRing>"
+                + "</gml:outerBoundaryIs>"
+                + "</gml:Polygon>"
+                + "</wfs:Value>"
+                + "</wfs:Property>"
+                + "<ogc:Filter>"
+                + "<ogc:PropertyIsEqualTo>"
+                + "<ogc:PropertyName>id</ogc:PropertyName>"
+                + "<ogc:Literal>t0002</ogc:Literal>"
+                + "</ogc:PropertyIsEqualTo>"
+                + "</ogc:Filter>"
+                + "</wfs:Update>"
+                + "</wfs:Transaction>";
 
         dom = postAsDOM("wfs", xml);
 

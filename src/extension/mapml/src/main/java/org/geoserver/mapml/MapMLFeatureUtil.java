@@ -117,8 +117,7 @@ public class MapMLFeatureUtil {
             LOGGER.log(Level.FINEST, MAPML_FEATURE_HEAD_FTL + " Template not found", e);
         }
         try {
-            if (!mapMLMapTemplate.isTemplateEmpty(
-                    fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
+            if (!mapMLMapTemplate.isTemplateEmpty(fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
                 hasTemplate = true;
             }
         } catch (TemplateNotFoundException e) {
@@ -196,19 +195,14 @@ public class MapMLFeatureUtil {
                 // convert feature to xml
                 if (styles != null) {
                     List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
-                    Optional<Feature> f =
-                            featureBuilder.buildFeature(
-                                    feature,
-                                    fCaptionTemplate,
-                                    applicableStyles,
-                                    interpolatedOptional);
+                    Optional<Feature> f = featureBuilder.buildFeature(
+                            feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
                     // feature will be skipped if geometry incompatible with style symbolizer
                     f.ifPresent(features::add);
                 } else {
                     // WFS GETFEATURE request with no styles
                     Optional<Feature> f =
-                            featureBuilder.buildFeature(
-                                    feature, fCaptionTemplate, null, interpolatedOptional);
+                            featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
                     f.ifPresent(features::add);
                 }
             }
@@ -216,20 +210,18 @@ public class MapMLFeatureUtil {
         return mapml;
     }
 
-    private static Optional<Mapml> getInterpolatedFromTemplate(
-            SimpleFeatureCollection fc, SimpleFeature feature) {
+    private static Optional<Mapml> getInterpolatedFromTemplate(SimpleFeatureCollection fc, SimpleFeature feature) {
         String templateOutput = "Error parsing template output";
         try {
             templateOutput = mapMLMapTemplate.features(fc.getSchema(), feature);
             Mapml out = encoder.decode(new StringReader(templateOutput));
             return Optional.of(out);
         } catch (Exception e) {
-            LOGGER.info(
-                    "Error unmarshalling template output for MapML features "
-                            + "Output from template: "
-                            + templateOutput
-                            + " Error: "
-                            + e.getLocalizedMessage());
+            LOGGER.info("Error unmarshalling template output for MapML features "
+                    + "Output from template: "
+                    + templateOutput
+                    + " Error: "
+                    + e.getLocalizedMessage());
             throw new ServiceException(e, templateOutput);
         }
     }
@@ -253,8 +245,7 @@ public class MapMLFeatureUtil {
         }
     }
 
-    private static Optional<Mapml> getInterpolatedStylesFromTemplate(SimpleFeatureCollection fc)
-            throws IOException {
+    private static Optional<Mapml> getInterpolatedStylesFromTemplate(SimpleFeatureCollection fc) throws IOException {
         String templateOutput = mapMLMapTemplate.featureHead(fc.getSchema());
         StringReader reader = new StringReader(templateOutput);
         try {
@@ -273,8 +264,7 @@ public class MapMLFeatureUtil {
      * @return an empty MapML document
      * @throws IOException if an error occurs while producing the MapML document
      */
-    public static Mapml getEmptyMapML(LayerInfo layerInfo, CoordinateReferenceSystem requestCRS)
-            throws IOException {
+    public static Mapml getEmptyMapML(LayerInfo layerInfo, CoordinateReferenceSystem requestCRS) throws IOException {
 
         ResourceInfo resourceInfo = layerInfo.getResource();
         MetadataMap layerMeta = resourceInfo.getMetadata();
@@ -327,8 +317,7 @@ public class MapMLFeatureUtil {
      * @param styles the styles
      * @return the applicable styles
      */
-    private static List<MapMLStyle> getApplicableStyles(
-            SimpleFeature sf, Map<String, MapMLStyle> styles) {
+    private static List<MapMLStyle> getApplicableStyles(SimpleFeature sf, Map<String, MapMLStyle> styles) {
         List<MapMLStyle> applicableStyles = new ArrayList<>();
         for (MapMLStyle style : styles.values()) {
             if (!style.isElseFilter()
@@ -386,8 +375,7 @@ public class MapMLFeatureUtil {
      * @param layerInfo metadata for the feature class
      * @return
      */
-    private static Set<Meta> deduceProjectionAndExtent(
-            CoordinateReferenceSystem requestCRS, LayerInfo layerInfo) {
+    private static Set<Meta> deduceProjectionAndExtent(CoordinateReferenceSystem requestCRS, LayerInfo layerInfo) {
         Set<Meta> metas = new HashSet<>();
         TiledCRSParams tcrs = null;
         CoordinateReferenceSystem sourceCRS = layerInfo.getResource().getCRS();
@@ -423,8 +411,7 @@ public class MapMLFeatureUtil {
             // "MapML" CRS 'authority'
             // so that nobody can be surprised by x,y axis order in WGS84 data
             crs = (responseCRS instanceof GeodeticCRS) ? "gcrs" : "pcrs";
-            projection.setContent(
-                    crs.equalsIgnoreCase("gcrs") ? cite + ":" + responseCRSCode : responseCRSCode);
+            projection.setContent(crs.equalsIgnoreCase("gcrs") ? cite + ":" + responseCRSCode : responseCRSCode);
             coordinateSystem.setContent(crs);
         }
         extent.setContent(getExtent(layerInfo, responseCRSCode, responseCRS));
@@ -466,8 +453,7 @@ public class MapMLFeatureUtil {
                 minNorthing = re.getMinY();
                 maxEasting = re.getMaxX();
                 maxNorthing = re.getMaxY();
-                extent =
-                        String.format(pcrsFormat, minEasting, maxNorthing, maxEasting, minNorthing);
+                extent = String.format(pcrsFormat, minEasting, maxNorthing, maxEasting, minNorthing);
             }
         } catch (Exception e) {
             if (tcrs != null) {
@@ -482,9 +468,7 @@ public class MapMLFeatureUtil {
                     minNorthing = tcrs.getBounds().getMin().y;
                     maxEasting = tcrs.getBounds().getMax().x;
                     maxNorthing = tcrs.getBounds().getMax().y;
-                    extent =
-                            String.format(
-                                    pcrsFormat, minEasting, maxNorthing, maxEasting, minNorthing);
+                    extent = String.format(pcrsFormat, minEasting, maxNorthing, maxEasting, minNorthing);
                 }
             }
         }
@@ -492,37 +476,29 @@ public class MapMLFeatureUtil {
     }
 
     /**
-     * Format TCRS as alternate projection links for use in a WFS response, allowing projection
-     * negotiation
+     * Format TCRS as alternate projection links for use in a WFS response, allowing projection negotiation
      *
      * @param base the base URL
      * @param path the path to the service
      * @param query the query parameters
      * @return list of link elements with rel=alternate projection=proj-name
      */
-    public static List<Link> alternateProjections(
-            String base, String path, Map<String, Object> query) {
+    public static List<Link> alternateProjections(String base, String path, Map<String, Object> query) {
         ArrayList<Link> links = new ArrayList<>();
         Set<String> projections = TiledCRSConstants.tiledCRSBySrsName.keySet();
-        projections.forEach(
-                (String proj) -> {
-                    Link l = new Link();
-                    TiledCRSParams projection = TiledCRSConstants.lookupTCRSParams(proj);
-                    l.setProjection(projection.getName());
-                    l.setRel(RelType.ALTERNATE);
-                    query.put("srsName", "MapML:" + projection.getName());
-                    HashMap<String, String> kvp = new HashMap<>(query.size());
-                    query.keySet()
-                            .forEach(
-                                    key -> {
-                                        kvp.put(key, query.getOrDefault(key, "").toString());
-                                    });
-                    l.setHref(
-                            ResponseUtils.urlDecode(
-                                    ResponseUtils.buildURL(
-                                            base, path, kvp, URLMangler.URLType.SERVICE)));
-                    links.add(l);
-                });
+        projections.forEach((String proj) -> {
+            Link l = new Link();
+            TiledCRSParams projection = TiledCRSConstants.lookupTCRSParams(proj);
+            l.setProjection(projection.getName());
+            l.setRel(RelType.ALTERNATE);
+            query.put("srsName", "MapML:" + projection.getName());
+            HashMap<String, String> kvp = new HashMap<>(query.size());
+            query.keySet().forEach(key -> {
+                kvp.put(key, query.getOrDefault(key, "").toString());
+            });
+            l.setHref(ResponseUtils.urlDecode(ResponseUtils.buildURL(base, path, kvp, URLMangler.URLType.SERVICE)));
+            links.add(l);
+        });
         return links;
     }
 

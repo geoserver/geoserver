@@ -72,8 +72,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("form:policies:add");
         assertPolicyPage(new CSPPolicy(), 0);
         tester.newFormTester("form").setValue("name", name).submit("save");
-        tester.assertErrorMessages(
-                "Another policy with the same name already exists: '" + name + "'");
+        tester.assertErrorMessages("Another policy with the same name already exists: '" + name + "'");
     }
 
     @Test
@@ -90,14 +89,12 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     public void testAddRuleDuplicateName() throws Exception {
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
         String name = expectedPolicy.getRules().get(0).getName();
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
         tester.clickLink("form:rules:add");
         assertRulePage(new CSPRule());
         tester.newFormTester("form").setValue("name", name).submit("save");
-        tester.assertErrorMessages(
-                "Another rule with the same name already exists: '" + name + "'");
+        tester.assertErrorMessages("Another rule with the same name already exists: '" + name + "'");
     }
 
     @Test
@@ -134,8 +131,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     public void testEditPolicyFieldsAndSave() throws Exception {
         // verify that policy changes are saved
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
         expectedPolicy.setDescription("foo");
         expectedPolicy.setEnabled(false);
@@ -153,8 +149,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     public void testEditPolicyFieldsAndCancel() throws Exception {
         // verify that policy changes are discarded
         CSPPolicy expectedPolicy = expectedConfig.getPolicies().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
         tester.newFormTester("form")
                 .setValue("description", "foo")
@@ -171,8 +166,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         // verify that rule changes are saved
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
         CSPRule expectedRule = expectedPolicy.getRules().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
         tester.clickLink("form:rules:table:listContainer:items:1:itemProperties:3:component:link");
         assertRulePage(expectedRule);
@@ -199,8 +193,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         // verify that rule changes are discarded
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
         CSPRule expectedRule = expectedPolicy.getRules().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
         tester.clickLink("form:rules:table:listContainer:items:1:itemProperties:3:component:link");
         assertRulePage(expectedRule);
@@ -221,8 +214,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testMovePolicyDown() throws Exception {
         // move the first policy down
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:1:component:down:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:1:component:down:link");
         this.expectedConfig.getPolicies().add(this.expectedConfig.getPolicies().remove(0));
         assertConfigPage(this.expectedConfig, this.expectedConfig.getPolicies().size());
         tester.newFormTester("form").submit("save");
@@ -233,8 +225,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testMovePolicyUp() throws Exception {
         // move the second policy up
-        tester.clickLink(
-                "form:policies:table:listContainer:items:2:itemProperties:1:component:up:link");
+        tester.clickLink("form:policies:table:listContainer:items:2:itemProperties:1:component:up:link");
         this.expectedConfig.getPolicies().add(this.expectedConfig.getPolicies().remove(0));
         assertConfigPage(this.expectedConfig, this.expectedConfig.getPolicies().size());
         tester.newFormTester("form").submit("save");
@@ -245,8 +236,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testRemovePolicy() throws Exception {
         // remove the first policy
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:5:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:5:component:link");
         this.expectedConfig.getPolicies().remove(0);
         assertConfigPage(this.expectedConfig, this.expectedConfig.getPolicies().size() + 1);
         tester.newFormTester("form").submit("save");
@@ -258,11 +248,9 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     public void testMoveRuleDown() throws Exception {
         // move the first rule down
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
-        tester.clickLink(
-                "form:rules:table:listContainer:items:1:itemProperties:1:component:down:link");
+        tester.clickLink("form:rules:table:listContainer:items:1:itemProperties:1:component:down:link");
         expectedPolicy.getRules().add(0, expectedPolicy.getRules().remove(1));
         assertPolicyPage(expectedPolicy, expectedPolicy.getRules().size());
         tester.newFormTester("form").submit("save");
@@ -276,11 +264,9 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     public void testMoveRuleUp() throws Exception {
         // move the second rule up
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
-        tester.clickLink(
-                "form:rules:table:listContainer:items:2:itemProperties:1:component:up:link");
+        tester.clickLink("form:rules:table:listContainer:items:2:itemProperties:1:component:up:link");
         expectedPolicy.getRules().add(0, expectedPolicy.getRules().remove(1));
         assertPolicyPage(expectedPolicy, expectedPolicy.getRules().size());
         tester.newFormTester("form").submit("save");
@@ -294,8 +280,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     public void testRemoveRule() throws Exception {
         // remove the first rule
         CSPPolicy expectedPolicy = this.expectedConfig.getPolicies().get(0);
-        tester.clickLink(
-                "form:policies:table:listContainer:items:1:itemProperties:3:component:link");
+        tester.clickLink("form:policies:table:listContainer:items:1:itemProperties:3:component:link");
         assertPolicyPage(expectedPolicy, 0);
         tester.clickLink("form:rules:table:listContainer:items:1:itemProperties:7:component:link");
         expectedPolicy.getRules().remove(0);
@@ -385,15 +370,13 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:frameAncestors", frameAncestors);
         tester.assertComponent("form:policies", CSPPolicyPanel.class);
         tester.assertComponent("form:policies:add", AjaxLink.class);
-        Component component =
-                tester.getComponentFromLastRenderedPage("form:policies:table:listContainer:items");
+        Component component = tester.getComponentFromLastRenderedPage("form:policies:table:listContainer:items");
         assertThat(component, instanceOf(MarkupContainer.class));
         assertEquals(policies.size(), ((MarkupContainer) component).size());
         for (int i = 1; i <= policies.size(); i++) {
             CSPPolicy policy = policies.get(i - 1);
             // new list items are created every time the table is rendered
-            String path =
-                    "form:policies:table:listContainer:items:" + (i + offset) + ":itemProperties:";
+            String path = "form:policies:table:listContainer:items:" + (i + offset) + ":itemProperties:";
             tester.assertLabel(path + "0:component", Integer.toString(i));
             if (policy.isEnabled()) {
                 component = tester.getComponentFromLastRenderedPage(path + "2:component");
@@ -413,12 +396,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     private static void assertPolicyPage(CSPPolicy policy, int offset) {
-        assertPolicyPage(
-                policy.getName(),
-                policy.getDescription(),
-                policy.isEnabled(),
-                policy.getRules(),
-                offset);
+        assertPolicyPage(policy.getName(), policy.getDescription(), policy.isEnabled(), policy.getRules(), offset);
     }
 
     private static void assertPolicyPage(
@@ -435,15 +413,13 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:enabled", enabled);
         tester.assertComponent("form:rules", CSPRulePanel.class);
         tester.assertComponent("form:rules:add", AjaxLink.class);
-        Component component =
-                tester.getComponentFromLastRenderedPage("form:rules:table:listContainer:items");
+        Component component = tester.getComponentFromLastRenderedPage("form:rules:table:listContainer:items");
         assertThat(component, instanceOf(MarkupContainer.class));
         assertEquals(rules.size(), ((MarkupContainer) component).size());
         for (int i = 1; i <= rules.size(); i++) {
             CSPRule rule = rules.get(i - 1);
             // new list items are created every time the table is rendered
-            String path =
-                    "form:rules:table:listContainer:items:" + (i + offset) + ":itemProperties:";
+            String path = "form:rules:table:listContainer:items:" + (i + offset) + ":itemProperties:";
             tester.assertLabel(path + "0:component", Integer.toString(i));
             if (rule.isEnabled()) {
                 component = tester.getComponentFromLastRenderedPage(path + "2:component");
@@ -456,9 +432,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
             assertThat(component, instanceOf(Icon.class));
             assertEquals(
                     rule.getDescription(),
-                    tester.getTagById(component.getMarkupId())
-                            .getChild("img")
-                            .getAttribute("title"));
+                    tester.getTagById(component.getMarkupId()).getChild("img").getAttribute("title"));
             tester.assertModelValue(path + "5:component", rule.getFilter());
             tester.assertModelValue(path + "6:component", rule.getDirectives());
         }
@@ -467,12 +441,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     private static void assertRulePage(CSPRule rule) {
-        assertRulePage(
-                rule.getName(),
-                rule.getDescription(),
-                rule.isEnabled(),
-                rule.getFilter(),
-                rule.getDirectives());
+        assertRulePage(rule.getName(), rule.getDescription(), rule.isEnabled(), rule.getFilter(), rule.getDirectives());
     }
 
     private static void assertRulePage(
@@ -530,11 +499,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     private static void assertPolicy(
-            CSPPolicy actualPolicy,
-            String name,
-            String description,
-            boolean enabled,
-            List<CSPRule> rules) {
+            CSPPolicy actualPolicy, String name, String description, boolean enabled, List<CSPRule> rules) {
         assertEquals(name, actualPolicy.getName());
         assertEquals(description, actualPolicy.getDescription());
         assertEquals(enabled, actualPolicy.isEnabled());
@@ -555,12 +520,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
     }
 
     private static void assertRule(
-            CSPRule actualRule,
-            String name,
-            String description,
-            boolean enabled,
-            String filter,
-            String directives) {
+            CSPRule actualRule, String name, String description, boolean enabled, String filter, String directives) {
         assertEquals(name, actualRule.getName());
         assertEquals(description, actualRule.getDescription());
         assertEquals(enabled, actualRule.isEnabled());

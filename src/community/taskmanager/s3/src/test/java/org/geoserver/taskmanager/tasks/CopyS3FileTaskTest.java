@@ -63,19 +63,26 @@ public class CopyS3FileTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_SOURCE_PATH = "source-target";
     private static final String ATT_TARGET_PATH = "target-taret";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     private Configuration config;
 
@@ -84,14 +91,11 @@ public class CopyS3FileTaskTest extends AbstractTaskManagerTest {
     @Before
     public void setupBatch() throws Exception {
         try {
-            FileService sourceFileService =
-                    fileServices.get(S3FileServiceImpl.name(SOURCE_ALIAS, SOURCE_BUCKET));
+            FileService sourceFileService = fileServices.get(S3FileServiceImpl.name(SOURCE_ALIAS, SOURCE_BUCKET));
             Assume.assumeNotNull(sourceFileService);
-            Assume.assumeTrue(
-                    "File exists on s3 service", sourceFileService.checkFileExists(SOURCE_FILE));
+            Assume.assumeTrue("File exists on s3 service", sourceFileService.checkFileExists(SOURCE_FILE));
 
-            FileService targetFileService =
-                    fileServices.get(S3FileServiceImpl.name(TARGET_ALIAS, TARGET_BUCKET));
+            FileService targetFileService = fileServices.get(S3FileServiceImpl.name(TARGET_ALIAS, TARGET_BUCKET));
             Assume.assumeNotNull(targetFileService);
 
             // copy old version
@@ -112,14 +116,10 @@ public class CopyS3FileTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(CopyFileTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyFileTaskTypeImpl.PARAM_SOURCE_SERVICE, ATT_SOURCE_SERVICE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyFileTaskTypeImpl.PARAM_TARGET_SERVICE, ATT_TARGET_SERVICE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyFileTaskTypeImpl.PARAM_SOURCE_PATH, ATT_SOURCE_PATH);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyFileTaskTypeImpl.PARAM_TARGET_PATH, ATT_TARGET_PATH);
+        dataUtil.setTaskParameterToAttribute(task1, CopyFileTaskTypeImpl.PARAM_SOURCE_SERVICE, ATT_SOURCE_SERVICE);
+        dataUtil.setTaskParameterToAttribute(task1, CopyFileTaskTypeImpl.PARAM_TARGET_SERVICE, ATT_TARGET_SERVICE);
+        dataUtil.setTaskParameterToAttribute(task1, CopyFileTaskTypeImpl.PARAM_SOURCE_PATH, ATT_SOURCE_PATH);
+        dataUtil.setTaskParameterToAttribute(task1, CopyFileTaskTypeImpl.PARAM_TARGET_PATH, ATT_TARGET_PATH);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -152,13 +152,14 @@ public class CopyS3FileTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_TARGET_PATH, TARGET_FILE_PATTERN);
         config = dao.save(config);
 
-        FileService fileService =
-                fileServices.get(S3FileServiceImpl.name(TARGET_ALIAS, TARGET_BUCKET));
+        FileService fileService = fileServices.get(S3FileServiceImpl.name(TARGET_ALIAS, TARGET_BUCKET));
         assertTrue(fileService.checkFileExists(TARGET_FILE_OLD));
         assertFalse(fileService.checkFileExists(TARGET_FILE_NEW));
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -189,13 +190,14 @@ public class CopyS3FileTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        FileService fileService =
-                fileServices.get(S3FileServiceImpl.name(TARGET_ALIAS, TARGET_BUCKET));
+        FileService fileService = fileServices.get(S3FileServiceImpl.name(TARGET_ALIAS, TARGET_BUCKET));
         assertTrue(fileService.checkFileExists(TARGET_FILE_OLD));
         assertFalse(fileService.checkFileExists(TARGET_FILE_NEW));
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

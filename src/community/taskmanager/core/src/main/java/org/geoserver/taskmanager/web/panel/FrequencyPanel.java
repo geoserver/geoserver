@@ -64,8 +64,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                 int hour = Integer.parseInt(matcher.group(2));
                 if (minutes <= 60 && hour < 24) {
                     typeModel.setObject(Type.DAILY);
-                    timeModel.setObject(
-                            String.format("%02d", hour) + ":" + String.format("%02d", minutes));
+                    timeModel.setObject(String.format("%02d", hour) + ":" + String.format("%02d", minutes));
                 }
             } else {
                 matcher = FrequencyUtil.WEEKLY_PATTERN.matcher(model.getObject());
@@ -75,8 +74,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                     DayOfWeek day = FrequencyUtil.findDayOfWeek(matcher.group(3));
                     if (minutes <= 60 && hour < 24 && day != null) {
                         typeModel.setObject(Type.WEEKLY);
-                        timeModel.setObject(
-                                String.format("%02d", hour) + ":" + String.format("%02d", minutes));
+                        timeModel.setObject(String.format("%02d", hour) + ":" + String.format("%02d", minutes));
                         dayOfWeekModel.setObject(day);
                     }
                 } else {
@@ -87,10 +85,7 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                         int day = Integer.parseInt(matcher.group(3));
                         if (minutes <= 60 && hour < 24 && day > 0 && day <= 28) {
                             typeModel.setObject(Type.MONTHLY);
-                            timeModel.setObject(
-                                    String.format("%02d", hour)
-                                            + ":"
-                                            + String.format("%02d", minutes));
+                            timeModel.setObject(String.format("%02d", hour) + ":" + String.format("%02d", minutes));
                             dayOfMonthModel.setObject(day);
                         }
                     }
@@ -103,91 +98,66 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        add(
-                new DropDownChoice<Type>(
-                                "type",
-                                typeModel,
-                                Arrays.asList(Type.values()),
-                                new EnumChoiceRenderer<Type>(this))
-                        .add(
-                                new AjaxFormSubmitBehavior("change") {
-                                    private static final long serialVersionUID =
-                                            -7698014209707408962L;
+        add(new DropDownChoice<Type>(
+                        "type", typeModel, Arrays.asList(Type.values()), new EnumChoiceRenderer<Type>(this))
+                .add(new AjaxFormSubmitBehavior("change") {
+                    private static final long serialVersionUID = -7698014209707408962L;
 
-                                    @Override
-                                    protected void onSubmit(AjaxRequestTarget target) {
-                                        updateVisibility();
-                                        target.add(FrequencyPanel.this);
-                                    }
-                                }));
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        updateVisibility();
+                        target.add(FrequencyPanel.this);
+                    }
+                }));
 
         add(new WebMarkupContainer("dayOfWeekLabel"));
-        add(
-                new DropDownChoice<DayOfWeek>(
-                        "dayOfWeek",
-                        dayOfWeekModel,
-                        Arrays.asList(DayOfWeek.values()),
-                        new EnumChoiceRenderer<DayOfWeek>() {
-                            private static final long serialVersionUID = 246492731661118407L;
+        add(new DropDownChoice<DayOfWeek>(
+                "dayOfWeek", dayOfWeekModel, Arrays.asList(DayOfWeek.values()), new EnumChoiceRenderer<DayOfWeek>() {
+                    private static final long serialVersionUID = 246492731661118407L;
 
-                            @Override
-                            public Object getDisplayValue(DayOfWeek object) {
-                                return object.getDisplayName(TextStyle.FULL, getLocale());
-                            }
-                        }));
+                    @Override
+                    public Object getDisplayValue(DayOfWeek object) {
+                        return object.getDisplayName(TextStyle.FULL, getLocale());
+                    }
+                }));
         add(new WebMarkupContainer("dayOfMonthLabel"));
-        add(
-                new DropDownChoice<Integer>(
-                        "dayOfMonth",
-                        dayOfMonthModel,
-                        Arrays.asList(
-                                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                                20, 21, 22, 23, 24, 25, 26, 27, 28)));
+        add(new DropDownChoice<Integer>(
+                "dayOfMonth",
+                dayOfMonthModel,
+                Arrays.asList(
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+                        27, 28)));
         add(new WebMarkupContainer("timeLabel"));
-        add(
-                new TextField<String>("time", timeModel)
-                        .add(
-                                new IValidator<String>() {
-                                    private static final long serialVersionUID =
-                                            -3170061736947280260L;
+        add(new TextField<String>("time", timeModel).add(new IValidator<String>() {
+            private static final long serialVersionUID = -3170061736947280260L;
 
-                                    @Override
-                                    public void validate(IValidatable<String> validatable) {
-                                        if (findParent(Form.class).findSubmitter() != null) {
-                                            Matcher matcher =
-                                                    TIME_PATTERN.matcher(validatable.getValue());
+            @Override
+            public void validate(IValidatable<String> validatable) {
+                if (findParent(Form.class).findSubmitter() != null) {
+                    Matcher matcher = TIME_PATTERN.matcher(validatable.getValue());
 
-                                            if (!(matcher.matches()
-                                                    && Integer.parseInt(matcher.group(1)) < 24
-                                                    && Integer.parseInt(matcher.group(2)) < 60)) {
-                                                error(
-                                                        new ParamResourceModel(
-                                                                        "timeFormatError",
-                                                                        FrequencyPanel.this)
-                                                                .getString());
-                                            }
-                                        }
-                                    }
-                                }));
-        add(
-                new TextField<String>("custom", (IModel<String>) getDefaultModel())
-                        .add(
-                                new IValidator<String>() {
-                                    private static final long serialVersionUID =
-                                            -3170061736947280260L;
+                    if (!(matcher.matches()
+                            && Integer.parseInt(matcher.group(1)) < 24
+                            && Integer.parseInt(matcher.group(2)) < 60)) {
+                        error(new ParamResourceModel("timeFormatError", FrequencyPanel.this).getString());
+                    }
+                }
+            }
+        }));
+        add(new TextField<String>("custom", (IModel<String>) getDefaultModel()).add(new IValidator<String>() {
+            private static final long serialVersionUID = -3170061736947280260L;
 
-                                    @Override
-                                    public void validate(IValidatable<String> validatable) {
-                                        if (findParent(Form.class).findSubmitter() != null) {
-                                            try {
-                                                CronExpression.validateExpression(
-                                                        validatable.getValue());
-                                            } catch (ParseException e) {
-                                                error(e.getLocalizedMessage());
-                                            }
-                                        }
-                                    }
-                                }));
+            @Override
+            public void validate(IValidatable<String> validatable) {
+                if (findParent(Form.class).findSubmitter() != null) {
+                    try {
+                        CronExpression.validateExpression(validatable.getValue());
+                    } catch (ParseException e) {
+                        error(e.getLocalizedMessage());
+                    }
+                }
+            }
+        }));
 
         setOutputMarkupId(true);
         updateVisibility();
@@ -196,9 +166,8 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
     private void updateVisibility() {
         boolean weeklyVisible = typeModel.getObject().equals(Type.WEEKLY);
         boolean monthlyVisible = typeModel.getObject().equals(Type.MONTHLY);
-        boolean timeVisible =
-                !typeModel.getObject().equals(Type.CUSTOM)
-                        && !typeModel.getObject().equals(Type.NEVER);
+        boolean timeVisible = !typeModel.getObject().equals(Type.CUSTOM)
+                && !typeModel.getObject().equals(Type.NEVER);
         get("dayOfWeek").setVisible(weeklyVisible);
         get("dayOfWeekLabel").setVisible(weeklyVisible);
         get("dayOfMonth").setVisible(monthlyVisible);
@@ -223,34 +192,21 @@ public class FrequencyPanel extends Panel implements IFormModelUpdateListener {
                     String minute = matcher.group(2);
 
                     if (typeModel.getObject() == Type.DAILY) {
-                        ((IModel<String>) getDefaultModel())
-                                .setObject("0 " + minute + " " + hour + " * * ?");
+                        ((IModel<String>) getDefaultModel()).setObject("0 " + minute + " " + hour + " * * ?");
                     } else if (typeModel.getObject() == Type.WEEKLY) {
                         ((IModel<String>) getDefaultModel())
-                                .setObject(
-                                        "0 "
-                                                + minute
-                                                + " "
-                                                + hour
-                                                + " ? * "
-                                                + dayOfWeekModel
-                                                        .getObject()
-                                                        .getDisplayName(
-                                                                TextStyle.SHORT, Locale.ENGLISH));
+                                .setObject("0 "
+                                        + minute
+                                        + " "
+                                        + hour
+                                        + " ? * "
+                                        + dayOfWeekModel.getObject().getDisplayName(TextStyle.SHORT, Locale.ENGLISH));
                     } else if (typeModel.getObject() == Type.MONTHLY) {
                         ((IModel<String>) getDefaultModel())
-                                .setObject(
-                                        "0 "
-                                                + minute
-                                                + " "
-                                                + hour
-                                                + " "
-                                                + dayOfMonthModel.getObject()
-                                                + " * ?");
+                                .setObject("0 " + minute + " " + hour + " " + dayOfMonthModel.getObject() + " * ?");
                     }
                 } else {
-                    throw new IllegalStateException(
-                            new ParamResourceModel("timeFormatError", this).getString());
+                    throw new IllegalStateException(new ParamResourceModel("timeFormatError", this).getString());
                 }
             }
         }

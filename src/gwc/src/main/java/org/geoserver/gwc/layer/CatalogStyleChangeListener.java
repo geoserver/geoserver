@@ -31,8 +31,8 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
 
 /**
- * Listens to changes in {@link StyleInfo styles} for the GeoServer {@link Catalog} and applies the
- * needed {@link ParameterFilter} changes to the corresponding {@link GeoServerTileLayer}.
+ * Listens to changes in {@link StyleInfo styles} for the GeoServer {@link Catalog} and applies the needed
+ * {@link ParameterFilter} changes to the corresponding {@link GeoServerTileLayer}.
  *
  * @author Arne Kepp
  * @author Gabriel Roldan
@@ -42,9 +42,9 @@ public class CatalogStyleChangeListener implements CatalogListener {
     private static Logger log = Logging.getLogger(CatalogStyleChangeListener.class);
 
     /**
-     * Holds the CatalogModifyEvent from {@link #handleModifyEvent} to be taken after the change was
-     * applied to the {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is
-     * necessary to perform any action on the cache based on the changed properties
+     * Holds the CatalogModifyEvent from {@link #handleModifyEvent} to be taken after the change was applied to the
+     * {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is necessary to perform any action on the
+     * cache based on the changed properties
      */
     private static ThreadLocal<CatalogModifyEvent> PRE_MODIFY_EVENT = new ThreadLocal<>();
 
@@ -57,30 +57,24 @@ public class CatalogStyleChangeListener implements CatalogListener {
         this.catalog = catalog;
     }
 
-    /**
-     * @see
-     *     org.geoserver.catalog.event.CatalogListener#handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent)
-     */
+    /** @see org.geoserver.catalog.event.CatalogListener#handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent) */
     @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         // no need to handle style additions, they are added before being attached to a layerinfo
     }
 
     /**
-     * Handles the rename of a style, truncating the cache for any layer that has it as a cached
-     * alternate style; modifications to the actual style are handled at {@link
-     * #handlePostModifyEvent(CatalogPostModifyEvent)}.
+     * Handles the rename of a style, truncating the cache for any layer that has it as a cached alternate style;
+     * modifications to the actual style are handled at {@link #handlePostModifyEvent(CatalogPostModifyEvent)}.
      *
-     * <p>When a style is renamed, the {@link LayerInfo} and {@link LayerGroupInfo} that refer to it
-     * are not modified, since they refer to the {@link StyleInfo} by id, so they don't really care
-     * about the name of the style. For the tiled layer its different, because styles are referred
-     * to by {@link GeoServerTileLayerInfoImpl#cachedStyles() name} in order to create the
-     * appropriate "STYLES" {@link ParameterFilter parameter filter}. This method will look for any
-     * tile layer backed by a {@link LayerInfo} that has a cache for the renamed style as an
-     * alternate style (i.e. through a parameter filter) and will truncate the cache for that
-     * layer/style. This is so because there's no way in GWC to just rename a style (that would
-     * imply getting to the parameter filters that refer to that style in the meta-store and change
-     * it's value preserving the parametersId)
+     * <p>When a style is renamed, the {@link LayerInfo} and {@link LayerGroupInfo} that refer to it are not modified,
+     * since they refer to the {@link StyleInfo} by id, so they don't really care about the name of the style. For the
+     * tiled layer its different, because styles are referred to by {@link GeoServerTileLayerInfoImpl#cachedStyles()
+     * name} in order to create the appropriate "STYLES" {@link ParameterFilter parameter filter}. This method will look
+     * for any tile layer backed by a {@link LayerInfo} that has a cache for the renamed style as an alternate style
+     * (i.e. through a parameter filter) and will truncate the cache for that layer/style. This is so because there's no
+     * way in GWC to just rename a style (that would imply getting to the parameter filters that refer to that style in
+     * the meta-store and change it's value preserving the parametersId)
      *
      * <p>
      *
@@ -96,10 +90,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 return;
             }
             final int nameIdx = propertyNames.indexOf("name");
-            final String oldName =
-                    nameIdx != -1 ? (String) event.getOldValues().get(nameIdx) : null;
-            final String newName =
-                    nameIdx != -1 ? (String) event.getNewValues().get(nameIdx) : null;
+            final String oldName = nameIdx != -1 ? (String) event.getOldValues().get(nameIdx) : null;
+            final String newName = nameIdx != -1 ? (String) event.getNewValues().get(nameIdx) : null;
             final int workspaceIdx = propertyNames.indexOf("wokspace");
             final String oldWorkspaceName =
                     workspaceIdx != -1 ? (String) event.getOldValues().get(workspaceIdx) : null;
@@ -141,10 +133,9 @@ public class CatalogStyleChangeListener implements CatalogListener {
                 newStyles.remove(oldStyleName);
                 newStyles.add(newStyleName);
                 LayerInfo layerInfo = (LayerInfo) tl.getPublishedInfo();
-                String defaultStyle =
-                        layerInfo.getDefaultStyle() == null
-                                ? null
-                                : layerInfo.getDefaultStyle().prefixedName();
+                String defaultStyle = layerInfo.getDefaultStyle() == null
+                        ? null
+                        : layerInfo.getDefaultStyle().prefixedName();
                 TileLayerInfoUtil.setCachedStyles(info, defaultStyle, newStyles);
 
                 mediator.save(tl);
@@ -193,8 +184,7 @@ public class CatalogStyleChangeListener implements CatalogListener {
 
         // grab the styles
         try (CloseableIterator<StyleInfo> styles =
-                catalog.list(
-                        StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName))) {
+                catalog.list(StyleInfo.class, Predicates.equal("workspace.name", newWorkspaceName))) {
             while (styles.hasNext()) {
                 StyleInfo style = styles.next();
                 String oldStyleName = oldWorkspaceName + ":" + style.getName();
@@ -209,8 +199,8 @@ public class CatalogStyleChangeListener implements CatalogListener {
      * Options are:
      *
      * <ul>
-     *   <li>A {@link LayerInfo} has {@code modifiedStyle} as either its default or style or as one
-     *       of its alternate styles
+     *   <li>A {@link LayerInfo} has {@code modifiedStyle} as either its default or style or as one of its alternate
+     *       styles
      *   <li>A {@link LayerGroupInfo} contains a layer using {@code modifiedStyle}
      *   <li>{@code modifiedStyle} is explicitly assigned to a {@link LayerGroupInfo}
      * </ul>
@@ -223,31 +213,20 @@ public class CatalogStyleChangeListener implements CatalogListener {
         for (LayerInfo affectedLayer : layers) {
             // If the style name changes, we need to update the layer's parameter filter
             String prefixedName = tileLayerName(affectedLayer);
-            log.info(
-                    "Truncating layer '"
-                            + prefixedName
-                            + "' due to a change in style '"
-                            + styleName
-                            + "'");
+            log.info("Truncating layer '" + prefixedName + "' due to a change in style '" + styleName + "'");
             mediator.truncateByLayerAndStyle(prefixedName, styleName);
         }
 
         // Now we check for layer groups that are affected
         for (LayerGroupInfo layerGroup : mediator.getLayerGroupsFor(modifiedStyle)) {
             String layerGroupName = tileLayerName(layerGroup);
-            log.info(
-                    "Truncating layer group '"
-                            + layerGroupName
-                            + "' due to a change in style '"
-                            + styleName
-                            + "'");
+            log.info("Truncating layer group '" + layerGroupName + "' due to a change in style '" + styleName + "'");
             mediator.truncate(layerGroupName);
         }
     }
 
     /**
-     * No need to do anything here, when a style is removed all the layers that reference it are
-     * updated first
+     * No need to do anything here, when a style is removed all the layers that reference it are updated first
      *
      * @see org.geoserver.catalog.event.CatalogListener#handleRemoveEvent
      */

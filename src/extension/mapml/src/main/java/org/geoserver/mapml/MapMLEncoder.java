@@ -52,8 +52,7 @@ public class MapMLEncoder {
      */
     public void encode(Mapml mapml, OutputStream output) {
         try {
-            XMLStreamWriter writer =
-                    new Wrapper(XMLOutputFactory.newInstance().createXMLStreamWriter(output));
+            XMLStreamWriter writer = new Wrapper(XMLOutputFactory.newInstance().createXMLStreamWriter(output));
             createMarshaller().marshal(mapml, writer);
             writer.flush();
         } catch (JAXBException | XMLStreamException e) {
@@ -70,18 +69,14 @@ public class MapMLEncoder {
     public Mapml decode(Reader reader) {
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setEventHandler(
-                    new javax.xml.bind.helpers.DefaultValidationEventHandler());
+            unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
             return (Mapml) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new ServiceException(e);
         }
     }
 
-    /**
-     * Wrapper class to provide control over namespace prefixing even if XML implementation classes
-     * are regenerated
-     */
+    /** Wrapper class to provide control over namespace prefixing even if XML implementation classes are regenerated */
     static class Wrapper implements XMLStreamWriter {
 
         private final XMLStreamWriter writer;
@@ -102,26 +97,22 @@ public class MapMLEncoder {
         }
 
         @Override
-        public void writeStartElement(String namespaceURI, String localName)
-                throws XMLStreamException {
+        public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
             writer.writeStartElement(namespaceURI, localName);
         }
 
         @Override
-        public void writeStartElement(String prefix, String localName, String namespaceURI)
-                throws XMLStreamException {
+        public void writeStartElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
             writer.writeStartElement(NS_PREFIX, localName, namespaceURI);
         }
 
         @Override
-        public void writeEmptyElement(String namespaceURI, String localName)
-                throws XMLStreamException {
+        public void writeEmptyElement(String namespaceURI, String localName) throws XMLStreamException {
             writer.writeEmptyElement(namespaceURI, localName);
         }
 
         @Override
-        public void writeEmptyElement(String prefix, String localName, String namespaceURI)
-                throws XMLStreamException {
+        public void writeEmptyElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
             writer.writeEmptyElement(prefix, localName, namespaceURI);
         }
 
@@ -156,15 +147,13 @@ public class MapMLEncoder {
         }
 
         @Override
-        public void writeAttribute(
-                String prefix, String namespaceURI, String localName, String value)
+        public void writeAttribute(String prefix, String namespaceURI, String localName, String value)
                 throws XMLStreamException {
             writer.writeAttribute(prefix, namespaceURI, localName, value);
         }
 
         @Override
-        public void writeAttribute(String namespaceURI, String localName, String value)
-                throws XMLStreamException {
+        public void writeAttribute(String namespaceURI, String localName, String value) throws XMLStreamException {
             writer.writeAttribute(namespaceURI, localName, value);
         }
 
@@ -189,8 +178,7 @@ public class MapMLEncoder {
         }
 
         @Override
-        public void writeProcessingInstruction(String target, String data)
-                throws XMLStreamException {
+        public void writeProcessingInstruction(String target, String data) throws XMLStreamException {
             writer.writeProcessingInstruction(target, data);
         }
 

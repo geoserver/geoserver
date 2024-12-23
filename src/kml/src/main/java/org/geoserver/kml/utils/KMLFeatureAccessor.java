@@ -43,8 +43,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Class encapsulating the logic to query features for a given layer in the current GetMap KML
- * request
+ * Class encapsulating the logic to query features for a given layer in the current GetMap KML request
  *
  * @author Andrea Aime - GeoSolutions
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
@@ -57,12 +56,11 @@ public class KMLFeatureAccessor {
     private static FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
 
     /**
-     * Loads the feature collection based on the current styling and the scale denominator. If no
-     * feature is going to be returned a null feature collection will be returned instead
+     * Loads the feature collection based on the current styling and the scale denominator. If no feature is going to be
+     * returned a null feature collection will be returned instead
      */
     public SimpleFeatureCollection loadFeatureCollection(
-            Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
-            throws Exception {
+            Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator) throws Exception {
         SimpleFeatureSource featureSource = (SimpleFeatureSource) layer.getFeatureSource();
         Query q = getFeaturesQuery(layer, mapContent, wms, scaleDenominator);
 
@@ -71,8 +69,7 @@ public class KMLFeatureAccessor {
         try {
             wgs84 = CRS.decode("EPSG:4326", true);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Cannot decode EPSG:4326, the CRS subsystem must be badly broken...", e);
+            throw new RuntimeException("Cannot decode EPSG:4326, the CRS subsystem must be badly broken...", e);
         }
         SimpleFeatureCollection features = featureSource.getFeatures(q);
         SimpleFeatureType schema = featureSource.getSchema();
@@ -85,8 +82,7 @@ public class KMLFeatureAccessor {
     }
 
     /** Counts how many features will be returned for the specified layer in the current request */
-    public int getFeatureCount(
-            Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
+    public int getFeatureCount(Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
             throws Exception {
         Query q = getFeaturesQuery(layer, mapContent, wms, scaleDenominator);
 
@@ -100,11 +96,10 @@ public class KMLFeatureAccessor {
     }
 
     /**
-     * Builds the Query object that will return the features for the specified layer and scale
-     * denominator, based also on the current WMS configuration
+     * Builds the Query object that will return the features for the specified layer and scale denominator, based also
+     * on the current WMS configuration
      */
-    private Query getFeaturesQuery(
-            Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
+    private Query getFeaturesQuery(Layer layer, WMSMapContent mapContent, WMS wms, double scaleDenominator)
             throws TransformException, FactoryException {
         SimpleFeatureType schema = ((SimpleFeatureSource) layer.getFeatureSource()).getSchema();
 
@@ -127,10 +122,7 @@ public class KMLFeatureAccessor {
         if (("auto").equals(stratname)) {
             Catalog catalog = wms.getGeoServer().getCatalog();
             Name name = layer.getFeatureSource().getName();
-            stratname =
-                    catalog.getFeatureTypeByName(name)
-                            .getMetadata()
-                            .get("kml.regionateStrategy", String.class);
+            stratname = catalog.getFeatureTypeByName(name).getMetadata().get("kml.regionateStrategy", String.class);
             if (stratname == null || "".equals(stratname)) {
                 stratname = "best_guess";
                 LOGGER.log(
@@ -166,8 +158,7 @@ public class KMLFeatureAccessor {
     }
 
     private RegionatingStrategy findStrategyByName(String name) {
-        List<RegionatingStrategyFactory> factories =
-                GeoServerExtensions.extensions(RegionatingStrategyFactory.class);
+        List<RegionatingStrategyFactory> factories = GeoServerExtensions.extensions(RegionatingStrategyFactory.class);
         Iterator<RegionatingStrategyFactory> it = factories.iterator();
         while (it.hasNext()) {
             RegionatingStrategyFactory factory = it.next();
@@ -198,8 +189,7 @@ public class KMLFeatureAccessor {
      * @param aoi the target rendering bounding box
      * @throws IllegalFilterException if something goes wrong creating the filter
      */
-    private Filter createBBoxFilter(SimpleFeatureType schema, ReferencedEnvelope aoi)
-            throws IllegalFilterException {
+    private Filter createBBoxFilter(SimpleFeatureType schema, ReferencedEnvelope aoi) throws IllegalFilterException {
 
         // Google earth likes to make requests that go beyond 180 when zoomed out
         // fix them
@@ -217,19 +207,13 @@ public class KMLFeatureAccessor {
                 double maxx = aoi.getMaxX() - 360;
                 double minx = aoi.getMinX() > 180 ? aoi.getMinX() - 360 : -180;
                 envelopes.add(
-                        new ReferencedEnvelope(
-                                minx,
-                                maxx,
-                                aoi.getMinY(),
-                                aoi.getMaxY(),
-                                DefaultGeographicCRS.WGS84));
+                        new ReferencedEnvelope(minx, maxx, aoi.getMinY(), aoi.getMaxY(), DefaultGeographicCRS.WGS84));
             }
         }
 
         List<ReferencedEnvelope> sourceEnvelopes = new ArrayList<>();
         CoordinateReferenceSystem sourceCrs = schema.getCoordinateReferenceSystem();
-        if ((sourceCrs != null)
-                && !CRS.equalsIgnoreMetadata(aoi.getCoordinateReferenceSystem(), sourceCrs)) {
+        if ((sourceCrs != null) && !CRS.equalsIgnoreMetadata(aoi.getCoordinateReferenceSystem(), sourceCrs)) {
             for (ReferencedEnvelope re : envelopes) {
                 try {
                     ReferencedEnvelope se = re.transform(sourceCrs, true);
@@ -251,25 +235,13 @@ public class KMLFeatureAccessor {
             return Filter.INCLUDE;
         } else if (sourceEnvelopes.size() == 1) {
             ReferencedEnvelope se = sourceEnvelopes.get(0);
-            return filterFactory.bbox(
-                    gd.getLocalName(),
-                    se.getMinX(),
-                    se.getMinY(),
-                    se.getMaxX(),
-                    se.getMaxY(),
-                    null);
+            return filterFactory.bbox(gd.getLocalName(), se.getMinX(), se.getMinY(), se.getMaxX(), se.getMaxY(), null);
         } else {
             // we have to OR the multiple source envelopes
             List<Filter> filters = new ArrayList<>();
             for (ReferencedEnvelope se : sourceEnvelopes) {
-                filters.add(
-                        filterFactory.bbox(
-                                gd.getLocalName(),
-                                se.getMinX(),
-                                se.getMinY(),
-                                se.getMaxX(),
-                                se.getMaxY(),
-                                null));
+                filters.add(filterFactory.bbox(
+                        gd.getLocalName(), se.getMinX(), se.getMinY(), se.getMaxX(), se.getMaxY(), null));
             }
             return filterFactory.or(filters);
         }

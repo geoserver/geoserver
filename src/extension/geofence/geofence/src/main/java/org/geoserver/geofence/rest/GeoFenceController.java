@@ -25,7 +25,8 @@ public class GeoFenceController extends AbstractCatalogController {
 
     static final Logger LOGGER = Logging.getLogger(GeoFenceController.class);
 
-    @Autowired private GeoFenceConfigurationManager configManager;
+    @Autowired
+    private GeoFenceConfigurationManager configManager;
 
     public GeoFenceController(Catalog catalog) {
         super(catalog);

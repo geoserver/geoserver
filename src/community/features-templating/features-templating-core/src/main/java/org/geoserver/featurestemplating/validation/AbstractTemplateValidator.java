@@ -56,8 +56,7 @@ public abstract class AbstractTemplateValidator {
         return getFeatureType().getName().getLocalPart();
     }
 
-    private boolean validateExpressions(
-            TemplateBuilder builder, ValidateExpressionVisitor visitor, String source)
+    private boolean validateExpressions(TemplateBuilder builder, ValidateExpressionVisitor visitor, String source)
             throws IOException {
         for (TemplateBuilder jb : builder.getChildren()) {
             String siblingSource = null;
@@ -66,12 +65,10 @@ public abstract class AbstractTemplateValidator {
                 Expression toValidate = getExpressionToValidate(djb, source, djb.getContextPos());
                 if (!validate(toValidate, visitor)) {
                     if (djb.getCql() != null) {
-                        this.failingAttribute =
-                                "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getCql());
+                        this.failingAttribute = "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getCql());
                         return false;
                     } else if (djb.getXpath() != null) {
-                        this.failingAttribute =
-                                "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getXpath());
+                        this.failingAttribute = "Key: " + djb.getKey() + " Value: " + CQL.toCQL(djb.getXpath());
                         return false;
                     }
                 }
@@ -97,16 +94,13 @@ public abstract class AbstractTemplateValidator {
                         return false;
                     }
                 }
-                if (!validateExpressions(
-                        jb, visitor, siblingSource != null ? siblingSource : source)) {
+                if (!validateExpressions(jb, visitor, siblingSource != null ? siblingSource : source)) {
                     return false;
                 }
             }
             if (jb instanceof AbstractTemplateBuilder) {
-                Filter filter =
-                        getFilterToValidate(
-                                (AbstractTemplateBuilder) jb,
-                                siblingSource != null ? siblingSource : source);
+                Filter filter = getFilterToValidate(
+                        (AbstractTemplateBuilder) jb, siblingSource != null ? siblingSource : source);
                 if (filter != null && !validate(filter, visitor)) {
                     failingAttribute = "Filter: " + CQL.toCQL(filter);
                     return false;
@@ -140,22 +134,19 @@ public abstract class AbstractTemplateValidator {
                 if (builder.getNamespaces() != null) {
                     String prefix = nameAr[0];
                     String uri = builder.getNamespaces().getURI(prefix);
-                    result =
-                            name.getNamespaceURI().equals(uri)
-                                    && localPartMatches(name.getLocalPart(), nameAr[1]);
+                    result = name.getNamespaceURI().equals(uri) && localPartMatches(name.getLocalPart(), nameAr[1]);
                 } else {
                     result = localPartMatches(name.getLocalPart(), nameAr[1]);
                 }
             } else result = name.getLocalPart().equals(strSource);
             if (!result)
-                LOGGER.warning(
-                        "Failed to validate the topLevel Feature source against the FeatureType. "
-                                + "The source is "
-                                + strSource
-                                + " and the FeatureType name is "
-                                + name.toString()
-                                + ". The top level source"
-                                + " might be still valid anyway");
+                LOGGER.warning("Failed to validate the topLevel Feature source against the FeatureType. "
+                        + "The source is "
+                        + strSource
+                        + " and the FeatureType name is "
+                        + name.toString()
+                        + ". The top level source"
+                        + " might be still valid anyway");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -177,8 +168,8 @@ public abstract class AbstractTemplateValidator {
     }
 
     /**
-     * Produce an AttributeExpressionImpl from the source attribute, suitable to be validated, eg.
-     * taking cares of handling properly changes of context
+     * Produce an AttributeExpressionImpl from the source attribute, suitable to be validated, eg. taking cares of
+     * handling properly changes of context
      */
     private AttributeExpressionImpl getSourceToValidate(SourceBuilder sb, String strSource) {
         AttributeExpressionImpl source = (AttributeExpressionImpl) sb.getSource();
@@ -192,23 +183,21 @@ public abstract class AbstractTemplateValidator {
     }
 
     /**
-     * Produce a Filter from the filter attribute, suitable to be validated eg. taking cares of
-     * handling properly ../ and changes of context
+     * Produce a Filter from the filter attribute, suitable to be validated eg. taking cares of handling properly ../
+     * and changes of context
      */
     private Filter getFilterToValidate(AbstractTemplateBuilder ab, String source) {
         if (ab.getFilter() != null) {
-            return (Filter)
-                    completeXpathWithVisitor(ab.getFilter(), source, ab.getFilterContextPos());
+            return (Filter) completeXpathWithVisitor(ab.getFilter(), source, ab.getFilterContextPos());
         }
         return null;
     }
 
     /**
-     * Produce an expression from the xpath or the cql expression hold by the DynamicBuilder,
-     * suitable to be validated, eg. taking care of handling properly ../ and changes of context
+     * Produce an expression from the xpath or the cql expression hold by the DynamicBuilder, suitable to be validated,
+     * eg. taking care of handling properly ../ and changes of context
      */
-    private Expression getExpressionToValidate(
-            DynamicValueBuilder db, String source, int contextPos) {
+    private Expression getExpressionToValidate(DynamicValueBuilder db, String source, int contextPos) {
         if (db.getXpath() != null) {
             return completeXpathForValidation(db.getXpath(), source, contextPos);
         } else {
@@ -216,8 +205,7 @@ public abstract class AbstractTemplateValidator {
         }
     }
 
-    private PropertyName completeXpathForValidation(
-            PropertyName pn, String source, int contextPos) {
+    private PropertyName completeXpathForValidation(PropertyName pn, String source, int contextPos) {
         String strXpath = pn.getPropertyName();
         int i = 0;
         String newSource = source;
@@ -255,16 +243,15 @@ public abstract class AbstractTemplateValidator {
     }
 
     private Object completeXpathWithVisitor(Object cql, String source, int contextPos) {
-        DuplicatingFilterVisitor visitor =
-                new DuplicatingFilterVisitor() {
-                    @Override
-                    public Object visit(PropertyName filter, Object extraData) {
-                        filter = (PropertyName) super.visit(filter, extraData);
-                        Object result = completeXpathForValidation(filter, source, contextPos);
-                        if (result != null) return result;
-                        return filter;
-                    }
-                };
+        DuplicatingFilterVisitor visitor = new DuplicatingFilterVisitor() {
+            @Override
+            public Object visit(PropertyName filter, Object extraData) {
+                filter = (PropertyName) super.visit(filter, extraData);
+                Object result = completeXpathForValidation(filter, source, contextPos);
+                if (result != null) return result;
+                return filter;
+            }
+        };
         if (cql instanceof Expression) {
             return ((Expression) cql).accept(visitor, null);
         } else {

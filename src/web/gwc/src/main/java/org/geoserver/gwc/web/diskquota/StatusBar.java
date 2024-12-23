@@ -48,17 +48,16 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        this.script =
-                ""
-                        + "document.getElementsByClassName('statusBarProgress')[0].style.width = '"
-                        + usedPercentage
-                        + "px';\n"
-                        + "document.getElementsByClassName('statusBarExcess')[0].style.width = '"
-                        + excessPercentage
-                        + "px';\n"
-                        + "document.getElementsByClassName('statusBarExcess')[0].style.left = '"
-                        + (5 + usedPercentage)
-                        + "px';";
+        this.script = ""
+                + "document.getElementsByClassName('statusBarProgress')[0].style.width = '"
+                + usedPercentage
+                + "px';\n"
+                + "document.getElementsByClassName('statusBarExcess')[0].style.width = '"
+                + excessPercentage
+                + "px';\n"
+                + "document.getElementsByClassName('statusBarExcess')[0].style.left = '"
+                + (5 + usedPercentage)
+                + "px';";
 
         add(usageBar);
         add(excessBar);
@@ -71,9 +70,7 @@ public class StatusBar extends Panel {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(
-                CssHeaderItem.forReference(
-                        new PackageResourceReference(StatusBar.class, "statusbar.css")));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
         response.render(OnLoadHeaderItem.forScript(this.script));
     }
 }

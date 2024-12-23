@@ -115,10 +115,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
         return property;
     }
 
-    /**
-     * This method does nothing, its functionality is implemented by {@link
-     * PropertyTypePropertyExtractor}.
-     */
+    /** This method does nothing, its functionality is implemented by {@link PropertyTypePropertyExtractor}. */
     @Override
     public Object getProperty(Object object, QName name) throws Exception {
         return null;

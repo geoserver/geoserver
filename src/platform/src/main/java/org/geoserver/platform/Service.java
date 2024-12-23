@@ -9,17 +9,16 @@ import java.util.List;
 import org.geotools.util.Version;
 
 /**
- * A service descriptor which provides metadata, primarily service {@code id}, and {@code version}
- * allowing {@code Dispatcher} to execute requests to the correct operation.
+ * A service descriptor which provides metadata, primarily service {@code id}, and {@code version} allowing
+ * {@code Dispatcher} to execute requests to the correct operation.
  *
- * <p>A Service is identified by an {@link #id}, {@link #version} pair. Two service descriptors are
- * considered equal if they have the same {@code id}, and {@code version}.
+ * <p>A Service is identified by an {@link #id}, {@link #version} pair. Two service descriptors are considered equal if
+ * they have the same {@code id}, and {@code version}.
  *
- * <p>The underlying service implementation is a plain old java object, available via {@link
- * #service}.
+ * <p>The underlying service implementation is a plain old java object, available via {@link #service}.
  *
- * <p>The {@code id} is treated as a service type by ServiceDescriptor for presentation, and by
- * ServiceResourceProvider for service enablement.
+ * <p>The {@code id} is treated as a service type by ServiceDescriptor for presentation, and by ServiceResourceProvider
+ * for service enablement.
  *
  * <p>Services may be composed of several {@link #operations}.
  *
@@ -30,8 +29,8 @@ public final class Service {
     /**
      * Service type identifying the service.
      *
-     * <p>This is used by the dispatcher for open web services, where several services may implement
-     * different versions of a protocol.
+     * <p>This is used by the dispatcher for open web services, where several services may implement different versions
+     * of a protocol.
      *
      * <p>This is used to obtain a service info configuring the service.
      */
@@ -40,16 +39,15 @@ public final class Service {
     /**
      * Namespace for the web service specification.
      *
-     * <p>As an example the {@code wfs} standard {@code http://www.opengis.net/wfs}, and {@code
-     * http://www.opengis.net/wfs/2.0} depending on version.
+     * <p>As an example the {@code wfs} standard {@code http://www.opengis.net/wfs}, and
+     * {@code http://www.opengis.net/wfs/2.0} depending on version.
      */
     final String namespace;
 
     /**
      * The service implementation.
      *
-     * <p>The service is configured using matching ServiceInfo matching, implicitly matching {@link
-     * #id}
+     * <p>The service is configured using matching ServiceInfo matching, implicitly matching {@link #id}
      */
     final Object service;
 
@@ -82,8 +80,7 @@ public final class Service {
      * @param version The version of the service.
      * @param operations The list of operations the service provides
      */
-    public Service(
-            String id, String namespace, Object service, Version version, List<String> operations) {
+    public Service(String id, String namespace, Object service, Version version, List<String> operations) {
         this.id = id;
         this.service = service;
         this.version = version;
@@ -97,9 +94,8 @@ public final class Service {
     /**
      * Service type used to identify the service.
      *
-     * <p>This is required to tbe the service type, example {@code WMS}, {@code WFS}, {@code
-     * Features} allowing ServiceDescription and
-     * ServiceResourceProvider.getServicesForResource(layer) to manage user interaction with web
+     * <p>This is required to tbe the service type, example {@code WMS}, {@code WFS}, {@code Features} allowing
+     * ServiceDescription and ServiceResourceProvider.getServicesForResource(layer) to manage user interaction with web
      * services.
      *
      * @return service type used to identify the service

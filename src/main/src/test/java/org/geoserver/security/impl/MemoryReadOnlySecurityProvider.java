@@ -52,8 +52,7 @@ public class MemoryReadOnlySecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return new ReadOnlyUGService();
     }
 
@@ -63,14 +62,12 @@ public class MemoryReadOnlySecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return new ReadOnlyRoleService();
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new MemorySecurityConfigValidator(securityManager);
     }
 }

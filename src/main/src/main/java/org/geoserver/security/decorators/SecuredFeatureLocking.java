@@ -23,8 +23,8 @@ import org.geotools.api.filter.Filter;
  * @param <T>
  * @param <F>
  */
-public class SecuredFeatureLocking<T extends FeatureType, F extends Feature>
-        extends SecuredFeatureStore<T, F> implements FeatureLocking<T, F> {
+public class SecuredFeatureLocking<T extends FeatureType, F extends Feature> extends SecuredFeatureStore<T, F>
+        implements FeatureLocking<T, F> {
 
     FeatureLocking<T, F> lockDelegate;
 

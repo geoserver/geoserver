@@ -33,8 +33,7 @@ public class TemplateFileManager {
     /**
      * Return a {@link Resource} from a template info.
      *
-     * @param templateInfo the template info for which we want to retrieve the corresponding
-     *     resource.
+     * @param templateInfo the template info for which we want to retrieve the corresponding resource.
      * @return the resource that corresponds to the template info.
      */
     public Resource getTemplateResource(TemplateInfo templateInfo) {
@@ -58,8 +57,7 @@ public class TemplateFileManager {
     /**
      * Delete the template file associated to the template info passed as an argument.
      *
-     * @param templateInfo the templateInfo for which we want to delete the corresponding template
-     *     file.
+     * @param templateInfo the templateInfo for which we want to delete the corresponding template file.
      * @return true if the delete process was successful false otherwise.
      */
     public boolean delete(TemplateInfo templateInfo) {
@@ -101,10 +99,7 @@ public class TemplateFileManager {
     public void saveTemplateFile(TemplateInfo templateInfo, String rawTemplate) {
         File destDir = getTemplateLocation(templateInfo);
         try {
-            File file =
-                    new File(
-                            destDir,
-                            templateInfo.getTemplateName() + "." + templateInfo.getExtension());
+            File file = new File(destDir, templateInfo.getTemplateName() + "." + templateInfo.getExtension());
             if (!file.exists()) file.createNewFile();
             synchronized (this) {
                 try (FileOutputStream fos = new FileOutputStream(file, false)) {

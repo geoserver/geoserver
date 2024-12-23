@@ -22,22 +22,19 @@ public class GMLFormatLink extends CommonFormatLink {
 
     @Override
     public ExternalLink getFormatLink(PreviewLayer layer) {
-        ExternalLink gmlLink =
-                new ExternalLink(
-                        this.getComponentId(),
-                        layer.getGmlLink(gmlParamsCache) + this.getMaxFeatures(),
-                        (new StringResourceModel(this.getTitleKey(), null, null)).getString());
-        gmlLink.setVisible(
-                layer.getType() == PreviewLayerType.Vector && layer.hasServiceSupport("WFS"));
+        ExternalLink gmlLink = new ExternalLink(
+                this.getComponentId(),
+                layer.getGmlLink(gmlParamsCache) + this.getMaxFeatures(),
+                (new StringResourceModel(this.getTitleKey(), null, null)).getString());
+        gmlLink.setVisible(layer.getType() == PreviewLayerType.Vector && layer.hasServiceSupport("WFS"));
         return gmlLink;
     }
 
     /**
-     * Generates the maxFeatures element of the WFS request using the value of
-     * maxNumberOfFeaturesForPreview. Values <= 0 give no limit.
+     * Generates the maxFeatures element of the WFS request using the value of maxNumberOfFeaturesForPreview. Values <=
+     * 0 give no limit.
      *
-     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if
-     *     maxNumberOfFeaturesForPreview <= 0"
+     * @return "&maxFeatures=${maxNumberOfFeaturesForPreview}" or "" if maxNumberOfFeaturesForPreview <= 0"
      */
     private String getMaxFeatures() {
         WFSInfo service = geoserver.getService(WFSInfo.class);

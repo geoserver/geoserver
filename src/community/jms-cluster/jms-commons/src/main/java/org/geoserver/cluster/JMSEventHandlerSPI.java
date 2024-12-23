@@ -19,8 +19,8 @@ import java.io.Serializable;
  */
 public abstract class JMSEventHandlerSPI<S extends Serializable, O> {
     /**
-     * The key of the property stored into message which tells the Handler used to serialize the
-     * message and the one which will be used to de-serialize and synchronize
+     * The key of the property stored into message which tells the Handler used to serialize the message and the one
+     * which will be used to de-serialize and synchronize
      */
     private static final String PROPERTY_KEY = "JMSEventHandlerSPI";
 

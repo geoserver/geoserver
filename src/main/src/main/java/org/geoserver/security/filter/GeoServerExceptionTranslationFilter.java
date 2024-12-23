@@ -26,12 +26,11 @@ import org.springframework.util.StringUtils;
  *
  * <p>The {@link AuthenticationEntryPoint} is of type {@link DynamicAuthenticationEntryPoint}
  *
- * <p>if {@link ExceptionTranslationFilterConfig#getAuthenticationEntryPointName()} is not empty,
- * use this name for a lookup of an authentication filter and use the entry point of this filter.
+ * <p>if {@link ExceptionTranslationFilterConfig#getAuthenticationEntryPointName()} is not empty, use this name for a
+ * lookup of an authentication filter and use the entry point of this filter.
  *
- * <p>if the name is empty, use {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER} as
- * a servlet attribute name. Previous authentication filter should put an entry point in this
- * attribute.
+ * <p>if the name is empty, use {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER} as a servlet attribute
+ * name. Previous authentication filter should put an entry point in this attribute.
  *
  * <p>if still no entry point was a found, use {@link Http403ForbiddenEntryPoint} as a default.
  *
@@ -54,15 +53,11 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
 
         @Override
         public void commence(
-                HttpServletRequest request,
-                HttpServletResponse response,
-                AuthenticationException authException)
+                HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
                 throws IOException, ServletException {
 
-            AuthenticationEntryPoint aep =
-                    (AuthenticationEntryPoint)
-                            request.getAttribute(
-                                    GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER);
+            AuthenticationEntryPoint aep = (AuthenticationEntryPoint)
+                    request.getAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER);
             if (aep != null) // remove from request
             request.removeAttribute(AUTHENTICATION_ENTRY_POINT_HEADER);
 

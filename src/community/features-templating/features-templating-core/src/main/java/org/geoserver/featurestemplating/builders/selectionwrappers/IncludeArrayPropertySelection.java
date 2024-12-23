@@ -20,8 +20,7 @@ import org.geotools.api.feature.type.PropertyType;
 public class IncludeArrayPropertySelection extends PropertySelectionWrapper {
 
     public IncludeArrayPropertySelection(
-            ArrayIncludeFlatBuilder templateBuilder,
-            PropertySelectionHandler propertySelectionHandler) {
+            ArrayIncludeFlatBuilder templateBuilder, PropertySelectionHandler propertySelectionHandler) {
         super(templateBuilder, propertySelectionHandler);
     }
 
@@ -41,20 +40,17 @@ public class IncludeArrayPropertySelection extends PropertySelectionWrapper {
                 if (object != null) {
                     Property prop = (Property) object;
                     PropertyType type = prop.getType();
-                    PropertySelectionVisitor propertySelectionVisitor =
-                            new PropertySelectionVisitor(strategy, type);
+                    PropertySelectionVisitor propertySelectionVisitor = new PropertySelectionVisitor(strategy, type);
                     PropertySelectionContext selContext =
                             new PropertySelectionContext(getFullKey(context), false, false);
-                    builder =
-                            (TemplateBuilder) builder.accept(propertySelectionVisitor, selContext);
+                    builder = (TemplateBuilder) builder.accept(propertySelectionVisitor, selContext);
                 }
                 return builder;
             }
 
             @Override
             public boolean canWrite(TemplateBuilderContext context) {
-                return IncludeArrayPropertySelection.this.canWrite(context)
-                        && super.canWrite(context);
+                return IncludeArrayPropertySelection.this.canWrite(context) && super.canWrite(context);
             }
         };
     }

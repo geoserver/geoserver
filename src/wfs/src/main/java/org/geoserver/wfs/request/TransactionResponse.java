@@ -93,15 +93,11 @@ public abstract class TransactionResponse extends RequestObject {
         @Override
         @SuppressWarnings("unchecked") // EMF model without generics
         public void addInsertedFeature(String handle, FeatureId featureId) {
-            InsertedFeatureType insertedFeature =
-                    ((WfsFactory) getFactory()).createInsertedFeatureType();
+            InsertedFeatureType insertedFeature = ((WfsFactory) getFactory()).createInsertedFeatureType();
             insertedFeature.setHandle(handle);
             insertedFeature.getFeatureId().add(featureId);
 
-            ((TransactionResponseType) adaptee)
-                    .getInsertResults()
-                    .getFeature()
-                    .add(insertedFeature);
+            ((TransactionResponseType) adaptee).getInsertResults().getFeature().add(insertedFeature);
         }
 
         @Override
@@ -123,7 +119,10 @@ public abstract class TransactionResponse extends RequestObject {
             action.setLocator(locator);
             action.setMessage(message);
 
-            ((TransactionResponseType) adaptee).getTransactionResults().getAction().add(action);
+            ((TransactionResponseType) adaptee)
+                    .getTransactionResults()
+                    .getAction()
+                    .add(action);
         }
 
         public static TransactionResponseType unadapt(TransactionResponse response) {
@@ -147,13 +146,11 @@ public abstract class TransactionResponse extends RequestObject {
 
         @Override
         public void addInsertedFeature(String handle, FeatureId featureId) {
-            CreatedOrModifiedFeatureType inserted =
-                    ((Wfs20Factory) getFactory()).createCreatedOrModifiedFeatureType();
+            CreatedOrModifiedFeatureType inserted = ((Wfs20Factory) getFactory()).createCreatedOrModifiedFeatureType();
             inserted.setHandle(handle);
             inserted.getResourceId().add(featureId);
 
-            net.opengis.wfs20.TransactionResponseType tr =
-                    (net.opengis.wfs20.TransactionResponseType) adaptee;
+            net.opengis.wfs20.TransactionResponseType tr = (net.opengis.wfs20.TransactionResponseType) adaptee;
             if (tr.getInsertResults() == null) {
                 tr.setInsertResults(((Wfs20Factory) getFactory()).createActionResultsType());
             }
@@ -163,13 +160,11 @@ public abstract class TransactionResponse extends RequestObject {
 
         @Override
         public void addUpdatedFeatures(String handle, Collection<FeatureId> ids) {
-            CreatedOrModifiedFeatureType updated =
-                    ((Wfs20Factory) getFactory()).createCreatedOrModifiedFeatureType();
+            CreatedOrModifiedFeatureType updated = ((Wfs20Factory) getFactory()).createCreatedOrModifiedFeatureType();
             updated.setHandle(handle);
             updated.getResourceId().addAll(ids);
 
-            net.opengis.wfs20.TransactionResponseType tr =
-                    (net.opengis.wfs20.TransactionResponseType) adaptee;
+            net.opengis.wfs20.TransactionResponseType tr = (net.opengis.wfs20.TransactionResponseType) adaptee;
             if (tr.getUpdateResults() == null) {
                 tr.setUpdateResults(((Wfs20Factory) getFactory()).createActionResultsType());
             }
@@ -179,13 +174,11 @@ public abstract class TransactionResponse extends RequestObject {
 
         @Override
         public void addReplacedFeatures(String handle, Collection<FeatureId> ids) {
-            CreatedOrModifiedFeatureType updated =
-                    ((Wfs20Factory) getFactory()).createCreatedOrModifiedFeatureType();
+            CreatedOrModifiedFeatureType updated = ((Wfs20Factory) getFactory()).createCreatedOrModifiedFeatureType();
             updated.setHandle(handle);
             updated.getResourceId().addAll(ids);
 
-            net.opengis.wfs20.TransactionResponseType tr =
-                    (net.opengis.wfs20.TransactionResponseType) adaptee;
+            net.opengis.wfs20.TransactionResponseType tr = (net.opengis.wfs20.TransactionResponseType) adaptee;
             if (tr.getReplaceResults() == null) {
                 tr.setReplaceResults(((Wfs20Factory) getFactory()).createActionResultsType());
             }

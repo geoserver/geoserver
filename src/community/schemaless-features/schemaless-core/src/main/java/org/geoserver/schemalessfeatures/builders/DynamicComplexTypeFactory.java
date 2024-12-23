@@ -30,8 +30,7 @@ public class DynamicComplexTypeFactory extends FeatureTypeFactoryImpl {
             List<Filter> restrictions,
             AttributeType superType,
             InternationalString description) {
-        return new DynamicFeatureType(
-                name, schema, defaultGeometry, isAbstract, restrictions, superType, description);
+        return new DynamicFeatureType(name, schema, defaultGeometry, isAbstract, restrictions, superType, description);
     }
 
     @Override

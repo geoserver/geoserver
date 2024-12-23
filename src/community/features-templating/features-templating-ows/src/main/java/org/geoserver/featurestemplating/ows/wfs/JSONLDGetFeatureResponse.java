@@ -29,8 +29,7 @@ import org.geotools.api.feature.Feature;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * Encodes features in json-ld output format by means of a ${@link TemplateBuilder} tree obtained by
- * a JSON-LD template
+ * Encodes features in json-ld output format by means of a ${@link TemplateBuilder} tree obtained by a JSON-LD template
  */
 public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
@@ -42,8 +41,7 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
         //  Multiple FeatureType encoding for json-ld has not be implemented.
         //  Is missed a strategy for multiple context in template. Probably we should merge them
@@ -76,12 +74,9 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     }
 
     private void validate(
-            FeatureCollectionResponse featureCollection,
-            EncodingHints encodingHints,
-            Operation operation) {
+            FeatureCollectionResponse featureCollection, EncodingHints encodingHints, Operation operation) {
         JSONLDContextValidation validator = new JSONLDContextValidation();
-        try (JSONLDWriter writer =
-                (JSONLDWriter) helper.getOutputWriter(new FileOutputStream(validator.init()))) {
+        try (JSONLDWriter writer = (JSONLDWriter) helper.getOutputWriter(new FileOutputStream(validator.init()))) {
             write(featureCollection, writer, encodingHints, operation);
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -101,18 +96,14 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     }
 
     @Override
-    protected void beforeFeatureIteration(
-            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
-        Boolean encodeAsString =
-                root.getVendorOptions()
-                        .get(VendorOptions.JSON_LD_STRING_ENCODE, Boolean.class, false);
+    protected void beforeFeatureIteration(TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
+        Boolean encodeAsString = root.getVendorOptions().get(VendorOptions.JSON_LD_STRING_ENCODE, Boolean.class, false);
         JSONLDWriter jsonldWriter = (JSONLDWriter) writer;
         jsonldWriter.setEncodeAsString(encodeAsString);
     }
 
     @Override
-    protected void beforeEvaluation(
-            TemplateOutputWriter writer, RootBuilder root, Feature feature) {}
+    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature) {}
 
     @Override
     protected void writeAdditionalFieldsInternal(

@@ -21,8 +21,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RelationshipDAO {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(RelationshipDAO.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(RelationshipDAO.class);
     public static final String RELATIONSHIP_CLASS_KEY = "gsr.relationshipClasses";
 
     private final GeoServer geoServer;
@@ -51,13 +50,8 @@ public class RelationshipDAO {
             String originPrimaryKey,
             String originForeignKey) {
         HashSet<RelationshipClass> relationshipClasses = getRelationshipClasses(workspaceName);
-        RelationshipClass searchRelationshipClass =
-                buildPartialRelationshipClass(
-                        workspaceName,
-                        originTable,
-                        destinationTable,
-                        originPrimaryKey,
-                        originForeignKey);
+        RelationshipClass searchRelationshipClass = buildPartialRelationshipClass(
+                workspaceName, originTable, destinationTable, originPrimaryKey, originForeignKey);
         Iterator<RelationshipClass> it = relationshipClasses.iterator();
         while (it.hasNext()) {
             RelationshipClass relationshipClass = it.next();
@@ -69,9 +63,7 @@ public class RelationshipDAO {
     }
 
     /**
-     * @see
-     *     org.geoserver.gsr.api.relationship.RelationshipController#getRelationshipClassByWorkspaceAndId(String,
-     *     Long)
+     * @see org.geoserver.gsr.api.relationship.RelationshipController#getRelationshipClassByWorkspaceAndId(String, Long)
      * @param workspaceName
      * @param relationshipId
      * @return
@@ -104,8 +96,7 @@ public class RelationshipDAO {
     }
 
     /**
-     * @see
-     *     org.geoserver.gsr.api.relationship.RelationshipController#getRelationshipClassByWorkspaceAndOrigin(String,
+     * @see org.geoserver.gsr.api.relationship.RelationshipController#getRelationshipClassByWorkspaceAndOrigin(String,
      *     String)
      * @param workspaceName
      * @param originTable
@@ -150,15 +141,12 @@ public class RelationshipDAO {
     }
 
     /**
-     * @see
-     *     org.geoserver.gsr.api.relationship.RelationshipController#createRelationshipClass(String,
-     *     RelationshipClass)
+     * @see org.geoserver.gsr.api.relationship.RelationshipController#createRelationshipClass(String, RelationshipClass)
      * @param workspaceName
      * @param relationshipClass
      * @return
      */
-    public RelationshipClass upsertRelationshipClass(
-            String workspaceName, RelationshipClass relationshipClass) {
+    public RelationshipClass upsertRelationshipClass(String workspaceName, RelationshipClass relationshipClass) {
         HashSet<RelationshipClass> relationshipClasses = getRelationshipClasses(workspaceName);
         if (relationshipClass.getWorkspaceName() == null
                 || !relationshipClass.getWorkspaceName().equals(workspaceName)) {
@@ -177,15 +165,13 @@ public class RelationshipDAO {
             relationshipClasses.remove(relationshipClass);
             relationshipClasses.add(relationshipClass);
         } else {
-            if (relationshipClass.getRelationshipId() == null
-                    || relationshipClass.getRelationshipId() == 0) {
-                relationshipClass.setRelationshipId(
-                        generateLongHashFromWorkspaceSourceTableAndKeys(
-                                relationshipClass.getWorkspaceName(),
-                                relationshipClass.getOriginTable(),
-                                relationshipClass.getDestinationTable(),
-                                relationshipClass.getOriginPrimaryKey(),
-                                relationshipClass.getOriginForeignKey()));
+            if (relationshipClass.getRelationshipId() == null || relationshipClass.getRelationshipId() == 0) {
+                relationshipClass.setRelationshipId(generateLongHashFromWorkspaceSourceTableAndKeys(
+                        relationshipClass.getWorkspaceName(),
+                        relationshipClass.getOriginTable(),
+                        relationshipClass.getDestinationTable(),
+                        relationshipClass.getOriginPrimaryKey(),
+                        relationshipClass.getOriginForeignKey()));
             }
             relationshipClasses.add(relationshipClass);
         }
@@ -199,12 +185,7 @@ public class RelationshipDAO {
             String destinationTable,
             String originPrimaryKey,
             String originForeignKey) {
-        String key =
-                workspaceName
-                        + originTable
-                        + destinationTable
-                        + originPrimaryKey
-                        + originForeignKey;
+        String key = workspaceName + originTable + destinationTable + originPrimaryKey + originForeignKey;
         return UUID.nameUUIDFromBytes(key.getBytes()).getMostSignificantBits();
     }
 
@@ -225,12 +206,7 @@ public class RelationshipDAO {
                         return true;
                     }
                 }
-                LOGGER.info(
-                        "Layer with name "
-                                + tableName
-                                + " was found but the attribute "
-                                + fieldName
-                                + " was not");
+                LOGGER.info("Layer with name " + tableName + " was found but the attribute " + fieldName + " was not");
                 return false;
             } else {
                 LOGGER.info("Layer with name " + tableName + " is not a FeatureLayer");
@@ -259,12 +235,7 @@ public class RelationshipDAO {
                         return attributeTypeInfo;
                     }
                 }
-                LOGGER.info(
-                        "Layer with name "
-                                + tableName
-                                + " was found but the attribute "
-                                + fieldName
-                                + " was not");
+                LOGGER.info("Layer with name " + tableName + " was found but the attribute " + fieldName + " was not");
                 return null;
             } else {
                 LOGGER.info("Layer with name " + tableName + " is not a FeatureLayer");
@@ -277,8 +248,7 @@ public class RelationshipDAO {
     }
 
     /**
-     * Validate that source and destination fields exist in the layers/tables and that their data
-     * types match
+     * Validate that source and destination fields exist in the layers/tables and that their data types match
      *
      * @param sourceTableName Source layer/table name
      * @param sourceFieldName Source field name
@@ -287,30 +257,19 @@ public class RelationshipDAO {
      * @return
      */
     public Boolean fieldTypeMatches(
-            String sourceTableName,
-            String sourceFieldName,
-            String destinationTableName,
-            String destinationFieldName) {
-        AttributeTypeInfo sourceAttributeTypeInfo =
-                getAttributeTypeInfo(sourceTableName, sourceFieldName);
+            String sourceTableName, String sourceFieldName, String destinationTableName, String destinationFieldName) {
+        AttributeTypeInfo sourceAttributeTypeInfo = getAttributeTypeInfo(sourceTableName, sourceFieldName);
         AttributeTypeInfo destinationAttributeTypeInfo =
                 getAttributeTypeInfo(destinationTableName, destinationFieldName);
         if (sourceAttributeTypeInfo != null) {
             if (destinationAttributeTypeInfo != null) {
-                return sourceAttributeTypeInfo
-                        .getBinding()
-                        .equals(destinationAttributeTypeInfo.getBinding());
+                return sourceAttributeTypeInfo.getBinding().equals(destinationAttributeTypeInfo.getBinding());
             } else {
-                LOGGER.info(
-                        "Unable to get the field type for "
-                                + destinationTableName
-                                + ":"
-                                + destinationFieldName);
+                LOGGER.info("Unable to get the field type for " + destinationTableName + ":" + destinationFieldName);
                 return false;
             }
         } else {
-            LOGGER.info(
-                    "Unable to get the field type for " + sourceTableName + ":" + sourceFieldName);
+            LOGGER.info("Unable to get the field type for " + sourceTableName + ":" + sourceFieldName);
             return false;
         }
     }
@@ -339,18 +298,15 @@ public class RelationshipDAO {
         try {
             attributeTypeInfos = featureTypeInfo.attributes();
         } catch (IOException ioe) {
-            LOGGER.info(
-                    "Layer with name "
-                            + featureTypeInfo.getName()
-                            + " was found but there was an IOException when retrieving the attributes.");
+            LOGGER.info("Layer with name "
+                    + featureTypeInfo.getName()
+                    + " was found but there was an IOException when retrieving the attributes.");
         }
         return attributeTypeInfos;
     }
 
     /**
-     * @see
-     *     org.geoserver.gsr.api.relationship.RelationshipController#deleteRelationshipClass(String,
-     *     RelationshipClass)
+     * @see org.geoserver.gsr.api.relationship.RelationshipController#deleteRelationshipClass(String, RelationshipClass)
      * @param workspaceName
      * @param originTable
      * @param destinationTable
@@ -365,30 +321,22 @@ public class RelationshipDAO {
             String originPrimaryKey,
             String originForeignKey) {
         HashSet<RelationshipClass> relationshipClasses = getRelationshipClasses(workspaceName);
-        RelationshipClass searchRelationshipClass =
-                buildPartialRelationshipClass(
-                        workspaceName,
-                        originTable,
-                        destinationTable,
-                        originPrimaryKey,
-                        originForeignKey);
+        RelationshipClass searchRelationshipClass = buildPartialRelationshipClass(
+                workspaceName, originTable, destinationTable, originPrimaryKey, originForeignKey);
         Boolean removed = relationshipClasses.remove(searchRelationshipClass);
         saveWorkspaceChanges(workspaceName, relationshipClasses);
         return removed;
     }
 
     /**
-     * @see
-     *     org.geoserver.gsr.api.relationship.RelationshipController#deleteRelationshipClass(String,
-     *     Long)
+     * @see org.geoserver.gsr.api.relationship.RelationshipController#deleteRelationshipClass(String, Long)
      * @param workspaceName
      * @param relationshipId
      * @return
      */
     public Boolean deleteRelationshipClass(String workspaceName, Long relationshipId) {
         HashSet<RelationshipClass> relationshipClasses = getRelationshipClasses(workspaceName);
-        RelationshipClass searchRelationshipClass =
-                getRelationshipClass(workspaceName, relationshipId);
+        RelationshipClass searchRelationshipClass = getRelationshipClass(workspaceName, relationshipId);
         Boolean removed = relationshipClasses.remove(searchRelationshipClass);
         saveWorkspaceChanges(workspaceName, relationshipClasses);
         return removed;
@@ -445,8 +393,7 @@ public class RelationshipDAO {
      * @param workspaceName Workspace name
      * @param relationshipClasses Set of RelationshipClasses that contain the changes
      */
-    public void saveWorkspaceChanges(
-            String workspaceName, HashSet<RelationshipClass> relationshipClasses) {
+    public void saveWorkspaceChanges(String workspaceName, HashSet<RelationshipClass> relationshipClasses) {
         WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspaceName);
         workspaceInfo.getMetadata().put(RELATIONSHIP_CLASS_KEY, relationshipClasses);
         catalog.save(workspaceInfo);

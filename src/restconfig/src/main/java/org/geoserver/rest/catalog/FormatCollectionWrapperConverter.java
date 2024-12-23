@@ -13,26 +13,19 @@ import org.springframework.stereotype.Component;
 
 /** Convert FormatCollectionWrapper to JSON or GML as required. */
 @Component
-public class FormatCollectionWrapperConverter
-        extends FeatureCollectionConverter<FormatCollectionWrapper> {
+public class FormatCollectionWrapperConverter extends FeatureCollectionConverter<FormatCollectionWrapper> {
 
     public FormatCollectionWrapperConverter() {
-        super(
-                MediaType.APPLICATION_XML,
-                MediaType.TEXT_XML,
-                MediaTypeExtensions.TEXT_JSON,
-                MediaType.APPLICATION_JSON);
+        super(MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaTypeExtensions.TEXT_JSON, MediaType.APPLICATION_JSON);
     }
 
     @Override
     protected void writeInternal(FormatCollectionWrapper content, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType mediaType = outputMessage.getHeaders().getContentType();
-        if (MediaType.APPLICATION_JSON.includes(mediaType)
-                || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
+        if (MediaType.APPLICATION_JSON.includes(mediaType) || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
             writeGeoJson(content.getCollection(), outputMessage);
-        } else if (MediaType.APPLICATION_XML.includes(mediaType)
-                || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
+        } else if (MediaType.APPLICATION_XML.includes(mediaType) || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
             writeGML(content.getCollection(), outputMessage);
         }
     }

@@ -49,8 +49,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
                 // Post service selection
                 addServiceAccessRuleWicket(jsessionid, i, false);
                 // Check if this had an effect
-                assertServiceAccessRuleNotAdded(
-                        initialRules, "Added access rule using only an exising session id");
+                assertServiceAccessRuleNotAdded(initialRules, "Added access rule using only an exising session id");
             }
         } finally {
             logout(jsessionid);
@@ -74,19 +73,17 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
 
             // Check if this had an effect
             assertServiceAccessRuleNotAdded(
-                    initialRules,
-                    "Added access rule using only an exising session id and response from page requests");
+                    initialRules, "Added access rule using only an exising session id and response from page requests");
         } finally {
             logout(jsessionid);
         }
     }
 
     private int getNewServiceAccessRulePageWicket(String jsessionid) throws IOException {
-        HttpURLConnection connection =
-                get(
-                        "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage",
-                        jsessionid,
-                        null);
+        HttpURLConnection connection = get(
+                "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage",
+                jsessionid,
+                null);
         IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         // Fetch index from response URL after redirects are handled
         int i = Integer.parseInt(connection.getURL().getQuery());
@@ -94,26 +91,23 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         return i;
     }
 
-    private void addServiceAccessRuleWicket(String jsessionid, int i, boolean setReferer)
-            throws IOException {
+    private void addServiceAccessRuleWicket(String jsessionid, int i, boolean setReferer) throws IOException {
         // Post service selection
         // NOTE: This is required, as wicket checks the model content against the form content
         // we post later on
         String body = "service=4";
-        HttpURLConnection connection =
-                preparePost(
-                        "web/wicket/bookmarkable/org.geoserver.security.web.service"
-                                + ".NewServiceAccessRulePage?"
-                                + i
-                                + "-1.IBehaviorListener.0-form-service",
-                        body.length(),
-                        "application/x-www-form-urlencoded",
-                        jsessionid);
+        HttpURLConnection connection = preparePost(
+                "web/wicket/bookmarkable/org.geoserver.security.web.service"
+                        + ".NewServiceAccessRulePage?"
+                        + i
+                        + "-1.IBehaviorListener.0-form-service",
+                body.length(),
+                "application/x-www-form-urlencoded",
+                jsessionid);
         connection.setRequestProperty("Wicket-Ajax", "true");
         connection.setRequestProperty(
                 "Wicket-Ajax-BaseURL",
-                "wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
-                        + i);
+                "wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?" + i);
         connection.setRequestProperty("Wicket-FocusedElementId", "service");
         if (setReferer) {
             connection.setRequestProperty(
@@ -132,14 +126,13 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         // NOTE: This is required, as wicket checks the model content against the form content
         // we post later on
         body = "roles:anyRole=on";
-        connection =
-                preparePost(
-                        "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
-                                + i
-                                + "-1.IBehaviorListener.0-form-roles-anyRole",
-                        body.length(),
-                        "application/x-www-form-urlencoded",
-                        jsessionid);
+        connection = preparePost(
+                "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
+                        + i
+                        + "-1.IBehaviorListener.0-form-roles-anyRole",
+                body.length(),
+                "application/x-www-form-urlencoded",
+                jsessionid);
         connection.setRequestProperty("Wicket-Ajax", "true");
         if (setReferer) {
             connection.setRequestProperty(
@@ -150,8 +143,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         }
         connection.setRequestProperty(
                 "Wicket-Ajax-BaseURL",
-                "wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
-                        + i);
+                "wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?" + i);
         connection.setRequestProperty("Wicket-FocusedElementId", "id3c");
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
@@ -161,14 +153,13 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
 
         // Submit form post
         body = "save=x&service=4&p::method=12&roles:anyRole=on";
-        connection =
-                preparePost(
-                        "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
-                                + i
-                                + "-1.IFormSubmitListener-form",
-                        body.length(),
-                        "application/x-www-form-urlencoded",
-                        jsessionid);
+        connection = preparePost(
+                "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
+                        + i
+                        + "-1.IFormSubmitListener-form",
+                body.length(),
+                "application/x-www-form-urlencoded",
+                jsessionid);
         connection.setInstanceFollowRedirects(false);
         if (setReferer) {
             connection.setRequestProperty(
@@ -184,8 +175,8 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         connection.disconnect();
     }
 
-    private void assertServiceAccessRuleNotAdded(
-            List<ServiceAccessRule> initialRules, String message) throws IOException {
+    private void assertServiceAccessRuleNotAdded(List<ServiceAccessRule> initialRules, String message)
+            throws IOException {
         List<ServiceAccessRule> updatedRules = getServiceAccessRules();
         if (updatedRules.size() > initialRules.size()) {
             // Remove the rule
@@ -203,10 +194,8 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
      */
     protected List<ServiceAccessRule> getServiceAccessRules() throws IOException {
         // Use rest api to fetch service access rules
-        HttpURLConnection connection =
-                prepareGet("rest/security/acl/services", null, "application/json");
-        connection.setRequestProperty(
-                "Authorization", "Basic " + Base64.encodeBytes(("admin:geoserver").getBytes()));
+        HttpURLConnection connection = prepareGet("rest/security/acl/services", null, "application/json");
+        connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(("admin:geoserver").getBytes()));
         connection = doGet(connection);
         String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         connection.disconnect();
@@ -217,8 +206,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         for (Object key : jsonObject.keySet()) {
             String[] serviceMethod = ((String) key).split("\\.");
             String[] roles = ((String) jsonObject.get(key)).split(",");
-            serviceAccessRules.add(
-                    new ServiceAccessRule(serviceMethod[0], serviceMethod[1], roles));
+            serviceAccessRules.add(new ServiceAccessRule(serviceMethod[0], serviceMethod[1], roles));
         }
 
         return serviceAccessRules;
@@ -230,10 +218,8 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
      * Uses the REST API and HTTP Basic authentication so as not to interfere with the web session
      */
     protected boolean deleteServiceAccessRule(String ruleName) throws IOException {
-        HttpURLConnection connection =
-                prepareDelete("rest/security/acl/services/" + ruleName, null);
-        connection.setRequestProperty(
-                "Authorization", "Basic " + Base64.encodeBytes(("admin:geoserver").getBytes()));
+        HttpURLConnection connection = prepareDelete("rest/security/acl/services/" + ruleName, null);
+        connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(("admin:geoserver").getBytes()));
         connection = doGet(connection);
         int responseCode = connection.getResponseCode();
         connection.disconnect();

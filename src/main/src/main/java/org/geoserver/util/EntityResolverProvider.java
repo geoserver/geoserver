@@ -33,14 +33,13 @@ public class EntityResolverProvider {
     private static EntityResolver entityResolver = null;
 
     /**
-     * Limit external entity resolution to provided list, and support locations (w3c,OGC,INSPIRE),
-     * and internal entity resolution, resolution to built-in xsd and GeoServer.
+     * Limit external entity resolution to provided list, and support locations (w3c,OGC,INSPIRE), and internal entity
+     * resolution, resolution to built-in xsd and GeoServer.
      */
     private final AllowListEntityResolver ALLOWLIST_ENTITY_RESOLVER;
 
     /** A entity resolver provider that always disables entity resolution */
-    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER =
-            new EntityResolverProvider(null);
+    public static final EntityResolverProvider RESOLVE_DISABLED_PROVIDER = new EntityResolverProvider(null);
 
     private final GeoServer geoServer;
 
@@ -63,15 +62,13 @@ public class EntityResolverProvider {
     /**
      * Obtain EntityResolver respecting GeoServer settings on accessing External Entities.
      *
-     * <p>To use your own EntityResolver (in a test case) call {@link
-     * #setEntityResolver(EntityResolver)}.
+     * <p>To use your own EntityResolver (in a test case) call {@link #setEntityResolver(EntityResolver)}.
      *
-     * <p>If the xml external entities enabled is set to true, no entity resolver is provided (and
-     * XML entity resolution can work with any location including local files).
+     * <p>If the xml external entities enabled is set to true, no entity resolver is provided (and XML entity resolution
+     * can work with any location including local files).
      *
-     * <p>Defaults to PreventLocalEntityResolver allowing all http(s) entity resolution, while
-     * preventing local file access. This implementation allows access to XSD files included in the
-     * geoserver application.
+     * <p>Defaults to PreventLocalEntityResolver allowing all http(s) entity resolution, while preventing local file
+     * access. This implementation allows access to XSD files included in the geoserver application.
      *
      * @return EntityResolver, or {@code null} if unrestricted
      */
@@ -98,23 +95,20 @@ public class EntityResolverProvider {
     }
 
     /**
-     * Locations allowed for external entity expansion from application property
-     * "ENTITY_RESOLUTION_ALLOWLIST".
+     * Locations allowed for external entity expansion from application property "ENTITY_RESOLUTION_ALLOWLIST".
      *
      * <ul>
      *   <li>{@code "*"}: Allow all http(s) schema locations
      *   <li>{@code ""} or undefined: Restrict to schemas provided by w3c, ogc and inspire</code>
-     *   <li>{@code "location1,location2"}: Restrict to the provided locations, and those list by
-     *       w4c, ogc and inspire
+     *   <li>{@code "location1,location2"}: Restrict to the provided locations, and those list by w4c, ogc and inspire
      * </ul>
      *
      * <p>The built-in list appended by {@link AllowListEntityResolver} is equivalent to: <code>
-     * www.w3.org,schemas.opengis.net,www.opengis.net,inspire.ec.europa.eu/schemas</code> and the
-     * proxy base url if known. This setting is used by {@link EntityResolverProvider} to limit
-     * external entity resolution.
+     * www.w3.org,schemas.opengis.net,www.opengis.net,inspire.ec.europa.eu/schemas</code> and the proxy base url if
+     * known. This setting is used by {@link EntityResolverProvider} to limit external entity resolution.
      *
-     * @return Restrict external http(s) entity expansion to these external locations, with "*"
-     *     wildcard indicating unrestricted.
+     * @return Restrict external http(s) entity expansion to these external locations, with "*" wildcard indicating
+     *     unrestricted.
      */
     public static Set<String> entityResolutionAllowlist() {
         String allowed = GeoServerExtensions.getProperty(ENTITY_RESOLUTION_ALLOWLIST);
@@ -122,8 +116,7 @@ public class EntityResolverProvider {
     }
 
     /**
-     * Provides parsing of ENTITY_RESOLUTION_ALLOWLIST property for {@link
-     * #entityResolutionAllowlist()}.
+     * Provides parsing of ENTITY_RESOLUTION_ALLOWLIST property for {@link #entityResolutionAllowlist()}.
      *
      * @param allowed Allowed list of expansion locations seperated by | character.
      * @return set of allowed http(s) entity expansion external locations.

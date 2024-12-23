@@ -60,8 +60,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     @Override
     public void onReset() {
         // kill the image caches
-        Iterator<ExternalGraphicFactory> it =
-                DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
         while (it.hasNext()) {
             ExternalGraphicFactory egf = it.next();
             if (egf instanceof GraphicCache) {
@@ -84,9 +83,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
 
     List<Font> loadFontsFromDataDirectory() {
         List<Font> result = new ArrayList<>();
-        for (Resource file :
-                Resources.list(
-                        data.getStyles(), new Resources.ExtensionFilter("TTF", "OTF"), true)) {
+        for (Resource file : Resources.list(data.getStyles(), new Resources.ExtensionFilter("TTF", "OTF"), true)) {
             try {
                 final Font font = Font.createFont(Font.TRUETYPE_FONT, file.file());
                 result.add(font);

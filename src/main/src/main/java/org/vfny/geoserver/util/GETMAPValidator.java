@@ -31,8 +31,8 @@ public class GETMAPValidator {
     public GETMAPValidator() {}
 
     /**
-     * validates against the "normal" location of the schema (ie.
-     * ".../capabilities/sld/StyleLayerDescriptor.xsd" uses the geoserver_home patch
+     * validates against the "normal" location of the schema (ie. ".../capabilities/sld/StyleLayerDescriptor.xsd" uses
+     * the geoserver_home patch
      */
     public List<SAXException> validateGETMAP(InputStream xml) {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
@@ -54,8 +54,8 @@ public class GETMAPValidator {
     }
 
     /**
-     * returns a better formated error message - suitable for framing. There's a more complex
-     * version in StylesEditorAction.
+     * returns a better formated error message - suitable for framing. There's a more complex version in
+     * StylesEditorAction.
      *
      * <p>This will kick out a VERY LARGE errorMessage.
      */
@@ -91,8 +91,7 @@ public class GETMAPValidator {
      * validate a GETMAP against the schema
      *
      * @param xml input stream representing the GETMAP file
-     * @param SchemaUrl location of the schemas. Normally use
-     *     ".../capabilities/sld/StyleLayerDescriptor.xsd"
+     * @param SchemaUrl location of the schemas. Normally use ".../capabilities/sld/StyleLayerDescriptor.xsd"
      * @return list of SAXExceptions (0 if the file's okay)
      */
     public List<SAXException> validateGETMAP(InputSource xml, URL SchemaUrl) {

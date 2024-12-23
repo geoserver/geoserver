@@ -12,8 +12,7 @@ public class ServerException extends RuntimeException {
     private @Getter Map<String, Collection<String>> responseHeaders;
     private @Getter String request;
 
-    public ServerException(
-            int status, String reason, Map<String, Collection<String>> headers, String request) {
+    public ServerException(int status, String reason, Map<String, Collection<String>> headers, String request) {
         super(String.format("Status %d: %s\nRequest: %s", status, reason, request));
         this.status = status;
         this.reason = reason;
@@ -22,9 +21,7 @@ public class ServerException extends RuntimeException {
     }
 
     public @Override String toString() {
-        return String.format(
-                "%s\n------\nERROR: %d '%s'\nHeaders: %s",
-                request, status, reason, responseHeaders);
+        return String.format("%s\n------\nERROR: %d '%s'\nHeaders: %s", request, status, reason, responseHeaders);
     }
 
     public static ServerException of(
@@ -76,8 +73,7 @@ public class ServerException extends RuntimeException {
 
     @SuppressWarnings("serial")
     public static class Unauthorized extends ServerException {
-        public Unauthorized(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public Unauthorized(String reason, Map<String, Collection<String>> headers, String request) {
             super(401, reason, headers, request);
         }
     }
@@ -98,16 +94,14 @@ public class ServerException extends RuntimeException {
 
     @SuppressWarnings("serial")
     public static class MethodNotAllowed extends ServerException {
-        public MethodNotAllowed(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public MethodNotAllowed(String reason, Map<String, Collection<String>> headers, String request) {
             super(405, reason, headers, request);
         }
     }
 
     @SuppressWarnings("serial")
     public static class NotAcceptable extends ServerException {
-        public NotAcceptable(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public NotAcceptable(String reason, Map<String, Collection<String>> headers, String request) {
             super(406, reason, headers, request);
         }
     }
@@ -128,40 +122,35 @@ public class ServerException extends RuntimeException {
 
     @SuppressWarnings("serial")
     public static class UnsupportedMediaType extends ServerException {
-        public UnsupportedMediaType(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public UnsupportedMediaType(String reason, Map<String, Collection<String>> headers, String request) {
             super(415, reason, headers, request);
         }
     }
 
     @SuppressWarnings("serial")
     public static class TooManyRequests extends ServerException {
-        public TooManyRequests(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public TooManyRequests(String reason, Map<String, Collection<String>> headers, String request) {
             super(429, reason, headers, request);
         }
     }
 
     @SuppressWarnings("serial")
     public static class UnprocessableEntity extends ServerException {
-        public UnprocessableEntity(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public UnprocessableEntity(String reason, Map<String, Collection<String>> headers, String request) {
             super(422, reason, headers, request);
         }
     }
 
     @SuppressWarnings("serial")
     public static class InternalServerError extends ServerException {
-        public InternalServerError(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public InternalServerError(String reason, Map<String, Collection<String>> headers, String request) {
             super(500, reason, headers, request);
         }
     }
 
     @SuppressWarnings("serial")
     public static class NotImplemented extends ServerException {
-        public NotImplemented(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public NotImplemented(String reason, Map<String, Collection<String>> headers, String request) {
             super(501, reason, headers, request);
         }
     }
@@ -175,16 +164,14 @@ public class ServerException extends RuntimeException {
 
     @SuppressWarnings("serial")
     public static class ServiceUnavailable extends ServerException {
-        public ServiceUnavailable(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public ServiceUnavailable(String reason, Map<String, Collection<String>> headers, String request) {
             super(503, reason, headers, request);
         }
     }
 
     @SuppressWarnings("serial")
     public static class GatewayTimeout extends ServerException {
-        public GatewayTimeout(
-                String reason, Map<String, Collection<String>> headers, String request) {
+        public GatewayTimeout(String reason, Map<String, Collection<String>> headers, String request) {
             super(504, reason, headers, request);
         }
     }

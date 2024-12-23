@@ -15,8 +15,8 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Makes sure that when nested requests occur, the events are balanced and use the right request,
- * one for the nested callbacks, and a separate one for the outer callback
+ * Makes sure that when nested requests occur, the events are balanced and use the right request, one for the nested
+ * callbacks, and a separate one for the outer callback
  */
 final class BalancedRequestTester implements DispatcherCallback {
 
@@ -47,8 +47,7 @@ final class BalancedRequestTester implements DispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         assertEquals(request, requestStack.peek());
         return response;
     }

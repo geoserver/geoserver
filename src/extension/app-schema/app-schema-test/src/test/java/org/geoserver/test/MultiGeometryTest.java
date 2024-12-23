@@ -28,21 +28,14 @@ public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4326",
-                "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "5.03335814 -1",
-                "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/gml:pos",
-                doc);
+                "urn:x-ogc:def:crs:EPSG:4326", "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/@srsName", doc);
+        assertXpathEvaluatesTo("5.03335814 -1", "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/gml:pos", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4979",
                 "//ex:geomContainer[@gml:id='mf1']/ex:shape/gml:Point/@srsName",
                 doc);
         assertXpathEvaluatesTo(
-                "133.8855 -23.6701 112",
-                "//ex:geomContainer[@gml:id='mf1']/ex:shape/gml:Point/gml:pos",
-                doc);
+                "133.8855 -23.6701 112", "//ex:geomContainer[@gml:id='mf1']/ex:shape/gml:Point/gml:pos", doc);
         assertXpathEvaluatesTo(
                 "urn:x-ogc:def:crs:EPSG:4326",
                 "//ex:geomContainer[@gml:id='mf1']/ex:nestedFeature/ex:nestedGeom/ex:geom/gml:Polygon/@srsName",
@@ -55,25 +48,19 @@ public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testMultiGeometryReprojected() {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer&srsName=urn:x-ogc:def:crs:EPSG:4052");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer&srsName=urn:x-ogc:def:crs:EPSG:4052");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4052",
-                "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "5 -1", "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/gml:pos", doc);
+                "urn:x-ogc:def:crs:EPSG:4052", "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/@srsName", doc);
+        assertXpathEvaluatesTo("5 -1", "//ex:geomContainer[@gml:id='mf1']/ex:geom/gml:Point/gml:pos", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4979",
                 "//ex:geomContainer[@gml:id='mf1']/ex:shape/gml:Point/@srsName",
                 doc);
         assertXpathEvaluatesTo(
-                "133.8855 -23.6701 112",
-                "//ex:geomContainer[@gml:id='mf1']/ex:shape/gml:Point/gml:pos",
-                doc);
+                "133.8855 -23.6701 112", "//ex:geomContainer[@gml:id='mf1']/ex:shape/gml:Point/gml:pos", doc);
         assertXpathEvaluatesTo(
                 "urn:x-ogc:def:crs:EPSG:4052",
                 "//ex:geomContainer[@gml:id='mf1']/ex:nestedFeature/ex:nestedGeom/ex:geom/gml:Polygon/@srsName",
@@ -84,12 +71,7 @@ public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4052",
-                "//ex:geomContainer[@gml:id='mf1']/ex:location/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "4.96649296 -1",
-                "//ex:geomContainer[@gml:id='mf1']/ex:location/gml:Point/gml:pos",
-                doc);
+                "urn:x-ogc:def:crs:EPSG:4052", "//ex:geomContainer[@gml:id='mf1']/ex:location/gml:Point/@srsName", doc);
+        assertXpathEvaluatesTo("4.96649296 -1", "//ex:geomContainer[@gml:id='mf1']/ex:location/gml:Point/gml:pos", doc);
     }
 }

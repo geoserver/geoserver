@@ -62,12 +62,10 @@ import org.springframework.web.bind.annotation.RestController;
         path = {
             RestBaseController.ROOT_PATH + "/templates",
             RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/templates",
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
             RestBaseController.ROOT_PATH
                     + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
             RestBaseController.ROOT_PATH
                     + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"
         })
@@ -100,8 +98,7 @@ public class TemplateController extends AbstractCatalogController {
         }
         boolean removed = resource.delete();
         if (!removed) {
-            throw new RestException(
-                    "Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException("Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -135,8 +132,7 @@ public class TemplateController extends AbstractCatalogController {
                 output.flush();
             }
         } catch (IOException problem) {
-            throw new RestException(
-                    problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
+            throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
         }
     }
 
@@ -191,8 +187,7 @@ public class TemplateController extends AbstractCatalogController {
             case UNDEFINED:
                 throw new ResourceNotFoundException("Directory not found: '" + path + "'");
             default:
-                List<Resource> files =
-                        Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
+                List<Resource> files = Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
                 List<TemplateInfo> list = new ArrayList<>();
                 for (Resource file : files) {
                     list.add(new TemplateInfo(file));
@@ -203,17 +198,12 @@ public class TemplateController extends AbstractCatalogController {
     /** Verifies mime type */
     private Resource fileUpload(Resource directory, String filename, HttpServletRequest request) {
         if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info(
-                    "PUT file: mimetype="
-                            + request.getContentType()
-                            + ", path="
-                            + directory.path());
+            LOGGER.info("PUT file: mimetype=" + request.getContentType() + ", path=" + directory.path());
         }
         try {
             return RESTUtils.handleBinUpload(filename, directory, false, request);
         } catch (IOException problem) {
-            throw new RestException(
-                    problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
+            throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
         }
     }
 

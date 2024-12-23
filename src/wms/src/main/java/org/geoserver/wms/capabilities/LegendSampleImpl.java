@@ -38,10 +38,9 @@ import org.geoserver.wms.legendgraphic.LegendGraphic;
 import org.geoserver.wms.legendgraphic.PNGLegendOutputFormat;
 
 /**
- * Default implementation of LegendSample. Implements samples caching to disk (png file on a
- * dedicated data_dir folder for each sld file), to be able to read the dimensions when needed.
- * Implements CatalogListener to be notified of style changes and update the cache accordingly and
- * GeoServerLifecycleHandler to handle catalog reload events.
+ * Default implementation of LegendSample. Implements samples caching to disk (png file on a dedicated data_dir folder
+ * for each sld file), to be able to read the dimensions when needed. Implements CatalogListener to be notified of style
+ * changes and update the cache accordingly and GeoServerLifecycleHandler to handle catalog reload events.
  *
  * @author Mauro Bartolomeoli (mauro.bartolomeoli @ geo-solutions.it)
  */
@@ -49,9 +48,8 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
 
     public static final String LEGEND_SAMPLES_FOLDER = "legendsamples";
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    LegendSampleImpl.class.getPackage().getName());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
+            LegendSampleImpl.class.getPackage().getName());
 
     private static final String DEFAULT_SAMPLE_FORMAT = "png";
 
@@ -85,10 +83,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
                         sampleFile.delete();
                     }
                 } catch (IOException e) {
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "Error cleaning invalid legend sample for " + style.getName(),
-                            e);
+                    LOGGER.log(Level.SEVERE, "Error cleaning invalid legend sample for " + style.getName(), e);
                 }
             }
         }
@@ -163,11 +158,10 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
     }
 
     /**
-     * Creates a new sample file for the given style and stores it on disk. The sample dimensions
-     * (width x height) are returned.
+     * Creates a new sample file for the given style and stores it on disk. The sample dimensions (width x height) are
+     * returned.
      */
-    private Dimension createNewSample(StyleInfo style, GetLegendGraphicOutputFormat pngOutputFormat)
-            throws Exception {
+    private Dimension createNewSample(StyleInfo style, GetLegendGraphicOutputFormat pngOutputFormat) throws Exception {
         GetLegendGraphicRequest legendGraphicRequest = new GetLegendGraphicRequest(WMS.get());
         Resource sampleLegendFolder = getSamplesFolder();
 
@@ -250,8 +244,8 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
     }
 
     /**
-     * Gets a unique name for a style, considering the workspace definition, in the form
-     * worspacename:stylename (or stylename if the style is global).
+     * Gets a unique name for a style, considering the workspace definition, in the form worspacename:stylename (or
+     * stylename if the style is global).
      */
     private String getStyleName(StyleInfo styleInfo) {
         return styleInfo.getWorkspace() != null

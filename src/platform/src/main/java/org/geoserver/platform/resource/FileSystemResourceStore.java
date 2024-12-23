@@ -33,11 +33,10 @@ public class FileSystemResourceStore implements ResourceStore {
 
     public static final String GS_LOCK_TRACE = "gs.lock.trace";
     /**
-     * When true, the stack trace that got an input stream that wasn't closed is recorded and then
-     * printed out when warning the user about this.
+     * When true, the stack trace that got an input stream that wasn't closed is recorded and then printed out when
+     * warning the user about this.
      */
-    protected static final Boolean TRACE_ENABLED =
-            "true".equalsIgnoreCase(System.getProperty(GS_LOCK_TRACE));
+    protected static final Boolean TRACE_ENABLED = "true".equalsIgnoreCase(System.getProperty(GS_LOCK_TRACE));
 
     /** LockProvider used to secure resources for exclusive access */
     protected LockProvider lockProvider = new NullLockProvider();
@@ -103,8 +102,7 @@ public class FileSystemResourceStore implements ResourceStore {
         if (!resourceDirectory.exists()) {
             boolean create = resourceDirectory.mkdirs();
             if (!create) {
-                throw new IllegalArgumentException(
-                        "Unable to create directory " + resourceDirectory);
+                throw new IllegalArgumentException("Unable to create directory " + resourceDirectory);
             }
         }
         if (resourceDirectory.exists() && resourceDirectory.isDirectory()) {
@@ -244,10 +242,8 @@ public class FileSystemResourceStore implements ResourceStore {
                     File tryTemp;
                     do {
                         UUID uuid = UUID.randomUUID();
-                        tryTemp =
-                                new File(
-                                        actualFile.getParentFile(),
-                                        String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                        tryTemp = new File(
+                                actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
                     } while (tryTemp.exists());
 
                     temp = tryTemp;
@@ -305,8 +301,7 @@ public class FileSystemResourceStore implements ResourceStore {
                     if (!parent.exists()) {
                         boolean created = parent.mkdirs();
                         if (!created) {
-                            throw new IllegalStateException(
-                                    "Unable to create " + parent.getAbsolutePath());
+                            throw new IllegalStateException("Unable to create " + parent.getAbsolutePath());
                         }
                     }
                     if (parent.isDirectory()) {
@@ -318,15 +313,11 @@ public class FileSystemResourceStore implements ResourceStore {
                             lock.release();
                         }
                         if (!created) {
-                            throw new FileNotFoundException(
-                                    "Unable to create " + file.getAbsolutePath());
+                            throw new FileNotFoundException("Unable to create " + file.getAbsolutePath());
                         }
                     } else {
                         throw new FileNotFoundException(
-                                "Unable to create"
-                                        + file.getName()
-                                        + " - not a directory "
-                                        + parent.getAbsolutePath());
+                                "Unable to create" + file.getName() + " - not a directory " + parent.getAbsolutePath());
                     }
                 } catch (IOException e) {
                     throw new IllegalStateException("Cannot create " + path, e);
@@ -347,8 +338,7 @@ public class FileSystemResourceStore implements ResourceStore {
                     if (!parent.exists()) {
                         boolean created = parent.mkdirs();
                         if (!created) {
-                            throw new IllegalStateException(
-                                    "Unable to create " + parent.getAbsolutePath());
+                            throw new IllegalStateException("Unable to create " + parent.getAbsolutePath());
                         }
                     }
                     if (parent.isDirectory()) {
@@ -360,15 +350,11 @@ public class FileSystemResourceStore implements ResourceStore {
                             lock.release();
                         }
                         if (!created) {
-                            throw new FileNotFoundException(
-                                    "Unable to create " + file.getAbsolutePath());
+                            throw new FileNotFoundException("Unable to create " + file.getAbsolutePath());
                         }
                     } else {
                         throw new FileNotFoundException(
-                                "Unable to create"
-                                        + file.getName()
-                                        + " - not a directory "
-                                        + parent.getAbsolutePath());
+                                "Unable to create" + file.getName() + " - not a directory " + parent.getAbsolutePath());
                     }
                 } catch (IOException e) {
                     throw new IllegalStateException("Cannot create " + path, e);
@@ -431,15 +417,13 @@ public class FileSystemResourceStore implements ResourceStore {
         public Type getType() {
             try {
                 BasicFileAttributes attributes =
-                        java.nio.file.Files.readAttributes(
-                                file.toPath(), BasicFileAttributes.class);
+                        java.nio.file.Files.readAttributes(file.toPath(), BasicFileAttributes.class);
                 if (attributes.isDirectory()) {
                     return Type.DIRECTORY;
                 } else if (attributes.isRegularFile()) {
                     return Type.RESOURCE;
                 } else {
-                    throw new IllegalStateException(
-                            "Path does not represent a configuration resource: " + path);
+                    throw new IllegalStateException("Path does not represent a configuration resource: " + path);
                 }
             } catch (NoSuchFileException e) {
                 return Type.UNDEFINED;
@@ -496,10 +480,7 @@ public class FileSystemResourceStore implements ResourceStore {
                     return Resources.renameByCopy(this, dest);
                 }
             } catch (IOException e) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Failed to rename file resource " + path + " to " + dest.path(),
-                        e);
+                LOGGER.log(Level.WARNING, "Failed to rename file resource " + path + " to " + dest.path(), e);
                 return false;
             }
             return true;
@@ -523,10 +504,8 @@ public class FileSystemResourceStore implements ResourceStore {
                     File tryTemp;
                     do {
                         UUID uuid = UUID.randomUUID();
-                        tryTemp =
-                                new File(
-                                        actualFile.getParentFile(),
-                                        String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                        tryTemp = new File(
+                                actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
                     } while (tryTemp.exists());
 
                     temp = tryTemp;
@@ -552,13 +531,8 @@ public class FileSystemResourceStore implements ResourceStore {
         if (instance == null) {
             // lazily initialize the FileSystemWatcher in a thread contention free way,
             // creating a single instance
-            instance =
-                    watcher.updateAndGet(
-                            v ->
-                                    v == null
-                                            ? new FileSystemWatcher(
-                                                    path -> new File(baseDirectory, path))
-                                            : v);
+            instance = watcher.updateAndGet(
+                    v -> v == null ? new FileSystemWatcher(path -> new File(baseDirectory, path)) : v);
         }
         return instance;
     }

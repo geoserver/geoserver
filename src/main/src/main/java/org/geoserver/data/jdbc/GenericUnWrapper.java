@@ -22,16 +22,15 @@ import org.geotools.util.logging.Logging;
 /**
  * Generic UnWrapper using reflection to access original JDBC connection.
  *
- * <p>This implementation is a stand-in for SpringUnWrapper which is not currently able to unwrap
- * JBoss WrappedConnectionJDK6 connections. While a list of well-known Connection implementations is
- * catered for (with both the class name and unwrap method recorded) the GenericUnWrapper is willing
- * to search through the available fields looking for an implementation of Connection to return.
+ * <p>This implementation is a stand-in for SpringUnWrapper which is not currently able to unwrap JBoss
+ * WrappedConnectionJDK6 connections. While a list of well-known Connection implementations is catered for (with both
+ * the class name and unwrap method recorded) the GenericUnWrapper is willing to search through the available fields
+ * looking for an implementation of Connection to return.
  *
  * @author Jody Garnett - OpenGeo
  */
 public class GenericUnWrapper implements UnWrapper {
-    private static final Logger LOGGER =
-            Logging.getLogger("org.geoserver.data.jdbc.GenericUnWrapper");
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.data.jdbc.GenericUnWrapper");
 
     private static final Method IGNORE;
 
@@ -39,14 +38,13 @@ public class GenericUnWrapper implements UnWrapper {
         try {
             IGNORE = GenericUnWrapper.class.getMethod("ignore", new Class[0]);
         } catch (Exception inconsistent) {
-            throw new IllegalStateException(
-                    "Expected static GenericUnWrapper ignore() method", inconsistent);
+            throw new IllegalStateException("Expected static GenericUnWrapper ignore() method", inconsistent);
         }
     }
 
     /**
-     * Primary record of known access methods used to unwrap conenctions in exotic deployment
-     * environments such as JBoss.
+     * Primary record of known access methods used to unwrap conenctions in exotic deployment environments such as
+     * JBoss.
      *
      * <p>This field is package visible to allow local testing.
      */
@@ -90,8 +88,7 @@ public class GenericUnWrapper implements UnWrapper {
     }
 
     /** Look up method used for unwrapping (if supported in the application container). */
-    private static void methodSearch(
-            String env, Map<Class<?>, Method> methods, String className, String methodName) {
+    private static void methodSearch(String env, Map<Class<?>, Method> methods, String className, String methodName) {
         try {
             Class<?> wrappedConnection = Class.forName(className);
             Method unwrap = wrappedConnection.getMethod(methodName, (Class[]) null);
@@ -122,8 +119,7 @@ public class GenericUnWrapper implements UnWrapper {
             return unwrapped;
         } else {
             throw new IllegalArgumentException(
-                    "This connection is not unwrappable, "
-                            + "check canUnwrap before calling unwrap");
+                    "This connection is not unwrappable, " + "check canUnwrap before calling unwrap");
         }
     }
 
@@ -140,19 +136,16 @@ public class GenericUnWrapper implements UnWrapper {
             return unwrapped;
         } else {
             throw new IllegalArgumentException(
-                    "This statement is not unwrappable, "
-                            + "check canUnwrap before calling unwrap");
+                    "This statement is not unwrappable, " + "check canUnwrap before calling unwrap");
         }
     }
 
     /**
-     * Using provided map of methods to unwrap. For each implementation class an unwrapper method is
-     * is provided, or null is sentinel (indicating no method is available). For classes that do not
-     * provide an unwrapping method reflection is tried once (resulting in either a cached method to
-     * next time, or null for use as a sentinel
+     * Using provided map of methods to unwrap. For each implementation class an unwrapper method is is provided, or
+     * null is sentinel (indicating no method is available). For classes that do not provide an unwrapping method
+     * reflection is tried once (resulting in either a cached method to next time, or null for use as a sentinel
      */
-    @SuppressWarnings(
-            "deprecation") // Method.isAccessible is deprecated but replacement not available in
+    @SuppressWarnings("deprecation") // Method.isAccessible is deprecated but replacement not available in
     // Java 8
     private <T> T unwrapInternal(Class<T> target, T conn, Map<Class<?>, Method> methods) {
         Class<?> implementation = conn.getClass();
@@ -206,47 +199,41 @@ public class GenericUnWrapper implements UnWrapper {
     private <T> T unwrapInternal(Class<T> target, T conn, Class<?> wrapper, Method accessMethod) {
         if (accessMethod == null) {
             LOGGER.finest(
-                    "Using "
-                            + wrapper.getName()
-                            + " does not have accessMethod to unwrap "
-                            + target.getSimpleName());
+                    "Using " + wrapper.getName() + " does not have accessMethod to unwrap " + target.getSimpleName());
             return null; // skip inaccessible method
         }
         try {
             Object result = accessMethod.invoke(conn, (Object[]) null);
             if (result == null) {
-                LOGGER.finest(
-                        "Using "
-                                + wrapper.getName()
-                                + "."
-                                + accessMethod.getName()
-                                + "() to unwrap "
-                                + target.getSimpleName()
-                                + " produced a null");
+                LOGGER.finest("Using "
+                        + wrapper.getName()
+                        + "."
+                        + accessMethod.getName()
+                        + "() to unwrap "
+                        + target.getSimpleName()
+                        + " produced a null");
                 return null;
             }
             if (result == conn) {
-                LOGGER.finest(
-                        "Using "
-                                + wrapper.getName()
-                                + "."
-                                + accessMethod.getName()
-                                + "() to unwrap did not result in native "
-                                + target.getSimpleName()
-                                + ": "
-                                + result.getClass().getSimpleName());
+                LOGGER.finest("Using "
+                        + wrapper.getName()
+                        + "."
+                        + accessMethod.getName()
+                        + "() to unwrap did not result in native "
+                        + target.getSimpleName()
+                        + ": "
+                        + result.getClass().getSimpleName());
                 return null;
             }
             if (!target.isInstance(result)) {
-                LOGGER.finest(
-                        "Using "
-                                + wrapper.getName()
-                                + "."
-                                + accessMethod.getName()
-                                + "() to unwrap did not result in native "
-                                + target.getSimpleName()
-                                + ": "
-                                + result.getClass().getSimpleName());
+                LOGGER.finest("Using "
+                        + wrapper.getName()
+                        + "."
+                        + accessMethod.getName()
+                        + "() to unwrap did not result in native "
+                        + target.getSimpleName()
+                        + ": "
+                        + result.getClass().getSimpleName());
                 return null;
             }
             return target.cast(result);

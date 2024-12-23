@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 public class GeoServerJ2eeAuthenticationFilter extends GeoServerJ2eeBaseAuthenticationFilter {
     @Override
     protected String getPreAuthenticatedPrincipalName(HttpServletRequest request) {
-        return request.getUserPrincipal() == null ? null : request.getUserPrincipal().getName();
+        return request.getUserPrincipal() == null
+                ? null
+                : request.getUserPrincipal().getName();
     }
 }

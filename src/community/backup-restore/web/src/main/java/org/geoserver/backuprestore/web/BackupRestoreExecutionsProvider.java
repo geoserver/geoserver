@@ -14,17 +14,13 @@ import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 /** @author Alessio Fabiani, GeoSolutions */
-public class BackupRestoreExecutionsProvider<T>
-        extends GeoServerDataProvider<AbstractExecutionAdapter> {
+public class BackupRestoreExecutionsProvider<T> extends GeoServerDataProvider<AbstractExecutionAdapter> {
     public static Property<AbstractExecutionAdapter> ID = new BeanProperty("id", "id");
     public static Property<AbstractExecutionAdapter> STATE = new BeanProperty("state", "status");
     public static Property<AbstractExecutionAdapter> STARTED = new BeanProperty("started", "time");
-    public static Property<AbstractExecutionAdapter> OPTIONS =
-            new BeanProperty("options", "options");
-    public static Property<AbstractExecutionAdapter> PROGRESS =
-            new BeanProperty("progress", "progress");
-    public static Property<AbstractExecutionAdapter> ARCHIVEFILE =
-            new BeanProperty("archiveFile", "archiveFile");
+    public static Property<AbstractExecutionAdapter> OPTIONS = new BeanProperty("options", "options");
+    public static Property<AbstractExecutionAdapter> PROGRESS = new BeanProperty("progress", "progress");
+    public static Property<AbstractExecutionAdapter> ARCHIVEFILE = new BeanProperty("archiveFile", "archiveFile");
 
     boolean sortByUpdated = false;
     private Class<T> clazz;

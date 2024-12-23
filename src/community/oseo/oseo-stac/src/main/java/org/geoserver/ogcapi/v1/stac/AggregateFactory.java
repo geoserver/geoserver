@@ -46,16 +46,14 @@ public class AggregateFactory {
                     return pt;
                 }
             }
-            throw new NoSuchElementException(
-                    "AggregateType with string " + string + " has not been found");
+            throw new NoSuchElementException("AggregateType with string " + string + " has not been found");
         }
     }
 
     private static Query getCollectionQuery(
             String collectionIdentifier, String sourceProperty, AggregateType aggregate) {
         Filter collectionFilter =
-                STACService.getProductInCollectionFilter(
-                        Collections.singletonList(collectionIdentifier));
+                STACService.getProductInCollectionFilter(Collections.singletonList(collectionIdentifier));
         Query query = new Query();
         query.setFilter(collectionFilter);
         if (AggregateType.MAX.equals(aggregate) || AggregateType.MIN.equals(aggregate)) {
@@ -69,8 +67,7 @@ public class AggregateFactory {
         return query;
     }
 
-    private static Object wrapReturnValue(
-            AggregateType aggregate, String property, Object visitorReturn) {
+    private static Object wrapReturnValue(AggregateType aggregate, String property, Object visitorReturn) {
         if (AggregateType.MIN.equals(aggregate) || AggregateType.MAX.equals(aggregate)) {
             if (visitorReturn != null) {
                 return visitorReturn;
@@ -114,12 +111,10 @@ public class AggregateFactory {
     public static class MaxAggregate implements AggregateStats {
 
         @Override
-        public Object getStat(
-                FeatureSource productSource, String collectionIdentifier, String sourceProperty)
+        public Object getStat(FeatureSource productSource, String collectionIdentifier, String sourceProperty)
                 throws IOException {
             FeatureCalc visitor = new MaxVisitor(sourceProperty);
-            Query query =
-                    getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.MAX);
+            Query query = getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.MAX);
             productSource.getFeatures(query).accepts(visitor, null);
             return wrapReturnValue(
                     AggregateType.MAX, sourceProperty, visitor.getResult().getValue());
@@ -130,12 +125,10 @@ public class AggregateFactory {
     public static class MinAggregate implements AggregateStats {
 
         @Override
-        public Object getStat(
-                FeatureSource productSource, String collectionIdentifier, String sourceProperty)
+        public Object getStat(FeatureSource productSource, String collectionIdentifier, String sourceProperty)
                 throws IOException {
             FeatureCalc visitor = new MinVisitor(sourceProperty);
-            Query query =
-                    getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.MIN);
+            Query query = getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.MIN);
             productSource.getFeatures(query).accepts(visitor, null);
             return wrapReturnValue(
                     AggregateType.MIN, sourceProperty, visitor.getResult().getValue());
@@ -146,13 +139,10 @@ public class AggregateFactory {
     public static class DistinctAggregate implements AggregateStats {
 
         @Override
-        public Object getStat(
-                FeatureSource productSource, String collectionIdentifier, String sourceProperty)
+        public Object getStat(FeatureSource productSource, String collectionIdentifier, String sourceProperty)
                 throws IOException {
             FeatureCalc visitor = new UniqueVisitor(sourceProperty);
-            Query query =
-                    getCollectionQuery(
-                            collectionIdentifier, sourceProperty, AggregateType.DISTINCT);
+            Query query = getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.DISTINCT);
             productSource.getFeatures(query).accepts(visitor, null);
             return wrapReturnValue(
                     AggregateType.DISTINCT, sourceProperty, visitor.getResult().getValue());
@@ -163,19 +153,15 @@ public class AggregateFactory {
     public static class BoundsAggregate implements AggregateStats {
 
         @Override
-        public Object getStat(
-                FeatureSource productSource, String collectionIdentifier, String sourceProperty)
+        public Object getStat(FeatureSource productSource, String collectionIdentifier, String sourceProperty)
                 throws IOException {
-            Query query =
-                    getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.BOUNDS);
+            Query query = getCollectionQuery(collectionIdentifier, sourceProperty, AggregateType.BOUNDS);
             Object bounds = productSource.getFeatures(query).getBounds();
             return wrapReturnValue(AggregateType.BOUNDS, sourceProperty, bounds);
         }
     }
 
-    /**
-     * A wrapper class for a ReferencedEnvelope that exposes the minx, maxx, miny, and maxy values
-     */
+    /** A wrapper class for a ReferencedEnvelope that exposes the minx, maxx, miny, and maxy values */
     static class EnvelopeWrapper {
         private List<Double> x;
         private List<Double> y;

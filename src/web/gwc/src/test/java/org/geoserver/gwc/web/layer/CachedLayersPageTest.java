@@ -74,8 +74,7 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         assertNotNull(tileLayer);
 
         tester.startComponentInPage(
-                new ConfigureCachedLayerAjaxLink(
-                        "test", new TileLayerDetachableModel(tileLayer.getName()), null));
+                new ConfigureCachedLayerAjaxLink("test", new TileLayerDetachableModel(tileLayer.getName()), null));
         // tester.debugComponentTrees();
         tester.executeAjaxEvent("test:link", "click");
         tester.assertNoErrorMessage();
@@ -98,11 +97,10 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testMangleSeedLink() {
         // Mimic a Proxy URL mangler
-        URLMangler testMangler =
-                (base, path, map, type) -> {
-                    base.setLength(0);
-                    base.append("http://rewrite/");
-                };
+        URLMangler testMangler = (base, path, map, type) -> {
+            base.setLength(0);
+            base.append("http://rewrite/");
+        };
         extensions.singleton("testMangler", testMangler, URLMangler.class);
 
         CachedLayersPage page = new CachedLayersPage();
@@ -122,11 +120,10 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testManglePreviewLink() {
         // Mimic a Proxy URL mangler
-        URLMangler testMangler =
-                (base, path, map, type) -> {
-                    base.setLength(0);
-                    base.append("http://rewrite/");
-                };
+        URLMangler testMangler = (base, path, map, type) -> {
+            base.setLength(0);
+            base.append("http://rewrite/");
+        };
         extensions.singleton("testMangler", testMangler, URLMangler.class);
         assertPreviewLinks("http://rewrite/gwc/demo/cgf");
     }
@@ -134,14 +131,13 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     private static void assertPreviewLinks(String url) {
         CachedLayersPage page = new CachedLayersPage();
         tester.startPage(page);
-        List<TagTester> tags =
-                TagTester.createTags(
-                        tester.getLastResponseAsString(),
-                        tag -> {
-                            String value = tag.getAttributes().getString("value");
-                            return value != null && value.startsWith(url);
-                        },
-                        false);
+        List<TagTester> tags = TagTester.createTags(
+                tester.getLastResponseAsString(),
+                tag -> {
+                    String value = tag.getAttributes().getString("value");
+                    return value != null && value.startsWith(url);
+                },
+                false);
         assertEquals("Incorrect number of preview links starting with " + url, 20, tags.size());
     }
 

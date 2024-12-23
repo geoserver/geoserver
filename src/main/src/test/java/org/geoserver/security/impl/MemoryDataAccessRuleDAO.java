@@ -13,8 +13,7 @@ import org.vfny.geoserver.global.ConfigurationException;
 /** A {@link DataAccessRuleDAO} variant that lives in memory */
 class MemoryDataAccessRuleDAO extends DataAccessRuleDAO {
 
-    public MemoryDataAccessRuleDAO(Catalog rawCatalog, Properties props)
-            throws ConfigurationException {
+    public MemoryDataAccessRuleDAO(Catalog rawCatalog, Properties props) throws ConfigurationException {
         super(rawCatalog, null);
         loadRules(props);
     }

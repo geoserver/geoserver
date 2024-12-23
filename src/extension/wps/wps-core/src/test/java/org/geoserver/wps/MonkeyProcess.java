@@ -42,8 +42,7 @@ public class MonkeyProcess {
         }
     }
 
-    public static void exit(String id, SimpleFeatureCollection value, boolean wait)
-            throws InterruptedException {
+    public static void exit(String id, SimpleFeatureCollection value, boolean wait) throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exit, value));
         if (wait) {
             while (!getCommandQueue(id).isEmpty()) {
@@ -62,8 +61,7 @@ public class MonkeyProcess {
         return queue;
     }
 
-    public static void progress(String id, float progress, boolean wait)
-            throws InterruptedException {
+    public static void progress(String id, float progress, boolean wait) throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.SetProgress, progress));
         if (wait) {
             while (!getCommandQueue(id).isEmpty()) {
@@ -76,8 +74,7 @@ public class MonkeyProcess {
         getCommandQueue(id).put(new Command(CommandType.Wait, wait));
     }
 
-    public static void exception(String id, ProcessException exception, boolean wait)
-            throws InterruptedException {
+    public static void exception(String id, ProcessException exception, boolean wait) throws InterruptedException {
         getCommandQueue(id).put(new Command(CommandType.Exception, exception));
         if (wait) {
             while (!getCommandQueue(id).isEmpty()) {
@@ -123,11 +120,10 @@ public class MonkeyProcess {
     public static void clearCommands() {
         for (Map.Entry<String, BlockingQueue<MonkeyProcess.Command>> entry : commands.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                throw new IllegalStateException(
-                        "The command queue is not clean, queue "
-                                + entry.getKey()
-                                + " still has commands in: "
-                                + entry.getValue());
+                throw new IllegalStateException("The command queue is not clean, queue "
+                        + entry.getKey()
+                        + " still has commands in: "
+                        + entry.getValue());
             }
         }
 

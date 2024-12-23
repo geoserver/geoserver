@@ -409,8 +409,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
 
     @Override
     public boolean addParameterFilter(ParameterFilter parameterFilter) {
-        return parameterFiltersMap.put(parameterFilter.getKey().toUpperCase(), parameterFilter)
-                != null;
+        return parameterFiltersMap.put(parameterFilter.getKey().toUpperCase(), parameterFilter) != null;
     }
 
     @Override

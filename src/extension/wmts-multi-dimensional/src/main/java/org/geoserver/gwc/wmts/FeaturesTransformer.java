@@ -48,18 +48,15 @@ class FeaturesTransformer extends TransformerBase {
         @Override
         public void encode(Object object) throws IllegalArgumentException {
             if (!(object instanceof Domains)) {
-                throw new IllegalArgumentException(
-                        "Expected domains info but instead got: "
-                                + object.getClass().getCanonicalName());
+                throw new IllegalArgumentException("Expected domains info but instead got: "
+                        + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
-            Attributes nameSpaces =
-                    createAttributes(
-                            new String[] {
-                                "xmlns:xs", "http://www.w3.org/2001/XMLSchema",
-                                "xmlns:gml", "http://www.opengis.net/gml",
-                                "xmlns:wmts", "http://www.opengis.net/wmts/1.0"
-                            });
+            Attributes nameSpaces = createAttributes(new String[] {
+                "xmlns:xs", "http://www.w3.org/2001/XMLSchema",
+                "xmlns:gml", "http://www.opengis.net/gml",
+                "xmlns:wmts", "http://www.opengis.net/wmts/1.0"
+            });
             start("wmts:FeatureCollection", nameSpaces);
             try (FeatureIterator iterator = domains.getFeatureCollection().features()) {
                 while (iterator.hasNext()) {
@@ -76,8 +73,7 @@ class FeaturesTransformer extends TransformerBase {
             start("wmts:feature", attributes);
             start("wmts:footprint");
             // encode the geometry
-            GeometryDescriptor geometryDescriptor =
-                    feature.getFeatureType().getGeometryDescriptor();
+            GeometryDescriptor geometryDescriptor = feature.getFeatureType().getGeometryDescriptor();
             Geometry geometry = (Geometry) feature.getAttribute(geometryDescriptor.getName());
             handleGeometry(geometry);
             // encode the dimensions
@@ -108,16 +104,14 @@ class FeaturesTransformer extends TransformerBase {
                 Encoder encoder = new Encoder(new GMLConfiguration());
                 encoder.encode(geometry, elementName, contentHandler);
             } catch (Exception exception) {
-                throw new RuntimeException(
-                        "Cannot transform the specified geometry in GML.", exception);
+                throw new RuntimeException("Cannot transform the specified geometry in GML.", exception);
             }
         }
 
         /** Encodes a dimension extracting the dimension value from the feature. */
         private void handleDimension(SimpleFeature feature, Dimension dimension) {
             Object value = feature.getAttribute(dimension.getAttributes().first);
-            Attributes attributes =
-                    createAttributes(new String[] {"name", dimension.getDimensionName()});
+            Attributes attributes = createAttributes(new String[] {"name", dimension.getDimensionName()});
             element("wmts:dimension", DimensionsUtils.formatDomainValue(value), attributes);
         }
     }

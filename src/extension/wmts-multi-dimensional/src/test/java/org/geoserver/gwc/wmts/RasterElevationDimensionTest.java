@@ -23,10 +23,7 @@ import org.geoserver.gwc.wmts.dimensions.RasterElevationDimension;
 import org.geotools.api.filter.Filter;
 import org.junit.Test;
 
-/**
- * This class contains tests that check that elevation dimensions values are correctly extracted
- * from rasters.
- */
+/** This class contains tests that check that elevation dimensions values are correctly extracted from rasters. */
 public class RasterElevationDimensionTest extends TestsSupport {
 
     @Test
@@ -39,14 +36,18 @@ public class RasterElevationDimensionTest extends TestsSupport {
         getCatalog().save(rasterInfo);
         // check that we correctly retrieve the elevation dimension
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(1));
         // disable the elevation dimension
         dimensionInfo.setEnabled(false);
         rasterInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(rasterInfo);
         // no dimensions should be available
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(0));
     }
 
     @Test

@@ -17,19 +17,17 @@ import org.junit.Test;
 
 public class SecuredWebMapTileServerTest {
 
-    @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
 
     @Test
     public void testCanSecure() throws IOException, ServiceException {
         String capabilitiesURL =
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         URL serverURL = new URL(capabilitiesURL);
         MockHttpClient mockClient = new MockHttpClient();
         mockClient.expectGet(
-                serverURL,
-                new MockHttpResponse(
-                        WMTSStoreInfoImpl.class.getResource("nasa.getcapa.xml"), "text/xml"));
+                serverURL, new MockHttpResponse(WMTSStoreInfoImpl.class.getResource("nasa.getcapa.xml"), "text/xml"));
         TestHttpClientProvider.bind(mockClient, serverURL);
         HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
 

@@ -13,9 +13,6 @@ public class InvalidColumnTestData extends AbstractAppSchemaMockData {
     @Override
     public void addContent() {
         addFeatureType(
-                GSML_PREFIX,
-                "GeologicUnit",
-                "InvalidColumnGeologicUnit.xml",
-                "InvalidColumnGeologicUnit.properties");
+                GSML_PREFIX, "GeologicUnit", "InvalidColumnGeologicUnit.xml", "InvalidColumnGeologicUnit.properties");
     }
 }

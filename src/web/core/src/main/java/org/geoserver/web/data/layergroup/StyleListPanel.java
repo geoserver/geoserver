@@ -41,8 +41,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
         @Override
         protected List<StyleInfo> getItems() {
             List<StyleInfo> items;
-            if (publishedInfo instanceof LayerGroupInfo)
-                items = groupStyles((LayerGroupInfo) publishedInfo);
+            if (publishedInfo instanceof LayerGroupInfo) items = groupStyles((LayerGroupInfo) publishedInfo);
             else items = new ArrayList<>(getCatalog().getStyles());
             return items;
         }
@@ -82,8 +81,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Component getComponentForProperty(
-            String id, IModel<StyleInfo> itemModel, Property<StyleInfo> property) {
+    protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel, Property<StyleInfo> property) {
         final StyleInfo style = itemModel.getObject();
         if (property == NAME) {
             return new SimpleAjaxLink<>(id, (IModel<String>) NAME.getModel(itemModel)) {

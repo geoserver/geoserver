@@ -127,8 +127,7 @@ public class ImporterTest extends ImporterTestSupport {
         assertEquals(bbox, resource.getNativeBoundingBox());
 
         // Test nonempty bbox - should not be changed
-        ReferencedEnvelope customBbox =
-                new ReferencedEnvelope(30, 60, -10, 30, bbox.getCoordinateReferenceSystem());
+        ReferencedEnvelope customBbox = new ReferencedEnvelope(30, 60, -10, 30, bbox.getCoordinateReferenceSystem());
         resource.setNativeBoundingBox(customBbox);
         assertNotEquals(bbox, resource.getNativeBoundingBox());
         importer.calculateBounds(resource);

@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * A queue of images with memory control (provides just enough functionality to support legend
- * graphic construction and layout, not a generic Queue implementation). Will check the memory
- * limits and throw an exception if they are exceeded.
+ * A queue of images with memory control (provides just enough functionality to support legend graphic construction and
+ * layout, not a generic Queue implementation). Will check the memory limits and throw an exception if they are
+ * exceeded.
  */
 class ImageQueue {
 

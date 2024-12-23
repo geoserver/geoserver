@@ -19,13 +19,12 @@ import org.geotools.ows.wms.WebMapServer;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the delegate wms store info. Subclasses will override selected methods
- * to perform their "decoration" job
+ * Delegates every method to the delegate wms store info. Subclasses will override selected methods to perform their
+ * "decoration" job
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo>
-        implements WMSStoreInfo {
+public class DecoratingWMSStoreInfo extends AbstractDecorator<WMSStoreInfo> implements WMSStoreInfo {
 
     public DecoratingWMSStoreInfo(WMSStoreInfo delegate) {
         super(delegate);

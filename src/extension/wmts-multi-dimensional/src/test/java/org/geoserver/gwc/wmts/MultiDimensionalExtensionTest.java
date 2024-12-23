@@ -39,43 +39,27 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 /**
- * Tests that perform requests again the multidimensional extension and check the results for the
- * main four operations: GetCapabilities, DescribeDomains, GetHistogram and GetFewature
+ * Tests that perform requests again the multidimensional extension and check the results for the main four operations:
+ * GetCapabilities, DescribeDomains, GetHistogram and GetFewature
  */
 public class MultiDimensionalExtensionTest extends TestsSupport {
 
     @Override
     protected void afterSetup(SystemTestData testData) {
         // registering elevation and time dimensions for a raster
-        CoverageInfo rasterInfo =
-                getCatalog().getCoverageByName(RASTER_ELEVATION_TIME.getLocalPart());
+        CoverageInfo rasterInfo = getCatalog().getCoverageByName(RASTER_ELEVATION_TIME.getLocalPart());
+        registerLayerDimension(rasterInfo, ResourceInfo.ELEVATION, null, DimensionPresentation.LIST, minimumValue());
         registerLayerDimension(
-                rasterInfo,
-                ResourceInfo.ELEVATION,
-                null,
-                DimensionPresentation.LIST,
-                minimumValue());
-        registerLayerDimension(
-                rasterInfo,
-                ResourceInfo.TIME,
-                null,
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                minimumValue());
+                rasterInfo, ResourceInfo.TIME, null, DimensionPresentation.CONTINUOUS_INTERVAL, minimumValue());
         // registering elevation and time dimensions for a vector
-        FeatureTypeInfo vectorInfo =
-                getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
+        FeatureTypeInfo vectorInfo = getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
         registerLayerDimension(
                 vectorInfo,
                 ResourceInfo.ELEVATION,
                 "startElevation",
                 DimensionPresentation.CONTINUOUS_INTERVAL,
                 minimumValue());
-        registerLayerDimension(
-                vectorInfo,
-                ResourceInfo.TIME,
-                "startTime",
-                DimensionPresentation.LIST,
-                minimumValue());
+        registerLayerDimension(vectorInfo, ResourceInfo.TIME, "startTime", DimensionPresentation.LIST, minimumValue());
         // register dimension for raster custom
         CoverageInfo rasterCustom = getCatalog().getCoverageByName(RASTER_CUSTOM.getLocalPart());
         registerLayerDimension(
@@ -89,8 +73,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testGetCapabilitiesOperation() throws Exception {
         // perform the get capabilities request
-        MockHttpServletResponse response =
-                getAsServletResponse("gwc/service/wmts?request=GetCapabilities");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?request=GetCapabilities");
         Document result = getResultAsDocument(response, "text/xml");
         // four total dimensions that we are going to check one by one
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension", "5");
@@ -98,22 +81,13 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // DescribeDomains
         // check raster elevation dimension
         checkXpathCount(
-                result,
-                "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']",
-                "1");
+                result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='0']", "1");
         checkXpathCount(
-                result,
-                "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='0']",
-                "1");
-        checkXpathCount(
-                result,
-                "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='100']",
-                "1");
+                result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='100']", "1");
         // check raster time dimension
         checkXpathCount(
-                result,
-                "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']",
-                "1");
+                result, "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Default='0.0']", "1");
         checkXpathCount(
                 result,
                 "/wmts:Contents/wmts:Layer[ows:Title='watertemp']/wmts:Dimension[wmts:Value='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']",
@@ -145,10 +119,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -167,31 +140,18 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 "1");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']", "1");
     }
 
     @Test
     public void testRasterDescribeDomainsOperationNoSpace() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&domains=elevation,time");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&domains=elevation,time");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -214,49 +174,31 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterDescribeDomainsOperationOnlySpace() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&domains=bbox");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&domains=bbox");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "0");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']", "1");
     }
 
     @Test
     public void testRasterDescribeDomainsOperationInvalidDimension() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&domains=abcd");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&domains=abcd");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result =
-                getResultAsDocument(
-                        response,
-                        "text/xml",
-                        HttpStatus.BAD_REQUEST); // check that we have two domains
-        assertEquals(
-                "InvalidParameterValue", xpath.evaluate("//ows:Exception/@exceptionCode", result));
+                getResultAsDocument(response, "text/xml", HttpStatus.BAD_REQUEST); // check that we have two domains
+        assertEquals("InvalidParameterValue", xpath.evaluate("//ows:Exception/@exceptionCode", result));
         assertEquals("Domains", xpath.evaluate("//ows:Exception/@locator", result));
         assertThat(xpath.evaluate("//ows:ExceptionText", result), containsString("'abcd'"));
     }
@@ -264,10 +206,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOperation() throws Exception {
         // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -275,16 +216,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
 
         // check the elevation domain
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='1.0,2.0,3.0,5.0']", "1");
         // check the time domain
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']", "1");
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']",
@@ -301,10 +236,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsOperationWithElevationFilter() throws Exception {
         // perform the get describe domains operation request filter elevations that are equal to
         // 100.0
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&elevation=100");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&elevation=100");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -323,32 +257,19 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "1");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']", "1");
     }
 
     @Test
     public void testVectorDescribeDomainsOperationWithTimeFilterNoResults() throws Exception {
         // perform the get describe domains operation request filter elevations that are equal to
         // 100.0
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME) + "&time=1980-10-31T00:00:00.000Z");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&time=1980-10-31T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -361,13 +282,11 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
-    public void testRasterDescribeDomainsOperationWithBoundingBoxNoResultsFilter()
-            throws Exception {
+    public void testRasterDescribeDomainsOperationWithBoundingBoxNoResultsFilter() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check that we have two domains
@@ -382,11 +301,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsReprojectedFilterMosaic() throws Exception {
         // perform the get describe domains operation with a spatial restriction in 3857, crossing
         // the data
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME)
-                                + "&bbox=700000,5000000,800000,6000000,EPSG:3857");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=700000,5000000,800000,6000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -403,10 +320,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // perform the get describe domains operation with a spatial restriction across the
         // dateline,
         // with the part covering the data fully outside of the dateline
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=170,40,374,45,EPSG:4326");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=170,40,374,45,EPSG:4326");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -422,11 +338,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testRasterDescribeDomainsReprojectedOutsideValid() throws Exception {
         // perform the get describe domains operation with a spatial restriction in 3857 and with
         // values wrapped to a "second copy of the world" past the dateline
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME)
-                                + "&bbox=40000000,5000000,41000000,6000000,EPSG:3857");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=40000000,5000000,41000000,6000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -439,14 +353,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     @Test
-    public void testRasterDescribeDomainsOperationWithBoundingAndWrongTileMatrixSet()
-            throws Exception {
+    public void testRasterDescribeDomainsOperationWithBoundingAndWrongTileMatrixSet() throws Exception {
         // perform the get describe domains operation with a spatial restriction and in invalid tile
         // matrix set
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:XXXX",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:XXXX",
+                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=5,5,6,6");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         // this request should fail because of the invalid tile matrix set
         assertThat(response.getContentAsString(), containsString("Unknown grid set"));
@@ -456,10 +368,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOperationWithBoundingBoxFilter() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
@@ -472,20 +383,14 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // check the elevation domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']", "1");
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0,2.0,3.0,5.0']",
                 "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']", "1");
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']",
@@ -495,11 +400,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsReprojectedFilter() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME)
-                                + "&bbox=-20000000,-20000000,20000000,20000000,EPSG:3857");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-20000000,-20000000,20000000,20000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -511,10 +414,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsAcrossDateline() throws Exception {
         // spatial restriction across the dateline, the polygons are the 4 quadrants covering the
         // world
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=170,-90,190,90,EPSG:4326");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=170,-90,190,90,EPSG:4326");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -525,10 +427,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorDescribeDomainsOutsideWorld() throws Exception {
         // spatial restriction is whole world but completely outside range, code should re-roll it
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=180,-90,540,90,EPSG:4326");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=180,-90,540,90,EPSG:4326");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -540,11 +441,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsAcrossDatelineWebMercator() throws Exception {
         // spatial restriction across the dateline in 3857, the polygons are the 4 quadrants
         // covering the world
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME)
-                                + "&bbox=19000000,-20000000,21000000,20000000,EPSG:3857");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=19000000,-20000000,21000000,20000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -556,11 +455,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testVectorDescribeDomainsOutswideWorldWebMercator() throws Exception {
         // spatial restriction outside of the valid 3857 domain, the polygons are the 4 quadrants
         // covering the world
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME)
-                                + "&bbox=21000000,-20000000,59000000,20000000,EPSG:3857");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=21000000,-20000000,59000000,20000000,EPSG:3857");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -580,21 +477,14 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // check the elevation domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']", "1");
         checkXpathCount(
                 result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='4']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0,2"
-                        + ".0,3.0,5.0']",
+                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0,2" + ".0,3.0,5.0']",
                 "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']", "1");
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[ows:Identifier='time' and "
@@ -603,16 +493,15 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     /**
-     * Same as {@link #testVectorDescribeDomainsOperationWithBoundingBoxFilter()} but with a limit
-     * of zero, so all domain descriptions should contract to a min max value
+     * Same as {@link #testVectorDescribeDomainsOperationWithBoundingBoxFilter()} but with a limit of zero, so all
+     * domain descriptions should contract to a min max value
      */
     @Test
     public void testVectorDescribeDomainsOperationWithLimitZero() throws Exception {
         // perform the get describe domains operation with a spatial restriction
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90&expandLimit=0");
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&bbox=-180,-90,180,90&expandLimit=0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // check the space domain
@@ -625,20 +514,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // check the elevation domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='2']", "1");
         checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Size='2']",
-                "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0--5.0']",
-                "1");
+                result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'elevation' and md:Domain='1.0--5.0']", "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier = 'time' and md:Size='2']", "1");
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Domain='2012-02-11T00:00:00.000Z--2012-02-12T00:00:00.000Z']",
@@ -648,10 +529,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetHistogramOperationForElevation() throws Exception {
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25",
-                        getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25",
+                getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -664,11 +544,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterEmptyElevationHistogram() throws Exception {
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s"
-                                + "&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25&elevation=-100",
-                        getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s"
+                        + "&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=25&elevation=-100",
+                getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // print(result);
@@ -679,11 +558,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterEmptyTimeHistogram() throws Exception {
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s"
-                                + "&TileMatrixSet=EPSG:4326&histogram=time&elevation=-100",
-                        getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s"
+                        + "&TileMatrixSet=EPSG:4326&histogram=time&elevation=-100",
+                getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // print(result);
@@ -694,11 +572,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterEmptyCustomHistogram() throws Exception {
         // perform the get histogram operation request (empty domain via dimension filter)
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s"
-                                + "&TileMatrixSet=EPSG:4326&histogram=%s&%s=FOOBAR",
-                        getLayerId(RASTER_CUSTOM), CUSTOM_DIMENSION_NAME, CUSTOM_DIMENSION_NAME);
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s" + "&TileMatrixSet=EPSG:4326&histogram=%s&%s=FOOBAR",
+                getLayerId(RASTER_CUSTOM), CUSTOM_DIMENSION_NAME, CUSTOM_DIMENSION_NAME);
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -711,29 +587,21 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
 
         // enable dimensions
         registerLayerDimension(
-                coverageInfo,
-                ResourceInfo.TIME,
-                null,
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                minimumValue());
+                coverageInfo, ResourceInfo.TIME, null, DimensionPresentation.CONTINUOUS_INTERVAL, minimumValue());
 
         // test histogram
         String layerName = RASTER_ELEVATION_TIME.getPrefix() + ":waterView";
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
-                                + "&histogram=time&resolution=P1D",
-                        layerName);
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                        + "&histogram=time&resolution=P1D",
+                layerName);
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
         // check the returned histogram, it's two days, not just one
         checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
         checkXpathCount(
-                result,
-                "/md:Histogram[md:Domain='2008-10-31T00:00:00.000Z/2008-11-02T00"
-                        + ":00:00.000Z/P1D']",
-                "1");
+                result, "/md:Histogram[md:Domain='2008-10-31T00:00:00.000Z/2008-11-02T00" + ":00:00.000Z/P1D']", "1");
         checkXpathCount(result, "/md:Histogram[md:Values='2,2']", "1");
     }
 
@@ -743,19 +611,14 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
 
         // enable dimensions
         registerLayerDimension(
-                coverageInfo,
-                ResourceInfo.ELEVATION,
-                null,
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                minimumValue());
+                coverageInfo, ResourceInfo.ELEVATION, null, DimensionPresentation.CONTINUOUS_INTERVAL, minimumValue());
 
         // test histogram
         String layerName = RASTER_ELEVATION_TIME.getPrefix() + ":waterView";
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
-                                + "&histogram=elevation&resolution=100",
-                        layerName);
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326"
+                        + "&histogram=elevation&resolution=100",
+                layerName);
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -779,24 +642,14 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
 
         final InputCoverageBand band = new InputCoverageBand("watertemp", "0");
         final CoverageBand outputBand1 =
-                new CoverageBand(
-                        Collections.singletonList(band),
-                        "watertemp@0",
-                        0,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(band), "watertemp@0", 0, CompositionType.BAND_SELECT);
         final CoverageBand outputBand2 =
-                new CoverageBand(
-                        Collections.singletonList(band),
-                        "watertemp@0",
-                        1,
-                        CompositionType.BAND_SELECT);
-        final CoverageView coverageView =
-                new CoverageView("waterView", Arrays.asList(outputBand1, outputBand2));
+                new CoverageBand(Collections.singletonList(band), "watertemp@0", 1, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView("waterView", Arrays.asList(outputBand1, outputBand2));
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo("waterView", storeInfo, builder);
+        CoverageInfo coverageInfo = coverageView.createCoverageInfo("waterView", storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
         coverageInfo = cat.getCoverage(coverageInfo.getId());
@@ -808,31 +661,26 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetHistogramOperationForTime() throws Exception {
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
-                        getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
+                getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
         checkXpathCount(
-                result,
-                "/md:Histogram[md:Domain="
-                        + "'2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']",
-                "1");
+                result, "/md:Histogram[md:Domain=" + "'2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']", "1");
         checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
     }
 
     @Test
     public void testVectorEmptyTimeHistogram() throws Exception {
         // perform the get histogram operation request, using a non existing elevation value
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s"
-                                + "&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M&elevation=-10",
-                        getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s"
+                        + "&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M&elevation=-10",
+                getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // print(result);
@@ -850,11 +698,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorEmptyElevationHistogram() throws Exception {
         // perform the get histogram operation request, using a non existing elevation value
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s"
-                                + "&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=P1M&elevation=-10",
-                        getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s"
+                        + "&TileMatrixSet=EPSG:4326&histogram=elevation&resolution=P1M&elevation=-10",
+                getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         // print(result);
@@ -864,10 +711,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetFeatureOperation() throws Exception {
         // perform the get feature operation request
-        String queryRequest =
-                String.format(
-                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getLayerId(RASTER_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -882,10 +727,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetFeatureOperationWithBoundingBoxFilterNoResults() throws Exception {
         // perform the get feature operation request
-        String queryRequest =
-                String.format(
-                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(RASTER_ELEVATION_TIME) + "&bbox=-1,-1,0,0");
+        String queryRequest = String.format(
+                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(RASTER_ELEVATION_TIME) + "&bbox=-1,-1,0,0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the no features were returned
@@ -895,10 +739,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetFeatureOperation() throws Exception {
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME));
+        String queryRequest = String.format(
+                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getLayerId(VECTOR_ELEVATION_TIME));
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -915,11 +757,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetFeatureOperationWithTimeFilter() throws Exception {
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getLayerId(VECTOR_ELEVATION_TIME)
-                                + "&time=2012-02-10T00:00:00.000Z/2012-02-11T00:00:00.000Z");
+        String queryRequest = String.format(
+                "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
+                getLayerId(VECTOR_ELEVATION_TIME) + "&time=2012-02-10T00:00:00.000Z/2012-02-11T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the filtered returned features
@@ -933,8 +773,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testInvalidRequestWithNoOperation() throws Exception {
         // perform an invalid WMTS request that doesn't provide a valid request
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "gwc/service/wmts?request~GetCapabilities!service~!'WMTS'version~'1.0.0");
+                getAsServletResponse("gwc/service/wmts?request~GetCapabilities!service~!'WMTS'version~'1.0.0");
         // this request should fail whit an exception report
         assertThat(response.getContentAsString(), containsString("Missing Request parameter"));
         assertThat(response.getStatus(), is(400));
@@ -948,20 +787,16 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetDomainValuesOnTime() throws Exception {
         // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getLayerId(VECTOR_ELEVATION_TIME)
-                        + "&TileMatrixSet=EPSG:4326&domain=time";
+        String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                + getLayerId(VECTOR_ELEVATION_TIME)
+                + "&TileMatrixSet=EPSG:4326&domain=time";
         Document dom = getAsDOM(baseRequest);
         print(dom);
         assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
         assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
         assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
-        assertXpathEvaluatesTo(
-                "2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z",
-                "/md:DomainValues/md:Domain",
-                dom);
+        assertXpathEvaluatesTo("2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
 
         // first page ascending
         dom = getAsDOM(baseRequest + "&limit=1");
@@ -994,20 +829,16 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetDomainValuesOnTime() throws Exception {
         // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getLayerId(RASTER_ELEVATION_TIME)
-                        + "&TileMatrixSet=EPSG:4326&domain=time";
+        String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                + getLayerId(RASTER_ELEVATION_TIME)
+                + "&TileMatrixSet=EPSG:4326&domain=time";
         Document dom = getAsDOM(baseRequest);
         // print(dom);
         assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
         assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
         assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
-        assertXpathEvaluatesTo(
-                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z",
-                "/md:DomainValues/md:Domain",
-                dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
 
         // first page ascending
         dom = getAsDOM(baseRequest + "&limit=1");
@@ -1040,10 +871,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testVectorGetDomainValuesOnElevations() throws Exception {
         // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getLayerId(VECTOR_ELEVATION_TIME)
-                        + "&TileMatrixSet=EPSG:4326&domain=elevation";
+        String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                + getLayerId(VECTOR_ELEVATION_TIME)
+                + "&TileMatrixSet=EPSG:4326&domain=elevation";
         Document dom = getAsDOM(baseRequest);
         // print(dom);
         assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
@@ -1101,10 +931,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterGetDomainValuesOnElevation() throws Exception {
         // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getLayerId(RASTER_ELEVATION_TIME)
-                        + "&TileMatrixSet=EPSG:4326&domain=elevation";
+        String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                + getLayerId(RASTER_ELEVATION_TIME)
+                + "&TileMatrixSet=EPSG:4326&domain=elevation";
         Document dom = getAsDOM(baseRequest);
         // print(dom);
         assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
@@ -1144,21 +973,17 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     @Test
     public void testRasterCustomGetDomainValues() throws Exception {
         // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getLayerId(RASTER_CUSTOM)
-                        + "&TileMatrixSet=EPSG:4326&domain="
-                        + CUSTOM_DIMENSION_NAME;
+        String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                + getLayerId(RASTER_CUSTOM)
+                + "&TileMatrixSet=EPSG:4326&domain="
+                + CUSTOM_DIMENSION_NAME;
         Document dom = getAsDOM(baseRequest);
         // print(dom);
         assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
         assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
         assertXpathEvaluatesTo("3", "/md:DomainValues/md:Size", dom);
-        assertXpathEvaluatesTo(
-                "CustomDimValueA,CustomDimValueB,CustomDimValueC",
-                "/md:DomainValues/md:Domain",
-                dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "/md:DomainValues/md:Domain", dom);
 
         // first page ascending
         dom = getAsDOM(baseRequest + "&limit=2");
@@ -1167,8 +992,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         assertXpathEvaluatesTo("2", "/md:DomainValues/md:Limit", dom);
         assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
         assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
-        assertXpathEvaluatesTo(
-                "CustomDimValueA,CustomDimValueB", "/md:DomainValues/md:Domain", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "/md:DomainValues/md:Domain", dom);
 
         // second page ascending
         dom = getAsDOM(baseRequest + "&fromValue=CustomDimValueB&limit=2");
@@ -1180,8 +1004,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         dom = getAsDOM(baseRequest + "&limit=2&sort=desc");
         // print(dom);
         assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
-        assertXpathEvaluatesTo(
-                "CustomDimValueC,CustomDimValueB", "/md:DomainValues/md:Domain", dom);
+        assertXpathEvaluatesTo("CustomDimValueC,CustomDimValueB", "/md:DomainValues/md:Domain", dom);
 
         // second page descending
         dom = getAsDOM(baseRequest + "&fromValue=CustomDimValueB&limit=2&sort=desc");
@@ -1205,24 +1028,16 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
 
     @Test
     public void testVectorGetDomainValuesTimeByEndAttribute() throws Exception {
-        FeatureTypeInfo vectorInfo =
-                getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
+        FeatureTypeInfo vectorInfo = getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
         try {
             registerLayerDimension(
-                    vectorInfo,
-                    ResourceInfo.TIME,
-                    "startTime",
-                    "endTime",
-                    DimensionPresentation.LIST,
-                    minimumValue());
+                    vectorInfo, ResourceInfo.TIME, "startTime", "endTime", DimensionPresentation.LIST, minimumValue());
 
-            String baseRequest =
-                    "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                            + getLayerId(VECTOR_ELEVATION_TIME)
-                            + "&TileMatrixSet=EPSG:4326&domain=time";
+            String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                    + getLayerId(VECTOR_ELEVATION_TIME)
+                    + "&TileMatrixSet=EPSG:4326&domain=time";
 
-            Document dom =
-                    getAsDOM(baseRequest + "&fromValue=2012-02-12T09:00:00.000Z&fromEnd=true");
+            Document dom = getAsDOM(baseRequest + "&fromValue=2012-02-12T09:00:00.000Z&fromEnd=true");
 
             assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
             // sorted by end date too
@@ -1232,19 +1047,13 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                     dom);
         } finally {
             registerLayerDimension(
-                    vectorInfo,
-                    ResourceInfo.TIME,
-                    "startTime",
-                    null,
-                    DimensionPresentation.LIST,
-                    minimumValue());
+                    vectorInfo, ResourceInfo.TIME, "startTime", null, DimensionPresentation.LIST, minimumValue());
         }
     }
 
     @Test
     public void testVectorGetDomainValuesOnElevationsByEndAttribute() throws Exception {
-        FeatureTypeInfo vectorInfo =
-                getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
+        FeatureTypeInfo vectorInfo = getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
         try {
             registerLayerDimension(
                     vectorInfo,
@@ -1254,10 +1063,9 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                     DimensionPresentation.LIST,
                     minimumValue());
             // full domain (only 2 entries)
-            String baseRequest =
-                    "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                            + getLayerId(VECTOR_ELEVATION_TIME)
-                            + "&TileMatrixSet=EPSG:4326&domain=elevation";
+            String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                    + getLayerId(VECTOR_ELEVATION_TIME)
+                    + "&TileMatrixSet=EPSG:4326&domain=elevation";
             Document dom = getAsDOM(baseRequest + "&fromValue=3.5&fromEnd=true&limit=3");
             assertXpathEvaluatesTo("elevation", "/md:DomainValues/ows:Identifier", dom);
             assertXpathEvaluatesTo("3", "/md:DomainValues/md:Limit", dom);

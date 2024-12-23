@@ -7,10 +7,9 @@ package org.geoserver.taskmanager.schedule;
 import org.geoserver.taskmanager.data.BatchRun;
 
 /**
- * During run, tasks create temporary objects that are committed to real objects during the commit
- * phase (such as a table name) This maps real objects to temporary objects during a single batch
- * run. Tasks should save and look up temporary objects so that tasks within a batch can work
- * together.
+ * During run, tasks create temporary objects that are committed to real objects during the commit phase (such as a
+ * table name) This maps real objects to temporary objects during a single batch run. Tasks should save and look up
+ * temporary objects so that tasks within a batch can work together.
  *
  * @author Niels Charlier
  */

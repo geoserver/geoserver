@@ -47,8 +47,7 @@ import org.geotools.util.factory.Hints;
  */
 public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
-    private static final String MY_DIMENSION_DOMAIN =
-            CustomFormat.CUSTOM_DIMENSION_NAME + "_DOMAIN";
+    private static final String MY_DIMENSION_DOMAIN = CustomFormat.CUSTOM_DIMENSION_NAME + "_DOMAIN";
     private static final String HAS_MY_DIMENSION_DOMAIN = "HAS_" + MY_DIMENSION_DOMAIN;
     private static final String MY_DIMENSION_DATATYPE = MY_DIMENSION_DOMAIN + "_DATATYPE";
 
@@ -80,10 +79,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         boolean haveDimension = false;
         final List<GridCoverage2D> returnValues = new ArrayList<>();
         for (GeneralParameterValue p : params) {
-            if (p.getDescriptor()
-                    .getName()
-                    .toString()
-                    .equalsIgnoreCase(CustomFormat.CUSTOM_DIMENSION_NAME)) {
+            if (p.getDescriptor().getName().toString().equalsIgnoreCase(CustomFormat.CUSTOM_DIMENSION_NAME)) {
                 haveDimension = true;
                 final List<?> value = extractValue(p);
                 for (Object o : value) {
@@ -240,18 +236,16 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     /** Creates a {@link GridCoverage2D} for the provided {@link RenderedImage}. */
     private GridCoverage2D createCoverage(String name, RenderedImage image) {
-        Category noDataCategory =
-                new Category(
-                        Vocabulary.formatInternational(VocabularyKeys.NODATA),
-                        new Color[] {new Color(0, 0, 0, 0)},
-                        NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
+        Category noDataCategory = new Category(
+                Vocabulary.formatInternational(VocabularyKeys.NODATA),
+                new Color[] {new Color(0, 0, 0, 0)},
+                NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
         Category[] categories = {noDataCategory};
         GridSampleDimension[] bands = new GridSampleDimension[1];
         bands[0] = new GridSampleDimension(null, categories, null);
         final Map<String, Object> properties = new HashMap<>();
         CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);
-        return this.coverageFactory.create(
-                name, image, this.originalEnvelope, bands, null, properties);
+        return this.coverageFactory.create(name, image, this.originalEnvelope, bands, null, properties);
     }
 
     private static boolean isDataFile(String filename) {
@@ -267,8 +261,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
                     final List<?> list = (List<?>) paramVal;
                     return list;
                 } else {
-                    throw new UnsupportedOperationException(
-                            "Custom dimension value must be a list");
+                    throw new UnsupportedOperationException("Custom dimension value must be a list");
                 }
             }
         }

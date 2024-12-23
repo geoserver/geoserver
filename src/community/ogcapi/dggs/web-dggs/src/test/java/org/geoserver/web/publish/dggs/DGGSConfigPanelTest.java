@@ -106,8 +106,7 @@ public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
         assertIntegerMetadataKey(fti, CONFIGURED_MAXRES_KEY, 5);
     }
 
-    private static void assertIntegerMetadataKey(
-            FeatureTypeInfo fti, String key, int expectedValue) {
+    private static void assertIntegerMetadataKey(FeatureTypeInfo fti, String key, int expectedValue) {
         assertEquals(Integer.valueOf(expectedValue), fti.getMetadata().get(key, Integer.class));
     }
 
@@ -150,7 +149,6 @@ public class DGGSConfigPanelTest extends GeoServerWicketTestSupport {
         formTester.setValue(baseFormPath + ":minResolution", "6");
         formTester.setValue(baseFormPath + ":maxResolution", "2");
         formTester.submit();
-        tester.assertErrorMessages(
-                "DGGS minimum layer resolution but be less or equal than the maximum resolution.");
+        tester.assertErrorMessages("DGGS minimum layer resolution but be less or equal than the maximum resolution.");
     }
 }

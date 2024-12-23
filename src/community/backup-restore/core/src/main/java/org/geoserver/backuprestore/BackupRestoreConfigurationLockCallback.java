@@ -12,8 +12,7 @@ public class BackupRestoreConfigurationLockCallback implements BackupRestoreCall
 
     GeoServerConfigurationLock locker;
 
-    static ThreadLocal<LockType> THREAD_LOCK =
-            new ThreadLocal<GeoServerConfigurationLock.LockType>();
+    static ThreadLocal<LockType> THREAD_LOCK = new ThreadLocal<GeoServerConfigurationLock.LockType>();
 
     public BackupRestoreConfigurationLockCallback(GeoServerConfigurationLock locker) {
         this.locker = locker;

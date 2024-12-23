@@ -6,8 +6,8 @@ package org.geoserver.featurestemplating.builders.visitors;
 
 /**
  * This class is meant to hold information about the keys of the builder node being parsed by the
- * {@link PropertySelectionVisitor}. Namely, if at least one dynamic parent key was found, or if the
- * current builder has a dynamic key, or the static full key of the current node.
+ * {@link PropertySelectionVisitor}. Namely, if at least one dynamic parent key was found, or if the current builder has
+ * a dynamic key, or the static full key of the current node.
  */
 public class PropertySelectionContext {
 
@@ -21,18 +21,17 @@ public class PropertySelectionContext {
         this.dynamicKeyCurrent = false;
     }
 
-    public PropertySelectionContext(
-            String staticFullKey, boolean dynamicKeyCurrent, boolean dynamicKeyParent) {
+    public PropertySelectionContext(String staticFullKey, boolean dynamicKeyCurrent, boolean dynamicKeyParent) {
         this.staticFullKey = staticFullKey;
         this.dynamicKeyCurrent = dynamicKeyCurrent;
         this.dynamicKeyParent = dynamicKeyParent;
-    };
+    }
+    ;
 
-    public PropertySelectionContext() {};
+    public PropertySelectionContext() {}
+    ;
 
-    /**
-     * @return true if the current node as at least one parent with a dynamic key. false otherwise.
-     */
+    /** @return true if the current node as at least one parent with a dynamic key. false otherwise. */
     public boolean isDynamicKeyParent() {
         return dynamicKeyParent;
     }
@@ -46,10 +45,7 @@ public class PropertySelectionContext {
         this.dynamicKeyParent = dynamicKeyParent;
     }
 
-    /**
-     * @return the static full key of the current node. Should return null if at least one parent
-     *     has a dynamic key.
-     */
+    /** @return the static full key of the current node. Should return null if at least one parent has a dynamic key. */
     public String getStaticFullKey() {
         return staticFullKey;
     }

@@ -28,8 +28,7 @@ public class DuplicatingTemplateVisitor implements TemplateVisitor {
         return copy;
     }
 
-    protected void addChildren(
-            TemplateBuilder copy, Object extraData, List<TemplateBuilder> children) {
+    protected void addChildren(TemplateBuilder copy, Object extraData, List<TemplateBuilder> children) {
         for (TemplateBuilder child : children) {
             Object o = child.accept(this, extraData);
             if (o != null) copy.addChild((TemplateBuilder) o);

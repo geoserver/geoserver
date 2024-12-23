@@ -97,38 +97,29 @@ public class ValidationTest extends AbstractAppSchemaTestSupport {
         LOGGER.info("WFS GetFeature&typename=er:Commodity response:\n" + prettyString(doc));
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.1']/gml:name", doc);
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.1']/er:commodityRank", doc);
-        assertXpathEvaluatesTo(
-                "myName1", "//er:Commodity[@gml:id='er.commodity.gu.1']/gml:name", doc);
-        assertXpathEvaluatesTo(
-                "1", "//er:Commodity[@gml:id='er.commodity.gu.1']/er:commodityRank", doc);
+        assertXpathEvaluatesTo("myName1", "//er:Commodity[@gml:id='er.commodity.gu.1']/gml:name", doc);
+        assertXpathEvaluatesTo("1", "//er:Commodity[@gml:id='er.commodity.gu.1']/er:commodityRank", doc);
 
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.2']/gml:name", doc);
         assertXpathCount(0, "//er:Commodity[@gml:id='er.commodity.gu.2']/er:commodityRank", doc);
-        assertXpathEvaluatesTo(
-                "myName2", "//er:Commodity[@gml:id='er.commodity.gu.2']/gml:name", doc);
+        assertXpathEvaluatesTo("myName2", "//er:Commodity[@gml:id='er.commodity.gu.2']/gml:name", doc);
 
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.3']/gml:name", doc);
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.3']/er:commodityRank", doc);
-        assertXpathEvaluatesTo(
-                "myName3", "//er:Commodity[@gml:id='er.commodity.gu.3']/gml:name", doc);
-        assertXpathEvaluatesTo(
-                "3", "//er:Commodity[@gml:id='er.commodity.gu.3']/er:commodityRank", doc);
+        assertXpathEvaluatesTo("myName3", "//er:Commodity[@gml:id='er.commodity.gu.3']/gml:name", doc);
+        assertXpathEvaluatesTo("3", "//er:Commodity[@gml:id='er.commodity.gu.3']/er:commodityRank", doc);
     }
 
     /** Test minOccur=1 and the attribute should always be encoded even when empty. */
     @Test
     public void testAttributeMinOccur1() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
-        LOGGER.info(
-                "WFS GetFeature&typename=gsml:gsml:MappedFeature response:\n" + prettyString(doc));
+        LOGGER.info("WFS GetFeature&typename=gsml:gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathCount(3, "//gsml:MappedFeature", doc);
 
         // with minOccur = 1 and null value, an empty tag would be encoded
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.gu.1']", doc);
-        assertXpathCount(
-                1,
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.gu.1']/gsml:observationMethod",
-                doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.gu.1']/gsml:observationMethod", doc);
         assertXpathCount(
                 0,
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.gu.1']/gsml:observationMethod/gsml:CGI_TermValue",

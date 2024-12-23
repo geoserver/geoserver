@@ -16,8 +16,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 
 /**
- * A datasource that is user configurable via properties file stored in the geoserver data
- * directory.
+ * A datasource that is user configurable via properties file stored in the geoserver data directory.
  *
  * <p>Instances of this class are defined in a spring context as follows:
  *
@@ -36,8 +35,8 @@ import org.geoserver.platform.resource.Resource.Type;
  *   &lt;/bean>
  * </pre>
  *
- * Note that any property values can contain "${GEOSERVER_DATA_DIR}" and it will be expanded out to
- * the absolute path of the geoserver data directory.
+ * Note that any property values can contain "${GEOSERVER_DATA_DIR}" and it will be expanded out to the absolute path of
+ * the geoserver data directory.
  *
  * @author Justin Deoliveira, OpenGeo
  */

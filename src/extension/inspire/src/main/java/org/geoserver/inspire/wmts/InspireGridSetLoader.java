@@ -54,28 +54,26 @@ public class InspireGridSetLoader implements ApplicationListener<ContextLoadedEv
                     "InspireCRS84Quad:4",
             "InspireCRS84Quad:5", "InspireCRS84Quad:6", "InspireCRS84Quad:7", "InspireCRS84Quad:8",
                     "InspireCRS84Quad:9",
-            "InspireCRS84Quad:10", "InspireCRS84Quad:11", "InspireCRS84Quad:12",
-                    "InspireCRS84Quad:13", "InspireCRS84Quad:14",
+            "InspireCRS84Quad:10", "InspireCRS84Quad:11", "InspireCRS84Quad:12", "InspireCRS84Quad:13",
+                    "InspireCRS84Quad:14",
             "InspireCRS84Quad:15", "InspireCRS84Quad:16", "InspireCRS84Quad:17"
         };
         // creating thee grid set
-        gridSet =
-                GridSetFactory.createGridSet(
-                        INSPIRE_GRID_SET_NAME,
-                        SRS.getEPSG4326(),
-                        BoundingBox.WORLD4326,
-                        false,
-                        resolutions,
-                        null,
-                        111319.49079327358,
-                        GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
-                        scaleNames,
-                        256,
-                        256,
-                        false);
+        gridSet = GridSetFactory.createGridSet(
+                INSPIRE_GRID_SET_NAME,
+                SRS.getEPSG4326(),
+                BoundingBox.WORLD4326,
+                false,
+                resolutions,
+                null,
+                111319.49079327358,
+                GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
+                scaleNames,
+                256,
+                256,
+                false);
         // set a proper description
-        gridSet.setDescription(
-                "Every layer offered by a INSPIRE WMTS should use the InspireCRS84Quad Matrix Set");
+        gridSet.setDescription("Every layer offered by a INSPIRE WMTS should use the InspireCRS84Quad Matrix Set");
         try {
             // add the grid set
             gwc.addGridSet(gridSet);

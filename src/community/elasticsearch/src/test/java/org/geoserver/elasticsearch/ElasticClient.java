@@ -22,8 +22,7 @@ interface ElasticClient extends Closeable {
 
     Map<String, Object> getMapping(String indexName, String type) throws IOException;
 
-    ElasticResponse search(String searchIndices, String type, ElasticRequest request)
-            throws IOException;
+    ElasticResponse search(String searchIndices, String type, ElasticRequest request) throws IOException;
 
     ElasticResponse scroll(String scrollId, Integer scrollTime) throws IOException;
 

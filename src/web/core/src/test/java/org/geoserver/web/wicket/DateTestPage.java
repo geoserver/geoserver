@@ -19,9 +19,7 @@ public class DateTestPage extends WebPage {
         form.add(new DateField("date", Model.of(new Date()), false));
         form.add(new DateField("dateTime", Model.of(new Date()), true));
         form.add(new DateField("date2", Model.of(new Date()), false, "YYYY/MM/DD", null));
-        form.add(
-                new DateField(
-                        "dateTime2", Model.of(new Date()), true, "YYYY/MM/DD HH:mm:ss.SSS", " "));
+        form.add(new DateField("dateTime2", Model.of(new Date()), true, "YYYY/MM/DD HH:mm:ss.SSS", " "));
         add(form);
     }
 }

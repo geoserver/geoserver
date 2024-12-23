@@ -200,14 +200,8 @@ public class BatchManagerTest {
 
         TransactionRequest lTransaction = transactionRequest(element2Handlers.keySet());
 
-        BatchManager sut =
-                new BatchManager(
-                        lTransaction,
-                        transactionListener,
-                        stores,
-                        transactionResponse,
-                        element2Handlers,
-                        batchSizeForDeletion);
+        BatchManager sut = new BatchManager(
+                lTransaction, transactionListener, stores, transactionResponse, element2Handlers, batchSizeForDeletion);
         sut.run();
 
         String message = String.format("First %d DELETEs have been merged", batchSizeForDeletion);
@@ -232,49 +226,48 @@ public class BatchManagerTest {
         Insert insertUseExisting4 = newUseExistingIDInsert(feature4);
         TransactionElementHandler insert4Handler = mock(TransactionElementHandler.class);
 
-        Map<TransactionElement, TransactionElementHandler> element2Handlers =
-                asMap( //
-                        keyValue(insertUseExisting1, insert1Handler), //
-                        keyValue(insertUseExisting2, insert2Handler), //
-                        keyValue(insertGenerateNew3, insert3Handler), //
-                        keyValue(insertUseExisting4, insert4Handler));
+        Map<TransactionElement, TransactionElementHandler> element2Handlers = asMap( //
+                keyValue(insertUseExisting1, insert1Handler), //
+                keyValue(insertUseExisting2, insert2Handler), //
+                keyValue(insertGenerateNew3, insert3Handler), //
+                keyValue(insertUseExisting4, insert4Handler));
 
         TransactionRequest lTransaction = transactionRequestV11(element2Handlers.keySet());
 
         // when: BatchManager runs...
         BatchManager sut =
-                new BatchManager(
-                        lTransaction,
-                        transactionListener,
-                        stores,
-                        transactionResponse,
-                        element2Handlers,
-                        100);
+                new BatchManager(lTransaction, transactionListener, stores, transactionResponse, element2Handlers, 100);
         sut.run();
 
         // then:
-        assertEquals("First insert has two features", 2, insertUseExisting1.getFeatures().size());
         assertEquals(
-                "Second insert has no added features", 1, insertUseExisting2.getFeatures().size());
+                "First insert has two features",
+                2,
+                insertUseExisting1.getFeatures().size());
+        assertEquals(
+                "Second insert has no added features",
+                1,
+                insertUseExisting2.getFeatures().size());
         assertEquals(
                 "Second feature has been added to insert1",
                 insertUseExisting1.getFeatures().get(1),
                 feature2);
         assertEquals(
-                "Third INSERT have been not merged", 1, insertGenerateNew3.getFeatures().size());
+                "Third INSERT have been not merged",
+                1,
+                insertGenerateNew3.getFeatures().size());
         assertEquals(
-                "Last INSERT have been not merged", 1, insertUseExisting4.getFeatures().size());
+                "Last INSERT have been not merged",
+                1,
+                insertUseExisting4.getFeatures().size());
 
         // verify invocations of handlers
         // INSERT-1 handler was executed with first insert?
-        verify(insert1Handler, times(1))
-                .execute(same(insertUseExisting1), any(), any(), any(), any());
+        verify(insert1Handler, times(1)).execute(same(insertUseExisting1), any(), any(), any(), any());
         // INSERT-2 skipped?
         verify(insert2Handler, times(0)).execute(any(), any(), any(), any(), any());
-        verify(insert3Handler, times(1))
-                .execute(same(insertGenerateNew3), any(), any(), any(), any());
-        verify(insert4Handler, times(1))
-                .execute(same(insertUseExisting4), any(), any(), any(), any());
+        verify(insert3Handler, times(1)).execute(same(insertGenerateNew3), any(), any(), any(), any());
+        verify(insert4Handler, times(1)).execute(same(insertUseExisting4), any(), any(), any(), any());
     }
 
     private void testAggregationWithDeleteBatchSize(int pDeleteBatchSize) {
@@ -306,36 +299,30 @@ public class BatchManagerTest {
         Native native1 = newNative();
         TransactionElementHandler native1Handler = mock(TransactionElementHandler.class);
 
-        Map<TransactionElement, TransactionElementHandler> element2Handlers =
-                asMap( //
-                        keyValue(insert1, insert1Handler), //
-                        keyValue(insert2, insert2Handler), //
-                        keyValue(update1, update1Handler), //
-                        keyValue(insert3, insert3Handler), //
-                        keyValue(delete1, delete1Handler), //
-                        keyValue(delete2, delete2Handler), //
-                        keyValue(delete3, delete3Handler), //
-                        keyValue(replace1, replace1Handler), //
-                        keyValue(native1, native1Handler)
-                        //
-                        );
+        Map<TransactionElement, TransactionElementHandler> element2Handlers = asMap( //
+                keyValue(insert1, insert1Handler), //
+                keyValue(insert2, insert2Handler), //
+                keyValue(update1, update1Handler), //
+                keyValue(insert3, insert3Handler), //
+                keyValue(delete1, delete1Handler), //
+                keyValue(delete2, delete2Handler), //
+                keyValue(delete3, delete3Handler), //
+                keyValue(replace1, replace1Handler), //
+                keyValue(native1, native1Handler)
+                //
+                );
 
         TransactionRequest lTransaction = transactionRequest(element2Handlers.keySet());
 
         // when: BatchManager runs...
-        BatchManager sut =
-                new BatchManager(
-                        lTransaction,
-                        transactionListener,
-                        stores,
-                        transactionResponse,
-                        element2Handlers,
-                        pDeleteBatchSize);
+        BatchManager sut = new BatchManager(
+                lTransaction, transactionListener, stores, transactionResponse, element2Handlers, pDeleteBatchSize);
         sut.run();
 
         // then:
         // verify contents have been moved appropriately
-        assertEquals("First 2 INSERTs have been merged", 2, insert1.getFeatures().size());
+        assertEquals(
+                "First 2 INSERTs have been merged", 2, insert1.getFeatures().size());
         if (pDeleteBatchSize <= 1) {
             assertFalse("First 2 DELETEs must not be merged", delete1.getFilter() instanceof Or);
         } else {
@@ -356,8 +343,7 @@ public class BatchManagerTest {
         // DELETE-1 was executed?
         verify(delete1Handler, times(1)).execute(same(delete1), any(), any(), any(), any());
         // DELETE-2 skipped?
-        verify(delete2Handler, times(pDeleteBatchSize <= 1 ? 1 : 0))
-                .execute(any(), any(), any(), any(), any());
+        verify(delete2Handler, times(pDeleteBatchSize <= 1 ? 1 : 0)).execute(any(), any(), any(), any(), any());
         // DELETE-3 was executed?
         verify(delete3Handler, times(1)).execute(same(delete3), any(), any(), any(), any());
         // REPLACE-1 was executed?
@@ -382,8 +368,7 @@ public class BatchManagerTest {
     }
 
     private TransactionRequest transactionRequestV11(Set<TransactionElement> pElems) {
-        net.opengis.wfs.TransactionType lTransactionType =
-                WfsFactory.eINSTANCE.createTransactionType();
+        net.opengis.wfs.TransactionType lTransactionType = WfsFactory.eINSTANCE.createTransactionType();
         TransactionRequest lTransactionRequest = TransactionRequest.adapt(lTransactionType);
         lTransactionRequest.setElements(new ArrayList<>(pElems));
         return lTransactionRequest;

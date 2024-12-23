@@ -53,26 +53,22 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
         Object wfs = container.getComponentInstanceOfType(org.geotools.wfs.WFSParserDelegate.class);
         container.unregisterComponentByInstance(wfs);
         // XSDParserDelegate with CatalogNamespaceSupport
-        container.registerComponentInstance(
-                new WPSInternalXSDParserDelegate(
-                        new WFSConfiguration() {
+        container.registerComponentInstance(new WPSInternalXSDParserDelegate(
+                new WFSConfiguration() {
 
-                            @Override
-                            protected void configureBindings(MutablePicoContainer container) {
-                                super.configureBindings(container);
-                                container.registerComponentImplementation(
-                                        WFS.GetFeatureType, GetFeatureTypeBinding.class);
-                            }
-                        },
-                        new CatalogNamespaceSupport(
-                                GeoServerExtensions.bean(LocalWorkspaceCatalog.class))));
+                    @Override
+                    protected void configureBindings(MutablePicoContainer container) {
+                        super.configureBindings(container);
+                        container.registerComponentImplementation(WFS.GetFeatureType, GetFeatureTypeBinding.class);
+                    }
+                },
+                new CatalogNamespaceSupport(GeoServerExtensions.bean(LocalWorkspaceCatalog.class))));
 
         container.registerComponentInstance(new org.geoserver.wfs.xml.v2_0.WFSParserDelegate());
         container.registerComponentImplementation(ComplexDataHandler.class);
     }
 
-    public static class ComplexDataHandler extends CopyingHandler
-            implements ParserDelegate, ParserDelegate2 {
+    public static class ComplexDataHandler extends CopyingHandler implements ParserDelegate, ParserDelegate2 {
 
         private List<ParserDelegate> delegates;
         private final PicoContainer container;
@@ -94,8 +90,7 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
         }
 
         @Override
-        public boolean canHandle(
-                QName elementName, Attributes attributes, Handler handler, Handler parent) {
+        public boolean canHandle(QName elementName, Attributes attributes, Handler handler, Handler parent) {
             if (parent == null || !("ComplexData".equals(parent.getComponent().getName()))) {
                 return false;
             }
@@ -137,8 +132,7 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
 
     private static final class WPSInternalXSDParserDelegate extends XSDParserDelegate {
 
-        public WPSInternalXSDParserDelegate(
-                Configuration configuration, NamespaceSupport nsSupport) {
+        public WPSInternalXSDParserDelegate(Configuration configuration, NamespaceSupport nsSupport) {
             super(configuration);
             handler.getNamespaceSupport().add(nsSupport);
         }

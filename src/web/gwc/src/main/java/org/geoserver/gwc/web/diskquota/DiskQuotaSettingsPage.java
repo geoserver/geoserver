@@ -42,9 +42,8 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         ConfigurableQuotaStoreProvider provider =
                 GeoServerApplication.get().getBeanOfType(ConfigurableQuotaStoreProvider.class);
         if (provider.getException() != null) {
-            ParamResourceModel rm =
-                    new ParamResourceModel(
-                            "GWC.diskQuotaLoadFailed", null, provider.getException().getMessage());
+            ParamResourceModel rm = new ParamResourceModel(
+                    "GWC.diskQuotaLoadFailed", null, provider.getException().getMessage());
             error(rm.getString());
         }
 
@@ -89,78 +88,66 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
         form.add(diskQuotaConfigPanel);
 
-        form.add(
-                new Button("submit") {
-                    private static final long serialVersionUID = 1L;
+        form.add(new Button("submit") {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit() {
-                        GWC gwc = getGWC();
-                        if (!diskQuotaModuleDisabled) {
-                            StorageUnit chosenUnit = diskQuotaConfigPanel.getStorageUnit();
-                            // REVISIT: it seems Wicket is sending back a plain string instead of a
-                            String chosenQuotaStr =
-                                    String.valueOf(diskQuotaConfigPanel.getQuotaValue());
-                            Double chosenQuota;
-                            try {
-                                chosenQuota = Double.valueOf(chosenQuotaStr);
-                            } catch (NumberFormatException e) {
-                                form.error(
-                                        chosenQuotaStr
-                                                + " is not a valid floating point number"); // TODO:
-                                // localize
-                                return;
-                            }
-                            if (chosenQuota.doubleValue() <= 0D) {
-                                form.error("Quota has to be > 0");
-                                return;
-                            }
-                            DiskQuotaConfig dqConfig = diskQuotaModel.getObject();
-                            JDBCConfiguration jdbcConfig = jdbcQuotaModel.getObject();
-                            if (dqConfig.getQuotaStore() != null
-                                    && dqConfig.getQuotaStore().equals("JDBC")) {
-                                try {
-                                    gwc.testQuotaConfiguration(jdbcConfig);
-                                } catch (Exception e) {
-                                    LOGGER.log(
-                                            Level.SEVERE,
-                                            "Error instantiating the JDBC configuration",
-                                            e);
-                                    error(
-                                            "Failure occurred while saving the JDBC configuration"
-                                                    + e.getMessage()
-                                                    + " (see the logs for a full stack trace)");
-                                    return;
-                                }
-                            }
-
-                            dqConfig.getGlobalQuota()
-                                    .setValue(chosenQuota.doubleValue(), chosenUnit);
-                            try {
-                                gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig.clone(false));
-                            } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.SEVERE, "Failed to save the JDBC configuration", e);
-                                error(
-                                        "Failure occurred while saving the JDBC configuration"
-                                                + e.getMessage()
-                                                + " (see the logs for a full stack trace)");
-                                return;
-                            }
+            @Override
+            public void onSubmit() {
+                GWC gwc = getGWC();
+                if (!diskQuotaModuleDisabled) {
+                    StorageUnit chosenUnit = diskQuotaConfigPanel.getStorageUnit();
+                    // REVISIT: it seems Wicket is sending back a plain string instead of a
+                    String chosenQuotaStr = String.valueOf(diskQuotaConfigPanel.getQuotaValue());
+                    Double chosenQuota;
+                    try {
+                        chosenQuota = Double.valueOf(chosenQuotaStr);
+                    } catch (NumberFormatException e) {
+                        form.error(chosenQuotaStr + " is not a valid floating point number"); // TODO:
+                        // localize
+                        return;
+                    }
+                    if (chosenQuota.doubleValue() <= 0D) {
+                        form.error("Quota has to be > 0");
+                        return;
+                    }
+                    DiskQuotaConfig dqConfig = diskQuotaModel.getObject();
+                    JDBCConfiguration jdbcConfig = jdbcQuotaModel.getObject();
+                    if (dqConfig.getQuotaStore() != null
+                            && dqConfig.getQuotaStore().equals("JDBC")) {
+                        try {
+                            gwc.testQuotaConfiguration(jdbcConfig);
+                        } catch (Exception e) {
+                            LOGGER.log(Level.SEVERE, "Error instantiating the JDBC configuration", e);
+                            error("Failure occurred while saving the JDBC configuration"
+                                    + e.getMessage()
+                                    + " (see the logs for a full stack trace)");
+                            return;
                         }
-
-                        doReturn();
                     }
-                });
-        form.add(
-                new GeoServerAjaxFormLink("cancel") {
-                    private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        doReturn();
+                    dqConfig.getGlobalQuota().setValue(chosenQuota.doubleValue(), chosenUnit);
+                    try {
+                        gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig.clone(false));
+                    } catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Failed to save the JDBC configuration", e);
+                        error("Failure occurred while saving the JDBC configuration"
+                                + e.getMessage()
+                                + " (see the logs for a full stack trace)");
+                        return;
                     }
-                });
+                }
+
+                doReturn();
+            }
+        });
+        form.add(new GeoServerAjaxFormLink("cancel") {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                doReturn();
+            }
+        });
 
         checkWarnings();
     }
@@ -168,8 +155,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
     private void checkWarnings() {
         Long imageIOFileCachingThreshold = ImageIOExt.getFilesystemThreshold();
         if (null == imageIOFileCachingThreshold || 0L >= imageIOFileCachingThreshold.longValue()) {
-            String warningMsg =
-                    new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning").getObject();
+            String warningMsg = new ResourceModel("GWC.ImageIOFileCachingThresholdUnsetWarning").getObject();
             super.warn(warningMsg);
         }
     }

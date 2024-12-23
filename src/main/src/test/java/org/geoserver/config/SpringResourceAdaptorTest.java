@@ -89,7 +89,9 @@ public class SpringResourceAdaptorTest {
         assertEquals(springResource.contentLength(), 0);
 
         assertNotNull(springResource.getFile());
-        assertThrows(FileNotFoundException.class, () -> springResource.getInputStream().close());
+        assertThrows(
+                FileNotFoundException.class,
+                () -> springResource.getInputStream().close());
     }
 
     @Test
@@ -104,7 +106,9 @@ public class SpringResourceAdaptorTest {
         assertEquals(springResource.contentLength(), 0);
 
         assertThrows(FileNotFoundException.class, springResource::getFile);
-        assertThrows(FileNotFoundException.class, () -> springResource.getInputStream().close());
+        assertThrows(
+                FileNotFoundException.class,
+                () -> springResource.getInputStream().close());
 
         // must not be created unintentionally.
         assertFalse(Resources.exists(missingResource));

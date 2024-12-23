@@ -36,22 +36,19 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
         add(new TextField<>("minLength"));
 
         boolean unlimited = pwPolicy.getMaxLength() == -1;
-        add(
-                new AjaxCheckBox("unlimitedMaxLength", new Model<>(unlimited)) {
+        add(new AjaxCheckBox("unlimitedMaxLength", new Model<>(unlimited)) {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Boolean value = getModelObject();
-                        maxLengthPanel.setVisible(!value);
-                        if (value) {
-                            maxLengthPanel.setUnlimited();
-                        }
-                        target.add(maxLengthPanel.getParent());
-                    }
-                });
-        add(
-                maxLengthPanel =
-                        (MaxLengthPanel) new MaxLengthPanel("maxLength").setVisible(!unlimited));
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Boolean value = getModelObject();
+                maxLengthPanel.setVisible(!value);
+                if (value) {
+                    maxLengthPanel.setUnlimited();
+                }
+                target.add(maxLengthPanel.getParent());
+            }
+        });
+        add(maxLengthPanel = (MaxLengthPanel) new MaxLengthPanel("maxLength").setVisible(!unlimited));
     }
 
     @Override

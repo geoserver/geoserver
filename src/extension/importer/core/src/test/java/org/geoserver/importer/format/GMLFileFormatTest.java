@@ -27,39 +27,40 @@ public class GMLFileFormatTest {
 
     @Test
     public void testParsePoiGML2() throws Exception {
-        File file =
-                new File("./src/test/resources/org/geoserver/importer/test-data/gml/poi.gml2.gml");
+        File file = new File("./src/test/resources/org/geoserver/importer/test-data/gml/poi.gml2.gml");
         SimpleFeatureType schema = gmlFileFormat.getSchema(file);
         assertEquals(Point.class, schema.getGeometryDescriptor().getType().getBinding());
         assertEquals(
                 CRS.decode("EPSG:4326", true),
                 schema.getGeometryDescriptor().getType().getCoordinateReferenceSystem());
         assertEquals(String.class, schema.getDescriptor("NAME").getType().getBinding());
-        assertEquals(Integer.class, schema.getDescriptor("intAttribute").getType().getBinding());
-        assertEquals(Double.class, schema.getDescriptor("floatAttribute").getType().getBinding());
+        assertEquals(
+                Integer.class, schema.getDescriptor("intAttribute").getType().getBinding());
+        assertEquals(
+                Double.class, schema.getDescriptor("floatAttribute").getType().getBinding());
     }
 
     @Test
     public void testParsePoiGML3() throws Exception {
-        File file =
-                new File("./src/test/resources/org/geoserver/importer/test-data/gml/poi.gml3.gml");
+        File file = new File("./src/test/resources/org/geoserver/importer/test-data/gml/poi.gml3.gml");
         SimpleFeatureType schema = gmlFileFormat.getSchema(file);
         assertEquals(Point.class, schema.getGeometryDescriptor().getType().getBinding());
         assertEquals(
                 CRS.decode("urn:x-ogc:def:crs:EPSG:4326", false),
                 schema.getGeometryDescriptor().getType().getCoordinateReferenceSystem());
         assertEquals(String.class, schema.getDescriptor("NAME").getType().getBinding());
-        assertEquals(Integer.class, schema.getDescriptor("intAttribute").getType().getBinding());
-        assertEquals(Double.class, schema.getDescriptor("floatAttribute").getType().getBinding());
+        assertEquals(
+                Integer.class, schema.getDescriptor("intAttribute").getType().getBinding());
+        assertEquals(
+                Double.class, schema.getDescriptor("floatAttribute").getType().getBinding());
     }
 
     @Test
     public void testParseStreamsGML2() throws Exception {
-        File file =
-                new File(
-                        "./src/test/resources/org/geoserver/importer/test-data/gml/streams.gml2.gml");
+        File file = new File("./src/test/resources/org/geoserver/importer/test-data/gml/streams.gml2.gml");
         SimpleFeatureType schema = gmlFileFormat.getSchema(file);
-        assertEquals(MultiLineString.class, schema.getGeometryDescriptor().getType().getBinding());
+        assertEquals(
+                MultiLineString.class, schema.getGeometryDescriptor().getType().getBinding());
         assertEquals(
                 CRS.decode("EPSG:26713"),
                 schema.getGeometryDescriptor().getType().getCoordinateReferenceSystem());
@@ -70,11 +71,10 @@ public class GMLFileFormatTest {
 
     @Test
     public void testParseStreamsGML3() throws Exception {
-        File file =
-                new File(
-                        "./src/test/resources/org/geoserver/importer/test-data/gml/streams.gml3.gml");
+        File file = new File("./src/test/resources/org/geoserver/importer/test-data/gml/streams.gml3.gml");
         SimpleFeatureType schema = gmlFileFormat.getSchema(file);
-        assertEquals(MultiLineString.class, schema.getGeometryDescriptor().getType().getBinding());
+        assertEquals(
+                MultiLineString.class, schema.getGeometryDescriptor().getType().getBinding());
         assertEquals(
                 CRS.decode("urn:x-ogc:def:crs:EPSG:26713"),
                 schema.getGeometryDescriptor().getType().getCoordinateReferenceSystem());

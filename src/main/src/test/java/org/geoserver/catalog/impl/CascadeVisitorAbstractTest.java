@@ -44,8 +44,7 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
         setupExtras(testData, catalog);
     }
 
-    void setupExtras(org.geoserver.data.test.SystemTestData testData, Catalog catalog)
-            throws IOException {
+    void setupExtras(org.geoserver.data.test.SystemTestData testData, Catalog catalog) throws IOException {
         // associate Lakes to Buildings as an extra style
         LayerInfo buildings = catalog.getLayerByName(getLayerId(BUILDINGS));
         buildings.getStyles().add(catalog.getStyleByName(LAKES.getLocalPart()));

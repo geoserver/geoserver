@@ -13,8 +13,8 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Writes out metadata in the requested format. Trusts that the steps before (kvp parsing, request
- * processing) have verified the requested mime type makes sense
+ * Writes out metadata in the requested format. Trusts that the steps before (kvp parsing, request processing) have
+ * verified the requested mime type makes sense
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -30,8 +30,7 @@ public class MetadataResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         MetadataResults results = (MetadataResults) value;
         IOUtils.write(results.getMetadata(), output, "UTF-8");
     }

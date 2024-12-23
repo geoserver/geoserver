@@ -37,8 +37,8 @@ import org.springframework.ldap.ldif.parser.LdifParser;
 import org.springframework.ldap.support.LdapUtils;
 
 /**
- * copied and modified from org.springframework.ldap.test.LdapTestUtils to allow anonymous access
- * (there was no alternative way)
+ * copied and modified from org.springframework.ldap.test.LdapTestUtils to allow anonymous access (there was no
+ * alternative way)
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  * @author Mattias Hellborg Arthursson
@@ -54,40 +54,31 @@ public class LDAPTestUtils {
     private static EmbeddedLdapServer embeddedServer;
 
     /**
-     * Start an embedded Apache Directory Server. Only one embedded server will be permitted in the
-     * same JVM.
+     * Start an embedded Apache Directory Server. Only one embedded server will be permitted in the same JVM.
      *
      * @param port the port on which the server will be listening.
      * @param defaultPartitionSuffix The default base suffix that will be used for the LDAP server.
-     * @param defaultPartitionName The name to use in the directory server configuration for the
-     *     default base suffix.
+     * @param defaultPartitionName The name to use in the directory server configuration for the default base suffix.
      * @throws IllegalStateException if an embedded server is already started.
      * @since 1.3.2
      */
     public static void startEmbeddedServer(
-            int port,
-            String defaultPartitionSuffix,
-            String defaultPartitionName,
-            boolean allowAnonymousAccess) {
+            int port, String defaultPartitionSuffix, String defaultPartitionName, boolean allowAnonymousAccess) {
         if (embeddedServer != null) {
             throw new IllegalStateException("An embedded server is already started");
         }
 
         try {
-            embeddedServer =
-                    EmbeddedLdapServer.newEmbeddedServer(
-                            defaultPartitionName,
-                            defaultPartitionSuffix,
-                            port,
-                            allowAnonymousAccess);
+            embeddedServer = EmbeddedLdapServer.newEmbeddedServer(
+                    defaultPartitionName, defaultPartitionSuffix, port, allowAnonymousAccess);
         } catch (Exception e) {
             throw new RuntimeException("Failed to start embedded server", e);
         }
     }
 
     /**
-     * Shuts down the embedded server, if there is one. If no server was previously started in this
-     * JVM this is silently ignored.
+     * Shuts down the embedded server, if there is one. If no server was previously started in this JVM this is silently
+     * ignored.
      *
      * @since 1.3.2
      */
@@ -103,8 +94,8 @@ public class LDAPTestUtils {
      *
      * @param allowAnonymous anonymous access is allowed or not
      */
-    public static boolean initLdapServer(
-            boolean allowAnonymous, String ldapServerUrl, String basePath) throws Exception {
+    public static boolean initLdapServer(boolean allowAnonymous, String ldapServerUrl, String basePath)
+            throws Exception {
         return initLdapServer(allowAnonymous, ldapServerUrl, basePath, "data.ldif");
     }
 
@@ -114,8 +105,7 @@ public class LDAPTestUtils {
      * @param allowAnonymous anonymous access is allowed or not
      */
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-    public static boolean initLdapServer(
-            boolean allowAnonymous, String ldapServerUrl, String basePath, String ldifPath)
+    public static boolean initLdapServer(boolean allowAnonymous, String ldapServerUrl, String basePath, String ldifPath)
             throws Exception {
         try {
             if (!portIsBusy("127.0.0.1", LDAP_SERVER_PORT)) {
@@ -159,15 +149,13 @@ public class LDAPTestUtils {
     }
 
     /**
-     * Clear the directory sub-tree starting with the node represented by the supplied distinguished
-     * name.
+     * Clear the directory sub-tree starting with the node represented by the supplied distinguished name.
      *
      * @param contextSource the ContextSource to use for getting a DirContext.
      * @param name the distinguished name of the root node.
      * @throws NamingException if anything goes wrong removing the sub-tree.
      */
-    public static void clearSubContexts(ContextSource contextSource, Name name)
-            throws NamingException {
+    public static void clearSubContexts(ContextSource contextSource, Name name) throws NamingException {
         DirContext ctx = null;
         try {
             ctx = contextSource.getReadWriteContext();
@@ -182,8 +170,7 @@ public class LDAPTestUtils {
     }
 
     /**
-     * Clear the directory sub-tree starting with the node represented by the supplied distinguished
-     * name.
+     * Clear the directory sub-tree starting with the node represented by the supplied distinguished name.
      *
      * @param ctx The DirContext to use for cleaning the tree.
      * @param name the distinguished name of the root node.
@@ -221,8 +208,7 @@ public class LDAPTestUtils {
     /**
      * Load an Ldif file into an LDAP server.
      *
-     * @param contextSource ContextSource to use for getting a DirContext to interact with the LDAP
-     *     server.
+     * @param contextSource ContextSource to use for getting a DirContext to interact with the LDAP server.
      * @param ldifFile a Resource representing a valid LDIF file.
      * @throws IOException if the Resource cannot be read.
      */
@@ -239,8 +225,7 @@ public class LDAPTestUtils {
         }
     }
 
-    public static void cleanAndSetup(
-            ContextSource contextSource, LdapName rootNode, Resource ldifFile)
+    public static void cleanAndSetup(ContextSource contextSource, LdapName rootNode, Resource ldifFile)
             throws NamingException, IOException {
 
         clearSubContexts(contextSource, rootNode);
@@ -250,10 +235,7 @@ public class LDAPTestUtils {
     @SuppressWarnings({"deprecation", "BanJNDI"})
     private static void loadLdif(DirContext context, Resource ldifFile) throws IOException {
         try {
-            LdapName baseDn =
-                    (LdapName)
-                            context.getEnvironment()
-                                    .get(DefaultDirObjectFactory.JNDI_ENV_BASE_PATH_KEY);
+            LdapName baseDn = (LdapName) context.getEnvironment().get(DefaultDirObjectFactory.JNDI_ENV_BASE_PATH_KEY);
 
             LdifParser parser = new LdifParser(ldifFile);
             parser.open();
@@ -271,13 +253,11 @@ public class LDAPTestUtils {
         }
     }
 
-    public static void loadLdif(DefaultDirectoryService directoryService, Resource ldifFile)
-            throws IOException {
+    public static void loadLdif(DefaultDirectoryService directoryService, Resource ldifFile) throws IOException {
         File tempFile = File.createTempFile("spring_ldap_test", ".ldif");
         try (InputStream inputStream = ldifFile.getInputStream()) {
             IOUtils.copy(inputStream, new FileOutputStream(tempFile));
-            LdifFileLoader fileLoader =
-                    new LdifFileLoader(directoryService.getSession(), tempFile.getAbsolutePath());
+            LdifFileLoader fileLoader = new LdifFileLoader(directoryService.getSession(), tempFile.getAbsolutePath());
             fileLoader.execute();
         } finally {
             try {

@@ -46,8 +46,8 @@ public interface DGGSFactory {
     DGGSInstance createInstance(Map<String, ?> params) throws IOException;
 
     /**
-     * Test to see if the implementation is available for use. This method ensures all the
-     * appropriate libraries to construct the {@link DGGSInstance} are available.
+     * Test to see if the implementation is available for use. This method ensures all the appropriate libraries to
+     * construct the {@link DGGSInstance} are available.
      */
     boolean isAvailable();
 }

@@ -12,8 +12,7 @@ public class TileMatrixSetLimit {
     long minTileCol;
     long maxTileCol;
 
-    public TileMatrixSetLimit(
-            String tileMatrix, long minTileRow, long maxTileRow, long minTileCol, long maxTileCol) {
+    public TileMatrixSetLimit(String tileMatrix, long minTileRow, long maxTileRow, long minTileCol, long maxTileCol) {
         this.tileMatrix = tileMatrix;
         this.minTileRow = minTileRow;
         this.maxTileRow = maxTileRow;

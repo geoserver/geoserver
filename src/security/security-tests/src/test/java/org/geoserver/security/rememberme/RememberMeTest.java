@@ -53,10 +53,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
 
         SecurityManagerConfig cfg = secMgr.getSecurityConfig();
         cfg.getFilterChain()
-                .insertAfter(
-                        "/web/**",
-                        filterCfg.getName(),
-                        GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
+                .insertAfter("/web/**", filterCfg.getName(), GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
 
         //        cfg.getFilterChain().put("/web/**", Arrays.asList(
         //            new FilterChainEntry(filterCfg.getName(), Position.AFTER,
@@ -68,12 +65,12 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+        springContextLocations.add(getClass()
+                .getResource(getClass().getSimpleName() + "-context.xml")
+                .toString());
     }
 
-    static class AuthCapturingFilter extends GeoServerSecurityFilter
-            implements GeoServerAuthenticationFilter {
+    static class AuthCapturingFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
         @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                 throws IOException, ServletException {

@@ -86,8 +86,7 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
                 UUID messageObject = capture.getValue().getUUID();
                 int publishTime = 0;
                 Member publishingMember = null;
-                Message<UUID> message =
-                        new Message<UUID>(topicName, messageObject, publishTime, publishingMember);
+                Message<UUID> message = new Message<UUID>(topicName, messageObject, publishTime, publishingMember);
                 listener.onMessage(message);
             }
         }

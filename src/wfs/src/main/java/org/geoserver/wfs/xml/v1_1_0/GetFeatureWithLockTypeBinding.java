@@ -166,15 +166,13 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
 
         // &lt;xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("traverseXlinkDepth")) {
-            getFeatureWithLock.setTraverseXlinkDepth(
-                    (String) node.getAttributeValue("traverseXlinkDepth"));
+            getFeatureWithLock.setTraverseXlinkDepth((String) node.getAttributeValue("traverseXlinkDepth"));
         }
 
         // &lt;xsd:attribute name="traverseXlinkExpiry"
         //		type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("traverseXlinkExpiry")) {
-            getFeatureWithLock.setTraverseXlinkExpiry(
-                    (BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
+            getFeatureWithLock.setTraverseXlinkExpiry((BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
         }
 
         return getFeatureWithLock;

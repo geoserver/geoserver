@@ -20,27 +20,23 @@ public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest
     @Override
     protected void setupPanel(final List<GeoServerRole> roots) {
 
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new ConfirmRemovalRolePanel(
-                                        id, roots.toArray(new GeoServerRole[roots.size()])) {
-                                    @Override
-                                    protected IModel<String> canRemove(GeoServerRole data) {
-                                        SelectionRoleRemovalLink link =
-                                                new SelectionRoleRemovalLink(
-                                                        getRoleServiceName(), "XXX", null, null);
-                                        return link.canRemove(data);
-                                    }
+            @Override
+            public Component buildComponent(String id) {
+                return new ConfirmRemovalRolePanel(id, roots.toArray(new GeoServerRole[roots.size()])) {
+                    @Override
+                    protected IModel<String> canRemove(GeoServerRole data) {
+                        SelectionRoleRemovalLink link =
+                                new SelectionRoleRemovalLink(getRoleServiceName(), "XXX", null, null);
+                        return link.canRemove(data);
+                    }
 
-                                    private static final long serialVersionUID = 1L;
-                                };
-                            }
-                        }));
+                    private static final long serialVersionUID = 1L;
+                };
+            }
+        }));
     }
 
     @Test

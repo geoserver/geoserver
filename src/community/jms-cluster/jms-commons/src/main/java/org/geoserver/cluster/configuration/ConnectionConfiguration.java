@@ -24,8 +24,7 @@ public final class ConnectionConfiguration implements JMSConfigurationExt {
     public static final String CONNECTION_MAXWAIT_KEY = "connection.maxwait";
     public static final Long DEFAULT_CONNECTION_MAXWAIT = 500L;
 
-    public static final ConnectionConfigurationStatus DEFAULT_CONNECTION_STATUS =
-            ConnectionConfigurationStatus.enabled;
+    public static final ConnectionConfigurationStatus DEFAULT_CONNECTION_STATUS = ConnectionConfigurationStatus.enabled;
 
     public static enum ConnectionConfigurationStatus {
         enabled,

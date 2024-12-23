@@ -15,9 +15,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.geotools.util.GrowableInternationalString;
 
 /**
- * A model for a {@link GrowableInternationalString} Internally it handles the mapping beetween the
- * entries of the growable internal Map and instances of a {@InternationalStringEntry} suitable to
- * be used as Model object.
+ * A model for a {@link GrowableInternationalString} Internally it handles the mapping beetween the entries of the
+ * growable internal Map and instances of a {@InternationalStringEntry} suitable to be used as Model object.
  */
 public class GrowableStringModel extends ChainingModel<GrowableInternationalString> {
 
@@ -29,8 +28,7 @@ public class GrowableStringModel extends ChainingModel<GrowableInternationalStri
     }
 
     /**
-     * Returns the list of entries currently available as a list of {InternationalStringEntry}
-     * instances.
+     * Returns the list of entries currently available as a list of {InternationalStringEntry} instances.
      *
      * @return the list of available entries.
      */
@@ -51,8 +49,8 @@ public class GrowableStringModel extends ChainingModel<GrowableInternationalStri
     }
 
     /**
-     * This class represent an entry of a GrowableInternationalString. It is meant to be used as the
-     * model object of a table/list entries
+     * This class represent an entry of a GrowableInternationalString. It is meant to be used as the model object of a
+     * table/list entries
      */
     public static final class InternationalStringEntry implements Serializable {
         private Locale locale;

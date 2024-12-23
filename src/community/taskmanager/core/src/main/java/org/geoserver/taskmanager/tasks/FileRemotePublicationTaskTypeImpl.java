@@ -55,10 +55,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();
-        ParameterInfo fileService =
-                new ParameterInfo(PARAM_FILE_SERVICE, extTypes.fileService, false);
-        ParameterInfo autoVersioned =
-                new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false);
+        ParameterInfo fileService = new ParameterInfo(PARAM_FILE_SERVICE, extTypes.fileService, false);
+        ParameterInfo autoVersioned = new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false);
         paramInfo.put(PARAM_FILE_SERVICE, fileService);
         paramInfo.put(PARAM_AUTO_VERSIONED, autoVersioned);
         paramInfo.put(
@@ -80,54 +78,35 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
 
     @Override
     protected boolean createStore(
-            ExternalGS extGS,
-            GeoServerRESTManager restManager,
-            StoreInfo store,
-            TaskContext ctx,
-            String name)
+            ExternalGS extGS, GeoServerRESTManager restManager, StoreInfo store, TaskContext ctx, String name)
             throws IOException, TaskException {
         final StoreType storeType =
-                store instanceof CoverageStoreInfo
-                        ? StoreType.COVERAGESTORES
-                        : StoreType.DATASTORES;
+                store instanceof CoverageStoreInfo ? StoreType.COVERAGESTORES : StoreType.DATASTORES;
 
-        FileReference fileRef =
-                (FileReference)
-                        ctx.getBatchContext()
-                                .get(
-                                        ctx.getParameterValues().get(PARAM_FILE),
-                                        new BatchContext.Dependency() {
-                                            @Override
-                                            public void revert() throws TaskException {
-                                                FileReference fileRef =
-                                                        (FileReference)
-                                                                ctx.getBatchContext()
-                                                                        .get(
-                                                                                ctx.getParameterValues()
-                                                                                        .get(
-                                                                                                PARAM_FILE));
-                                                URI uri =
-                                                        fileRef.getService()
-                                                                .getURI(fileRef.getLatestVersion());
+        FileReference fileRef = (FileReference)
+                ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_FILE), new BatchContext.Dependency() {
+                    @Override
+                    public void revert() throws TaskException {
+                        FileReference fileRef = (FileReference) ctx.getBatchContext()
+                                .get(ctx.getParameterValues().get(PARAM_FILE));
+                        URI uri = fileRef.getService().getURI(fileRef.getLatestVersion());
 
-                                                if (!isUpload(uri)) {
-                                                    restManager
-                                                            .getStoreManager()
-                                                            .update(
-                                                                    store.getWorkspace().getName(),
-                                                                    new GSGenericStoreEncoder(
-                                                                            storeType,
-                                                                            store.getWorkspace()
-                                                                                    .getName(),
-                                                                            store.getType(),
-                                                                            store.getName(),
-                                                                            store
-                                                                                    .getConnectionParameters(),
-                                                                            uri.toString(),
-                                                                            true));
-                                                }
-                                            }
-                                        });
+                        if (!isUpload(uri)) {
+                            restManager
+                                    .getStoreManager()
+                                    .update(
+                                            store.getWorkspace().getName(),
+                                            new GSGenericStoreEncoder(
+                                                    storeType,
+                                                    store.getWorkspace().getName(),
+                                                    store.getType(),
+                                                    store.getName(),
+                                                    store.getConnectionParameters(),
+                                                    uri.toString(),
+                                                    true));
+                        }
+                    }
+                });
         URI uri = fileRef == null ? null : fileRef.getService().getURI(fileRef.getLatestVersion());
         if (uri == null) {
             try {
@@ -164,7 +143,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                             name,
                             UploadMethod.FILE,
                             store.getType().toLowerCase(),
-                            Files.probeContentType(processedResources.get(0).file().toPath()),
+                            Files.probeContentType(
+                                    processedResources.get(0).file().toPath()),
                             processedResources.get(0).file().toURI(),
                             null);
         } else {
@@ -173,7 +153,8 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 for (Resource processedResource : processedResources) {
                     upload(restManager, locationKey, processedResource);
                 }
-                targetUri = "file:" + locationKey + "/" + processedResources.get(0).name();
+                targetUri =
+                        "file:" + locationKey + "/" + processedResources.get(0).name();
             } else {
                 targetUri = uri.toString();
             }
@@ -198,53 +179,35 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
         } else {
             // this will work for shapefiles and app-schemas
             // which I believe are the only file-based vector stores
-            return ((DataStoreInfo) storeInfo).getConnectionParameters().get("url").toString();
+            return ((DataStoreInfo) storeInfo)
+                    .getConnectionParameters()
+                    .get("url")
+                    .toString();
         }
     }
 
     @Override
     protected void postProcess(
-            StoreType storeType,
-            ResourceInfo resource,
-            GSResourceEncoder re,
-            TaskContext ctx,
-            Finalizer finalizer)
+            StoreType storeType, ResourceInfo resource, GSResourceEncoder re, TaskContext ctx, Finalizer finalizer)
             throws TaskException {
         if (storeType == StoreType.COVERAGESTORES) {
             FileReference originalFileRef =
                     (FileReference) ctx.getParameterValues().get(PARAM_FILE);
             if (originalFileRef != null) {
                 FileReference fileRef =
-                        (FileReference)
-                                ctx.getBatchContext()
-                                        .get(
-                                                originalFileRef,
-                                                new BatchContext.Dependency() {
-                                                    @Override
-                                                    public void revert() throws TaskException {
-                                                        FileReference fileRef =
-                                                                (FileReference)
-                                                                        ctx.getBatchContext()
-                                                                                .get(
-                                                                                        ctx.getParameterValues()
-                                                                                                .get(
-                                                                                                        PARAM_FILE));
-                                                        String nativeName =
-                                                                FilenameUtils.getBaseName(
-                                                                        fileRef.getLatestVersion());
-                                                        if (finalizer.getEncoder()
-                                                                instanceof GSCoverageEncoder) {
-                                                            ((GSCoverageEncoder)
-                                                                            finalizer.getEncoder())
-                                                                    .setNativeCoverageName(
-                                                                            nativeName);
-                                                        }
-                                                        finalizer
-                                                                .getEncoder()
-                                                                .setNativeName(nativeName);
-                                                        finalizer.run();
-                                                    }
-                                                });
+                        (FileReference) ctx.getBatchContext().get(originalFileRef, new BatchContext.Dependency() {
+                            @Override
+                            public void revert() throws TaskException {
+                                FileReference fileRef = (FileReference) ctx.getBatchContext()
+                                        .get(ctx.getParameterValues().get(PARAM_FILE));
+                                String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
+                                if (finalizer.getEncoder() instanceof GSCoverageEncoder) {
+                                    ((GSCoverageEncoder) finalizer.getEncoder()).setNativeCoverageName(nativeName);
+                                }
+                                finalizer.getEncoder().setNativeName(nativeName);
+                                finalizer.run();
+                            }
+                        });
                 finalizer.setFinalizeAtCommit(fileRef.equals(originalFileRef));
 
                 String nativeName = FilenameUtils.getBaseName(fileRef.getLatestVersion());
@@ -313,11 +276,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     }
 
     protected List<Resource> process(
-            Resource res,
-            String locationKey,
-            ExternalGS extGS,
-            GeoServerRESTManager restManager,
-            TaskContext ctx)
+            Resource res, String locationKey, ExternalGS extGS, GeoServerRESTManager restManager, TaskContext ctx)
             throws TaskException {
         // hook for subclasses
         return Collections.singletonList(res);

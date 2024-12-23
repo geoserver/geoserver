@@ -39,25 +39,23 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 /**
  * Base class for all rest controllers
  *
- * <p>Extending classes should be annotated with {@link
- * org.springframework.web.bind.annotation.RestController} so that they are automatically
- * instantiated as a Controller bean.
+ * <p>Extending classes should be annotated with {@link org.springframework.web.bind.annotation.RestController} so that
+ * they are automatically instantiated as a Controller bean.
  *
- * <p>Custom configuration can be added to XStreamPersister by overriding {@link
- * #configurePersister(XStreamPersister, XStreamMessageConverter)} Custom configuration can be added
- * to Freemarker by calling {@link #configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
+ * <p>Custom configuration can be added to XStreamPersister by overriding {@link #configurePersister(XStreamPersister,
+ * XStreamMessageConverter)} Custom configuration can be added to Freemarker by calling
+ * {@link #configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
  *
- * <p>Any extending classes which override {@link #configurePersister(XStreamPersister,
- * XStreamMessageConverter)}, and require this configuration for reading objects from incoming
- * requests must also be annotated with {@link
- * org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link
- * #supports(MethodParameter, Type, Class)} method.
+ * <p>Any extending classes which override {@link #configurePersister(XStreamPersister, XStreamMessageConverter)}, and
+ * require this configuration for reading objects from incoming requests must also be annotated with
+ * {@link org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link #supports(MethodParameter,
+ * Type, Class)} method.
  *
  * <p>Any response objects that should be encoded using either {@link XStreamMessageConverter} or
  * {@link FreemarkerHTMLMessageConverter} should be wrapped in a {@link RestWrapper} by calling
- * {@link #wrapObject(Object, Class)}. Any response objects that should be encoded using {@link
- * org.geoserver.rest.converters.XStreamCatalogListConverter} should be wrapped by calling {@link
- * #wrapList(Collection, Class)}
+ * {@link #wrapObject(Object, Class)}. Any response objects that should be encoded using
+ * {@link org.geoserver.rest.converters.XStreamCatalogListConverter} should be wrapped by calling
+ * {@link #wrapList(Collection, Class)}
  */
 public abstract class RestBaseController implements RequestBodyAdvice {
 
@@ -140,9 +138,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
 
             template = tryLoadTemplate(configuration, clazz.getSimpleName() + ".ftl");
             if (template == null) {
-                template =
-                        tryLoadTemplate(
-                                configuration, clazz.getSimpleName().toLowerCase() + ".ftl");
+                template = tryLoadTemplate(configuration, clazz.getSimpleName().toLowerCase() + ".ftl");
             }
             if (template == null) {
                 for (Class<?> interfaze : clazz.getInterfaces()) {
@@ -168,8 +164,8 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     }
 
     /**
-     * Tries to load a template, will return null if it's not found. If the template exists but it
-     * contains syntax errors an exception will be thrown instead
+     * Tries to load a template, will return null if it's not found. If the template exists but it contains syntax
+     * errors an exception will be thrown instead
      *
      * @param configuration The template configuration.
      * @param templateName The name of the template to load.
@@ -224,8 +220,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      */
     // TODO: Remove this once all references have been removed (should just use
     // ResourceNotFoundExceptions)
-    protected <T> RestWrapper<T> wrapObject(
-            T object, Class<T> clazz, String errorMessage, Boolean quietOnNotFound) {
+    protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz, String errorMessage, Boolean quietOnNotFound) {
         errorMessage = quietOnNotFound != null && quietOnNotFound ? "" : errorMessage;
         if (object == null) {
             throw new RestException(errorMessage, HttpStatus.NOT_FOUND);
@@ -235,16 +230,13 @@ public abstract class RestBaseController implements RequestBodyAdvice {
 
     @Override
     /**
-     * Any subclass that implements {@link #configurePersister(XStreamPersister,
-     * XStreamMessageConverter)} and require this configuration for reading objects from incoming
-     * requests should override this method to return true when called from the appropriate
-     * controller, and should also be annotated with {@link
-     * org.springframework.web.bind.annotation.ControllerAdvice}
+     * Any subclass that implements {@link #configurePersister(XStreamPersister, XStreamMessageConverter)} and require
+     * this configuration for reading objects from incoming requests should override this method to return true when
+     * called from the appropriate controller, and should also be annotated with
+     * {@link org.springframework.web.bind.annotation.ControllerAdvice}
      */
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return false;
     }
 
@@ -282,11 +274,10 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     }
 
     /**
-     * Default (empty) implementation of configurePersister. This will be called by the default
-     * implementations of {@link RestWrapper#configurePersister(XStreamPersister,
-     * XStreamMessageConverter)} and {@link
-     * RestHttpInputWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)}
-     * constructed by {@link #wrapObject(Object, Class)}, {@link #wrapList(Collection, Class)}, and
+     * Default (empty) implementation of configurePersister. This will be called by the default implementations of
+     * {@link RestWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)} and
+     * {@link RestHttpInputWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)} constructed by
+     * {@link #wrapObject(Object, Class)}, {@link #wrapList(Collection, Class)}, and
      * {@link #beforeBodyRead(HttpInputMessage, MethodParameter, Type, Class)}
      *
      * <p>Subclasses should override this to implement custom functionality
@@ -294,26 +285,24 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {}
 
     /**
-     * Default (empty) implementation of configurePersister. This will be called by the default
-     * implementation of {@link RestWrapper#configurePersister(XStreamPersister,
-     * XStreamMessageConverter)}, constructed by {@link #wrapObject(Object, Class)}, and {@link
-     * #wrapList(Collection, Class)}
+     * Default (empty) implementation of configurePersister. This will be called by the default implementation of
+     * {@link RestWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)}, constructed by
+     * {@link #wrapObject(Object, Class)}, and {@link #wrapList(Collection, Class)}
      *
      * <p>Subclasses should override this to implement custom functionality
      */
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {}
 
     /**
-     * Returns the result of RequestContextHolder#getRequestAttributes() making sure the result is
-     * not null, throwing an {@link NullPointerException} with an explanation otherwise
+     * Returns the result of RequestContextHolder#getRequestAttributes() making sure the result is not null, throwing an
+     * {@link NullPointerException} with an explanation otherwise
      */
     @NonNull
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     protected RequestAttributes getNonNullRequestAttributes() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) {
-            throw new NullPointerException(
-                    "Could not get request attributes in the current request");
+            throw new NullPointerException("Could not get request attributes in the current request");
         }
         return requestAttributes;
     }
@@ -324,11 +313,8 @@ public abstract class RestBaseController implements RequestBodyAdvice {
         if (attributes == null) return Collections.emptyMap();
 
         @SuppressWarnings("unchecked")
-        Map<String, String> result =
-                (Map<String, String>)
-                        attributes.getAttribute(
-                                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE,
-                                RequestAttributes.SCOPE_REQUEST);
+        Map<String, String> result = (Map<String, String>) attributes.getAttribute(
+                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
         if (result == null) return Collections.emptyMap();
 
         return result;

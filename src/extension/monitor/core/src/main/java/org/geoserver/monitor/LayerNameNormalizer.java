@@ -28,8 +28,7 @@ public class LayerNameNormalizer implements RequestPostProcessor {
     }
 
     @Override
-    public void run(RequestData data, HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    public void run(RequestData data, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         List<String> layers = data.getResources();
         if (layers == null) {

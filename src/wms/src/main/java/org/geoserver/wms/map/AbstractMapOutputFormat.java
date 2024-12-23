@@ -54,11 +54,7 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
     }
 
     protected AbstractMapOutputFormat(final String mime, final String... outputFormats) {
-        this(
-                mime,
-                outputFormats == null
-                        ? Collections.emptySet()
-                        : new HashSet<>(Arrays.asList(outputFormats)));
+        this(mime, outputFormats == null ? Collections.emptySet() : new HashSet<>(Arrays.asList(outputFormats)));
     }
 
     protected AbstractMapOutputFormat(final String mime, Set<String> outputFormats) {
@@ -187,8 +183,7 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
                     p = MapDecorationLayout.Block.Position.LR;
                     break;
                 default:
-                    throw new ServiceException(
-                            "Unknown WatermarkInfo.Position value.  Something is seriously wrong.");
+                    throw new ServiceException("Unknown WatermarkInfo.Position value.  Something is seriously wrong.");
             }
 
             return new MapDecorationLayout.Block(d, p, null, new Point(0, 0));

@@ -158,8 +158,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
         // add three joinable types with same code, but different type names
         SimpleFeatureType ft1 =
-                DataUtilities.createType(
-                        SystemTestData.CITE_URI, "t1", "g1:Point:srid=4326,code1:int,name1:String");
+                DataUtilities.createType(SystemTestData.CITE_URI, "t1", "g1:Point:srid=4326,code1:int,name1:String");
         store.createSchema(ft1);
         fs = (SimpleFeatureStore) store.getFeatureSource("t1");
         addFeature(fs, "POINT(1 1)", Integer.valueOf(1), "First");
@@ -167,8 +166,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         cat.add(ft);
 
         SimpleFeatureType ft2 =
-                DataUtilities.createType(
-                        SystemTestData.CITE_URI, "t2", "g2:Point:srid=4326,code2:int,name2:String");
+                DataUtilities.createType(SystemTestData.CITE_URI, "t2", "g2:Point:srid=4326,code2:int,name2:String");
         store.createSchema(ft2);
         fs = (SimpleFeatureStore) store.getFeatureSource("t2");
         addFeature(fs, "POINT(2 2)", Integer.valueOf(1), "Second");
@@ -176,8 +174,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         cat.add(ft);
 
         SimpleFeatureType ft3 =
-                DataUtilities.createType(
-                        SystemTestData.CITE_URI, "t3", "g3:Point:srid=4326,code3:int,name3:String");
+                DataUtilities.createType(SystemTestData.CITE_URI, "t3", "g3:Point:srid=4326,code3:int,name3:String");
         store.createSchema(ft3);
         fs = (SimpleFeatureStore) store.getFeatureSource("t3");
         addFeature(fs, "POINT(3 3)", Integer.valueOf(1), "Third");
@@ -199,34 +196,31 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSpatialJoinPOST() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<fes:Intersects> "
-                        + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
-                        + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
-                        + "</fes:Intersects> "
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<fes:Intersects> "
+                + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
+                + "</fes:Intersects> "
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
 
         XMLAssert.assertXpathExists(
-                "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']",
-                dom);
+                "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
         XMLAssert.assertXpathExists(
-                "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']",
-                dom);
+                "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
 
         XMLAssert.assertXpathExists(
                 "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']",
@@ -238,38 +232,35 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSpatialJoinNoAliasesCustomPrefixes() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "'"
-                        + " xmlns:ns123='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='ns123:Forests ns123:Lakes'>"
-                        + "<fes:Filter> "
-                        + "<fes:Intersects> "
-                        + "<fes:ValueReference>ns123:Forests/the_geom</fes:ValueReference> "
-                        + "<fes:ValueReference>ns123:Lakes/the_geom</fes:ValueReference>"
-                        + "</fes:Intersects> "
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "'"
+                + " xmlns:ns123='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='ns123:Forests ns123:Lakes'>"
+                + "<fes:Filter> "
+                + "<fes:Intersects> "
+                + "<fes:ValueReference>ns123:Forests/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>ns123:Lakes/the_geom</fes:ValueReference>"
+                + "</fes:Intersects> "
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
 
         XMLAssert.assertXpathExists(
-                "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']",
-                dom);
+                "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
         XMLAssert.assertXpathExists(
-                "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']",
-                dom);
+                "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
 
         XMLAssert.assertXpathExists(
                 "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']",
@@ -281,18 +272,15 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSpatialJoinGET() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&version=2.0.0&request=getFeature&typenames=gs:Forests,gs:Lakes&aliases=a,b&filter=%3CFilter%3E%3CIntersects%3E%3CValueReference%3Ea%2Fthe_geom%3C%2FValueReference%3E%3CValueReference%3Eb%2Fthe_geom%3C%2FValueReference%3E%3C%2FIntersects%3E%3C%2FFilter%3E");
+        Document dom = getAsDOM(
+                "wfs?service=WFS&version=2.0.0&request=getFeature&typenames=gs:Forests,gs:Lakes&aliases=a,b&filter=%3CFilter%3E%3CIntersects%3E%3CValueReference%3Ea%2Fthe_geom%3C%2FValueReference%3E%3CValueReference%3Eb%2Fthe_geom%3C%2FValueReference%3E%3C%2FIntersects%3E%3C%2FFilter%3E");
 
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
 
         XMLAssert.assertXpathExists(
-                "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']",
-                dom);
+                "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
         XMLAssert.assertXpathExists(
-                "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']",
-                dom);
+                "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
 
         XMLAssert.assertXpathExists(
                 "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']",
@@ -303,12 +291,11 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     }
 
     /**
-     * Both {@code cdf:Forests} and {@code gs:Forests} exist. The default workspace is {@code cdf},
-     * but the request calls for the {@code gs} local workspace with unqualified type names. At the
-     * time the KVP is parsed, the {@code LocalWorkspace} is not set, so it resolves {@code Forests}
-     * based on the default namespace. Further down the request processing chain, {@link
-     * WFSWorkspaceQualifier} figures out the original request was meant to use the typename in the
-     * local workspace instead and amends the KVP.
+     * Both {@code cdf:Forests} and {@code gs:Forests} exist. The default workspace is {@code cdf}, but the request
+     * calls for the {@code gs} local workspace with unqualified type names. At the time the KVP is parsed, the
+     * {@code LocalWorkspace} is not set, so it resolves {@code Forests} based on the default namespace. Further down
+     * the request processing chain, {@link WFSWorkspaceQualifier} figures out the original request was meant to use the
+     * typename in the local workspace instead and amends the KVP.
      */
     @Test
     public void testSpatialJoinGETWorkspaceQualifier() throws Exception {
@@ -320,18 +307,15 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         WorkspaceInfo cdf = catalog.getWorkspaceByName("cdf");
         catalog.setDefaultWorkspace(cdf);
         try {
-            Document dom =
-                    getAsDOM(
-                            "gs/wfs?service=WFS&version=2.0.0&request=getFeature&typenames=Forests,Lakes&aliases=a,b&filter=<Filter><Intersects><ValueReference>a/the_geom</ValueReference><ValueReference>b/the_geom</ValueReference></Intersects></Filter>");
+            Document dom = getAsDOM(
+                    "gs/wfs?service=WFS&version=2.0.0&request=getFeature&typenames=Forests,Lakes&aliases=a,b&filter=<Filter><Intersects><ValueReference>a/the_geom</ValueReference><ValueReference>b/the_geom</ValueReference></Intersects></Filter>");
 
             XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
 
             XMLAssert.assertXpathExists(
-                    "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']",
-                    dom);
+                    "//wfs:Tuple[position() = 1]/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
             XMLAssert.assertXpathExists(
-                    "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']",
-                    dom);
+                    "//wfs:Tuple[position() = 1]/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
 
             XMLAssert.assertXpathExists(
                     "wfs:FeatureCollection/wfs:member[position()=2]/wfs:Tuple//gs:Forests/gs:NAME[text() = 'Foo Forest']",
@@ -347,261 +331,239 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSpatialJoinPOSTWithPrimaryFilter() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<fes:And>"
-                        + "<fes:Intersects> "
-                        + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
-                        + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
-                        + "</fes:Intersects> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/FID</ValueReference>"
-                        + "<Literal>110</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<fes:And>"
+                + "<fes:Intersects> "
+                + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
+                + "</fes:Intersects> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<Literal>110</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
     }
 
     @Test
     public void testSpatialJoinPOSTWithSecondaryFilter() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<fes:And>"
-                        + "<fes:Intersects> "
-                        + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
-                        + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
-                        + "</fes:Intersects> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>b/FID</ValueReference>"
-                        + "<Literal>101</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<fes:And>"
+                + "<fes:Intersects> "
+                + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
+                + "</fes:Intersects> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/FID</ValueReference>"
+                + "<Literal>101</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Green Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Blue Lake']", dom);
     }
 
     @Test
     public void testSpatialJoinWithBothFilters() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<fes:And>"
-                        + "<fes:Disjoint> "
-                        + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
-                        + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
-                        + "</fes:Disjoint> "
-                        + "<fes:And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/NAME</ValueReference>"
-                        + "<Literal>Bar Forest</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsGreaterThan>"
-                        + "<ValueReference>b/FID</ValueReference>"
-                        + "<Literal>102</Literal>"
-                        + "</PropertyIsGreaterThan>"
-                        + "</fes:And>"
-                        + "</fes:And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<fes:And>"
+                + "<fes:Disjoint> "
+                + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
+                + "</fes:Disjoint> "
+                + "<fes:And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/NAME</ValueReference>"
+                + "<Literal>Bar Forest</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsGreaterThan>"
+                + "<ValueReference>b/FID</ValueReference>"
+                + "<Literal>102</Literal>"
+                + "</PropertyIsGreaterThan>"
+                + "</fes:And>"
+                + "</fes:And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
 
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
         XMLAssert.assertXpathEvaluatesTo(
-                "2",
-                "count(//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Bar Forest'])",
-                dom);
+                "2", "count(//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Bar Forest'])", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Green Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testStandardJoin() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/FID</ValueReference>"
-                        + "<ValueReference>b/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>b/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testJoinAliasConflictProperty() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/FID</ValueReference>"
-                        + "<ValueReference>NAME/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>NAME/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testStandardJoinThreeWays() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes gs:Lakes' aliases='a b c'>"
-                        + "<fes:Filter> "
-                        + "<And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/FID</ValueReference>"
-                        + "<ValueReference>b/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>b/FID</ValueReference>"
-                        + "<ValueReference>c/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes gs:Lakes' aliases='a b c'>"
+                + "<fes:Filter> "
+                + "<And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>b/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/FID</ValueReference>"
+                + "<ValueReference>c/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member[1]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member[2]/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member[3]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member[1]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member[2]/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member[3]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testStandardJoinThreeWaysLocalFilters() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:t1 gs:t2 gs:t3' aliases='a b c'>"
-                        + "<fes:Filter> "
-                        + "<And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/name1</ValueReference>"
-                        + "<Literal>First</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/code1</ValueReference>"
-                        + "<ValueReference>b/code2</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>b/name2</ValueReference>"
-                        + "<Literal>Second</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/name3</ValueReference>"
-                        + "<Literal>Third</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>b/code2</ValueReference>"
-                        + "<ValueReference>c/code3</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:t1 gs:t2 gs:t3' aliases='a b c'>"
+                + "<fes:Filter> "
+                + "<And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/name1</ValueReference>"
+                + "<Literal>First</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/code1</ValueReference>"
+                + "<ValueReference>b/code2</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/name2</ValueReference>"
+                + "<Literal>Second</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/name3</ValueReference>"
+                + "<Literal>Third</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/code2</ValueReference>"
+                + "<ValueReference>c/code3</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
@@ -614,32 +576,29 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testStandardJoin2() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/FID</ValueReference>"
-                        + "<ValueReference>d/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/FID</ValueReference>"
+                + "<ValueReference>d/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
@@ -650,33 +609,30 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         forestsInfo.setName("ForestsRenamed");
         try {
             catalog.save(forestsInfo);
-            String xml =
-                    "<wfs:GetFeature xmlns:wfs='"
-                            + WFS.NAMESPACE
-                            + "' xmlns:fes='"
-                            + FES.NAMESPACE
-                            + "'"
-                            + " xmlns:gs='"
-                            + SystemTestData.DEFAULT_URI
-                            + "' version='2.0.0'>"
-                            + "<wfs:Query typeNames='gs:ForestsRenamed gs:Lakes' aliases='c d'>"
-                            + "<fes:Filter> "
-                            + "<PropertyIsEqualTo>"
-                            + "<ValueReference>c/FID</ValueReference>"
-                            + "<ValueReference>d/FID</ValueReference>"
-                            + "</PropertyIsEqualTo>"
-                            + "</fes:Filter> "
-                            + "</wfs:Query>"
-                            + "</wfs:GetFeature>";
+            String xml = "<wfs:GetFeature xmlns:wfs='"
+                    + WFS.NAMESPACE
+                    + "' xmlns:fes='"
+                    + FES.NAMESPACE
+                    + "'"
+                    + " xmlns:gs='"
+                    + SystemTestData.DEFAULT_URI
+                    + "' version='2.0.0'>"
+                    + "<wfs:Query typeNames='gs:ForestsRenamed gs:Lakes' aliases='c d'>"
+                    + "<fes:Filter> "
+                    + "<PropertyIsEqualTo>"
+                    + "<ValueReference>c/FID</ValueReference>"
+                    + "<ValueReference>d/FID</ValueReference>"
+                    + "</PropertyIsEqualTo>"
+                    + "</fes:Filter> "
+                    + "</wfs:Query>"
+                    + "</wfs:GetFeature>";
 
             Document dom = postAsDOM("wfs", xml);
             // print(dom);
             XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-            XMLAssert.assertXpathExists(
-                    "//wfs:Tuple/wfs:member/gs:ForestsRenamed/gs:NAME[text() = 'Foo Forest']", dom);
-            XMLAssert.assertXpathExists(
-                    "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:ForestsRenamed/gs:NAME[text() = 'Foo Forest']", dom);
+            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
         } finally {
             forestsInfo.setName(oldName);
             catalog.save(forestsInfo);
@@ -693,33 +649,30 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         forestsInfo.setName("LakesRenamed");
         try {
             catalog.save(forestsInfo);
-            String xml =
-                    "<wfs:GetFeature xmlns:wfs='"
-                            + WFS.NAMESPACE
-                            + "' xmlns:fes='"
-                            + FES.NAMESPACE
-                            + "'"
-                            + " xmlns:gs='"
-                            + SystemTestData.DEFAULT_URI
-                            + "' version='2.0.0'>"
-                            + "<wfs:Query typeNames='gs:Forests gs:LakesRenamed' aliases='c d'>"
-                            + "<fes:Filter> "
-                            + "<PropertyIsEqualTo>"
-                            + "<ValueReference>c/FID</ValueReference>"
-                            + "<ValueReference>d/FID</ValueReference>"
-                            + "</PropertyIsEqualTo>"
-                            + "</fes:Filter> "
-                            + "</wfs:Query>"
-                            + "</wfs:GetFeature>";
+            String xml = "<wfs:GetFeature xmlns:wfs='"
+                    + WFS.NAMESPACE
+                    + "' xmlns:fes='"
+                    + FES.NAMESPACE
+                    + "'"
+                    + " xmlns:gs='"
+                    + SystemTestData.DEFAULT_URI
+                    + "' version='2.0.0'>"
+                    + "<wfs:Query typeNames='gs:Forests gs:LakesRenamed' aliases='c d'>"
+                    + "<fes:Filter> "
+                    + "<PropertyIsEqualTo>"
+                    + "<ValueReference>c/FID</ValueReference>"
+                    + "<ValueReference>d/FID</ValueReference>"
+                    + "</PropertyIsEqualTo>"
+                    + "</fes:Filter> "
+                    + "</wfs:Query>"
+                    + "</wfs:GetFeature>";
 
             Document dom = postAsDOM("wfs", xml);
             print(dom);
             XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-            XMLAssert.assertXpathExists(
-                    "//wfs:Tuple/wfs:member/gs:Renamed/gs:NAME[text() = 'Foo Forest']", dom);
-            XMLAssert.assertXpathExists(
-                    "//wfs:Tuple/wfs:member/gs:LakesRenamed/gs:NAME[text() = 'Black Lake']", dom);
+            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Renamed/gs:NAME[text() = 'Foo Forest']", dom);
+            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:LakesRenamed/gs:NAME[text() = 'Black Lake']", dom);
         } finally {
             forestsInfo.setName(oldName);
             catalog.save(forestsInfo);
@@ -728,54 +681,50 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testStandardJoinNoAliases() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>gs:Forests/FID</ValueReference>"
-                        + "<ValueReference>gs:Lakes/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>gs:Forests/FID</ValueReference>"
+                + "<ValueReference>gs:Lakes/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testSelfJoin() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Forests' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<Disjoint>"
-                        + "<ValueReference>a/the_geom</ValueReference>"
-                        + "<ValueReference>b/the_geom</ValueReference>"
-                        + "</Disjoint>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Forests' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<Disjoint>"
+                + "<ValueReference>a/the_geom</ValueReference>"
+                + "<ValueReference>b/the_geom</ValueReference>"
+                + "</Disjoint>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
 
@@ -784,24 +733,23 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSelfJoinLocalNamespaces() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:ns42='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='ns42:Forests ns42:Forests' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<Disjoint>"
-                        + "<ValueReference>a/ns42:the_geom</ValueReference>"
-                        + "<ValueReference>b/ns42:the_geom</ValueReference>"
-                        + "</Disjoint>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:ns42='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='ns42:Forests ns42:Forests' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<Disjoint>"
+                + "<ValueReference>a/ns42:the_geom</ValueReference>"
+                + "<ValueReference>b/ns42:the_geom</ValueReference>"
+                + "</Disjoint>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
 
@@ -810,146 +758,138 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testTemporalJoin() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:PrimitiveGeoFeature gs:TimeFeature' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<And>"
-                        + "<After>"
-                        + "<ValueReference>a/dateTimeProperty</ValueReference>"
-                        + "<ValueReference>b/dateTime</ValueReference>"
-                        + "</After>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/name</ValueReference>"
-                        + "<Literal>name-f008</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "</And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:PrimitiveGeoFeature gs:TimeFeature' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<And>"
+                + "<After>"
+                + "<ValueReference>a/dateTimeProperty</ValueReference>"
+                + "<ValueReference>b/dateTime</ValueReference>"
+                + "</After>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/name</ValueReference>"
+                + "<Literal>name-f008</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "</And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
     }
 
     @Test
     public void testStandardJoinLocalFilterNot() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
-                        + "<fes:Filter> "
-                        + "<And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/FID</ValueReference>"
-                        + "<ValueReference>d/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "<Not>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>d/NAME</ValueReference>"
-                        + "<Literal>foo</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "</Not>"
-                        + "</And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
+                + "<fes:Filter> "
+                + "<And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/FID</ValueReference>"
+                + "<ValueReference>d/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "<Not>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>d/NAME</ValueReference>"
+                + "<Literal>foo</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "</Not>"
+                + "</And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testStandardJoinLocalFilterOr() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
-                        + "<fes:Filter> "
-                        + "<And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/FID</ValueReference>"
-                        + "<ValueReference>d/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "<Or>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>d/NAME</ValueReference>"
-                        + "<Literal>foo</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>d/NAME</ValueReference>"
-                        + "<Literal>Black Lake</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "</Or>"
-                        + "</And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
+                + "<fes:Filter> "
+                + "<And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/FID</ValueReference>"
+                + "<ValueReference>d/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "<Or>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>d/NAME</ValueReference>"
+                + "<Literal>foo</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>d/NAME</ValueReference>"
+                + "<Literal>Black Lake</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "</Or>"
+                + "</And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
 
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
-        XMLAssert.assertXpathExists(
-                "//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test
     public void testOredJoinCondition() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
-                        + "<fes:Filter> "
-                        + "<Or>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/FID</ValueReference>"
-                        + "<ValueReference>d/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "<And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/NAME</ValueReference>"
-                        + "<Literal>Bar Forest</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>d/NAME</ValueReference>"
-                        + "<Literal>Green Lake</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "</And>"
-                        + "</Or>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>"
+                + "<fes:Filter> "
+                + "<Or>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/FID</ValueReference>"
+                + "<ValueReference>d/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "<And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/NAME</ValueReference>"
+                + "<Literal>Bar Forest</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>d/NAME</ValueReference>"
+                + "<Literal>Green Lake</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "</And>"
+                + "</Or>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
@@ -967,28 +907,26 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testStandardJoinCSV() throws Exception {
-        String xml =
-                "<?xml version='1.0' encoding='UTF-8'?>"
-                        + "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' outputFormat='csv' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/FID</ValueReference>"
-                        + "<ValueReference>b/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>b/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
-        MockHttpServletResponse resp =
-                postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
 
         // check the mime type
         assertEquals(CSV, getBaseMimeType(resp.getContentType()));
@@ -997,8 +935,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1020,28 +957,26 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testJoinAliasConflictingPropertyCSV() throws Exception {
-        String xml =
-                "<?xml version='1.0' encoding='UTF-8'?>"
-                        + "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' outputFormat='csv' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/FID</ValueReference>"
-                        + "<ValueReference>NAME/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>NAME/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
-        MockHttpServletResponse resp =
-                postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
 
         // check the mime type
         assertEquals(CSV, getBaseMimeType(resp.getContentType()));
@@ -1050,8 +985,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1073,28 +1007,26 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testStandardJoinNoAliasesCSV() throws Exception {
-        String xml =
-                "<?xml version='1.0' encoding='UTF-8'?>"
-                        + "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' outputFormat='csv' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes'>"
-                        + "<fes:Filter> "
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>Forests/FID</ValueReference>"
-                        + "<ValueReference>Lakes/FID</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes'>"
+                + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>Forests/FID</ValueReference>"
+                + "<ValueReference>Lakes/FID</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
-        MockHttpServletResponse resp =
-                postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
 
         // check the mime type
         assertEquals(CSV, getBaseMimeType(resp.getContentType()));
@@ -1103,8 +1035,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1124,28 +1055,26 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSelfJoinCSV() throws Exception {
-        String xml =
-                "<?xml version='1.0' encoding='UTF-8'?>"
-                        + "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' outputFormat='csv' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests Forests' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<Disjoint>"
-                        + "<ValueReference>a/the_geom</ValueReference>"
-                        + "<ValueReference>b/the_geom</ValueReference>"
-                        + "</Disjoint>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests Forests' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<Disjoint>"
+                + "<ValueReference>a/the_geom</ValueReference>"
+                + "<ValueReference>b/the_geom</ValueReference>"
+                + "</Disjoint>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
-        MockHttpServletResponse resp =
-                postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
 
         // check the mime type
         assertEquals(CSV, getBaseMimeType(resp.getContentType()));
@@ -1154,8 +1083,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=Forests_Forests.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=Forests_Forests.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1170,27 +1098,25 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSpatialJoinPOST_CSV() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' outputFormat='csv' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
-                        + "<fes:Filter> "
-                        + "<fes:Intersects> "
-                        + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
-                        + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
-                        + "</fes:Intersects> "
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> "
+                + "<fes:Intersects> "
+                + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
+                + "</fes:Intersects> "
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
-        MockHttpServletResponse resp =
-                postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
 
         // check the mime type
         assertEquals(CSV, getBaseMimeType(resp.getContentType()));
@@ -1199,8 +1125,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         assertEquals(UTF_8.name(), resp.getCharacterEncoding());
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=Forests_Lakes.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines
         // and what not
@@ -1220,45 +1145,43 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testStandardJoinThreeWaysLocalFiltersCSV() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs='"
-                        + WFS.NAMESPACE
-                        + "' xmlns:fes='"
-                        + FES.NAMESPACE
-                        + "'"
-                        + " xmlns:gs='"
-                        + SystemTestData.DEFAULT_URI
-                        + "' outputFormat='csv' version='2.0.0'>"
-                        + "<wfs:Query typeNames='gs:t1 gs:t2 gs:t3' aliases='a b c'>"
-                        + "<fes:Filter> "
-                        + "<And>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/name1</ValueReference>"
-                        + "<Literal>First</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>a/code1</ValueReference>"
-                        + "<ValueReference>b/code2</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>b/name2</ValueReference>"
-                        + "<Literal>Second</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>c/name3</ValueReference>"
-                        + "<Literal>Third</Literal>"
-                        + "</PropertyIsEqualTo>"
-                        + "<PropertyIsEqualTo>"
-                        + "<ValueReference>b/code2</ValueReference>"
-                        + "<ValueReference>c/code3</ValueReference>"
-                        + "</PropertyIsEqualTo>"
-                        + "</And>"
-                        + "</fes:Filter> "
-                        + "</wfs:Query>"
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs='"
+                + WFS.NAMESPACE
+                + "' xmlns:fes='"
+                + FES.NAMESPACE
+                + "'"
+                + " xmlns:gs='"
+                + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:t1 gs:t2 gs:t3' aliases='a b c'>"
+                + "<fes:Filter> "
+                + "<And>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/name1</ValueReference>"
+                + "<Literal>First</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/code1</ValueReference>"
+                + "<ValueReference>b/code2</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/name2</ValueReference>"
+                + "<Literal>Second</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>c/name3</ValueReference>"
+                + "<Literal>Third</Literal>"
+                + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/code2</ValueReference>"
+                + "<ValueReference>c/code3</ValueReference>"
+                + "</PropertyIsEqualTo>"
+                + "</And>"
+                + "</fes:Filter> "
+                + "</wfs:Query>"
+                + "</wfs:GetFeature>";
 
-        MockHttpServletResponse resp =
-                postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", UTF_8.name());
 
         // check the mime type
         assertEquals(CSV, getBaseMimeType(resp.getContentType()));
@@ -1302,17 +1225,16 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
 
     @Test
     public void testSelfJoinNoAliases() throws Exception {
-        String xml =
-                "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" count=\"10\" "
-                        + "service=\"WFS\" startIndex=\"0\" version=\"2.0.0\"> <wfs:Query "
-                        + "xmlns:ns76=\""
-                        + SystemTestData.DEFAULT_URI
-                        + "\" "
-                        + "typeNames=\"ns76:PrimitiveGeoFeature ns76:PrimitiveGeoFeature\"> <Filter "
-                        + "xmlns=\"http://www.opengis.net/fes/2.0\"> <PropertyIsEqualTo> "
-                        + "<ValueReference>ns76:PrimitiveGeoFeature/ns76:booleanProperty</ValueReference> "
-                        + "<ValueReference>ns76:PrimitiveGeoFeature/ns76:booleanProperty</ValueReference> "
-                        + "</PropertyIsEqualTo> </Filter> </wfs:Query> </wfs:GetFeature>";
+        String xml = "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" count=\"10\" "
+                + "service=\"WFS\" startIndex=\"0\" version=\"2.0.0\"> <wfs:Query "
+                + "xmlns:ns76=\""
+                + SystemTestData.DEFAULT_URI
+                + "\" "
+                + "typeNames=\"ns76:PrimitiveGeoFeature ns76:PrimitiveGeoFeature\"> <Filter "
+                + "xmlns=\"http://www.opengis.net/fes/2.0\"> <PropertyIsEqualTo> "
+                + "<ValueReference>ns76:PrimitiveGeoFeature/ns76:booleanProperty</ValueReference> "
+                + "<ValueReference>ns76:PrimitiveGeoFeature/ns76:booleanProperty</ValueReference> "
+                + "</PropertyIsEqualTo> </Filter> </wfs:Query> </wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
         // print(dom);
 

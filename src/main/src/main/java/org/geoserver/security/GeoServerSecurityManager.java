@@ -239,8 +239,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     volatile String masterPasswdDigest;
 
     /** cached user groups */
-    ConcurrentHashMap<String, GeoServerUserGroupService> userGroupServices =
-            new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, GeoServerUserGroupService> userGroupServices = new ConcurrentHashMap<>();
 
     /** cached role services */
     ConcurrentHashMap<String, GeoServerRoleService> roleServices = new ConcurrentHashMap<>();
@@ -306,14 +305,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         configPasswordEncryptionHelper = new ConfigurationPasswordEncryptionHelper(this);
     }
 
-    private AuthenticationManager authMgrProxy =
-            new AuthenticationManager() {
-                @Override
-                public Authentication authenticate(Authentication authentication)
-                        throws AuthenticationException {
-                    return providerMgr.authenticate(authentication);
-                }
-            };
+    private AuthenticationManager authMgrProxy = new AuthenticationManager() {
+        @Override
+        public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+            return providerMgr.authenticate(authentication);
+        }
+    };
 
     private DefaultAuthenticationEventPublisher eventPublisher;
 
@@ -373,17 +370,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
     }
 
-    /**
-     * Reload the configuration which may have been updated in the meanwhile; after a restore as an
-     * instance.
-     */
+    /** Reload the configuration which may have been updated in the meanwhile; after a restore as an instance. */
     public void reload() {
         try {
             Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
             if (masterPasswordInfo.getType() != Type.UNDEFINED) {
-                LOGGER.warning(
-                        masterPasswordInfo.path()
-                                + " is a security risk. Please read this file and remove it afterward");
+                LOGGER.warning(masterPasswordInfo.path()
+                        + " is a security risk. Please read this file and remove it afterward");
             }
         } catch (Exception e1) {
             throw new RuntimeException(e1);
@@ -460,53 +453,40 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         Properties p = new Properties();
         p.put(VERSION, CURR_VERSION.toString());
         try (OutputStream os = properties.out()) {
-            p.store(
-                    os,
-                    "Current version of the security directory. Do not remove or alter this file");
+            p.store(os, "Current version of the security directory. Do not remove or alter this file");
         }
     }
 
     void migrateFrom24() throws SecurityConfigException, IOException {
         // allows migration of RoleSource from PreAuthenticatedUserNameFilterConfig
-        MigrationHelper mh =
-                xp ->
-                        xp.getXStream()
-                                .registerConverter(
-                                        new Converter() {
+        MigrationHelper mh = xp -> xp.getXStream().registerConverter(new Converter() {
 
-                                            @Override
-                                            @SuppressWarnings("unchecked")
-                                            public boolean canConvert(Class cls) {
-                                                return cls.isAssignableFrom(RoleSource.class);
-                                            }
+            @Override
+            @SuppressWarnings("unchecked")
+            public boolean canConvert(Class cls) {
+                return cls.isAssignableFrom(RoleSource.class);
+            }
 
-                                            @Override
-                                            public void marshal(
-                                                    Object rs,
-                                                    HierarchicalStreamWriter writer,
-                                                    MarshallingContext ctx) {
-                                                if (rs != null) {
-                                                    writer.setValue(rs.toString());
-                                                }
-                                            }
+            @Override
+            public void marshal(Object rs, HierarchicalStreamWriter writer, MarshallingContext ctx) {
+                if (rs != null) {
+                    writer.setValue(rs.toString());
+                }
+            }
 
-                                            @Override
-                                            public Object unmarshal(
-                                                    HierarchicalStreamReader reader,
-                                                    UnmarshallingContext ctx) {
-                                                if (reader.getValue() != null) {
-                                                    return J2EERoleSource.valueOf(
-                                                            reader.getValue());
-                                                }
-                                                return null;
-                                            }
-                                        });
+            @Override
+            public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext ctx) {
+                if (reader.getValue() != null) {
+                    return J2EERoleSource.valueOf(reader.getValue());
+                }
+                return null;
+            }
+        });
         for (String fName : listFilters()) {
             SecurityFilterConfig fConfig = loadFilterConfig(fName, mh);
             if (fConfig != null) {
                 if (fConfig instanceof J2eeAuthenticationBaseFilterConfig) {
-                    J2eeAuthenticationBaseFilterConfig j2eeConfig =
-                            (J2eeAuthenticationBaseFilterConfig) fConfig;
+                    J2eeAuthenticationBaseFilterConfig j2eeConfig = (J2eeAuthenticationBaseFilterConfig) fConfig;
                     // add default J2EE RoleSource that was the only one possible
                     // before 2.5
                     if (j2eeConfig.getRoleSource() == null) {
@@ -518,8 +498,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     RoleSource rs = userNameConfig.getRoleSource();
                     if (rs != null) {
                         // use the right RoleSource enum
-                        userNameConfig.setRoleSource(
-                                PreAuthenticatedUserNameRoleSource.valueOf(rs.toString()));
+                        userNameConfig.setRoleSource(PreAuthenticatedUserNameRoleSource.valueOf(rs.toString()));
                     }
                 }
                 saveFilter(fConfig, mh);
@@ -591,8 +570,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             LOGGER.log(
                     Level.WARNING,
                     String.format(
-                            "Error occured loading role service %s, "
-                                    + "falling back to default role service",
+                            "Error occured loading role service %s, " + "falling back to default role service",
                             roleServiceName),
                     e);
         }
@@ -612,8 +590,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         this.authProviders = new ArrayList<>();
 
         // first provider is for the root user
-        GeoServerRootAuthenticationProvider rootAuthProvider =
-                new GeoServerRootAuthenticationProvider();
+        GeoServerRootAuthenticationProvider rootAuthProvider = new GeoServerRootAuthenticationProvider();
         rootAuthProvider.setSecurityManager(this);
         rootAuthProvider.initializeFromConfig(null);
         this.authProviders.add(rootAuthProvider);
@@ -623,8 +600,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             for (String authProviderName : config.getAuthProviderNames()) {
                 // TODO: handle failure here... perhaps simply disabling when auth provider
                 // fails to load?
-                GeoServerAuthenticationProvider authProvider =
-                        authProviderHelper.load(authProviderName);
+                GeoServerAuthenticationProvider authProvider = authProviderHelper.load(authProviderName);
                 authProviders.add(authProvider);
             }
         }
@@ -641,8 +617,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         //        }
 
         // remember me
-        RememberMeAuthenticationProvider rap =
-                new RememberMeAuthenticationProvider(config.getRememberMeService().getKey());
+        RememberMeAuthenticationProvider rap = new RememberMeAuthenticationProvider(
+                config.getRememberMeService().getKey());
         rap.afterPropertiesSet();
         allAuthProviders.add(rap);
 
@@ -739,9 +715,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Determines if the security manager has been initialized yet.
      *
-     * <p>TODO: this is a temporary hack, perhaps we should think about initializing the security
-     * subsystem as the very first thing on startup... but now we have dependencies on the catalog
-     * so we cant.
+     * <p>TODO: this is a temporary hack, perhaps we should think about initializing the security subsystem as the very
+     * first thing on startup... but now we have dependencies on the catalog so we cant.
      */
     public boolean isInitialized() {
         return initialized;
@@ -832,8 +807,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         // check for group admin
         if (checkAuthenticationForRole(auth, GeoServerRole.GROUP_ADMIN_ROLE)) {
             roleService =
-                    new GroupAdminRoleService(
-                            roleService, calculateAdminGroups((UserDetails) auth.getPrincipal()));
+                    new GroupAdminRoleService(roleService, calculateAdminGroups((UserDetails) auth.getPrincipal()));
         }
         return roleService;
     }
@@ -860,8 +834,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Loads a role {@link SecurityRoleServiceConfig} from a named configuration. <code>null</code>
-     * if not found
+     * Loads a role {@link SecurityRoleServiceConfig} from a named configuration. <code>null</code> if not found
      *
      * @param name The name of the role service configuration.
      */
@@ -882,8 +855,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (validator == null) {
                     validator = passwordValidatorHelper.load(name);
                     if (validator != null) {
-                        PasswordValidator previous =
-                                passwordValidators.putIfAbsent(name, validator);
+                        PasswordValidator previous = passwordValidators.putIfAbsent(name, validator);
                         if (previous != null) {
                             validator = previous;
                         }
@@ -910,8 +882,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * @return The password encoder, or <code>null</code> if non found matching the name.
      */
     public GeoServerPasswordEncoder loadPasswordEncoder(String name) {
-        GeoServerPasswordEncoder encoder =
-                (GeoServerPasswordEncoder) GeoServerExtensions.bean(name);
+        GeoServerPasswordEncoder encoder = (GeoServerPasswordEncoder) GeoServerExtensions.bean(name);
         if (encoder != null) {
             try {
                 encoder.initialize(this);
@@ -939,10 +910,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * Loads the first password encoder that matches the specified criteria.
      *
      * @param filter Class used to filter password encoders.
-     * @param reversible Flag indicating if a reversible encoder is required, true forces
-     *     reversible, false forces irreversible, null means either.
-     * @param strong Flag indicating if an encoder that supports strong encryption is required, true
-     *     forces strong encryption, false forces weak encryption, null means either.
+     * @param reversible Flag indicating if a reversible encoder is required, true forces reversible, false forces
+     *     irreversible, null means either.
+     * @param strong Flag indicating if an encoder that supports strong encryption is required, true forces strong
+     *     encryption, false forces weak encryption, null means either.
      * @return The first encoder matching, or null if none was found.
      */
     public <T extends GeoServerPasswordEncoder> T loadPasswordEncoder(
@@ -957,8 +928,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Looks up all available password encoders filtering out only those that are instances of the
-     * specified class.
+     * Looks up all available password encoders filtering out only those that are instances of the specified class.
      *
      * <p>This method is convenience for:
      *
@@ -974,10 +944,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * Loads all the password encoders that match the specified criteria.
      *
      * @param filter Class used to filter password encoders.
-     * @param reversible Flag indicating if a reversible encoder is required, true forces
-     *     reversible, false forces irreversible, null means either.
-     * @param strong Flag indicating if an encoder that supports strong encryption is required, true
-     *     forces strong encryption, false forces weak encryption, null means either.
+     * @param reversible Flag indicating if a reversible encoder is required, true forces reversible, false forces
+     *     irreversible, null means either.
+     * @param strong Flag indicating if an encoder that supports strong encryption is required, true forces strong
+     *     encryption, false forces weak encryption, null means either.
      * @return All matching encoders, or an empty list.
      */
     public <T extends GeoServerPasswordEncoder> List<T> loadPasswordEncoders(
@@ -991,9 +961,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (reversible != null && !reversible.equals(pw.isReversible())) {
                 remove = true;
             }
-            if (!remove
-                    && strong != null
-                    && strong.equals(pw.isAvailableWithoutStrongCryptogaphy())) {
+            if (!remove && strong != null && strong.equals(pw.isAvailableWithoutStrongCryptogaphy())) {
                 remove = true;
             }
 
@@ -1003,10 +971,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 try {
                     pw.initialize(this);
                 } catch (IOException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error initializing password encoder " + pw.getName() + ", skipping",
-                            e);
+                    LOGGER.log(Level.WARNING, "Error initializing password encoder " + pw.getName() + ", skipping", e);
                     it.remove();
                 }
             }
@@ -1022,8 +987,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Determines if strong encryption is available.
      *
-     * <p>This method does the determination by trying to encrypt a value with AES 256 Bit
-     * encryption.
+     * <p>This method does the determination by trying to encrypt a value with AES 256 Bit encryption.
      *
      * @return True if strong encryption available, otherwise false.
      */
@@ -1045,9 +1009,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             LOGGER.info("Strong cryptography is available");
         } catch (InvalidKeyException e) {
             strongEncryptionAvaialble = false;
-            LOGGER.warning(
-                    "Strong cryptography is NOT available"
-                            + "\nDownload and installation the of unlimted length policy files is recommended");
+            LOGGER.warning("Strong cryptography is NOT available"
+                    + "\nDownload and installation the of unlimted length policy files is recommended");
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Strong cryptography is NOT available, unexpected error", ex);
             strongEncryptionAvaialble = false; // should not happen
@@ -1056,18 +1019,15 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /** Saves/persists a role service configuration. */
-    public void saveRoleService(SecurityRoleServiceConfig config)
-            throws IOException, SecurityConfigException {
+    public void saveRoleService(SecurityRoleServiceConfig config) throws IOException, SecurityConfigException {
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerRoleService.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(GeoServerRoleService.class, config.getClassName());
 
         if (config.getId() == null) {
             config.initBeforeSave();
             validator.validateAddRoleService(config);
         } else {
-            validator.validateModifiedRoleService(
-                    config, roleServiceHelper.loadConfig(config.getName(), true));
+            validator.validateModifiedRoleService(config, roleServiceHelper.loadConfig(config.getName(), true));
         }
 
         roleServiceHelper.saveConfig(config);
@@ -1083,11 +1043,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /** Saves/persists a password policy configuration. */
-    public void savePasswordPolicy(PasswordPolicyConfig config)
-            throws IOException, SecurityConfigException {
+    public void savePasswordPolicy(PasswordPolicyConfig config) throws IOException, SecurityConfigException {
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        PasswordValidator.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(PasswordValidator.class, config.getClassName());
 
         if (config.getId() == null) {
             config.initBeforeSave();
@@ -1105,12 +1063,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param config The role service configuration.
      */
-    public void removeRoleService(SecurityRoleServiceConfig config)
-            throws IOException, SecurityConfigException {
+    public void removeRoleService(SecurityRoleServiceConfig config) throws IOException, SecurityConfigException {
 
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerRoleService.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(GeoServerRoleService.class, config.getClassName());
 
         validator.validateRemoveRoleService(config);
 
@@ -1123,11 +1079,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param config The password validator configuration.
      */
-    public void removePasswordValidator(PasswordPolicyConfig config)
-            throws IOException, SecurityConfigException {
+    public void removePasswordValidator(PasswordPolicyConfig config) throws IOException, SecurityConfigException {
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        PasswordValidator.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(PasswordValidator.class, config.getClassName());
 
         validator.validateRemovePasswordPolicy(config);
         passwordValidators.remove(config.getName());
@@ -1173,8 +1127,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (ugService == null) {
                     ugService = userGroupServiceHelper.load(name);
                     if (ugService != null) {
-                        GeoServerUserGroupService previous =
-                                userGroupServices.putIfAbsent(name, ugService);
+                        GeoServerUserGroupService previous = userGroupServices.putIfAbsent(name, ugService);
                         if (previous != null) {
                             ugService = previous;
                         }
@@ -1186,8 +1139,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return wrapUserGroupService(ugService);
     }
 
-    GeoServerUserGroupService wrapUserGroupService(GeoServerUserGroupService ugService)
-            throws IOException {
+    GeoServerUserGroupService wrapUserGroupService(GeoServerUserGroupService ugService) throws IOException {
         if (!initialized) {
             // starting up
             return ugService;
@@ -1203,8 +1155,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         // check for group administrator and wrap accordingly
         if (checkAuthenticationForRole(auth, GeoServerRole.GROUP_ADMIN_ROLE)) {
             ugService =
-                    new GroupAdminUserGroupService(
-                            ugService, calculateAdminGroups((UserDetails) auth.getPrincipal()));
+                    new GroupAdminUserGroupService(ugService, calculateAdminGroups((UserDetails) auth.getPrincipal()));
         }
         return ugService;
     }
@@ -1215,17 +1166,15 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param name The name of the user group service configuration.
      */
-    public SecurityUserGroupServiceConfig loadUserGroupServiceConfig(String name)
-            throws IOException {
+    public SecurityUserGroupServiceConfig loadUserGroupServiceConfig(String name) throws IOException {
         return userGroupServiceHelper.loadConfig(name, true);
     }
 
     /** Saves/persists a user group service configuration. */
     public void saveUserGroupService(SecurityUserGroupServiceConfig config)
             throws IOException, SecurityConfigException {
-        SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerUserGroupService.class, config.getClassName());
+        SecurityConfigValidator validator = SecurityConfigValidator.getConfigurationValiator(
+                GeoServerUserGroupService.class, config.getClassName());
 
         if (config.getId() == null) {
             config.initBeforeSave();
@@ -1248,9 +1197,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     public void removeUserGroupService(SecurityUserGroupServiceConfig config)
             throws IOException, SecurityConfigException {
 
-        SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerUserGroupService.class, config.getClassName());
+        SecurityConfigValidator validator = SecurityConfigValidator.getConfigurationValiator(
+                GeoServerUserGroupService.class, config.getClassName());
 
         validator.validateRemoveUserGroupService(config);
 
@@ -1268,34 +1216,29 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param name The name of the authentication provider service configuration.
      */
-    public GeoServerAuthenticationProvider loadAuthenticationProvider(String name)
-            throws IOException {
+    public GeoServerAuthenticationProvider loadAuthenticationProvider(String name) throws IOException {
         return authProviderHelper.load(name);
     }
 
     /**
-     * Loads an authentication provider config from a named configuration. <code>null</code> if not
-     * found
+     * Loads an authentication provider config from a named configuration. <code>null</code> if not found
      *
      * @param name The name of the authentication provider service configuration.
      */
-    public SecurityAuthProviderConfig loadAuthenticationProviderConfig(String name)
-            throws IOException {
+    public SecurityAuthProviderConfig loadAuthenticationProviderConfig(String name) throws IOException {
         return authProviderHelper.loadConfig(name, true);
     }
 
     public void saveAuthenticationProvider(SecurityAuthProviderConfig config)
             throws IOException, SecurityConfigException {
-        SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerAuthenticationProvider.class, config.getClassName());
+        SecurityConfigValidator validator = SecurityConfigValidator.getConfigurationValiator(
+                GeoServerAuthenticationProvider.class, config.getClassName());
 
         if (config.getId() == null) {
             config.initBeforeSave();
             validator.validateAddAuthProvider(config);
         } else {
-            validator.validateModifiedAuthProvider(
-                    config, authProviderHelper.loadConfig(config.getName(), true));
+            validator.validateModifiedAuthProvider(config, authProviderHelper.loadConfig(config.getName(), true));
         }
 
         // update the running auth providers
@@ -1328,8 +1271,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * </code>
      */
     public boolean checkAuthenticationForAdminRole() {
-        if (SecurityContextHolder.getContext() == null)
-            return checkAuthenticationForAdminRole(null);
+        if (SecurityContextHolder.getContext() == null) return checkAuthenticationForAdminRole(null);
         else
             return checkAuthenticationForAdminRole(
                     SecurityContextHolder.getContext().getAuthentication());
@@ -1372,14 +1314,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         return false;
     }
 
-    /**
-     * Returns true if the default password for the {@Link GeoServerUser#ADMIN_USERNAME} has not
-     * been changed.
-     */
+    /** Returns true if the default password for the {@Link GeoServerUser#ADMIN_USERNAME} has not been changed. */
     public boolean checkForDefaultAdminPassword() {
-        Authentication token =
-                new UsernamePasswordAuthenticationToken(
-                        GeoServerUser.ADMIN_USERNAME, GeoServerUser.DEFAULT_ADMIN_PASSWD);
+        Authentication token = new UsernamePasswordAuthenticationToken(
+                GeoServerUser.ADMIN_USERNAME, GeoServerUser.DEFAULT_ADMIN_PASSWD);
 
         try {
             token = providerMgr.authenticate(token);
@@ -1396,8 +1334,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Lists all available pre authentication filter configurations whose implentation class is an
-     * instance of the specified class.
+     * Lists all available pre authentication filter configurations whose implentation class is an instance of the
+     * specified class.
      */
     public SortedSet<String> listFilters(Class<?> type) throws IOException {
         SortedSet<String> configs = new TreeSet<>();
@@ -1435,8 +1373,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * @param name The name of the authentication provider service configuration.
      * @param migrationHelper Optional helper used for migration purposes
      */
-    public SecurityFilterConfig loadFilterConfig(String name, MigrationHelper migrationHelper)
-            throws IOException {
+    public SecurityFilterConfig loadFilterConfig(String name, MigrationHelper migrationHelper) throws IOException {
         return filterHelper.loadConfig(name, migrationHelper, true);
     }
 
@@ -1446,13 +1383,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param name The name of the authentication provider service configuration.
      */
-    public SecurityFilterConfig loadFilterConfig(String name, boolean allowEnvParametrization)
-            throws IOException {
+    public SecurityFilterConfig loadFilterConfig(String name, boolean allowEnvParametrization) throws IOException {
         return filterHelper.loadConfig(name, allowEnvParametrization);
     }
 
-    public void saveFilter(SecurityNamedServiceConfig config)
-            throws IOException, SecurityConfigException {
+    public void saveFilter(SecurityNamedServiceConfig config) throws IOException, SecurityConfigException {
         saveFilter(config, null);
     }
 
@@ -1460,16 +1395,14 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             throws IOException, SecurityConfigException {
 
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerSecurityFilter.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(GeoServerSecurityFilter.class, config.getClassName());
 
         boolean fireChanged = false;
         if (config.getId() == null) {
             config.initBeforeSave();
             validator.validateAddFilter(config);
         } else {
-            validator.validateModifiedFilter(
-                    config, filterHelper.loadConfig(config.getName(), migrationHelper, true));
+            validator.validateModifiedFilter(config, filterHelper.loadConfig(config.getName(), migrationHelper, true));
             // remove all cached authentications for this filter
             getAuthenticationCache().removeAll(config.getName());
             if (!securityConfig
@@ -1493,18 +1426,15 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      */
     public void removeAuthenticationProvider(SecurityAuthProviderConfig config)
             throws IOException, SecurityConfigException {
-        SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerAuthenticationProvider.class, config.getClassName());
+        SecurityConfigValidator validator = SecurityConfigValidator.getConfigurationValiator(
+                GeoServerAuthenticationProvider.class, config.getClassName());
         validator.validateRemoveAuthProvider(config);
         authProviderHelper.removeConfig(config.getName());
     }
 
-    public void removeFilter(SecurityNamedServiceConfig config)
-            throws IOException, SecurityConfigException {
+    public void removeFilter(SecurityNamedServiceConfig config) throws IOException, SecurityConfigException {
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerSecurityFilter.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(GeoServerSecurityFilter.class, config.getClassName());
         validator.validateRemoveFilter(config);
         getAuthenticationCache().removeAll(config.getName());
         filterHelper.removeConfig(config.getName());
@@ -1513,9 +1443,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Returns the current security configuration.
      *
-     * <p>In order to make changes to the security configuration client code may make changes to
-     * this object directly, but must call {@link #saveSecurityConfig(SecurityManagerConfig)} in
-     * order to persist changes.
+     * <p>In order to make changes to the security configuration client code may make changes to this object directly,
+     * but must call {@link #saveSecurityConfig(SecurityManagerConfig)} in order to persist changes.
      */
     public SecurityManagerConfig getSecurityConfig() {
         return new SecurityManagerConfig(this.securityConfig);
@@ -1535,8 +1464,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
         SecurityConfigValidator validator = new SecurityConfigValidator(this);
         validator.validateManagerConfig(
-                (SecurityManagerConfig) config.clone(true),
-                (SecurityManagerConfig) oldConfig.clone(true));
+                (SecurityManagerConfig) config.clone(true), (SecurityManagerConfig) oldConfig.clone(true));
 
         // save the current config to fall back to
 
@@ -1545,9 +1473,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         try {
             // set the new configuration
             init(config);
-            if (config.getConfigPasswordEncrypterName()
-                            .equals(oldConfig.getConfigPasswordEncrypterName())
-                    == false) {
+            if (config.getConfigPasswordEncrypterName().equals(oldConfig.getConfigPasswordEncrypterName()) == false) {
                 updateConfigurationFilesWithEncryptedFields();
             }
 
@@ -1579,15 +1505,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * @throws PasswordPolicyException If the new password violates the master password policy
      */
     public synchronized void saveMasterPasswordConfig(
-            MasterPasswordConfig config,
-            char[] currPasswd,
-            char[] newPasswd,
-            char[] newPasswdConfirm)
+            MasterPasswordConfig config, char[] currPasswd, char[] newPasswd, char[] newPasswdConfirm)
             throws Exception {
 
         // load the (possibly new) master password provider
-        MasterPasswordProviderConfig mpProviderConfig =
-                loadMasterPassswordProviderConfig(config.getProviderName());
+        MasterPasswordProviderConfig mpProviderConfig = loadMasterPassswordProviderConfig(config.getProviderName());
         MasterPasswordProvider mpProvider = loadMasterPasswordProvider(config.getProviderName());
 
         if (mpProviderConfig.isReadOnly()) {
@@ -1686,8 +1608,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             throw new RuntimeException("Unable to load master password provider config", e);
         }
 
-        GeoServerDigestPasswordEncoder pwEncoder =
-                loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
+        GeoServerDigestPasswordEncoder pwEncoder = loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
         if (masterPasswdDigest == null) {
             synchronized (this) {
                 if (masterPasswdDigest == null) {
@@ -1728,8 +1649,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     String computeAndSaveMasterPasswordDigest(char[] passwd) throws IOException {
-        GeoServerDigestPasswordEncoder pwEncoder =
-                loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
+        GeoServerDigestPasswordEncoder pwEncoder = loadPasswordEncoder(GeoServerDigestPasswordEncoder.class);
         String masterPasswdDigest = pwEncoder.encodePassword(passwd, null);
         saveMasterPasswordDigest(masterPasswdDigest);
         return masterPasswdDigest;
@@ -1740,14 +1660,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * <p>This method is package protected and only allowed to be called by classes in this package.
      *
-     * <p>The password is returned as a char array rather than string to allow for the scrambling of
-     * the password after use. Since strings are immutable they can not be scrambled. All code that
-     * calls this method should follow the following guidelines:
+     * <p>The password is returned as a char array rather than string to allow for the scrambling of the password after
+     * use. Since strings are immutable they can not be scrambled. All code that calls this method should follow the
+     * following guidelines:
      *
      * <ol>
      *   <li>Never turn the result into a String object
-     *   <li>Always call {@link #disposePassword(char[])} (ideally in a finally block) when done
-     *       with the password.
+     *   <li>Always call {@link #disposePassword(char[])} (ideally in a finally block) when done with the password.
      * </ol>
      *
      * <p>For example: <code>
@@ -1789,8 +1708,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param name The name of the master password provider configuration.
      */
-    public MasterPasswordProviderConfig loadMasterPassswordProviderConfig(String name)
-            throws IOException {
+    public MasterPasswordProviderConfig loadMasterPassswordProviderConfig(String name) throws IOException {
         return masterPasswordProviderHelper.loadConfig(name, true);
     }
 
@@ -1820,8 +1738,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             throws IOException, SecurityConfigException {
 
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        MasterPasswordProvider.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(MasterPasswordProvider.class, config.getClassName());
 
         if (config.getId() == null) {
             config.initBeforeSave();
@@ -1843,8 +1760,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             throws IOException, SecurityConfigException {
 
         SecurityConfigValidator validator =
-                SecurityConfigValidator.getConfigurationValiator(
-                        MasterPasswordProvider.class, config.getClassName());
+                SecurityConfigValidator.getConfigurationValiator(MasterPasswordProvider.class, config.getClassName());
 
         validator.validateRemoveMasterPasswordProvider(config);
         masterPasswordProviderHelper.removeConfig(config.getName());
@@ -1925,8 +1841,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /** Writes a file containing info about the master password. */
-    void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray)
-            throws IOException {
+    void writeMasterPasswordInfo(Resource file, String message, char[] masterPasswordArray) throws IOException {
         try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(file.out()))) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             w.write("This file was created at " + dateFormat.format(new Date()));
@@ -1955,8 +1870,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * <p>The file name is the shared secret between the administrator and GeoServer.
      *
-     * <p>The method inspects the stack trace to check for an authorized calling method. The
-     * authenticated principal has to be an administrator
+     * <p>The method inspects the stack trace to check for an authorized calling method. The authenticated principal has
+     * to be an administrator
      *
      * <p>If authorization fails, a warning is written in the log and the return code is <code>false
      * </code>. On success, the return code is <code>true</code>.
@@ -1991,8 +1906,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     /**
      * Get master password for REST configuraton
      *
-     * <p>The method inspects the stack trace to check for an authorized calling method. The
-     * authenticated principal has to be an administrator
+     * <p>The method inspects the stack trace to check for an authorized calling method. The authenticated principal has
+     * to be an administrator
      *
      * <p>If authorization fails, an IOException is thrown
      */
@@ -2002,9 +1917,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             throw new IOException("Unauthorized user tries to read master password");
         }
 
-        String[][] allowedMethods = {
-            {"org.geoserver.rest.security.MasterPasswordController", "masterPasswordGet"}
-        };
+        String[][] allowedMethods = {{"org.geoserver.rest.security.MasterPasswordController", "masterPasswordGet"}};
 
         String result = checkStackTrace(10, allowedMethods);
         if (result != null) {
@@ -2015,8 +1928,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Checks if the stack trace contains allowed methods. It it contains allowed methods, return
-     * <code>null</code>, if not return a String listing the methods.
+     * Checks if the stack trace contains allowed methods. It it contains allowed methods, return <code>null</code>, if
+     * not return a String listing the methods.
      */
     String checkStackTrace(int countMethodsToCheck, String[][] allowedMethods) {
 
@@ -2027,8 +1940,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         for (int i = 0; i < countMethodsToCheck; i++) {
             StackTraceElement element = stackTraceElements[i];
             for (String[] methodEntry : allowedMethods) {
-                if (methodEntry[0].equals(element.getClassName())
-                        && methodEntry[1].equals(element.getMethodName())) {
+                if (methodEntry[0].equals(element.getClassName()) && methodEntry[1].equals(element.getMethodName())) {
                     isAllowed = true;
                     break;
                 }
@@ -2068,8 +1980,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         LOGGER.info("Start security migration");
 
         // master password configuration
-        MasterPasswordProviderConfig mpProviderConfig =
-                loadMasterPassswordProviderConfig("default");
+        MasterPasswordProviderConfig mpProviderConfig = loadMasterPassswordProviderConfig("default");
         if (mpProviderConfig == null) {
             mpProviderConfig = new URLMasterPasswordProviderConfig();
             mpProviderConfig.setName("default");
@@ -2081,8 +1992,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             saveMasterPasswordProviderConfig(mpProviderConfig, false);
 
             // save out the default master password
-            MasterPasswordProvider mpProvider =
-                    loadMasterPasswordProvider(mpProviderConfig.getName());
+            MasterPasswordProvider mpProvider = loadMasterPasswordProvider(mpProviderConfig.getName());
             Resource propFile = security().get("users.properties");
             Properties userprops = null;
             if (propFile.getType() == Type.RESOURCE) userprops = Util.loadPropertyFile(propFile);
@@ -2097,20 +2007,17 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         Resource serviceFile = security().get("services.properties");
         if (serviceFile.getType() == Type.UNDEFINED) {
             org.geoserver.util.IOUtils.copy(
-                    Util.class.getResourceAsStream("serviceTemplate.properties"),
-                    serviceFile.out());
+                    Util.class.getResourceAsStream("serviceTemplate.properties"), serviceFile.out());
         }
 
         long checkInterval = 10000; // 10 secs
 
         // check for the default user group service, create if necessary
-        GeoServerUserGroupService userGroupService =
-                loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService userGroupService = loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         KeyStoreProvider keyStoreProvider = getKeyStoreProvider();
         keyStoreProvider.reloadKeyStore();
-        keyStoreProvider.setUserGroupKey(
-                XMLUserGroupService.DEFAULT_NAME, randomPasswdProvider.getRandomPassword(32));
+        keyStoreProvider.setUserGroupKey(XMLUserGroupService.DEFAULT_NAME, randomPasswdProvider.getRandomPassword(32));
         keyStoreProvider.storeKeyStore();
 
         PasswordValidator validator = loadPasswordValidator(PasswordValidator.DEFAULT_NAME);
@@ -2144,8 +2051,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             ugConfig.setFileName(XMLConstants.FILE_UR);
             ugConfig.setValidating(true);
             // start with weak encryption, plain passwords can be restored
-            ugConfig.setPasswordEncoderName(
-                    loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false).getName());
+            ugConfig.setPasswordEncoderName(loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, null, false)
+                    .getName());
             ugConfig.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
             saveUserGroupService(ugConfig);
             userGroupService = loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
@@ -2188,21 +2095,17 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         filterName = GeoServerSecurityFilterChain.FORM_LOGIN_FILTER;
         filter = loadFilter(filterName);
         if (filter == null) {
-            UsernamePasswordAuthenticationFilterConfig upConfig =
-                    new UsernamePasswordAuthenticationFilterConfig();
+            UsernamePasswordAuthenticationFilterConfig upConfig = new UsernamePasswordAuthenticationFilterConfig();
             upConfig.setClassName(GeoServerUserNamePasswordAuthenticationFilter.class.getName());
             upConfig.setName(filterName);
-            upConfig.setUsernameParameterName(
-                    UsernamePasswordAuthenticationFilterConfig.DEFAULT_USERNAME_PARAM);
-            upConfig.setPasswordParameterName(
-                    UsernamePasswordAuthenticationFilterConfig.DEFAULT_PASSWORD_PARAM);
+            upConfig.setUsernameParameterName(UsernamePasswordAuthenticationFilterConfig.DEFAULT_USERNAME_PARAM);
+            upConfig.setPasswordParameterName(UsernamePasswordAuthenticationFilterConfig.DEFAULT_PASSWORD_PARAM);
             saveFilter(upConfig);
         }
         filterName = GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER;
         filter = loadFilter(filterName);
         if (filter == null) {
-            SecurityContextPersistenceFilterConfig pConfig =
-                    new SecurityContextPersistenceFilterConfig();
+            SecurityContextPersistenceFilterConfig pConfig = new SecurityContextPersistenceFilterConfig();
             pConfig.setClassName(GeoServerSecurityContextPersistenceFilter.class.getName());
             pConfig.setName(filterName);
             pConfig.setAllowSessionCreation(true);
@@ -2211,8 +2114,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         filterName = GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER;
         filter = loadFilter(filterName);
         if (filter == null) {
-            SecurityContextPersistenceFilterConfig pConfig =
-                    new SecurityContextPersistenceFilterConfig();
+            SecurityContextPersistenceFilterConfig pConfig = new SecurityContextPersistenceFilterConfig();
             pConfig.setClassName(GeoServerSecurityContextPersistenceFilter.class.getName());
             pConfig.setName(filterName);
             pConfig.setAllowSessionCreation(false);
@@ -2229,8 +2131,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         filterName = GeoServerSecurityFilterChain.REMEMBER_ME_FILTER;
         filter = loadFilter(filterName);
         if (filter == null) {
-            RememberMeAuthenticationFilterConfig rConfig =
-                    new RememberMeAuthenticationFilterConfig();
+            RememberMeAuthenticationFilterConfig rConfig = new RememberMeAuthenticationFilterConfig();
             rConfig.setClassName(GeoServerRememberMeAuthenticationFilter.class.getName());
             rConfig.setName(filterName);
             saveFilter(rConfig);
@@ -2305,8 +2206,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         config.setEncryptingUrlParams(false);
 
         // start with weak encryption
-        config.setConfigPasswordEncrypterName(
-                loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, true, false).getName());
+        config.setConfigPasswordEncrypterName(loadPasswordEncoder(GeoServerPBEPasswordEncoder.class, true, false)
+                .getName());
 
         // setup the default remember me service
         RememberMeServicesConfig rememberMeConfig = new RememberMeServicesConfig();
@@ -2343,8 +2244,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 UserAttribute attr = (UserAttribute) configAttribEd.getValue();
                 if (attr != null) {
                     GeoServerUser user =
-                            userGroupStore.createUserObject(
-                                    username, attr.getPassword(), attr.isEnabled());
+                            userGroupStore.createUserObject(username, attr.getPassword(), attr.isEnabled());
                     userGroupStore.addUser(user);
 
                     for (GrantedAuthority auth : attr.getAuthorities()) {
@@ -2365,8 +2265,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             // no user.properties, populate with default user and roles
             if (userGroupService.getUserByUsername(GeoServerUser.ADMIN_USERNAME) == null) {
                 userGroupStore.addUser(GeoServerUser.createDefaultAdmin());
-                GeoServerRole localAdminRole =
-                        roleStore.createRoleObject(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
+                GeoServerRole localAdminRole = roleStore.createRoleObject(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
                 roleStore.addRole(localAdminRole);
                 roleStore.associateRoleToUser(localAdminRole, GeoServerUser.ADMIN_USERNAME);
             }
@@ -2374,14 +2273,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
         // add the local group administrator role
         if (roleStore.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE) == null) {
-            roleStore.addRole(
-                    roleStore.createRoleObject(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE));
+            roleStore.addRole(roleStore.createRoleObject(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE));
         }
 
         // replace all occurrences of ROLE_ADMINISTRATOR  in the property files
         // TODO Justin, a little bit brute force, is this ok ?
-        for (String filename :
-                new String[] {"services.properties", "layers.properties", "rest.properties"}) {
+        for (String filename : new String[] {"services.properties", "layers.properties", "rest.properties"}) {
             Resource file = security().get(filename);
             if (file.getType() == Type.UNDEFINED) {
                 continue;
@@ -2390,10 +2287,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    lines.add(
-                            line.replace(
-                                    GeoServerRole.ADMIN_ROLE.getAuthority(),
-                                    XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
+                    lines.add(line.replace(
+                            GeoServerRole.ADMIN_ROLE.getAuthority(), XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
                 }
             }
             try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()))) {
@@ -2458,8 +2353,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         String filterName = GeoServerSecurityFilterChain.ROLE_FILTER;
         GeoServerSecurityFilter filter = loadFilter(filterName);
 
-        Resource logoutFilterDir =
-                filterRoot().get(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        Resource logoutFilterDir = filterRoot().get(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         Resource oldLogoutFilterConfig = logoutFilterDir.get("config.xml.2.2.x");
         Resource oldSecManagerConfig = security().get("config.xml.2.2.x");
 
@@ -2475,8 +2369,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         RoleFilterConfig rfConfig = new RoleFilterConfig();
         rfConfig.setClassName(GeoServerRoleFilter.class.getName());
         rfConfig.setName(filterName);
-        rfConfig.setHttpResponseHeaderAttrForIncludedRoles(
-                GeoServerRoleFilter.DEFAULT_HEADER_ATTRIBUTE);
+        rfConfig.setHttpResponseHeaderAttrForIncludedRoles(GeoServerRoleFilter.DEFAULT_HEADER_ATTRIBUTE);
         rfConfig.setRoleConverterName(GeoServerRoleFilter.DEFAULT_ROLE_CONVERTER);
         saveFilter(rfConfig);
 
@@ -2489,74 +2382,49 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
         // set redirect url after successful logout
         if (!migratedFrom21)
-            org.geoserver.util.IOUtils.copy(
-                    logoutFilterDir.get("config.xml").in(), oldLogoutFilterConfig.out());
+            org.geoserver.util.IOUtils.copy(logoutFilterDir.get("config.xml").in(), oldLogoutFilterConfig.out());
         LogoutFilterConfig loConfig =
-                (LogoutFilterConfig)
-                        loadFilterConfig(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER, true);
+                (LogoutFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER, true);
         loConfig.setRedirectURL(GeoServerLogoutFilter.URL_AFTER_LOGOUT);
         saveFilter(loConfig);
 
         if (!migratedFrom21)
-            org.geoserver.util.IOUtils.copy(
-                    security().get("config.xml").in(), oldSecManagerConfig.out());
+            org.geoserver.util.IOUtils.copy(security().get("config.xml").in(), oldSecManagerConfig.out());
         SecurityManagerConfig config = loadSecurityConfig();
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
-            if (chain.getFilterNames()
-                    .contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER)) {
+            if (chain.getFilterNames().contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER)) {
                 chain.setAllowSessionCreation(true);
-                chain.getFilterNames()
-                        .remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER);
+                chain.getFilterNames().remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER);
             }
-            if (chain.getFilterNames()
-                    .contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER)) {
+            if (chain.getFilterNames().contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER)) {
                 chain.setAllowSessionCreation(false);
-                chain.getFilterNames()
-                        .remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER);
+                chain.getFilterNames().remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER);
             }
             // prepare web chain
             if (GeoServerSecurityFilterChain.WEB_CHAIN_NAME.equals(chain.getName())) {
                 // replace exception translation filter
                 int index =
-                        chain.getFilterNames()
-                                .indexOf(
-                                        GeoServerSecurityFilterChain
-                                                .GUI_EXCEPTION_TRANSLATION_FILTER);
+                        chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER);
                 if (index != -1)
                     chain.getFilterNames()
-                            .set(
-                                    index,
-                                    GeoServerSecurityFilterChain
-                                            .DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+                            .set(index, GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
                 // inject form login filter if necessary
-                if (!chain.getFilterNames()
-                        .contains(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER)) {
-                    index =
-                            chain.getFilterNames()
-                                    .indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+                if (!chain.getFilterNames().contains(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER)) {
+                    index = chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
                     if (index == -1)
-                        index =
-                                chain.getFilterNames()
-                                        .indexOf(
-                                                GeoServerSecurityFilterChain
-                                                        .FILTER_SECURITY_INTERCEPTOR);
-                    if (index != -1)
-                        chain.getFilterNames()
-                                .add(index, GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
+                        index = chain.getFilterNames()
+                                .indexOf(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+                    if (index != -1) chain.getFilterNames().add(index, GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
                 }
             }
 
             // remove dynamic translation filter
-            chain.getFilterNames()
-                    .remove(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+            chain.getFilterNames().remove(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
             chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
-            chain.getFilterNames()
-                    .remove(GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR);
+            chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR);
         }
         // gui filter not needed any more
-        removeFilter(
-                loadFilterConfig(
-                        GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER, true));
+        removeFilter(loadFilterConfig(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER, true));
         saveSecurityConfig(config);
 
         // load and store all filter configuration
@@ -2581,8 +2449,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     boolean migrateFrom23() throws Exception {
         SecurityManagerConfig config = loadSecurityConfig();
         RequestFilterChain webChain =
-                config.getFilterChain()
-                        .getRequestChainByName(GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
+                config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
 
         boolean migrated = false;
         List<String> patterns = webChain.getPatterns();
@@ -2595,26 +2462,20 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943) The page /accessDeniedPage
-     * does not exist and would not work if it exists.
+     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943) The page /accessDeniedPage does not exist and
+     * would not work if it exists.
      */
     void removeErroneousAccessDeniedPage() throws Exception {
 
-        ExceptionTranslationFilterConfig config =
-                (ExceptionTranslationFilterConfig)
-                        loadFilterConfig(
-                                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER,
-                                true);
+        ExceptionTranslationFilterConfig config = (ExceptionTranslationFilterConfig)
+                loadFilterConfig(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER, true);
         if (config != null && "/accessDenied.jsp".equals(config.getAccessDeniedErrorPage())) {
             config.setAccessDeniedErrorPage(null);
             saveFilter(config);
         }
 
-        config =
-                (ExceptionTranslationFilterConfig)
-                        loadFilterConfig(
-                                GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER,
-                                true);
+        config = (ExceptionTranslationFilterConfig)
+                loadFilterConfig(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER, true);
         if (config != null && "/accessDenied.jsp".equals(config.getAccessDeniedErrorPage())) {
             config.setAccessDeniedErrorPage(null);
             saveFilter(config);
@@ -2645,8 +2506,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         SortedSet<String> result = new TreeSet<>();
         List<Resource> dirs = dir.list();
         for (Resource d : dirs) {
-            if (d.getType() == Type.DIRECTORY
-                    && d.get(CONFIG_FILENAME).getType() == Type.RESOURCE) {
+            if (d.getType() == Type.DIRECTORY && d.get(CONFIG_FILENAME).getType() == Type.RESOURCE) {
                 result.add(d.name());
             }
         }
@@ -2725,10 +2585,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
     /** reads a config file from the specified directly using the specified xstream persister */
     SecurityConfig loadConfigFile(
-            Resource directory,
-            String filename,
-            XStreamPersister xp,
-            boolean allowEnvParametrization)
+            Resource directory, String filename, XStreamPersister xp, boolean allowEnvParametrization)
             throws IOException {
         try (InputStream fin = directory.get(filename).in()) {
             return xp.load(fin, SecurityConfig.class).clone(allowEnvParametrization);
@@ -2736,28 +2593,23 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * reads a file named {@value #CONFIG_FILENAME} from the specified directly using the specified
-     * xstream persister
+     * reads a file named {@value #CONFIG_FILENAME} from the specified directly using the specified xstream persister
      */
-    SecurityConfig loadConfigFile(
-            Resource directory, XStreamPersister xp, boolean allowEnvParametrization)
+    SecurityConfig loadConfigFile(Resource directory, XStreamPersister xp, boolean allowEnvParametrization)
             throws IOException {
         return loadConfigFile(directory, CONFIG_FILENAME, xp, allowEnvParametrization);
     }
 
     /** saves a config file to the specified directly using the specified xstream persister */
-    void saveConfigFile(
-            SecurityConfig config, Resource directory, String filename, XStreamPersister xp)
+    void saveConfigFile(SecurityConfig config, Resource directory, String filename, XStreamPersister xp)
             throws IOException {
         xStreamPersist(directory.get(filename), config, xp);
     }
 
     /**
-     * saves a file named {@value #CONFIG_FILENAME} from the specified directly using the specified
-     * xstream persister
+     * saves a file named {@value #CONFIG_FILENAME} from the specified directly using the specified xstream persister
      */
-    void saveConfigFile(SecurityConfig config, Resource directory, XStreamPersister xp)
-            throws IOException {
+    void saveConfigFile(SecurityConfig config, Resource directory, XStreamPersister xp) throws IOException {
 
         saveConfigFile(config, directory, CONFIG_FILENAME, xp);
     }
@@ -2773,8 +2625,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         public abstract T load(String name) throws IOException;
 
         /** loads the named entity config from persistence */
-        public C loadConfig(
-                String name, MigrationHelper migrationHelper, boolean allowEnvParametrization)
+        public C loadConfig(String name, MigrationHelper migrationHelper, boolean allowEnvParametrization)
                 throws IOException {
             Resource dir = getRoot().get(name);
             if (dir.getType() != Type.DIRECTORY) {
@@ -2836,8 +2687,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         protected abstract Resource getRoot() throws IOException;
     }
 
-    class UserGroupServiceHelper
-            extends HelperBase<GeoServerUserGroupService, SecurityUserGroupServiceConfig> {
+    class UserGroupServiceHelper extends HelperBase<GeoServerUserGroupService, SecurityUserGroupServiceConfig> {
         @Override
         public GeoServerUserGroupService load(String name) throws IOException {
 
@@ -2866,10 +2716,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
             service.setSecurityManager(GeoServerSecurityManager.this);
             if (config instanceof SecurityUserGroupServiceConfig) {
-                boolean needsLockProtection =
-                        GeoServerSecurityProvider.getProvider(
-                                        GeoServerUserGroupService.class, config.getClassName())
-                                .roleServiceNeedsLockProtection();
+                boolean needsLockProtection = GeoServerSecurityProvider.getProvider(
+                                GeoServerUserGroupService.class, config.getClassName())
+                        .roleServiceNeedsLockProtection();
                 if (needsLockProtection) service = new LockingUserGroupService(service);
             }
             service.setName(name);
@@ -2880,8 +2729,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (fileConfig.getCheckInterval() > 0) {
                     Resource resource = getConfigFile(fileConfig.getFileName());
                     if (resource == null) {
-                        String path =
-                                Paths.path("security/usergroup", name, fileConfig.getFileName());
+                        String path = Paths.path("security/usergroup", name, fileConfig.getFileName());
                         resource = get(path);
                     }
 
@@ -2934,10 +2782,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             service.setSecurityManager(GeoServerSecurityManager.this);
 
             if (config instanceof SecurityRoleServiceConfig) {
-                boolean needsLockProtection =
-                        GeoServerSecurityProvider.getProvider(
-                                        GeoServerRoleService.class, config.getClassName())
-                                .roleServiceNeedsLockProtection();
+                boolean needsLockProtection = GeoServerSecurityProvider.getProvider(
+                                GeoServerRoleService.class, config.getClassName())
+                        .roleServiceNeedsLockProtection();
                 if (needsLockProtection) {
                     service = new LockingRoleService(service);
                 }
@@ -2957,8 +2804,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                         resource = get(path);
                     }
 
-                    RoleFileWatcher watcher =
-                            new RoleFileWatcher(resource, service, resource.lastmodified());
+                    RoleFileWatcher watcher = new RoleFileWatcher(resource, service, resource.lastmodified());
                     service.registerRoleLoadedListener(watcher);
                     watcher.start();
 
@@ -2977,11 +2823,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Alternative to {@link GeoServerResourceLoader#find(String)} that supports absolute paths for
-     * use in test cases.
+     * Alternative to {@link GeoServerResourceLoader#find(String)} that supports absolute paths for use in test cases.
      *
-     * <p>If an absolute path is used the Resource implementation is provided by {@link
-     * Files#asResource(File)}.
+     * <p>If an absolute path is used the Resource implementation is provided by {@link Files#asResource(File)}.
      *
      * @return resource
      */
@@ -3035,8 +2879,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
     }
 
-    class MasterPasswordProviderHelper
-            extends HelperBase<MasterPasswordProvider, MasterPasswordProviderConfig> {
+    class MasterPasswordProviderHelper extends HelperBase<MasterPasswordProvider, MasterPasswordProviderConfig> {
 
         @Override
         public MasterPasswordProvider load(String name) throws IOException {
@@ -3064,9 +2907,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             // ensure that the provider is a final class
             if (!Modifier.isFinal(provider.getClass().getModifiers())) {
                 throw new RuntimeException(
-                        "Master password provider class: "
-                                + provider.getClass().getCanonicalName()
-                                + " is not final");
+                        "Master password provider class: " + provider.getClass().getCanonicalName() + " is not final");
             }
 
             provider.setName(config.getName());
@@ -3096,14 +2937,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * rewrites configuration files with encrypted fields. Candidates: {@link StoreInfo} from the
-     * {@link Catalog} {@link SecurityNamedServiceConfig} objects from the security directory
+     * rewrites configuration files with encrypted fields. Candidates: {@link StoreInfo} from the {@link Catalog}
+     * {@link SecurityNamedServiceConfig} objects from the security directory
      */
     public void updateConfigurationFilesWithEncryptedFields() throws IOException {
         // rewrite stores in catalog
-        LOGGER.info(
-                "Start encrypting configuration passwords using "
-                        + getSecurityConfig().getConfigPasswordEncrypterName());
+        LOGGER.info("Start encrypting configuration passwords using "
+                + getSecurityConfig().getConfigPasswordEncrypterName());
 
         Catalog catalog = getCatalog();
         List<StoreInfo> stores = catalog.getStores(StoreInfo.class);
@@ -3171,27 +3011,24 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Interface that can be used to assist migration phases, adding XStream behaviours to be used
-     * only during migration of configurations from previous versions. A specific implementation can
-     * be passed to {@link FilterHelper#loadConfig(String)} and/or {@link
-     * FilterHelper#saveConfig(SecurityNamedServiceConfig)} to change XStream mappings and
-     * conversions to allow loading of old (incompatible) configuration files that need to be
-     * updated to a new format. The implementation should implement the migrationPersister method to
-     * add aliases, converters or other XStream behaviours needed only when migrating old
-     * configurations.
+     * Interface that can be used to assist migration phases, adding XStream behaviours to be used only during migration
+     * of configurations from previous versions. A specific implementation can be passed to
+     * {@link FilterHelper#loadConfig(String)} and/or {@link FilterHelper#saveConfig(SecurityNamedServiceConfig)} to
+     * change XStream mappings and conversions to allow loading of old (incompatible) configuration files that need to
+     * be updated to a new format. The implementation should implement the migrationPersister method to add aliases,
+     * converters or other XStream behaviours needed only when migrating old configurations.
      *
      * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
      */
     interface MigrationHelper {
         /**
-         * Implement here XStream mappings and conversion behaviours needed to read incompatible
-         * configurations during migration.
+         * Implement here XStream mappings and conversion behaviours needed to read incompatible configurations during
+         * migration.
          */
         public void migrationPersister(XStreamPersister xp);
     }
 
-    class AuthProviderHelper
-            extends HelperBase<GeoServerAuthenticationProvider, SecurityAuthProviderConfig> {
+    class AuthProviderHelper extends HelperBase<GeoServerAuthenticationProvider, SecurityAuthProviderConfig> {
 
         /** Loads the auth provider for the named config from persistence. */
         @Override
@@ -3287,8 +3124,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
 
         @Override
-        public void marshal(
-                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 
             GeoServerSecurityFilterChain filterChain = (GeoServerSecurityFilterChain) source;
             for (RequestFilterChain requestChain : filterChain.getRequestChains()) {
@@ -3315,13 +3151,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     writer.addAttribute("roleFilterName", requestChain.getRoleFilterName());
 
                 if (requestChain instanceof VariableFilterChain) {
-                    if (StringUtils.hasLength(
-                            ((VariableFilterChain) requestChain).getInterceptorName()))
+                    if (StringUtils.hasLength(((VariableFilterChain) requestChain).getInterceptorName()))
                         writer.addAttribute(
-                                "interceptorName",
-                                ((VariableFilterChain) requestChain).getInterceptorName());
-                    if (StringUtils.hasLength(
-                            ((VariableFilterChain) requestChain).getExceptionTranslationName()))
+                                "interceptorName", ((VariableFilterChain) requestChain).getInterceptorName());
+                    if (StringUtils.hasLength(((VariableFilterChain) requestChain).getExceptionTranslationName()))
                         writer.addAttribute(
                                 "exceptionTranslationName",
                                 ((VariableFilterChain) requestChain).getExceptionTranslationName());
@@ -3329,18 +3162,13 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
                 writer.addAttribute("path", sb.toString());
                 writer.addAttribute("disabled", Boolean.toString(requestChain.isDisabled()));
-                writer.addAttribute(
-                        "allowSessionCreation",
-                        Boolean.toString(requestChain.isAllowSessionCreation()));
+                writer.addAttribute("allowSessionCreation", Boolean.toString(requestChain.isAllowSessionCreation()));
                 writer.addAttribute("ssl", Boolean.toString(requestChain.isRequireSSL()));
-                writer.addAttribute(
-                        "matchHTTPMethod", Boolean.toString(requestChain.isMatchHTTPMethod()));
+                writer.addAttribute("matchHTTPMethod", Boolean.toString(requestChain.isMatchHTTPMethod()));
                 if (requestChain.getHttpMethods() != null
                         && !requestChain.getHttpMethods().isEmpty()) {
                     writer.addAttribute(
-                            "httpMethods",
-                            StringUtils.collectionToCommaDelimitedString(
-                                    requestChain.getHttpMethods()));
+                            "httpMethods", StringUtils.collectionToCommaDelimitedString(requestChain.getHttpMethods()));
                 }
 
                 for (String filterName : requestChain.getFilterNames()) {
@@ -3379,9 +3207,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     // first version of the serialization did not contain name attribute, if not
                     // available try to look up well known chain, if not found just use the path
                     // as the name
-                    RequestFilterChain requestChain =
-                            GeoServerSecurityFilterChain.lookupRequestChainByPattern(
-                                    path, GeoServerSecurityManager.this);
+                    RequestFilterChain requestChain = GeoServerSecurityFilterChain.lookupRequestChainByPattern(
+                            path, GeoServerSecurityManager.this);
                     if (requestChain != null) {
                         name = requestChain.getName();
                     } else {
@@ -3409,14 +3236,12 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     if (GeoServerSecurityFilterChain.REST_CHAIN_NAME.equals(name)) {
                         classname = ServiceLoginFilterChain.class.getName();
                         allowSessionCreationString = "false";
-                        interceptorName =
-                                GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
+                        interceptorName = GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
                     }
                     if (GeoServerSecurityFilterChain.GWC_CHAIN_NAME.equals(name)) {
                         classname = ServiceLoginFilterChain.class.getName();
                         allowSessionCreationString = "false";
-                        interceptorName =
-                                GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
+                        interceptorName = GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
                     }
                     if (GeoServerSecurityFilterChain.DEFAULT_CHAIN_NAME.equals(name)) {
                         classname = ServiceLoginFilterChain.class.getName();
@@ -3447,8 +3272,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                     requestChain.setDisabled(Boolean.parseBoolean(disabledString));
                 }
                 if (StringUtils.hasLength(allowSessionCreationString)) {
-                    requestChain.setAllowSessionCreation(
-                            Boolean.parseBoolean(allowSessionCreationString));
+                    requestChain.setAllowSessionCreation(Boolean.parseBoolean(allowSessionCreationString));
                 }
                 if (StringUtils.hasLength(sslString)) {
                     requestChain.setRequireSSL(Boolean.parseBoolean(sslString));
@@ -3467,13 +3291,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 if (requestChain instanceof VariableFilterChain) {
                     ((VariableFilterChain) requestChain).setInterceptorName(interceptorName);
                     if (StringUtils.hasLength(exceptionTranslationName))
-                        ((VariableFilterChain) requestChain)
-                                .setExceptionTranslationName(exceptionTranslationName);
+                        ((VariableFilterChain) requestChain).setExceptionTranslationName(exceptionTranslationName);
                     else
                         ((VariableFilterChain) requestChain)
                                 .setExceptionTranslationName(
-                                        GeoServerSecurityFilterChain
-                                                .DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+                                        GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
                 }
                 requestChain.setFilterNames(filterNames);
                 filterChain.getRequestChains().add(requestChain);
@@ -3488,8 +3310,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Calculates the union of roles from all role services and adds {@link
-     * GeoServerRole#ANONYMOUS_ROLE} and {@link GeoServerRole#AUTHENTICATED_ROLE}
+     * Calculates the union of roles from all role services and adds {@link GeoServerRole#ANONYMOUS_ROLE} and
+     * {@link GeoServerRole#AUTHENTICATED_ROLE}
      */
     public SortedSet<GeoServerRole> getRolesForAccessControl() throws IOException {
 

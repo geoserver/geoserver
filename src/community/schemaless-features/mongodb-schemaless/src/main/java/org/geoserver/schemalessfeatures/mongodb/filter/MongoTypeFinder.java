@@ -20,8 +20,8 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.util.logging.Logging;
 
 /**
- * Class helping to overcome those issues caused by the schemaless approach, eg. the retrieval of
- * the type binding for a PropertyName or of a geometry path for the geometryDescriptor.
+ * Class helping to overcome those issues caused by the schemaless approach, eg. the retrieval of the type binding for a
+ * PropertyName or of a geometry path for the geometryDescriptor.
  */
 public class MongoTypeFinder {
 
@@ -45,8 +45,7 @@ public class MongoTypeFinder {
     public Class<?> getAttributeType(String attribute) {
 
         String mongoPath = MongoSchemalessUtils.toMongoPath(attribute);
-        Bson projection =
-                Projections.fields(Projections.include(mongoPath), Projections.excludeId());
+        Bson projection = Projections.fields(Projections.include(mongoPath), Projections.excludeId());
         Bson query = Filters.ne(mongoPath, null);
         try (MongoCursor<DBObject> cursor =
                 collection.find(query).projection(projection).limit(1).cursor()) {
@@ -85,9 +84,9 @@ public class MongoTypeFinder {
     }
 
     /**
-     * Get the geometry path to be used for the default geometry. The method first tries to find it
-     * from a 2dsphere index. If there is no index, then it takes the path of the first geometry
-     * attribute found in the collection's documents.
+     * Get the geometry path to be used for the default geometry. The method first tries to find it from a 2dsphere
+     * index. If there is no index, then it takes the path of the first geometry attribute found in the collection's
+     * documents.
      *
      * @return the geometry path
      */
@@ -98,10 +97,9 @@ public class MongoTypeFinder {
         if (geometryPath == null) geometryPath = findGeometryPathFromData();
 
         if (geometryPath == null)
-            LOG.log(
-                    Level.WARNING,
-                    "No geometry path found for type {0}, in collection {1}",
-                    new Object[] {name.toString(), collection.getNamespace().getFullName()});
+            LOG.log(Level.WARNING, "No geometry path found for type {0}, in collection {1}", new Object[] {
+                name.toString(), collection.getNamespace().getFullName()
+            });
 
         return geometryPath;
     }
@@ -121,7 +119,9 @@ public class MongoTypeFinder {
                         Level.WARNING,
                         "More than one indexed geometry field found for type {0}, selecting {1} (first one encountered with index search of collection {2})",
                         new Object[] {
-                            name.toString(), geometryPath, collection.getNamespace().getFullName()
+                            name.toString(),
+                            geometryPath,
+                            collection.getNamespace().getFullName()
                         });
             }
         }
@@ -144,8 +144,7 @@ public class MongoTypeFinder {
         if (object instanceof BasicDBList) {
             BasicDBList list = (BasicDBList) object;
             for (int i = 0; i < list.size(); i++) {
-                String geometryPath =
-                        findGeometryPathFromData(list.get(i), addPathPart(path, String.valueOf(i)));
+                String geometryPath = findGeometryPathFromData(list.get(i), addPathPart(path, String.valueOf(i)));
                 if (geometryPath != null) return geometryPath;
             }
         } else if (object instanceof BasicDBObject) {
@@ -153,8 +152,7 @@ public class MongoTypeFinder {
             if (MongoSchemalessUtils.isGeometry(dbObject)) return path;
             Set<String> keys = dbObject.keySet();
             for (String k : keys) {
-                String geometryPath =
-                        findGeometryPathFromData(dbObject.get(k), addPathPart(path, k));
+                String geometryPath = findGeometryPathFromData(dbObject.get(k), addPathPart(path, k));
                 if (geometryPath != null) return geometryPath;
             }
         }

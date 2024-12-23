@@ -132,13 +132,9 @@ public class GridCoverageRequest {
         result = prime * result + ((filter == null) ? 0 : filter.hashCode());
         result = prime * result + ((outputCRS == null) ? 0 : outputCRS.hashCode());
         result = prime * result + ((overviewPolicy == null) ? 0 : overviewPolicy.hashCode());
-        result =
-                prime * result
-                        + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
+        result = prime * result + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
         result = prime * result + ((spatialSubset == null) ? 0 : spatialSubset.hashCode());
-        result =
-                prime * result
-                        + ((temporalInterpolation == null) ? 0 : temporalInterpolation.hashCode());
+        result = prime * result + ((temporalInterpolation == null) ? 0 : temporalInterpolation.hashCode());
         result = prime * result + ((temporalSubset == null) ? 0 : temporalSubset.hashCode());
         return result;
     }

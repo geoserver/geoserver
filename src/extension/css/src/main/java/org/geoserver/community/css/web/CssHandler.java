@@ -52,24 +52,18 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
         try {
             TEMPLATES.put(
                     StyleType.POINT,
-                    IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_point.css"), UTF_8));
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_point.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
-                    IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_polygon.css"), UTF_8));
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_polygon.css"), UTF_8));
             TEMPLATES.put(
-                    StyleType.LINE,
-                    IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_line.css"), UTF_8));
+                    StyleType.LINE, IOUtils.toString(CssHandler.class.getResourceAsStream("template_line.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
-                    IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_raster.css"), UTF_8));
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_raster.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.GENERIC,
-                    IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_generic.css"), UTF_8));
+                    IOUtils.toString(CssHandler.class.getResourceAsStream("template_generic.css"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the css style templates", e);
         }
@@ -102,10 +96,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     @Override
     public StyledLayerDescriptor parse(
-            Object input,
-            Version version,
-            ResourceLocator resourceLocator,
-            EntityResolver entityResolver)
+            Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         // see if we can use the SLD cache, some conversions are expensive.
         if (input instanceof File) {
@@ -117,14 +108,10 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
         if (input instanceof Resource) {
             Resource cssResource = (Resource) input;
-            Resource sldResource =
-                    cssResource
-                            .parent()
-                            .get(FilenameUtils.getBaseName(cssResource.name()) + ".sld");
+            Resource sldResource = cssResource.parent().get(FilenameUtils.getBaseName(cssResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > cssResource.lastmodified()) {
-                return sldHandler.parse(
-                        sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
+                return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
             } else {
                 // otherwise convert and write the cache
                 try (Reader reader = toReader(input)) {
@@ -135,8 +122,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
                     // be consistent, have the SLD always be generated from and SLD parse,
                     // different code paths could result in different defaults/results due
                     // to inconsistencies/bugs happening over time
-                    return sldHandler.parse(
-                            sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
+                    return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator, entityResolver);
                 }
             }
         }
@@ -160,15 +146,13 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
     }
 
     @Override
-    public void encode(
-            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
             throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         try (Reader unusedReader = toReader(input)) { // NOPMD
             // full parse to perform the validation
             convertToSLD(toReader(input));

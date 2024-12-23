@@ -38,49 +38,37 @@ public class WorkspacePage extends GeoServerSecuredPage {
     public WorkspacePage() {
         // the middle table
         add(
-                table =
-                        new GeoServerTablePanel<>("table", provider, true) {
-                            private static final long serialVersionUID = 8028081894753417294L;
+                table = new GeoServerTablePanel<>("table", provider, true) {
+                    private static final long serialVersionUID = 8028081894753417294L;
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<WorkspaceInfo> itemModel,
-                                    Property<WorkspaceInfo> property) {
-                                if (property == NAME) {
-                                    return workspaceLink(id, itemModel);
-                                } else if (property == DEFAULT) {
-                                    if (getCatalog()
-                                            .getDefaultWorkspace()
-                                            .equals(itemModel.getObject()))
-                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                                    else return new Label(id, "");
-                                } else if (property == ISOLATED) {
-                                    if (itemModel.getObject().isIsolated())
-                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                                    else return new Label(id, "");
-                                } else if (property == WorkspaceProvider.MODIFIED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(
-                                                    itemModel));
-                                } else if (property == WorkspaceProvider.CREATED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            WorkspaceProvider.CREATED_TIMESTAMP.getModel(
-                                                    itemModel));
-                                }
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<WorkspaceInfo> itemModel, Property<WorkspaceInfo> property) {
+                        if (property == NAME) {
+                            return workspaceLink(id, itemModel);
+                        } else if (property == DEFAULT) {
+                            if (getCatalog().getDefaultWorkspace().equals(itemModel.getObject()))
+                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                            else return new Label(id, "");
+                        } else if (property == ISOLATED) {
+                            if (itemModel.getObject().isIsolated())
+                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                            else return new Label(id, "");
+                        } else if (property == WorkspaceProvider.MODIFIED_TIMESTAMP) {
+                            return new DateTimeLabel(id, WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
+                        } else if (property == WorkspaceProvider.CREATED_TIMESTAMP) {
+                            return new DateTimeLabel(id, WorkspaceProvider.CREATED_TIMESTAMP.getModel(itemModel));
+                        }
 
-                                throw new IllegalArgumentException(
-                                        "No such property " + property.getName());
-                            }
+                        throw new IllegalArgumentException("No such property " + property.getName());
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(!table.getSelection().isEmpty());
-                                target.add(removal);
-                            }
-                        });
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        removal.setEnabled(!table.getSelection().isEmpty());
+                        target.add(removal);
+                    }
+                });
         table.setOutputMarkupId(true);
 
         // the confirm dialog

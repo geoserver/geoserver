@@ -80,8 +80,7 @@ public class LocalWorkspaceCatalogTest {
         // secured wrapped around lg1. These wrappers can be returned by the
         // secure catalog
         SecuredLayerGroupInfo slg1 =
-                new SecuredLayerGroupInfo(
-                        lg1, null, Collections.emptyList(), Collections.emptyList());
+                new SecuredLayerGroupInfo(lg1, null, Collections.emptyList(), Collections.emptyList());
 
         LayerGroupInfo lg2 = createNiceMock(LayerGroupInfo.class);
         expect(lg2.getName()).andReturn("lg2").anyTimes();
@@ -290,9 +289,9 @@ public class LocalWorkspaceCatalogTest {
     }
 
     /**
-     * No geoserver instance has been set. This means there is no access to geoserver. this should
-     * not happen but we want to protect against this consideration. In this case we have a local
-     * workspace set and we will use the default behaviour (no prefix)
+     * No geoserver instance has been set. This means there is no access to geoserver. this should not happen but we
+     * want to protect against this consideration. In this case we have a local workspace set and we will use the
+     * default behaviour (no prefix)
      */
     @Test
     public void testGetNoGeoserverPrefixedLayerNameBehaviour() {
@@ -303,11 +302,10 @@ public class LocalWorkspaceCatalogTest {
     }
 
     /**
-     * No local workspace is set this means the prefix should be included since the global
-     * capabilities is probably being created.
+     * No local workspace is set this means the prefix should be included since the global capabilities is probably
+     * being created.
      *
-     * <p>The No Geoserver part is just to verify there are no nullpointer exceptions because of a
-     * coding error
+     * <p>The No Geoserver part is just to verify there are no nullpointer exceptions because of a coding error
      */
     @Test
     public void testGetNoGeoserverLocalWorkspacePrefixedLayerNameBehaviour() {
@@ -317,10 +315,7 @@ public class LocalWorkspaceCatalogTest {
         assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
     }
 
-    /**
-     * No localworkspace so prefix should be included since the global capabilities is probably
-     * being created.
-     */
+    /** No localworkspace so prefix should be included since the global capabilities is probably being created. */
     @Test
     public void testGetNoLocalWorkspacePrefixedLayerNameBehaviour() {
         boolean includePrefix = true;
@@ -338,11 +333,12 @@ public class LocalWorkspaceCatalogTest {
         assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
     }
 
-    private void assertPrefixInclusion(
-            boolean includePrefix, boolean setLocalWorkspace, boolean createGeoServer) {
+    private void assertPrefixInclusion(boolean includePrefix, boolean setLocalWorkspace, boolean createGeoServer) {
         if (createGeoServer) {
             SettingsInfo settings = createNiceMock(SettingsInfo.class);
-            expect(settings.isLocalWorkspaceIncludesPrefix()).andReturn(includePrefix).anyTimes();
+            expect(settings.isLocalWorkspaceIncludesPrefix())
+                    .andReturn(includePrefix)
+                    .anyTimes();
             replay(settings);
 
             GeoServer geoServer = createNiceMock(GeoServer.class);
@@ -370,13 +366,9 @@ public class LocalWorkspaceCatalogTest {
             }
             String message;
             if (includePrefix) {
-                message =
-                        layerInfo.getName()
-                                + " should contain a : because the prefix should have been kept";
+                message = layerInfo.getName() + " should contain a : because the prefix should have been kept";
             } else {
-                message =
-                        layerInfo.getName()
-                                + " should contain not a : because the prefix should have been removed";
+                message = layerInfo.getName() + " should contain not a : because the prefix should have been removed";
             }
             assertEquals(message, includePrefix, layerInfo.getName().contains(":"));
         }

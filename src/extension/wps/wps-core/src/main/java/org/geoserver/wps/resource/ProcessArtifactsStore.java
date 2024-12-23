@@ -19,8 +19,8 @@ public interface ProcessArtifactsStore {
     }
 
     /**
-     * Retrieves a Resource for a store WPS artifact (input, output, temp file). The resource will
-     * be UNDEFINED if the artifact is missing, and will be created on demand at the first access
+     * Retrieves a Resource for a store WPS artifact (input, output, temp file). The resource will be UNDEFINED if the
+     * artifact is missing, and will be created on demand at the first access
      */
     Resource getArtifact(String executionId, ArtifactType type, String name);
 

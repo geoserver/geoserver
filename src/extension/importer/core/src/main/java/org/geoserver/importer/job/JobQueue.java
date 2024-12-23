@@ -39,8 +39,7 @@ public class JobQueue {
 
     /** job runner */
     ThreadPoolExecutor pool =
-            new ThreadPoolExecutor(
-                    0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>()) {
+            new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>()) {
                 @Override
                 protected <T extends Object> RunnableFuture<T> newTaskFor(Callable<T> callable) {
                     if (callable instanceof Job) {
@@ -76,10 +75,10 @@ public class JobQueue {
                                 || (e.getValue()
                                         .isDone() /* AF: This condition is never verified ?!? && e.getValue().isRecieved() */)) {
                             try {
-                                ImportContext context = (ImportContext) e.getValue().get();
+                                ImportContext context =
+                                        (ImportContext) e.getValue().get();
 
-                                if (context.getState() == ImportContext.State.COMPLETE
-                                        && context.isEmpty()) {
+                                if (context.getState() == ImportContext.State.COMPLETE && context.isEmpty()) {
                                     context.unlockUploadFolder(context.getUploadDirectory());
                                     toremove.add(e.getKey());
                                 }
@@ -102,8 +101,7 @@ public class JobQueue {
                                 } catch (IOException e) {
                                     LOGGER.log(
                                             Level.WARNING,
-                                            "It was not possible to cleanup Importer temporary folder "
-                                                    + f,
+                                            "It was not possible to cleanup Importer temporary folder " + f,
                                             e);
                                 }
                             }

@@ -25,9 +25,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
- * Hack for CITE tests, they force a trailing "/" for the landing page even if they did not specify
- * it in the request, and the landing page would not work if trailing slashes are disabled. This
- * filter removes the trailing slash from the request path.
+ * Hack for CITE tests, they force a trailing "/" for the landing page even if they did not specify it in the request,
+ * and the landing page would not work if trailing slashes are disabled. This filter removes the trailing slash from the
+ * request path.
  */
 @Component
 public class LandingPageSlashFilter implements GeoServerFilter, ApplicationContextAware {
@@ -45,8 +45,7 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
     }
 
     @Override
-    public void doFilter(
-            ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         if (servletRequest instanceof HttpServletRequest
                 && isLandingPageWithSlash((HttpServletRequest) servletRequest)) {
@@ -68,8 +67,8 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
     }
 
     /**
-     * The path can contain a local workspace and a local layer name, so we need to remove them to
-     * get to the actual path in the service
+     * The path can contain a local workspace and a local layer name, so we need to remove them to get to the actual
+     * path in the service
      */
     private boolean matchesServiceLandingPage(String path, APIService s) {
         // global service
@@ -82,8 +81,7 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
 
         // check if the first component is a workspace or a layer group
         String token1 = components[0];
-        if (catalog.getWorkspaceByName(token1) == null
-                && catalog.getLayerGroupByName(token1) == null) return false;
+        if (catalog.getWorkspaceByName(token1) == null && catalog.getLayerGroupByName(token1) == null) return false;
 
         // is it a match now?
         if (landingPageSlash.equals(toLandingPath(components, 1))) return true;
@@ -107,15 +105,14 @@ public class LandingPageSlashFilter implements GeoServerFilter, ApplicationConte
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        services =
-                applicationContext.getBeansWithAnnotation(APIService.class).values().stream()
-                        .map(o -> APIDispatcher.getApiServiceAnnotation(o.getClass()))
-                        .collect(Collectors.toList());
+        services = applicationContext.getBeansWithAnnotation(APIService.class).values().stream()
+                .map(o -> APIDispatcher.getApiServiceAnnotation(o.getClass()))
+                .collect(Collectors.toList());
     }
 
     /**
-     * Removes the trailing slash on the path info, so that the landing page is properly served even
-     * when trailing slashes are present by their match is disabled
+     * Removes the trailing slash on the path info, so that the landing page is properly served even when trailing
+     * slashes are present by their match is disabled
      */
     private class SlashWrapper extends HttpServletRequestWrapper {
 

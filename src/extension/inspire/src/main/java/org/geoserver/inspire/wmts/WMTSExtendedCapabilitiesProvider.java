@@ -22,8 +22,7 @@ import org.xml.sax.Attributes;
 
 public class WMTSExtendedCapabilitiesProvider extends WMTSExtensionImpl {
 
-    public static final String VS_VS_OWS_NAMESPACE =
-            "http://inspire.ec.europa.eu/schemas/inspire_vs_ows11/1.0";
+    public static final String VS_VS_OWS_NAMESPACE = "http://inspire.ec.europa.eu/schemas/inspire_vs_ows11/1.0";
     public static final String VS_VS_OWS_SCHEMA =
             "http://inspire.ec.europa.eu/schemas/inspire_vs_ows11/1.0/inspire_vs_ows_11.xsd";
 
@@ -93,11 +92,9 @@ public class WMTSExtendedCapabilitiesProvider extends WMTSExtensionImpl {
 
         // write inspire scenario 1 metadata
         MetadataMap serviceMetadata = geoserver.getService(WMTSInfo.class).getMetadata();
-        Boolean createExtendedCapabilities =
-                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
-        if (metadataURL == null
-                || createExtendedCapabilities != null && !createExtendedCapabilities) {
+        if (metadataURL == null || createExtendedCapabilities != null && !createExtendedCapabilities) {
             return;
         }
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);

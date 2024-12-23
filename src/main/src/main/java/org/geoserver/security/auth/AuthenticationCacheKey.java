@@ -35,14 +35,12 @@ public class AuthenticationCacheKey {
         if (!(other instanceof AuthenticationCacheKey)) return false;
 
         AuthenticationCacheKey otherKey = (AuthenticationCacheKey) other;
-        return (Objects.equals(filterName, otherKey.filterName))
-                && (Objects.equals(cacheKey, otherKey.cacheKey));
+        return (Objects.equals(filterName, otherKey.filterName)) && (Objects.equals(cacheKey, otherKey.cacheKey));
     }
 
     @Override
     public int hashCode() {
-        return ((filterName == null) ? 0 : filterName.hashCode())
-                ^ ((cacheKey == null) ? 0 : cacheKey.hashCode());
+        return ((filterName == null) ? 0 : filterName.hashCode()) ^ ((cacheKey == null) ? 0 : cacheKey.hashCode());
     }
 
     @Override

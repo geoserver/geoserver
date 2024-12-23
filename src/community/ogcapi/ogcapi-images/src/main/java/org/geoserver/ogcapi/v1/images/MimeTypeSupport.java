@@ -7,16 +7,10 @@ package org.geoserver.ogcapi.v1.images;
 import java.net.URLConnection;
 import org.apache.commons.io.FilenameUtils;
 
-/**
- * Basic support for guessing mime types and files extensions (we should try to do better than
- * this...)
- */
+/** Basic support for guessing mime types and files extensions (we should try to do better than this...) */
 class MimeTypeSupport {
 
-    /**
-     * Performs an educated guess on the file mimeType based on the file name (fast lookup, not very
-     * precise)
-     */
+    /** Performs an educated guess on the file mimeType based on the file name (fast lookup, not very precise) */
     public static String guessMimeType(String fileName) {
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         if (extension.equals("tif") || extension.equals(".tiff")) {

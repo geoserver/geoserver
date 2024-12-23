@@ -55,9 +55,7 @@ public class JsonWriterTest {
         fb.set("integer", 1);
         fb.set("double", 0.0);
         fb.set("url", new URI("http://some/url/to.test"));
-        fb.set(
-                "intArray",
-                new Integer[] {Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)});
+        fb.set("intArray", new Integer[] {Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)});
         fb.set("strArray", new String[] {"one", "two", "three"});
         return fb.buildFeature("1");
     }
@@ -67,8 +65,7 @@ public class JsonWriterTest {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        JSONLDWriter writer =
-                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer = new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeElementName(prop.getName().toString(), null);
@@ -87,8 +84,7 @@ public class JsonWriterTest {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        GeoJSONWriter writer = new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeElementName(prop.getName().toString(), null);
@@ -100,9 +96,7 @@ public class JsonWriterTest {
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
 
         List<Integer> intArray = json.getJSONArray("intArray");
-        assertThat(
-                intArray,
-                Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
+        assertThat(intArray, Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
 
         List<String> strArray = json.getJSONArray("strArray");
         assertThat(strArray, Matchers.hasItems("one", "two", "three"));
@@ -114,19 +108,14 @@ public class JsonWriterTest {
         NamespaceSupport namespaceSuport = new NamespaceSupport();
         namespaceSuport.declarePrefix("", "http://www.geoserver.org");
         InputStream is = getClass().getResource("arrayTemplate.json").openStream();
-        ObjectMapper mapper =
-                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-        JSONTemplateReader templateReader =
-                new JSONTemplateReader(
-                        mapper.readTree(is),
-                        new TemplateReaderConfiguration(namespaceSuport),
-                        Collections.emptyList());
+        ObjectMapper mapper = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+        JSONTemplateReader templateReader = new JSONTemplateReader(
+                mapper.readTree(is), new TemplateReaderConfiguration(namespaceSuport), Collections.emptyList());
         RootBuilder builder = templateReader.getRootBuilder();
 
         // write the output
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        GeoJSONWriter writer = new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         SimpleFeature sf = createSimpleFeature();
         builder.evaluate(writer, new TemplateBuilderContext(sf));
         writer.close();
@@ -137,9 +126,7 @@ public class JsonWriterTest {
 
         // straight array expansion tests
         List<Integer> intArray = json.getJSONArray("intArray");
-        assertThat(
-                intArray,
-                Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
+        assertThat(intArray, Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
 
         List<String> strArray = json.getJSONArray("strArray");
         assertThat(strArray, Matchers.hasItems("one", "two", "three"));
@@ -169,9 +156,7 @@ public class JsonWriterTest {
     public void testStaticArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GeoJSONWriter writer =
-                new GeoJSONWriter(
-                        new JsonFactory().createGenerator(baos, JsonEncoding.UTF8),
-                        TemplateIdentifier.JSON);
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
         writer.startArray(null, null);
         writer.writeStaticContent(null, "abc", new EncodingHints());
         writer.writeStaticContent(null, 5, new EncodingHints());
@@ -184,13 +169,11 @@ public class JsonWriterTest {
     }
 
     @Test
-    public void testJsonLDWriterEncodesActualTypesByDefault()
-            throws URISyntaxException, IOException {
+    public void testJsonLDWriterEncodesActualTypesByDefault() throws URISyntaxException, IOException {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        JSONLDWriter writer =
-                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer = new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeElementName(prop.getName().toString(), null);

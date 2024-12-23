@@ -45,9 +45,7 @@ public class GeoJSONBuilderTest {
         Geometry g = new WKTReader().read("MULTILINESTRING((0 0, 1 1))");
         builder.writeGeom(g);
 
-        assertEquals(
-                "{\"type\":\"MultiLineString\",\"coordinates\":[[[0,0],[1,1]]]}",
-                writer.toString());
+        assertEquals("{\"type\":\"MultiLineString\",\"coordinates\":[[[0,0],[1,1]]]}", writer.toString());
     }
 
     @Test
@@ -60,9 +58,7 @@ public class GeoJSONBuilderTest {
     class MyPoint extends Point {
 
         public MyPoint(double x, double y) {
-            super(
-                    new CoordinateArraySequence(new Coordinate[] {new Coordinate(x, y)}),
-                    new GeometryFactory());
+            super(new CoordinateArraySequence(new Coordinate[] {new Coordinate(x, y)}), new GeometryFactory());
         }
     }
 
@@ -209,10 +205,8 @@ public class GeoJSONBuilderTest {
 
     @Test
     public void testWrite3DPolygon() throws Exception {
-        Geometry g =
-                new WKTReader()
-                        .read(
-                                "POLYGON((0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
+        Geometry g = new WKTReader()
+                .read("POLYGON((0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
         builder.writeGeom(g);
         assertEquals(
                 "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}",
@@ -230,10 +224,8 @@ public class GeoJSONBuilderTest {
     @Test
     public void testNumberOfDecimalsFor3dLine() throws Exception {
         builder.setNumberOfDecimals(3);
-        Geometry g =
-                new WKTReader()
-                        .read(
-                                "LINESTRING(1E-3 1E-4 1E-5, 0 10.12312321 1.000002, 10.1 10.2 2.0, 10 0 3, 0 0 0)");
+        Geometry g = new WKTReader()
+                .read("LINESTRING(1E-3 1E-4 1E-5, 0 10.12312321 1.000002, 10.1 10.2 2.0, 10 0 3, 0 0 0)");
         builder.writeGeom(g);
         assertEquals(
                 "{\"type\":\"LineString\",\"coordinates\":[[0.001,0,0],[0,10.123,1],[10.1,10.2,2],[10,0,3],[0,0,0]]}",
@@ -243,10 +235,9 @@ public class GeoJSONBuilderTest {
     @Test
     public void testNumberOfDecimalsFor3dPolygon() throws Exception {
         builder.setNumberOfDecimals(0);
-        Geometry g =
-                new WKTReader()
-                        .read(
-                                "POLYGON((0.1 0.2 0.3, 0.1 10.1 1.1, 10.2 10.3 2.4, 9.5 0.4 3, 0.1 0.2 0.3),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
+        Geometry g = new WKTReader()
+                .read(
+                        "POLYGON((0.1 0.2 0.3, 0.1 10.1 1.1, 10.2 10.3 2.4, 9.5 0.4 3, 0.1 0.2 0.3),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
         builder.writeGeom(g);
         assertEquals(
                 "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}",
@@ -265,11 +256,7 @@ public class GeoJSONBuilderTest {
         final List<Integer> list = Arrays.asList(Integer.MAX_VALUE, Integer.MIN_VALUE, 3, 4);
         builder.writeList(list);
         assertEquals(
-                "["
-                        + Integer.toString(Integer.MAX_VALUE)
-                        + ","
-                        + Integer.toString(Integer.MIN_VALUE)
-                        + ",3,4]",
+                "[" + Integer.toString(Integer.MAX_VALUE) + "," + Integer.toString(Integer.MIN_VALUE) + ",3,4]",
                 writer.toString());
     }
 
@@ -278,18 +265,13 @@ public class GeoJSONBuilderTest {
         final List<Long> list = Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE, 0L, -333L, 4L);
         builder.writeList(list);
         assertEquals(
-                "["
-                        + Long.toString(Long.MAX_VALUE)
-                        + ","
-                        + Long.toString(Long.MIN_VALUE)
-                        + ",0,-333,4]",
+                "[" + Long.toString(Long.MAX_VALUE) + "," + Long.toString(Long.MIN_VALUE) + ",0,-333,4]",
                 writer.toString());
     }
 
     @Test
     public void testWriteFloatList() throws Exception {
-        final List<Float> list =
-                Arrays.asList(Float.MAX_VALUE, Float.MIN_VALUE, 0f, -333.2365f, 0.23235656f);
+        final List<Float> list = Arrays.asList(Float.MAX_VALUE, Float.MIN_VALUE, 0f, -333.2365f, 0.23235656f);
         builder.writeList(list);
         assertEquals(
                 "["
@@ -302,8 +284,7 @@ public class GeoJSONBuilderTest {
 
     @Test
     public void testWriteDoubleList() throws Exception {
-        final List<Double> list =
-                Arrays.asList(Double.MAX_VALUE, Double.MIN_VALUE, 0d, -333.2365d, 0.23235656d);
+        final List<Double> list = Arrays.asList(Double.MAX_VALUE, Double.MIN_VALUE, 0d, -333.2365d, 0.23235656d);
         builder.writeList(list);
         assertEquals(
                 "["
@@ -320,15 +301,12 @@ public class GeoJSONBuilderTest {
         final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
         final List<UUID> list = Arrays.asList(u1, u2);
         builder.writeList(list);
-        assertEquals(
-                "[" + "\"" + u1.toString() + "\"" + "," + "\"" + u2.toString() + "\"" + "]",
-                writer.toString());
+        assertEquals("[" + "\"" + u1.toString() + "\"" + "," + "\"" + u2.toString() + "\"" + "]", writer.toString());
     }
 
     @Test
     public void testWriteStringStringMap() throws Exception {
-        final Map<String, String> map =
-                Map.ofEntries(entry("a", "1"), entry("b", "2"), entry("c", "3"));
+        final Map<String, String> map = Map.ofEntries(entry("a", "1"), entry("b", "2"), entry("c", "3"));
 
         builder.writeMap(map);
         final JSONObject root = JSONObject.fromObject(writer.toString());
@@ -341,10 +319,7 @@ public class GeoJSONBuilderTest {
     @Test
     public void testWriteStringIntMap() throws Exception {
         final Map<String, Integer> map =
-                Map.ofEntries(
-                        entry("a", Integer.MAX_VALUE),
-                        entry("b", Integer.MIN_VALUE),
-                        entry("c", 3));
+                Map.ofEntries(entry("a", Integer.MAX_VALUE), entry("b", Integer.MIN_VALUE), entry("c", 3));
 
         builder.writeMap(map);
         final JSONObject root = JSONObject.fromObject(writer.toString());
@@ -357,12 +332,10 @@ public class GeoJSONBuilderTest {
     @Test
     public void testWriteListOfMaps() throws Exception {
         final UUID u1 = UUID.fromString("12345678-1234-1234-1234-123456781234");
-        final Map<String, Object> tuple1 =
-                Map.ofEntries(entry("a", 1), entry("b", u1), entry("c", "object1"));
+        final Map<String, Object> tuple1 = Map.ofEntries(entry("a", 1), entry("b", u1), entry("c", "object1"));
 
         final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
-        final Map<String, Object> tuple2 =
-                Map.ofEntries(entry("a", 2), entry("b", u2), entry("c", "object2"));
+        final Map<String, Object> tuple2 = Map.ofEntries(entry("a", 2), entry("b", u2), entry("c", "object2"));
 
         final List<Map<String, Object>> tupleList = Arrays.asList(tuple1, tuple2);
         builder.writeList(tupleList);
@@ -401,55 +374,43 @@ public class GeoJSONBuilderTest {
     public void testWriteMultiPointZM() throws Exception {
         Geometry g = new WKTReader().read("MULTIPOINT ZM (2 0 20 2, 1 1 1 1)");
         builder.writeGeom(g);
-        assertEquals(
-                "{\"type\":\"MultiPoint\",\"coordinates\":[[2,0,20,2],[1,1,1,1]]}",
-                writer.toString());
+        assertEquals("{\"type\":\"MultiPoint\",\"coordinates\":[[2,0,20,2],[1,1,1,1]]}", writer.toString());
     }
 
     @Test
     public void testWriteMultiPointM() throws Exception {
         Geometry g = new WKTReader().read("MULTIPOINT M (2 0 20, 1 1 1)");
         builder.writeGeom(g);
-        assertEquals(
-                "{\"type\":\"MultiPoint\",\"coordinates\":[[2,0,0,20],[1,1,0,1]]}",
-                writer.toString());
+        assertEquals("{\"type\":\"MultiPoint\",\"coordinates\":[[2,0,0,20],[1,1,0,1]]}", writer.toString());
     }
 
     @Test
     public void testWriteLineZM() throws Exception {
         Geometry g = new WKTReader().read("LINESTRING ZM (0 0 0 0, 0 10 1 1, 10 10 2 2)");
         builder.writeGeom(g);
-        assertEquals(
-                "{\"type\":\"LineString\",\"coordinates\":[[0,0,0,0],[0,10,1,1],[10,10,2,2]]}",
-                writer.toString());
+        assertEquals("{\"type\":\"LineString\",\"coordinates\":[[0,0,0,0],[0,10,1,1],[10,10,2,2]]}", writer.toString());
     }
 
     @Test
     public void testWriteMultiLineZM() throws Exception {
         Geometry g = new WKTReader().read("MULTILINESTRING ZM ((1 2 3 4,5 6 7 8))");
         builder.writeGeom(g);
-        assertEquals(
-                "{\"type\":\"MultiLineString\",\"coordinates\":[[[1,2,3,4],[5,6,7,8]]]}",
-                writer.toString());
+        assertEquals("{\"type\":\"MultiLineString\",\"coordinates\":[[[1,2,3,4],[5,6,7,8]]]}", writer.toString());
     }
 
     @Test
     public void testWriteMultiLineM() throws Exception {
         Geometry g = new WKTReader().read("MULTILINESTRING M ((1 2 4,5 6 8))");
         builder.writeGeom(g);
-        assertEquals(
-                "{\"type\":\"MultiLineString\",\"coordinates\":[[[1,2,0,4],[5,6,0,8]]]}",
-                writer.toString());
+        assertEquals("{\"type\":\"MultiLineString\",\"coordinates\":[[[1,2,0,4],[5,6,0,8]]]}", writer.toString());
     }
 
     @Test
     public void testWritePolygonZM() throws Exception {
-        Geometry g =
-                new WKTReader()
-                        .read(
-                                "POLYGON ZM "
-                                        + "((0 0 0 3, 0 10 1 3, 10 10 2 3, 10 0 3 3, 0 0 0 3),"
-                                        + "(1 1 4 3, 1 2 5 3, 2 2 6 3, 2 1 7 3, 1 1 4 3))");
+        Geometry g = new WKTReader()
+                .read("POLYGON ZM "
+                        + "((0 0 0 3, 0 10 1 3, 10 10 2 3, 10 0 3 3, 0 0 0 3),"
+                        + "(1 1 4 3, 1 2 5 3, 2 2 6 3, 2 1 7 3, 1 1 4 3))");
         builder.writeGeom(g);
         assertEquals(
                 "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0,3],[0,10,1,3],[10,10,2,3],[10,0,3,3],[0,0,0,3]]"
@@ -502,17 +463,13 @@ public class GeoJSONBuilderTest {
     public void testWrite3DPointWithInfiniteCoordinates() throws Exception {
         Geometry g = new WKTReader().read("POINT(Infinity -Infinity 1)");
         builder.writeGeom(g);
-        assertEquals(
-                "{\"type\":\"Point\",\"coordinates\":[\"Infinity\",\"-Infinity\",1]}",
-                writer.toString());
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[\"Infinity\",\"-Infinity\",1]}", writer.toString());
     }
 
     @Test
     public void testWritePolygonZMWithInfiniteCoordinates() throws Exception {
-        Geometry g =
-                new WKTReader()
-                        .read(
-                                "POLYGON ZM((0 0 0 0, 0 Infinity 0 0, 10 -Infinity 0 0, 10 0 Infinity -Infinity, 0 0 0 0))");
+        Geometry g = new WKTReader()
+                .read("POLYGON ZM((0 0 0 0, 0 Infinity 0 0, 10 -Infinity 0 0, 10 0 Infinity -Infinity, 0 0 0 0))");
         builder.writeGeom(g);
         assertEquals(
                 "{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0,0],[0,\"Infinity\",0,0],[10,\"-Infinity\",0,0],[10,0,\"Infinity\",\"-Infinity\"],[0,0,0,0]]]}",
@@ -521,10 +478,7 @@ public class GeoJSONBuilderTest {
 
     @Test
     public void testWrite3DLineWithInfiniteCoordinates() throws Exception {
-        Geometry g =
-                new WKTReader()
-                        .read(
-                                "LINESTRING(0 0 0, 0 Infinity 0, 10 -Infinity 0, 10 0 Infinity, 0 0 0)");
+        Geometry g = new WKTReader().read("LINESTRING(0 0 0, 0 Infinity 0, 10 -Infinity 0, 10 0 Infinity, 0 0 0)");
         builder.writeGeom(g);
         assertEquals(
                 "{\"type\":\"LineString\",\"coordinates\":[[0,0,0],[0,\"Infinity\",0],[10,\"-Infinity\",0],[10,0,\"Infinity\"],[0,0,0]]}",

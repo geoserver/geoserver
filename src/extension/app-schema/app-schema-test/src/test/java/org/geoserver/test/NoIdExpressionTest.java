@@ -42,9 +42,8 @@ public class NoIdExpressionTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureSimpleFilter() {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&cql_filter=st:name = 'station1'");
+        Document doc = getAsDOM(
+                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&cql_filter=st:name = 'station1'");
         LOGGER.info(
                 "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&cql_filter=st:name = 'station1' Response:\n"
                         + prettyString(doc));
@@ -55,9 +54,8 @@ public class NoIdExpressionTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureNestedFilter() {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2");
+        Document doc = getAsDOM(
+                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2");
         LOGGER.info(
                 "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=1 Response:\n"
                         + prettyString(doc));
@@ -68,9 +66,8 @@ public class NoIdExpressionTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureStartIndex() {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2");
+        Document doc = getAsDOM(
+                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2");
         LOGGER.info(
                 "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=st:Station&maxFeatures=50&startIndex=2 Response:\n"
                         + prettyString(doc));

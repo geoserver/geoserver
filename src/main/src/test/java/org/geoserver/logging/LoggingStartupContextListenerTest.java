@@ -158,20 +158,15 @@ public class LoggingStartupContextListenerTest {
         assertTrue(logs.mkdirs());
 
         FileUtils.copyURLToFile(
-                LoggingStartupContextListenerTest.class.getResource("logging.xml"),
-                new File(tmp, "logging.xml"));
+                LoggingStartupContextListenerTest.class.getResource("logging.xml"), new File(tmp, "logging.xml"));
 
         MockServletContext context = new MockServletContext();
         context.setInitParameter("GEOSERVER_DATA_DIR", tmp.getPath());
-        context.setInitParameter(
-                "GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
+        context.setInitParameter("GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
 
         // Lookup Log4J Core configuration
         {
-            @SuppressWarnings({
-                "resource",
-                "PMD.CloseResource"
-            }) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
@@ -186,8 +181,7 @@ public class LoggingStartupContextListenerTest {
         String restore = System.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
         try {
             System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");
-            new LoggingStartupContextListener()
-                    .contextInitialized(new ServletContextEvent(context));
+            new LoggingStartupContextListener().contextInitialized(new ServletContextEvent(context));
         } finally {
             if (restore == null) {
                 System.getProperties().remove(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
@@ -201,10 +195,7 @@ public class LoggingStartupContextListenerTest {
         {
             String expectedLogfile = new File(tmp, "foo.log").getCanonicalPath();
 
-            @SuppressWarnings({
-                "resource",
-                "PMD.CloseResource"
-            }) // current context, no need to enforce AutoClosable
+            @SuppressWarnings({"resource", "PMD.CloseResource"}) // current context, no need to enforce AutoClosable
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
 
             Configuration configuration = ctx.getConfiguration();
@@ -232,10 +223,7 @@ public class LoggingStartupContextListenerTest {
                 assertTrue(appender instanceof RollingFileAppender);
 
                 RollingFileAppender fileAppender = (RollingFileAppender) appender;
-                assertEquals(
-                        "fileName property substitution",
-                        expectedLogfile,
-                        fileAppender.getFileName());
+                assertEquals("fileName property substitution", expectedLogfile, fileAppender.getFileName());
             }
         }
     }
@@ -251,8 +239,7 @@ public class LoggingStartupContextListenerTest {
 
         MockServletContext context = new MockServletContext();
         context.setInitParameter("GEOSERVER_DATA_DIR", tmp.getPath());
-        context.setInitParameter(
-                "GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
+        context.setInitParameter("GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
 
         try (TestAppender appender = TestAppender.createAppender("quite", null)) {
             appender.startRecording("org.geoserver.logging");
@@ -311,24 +298,20 @@ public class LoggingStartupContextListenerTest {
     public void testFilenameAndFilePattern() throws Exception {
         assertEquals(
                 "some/where/logging.txt",
-                GeoServerXMLConfiguration.applyPathTemplate(
-                        "some/where/logging.txt", "logs/geoserver.log"));
+                GeoServerXMLConfiguration.applyPathTemplate("some/where/logging.txt", "logs/geoserver.log"));
         assertEquals(
                 "some/where/logging-%d{MM-dd-yyyy}.log",
-                GeoServerXMLConfiguration.applyPathTemplate(
-                        "some/where/logging", "logs/geoserver-%d{MM-dd-yyyy}.log"));
+                GeoServerXMLConfiguration.applyPathTemplate("some/where/logging", "logs/geoserver-%d{MM-dd-yyyy}.log"));
         assertEquals(
                 "some/where/logging-%i.txt.zip",
-                GeoServerXMLConfiguration.applyPathTemplate(
-                        "some/where/logging.txt", "logs/geoserver-%i.log.zip"));
+                GeoServerXMLConfiguration.applyPathTemplate("some/where/logging.txt", "logs/geoserver-%i.log.zip"));
         assertEquals(
                 "some/where/logging-%d{MM-dd-yyyy}.txt.zip",
                 GeoServerXMLConfiguration.applyPathTemplate(
                         "some/where/logging.txt", "logs/geoserver-%d{MM-dd-yyyy}.log.zip"));
         assertEquals(
                 "some/where/logging$hostName.txt",
-                GeoServerXMLConfiguration.applyPathTemplate(
-                        "some/where/logging.txt", "logs/$hostName.log"));
+                GeoServerXMLConfiguration.applyPathTemplate("some/where/logging.txt", "logs/$hostName.log"));
         assertEquals(
                 "some/where/logging-$hostName-%i.txt",
                 GeoServerXMLConfiguration.applyPathTemplate(
@@ -336,8 +319,7 @@ public class LoggingStartupContextListenerTest {
         // Do not allow log4j parameter substitution from global settings, only logging profile
         assertEquals(
                 "logs/geoserver.log",
-                GeoServerXMLConfiguration.applyPathTemplate(
-                        "${baseDir}/logs/logging.log", "logs/geoserver.log"));
+                GeoServerXMLConfiguration.applyPathTemplate("${baseDir}/logs/logging.log", "logs/geoserver.log"));
     }
 
     @Test
@@ -382,8 +364,7 @@ public class LoggingStartupContextListenerTest {
         LoggingUtils.initLogging(loader, "TEST_LOGGING", true, true, null);
     }
 
-    private static void testExpectetFormat(GeoServerResourceLoader loader, String configuration)
-            throws Exception {
+    private static void testExpectetFormat(GeoServerResourceLoader loader, String configuration) throws Exception {
         String location = "logs/" + configuration + ".log";
         LoggingUtils.initLogging(loader, configuration, true, false, location);
         Logger logger = LogManager.getLogger("org.geoserver.logging");

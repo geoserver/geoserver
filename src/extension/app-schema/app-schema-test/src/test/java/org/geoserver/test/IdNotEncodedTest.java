@@ -20,8 +20,7 @@ public class IdNotEncodedTest extends AbstractAppSchemaTestSupport {
     /** Test whether GetFeature */
     @Test
     public void testGetFeature() {
-        Document doc =
-                getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedInterval");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedInterval");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo(
                 "ubspatial.hydrostratigraphicunit.123",

@@ -23,7 +23,6 @@ public class Security_2_2_TestData extends SystemTestData {
     @Override
     public void setUpSecurity() throws IOException {
         File secDir = new File(getDataDirectoryRoot(), "security");
-        IOUtils.decompress(
-                Security_2_2_TestData.class.getResourceAsStream("security-2.2.zip"), secDir);
+        IOUtils.decompress(Security_2_2_TestData.class.getResourceAsStream("security-2.2.zip"), secDir);
     }
 }

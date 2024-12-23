@@ -23,9 +23,7 @@ public class RestConfigXStreamPersister implements XStreamPersisterInitializer {
     @Override
     public void init(XStreamPersister persister) {
 
-        persister
-                .getXStream()
-                .allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
+        persister.getXStream().allowTypesByWildcard(new String[] {"org.geoserver.rest.security.xml.*"});
         persister.getXStream().alias("user", JaxbUser.class);
     }
 }

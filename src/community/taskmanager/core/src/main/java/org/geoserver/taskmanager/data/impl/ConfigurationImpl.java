@@ -53,7 +53,8 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @Column(nullable = false)
     private Boolean validated = false;
 
-    @Column private String workspace;
+    @Column
+    private String workspace;
 
     @OneToMany(
             fetch = FetchType.LAZY,
@@ -89,7 +90,8 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @XStreamOmitField
     private Long removeStamp = 0L;
 
-    @Column private String description;
+    @Column
+    private String description;
 
     @Override
     public Long getId() {

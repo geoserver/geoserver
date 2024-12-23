@@ -16,8 +16,7 @@ import org.geotools.util.factory.FactoryRegistry;
 /**
  * Enable programs to find all available DWFWriter implementations.
  *
- * <p>In order to be located by this finder writer must provide an implementation of the {@link
- * DXFWriter} interface.
+ * <p>In order to be located by this finder writer must provide an implementation of the {@link DXFWriter} interface.
  *
  * <p>In addition to implementing this interface writers should have a services file:<br>
  * <code>META-INF/services/org.geoserver.wfs.response.dxf.DXFWriter</code>
@@ -30,8 +29,7 @@ import org.geotools.util.factory.FactoryRegistry;
  */
 public final class DXFWriterFinder {
     protected static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    "org.geoserver.wfs.response.dxf.DXFWriterFinder");
+            org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs.response.dxf.DXFWriterFinder");
 
     /** The service registry for this manager. Will be initialized only when first needed. */
     private static FactoryRegistry registry;
@@ -57,10 +55,7 @@ public final class DXFWriterFinder {
         return null;
     }
 
-    /**
-     * Returns the service registry. The registry will be created the first time this method is
-     * invoked.
-     */
+    /** Returns the service registry. The registry will be created the first time this method is invoked. */
     private static FactoryRegistry getServiceRegistry() {
         if (registry == null) {
             registry = new FactoryCreator(Arrays.asList(new Class<?>[] {DXFWriter.class}));

@@ -31,8 +31,7 @@ public class NumDecimalsTest extends WFSTestSupport {
 
     @Test
     public void testDefaults() throws Exception {
-        Document dom =
-                getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
+        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
         runAssertions(dom, 3);
     }
 
@@ -47,8 +46,7 @@ public class NumDecimalsTest extends WFSTestSupport {
         global.getSettings().setNumDecimals(1);
         getGeoServer().save(global);
 
-        Document dom =
-                getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
+        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
         runAssertions(dom, 1);
     }
 
@@ -59,8 +57,7 @@ public class NumDecimalsTest extends WFSTestSupport {
         ft.setNumDecimals(1);
         cat.save(ft);
 
-        Document dom =
-                getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
+        Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
         runAssertions(dom, 1);
     }
 
@@ -75,9 +72,8 @@ public class NumDecimalsTest extends WFSTestSupport {
         ft2.setNumDecimals(1);
         cat.save(ft2);
 
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008,AggregateGeoFeature.f009&version=1.0.0");
+        Document dom = getAsDOM(
+                "wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008,AggregateGeoFeature.f009&version=1.0.0");
         runAssertions(dom, 3);
     }
 

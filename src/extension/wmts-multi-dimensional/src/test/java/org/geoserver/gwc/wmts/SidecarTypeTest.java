@@ -28,20 +28,14 @@ public class SidecarTypeTest extends TestsSupport {
     @Override
     protected void afterSetup(SystemTestData testData) throws IOException {
         // registering elevation and time dimensions for a vector
-        FeatureTypeInfo vectorInfo =
-                getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
+        FeatureTypeInfo vectorInfo = getCatalog().getFeatureTypeByName(VECTOR_ELEVATION_TIME.getLocalPart());
         registerLayerDimension(
                 vectorInfo,
                 ResourceInfo.ELEVATION,
                 "startElevation",
                 DimensionPresentation.CONTINUOUS_INTERVAL,
                 minimumValue());
-        registerLayerDimension(
-                vectorInfo,
-                ResourceInfo.TIME,
-                "startTime",
-                DimensionPresentation.LIST,
-                minimumValue());
+        registerLayerDimension(vectorInfo, ResourceInfo.TIME, "startTime", DimensionPresentation.LIST, minimumValue());
     }
 
     @After
@@ -55,8 +49,7 @@ public class SidecarTypeTest extends TestsSupport {
     protected void setupVectorSidecar() throws Exception {
         Catalog catalog = getCatalog();
         FeatureTypeInfo vector = catalog.getFeatureTypeByName(getTestLayerId());
-        vector.getMetadata()
-                .put(MultiDimensionalExtension.SIDECAR_TYPE, SIDECAR_VECTOR_ET.getLocalPart());
+        vector.getMetadata().put(MultiDimensionalExtension.SIDECAR_TYPE, SIDECAR_VECTOR_ET.getLocalPart());
         catalog.save(vector);
     }
 
@@ -72,10 +65,8 @@ public class SidecarTypeTest extends TestsSupport {
         setupVectorSidecar();
 
         // perform the get describe domains operation request
-        String queryRequest =
-                String.format(
-                        "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getTestLayerId());
+        String queryRequest = String.format(
+                "request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getTestLayerId());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
@@ -83,17 +74,10 @@ public class SidecarTypeTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
 
         // check the elevation domain
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']",
-                "1");
-        checkXpathCount(
-                result, "/md:Domains/md:DimensionDomain[md:Domain='11.0,12.0,13.0,15.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation' and md:Size='4']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='11.0,12.0,13.0,15.0']", "1");
         // check the time domain
-        checkXpathCount(
-                result,
-                "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']",
-                "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time' and md:Size='2']", "1");
         checkXpathCount(
                 result,
                 "/md:Domains/md:DimensionDomain[md:Domain='2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z']",
@@ -112,20 +96,16 @@ public class SidecarTypeTest extends TestsSupport {
         setupVectorSidecar();
 
         // perform the get histogram operation request
-        String queryRequest =
-                String.format(
-                        "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
-                        getTestLayerId());
+        String queryRequest = String.format(
+                "request=GetHistogram&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326&histogram=time&resolution=P1M",
+                getTestLayerId());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response);
         print(result);
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
         checkXpathCount(
-                result,
-                "/md:Histogram[md:Domain="
-                        + "'2011-02-11T00:00:00.000Z/2011-02-12T00:00:00.000Z/P1M']",
-                "1");
+                result, "/md:Histogram[md:Domain=" + "'2011-02-11T00:00:00.000Z/2011-02-12T00:00:00.000Z/P1M']", "1");
         checkXpathCount(result, "/md:Histogram[md:Values='4']", "1");
     }
 
@@ -136,9 +116,7 @@ public class SidecarTypeTest extends TestsSupport {
 
         // perform the get histogram operation request
         String queryRequest =
-                String.format(
-                        "request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
-                        getTestLayerId());
+                String.format("request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326", getTestLayerId());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
         Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
@@ -158,19 +136,15 @@ public class SidecarTypeTest extends TestsSupport {
         setupVectorSidecar();
 
         // full domain (only 2 entries)
-        String baseRequest =
-                "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
-                        + getTestLayerId()
-                        + "&TileMatrixSet=EPSG:4326&domain=time";
+        String baseRequest = "gwc/service/wmts?request=GetDomainValues&Version=1.0.0&Layer="
+                + getTestLayerId()
+                + "&TileMatrixSet=EPSG:4326&domain=time";
         Document dom = getAsDOM(baseRequest);
         print(dom);
         assertXpathEvaluatesTo("time", "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("1000", "/md:DomainValues/md:Limit", dom);
         assertXpathEvaluatesTo("asc", "/md:DomainValues/md:Sort", dom);
         assertXpathEvaluatesTo("2", "/md:DomainValues/md:Size", dom);
-        assertXpathEvaluatesTo(
-                "2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z",
-                "/md:DomainValues/md:Domain",
-                dom);
+        assertXpathEvaluatesTo("2011-02-11T00:00:00.000Z,2011-02-12T00:00:00.000Z", "/md:DomainValues/md:Domain", dom);
     }
 }

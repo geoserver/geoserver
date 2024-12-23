@@ -12,17 +12,13 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.web.data.settings.SettingsPluginPanel;
 import org.geoserver.web.util.MetadataMapModel;
 
-/**
- * Pluggable panel containing {@link CogSettings}} configuration, to show up on the Global Settings
- * page
- */
+/** Pluggable panel containing {@link CogSettings}} configuration, to show up on the Global Settings page */
 public class CogSettingsPluginPanel extends SettingsPluginPanel {
 
     public CogSettingsPluginPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);
         // Model associated to the metadata map
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
 
         IModel<CogSettings> cogSettingsModel =
                 new MetadataMapModel(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);

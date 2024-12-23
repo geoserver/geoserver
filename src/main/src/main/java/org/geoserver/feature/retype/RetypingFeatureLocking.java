@@ -12,19 +12,14 @@ import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureLocking;
 import org.geotools.api.filter.Filter;
 
-/**
- * Renaming wrapper for a {@link FeatureLocking} instance, to be used along with {@link
- * RetypingDataStore}
- */
+/** Renaming wrapper for a {@link FeatureLocking} instance, to be used along with {@link RetypingDataStore} */
 class RetypingFeatureLocking extends RetypingFeatureStore implements SimpleFeatureLocking {
 
-    RetypingFeatureLocking(
-            RetypingDataStore ds, SimpleFeatureLocking wrapped, FeatureTypeMap typeMap) {
+    RetypingFeatureLocking(RetypingDataStore ds, SimpleFeatureLocking wrapped, FeatureTypeMap typeMap) {
         super(ds, wrapped, typeMap);
     }
 
-    RetypingFeatureLocking(SimpleFeatureLocking wrapped, FeatureTypeMap typeMap)
-            throws IOException {
+    RetypingFeatureLocking(SimpleFeatureLocking wrapped, FeatureTypeMap typeMap) throws IOException {
         super(wrapped, typeMap);
     }
 

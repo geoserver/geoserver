@@ -17,9 +17,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 /**
  * The GeoServer request monitor and primary entry point into the monitor api.
  *
- * <p>For each request submitted to a GeoServer instance the monitor maintains state about the
- * request and makes operations available that control the life cycle of the request. The life cycle
- * of a monitored request advances through the following states:
+ * <p>For each request submitted to a GeoServer instance the monitor maintains state about the request and makes
+ * operations available that control the life cycle of the request. The life cycle of a monitored request advances
+ * through the following states:
  *
  * <ul>
  *   <li>the request is STARTED

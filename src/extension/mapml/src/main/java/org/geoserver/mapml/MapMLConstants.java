@@ -27,8 +27,7 @@ public final class MapMLConstants {
     public static final String MAPML_WMS_MIME_TYPE_OPTION = "mapml-wms-format";
 
     /** format MediaType */
-    public static final MediaType MAPML_MEDIA_TYPE =
-            new MediaType("text", "mapml", StandardCharsets.UTF_8);
+    public static final MediaType MAPML_MEDIA_TYPE = new MediaType("text", "mapml", StandardCharsets.UTF_8);
 
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
@@ -117,8 +116,7 @@ public final class MapMLConstants {
     public static final String REL_TILE = "tile";
 
     public static final List<String> ZOOM_RELS = Arrays.asList(REL_ZOOMIN, REL_ZOOMOUT);
-    public static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE =
-            new Bounds(new Point(0, 0), new Point(768, 1024));
+    public static final Bounds DISPLAY_BOUNDS_DESKTOP_LANDSCAPE = new Bounds(new Point(0, 0), new Point(768, 1024));
 
     public static int PAGESIZE = 100;
 }

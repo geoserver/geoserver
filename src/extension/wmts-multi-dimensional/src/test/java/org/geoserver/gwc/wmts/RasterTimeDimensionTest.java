@@ -28,13 +28,12 @@ import org.geotools.feature.type.DateUtil;
 import org.junit.Test;
 
 /**
- * This class contains tests that check that time dimension values are correctly extracted from
- * rasters. Some domain values are dynamically created based on the current time, this matches what
- * is done in WMS dimensions tests.
+ * This class contains tests that check that time dimension values are correctly extracted from rasters. Some domain
+ * values are dynamically created based on the current time, this matches what is done in WMS dimensions tests.
  *
- * <p>Note, there is some inconsistency between ISO formatter and GeoTools data serializer string
- * output, this is something that needs to be fixed (or maybe not) at GeoServer and GeoTools level.
- * In the mean time this tests will use the two formatter were needed.
+ * <p>Note, there is some inconsistency between ISO formatter and GeoTools data serializer string output, this is
+ * something that needs to be fixed (or maybe not) at GeoServer and GeoTools level. In the mean time this tests will use
+ * the two formatter were needed.
  */
 public class RasterTimeDimensionTest extends TestsSupport {
 
@@ -66,22 +65,24 @@ public class RasterTimeDimensionTest extends TestsSupport {
         getCatalog().save(rasterInfo);
         // check that we correctly retrieve the time dimension
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(1));
         // disable the time dimension
         dimensionInfo.setEnabled(false);
         rasterInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
         getCatalog().save(rasterInfo);
         // no dimensions should be available
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(0));
     }
 
     @Test
     public void testGetDefaultValue() {
-        testDefaultValueStrategy(
-                Strategy.MINIMUM, DateUtil.serializeDateTime(DATE_VALUES[0].getTime(), true));
-        testDefaultValueStrategy(
-                Strategy.MAXIMUM, DateUtil.serializeDateTime(DATE_VALUES[4].getTime(), true));
+        testDefaultValueStrategy(Strategy.MINIMUM, DateUtil.serializeDateTime(DATE_VALUES[0].getTime(), true));
+        testDefaultValueStrategy(Strategy.MAXIMUM, DateUtil.serializeDateTime(DATE_VALUES[4].getTime(), true));
     }
 
     @Test
@@ -112,10 +113,7 @@ public class RasterTimeDimensionTest extends TestsSupport {
         return calendar.getTime();
     }
 
-    /**
-     * Generates the current middle date, this date is one month later than the current minimum
-     * date.
-     */
+    /** Generates the current middle date, this date is one month later than the current minimum date. */
     private static Date getGeneratedMiddleValue() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         Calendar calendar = Calendar.getInstance();
@@ -127,10 +125,7 @@ public class RasterTimeDimensionTest extends TestsSupport {
         return calendar.getTime();
     }
 
-    /**
-     * Generates the current maximum date, this date is one year later than the current minimum
-     * date.
-     */
+    /** Generates the current maximum date, this date is one year later than the current minimum date. */
     private static Date getGeneratedMaxValue() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         Calendar calendar = Calendar.getInstance();

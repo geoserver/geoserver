@@ -23,10 +23,7 @@ public class XSLTTestSupport extends WFSTestSupport {
                 FileUtils.deleteQuietly(directory);
             }
             if (directory.exists()) {
-                throw new IOException(
-                        "Could not remove directory "
-                                + directory.getPath()
-                                + " after repeated attempts");
+                throw new IOException("Could not remove directory " + directory.getPath() + " after repeated attempts");
             }
         } else {
             // aaah, sanity

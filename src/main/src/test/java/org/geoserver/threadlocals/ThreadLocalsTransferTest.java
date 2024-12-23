@@ -76,42 +76,38 @@ public class ThreadLocalsTransferTest extends GeoServerSystemTestSupport {
         final Authentication auth = new UsernamePasswordAuthenticationToken("user", "password");
         SecurityContextHolder.getContext().setAuthentication(auth);
         final ThreadLocalsTransfer transfer = new ThreadLocalsTransfer();
-        Future<Void> future =
-                executor.submit(
-                        new Callable<>() {
+        Future<Void> future = executor.submit(new Callable<>() {
 
-                            @Override
-                            public Void call() throws Exception {
-                                testApply();
-                                testCleanup();
-                                return null;
-                            }
+            @Override
+            public Void call() throws Exception {
+                testApply();
+                testCleanup();
+                return null;
+            }
 
-                            private void testApply() {
-                                transfer.apply();
+            private void testApply() {
+                transfer.apply();
 
-                                // check all thread locals have been applied to the current thread
-                                assertSame(request, Dispatcher.REQUEST.get());
-                                assertSame(myState, AdminRequest.get());
-                                assertSame(layer, LocalPublished.get());
-                                assertSame(ws, LocalWorkspace.get());
-                                assertSame(
-                                        auth,
-                                        SecurityContextHolder.getContext().getAuthentication());
-                            }
+                // check all thread locals have been applied to the current thread
+                assertSame(request, Dispatcher.REQUEST.get());
+                assertSame(myState, AdminRequest.get());
+                assertSame(layer, LocalPublished.get());
+                assertSame(ws, LocalWorkspace.get());
+                assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
+            }
 
-                            private void testCleanup() {
-                                transfer.cleanup();
+            private void testCleanup() {
+                transfer.cleanup();
 
-                                // check all thread locals have been cleaned up from the current
-                                // thread
-                                assertNull(Dispatcher.REQUEST.get());
-                                assertNull(AdminRequest.get());
-                                assertNull(LocalPublished.get());
-                                assertNull(LocalWorkspace.get());
-                                assertNull(SecurityContextHolder.getContext().getAuthentication());
-                            }
-                        });
+                // check all thread locals have been cleaned up from the current
+                // thread
+                assertNull(Dispatcher.REQUEST.get());
+                assertNull(AdminRequest.get());
+                assertNull(LocalPublished.get());
+                assertNull(LocalWorkspace.get());
+                assertNull(SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
         future.get();
     }
 

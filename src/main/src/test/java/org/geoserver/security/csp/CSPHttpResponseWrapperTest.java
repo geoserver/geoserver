@@ -20,7 +20,8 @@ import org.mockito.MockitoAnnotations;
 
 public class CSPHttpResponseWrapperTest {
 
-    @Mock private HttpServletResponse response;
+    @Mock
+    private HttpServletResponse response;
 
     private CSPHttpResponseWrapper wrapper;
 
@@ -134,8 +135,7 @@ public class CSPHttpResponseWrapperTest {
     public void testCSPWithMerge() throws Exception {
         String csp1 = "base-uri 'self'; default-src 'self';, frame-ancestors 'self';";
         String csp2 = "base-uri 'none'; form-action 'none'; default-src 'none';";
-        String csp3 =
-                "base-uri 'none'; form-action 'none'; default-src 'none';, frame-ancestors 'self';";
+        String csp3 = "base-uri 'none'; form-action 'none'; default-src 'none';, frame-ancestors 'self';";
         when(this.response.getHeader(CONTENT_SECURITY_POLICY)).thenReturn(csp1);
         this.wrapper.setHeader(CONTENT_SECURITY_POLICY, csp2);
         verify(this.response).setHeader(CONTENT_SECURITY_POLICY, csp3);
@@ -146,8 +146,7 @@ public class CSPHttpResponseWrapperTest {
         this.config.setReportOnly(true);
         String csp1 = "base-uri 'self'; default-src 'self';, frame-ancestors 'self';";
         String csp2 = "base-uri 'none'; form-action 'none'; default-src 'none';";
-        String csp3 =
-                "base-uri 'none'; form-action 'none'; default-src 'none';, frame-ancestors 'self';";
+        String csp3 = "base-uri 'none'; form-action 'none'; default-src 'none';, frame-ancestors 'self';";
         when(this.response.getHeader(CONTENT_SECURITY_POLICY_REPORT_ONLY)).thenReturn(csp1);
         this.wrapper.setHeader(CONTENT_SECURITY_POLICY_REPORT_ONLY, csp2);
         verify(this.response).setHeader(CONTENT_SECURITY_POLICY_REPORT_ONLY, csp3);

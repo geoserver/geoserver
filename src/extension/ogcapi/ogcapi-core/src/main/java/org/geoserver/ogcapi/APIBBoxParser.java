@@ -33,21 +33,18 @@ public class APIBBoxParser {
     private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /**
-     * Turns a bbox specification into a OGC filter, assuming it's expressed in {@link
-     * DefaultGeographicCRS#WGS84}. Will return {@link Filter#INCLUDE} if the bbox * spec itself is
-     * null or empty.
+     * Turns a bbox specification into a OGC filter, assuming it's expressed in {@link DefaultGeographicCRS#WGS84}. Will
+     * return {@link Filter#INCLUDE} if the bbox * spec itself is null or empty.
      */
     public static Filter toFilter(String bbox) throws FactoryException {
         return toFilter(bbox, (CoordinateReferenceSystem) null);
     }
 
     /**
-     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link
-     * DefaultGeographicCRS#WGS84} if null is passed. Will return {@link Filter#INCLUDE} if the bbox
-     * spec itself is null or empty.
+     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link DefaultGeographicCRS#WGS84} if null
+     * is passed. Will return {@link Filter#INCLUDE} if the bbox spec itself is null or empty.
      */
-    public static Filter toFilter(double[] bbox, CoordinateReferenceSystem crs)
-            throws FactoryException {
+    public static Filter toFilter(double[] bbox, CoordinateReferenceSystem crs) throws FactoryException {
         if (bbox == null) {
             return Filter.INCLUDE;
         }
@@ -57,9 +54,7 @@ public class APIBBoxParser {
         if (bbox.length == 4) {
             parsed = buildEnvelopes(bbox.length, bbox[0], bbox[1], 0, bbox[2], bbox[3], 0, crs);
         } else if (bbox.length == 6) {
-            parsed =
-                    buildEnvelopes(
-                            bbox.length, bbox[0], bbox[1], bbox[2], bbox[3], bbox[4], bbox[5], crs);
+            parsed = buildEnvelopes(bbox.length, bbox[0], bbox[1], bbox[2], bbox[3], bbox[4], bbox[5], crs);
         } else {
             throw new APIException(
                     INVALID_PARAMETER_VALUE,
@@ -70,9 +65,8 @@ public class APIBBoxParser {
     }
 
     /**
-     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link
-     * DefaultGeographicCRS#WGS84} if null is passed. Will return {@link Filter#INCLUDE} if the bbox
-     * spec itself is null or empty.
+     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link DefaultGeographicCRS#WGS84} if null
+     * is passed. Will return {@link Filter#INCLUDE} if the bbox spec itself is null or empty.
      */
     public static Filter toFilter(String bbox, String crs) throws FactoryException {
         if (bbox == null || bbox.trim().isEmpty()) {
@@ -85,12 +79,10 @@ public class APIBBoxParser {
     }
 
     /**
-     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link
-     * DefaultGeographicCRS#WGS84} if null is passed. Will return {@link Filter#INCLUDE} if the bbox
-     * spec itself is null or empty.
+     * Turns a bbox specification into a OGC filter, using the given CRS, or {@link DefaultGeographicCRS#WGS84} if null
+     * is passed. Will return {@link Filter#INCLUDE} if the bbox spec itself is null or empty.
      */
-    public static Filter toFilter(String bbox, CoordinateReferenceSystem crs)
-            throws FactoryException {
+    public static Filter toFilter(String bbox, CoordinateReferenceSystem crs) throws FactoryException {
         if (bbox == null || bbox.trim().isEmpty()) {
             return Filter.INCLUDE;
         }
@@ -105,13 +97,10 @@ public class APIBBoxParser {
             return FF.bbox(FF.property(""), bboxes[0]);
         } else if (bboxes instanceof ReferencedEnvelope[]) {
             List<Filter> filters =
-                    Stream.of(bboxes)
-                            .map(e -> FF.bbox(FF.property(""), e))
-                            .collect(Collectors.toList());
+                    Stream.of(bboxes).map(e -> FF.bbox(FF.property(""), e)).collect(Collectors.toList());
             return FF.or(filters);
         } else {
-            throw new IllegalArgumentException(
-                    "Could not understand parsed bbox " + Arrays.toString(bboxes));
+            throw new IllegalArgumentException("Could not understand parsed bbox " + Arrays.toString(bboxes));
         }
     }
 
@@ -129,14 +118,12 @@ public class APIBBoxParser {
         try {
             return crs != null ? CRS.decode(crs, true) : null;
         } catch (NoSuchAuthorityCodeException e) {
-            throw new APIException(
-                    INVALID_PARAMETER_VALUE, "Invalid CRS: " + crs, HttpStatus.BAD_REQUEST);
+            throw new APIException(INVALID_PARAMETER_VALUE, "Invalid CRS: " + crs, HttpStatus.BAD_REQUEST);
         }
     }
 
     /** Parses a BBOX with the given CRS, if null {@link DefaultGeographicCRS#WGS84} will be used */
-    public static ReferencedEnvelope[] parse(String value, CoordinateReferenceSystem crs)
-            throws FactoryException {
+    public static ReferencedEnvelope[] parse(String value, CoordinateReferenceSystem crs) throws FactoryException {
         if (value == null || value.trim().isEmpty()) {
             return null;
         }
@@ -145,8 +132,7 @@ public class APIBBoxParser {
         // check to make sure that the bounding box has 4 coordinates
         if (unparsed.size() < 4) {
             throw new IllegalArgumentException(
-                    "Requested bounding box contains wrong number of coordinates (should have 4): "
-                            + unparsed.size());
+                    "Requested bounding box contains wrong number of coordinates (should have 4): " + unparsed.size());
         }
 
         int countco = 4;
@@ -215,9 +201,7 @@ public class APIBBoxParser {
             }
         }
         // fallback, single envelope
-        return new ReferencedEnvelope[] {
-            buildSingleEnvelope(countco, minx, miny, minz, maxx, maxy, maxz, crs)
-        };
+        return new ReferencedEnvelope[] {buildSingleEnvelope(countco, minx, miny, minz, maxx, maxy, maxz, crs)};
     }
 
     private static ReferencedEnvelope buildSingleEnvelope(
@@ -230,18 +214,15 @@ public class APIBBoxParser {
             double maxz,
             CoordinateReferenceSystem crs) {
         if (minx > maxx) {
-            throw new ServiceException(
-                    "illegal bbox, minX: " + minx + " is " + "greater than maxX: " + maxx);
+            throw new ServiceException("illegal bbox, minX: " + minx + " is " + "greater than maxX: " + maxx);
         }
 
         if (miny > maxy) {
-            throw new ServiceException(
-                    "illegal bbox, minY: " + miny + " is " + "greater than maxY: " + maxy);
+            throw new ServiceException("illegal bbox, minY: " + miny + " is " + "greater than maxY: " + maxy);
         }
 
         if (minz > maxz) {
-            throw new ServiceException(
-                    "illegal bbox, minZ: " + minz + " is " + "greater than maxZ: " + maxz);
+            throw new ServiceException("illegal bbox, minZ: " + minz + " is " + "greater than maxZ: " + maxz);
         }
 
         if (countco == 6) {
@@ -250,11 +231,9 @@ public class APIBBoxParser {
             if (crs == null || crs.getCoordinateSystem().getDimension() == 2) {
                 return new ReferencedEnvelope(minx, maxx, miny, maxy, crs);
             } else if (crs.getCoordinateSystem().getDimension() == 3) {
-                return new ReferencedEnvelope3D(
-                        minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
+                return new ReferencedEnvelope3D(minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
             } else {
-                throw new InvalidParameterValueException(
-                        "Unexpected BBOX, can only handle 2D or 3D ones");
+                throw new InvalidParameterValueException("Unexpected BBOX, can only handle 2D or 3D ones");
             }
         }
     }
@@ -275,9 +254,7 @@ public class APIBBoxParser {
         if (polygons.size() == 1) {
             return polygons.get(0);
         } else {
-            return polygons.get(0)
-                    .getFactory()
-                    .createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            return polygons.get(0).getFactory().createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
         }
     }
 }

@@ -24,8 +24,7 @@ public class ColorKvpParser extends KvpParser {
         try {
             return Color.decode(value);
         } catch (NumberFormatException nfe) {
-            throw new ServiceException(
-                    "BGCOLOR " + value + " incorrectly specified (0xRRGGBB format expected)");
+            throw new ServiceException("BGCOLOR " + value + " incorrectly specified (0xRRGGBB format expected)");
         }
     }
 }

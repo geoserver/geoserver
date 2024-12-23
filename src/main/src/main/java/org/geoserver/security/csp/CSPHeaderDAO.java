@@ -46,14 +46,14 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     public static final String CONFIG_FILE_NAME = "csp.xml";
 
     /**
-     * The file containing the default CSP configuration that is used to check for changes to the
-     * default configuration with new GeoServer updates
+     * The file containing the default CSP configuration that is used to check for changes to the default configuration
+     * with new GeoServer updates
      */
     public static final String DEFAULT_CONFIG_FILE_NAME = "csp_default.xml";
 
     /**
-     * The thread local to store Content-Security-Policy values that contain variables for the proxy
-     * base URL in case it needs to be updated based on local workspace settings
+     * The thread local to store Content-Security-Policy values that contain variables for the proxy base URL in case it
+     * needs to be updated based on local workspace settings
      */
     private static final ThreadLocal<String> PROXY_POLICY = new ThreadLocal<>();
 
@@ -88,9 +88,9 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * If the Content-Security-Policy header for an OGC request contains proxy base URL properties,
-     * set the header a second time using the URL from the local workspace settings if it results in
-     * a different header value than with the global settings.
+     * If the Content-Security-Policy header for an OGC request contains proxy base URL properties, set the header a
+     * second time using the URL from the local workspace settings if it results in a different header value than with
+     * the global settings.
      */
     @Override
     public Request init(Request request) {
@@ -100,10 +100,9 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
             if (policy != null && hasLocalProxyBase()) {
                 policy = replaceVariables(request.getHttpRequest(), getConfig(), policy);
                 HttpServletResponse response = request.getHttpResponse();
-                String name =
-                        getConfig().isReportOnly()
-                                ? HttpHeaders.CONTENT_SECURITY_POLICY_REPORT_ONLY
-                                : HttpHeaders.CONTENT_SECURITY_POLICY;
+                String name = getConfig().isReportOnly()
+                        ? HttpHeaders.CONTENT_SECURITY_POLICY_REPORT_ONLY
+                        : HttpHeaders.CONTENT_SECURITY_POLICY;
                 if (!policy.equals(response.getHeader(name))) {
                     logPolicy(request.getHttpRequest(), policy);
                     response.setHeader(name, policy);
@@ -135,22 +134,19 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
      * @throws IOException if an error occurs while writing the configuration
      */
     public void setConfig(CSPConfiguration config) throws IOException {
-        configurationAction(
-                () -> this.configuration = doSetConfig(config.parseFilters(), this.resource));
+        configurationAction(() -> this.configuration = doSetConfig(config.parseFilters(), this.resource));
     }
 
     /**
-     * Sets the Content-Security-Policy header on the HTTP response. The request will be checked
-     * against the currently configured rules and settings to determine the appropriate header
-     * value. A secure fallback policy is used if there is a misconfiguration or a bug that prevents
-     * determining the header value.
+     * Sets the Content-Security-Policy header on the HTTP response. The request will be checked against the currently
+     * configured rules and settings to determine the appropriate header value. A secure fallback policy is used if
+     * there is a misconfiguration or a bug that prevents determining the header value.
      *
      * @param request the HTTP request
      * @param response the HTTP response
      * @return an HTTP response wrapper
      */
-    public HttpServletResponse setContentSecurityPolicy(
-            HttpServletRequest request, HttpServletResponse response) {
+    public HttpServletResponse setContentSecurityPolicy(HttpServletRequest request, HttpServletResponse response) {
         CSPConfiguration config = new CSPConfiguration();
         config.setReportOnly(false);
         String policy;
@@ -159,15 +155,12 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
             policy = getContentSecurityPolicy(config, request, false);
         } catch (Throwable t) {
             LOGGER.log(Level.WARNING, "Error setting Content-Security-Policy header", t);
-            policy =
-                    CSPUtils.getStringProperty(
-                            CSPUtils.GEOSERVER_CSP_FALLBACK, CSPUtils.DEFAULT_FALLBACK);
+            policy = CSPUtils.getStringProperty(CSPUtils.GEOSERVER_CSP_FALLBACK, CSPUtils.DEFAULT_FALLBACK);
         }
         if (!policy.equals("NONE")) {
-            String name =
-                    config.isReportOnly()
-                            ? HttpHeaders.CONTENT_SECURITY_POLICY_REPORT_ONLY
-                            : HttpHeaders.CONTENT_SECURITY_POLICY;
+            String name = config.isReportOnly()
+                    ? HttpHeaders.CONTENT_SECURITY_POLICY_REPORT_ONLY
+                    : HttpHeaders.CONTENT_SECURITY_POLICY;
             response.setHeader(name, policy);
         }
         // The wrapper will merge parts of GeoServer's Content-Security-Policy header value with
@@ -176,8 +169,7 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Executes a {@link ThrowingRunnable} on the configuration file, locking it to avoid concurrent
-     * access
+     * Executes a {@link ThrowingRunnable} on the configuration file, locking it to avoid concurrent access
      *
      * @param action the action to execute
      * @throws IOException if there was an error with the configuration file
@@ -192,8 +184,8 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Reads the CSP configuration from the file if it exists. Otherwise, save the default
-     * configuration to the file and return it.
+     * Reads the CSP configuration from the file if it exists. Otherwise, save the default configuration to the file and
+     * return it.
      *
      * @return the CSP configuration
      * @throws IOException if the was an error reading from the configuration file
@@ -215,8 +207,7 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
      * @return the CSP configuration that was written to the configuration
      * @throws IOException if the was an error writing to configuration file
      */
-    private CSPConfiguration doSetConfig(CSPConfiguration config, Resource resource)
-            throws IOException {
+    private CSPConfiguration doSetConfig(CSPConfiguration config, Resource resource) throws IOException {
         try (OutputStream fos = resource.out()) {
             this.xp.save(config, fos);
         }
@@ -224,9 +215,9 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Determines if the the proxy base URL being used for the current request comes from the local
-     * workspaces settings. Will be false if the PROXY_BASE_URL system property is set or of the
-     * proxy base URL comes from the global settings.
+     * Determines if the the proxy base URL being used for the current request comes from the local workspaces settings.
+     * Will be false if the PROXY_BASE_URL system property is set or of the proxy base URL comes from the global
+     * settings.
      *
      * @return whether the request uses a local workspace proxy base URL
      */
@@ -239,11 +230,10 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Creates the configuration files csp.xml and csp_default.xml from the default configuration if
-     * either file does not exist. If both configuration files exist and have the exact same
-     * policies but this does not match the default configuration's policies, then update csp.xml
-     * with the policies from the current default configuration. If csp_default.xml exists, update
-     * it with the current default configuration if there were any changes to the default
+     * Creates the configuration files csp.xml and csp_default.xml from the default configuration if either file does
+     * not exist. If both configuration files exist and have the exact same policies but this does not match the default
+     * configuration's policies, then update csp.xml with the policies from the current default configuration. If
+     * csp_default.xml exists, update it with the current default configuration if there were any changes to the default
      * configuration.
      *
      * @throws IOException if the was an error reading from or writing to configuration files
@@ -279,9 +269,8 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
                 LOGGER.fine("Leaving the csp.xml file alone");
             }
         } else {
-            LOGGER.warning(
-                    "Unable to check for default configuration changes. "
-                            + "csp.xml exists but csp_default.xml is missing");
+            LOGGER.warning("Unable to check for default configuration changes. "
+                    + "csp.xml exists but csp_default.xml is missing");
         }
         if (defaultResource.getType() == Resource.Type.UNDEFINED) {
             // create csp_default.xml with the default config if it doesn't exist
@@ -296,10 +285,7 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
         }
     }
 
-    /**
-     * Resets the DAO, forcing it to reload the configuration from disk the next time it is
-     * accessed.
-     */
+    /** Resets the DAO, forcing it to reload the configuration from disk the next time it is accessed. */
     @VisibleForTesting
     public void reset() {
         this.configuration = null;
@@ -307,29 +293,26 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Gets the value for the Content-Security-Policy header. The keyword NONE will be returned if
-     * no CSP directives were found from the policies and rules that matched the provided request.
-     * If multiple sets of directives were found, they will be joined together into a comma-separate
-     * string (which is equivalent to setting multiple Content-Security-Policy headers). The proxy
-     * base URL properties will be injected if necessary and all variables in the policy will be
-     * lookup up and replaced to generate the final value for the header.
+     * Gets the value for the Content-Security-Policy header. The keyword NONE will be returned if no CSP directives
+     * were found from the policies and rules that matched the provided request. If multiple sets of directives were
+     * found, they will be joined together into a comma-separate string (which is equivalent to setting multiple
+     * Content-Security-Policy headers). The proxy base URL properties will be injected if necessary and all variables
+     * in the policy will be lookup up and replaced to generate the final value for the header.
      *
      * @param config the CSP configuration
      * @param request the HTTP request
      * @param test whether this is for the test form
      * @return the value for the Content-Security-Policy header or NONE
      */
-    public static String getContentSecurityPolicy(
-            CSPConfiguration config, HttpServletRequest request, boolean test) {
+    public static String getContentSecurityPolicy(CSPConfiguration config, HttpServletRequest request, boolean test) {
         if (!config.isEnabled()) {
             return "NONE";
         }
         CSPHttpRequestWrapper wrapper = new CSPHttpRequestWrapper(request, config);
-        List<String> directives =
-                config.getPolicies().stream()
-                        .map(p -> p.getDirectives(wrapper))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+        List<String> directives = config.getPolicies().stream()
+                .map(p -> p.getDirectives(wrapper))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         if (directives.isEmpty()) {
             return "NONE";
         }
@@ -378,10 +361,10 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Looks up the value of the provided property key. If the key does not match the regular
-     * expression for allowed property keys, an empty string is returned. For valid keys, the system
-     * property will be looked up and if it is not defined, it will be looked up from the CSP
-     * configuration. An empty string will be returned for keys without a value.
+     * Looks up the value of the provided property key. If the key does not match the regular expression for allowed
+     * property keys, an empty string is returned. For valid keys, the system property will be looked up and if it is
+     * not defined, it will be looked up from the CSP configuration. An empty string will be returned for keys without a
+     * value.
      *
      * @param request the HTTP request
      * @param config the CSP configuration
@@ -389,8 +372,7 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
      * @return the property value or an empty string
      */
     @VisibleForTesting
-    protected static String getPropertyValue(
-            HttpServletRequest request, CSPConfiguration config, String key) {
+    protected static String getPropertyValue(HttpServletRequest request, CSPConfiguration config, String key) {
         if (key.equals("proxy.base.url")) {
             return getProxyBase(request, config);
         } else if (CSPUtils.PROPERTY_KEY_REGEX.matcher(key).matches()) {
@@ -406,10 +388,9 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * This method will look up the proxy base URL. If no proxy base URL is set or the request was
-     * sent to the proxy base URL then an empty string will be returned. Otherwise, returns a
-     * truncated proxy base URL that only contains the protocol, host name and port number (the port
-     * is only included if it is not the protocol's default port).
+     * This method will look up the proxy base URL. If no proxy base URL is set or the request was sent to the proxy
+     * base URL then an empty string will be returned. Otherwise, returns a truncated proxy base URL that only contains
+     * the protocol, host name and port number (the port is only included if it is not the protocol's default port).
      *
      * @param request the HTTP request
      * @param config the CSP configuration
@@ -438,11 +419,11 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * If proxy base URL injection is enabled in the CSP configuration, injects the variable for the
-     * proxy base URL into the form-action directive and all fetch directives in the policy with the
-     * 'self' source. This implementation is very strict and requires 'self' to be the first source
-     * in each directive. If the final policy contains a proxy base URL variable, sets the thread
-     * local in case the header needs to be updated using the local workspace settings.
+     * If proxy base URL injection is enabled in the CSP configuration, injects the variable for the proxy base URL into
+     * the form-action directive and all fetch directives in the policy with the 'self' source. This implementation is
+     * very strict and requires 'self' to be the first source in each directive. If the final policy contains a proxy
+     * base URL variable, sets the thread local in case the header needs to be updated using the local workspace
+     * settings.
      *
      * @param config the CSP configuration
      * @param policy the original CSP policy
@@ -453,11 +434,10 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
         if (config.isInjectProxyBase()) {
             // inject the proxy base url into the form-action directive and all fetch directives
             // with a 'self' source
-            policy =
-                    policy.replace("form-action 'self'", "form-action 'self' ${proxy.base.url}")
-                            .replace("-src 'self'", "-src 'self' ${proxy.base.url}")
-                            .replace("-src-attr 'self'", "-src-attr 'self' ${proxy.base.url}")
-                            .replace("-src-elem 'self'", "-src-elem 'self' ${proxy.base.url}");
+            policy = policy.replace("form-action 'self'", "form-action 'self' ${proxy.base.url}")
+                    .replace("-src 'self'", "-src 'self' ${proxy.base.url}")
+                    .replace("-src-attr 'self'", "-src-attr 'self' ${proxy.base.url}")
+                    .replace("-src-elem 'self'", "-src-elem 'self' ${proxy.base.url}");
         }
         if (!test && policy.contains("${proxy.base.url}")) {
             setProxyPolicy(policy);
@@ -466,33 +446,30 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Logs the value of the Content-Security-Policy header that was calculated for the provided
-     * HTTP request.
+     * Logs the value of the Content-Security-Policy header that was calculated for the provided HTTP request.
      *
      * @param request the HTTP request
      * @param policy the Content-Security-Policy value
      */
     private static void logPolicy(HttpServletRequest request, String policy) {
-        LOGGER.fine(
-                () -> {
-                    String query = request.getQueryString();
-                    return "Content-Security-Policy for request:\n"
-                            + request.getMethod()
-                            + ' '
-                            + request.getRequestURI()
-                            + (query = query != null ? '?' + query : "")
-                            + '\n'
-                            + policy;
-                });
+        LOGGER.fine(() -> {
+            String query = request.getQueryString();
+            return "Content-Security-Policy for request:\n"
+                    + request.getMethod()
+                    + ' '
+                    + request.getRequestURI()
+                    + (query = query != null ? '?' + query : "")
+                    + '\n'
+                    + policy;
+        });
     }
 
     /**
-     * Attempts to determine whether the HTTP request was originally sent to the proxy base URL by
-     * checking the protocol, host name and port number. The request protocol will be determined
-     * from the X-Forwarded-Proto header, the Forwarded header or the HTTP request. The request host
-     * name will be determined from the X-Forwarded-Host header, the Forwarded header or the Host
-     * header. The port will be determined from the X-Forwarded-Port header, the previously
-     * determined host value or the default port of the protocol.
+     * Attempts to determine whether the HTTP request was originally sent to the proxy base URL by checking the
+     * protocol, host name and port number. The request protocol will be determined from the X-Forwarded-Proto header,
+     * the Forwarded header or the HTTP request. The request host name will be determined from the X-Forwarded-Host
+     * header, the Forwarded header or the Host header. The port will be determined from the X-Forwarded-Port header,
+     * the previously determined host value or the default port of the protocol.
      *
      * @param request the HTTP request
      * @param proxyBaseURL the proxy base URL
@@ -526,17 +503,16 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
     }
 
     /**
-     * Looks up the value for each variable in the CSP policy and replaces that variables in the
-     * policy with that value if it is value. If the variable is not defined or contains an invalid
-     * value, the variable is replace with an empty string.
+     * Looks up the value for each variable in the CSP policy and replaces that variables in the policy with that value
+     * if it is value. If the variable is not defined or contains an invalid value, the variable is replace with an
+     * empty string.
      *
      * @param request the HTTP request
      * @param config the CSP configuration
      * @param policy the CSP value with variable names
      * @return the CSP value with all variables replaced with their values
      */
-    private static String replaceVariables(
-            HttpServletRequest request, CSPConfiguration config, String policy) {
+    private static String replaceVariables(HttpServletRequest request, CSPConfiguration config, String policy) {
         for (int start = policy.indexOf("${"); start >= 0; start = policy.indexOf("${")) {
             int end = policy.indexOf('}', start + 2);
             String key = policy.substring(start + 2, end);
@@ -564,13 +540,10 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
             super(dd.getSecurity(CSPHeaderDAO.CONFIG_FILE_NAME));
         }
 
-        /**
-         * @return the configuration read from the file, or a default one if the file does not exist
-         */
+        /** @return the configuration read from the file, or a default one if the file does not exist */
         @Override
         public CSPConfiguration read() throws IOException {
-            return Optional.ofNullable(super.read())
-                    .orElseGet(CSPDefaultConfiguration::newInstance);
+            return Optional.ofNullable(super.read()).orElseGet(CSPDefaultConfiguration::newInstance);
         }
 
         /** @return the CSPConfiguration object parsed from the configuration file. */

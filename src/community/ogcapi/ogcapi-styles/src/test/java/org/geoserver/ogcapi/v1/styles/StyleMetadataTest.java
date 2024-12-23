@@ -68,13 +68,9 @@ public class StyleMetadataTest extends StylesTestSupport {
         super.onSetUp(testData);
 
         // Extra styles and layers to play with metadata and attributes
+        testData.addStyle(BUILDINGS_LABEL_STYLE, "BuildingsLabel.sld", StyleMetadataTest.class, getCatalog());
         testData.addStyle(
-                BUILDINGS_LABEL_STYLE, "BuildingsLabel.sld", StyleMetadataTest.class, getCatalog());
-        testData.addStyle(
-                BUILDINGS_LABEL_ASSOCIATED_STYLE,
-                "BuildingsLabel.sld",
-                StyleMetadataTest.class,
-                getCatalog());
+                BUILDINGS_LABEL_ASSOCIATED_STYLE, "BuildingsLabel.sld", StyleMetadataTest.class, getCatalog());
         testData.addVectorLayer(
                 BUILDINGS_LABEL,
                 Map.ofEntries(
@@ -86,8 +82,7 @@ public class StyleMetadataTest extends StylesTestSupport {
         // add vector tiles as a format for it
         String buildingsLabelId = getLayerId(BUILDINGS_LABEL);
         GWC gwc = GeoServerExtensions.bean(GWC.class);
-        GeoServerTileLayer buildingTiles =
-                (GeoServerTileLayer) gwc.getTileLayerByName(buildingsLabelId);
+        GeoServerTileLayer buildingTiles = (GeoServerTileLayer) gwc.getTileLayerByName(buildingsLabelId);
         Set<String> formats = buildingTiles.getInfo().getMimeFormats();
         formats.add(ApplicationMime.mapboxVector.getFormat());
         formats.add(ApplicationMime.topojson.getFormat());
@@ -99,8 +94,7 @@ public class StyleMetadataTest extends StylesTestSupport {
 
         // a style group kind, with the layers that it needs
         testData.addVectorLayer(MockData.LAKES, getCatalog());
-        testData.addStyle(
-                BUILDINGS_LAKES, "buildingsLakes.sld", StyleMetadataTest.class, getCatalog());
+        testData.addStyle(BUILDINGS_LAKES, "buildingsLakes.sld", StyleMetadataTest.class, getCatalog());
     }
 
     @Test
@@ -108,9 +102,7 @@ public class StyleMetadataTest extends StylesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/styles/v1/styles/raster/metadata", 200);
         assertEquals("raster", json.read("id"));
         assertEquals("Raster", json.read("title"));
-        assertEquals(
-                "A sample style for rasters, good for displaying imagery",
-                json.read("description"));
+        assertEquals("A sample style for rasters, good for displaying imagery", json.read("description"));
         assertEquals("Andrea Aime", json.read("pointOfContact"));
         assertEquals("style", json.read("scope"));
         assertEquals("unclassified", json.read("accessConstraints"));
@@ -144,11 +136,13 @@ public class StyleMetadataTest extends StylesTestSupport {
         org.jsoup.nodes.Document doc = getAsJSoup("ogc/styles/v1/styles/polygon/metadata?f=html");
 
         assertEquals("Title: " + POLYGON_TITLE, doc.select("#title").text());
-        assertEquals("Description: " + POLYGON_ABSTRACT, doc.select("#description").text());
+        assertEquals(
+                "Description: " + POLYGON_ABSTRACT, doc.select("#description").text());
         assertEquals("Point of contact: " + POLYGON_POC, doc.select("#poc").text());
 
         assertEquals(
-                "Stylesheet as SLD 1.0.0 (native)", doc.select("#stylesheets>ul>:eq(0)").text());
+                "Stylesheet as SLD 1.0.0 (native)",
+                doc.select("#stylesheets>ul>:eq(0)").text());
         assertEquals(
                 "Default Polygon: polygon.",
                 doc.select("#layers>ul>li").first().textNodes().get(0).text().trim());
@@ -167,8 +161,7 @@ public class StyleMetadataTest extends StylesTestSupport {
 
     @Test
     public void testGetMetadataAttributesFromStyle() throws Exception {
-        DocumentContext json =
-                getAsJSONPath("ogc/styles/v1/styles/" + BUILDINGS_LABEL_STYLE + "/metadata", 200);
+        DocumentContext json = getAsJSONPath("ogc/styles/v1/styles/" + BUILDINGS_LABEL_STYLE + "/metadata", 200);
         assertEquals("BuildingsLabel", json.read("id"));
 
         // layers
@@ -186,9 +179,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     @Test
     public void testGetMetadataAttributesFromAssociatedStyle() throws Exception {
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/styles/v1/styles/" + BUILDINGS_LABEL_ASSOCIATED_STYLE + "/metadata",
-                        200);
+                getAsJSONPath("ogc/styles/v1/styles/" + BUILDINGS_LABEL_ASSOCIATED_STYLE + "/metadata", 200);
         assertEquals("BuildingsLabelAssociated", json.read("id"));
 
         // layers
@@ -252,8 +243,7 @@ public class StyleMetadataTest extends StylesTestSupport {
 
     @Test
     public void testGetMetadataMultilayerSampleData() throws Exception {
-        DocumentContext json =
-                getAsJSONPath("ogc/styles/v1/styles/" + BUILDINGS_LAKES + "/metadata", 200);
+        DocumentContext json = getAsJSONPath("ogc/styles/v1/styles/" + BUILDINGS_LAKES + "/metadata", 200);
         assertEquals("buildingsLakes", json.read("id"));
         assertEquals(Integer.valueOf(2), (Integer) json.read("layers.size()"));
 
@@ -285,17 +275,14 @@ public class StyleMetadataTest extends StylesTestSupport {
         assertEquals("unclassified", json.read("accessConstraints"));
 
         // at least CSS, SLD 1.0 and 1.1
-        assertThat(
-                json.read("stylesheets.size()", Integer.class), Matchers.greaterThanOrEqualTo(3));
+        assertThat(json.read("stylesheets.size()", Integer.class), Matchers.greaterThanOrEqualTo(3));
 
         // sld 1.is not native, CSS is
         assertFalse((boolean) readSingle(json, "stylesheets[?(@.title =~ /.*SLD 1.0.*/)].native"));
         assertTrue((boolean) readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].native"));
 
         // some checks on the CSS one
-        assertEquals(
-                "Stylesheet as CSS 1.0.0",
-                readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].title"));
+        assertEquals("Stylesheet as CSS 1.0.0", readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].title"));
         assertEquals("1.0.0", readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].version"));
         assertEquals(
                 "https://docs.geoserver.org/latest/en/user/styling/css/index.html",
@@ -310,21 +297,15 @@ public class StyleMetadataTest extends StylesTestSupport {
 
     @Test
     public void testPutStyleMetadata() throws Exception {
-        String metadataJson =
-                IOUtils.toString(StyleTest.class.getResourceAsStream("polygonStyleMetadata.json"));
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        "ogc/styles/v1/styles/polygon/metadata",
-                        metadataJson,
-                        MediaType.APPLICATION_JSON_VALUE);
+        String metadataJson = IOUtils.toString(StyleTest.class.getResourceAsStream("polygonStyleMetadata.json"));
+        MockHttpServletResponse response = putAsServletResponse(
+                "ogc/styles/v1/styles/polygon/metadata", metadataJson, MediaType.APPLICATION_JSON_VALUE);
         assertEquals(204, response.getStatus());
 
         StyleInfo polygon = getCatalog().getStyleByName("polygon");
-        StyleMetadataInfo metadata =
-                polygon.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
+        StyleMetadataInfo metadata = polygon.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
         assertEquals("A polygon style with a twist", metadata.getTitle());
-        assertEquals(
-                "Draws polygons with gray fill. Gray is the new black!", metadata.getAbstract());
+        assertEquals("Draws polygons with gray fill. Gray is the new black!", metadata.getAbstract());
         assertEquals(Arrays.asList("polygon", "test", "hip"), metadata.getKeywords());
         // check dates
         StyleDates dates = metadata.getDates();
@@ -345,18 +326,13 @@ public class StyleMetadataTest extends StylesTestSupport {
         // init with some custom metadata
         testPutStyleMetadata();
 
-        String jsonPatch =
-                IOUtils.toString(StyleTest.class.getResourceAsStream("metadataPatch.json"));
-        MockHttpServletResponse response =
-                patchAsServletResponse(
-                        "ogc/styles/v1/styles/polygon/metadata",
-                        jsonPatch,
-                        MediaType.APPLICATION_JSON_VALUE);
+        String jsonPatch = IOUtils.toString(StyleTest.class.getResourceAsStream("metadataPatch.json"));
+        MockHttpServletResponse response = patchAsServletResponse(
+                "ogc/styles/v1/styles/polygon/metadata", jsonPatch, MediaType.APPLICATION_JSON_VALUE);
         assertEquals(204, response.getStatus());
 
         StyleInfo polygon = getCatalog().getStyleByName("polygon");
-        StyleMetadataInfo metadata =
-                polygon.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
+        StyleMetadataInfo metadata = polygon.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
         assertEquals("A polygon style with a twist", metadata.getTitle()); // not modified
         assertNull(metadata.getAbstract()); // explicitly set to null
         assertEquals("Jane Doe", metadata.getPointOfContact()); // modified
@@ -373,8 +349,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     public void testRoundTrip() throws Exception {
         String metadatPath = "ogc/styles/v1/styles/raster/metadata";
         String payload = getAsString(metadatPath);
-        MockHttpServletResponse response =
-                putAsServletResponse(metadatPath, payload, "application/json");
+        MockHttpServletResponse response = putAsServletResponse(metadatPath, payload, "application/json");
         assertEquals(response.getContentAsString(), 204, response.getStatus());
 
         // check nothing changed

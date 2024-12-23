@@ -20,7 +20,8 @@ public class Span {
     @XmlAttribute(name = "class")
     String clazz;
 
-    @XmlValue protected List<String> coordinates;
+    @XmlValue
+    protected List<String> coordinates;
 
     public Span(String clazz, List<String> coordinates) {
         this.clazz = clazz;

@@ -20,8 +20,8 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 
 /**
- * A class representing the image server "collections" in a way that Jackson can easily translate to
- * JSON/YAML (and can be used as a Freemarker template model)
+ * A class representing the image server "collections" in a way that Jackson can easily translate to JSON/YAML (and can
+ * be used as a Freemarker template model)
  */
 @JsonPropertyOrder({"links", "collections"})
 public class ImagesCollectionsDocument extends AbstractDocument {
@@ -40,11 +40,9 @@ public class ImagesCollectionsDocument extends AbstractDocument {
     @SuppressWarnings("PMD.CloseResource")
     public Iterator<ImagesCollectionDocument> getCollections() {
 
-        CloseableIterator<CoverageInfo> coverages =
-                gs.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
+        CloseableIterator<CoverageInfo> coverages = gs.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
         boolean skipInvalid =
-                gs.getGlobal().getResourceErrorHandling()
-                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
+                gs.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
         return new Iterator<>() {
 
             ImagesCollectionDocument next;
@@ -58,10 +56,8 @@ public class ImagesCollectionsDocument extends AbstractDocument {
                 while (coverages.hasNext()) {
                     CoverageInfo coverage = coverages.next();
                     try {
-                        if (coverage.getGridCoverageReader(null, null)
-                                instanceof StructuredGridCoverage2DReader) {
-                            ImagesCollectionDocument collection =
-                                    new ImagesCollectionDocument(coverage, true);
+                        if (coverage.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader) {
+                            ImagesCollectionDocument collection = new ImagesCollectionDocument(coverage, true);
                             next = collection;
                             return true;
                         }

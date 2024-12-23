@@ -14,8 +14,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 /**
- * A simple ajax link with a label inside. This is a utility component, avoid some boilerplate code
- * in case the link is really just
+ * A simple ajax link with a label inside. This is a utility component, avoid some boilerplate code in case the link is
+ * really just
  *
  * @author Andrea Aime - OpenGeo
  */

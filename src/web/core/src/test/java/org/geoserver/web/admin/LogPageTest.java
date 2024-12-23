@@ -14,10 +14,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-/**
- * Tests default logging functionality, requires use of {@link #cleanupLogs()} after test is
- * completed.
- */
+/** Tests default logging functionality, requires use of {@link #cleanupLogs()} after test is completed. */
 public class LogPageTest extends GeoServerWicketTestSupport {
 
     protected static File logsDir = null;

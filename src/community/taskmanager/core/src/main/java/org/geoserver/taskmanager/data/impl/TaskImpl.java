@@ -31,10 +31,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"})
-        })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"})})
 @FilterDef(name = "activeTaskElementFilter", defaultCondition = "removeStamp = 0")
 // TODO: need alias support for filters, for now need to filter this out manually
 // @FilterDef(name="activeTaskElementFilter", defaultCondition="removeStamp = 0 and
@@ -49,9 +46,11 @@ public class TaskImpl extends BaseImpl implements Task {
     @XStreamOmitField
     private Long id;
 
-    @Column private String name;
+    @Column
+    private String name;
 
-    @Column private String type;
+    @Column
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "configuration")

@@ -77,10 +77,7 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
         // collect extensions
         Map<String, Object> extensions = new HashMap<>();
         for (ExtensionItemType item : gc.getExtension().getContents()) {
-            Object value =
-                    item.getSimpleContent() != null
-                            ? item.getSimpleContent()
-                            : item.getObjectContent();
+            Object value = item.getSimpleContent() != null ? item.getSimpleContent() : item.getObjectContent();
             extensions.put(item.getNamespace() + ":" + item.getName(), value);
         }
         return extensions;
@@ -111,9 +108,7 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
 
     @Before
     public void setup() {
-        kvpreader =
-                (GetCoverageRequestReader)
-                        applicationContext.getBean("wcs111GetCoverageRequestReader");
+        kvpreader = (GetCoverageRequestReader) applicationContext.getBean("wcs111GetCoverageRequestReader");
         service = (WebCoverageService20) applicationContext.getBean("wcs20ServiceTarget");
         configuration = new WCSConfiguration();
     }

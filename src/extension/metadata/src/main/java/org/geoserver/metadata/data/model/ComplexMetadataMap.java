@@ -8,8 +8,7 @@ import java.io.Serializable;
 
 public interface ComplexMetadataMap extends Serializable {
 
-    <T extends Serializable> ComplexMetadataAttribute<T> get(
-            Class<T> clazz, String att, int... index);
+    <T extends Serializable> ComplexMetadataAttribute<T> get(Class<T> clazz, String att, int... index);
 
     ComplexMetadataMap subMap(String name, int... index);
 

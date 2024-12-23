@@ -22,8 +22,7 @@ public class PaginationLinksBuilder {
     private final int returned;
     private final long matched;
 
-    public PaginationLinksBuilder(
-            String path, long startIndex, int limit, int returned, long matched) {
+    public PaginationLinksBuilder(String path, long startIndex, int limit, int returned, long matched) {
         this.path = path;
         this.startIndex = startIndex;
         this.maxFeatures = limit;
@@ -90,9 +89,10 @@ public class PaginationLinksBuilder {
         for (Map.Entry<String, Object> e : kvp.entrySet()) {
             kvps.put(
                     e.getKey(),
-                    Optional.ofNullable(e.getValue()).map(v -> String.valueOf(v)).orElse(null));
+                    Optional.ofNullable(e.getValue())
+                            .map(v -> String.valueOf(v))
+                            .orElse(null));
         }
-        return ResponseUtils.buildURL(
-                APIRequestInfo.get().getBaseURL(), path, kvps, URLMangler.URLType.SERVICE);
+        return ResponseUtils.buildURL(APIRequestInfo.get().getBaseURL(), path, kvps, URLMangler.URLType.SERVICE);
     }
 }

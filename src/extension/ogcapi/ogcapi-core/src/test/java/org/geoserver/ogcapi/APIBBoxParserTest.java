@@ -55,8 +55,7 @@ public class APIBBoxParserTest {
         assertThat(boxFilter, instanceOf(BBOX.class));
         BBOX bboxFilter = (BBOX) boxFilter;
         assertEnvelope(bboxFilter.getBounds(), 10, 20, 30, 40);
-        assertEquals(
-                DefaultGeographicCRS.WGS84, bboxFilter.getBounds().getCoordinateReferenceSystem());
+        assertEquals(DefaultGeographicCRS.WGS84, bboxFilter.getBounds().getCoordinateReferenceSystem());
         assertEquals(DEFAULT_GEOMETRY, bboxFilter.getExpression1());
     }
 

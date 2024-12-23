@@ -64,9 +64,8 @@ public class ClipIntersectsFeatureCollectionTest {
         SimpleFeatureType featureTypeML = tbML.buildFeatureType();
         delegateMultiLines = new DefaultFeatureCollection(null, featureTypeML);
         SimpleFeatureBuilder bML = new SimpleFeatureBuilder(featureTypeML);
-        Geometry geomML =
-                reader.read(
-                        "MULTILINESTRING((1000 0, 1000 1000, 2000 1000, 2000 0), (1000 3000, 1000 2000, 2000 2000, 2000 3000))");
+        Geometry geomML = reader.read(
+                "MULTILINESTRING((1000 0, 1000 1000, 2000 1000, 2000 0), (1000 3000, 1000 2000, 2000 2000, 2000 3000))");
         bML.add(geomML);
         bML.add("one");
         delegateMultiLines.add(bML.buildFeature("fid.1"));
@@ -76,13 +75,11 @@ public class ClipIntersectsFeatureCollectionTest {
     public void testMultiPolygon() throws ParseException {
         WKTReader reader = new WKTReader();
 
-        Geometry clip =
-                reader.read(
-                        "Polygon ((-1.56800000000000095 5.7651818181818193, 0.2316363636363632 5.75627272727272832, 0.20490909090909026 5.33754545454545593, -1.55018181818181944 5.36427272727272886, -1.56800000000000095 5.7651818181818193))");
+        Geometry clip = reader.read(
+                "Polygon ((-1.56800000000000095 5.7651818181818193, 0.2316363636363632 5.75627272727272832, 0.20490909090909026 5.33754545454545593, -1.55018181818181944 5.36427272727272886, -1.56800000000000095 5.7651818181818193))");
 
-        Geometry intersects =
-                reader.read(
-                        "Polygon ((-2.41436363636363804 1.47100000000000009, 1.77290909090909077 1.23936363636363645, 1.47890909090909028 -0.40881818181818197, -2.83309090909091044 -0.18609090909090931, -2.41436363636363804 1.47100000000000009))");
+        Geometry intersects = reader.read(
+                "Polygon ((-2.41436363636363804 1.47100000000000009, 1.77290909090909077 1.23936363636363645, 1.47890909090909028 -0.40881818181818197, -2.83309090909091044 -0.18609090909090931, -2.41436363636363804 1.47100000000000009))");
 
         ClipIntersectsFeatureCollection collection =
                 new ClipIntersectsFeatureCollection(delegateMultiPolygon, clip, intersects);
@@ -107,13 +104,11 @@ public class ClipIntersectsFeatureCollectionTest {
 
         WKTReader reader = new WKTReader();
 
-        Geometry clip =
-                reader.read(
-                        "Polygon ((-1.56800000000000095 5.7651818181818193, 0.2316363636363632 5.75627272727272832, 0.20490909090909026 5.33754545454545593, -1.55018181818181944 5.36427272727272886, -1.56800000000000095 5.7651818181818193))");
+        Geometry clip = reader.read(
+                "Polygon ((-1.56800000000000095 5.7651818181818193, 0.2316363636363632 5.75627272727272832, 0.20490909090909026 5.33754545454545593, -1.55018181818181944 5.36427272727272886, -1.56800000000000095 5.7651818181818193))");
 
-        Geometry intersects =
-                reader.read(
-                        "Polygon ((-1.79963636363636481 4.99900000000000144, -1.22054545454545549 5.0613636363636374, -1.30072727272727384 3.49336363636363734, -1.85309090909091023 3.47554545454545538, -1.79963636363636481 4.99900000000000144))");
+        Geometry intersects = reader.read(
+                "Polygon ((-1.79963636363636481 4.99900000000000144, -1.22054545454545549 5.0613636363636374, -1.30072727272727384 3.49336363636363734, -1.85309090909091023 3.47554545454545538, -1.79963636363636481 4.99900000000000144))");
 
         ClipIntersectsFeatureCollection collection =
                 new ClipIntersectsFeatureCollection(delegateMultiPolygon, clip, intersects);
@@ -134,11 +129,9 @@ public class ClipIntersectsFeatureCollectionTest {
     @Test
     public void testMultiLinesClippingNotIntersecting() throws ParseException {
 
-        Geometry clip =
-                new WKTReader().read("POLYGON((900 900, 900 2100, 2100 2100, 2100 900, 900 900))");
+        Geometry clip = new WKTReader().read("POLYGON((900 900, 900 2100, 2100 2100, 2100 900, 900 900))");
 
-        Geometry intersects =
-                new WKTReader().read("POLYGON((-10 -10, -10 -5, -5 -5, -5 -10, -10 -10))");
+        Geometry intersects = new WKTReader().read("POLYGON((-10 -10, -10 -5, -5 -5, -5 -10, -10 -10))");
 
         ClipIntersectsFeatureCollection collection =
                 new ClipIntersectsFeatureCollection(delegateMultiLines, clip, intersects);
@@ -157,8 +150,7 @@ public class ClipIntersectsFeatureCollectionTest {
     @Test
     public void testMultiLinesIntersectingNotClipping() throws ParseException {
 
-        Geometry intersects =
-                new WKTReader().read("POLYGON((900 900, 900 2100, 2100 2100, 2100 900, 900 900))");
+        Geometry intersects = new WKTReader().read("POLYGON((900 900, 900 2100, 2100 2100, 2100 900, 900 900))");
 
         Geometry clip = new WKTReader().read("POLYGON((-10 -10, -10 -5, -5 -5, -5 -10, -10 -10))");
 

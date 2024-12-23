@@ -25,10 +25,9 @@ import org.geotools.api.filter.spatial.Within;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 
 /**
- * Checks if spatial filters are used against non spatial properties, if so, throws a
- * ServiceException (mandated for CSW cite compliance). Works fine for simple data models, but you
- * might need to use a custom one for more complex models (e.g., SpatialFilterChecker is known not
- * to work with ebRIM)
+ * Checks if spatial filters are used against non spatial properties, if so, throws a ServiceException (mandated for CSW
+ * cite compliance). Works fine for simple data models, but you might need to use a custom one for more complex models
+ * (e.g., SpatialFilterChecker is known not to work with ebRIM)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -51,9 +50,7 @@ public class SpatialFilterChecker extends DefaultFilterVisitor {
 
             if (!(pn.evaluate(schema) instanceof GeometryDescriptor)) {
                 throw new ServiceException(
-                        "Invalid spatial filter, property "
-                                + pn.getPropertyName()
-                                + " is not a geometry");
+                        "Invalid spatial filter, property " + pn.getPropertyName() + " is not a geometry");
             }
         }
     }

@@ -34,10 +34,7 @@ public interface GeoServerSecurityService {
      */
     void setSecurityManager(GeoServerSecurityManager securityManager);
 
-    /**
-     * Returns the reference to the security manager, set by {@link
-     * #setSecurityManager(GeoServerSecurityManager)}.
-     */
+    /** Returns the reference to the security manager, set by {@link #setSecurityManager(GeoServerSecurityManager)}. */
     GeoServerSecurityManager getSecurityManager();
 
     //    /**

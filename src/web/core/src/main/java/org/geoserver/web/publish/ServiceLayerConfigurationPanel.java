@@ -37,40 +37,34 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
     public ServiceLayerConfigurationPanel(String id, IModel<LayerInfo> layerModel) {
         super(id, layerModel);
         final AjaxCheckBox configEnabledCheck =
-                new AjaxCheckBox(
-                        "configEnabled",
-                        new PropertyModel<>(layerModel, "resource.serviceConfiguration")) {
+                new AjaxCheckBox("configEnabled", new PropertyModel<>(layerModel, "resource.serviceConfiguration")) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        ServiceLayerConfigurationPanel.this.servicesMultiSelector.setVisible(
-                                getModelObject());
+                        ServiceLayerConfigurationPanel.this.servicesMultiSelector.setVisible(getModelObject());
                         target.add(ServiceLayerConfigurationPanel.this.serviceSelectionContainer);
                     }
                 };
         add(configEnabledCheck);
-        PropertyModel<List<String>> dsModel =
-                new PropertyModel<>(layerModel, "resource.disabledServices");
-        final IChoiceRenderer<String> renderer =
-                new ChoiceRenderer<>() {
-                    @Override
-                    public String getObject(
-                            String id, IModel<? extends List<? extends String>> choices) {
-                        return id;
-                    }
+        PropertyModel<List<String>> dsModel = new PropertyModel<>(layerModel, "resource.disabledServices");
+        final IChoiceRenderer<String> renderer = new ChoiceRenderer<>() {
+            @Override
+            public String getObject(String id, IModel<? extends List<? extends String>> choices) {
+                return id;
+            }
 
-                    @Override
-                    public Object getDisplayValue(String object) {
-                        if (object == null) return null;
-                        return super.getDisplayValue(object);
-                    }
+            @Override
+            public Object getDisplayValue(String object) {
+                if (object == null) return null;
+                return super.getDisplayValue(object);
+            }
 
-                    @Override
-                    public String getIdValue(String object, int index) {
-                        return object;
-                    }
-                };
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
+        };
 
         servicesMultiSelector =
                 new Palette<>(
@@ -84,21 +78,16 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
 
                     @Override
                     public Component newSelectedHeader(final String componentId) {
-                        return new Label(
-                                componentId,
-                                new ResourceModel("DisabledServicesPalette.selectedHeader"));
+                        return new Label(componentId, new ResourceModel("DisabledServicesPalette.selectedHeader"));
                     }
 
                     @Override
                     public Component newAvailableHeader(final String componentId) {
-                        return new Label(
-                                componentId,
-                                new ResourceModel("DisabledServicesPalette.availableHeader"));
+                        return new Label(componentId, new ResourceModel("DisabledServicesPalette.availableHeader"));
                     }
                 };
         servicesMultiSelector.add(new DefaultTheme());
-        servicesMultiSelector.setVisible(
-                layerModel.getObject().getResource().isServiceConfiguration());
+        servicesMultiSelector.setVisible(layerModel.getObject().getResource().isServiceConfiguration());
         serviceSelectionContainer = new WebMarkupContainer("serviceSelectionContainer");
         serviceSelectionContainer.setOutputMarkupPlaceholderTag(true);
         add(serviceSelectionContainer);

@@ -40,8 +40,8 @@ import org.geotools.xsd.Parser;
 public class StoredQueryProvider {
 
     /**
-     * language(S) for this provider (the name changed across specs versions, apparently before the
-     * 2.0 spec was published)
+     * language(S) for this provider (the name changed across specs versions, apparently before the 2.0 spec was
+     * published)
      */
     public static String LANGUAGE_20_PRE = "urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression";
 
@@ -69,8 +69,7 @@ public class StoredQueryProvider {
         this(catalog, wfsInfo, allowPerWorkspace, null);
     }
 
-    public StoredQueryProvider(
-            Catalog catalog, WFSInfo wfsInfo, boolean allowPerWorkspace, String workspaceName) {
+    public StoredQueryProvider(Catalog catalog, WFSInfo wfsInfo, boolean allowPerWorkspace, String workspaceName) {
         this.catalog = catalog;
         this.loader = catalog.getResourceLoader();
         this.wfsInfo = wfsInfo;
@@ -107,8 +106,7 @@ public class StoredQueryProvider {
     }
 
     private boolean checkQueryNotExists(StoredQuery query, List<StoredQuery> localQueries) {
-        return localQueries.stream()
-                .noneMatch(local -> Objects.equals(query.getName(), local.getName()));
+        return localQueries.stream().noneMatch(local -> Objects.equals(query.getName(), local.getName()));
     }
 
     private boolean shouldProcessGlobalQueries() {
@@ -158,10 +156,8 @@ public class StoredQueryProvider {
         } else {
             // resource doesn't exists
             // are we inside a virtual service and global query exists ?
-            if (localWorkspaceDir() != null
-                    && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
-                throw new GeoServerRuntimException(
-                        "Global query can not be deleted from a virtual service.");
+            if (localWorkspaceDir() != null && storedQueryDir().get(filename).getType() == Type.RESOURCE) {
+                throw new GeoServerRuntimException("Global query can not be deleted from a virtual service.");
             }
         }
     }
@@ -228,10 +224,7 @@ public class StoredQueryProvider {
             try (BufferedOutputStream bout = new BufferedOutputStream(f.out())) {
                 Encoder e = new Encoder(new WFSConfiguration());
                 e.setRootElementType(WFS.StoredQueryDescriptionType);
-                e.encode(
-                        query.getQuery(),
-                        WFS.StoredQueryDescription,
-                        new BufferedOutputStream(bout));
+                e.encode(query.getQuery(), WFS.StoredQueryDescription, new BufferedOutputStream(bout));
                 bout.flush();
             }
         } catch (IOException e) {
@@ -255,8 +248,7 @@ public class StoredQueryProvider {
     StoredQuery parseStoredQuery(Resource file, Parser p) throws Exception {
         p.setRootElementType(WFS.StoredQueryDescriptionType);
         try (InputStream fin = file.in()) {
-            StoredQueryDescriptionType q =
-                    (StoredQueryDescriptionType) p.parse(new BufferedInputStream(fin));
+            StoredQueryDescriptionType q = (StoredQueryDescriptionType) p.parse(new BufferedInputStream(fin));
             return createStoredQuery(q, false);
         }
     }

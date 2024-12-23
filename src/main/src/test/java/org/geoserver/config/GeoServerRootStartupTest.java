@@ -19,10 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-/**
- * Testing class to check the roles involved on catalog and geoserver startup loading process should
- * be ADMIN.
- */
+/** Testing class to check the roles involved on catalog and geoserver startup loading process should be ADMIN. */
 public class GeoServerRootStartupTest extends GeoServerSystemTestSupport {
 
     private volatile Collection<? extends GrantedAuthority> catalogRoles = null;
@@ -32,19 +29,18 @@ public class GeoServerRootStartupTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefault();
-        RootStartupListener.setListener(
-                new GeoServerLoaderListener() {
+        RootStartupListener.setListener(new GeoServerLoaderListener() {
 
-                    @Override
-                    public void loadGeoServer(GeoServer geoServer, XStreamPersister xp) {
-                        catalogRoles = getCurrentRoles();
-                    }
+            @Override
+            public void loadGeoServer(GeoServer geoServer, XStreamPersister xp) {
+                catalogRoles = getCurrentRoles();
+            }
 
-                    @Override
-                    public void loadCatalog(Catalog catalog, XStreamPersister xp) {
-                        geoServerRoles = getCurrentRoles();
-                    }
-                });
+            @Override
+            public void loadCatalog(Catalog catalog, XStreamPersister xp) {
+                geoServerRoles = getCurrentRoles();
+            }
+        });
     }
 
     @After

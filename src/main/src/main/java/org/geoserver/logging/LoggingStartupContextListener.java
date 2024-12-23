@@ -24,9 +24,8 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geotools.util.logging.Logging;
 
 /**
- * Listens for GeoServer startup to configure logging redirection to LOG4J, then redirect LOG4J
- * output according to the GeoServer configuration files (provided logging control hasn't been
- * disabled).
+ * Listens for GeoServer startup to configure logging redirection to LOG4J, then redirect LOG4J output according to the
+ * GeoServer configuration files (provided logging control hasn't been disabled).
  *
  * <p>Results are recorded by:
  *
@@ -60,8 +59,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
         }
 
         String updateBuiltInLoggingProfiles =
-                GeoServerExtensions.getProperty(
-                        LoggingUtils.UPDATE_BUILT_IN_LOGGING_PROFILES, context);
+                GeoServerExtensions.getProperty(LoggingUtils.UPDATE_BUILT_IN_LOGGING_PROFILES, context);
 
         LoggingUtils.updateBuiltInLoggingProfiles = Boolean.valueOf(updateBuiltInLoggingProfiles);
 
@@ -72,11 +70,9 @@ public class LoggingStartupContextListener implements ServletContextListener {
             LoggingInfo loginfo = getLogging(loader);
 
             if (loginfo != null) {
-                final String location =
-                        LoggingUtils.getLogFileLocation(loginfo.getLocation(), context);
+                final String location = LoggingUtils.getLogFileLocation(loginfo.getLocation(), context);
 
-                LoggingUtils.initLogging(
-                        loader, loginfo.getLevel(), !loginfo.isStdOutLogging(), false, location);
+                LoggingUtils.initLogging(loader, loginfo.getLevel(), !loginfo.isStdOutLogging(), false, location);
             } else {
                 // check for old style data directory
                 File f = loader.find("services.xml");
@@ -84,8 +80,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
                     LegacyLoggingImporter loggingImporter = new LegacyLoggingImporter();
                     loggingImporter.imprt(baseDir);
 
-                    final String location =
-                            LoggingUtils.getLogFileLocation(loggingImporter.getLogFile(), context);
+                    final String location = LoggingUtils.getLogFileLocation(loggingImporter.getLogFile(), context);
 
                     LoggingUtils.initLogging(
                             loader,
@@ -110,8 +105,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
      *
      * <p>You probably want {@link org.geoserver.config.GeoServer#getLogging} instead
      *
-     * @return LoggingInfo loaded directly from logging.xml. Returns null if logging.xml does not
-     *     exist
+     * @return LoggingInfo loaded directly from logging.xml. Returns null if logging.xml does not exist
      */
     public static @Nullable LoggingInfo getLogging(ResourceStore store) throws IOException {
         // Exposing this is a hack to provide JDBCConfig with the information it needs to compute

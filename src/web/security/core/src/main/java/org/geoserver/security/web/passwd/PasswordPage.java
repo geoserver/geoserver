@@ -20,57 +20,51 @@ import org.geoserver.web.wicket.HelpLink;
 public class PasswordPage extends AbstractSecurityPage {
 
     public PasswordPage() {
-        Form form =
-                new Form<>("form", new CompoundPropertyModel<>(new MasterPasswordConfigModel()));
+        Form form = new Form<>("form", new CompoundPropertyModel<>(new MasterPasswordConfigModel()));
         add(form);
 
         form.add(new MasterPasswordProviderChoice("providerName"));
-        form.add(
-                new Link<>("changePassword") {
-                    @Override
-                    public void onClick() {
-                        MasterPasswordChangePage page = new MasterPasswordChangePage();
-                        page.setReturnPage(getPage());
-                        setResponsePage(page);
-                    }
-                });
+        form.add(new Link<>("changePassword") {
+            @Override
+            public void onClick() {
+                MasterPasswordChangePage page = new MasterPasswordChangePage();
+                page.setReturnPage(getPage());
+                setResponsePage(page);
+            }
+        });
 
-        form.add(
-                new Link<>("masterPasswordInfo") {
-                    @Override
-                    public void onClick() {
-                        MasterPasswordInfoPage page = new MasterPasswordInfoPage();
-                        page.setReturnPage(getPage());
-                        setResponsePage(page);
-                    }
-                });
+        form.add(new Link<>("masterPasswordInfo") {
+            @Override
+            public void onClick() {
+                MasterPasswordInfoPage page = new MasterPasswordInfoPage();
+                page.setReturnPage(getPage());
+                setResponsePage(page);
+            }
+        });
 
         form.add(new MasterPasswordProvidersPanel("masterPasswordProviders"));
         form.add(new HelpLink("masterPasswordProvidersHelp").setDialog(dialog));
         form.add(new PasswordPoliciesPanel("passwordPolicies"));
         form.add(new HelpLink("passwordPoliciesHelp").setDialog(dialog));
 
-        form.add(
-                new SubmitLink("save", form) {
-                    @Override
-                    public void onSubmit() {
-                        MasterPasswordConfig config =
-                                (MasterPasswordConfig) getForm().getModelObject();
-                        try {
-                            getSecurityManager().saveMasterPasswordConfig(config);
-                            doReturn();
-                        } catch (Exception e) {
-                            error(e);
-                        }
-                    }
-                });
-        form.add(
-                new AjaxLink<>("cancel") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+        form.add(new SubmitLink("save", form) {
+            @Override
+            public void onSubmit() {
+                MasterPasswordConfig config = (MasterPasswordConfig) getForm().getModelObject();
+                try {
+                    getSecurityManager().saveMasterPasswordConfig(config);
+                    doReturn();
+                } catch (Exception e) {
+                    error(e);
+                }
+            }
+        });
+        form.add(new AjaxLink<>("cancel") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 
     @Override
@@ -78,7 +72,6 @@ public class PasswordPage extends AbstractSecurityPage {
         super.renderHead(response);
         // Content-Security-Policy: inline styles must be nonce=...
         String css = " #masterPasswordProvider li {\n" + "     padding-right: 1em;\n" + "   }";
-        response.render(
-                CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataAccessRulePage"));
+        response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataAccessRulePage"));
     }
 }

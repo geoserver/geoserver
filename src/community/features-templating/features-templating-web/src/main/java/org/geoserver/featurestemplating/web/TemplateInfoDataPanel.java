@@ -74,69 +74,54 @@ public abstract class TemplateInfoDataPanel extends Panel {
         templateName.setOutputMarkupId(true);
         templateName.setRequired(true);
         add(templateName);
-        templateExtension =
-                new DropDownChoice<>(
-                        "extension", new PropertyModel<>(model, "extension"), getExtensions());
+        templateExtension = new DropDownChoice<>("extension", new PropertyModel<>(model, "extension"), getExtensions());
         CodeMirrorEditor editor = page.getEditor();
-        templateExtension.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        String mode = templateExtension.getConvertedInput();
-                        if (mode != null && (mode.equals("xml") || mode.equals("xhtml")))
-                            editor.setMode("xml");
-                        else if (isJsonLd(editor)) editor.setModeAndSubMode("javascript", "jsonld");
-                        else editor.setModeAndSubMode("javascript", mode);
-                        ajaxRequestTarget.add(editor);
-                        TemplatePreviewPanel panel = getPreviewPanel();
-                        if (panel != null)
-                            panel.setOutputFormatsDropDownValues(
-                                    templateExtension.getModelObject());
-                    }
-                });
+        templateExtension.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                String mode = templateExtension.getConvertedInput();
+                if (mode != null && (mode.equals("xml") || mode.equals("xhtml"))) editor.setMode("xml");
+                else if (isJsonLd(editor)) editor.setModeAndSubMode("javascript", "jsonld");
+                else editor.setModeAndSubMode("javascript", mode);
+                ajaxRequestTarget.add(editor);
+                TemplatePreviewPanel panel = getPreviewPanel();
+                if (panel != null) panel.setOutputFormatsDropDownValues(templateExtension.getModelObject());
+            }
+        });
         templateExtension.setRequired(true);
         add(templateExtension);
-        wsDropDown =
-                new DropDownChoice<>(
-                        "workspace", new PropertyModel<>(model, "workspace"), getWorkspaces());
+        wsDropDown = new DropDownChoice<>("workspace", new PropertyModel<>(model, "workspace"), getWorkspaces());
         wsDropDown.setNullValid(true);
-        wsDropDown.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 732177308220189475L;
+        wsDropDown.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 732177308220189475L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        String workspace = wsDropDown.getConvertedInput();
-                        ftiDropDown.setChoices(getFeatureTypesInfo(workspace));
-                        ftiDropDown.modelChanged();
-                        target.add(ftiDropDown);
-                        ftiDropDown.setEnabled(true);
-                        TemplatePreviewPanel previewPanel = getPreviewPanel();
-                        if (previewPanel != null) previewPanel.setWorkspaceValue(workspace);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                String workspace = wsDropDown.getConvertedInput();
+                ftiDropDown.setChoices(getFeatureTypesInfo(workspace));
+                ftiDropDown.modelChanged();
+                target.add(ftiDropDown);
+                ftiDropDown.setEnabled(true);
+                TemplatePreviewPanel previewPanel = getPreviewPanel();
+                if (previewPanel != null) previewPanel.setWorkspaceValue(workspace);
+            }
+        });
         add(wsDropDown);
 
-        ftiDropDown =
-                new DropDownChoice<>(
-                        "featureTypeInfo",
-                        new PropertyModel<>(model, "featureType"),
-                        Collections.emptyList());
-        if (wsDropDown.getValue() == null || wsDropDown.getValue() == "-1")
-            ftiDropDown.setEnabled(false);
+        ftiDropDown = new DropDownChoice<>(
+                "featureTypeInfo", new PropertyModel<>(model, "featureType"), Collections.emptyList());
+        if (wsDropDown.getValue() == null || wsDropDown.getValue() == "-1") ftiDropDown.setEnabled(false);
         else ftiDropDown.setChoices(getFeatureTypesInfo(wsDropDown.getModelObject()));
-        ftiDropDown.add(
-                new OnChangeAjaxBehavior() {
+        ftiDropDown.add(new OnChangeAjaxBehavior() {
 
-                    private static final long serialVersionUID = 3510850205685746576L;
+            private static final long serialVersionUID = 3510850205685746576L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        TemplatePreviewPanel previewPanel = getPreviewPanel();
-                        if (previewPanel != null)
-                            previewPanel.setFeatureTypeInfoValue(ftiDropDown.getConvertedInput());
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                TemplatePreviewPanel previewPanel = getPreviewPanel();
+                if (previewPanel != null) previewPanel.setFeatureTypeInfoValue(ftiDropDown.getConvertedInput());
+            }
+        });
         ftiDropDown.setOutputMarkupId(true);
         ftiDropDown.setNullValid(true);
         add(ftiDropDown);
@@ -183,22 +168,15 @@ public abstract class TemplateInfoDataPanel extends Panel {
                 try {
                     IOUtils.copy(upload.getInputStream(), bout);
                     page.getEditor().reset();
-                    page.setRawTemplate(
-                            new InputStreamReader(
-                                    new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
+                    page.setRawTemplate(new InputStreamReader(new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
                     upload.getContentType();
                 } catch (IOException e) {
                     throw new WicketRuntimeException(e);
                 } catch (Exception e) {
-                    page.error(
-                            "Errors occurred uploading the '"
-                                    + upload.getClientFileName()
-                                    + "' template");
+                    page.error("Errors occurred uploading the '" + upload.getClientFileName() + "' template");
                     LOGGER.log(
                             Level.WARNING,
-                            "Errors occurred uploading the '"
-                                    + upload.getClientFileName()
-                                    + "' template",
+                            "Errors occurred uploading the '" + upload.getClientFileName() + "' template",
                             e);
                 }
 
@@ -207,8 +185,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
                 String fileName = upload.getClientFileName();
                 if (templateInfo.getTemplateName() == null
                         || "".equals(templateInfo.getTemplateName().trim())) {
-                    templateName.setModelValue(
-                            new String[] {ResponseUtils.stripExtension(fileName)});
+                    templateName.setModelValue(new String[] {ResponseUtils.stripExtension(fileName)});
                 }
                 int index = fileName.lastIndexOf(".");
                 String extension = fileName.substring(index + 1);
@@ -240,34 +217,28 @@ public abstract class TemplateInfoDataPanel extends Panel {
         @Override
         protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
             super.updateAjaxAttributes(attributes);
-            attributes
-                    .getAjaxCallListeners()
-                    .add(
-                            new AjaxCallListener() {
-                                /** serialVersionUID */
-                                private static final long serialVersionUID = 8637613472102572505L;
+            attributes.getAjaxCallListeners().add(new AjaxCallListener() {
+                /** serialVersionUID */
+                private static final long serialVersionUID = 8637613472102572505L;
 
-                                @Override
-                                public CharSequence getPrecondition(Component component) {
-                                    CharSequence message =
-                                            new ParamResourceModel(
-                                                            "confirmOverwrite",
-                                                            TemplateInfoDataPanel.this)
-                                                    .getString();
-                                    message = JavaScriptUtils.escapeQuotes(message);
-                                    return "var val = attrs.event.view.document.gsEditors ? "
-                                            + "attrs.event.view.document.gsEditors."
-                                            + page.getEditor().getTextAreaMarkupId()
-                                            + ".getValue() : "
-                                            + "attrs.event.view.document.getElementById(\""
-                                            + page.getEditor().getTextAreaMarkupId()
-                                            + "\").value; "
-                                            + "if(val != '' &&"
-                                            + "!confirm('"
-                                            + message
-                                            + "')) return false;";
-                                }
-                            });
+                @Override
+                public CharSequence getPrecondition(Component component) {
+                    CharSequence message =
+                            new ParamResourceModel("confirmOverwrite", TemplateInfoDataPanel.this).getString();
+                    message = JavaScriptUtils.escapeQuotes(message);
+                    return "var val = attrs.event.view.document.gsEditors ? "
+                            + "attrs.event.view.document.gsEditors."
+                            + page.getEditor().getTextAreaMarkupId()
+                            + ".getValue() : "
+                            + "attrs.event.view.document.getElementById(\""
+                            + page.getEditor().getTextAreaMarkupId()
+                            + "\").value; "
+                            + "if(val != '' &&"
+                            + "!confirm('"
+                            + message
+                            + "')) return false;";
+                }
+            });
         }
 
         @Override

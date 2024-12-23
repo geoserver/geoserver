@@ -13,8 +13,8 @@ import org.geotools.api.feature.Feature;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * CompositeBuilder to generate a flat GeoJson output. It takes care of properly handle the
- * "properties" attribute name and to pass the key attribute if present to its children
+ * CompositeBuilder to generate a flat GeoJson output. It takes care of properly handle the "properties" attribute name
+ * and to pass the key attribute if present to its children
  */
 public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilder {
 
@@ -27,34 +27,28 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
 
     public FlatCompositeBuilder(FlatCompositeBuilder original, boolean includeChildren) {
         super(original, includeChildren);
-        attributeNameHelper =
-                new AttributeNameHelper(this.key, original.attributeNameHelper.getSeparator());
+        attributeNameHelper = new AttributeNameHelper(this.key, original.attributeNameHelper.getSeparator());
     }
 
-    public FlatCompositeBuilder(
-            String key, NamespaceSupport namespaces, String separator, boolean topLevelComplex) {
+    public FlatCompositeBuilder(String key, NamespaceSupport namespaces, String separator, boolean topLevelComplex) {
         super(key, namespaces, topLevelComplex);
         attributeNameHelper = new AttributeNameHelper(this.key, separator);
     }
 
     @Override
-    protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         Object o = context.getCurrentObj();
         addSkipObjectEncodingHint(context);
         String key = getKey(context);
         boolean isFeatureTypeBuilder = isFeatureTypeBuilder(o);
-        if (isFeatureTypeBuilder
-                || (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY))) {
+        if (isFeatureTypeBuilder || (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY))) {
             writer.startObject(key, encodingHints);
         }
         for (TemplateBuilder jb : children) {
-            ((FlatBuilder) jb)
-                    .setParentKey(attributeNameHelper.getCompleteCompositeAttributeName());
+            ((FlatBuilder) jb).setParentKey(attributeNameHelper.getCompleteCompositeAttributeName());
             jb.evaluate(writer, context);
         }
-        if (isFeatureTypeBuilder(o)
-                || (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY)))
+        if (isFeatureTypeBuilder(o) || (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY)))
             writer.endObject(key, encodingHints);
     }
 

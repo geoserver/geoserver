@@ -94,15 +94,10 @@ public class BatchPage extends GeoServerSecuredPage {
 
         add(dialog = new GeoServerDialog("dialog"));
 
-        add(
-                new WebMarkupContainer("notvalidated")
-                        .setVisible(
-                                batchModel.getObject().getConfiguration() != null
-                                        && !batchModel.getObject().getConfiguration().isTemplate()
-                                        && !batchModel
-                                                .getObject()
-                                                .getConfiguration()
-                                                .isValidated()));
+        add(new WebMarkupContainer("notvalidated")
+                .setVisible(batchModel.getObject().getConfiguration() != null
+                        && !batchModel.getObject().getConfiguration().isTemplate()
+                        && !batchModel.getObject().getConfiguration().isValidated()));
 
         Form<Batch> form = new Form<Batch>("batchForm", batchModel);
         add(form);
@@ -112,16 +107,14 @@ public class BatchPage extends GeoServerSecuredPage {
         AjaxSubmitLink applyButton = saveOrApplyButton("apply", false);
         form.add(applyButton);
 
-        form.add(
-                new TextField<String>("name", new PropertyModel<String>(batchModel, "name")) {
-                    private static final long serialVersionUID = -3736209422699508894L;
+        form.add(new TextField<String>("name", new PropertyModel<String>(batchModel, "name")) {
+            private static final long serialVersionUID = -3736209422699508894L;
 
-                    @Override
-                    public boolean isRequired() {
-                        return form.findSubmitter() == saveButton
-                                || form.findSubmitter() == applyButton;
-                    }
-                });
+            @Override
+            public boolean isRequired() {
+                return form.findSubmitter() == saveButton || form.findSubmitter() == applyButton;
+            }
+        });
 
         SortedSet<String> workspaces = new TreeSet<String>();
         for (WorkspaceInfo wi : GeoServerApplication.get().getCatalog().getWorkspaces()) {
@@ -132,15 +125,12 @@ public class BatchPage extends GeoServerSecuredPage {
                 workspaces.add(wi.getName());
             }
         }
-        boolean canBeNull =
-                (GeoServerApplication.get().getCatalog().getDefaultWorkspace() != null
-                        && TaskManagerBeans.get()
-                                .getSecUtil()
-                                .isAdminable(
-                                        getSession().getAuthentication(),
-                                        GeoServerApplication.get()
-                                                .getCatalog()
-                                                .getDefaultWorkspace()));
+        boolean canBeNull = (GeoServerApplication.get().getCatalog().getDefaultWorkspace() != null
+                && TaskManagerBeans.get()
+                        .getSecUtil()
+                        .isAdminable(
+                                getSession().getAuthentication(),
+                                GeoServerApplication.get().getCatalog().getDefaultWorkspace()));
         form.add(
                 new DropDownChoice<String>(
                         "workspace",
@@ -152,36 +142,29 @@ public class BatchPage extends GeoServerSecuredPage {
                     @Override
                     public boolean isRequired() {
                         return !canBeNull
-                                && (form.findSubmitter() == saveButton
-                                        || form.findSubmitter() == applyButton);
+                                && (form.findSubmitter() == saveButton || form.findSubmitter() == applyButton);
                     }
                 }.setNullValid(canBeNull)
                         // theoretically a batch can have a separate workspace from config, but it
                         // is
                         // confusing to users so turning this off by default.
-                        .setEnabled(
+                        .setEnabled(batchModel.getObject().getConfiguration() == null
+                                || batchModel.getObject().getWorkspace() != null));
+
+        form.add(new TextField<String>("description", new PropertyModel<String>(batchModel, "description")));
+
+        form.add(new TextField<String>(
+                        "configuration",
+                        new Model<String>(
                                 batchModel.getObject().getConfiguration() == null
-                                        || batchModel.getObject().getWorkspace() != null));
+                                        ? ""
+                                        : batchModel
+                                                .getObject()
+                                                .getConfiguration()
+                                                .getName()))
+                .setEnabled(false));
 
-        form.add(
-                new TextField<String>(
-                        "description", new PropertyModel<String>(batchModel, "description")));
-
-        form.add(
-                new TextField<String>(
-                                "configuration",
-                                new Model<String>(
-                                        batchModel.getObject().getConfiguration() == null
-                                                ? ""
-                                                : batchModel
-                                                        .getObject()
-                                                        .getConfiguration()
-                                                        .getName()))
-                        .setEnabled(false));
-
-        form.add(
-                new FrequencyPanel(
-                        "frequency", new PropertyModel<String>(batchModel, "frequency")));
+        form.add(new FrequencyPanel("frequency", new PropertyModel<String>(batchModel, "frequency")));
 
         form.add(new CheckBox("enabled", new PropertyModel<Boolean>(batchModel, "enabled")));
 
@@ -199,18 +182,17 @@ public class BatchPage extends GeoServerSecuredPage {
         elementsPanel.setSortable(false);
         elementsPanel.setOutputMarkupId(true);
 
-        form.add(
-                new AjaxLink<Object>("cancel") {
-                    private static final long serialVersionUID = -6892944747517089296L;
+        form.add(new AjaxLink<Object>("cancel") {
+            private static final long serialVersionUID = -6892944747517089296L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        // restore elements
-                        batchModel.getObject().getElements().clear();
-                        batchModel.getObject().getElements().addAll(oldElements);
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                // restore elements
+                batchModel.getObject().getElements().clear();
+                batchModel.getObject().getElements().addAll(oldElements);
+                doReturn();
+            }
+        });
 
         if (batchModel.getObject().getId() != null
                 && !TaskManagerBeans.get()
@@ -237,16 +219,13 @@ public class BatchPage extends GeoServerSecuredPage {
             public void onSubmit(AjaxRequestTarget target) {
                 try {
                     Configuration config = batchModel.getObject().getConfiguration();
-                    batchModel.setObject(
-                            TaskManagerBeans.get()
-                                    .getDataUtil()
-                                    .saveScheduleAndRemove(
-                                            batchModel.getObject(), removedElements));
+                    batchModel.setObject(TaskManagerBeans.get()
+                            .getDataUtil()
+                            .saveScheduleAndRemove(batchModel.getObject(), removedElements));
                     // update the old config (still used on configuration page)
                     if (config != null) {
                         batchModel.getObject().setConfiguration(config);
-                        config.getBatches()
-                                .put(batchModel.getObject().getName(), batchModel.getObject());
+                        config.getBatches().put(batchModel.getObject().getName(), batchModel.getObject());
                     }
                     if (doReturn) {
                         doReturn();
@@ -259,11 +238,7 @@ public class BatchPage extends GeoServerSecuredPage {
                     } else {
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
                         Throwable rootCause = ExceptionUtils.getRootCause(e);
-                        getForm()
-                                .error(
-                                        rootCause == null
-                                                ? e.getLocalizedMessage()
-                                                : rootCause.getLocalizedMessage());
+                        getForm().error(rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage());
                     }
                 }
                 addFeedbackPanels(target);
@@ -286,78 +261,65 @@ public class BatchPage extends GeoServerSecuredPage {
                 dialog.setTitle(new ParamResourceModel("newTaskDialog.title", getPage()));
                 dialog.setInitialWidth(600);
                 dialog.setInitialHeight(100);
-                dialog.showOkCancel(
-                        target,
-                        new GeoServerDialog.DialogDelegate() {
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                            private static final long serialVersionUID = 7410393012930249966L;
+                    private static final long serialVersionUID = 7410393012930249966L;
 
-                            private DropDownPanel panel;
-                            private Map<String, Task> tasks;
+                    private DropDownPanel panel;
+                    private Map<String, Task> tasks;
 
-                            @Override
-                            protected Component getContents(String id) {
-                                tasks = new TreeMap<String, Task>();
-                                for (Task task :
-                                        TaskManagerBeans.get()
-                                                .getDao()
-                                                .getTasksAvailableForBatch(
-                                                        batchModel.getObject())) {
-                                    if (batchModel.getObject().getConfiguration() != null
-                                            && !batchModel
-                                                    .getObject()
-                                                    .getConfiguration()
-                                                    .getTasks()
-                                                    .containsKey(task.getName())) {
-                                        // deleted in config
-                                        continue;
-                                    }
-                                    if (!addedTasks.contains(task)
-                                            && TaskManagerBeans.get()
-                                                    .getSecUtil()
-                                                    .isWritable(
-                                                            BatchPage.this
-                                                                    .getSession()
-                                                                    .getAuthentication(),
-                                                            task.getConfiguration())) {
-                                        tasks.put(task.getFullName(), task);
-                                    }
-                                }
-                                for (BatchElement be : removedElements) {
-                                    tasks.put(be.getTask().getFullName(), be.getTask());
-                                }
-                                panel =
-                                        new DropDownPanel(
-                                                id,
-                                                new Model<String>(),
-                                                new Model<ArrayList<String>>(
-                                                        new ArrayList<String>(tasks.keySet())),
-                                                new ParamResourceModel(
-                                                        "newTaskDialog.content", getPage()));
-                                panel.getDropDownChoice().setNullValid(false).setRequired(true);
-                                return panel;
+                    @Override
+                    protected Component getContents(String id) {
+                        tasks = new TreeMap<String, Task>();
+                        for (Task task :
+                                TaskManagerBeans.get().getDao().getTasksAvailableForBatch(batchModel.getObject())) {
+                            if (batchModel.getObject().getConfiguration() != null
+                                    && !batchModel
+                                            .getObject()
+                                            .getConfiguration()
+                                            .getTasks()
+                                            .containsKey(task.getName())) {
+                                // deleted in config
+                                continue;
                             }
-
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                Task task = tasks.get(panel.getDropDownChoice().getModelObject());
-                                BatchElement be =
-                                        TaskManagerBeans.get()
-                                                .getDataUtil()
-                                                .addBatchElement(batchModel.getObject(), task);
-                                if (!removedElements.remove(be)) {
-                                    addedTasks.add(task);
-                                }
-
-                                // bit of a hack - updates the selected array inside the panel
-                                // with the new count
-                                elementsPanel.setPageable(false);
-
-                                target.add(elementsPanel);
-                                return true;
+                            if (!addedTasks.contains(task)
+                                    && TaskManagerBeans.get()
+                                            .getSecUtil()
+                                            .isWritable(
+                                                    BatchPage.this.getSession().getAuthentication(),
+                                                    task.getConfiguration())) {
+                                tasks.put(task.getFullName(), task);
                             }
-                        });
+                        }
+                        for (BatchElement be : removedElements) {
+                            tasks.put(be.getTask().getFullName(), be.getTask());
+                        }
+                        panel = new DropDownPanel(
+                                id,
+                                new Model<String>(),
+                                new Model<ArrayList<String>>(new ArrayList<String>(tasks.keySet())),
+                                new ParamResourceModel("newTaskDialog.content", getPage()));
+                        panel.getDropDownChoice().setNullValid(false).setRequired(true);
+                        return panel;
+                    }
+
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        Task task = tasks.get(panel.getDropDownChoice().getModelObject());
+                        BatchElement be =
+                                TaskManagerBeans.get().getDataUtil().addBatchElement(batchModel.getObject(), task);
+                        if (!removedElements.remove(be)) {
+                            addedTasks.add(task);
+                        }
+
+                        // bit of a hack - updates the selected array inside the panel
+                        // with the new count
+                        elementsPanel.setPageable(false);
+
+                        target.add(elementsPanel);
+                        return true;
+                    }
+                });
             }
         };
     }
@@ -371,54 +333,41 @@ public class BatchPage extends GeoServerSecuredPage {
                 dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
                 dialog.setInitialWidth(600);
                 dialog.setInitialHeight(100);
-                dialog.showOkCancel(
-                        target,
-                        new GeoServerDialog.DialogDelegate() {
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                            private static final long serialVersionUID = -5552087037163833563L;
+                    private static final long serialVersionUID = -5552087037163833563L;
 
-                            @Override
-                            protected Component getContents(String id) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(
-                                        new ParamResourceModel(
-                                                        "confirmDeleteDialog.content", getPage())
-                                                .getString());
-                                for (BatchElement be : elementsPanel.getSelection()) {
-                                    sb.append("\n&nbsp;&nbsp;");
-                                    sb.append(
-                                            StringEscapeUtils.escapeHtml4(
-                                                    be.getTask().getFullName()));
-                                }
-                                return new MultiLineLabel(id, sb.toString())
-                                        .setEscapeModelStrings(false);
+                    @Override
+                    protected Component getContents(String id) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(new ParamResourceModel("confirmDeleteDialog.content", getPage()).getString());
+                        for (BatchElement be : elementsPanel.getSelection()) {
+                            sb.append("\n&nbsp;&nbsp;");
+                            sb.append(StringEscapeUtils.escapeHtml4(be.getTask().getFullName()));
+                        }
+                        return new MultiLineLabel(id, sb.toString()).setEscapeModelStrings(false);
+                    }
+
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        batchModel.getObject().getElements().removeAll(elementsPanel.getSelection());
+                        for (BatchElement be : elementsPanel.getSelection()) {
+                            if (!addedTasks.remove(be.getTask())) {
+                                removedElements.add(be);
                             }
-
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                batchModel
-                                        .getObject()
-                                        .getElements()
-                                        .removeAll(elementsPanel.getSelection());
-                                for (BatchElement be : elementsPanel.getSelection()) {
-                                    if (!addedTasks.remove(be.getTask())) {
-                                        removedElements.add(be);
-                                    }
-                                }
-                                remove.setEnabled(false);
-                                target.add(elementsPanel);
-                                target.add(remove);
-                                return true;
-                            }
-                        });
+                        }
+                        remove.setEnabled(false);
+                        target.add(elementsPanel);
+                        target.add(remove);
+                        return true;
+                    }
+                });
             }
         };
     }
 
     protected GeoServerTablePanel<BatchElement> elementsPanel() {
-        return new GeoServerTablePanel<BatchElement>(
-                "tasksPanel", new BatchElementsModel(batchModel), true) {
+        return new GeoServerTablePanel<BatchElement>("tasksPanel", new BatchElementsModel(batchModel), true) {
 
             private static final long serialVersionUID = -8943273843044917552L;
 

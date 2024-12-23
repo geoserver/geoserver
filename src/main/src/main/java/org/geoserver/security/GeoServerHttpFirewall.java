@@ -15,17 +15,16 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 /**
- * A custom {@link HttpFirewall} implementation that allows GeoServer administrators to enable or
- * disable the use of the stricter {@link StrictHttpFirewall} through a system property. The {@link
- * DefaultHttpFirewall} provides weaker protections but may be necessary for some users who need to
- * use certain special characters in URL paths.
+ * A custom {@link HttpFirewall} implementation that allows GeoServer administrators to enable or disable the use of the
+ * stricter {@link StrictHttpFirewall} through a system property. The {@link DefaultHttpFirewall} provides weaker
+ * protections but may be necessary for some users who need to use certain special characters in URL paths.
  */
 public class GeoServerHttpFirewall implements HttpFirewall {
 
     /**
-     * System property to control whether or not to run requests through {@link StrictHttpFirewall}.
-     * When set to false, requests will only be run through {@link DefaultHttpFirewall} which is
-     * more lenient but also more likely to allow malicious requests. Default is true.
+     * System property to control whether or not to run requests through {@link StrictHttpFirewall}. When set to false,
+     * requests will only be run through {@link DefaultHttpFirewall} which is more lenient but also more likely to allow
+     * malicious requests. Default is true.
      */
     public static final String USE_STRICT_FIREWALL = "GEOSERVER_USE_STRICT_FIREWALL";
 
@@ -52,8 +51,8 @@ public class GeoServerHttpFirewall implements HttpFirewall {
 
     /**
      * An {@link HttpServletRequestWrapper} that allows running a {@link HttpServletRequest} through
-     * {@link StrictHttpFirewall} even when the URL path contains two consecutive slashes since
-     * there are use cases where GeoServer needs to allow this type of non-normalized URL path.
+     * {@link StrictHttpFirewall} even when the URL path contains two consecutive slashes since there are use cases
+     * where GeoServer needs to allow this type of non-normalized URL path.
      */
     private static class NormalizedHttpServletRequest extends HttpServletRequestWrapper {
 

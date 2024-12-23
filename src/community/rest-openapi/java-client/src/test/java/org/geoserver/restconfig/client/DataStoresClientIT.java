@@ -48,8 +48,7 @@ public class DataStoresClientIT {
         Assume.assumeTrue(this.support.isAlive());
         this.workspaces = this.support.client().workspaces();
         this.dataStores = this.support.client().dataStores();
-        String wsname =
-                String.format("%s-%d", this.testName.getMethodName(), this.rnd.nextInt((int) 1e6));
+        String wsname = String.format("%s-%d", this.testName.getMethodName(), this.rnd.nextInt((int) 1e6));
         this.workspaces.create(wsname);
         this.workspace = this.workspaces.findByName(wsname).get();
         this.roadsShapefile = this.support.getRoadsShapefile();
@@ -86,20 +85,17 @@ public class DataStoresClientIT {
         assertEquals(Boolean.TRUE, store.getEnabled());
         assertThat(
                 store.getFeatureTypes().toURL().toString(),
-                StringContains.containsString(
-                        "/rest/workspaces/sf/datastores/sf/featuretypes.json"));
+                StringContains.containsString("/rest/workspaces/sf/datastores/sf/featuretypes.json"));
     }
 
     public @Test void testCreateShapefileDataStoreDefaults() {
-        DataStoreResponse created =
-                this.dataStores.createShapefileDataStore(
-                        this.workspace.getName(), "shpstore_defaults", this.streamsShapefile);
+        DataStoreResponse created = this.dataStores.createShapefileDataStore(
+                this.workspace.getName(), "shpstore_defaults", this.streamsShapefile);
 
         assertNotNull(created);
         assertEquals("shpstore_defaults", created.getName());
         assertEquals(this.workspace.getName(), created.getWorkspace().getName());
-        Map<String, String> params =
-                this.dataStores.toConnectionParameters(created.getConnectionParameters());
+        Map<String, String> params = this.dataStores.toConnectionParameters(created.getConnectionParameters());
         assertEquals(params.toString(), 4, params.size());
         assertEquals("shapefile", params.get("filetype"));
         assertEquals("shape", params.get("fstype"));
@@ -109,24 +105,18 @@ public class DataStoresClientIT {
 
     public @Test void testCreateShapefileDataStore() {
         String uri = this.roadsShapefile.toString();
-        Shapefile connectionParameters =
-                new DataStoreParams.Shapefile()
-                        .uri(uri)
-                        .useMemoryMappedBuffer(true)
-                        .useMemoryMaps(true)
-                        .createSpatialIndex(true);
+        Shapefile connectionParameters = new DataStoreParams.Shapefile()
+                .uri(uri)
+                .useMemoryMappedBuffer(true)
+                .useMemoryMaps(true)
+                .createSpatialIndex(true);
         String wsname = this.workspace.getName();
         DataStoreResponse created =
-                this.dataStores.create(
-                        wsname,
-                        "shpStore",
-                        "test shapefile based data store",
-                        connectionParameters);
+                this.dataStores.create(wsname, "shpStore", "test shapefile based data store", connectionParameters);
         assertNotNull(created);
         assertEquals("shpStore", created.getName());
         assertEquals(wsname, created.getWorkspace().getName());
-        Map<String, String> params =
-                this.dataStores.toConnectionParameters(created.getConnectionParameters());
+        Map<String, String> params = this.dataStores.toConnectionParameters(created.getConnectionParameters());
         assertEquals("shapefile", params.get("filetype"));
         assertEquals("shape", params.get("fstype"));
         assertEquals("http://" + this.workspace.getName(), params.get("namespace"));
@@ -142,8 +132,7 @@ public class DataStoresClientIT {
 
         final String storeName = "will_duplicate_store_name";
 
-        DataStoreResponse created =
-                this.dataStores.createShapefileDataStore(wsname, storeName, uri);
+        DataStoreResponse created = this.dataStores.createShapefileDataStore(wsname, storeName, uri);
         assertEquals(storeName, created.getName());
 
         DataStoreResponse nonDuplicateNameSameUri =
@@ -162,18 +151,13 @@ public class DataStoresClientIT {
     private DataStoreResponse createShapefileDataStore(URI shpfile) {
         String wsname = this.workspace.getName();
         String uri = shpfile.toString();
-        Shapefile connectionParameters =
-                new DataStoreParams.Shapefile()
-                        .uri(uri)
-                        .useMemoryMappedBuffer(true)
-                        .useMemoryMaps(true)
-                        .createSpatialIndex(true);
+        Shapefile connectionParameters = new DataStoreParams.Shapefile()
+                .uri(uri)
+                .useMemoryMappedBuffer(true)
+                .useMemoryMaps(true)
+                .createSpatialIndex(true);
         DataStoreResponse created =
-                this.dataStores.create(
-                        wsname,
-                        "shpStore",
-                        "test shapefile based data store",
-                        connectionParameters);
+                this.dataStores.create(wsname, "shpStore", "test shapefile based data store", connectionParameters);
         return created;
     }
 
@@ -183,8 +167,7 @@ public class DataStoresClientIT {
         assertEquals(this.workspace.getName(), ws);
         String newName = "renamed";
         DataStoreInfo info = new DataStoreInfo();
-        info.setConnectionParameters(
-                this.dataStores.toConnectionParameters(created.getConnectionParameters()));
+        info.setConnectionParameters(this.dataStores.toConnectionParameters(created.getConnectionParameters()));
         info.setName(newName);
         info.setDescription(created.getDescription());
         info.setEnabled(info.getEnabled());
@@ -194,18 +177,15 @@ public class DataStoresClientIT {
 
     public @Test void testUpdateShapefileDataStore() {
         String ws = this.workspace.getName();
-        DataStoreResponse created =
-                this.dataStores.createShapefileDataStore(ws, "streams", this.streamsShapefile);
+        DataStoreResponse created = this.dataStores.createShapefileDataStore(ws, "streams", this.streamsShapefile);
         assertEquals(ws, created.getWorkspace().getName());
 
-        assertNull(
-                this.dataStores
-                        .toConnectionParameters(created.getConnectionParameters())
-                        .get("memory mapped buffer"));
+        assertNull(this.dataStores
+                .toConnectionParameters(created.getConnectionParameters())
+                .get("memory mapped buffer"));
 
         DataStoreInfo info = new DataStoreInfo();
-        info.setConnectionParameters(
-                this.dataStores.toConnectionParameters(created.getConnectionParameters()));
+        info.setConnectionParameters(this.dataStores.toConnectionParameters(created.getConnectionParameters()));
         info.getConnectionParameters().put("memory mapped buffer", "true");
 
         info.setName(created.getName());
@@ -213,21 +193,19 @@ public class DataStoresClientIT {
         info.setEnabled(info.getEnabled());
 
         DataStoreResponse updated = this.dataStores.update(ws, info);
-        Map<String, String> params =
-                this.dataStores.toConnectionParameters(updated.getConnectionParameters());
+        Map<String, String> params = this.dataStores.toConnectionParameters(updated.getConnectionParameters());
         assertEquals("true", params.get("memory mapped buffer"));
     }
 
     public @Test void testDeleteShapefileDataStore() {
         String ws = this.workspace.getName();
-        DataStoreResponse streams =
-                this.dataStores.createShapefileDataStore(ws, "streams", this.streamsShapefile);
-        DataStoreResponse roads =
-                this.dataStores.createShapefileDataStore(ws, "roads", this.roadsShapefile);
+        DataStoreResponse streams = this.dataStores.createShapefileDataStore(ws, "streams", this.streamsShapefile);
+        DataStoreResponse roads = this.dataStores.createShapefileDataStore(ws, "roads", this.roadsShapefile);
 
         assertTrue(this.dataStores.findByWorkspaceAndName(ws, streams.getName()).isPresent());
         this.dataStores.deleteRecursive(ws, streams.getName());
-        assertFalse(this.dataStores.findByWorkspaceAndName(ws, streams.getName()).isPresent());
+        assertFalse(
+                this.dataStores.findByWorkspaceAndName(ws, streams.getName()).isPresent());
 
         assertTrue(this.dataStores.findByWorkspaceAndName(ws, roads.getName()).isPresent());
         this.dataStores.deleteRecursive(ws, roads.getName());

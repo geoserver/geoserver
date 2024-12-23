@@ -35,15 +35,13 @@ public class StaticBuilder extends AbstractTemplateBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (canWrite(context) && evaluateFilter(context)) {
             evaluateInternal(writer, context);
         }
     }
 
-    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         addChildrenEvaluationToEncodingHints(writer, context);
         String key = getKey(context);
         if (strValue != null) writer.writeStaticContent(key, strValue, getEncodingHints());
@@ -78,8 +76,7 @@ public class StaticBuilder extends AbstractTemplateBuilder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StaticBuilder that = (StaticBuilder) o;
-        return Objects.equals(staticValue, that.staticValue)
-                && Objects.equals(strValue, that.strValue);
+        return Objects.equals(staticValue, that.staticValue) && Objects.equals(strValue, that.strValue);
     }
 
     @Override

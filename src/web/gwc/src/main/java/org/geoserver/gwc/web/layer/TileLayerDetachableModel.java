@@ -12,8 +12,8 @@ import org.geowebcache.layer.TileLayer;
 /**
  * A loadable model for {@link TileLayer}s used by {@link CachedLayerProvider}.
  *
- * <p>Warning, don't use it in a tabbed form or in any other places where you might need to keep the
- * modifications in a resource stable across page loads.
+ * <p>Warning, don't use it in a tabbed form or in any other places where you might need to keep the modifications in a
+ * resource stable across page loads.
  */
 class TileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 

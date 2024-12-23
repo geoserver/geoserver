@@ -13,9 +13,8 @@ import org.geotools.util.logging.Logging;
 /**
  * Extension point for contributing additional css and/or javascript to a page.
  *
- * <p>Use of this extension point is more suited toward bulk updating of multiple existing pages in
- * the GeoServer application. For contributing css or javascript to a single page one should use the
- * existing Wicket approach.
+ * <p>Use of this extension point is more suited toward bulk updating of multiple existing pages in the GeoServer
+ * application. For contributing css or javascript to a single page one should use the existing Wicket approach.
  *
  * <p>Instances of this class are registered in the spring context. Example:
  *
@@ -82,16 +81,15 @@ public class HeaderContribution {
     /**
      * Determines if the header contribution should apply to a particular page or not.
      *
-     * <p>This implementation always returns true, if clients need a more flexible mechanism for
-     * determining which pages apply they should subclass and override this method.
+     * <p>This implementation always returns true, if clients need a more flexible mechanism for determining which pages
+     * apply they should subclass and override this method.
      */
     public boolean appliesTo(WebPage page) {
         return true;
     }
 
     /**
-     * Returns the resource reference to the css for the header contribution, or null if there is no
-     * css contribution.
+     * Returns the resource reference to the css for the header contribution, or null if there is no css contribution.
      */
     public PackageResourceReference getCSS() {
         if (scope != null && cssFilename != null) {
@@ -102,8 +100,8 @@ public class HeaderContribution {
     }
 
     /**
-     * Returns the resource reference to the javascript for the header contribution, or null if
-     * there is no javascript contribution.
+     * Returns the resource reference to the javascript for the header contribution, or null if there is no javascript
+     * contribution.
      */
     public PackageResourceReference getJavaScript() {
         if (scope != null && javaScriptFilename != null) {
@@ -114,8 +112,8 @@ public class HeaderContribution {
     }
 
     /**
-     * Returns the resource reference to a replacement favicon for the header contribution, or null
-     * if there is no favicon replacement
+     * Returns the resource reference to a replacement favicon for the header contribution, or null if there is no
+     * favicon replacement
      */
     public PackageResourceReference getFavicon() {
         if (scope != null && faviconFilename != null) {

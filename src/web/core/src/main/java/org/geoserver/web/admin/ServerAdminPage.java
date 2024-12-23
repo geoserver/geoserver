@@ -46,7 +46,8 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // is actually setting the same object reference, and hence the
         // modificationproxy does not count it as a change.
 
-        JAIInfo currJaiInfo = getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
+        JAIInfo currJaiInfo =
+                getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
         return new Model<>(currJaiInfo);
     }
 
@@ -62,8 +63,11 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // is actually setting the same object reference, and hence the
         // modificationProxy does not count it as a change.
 
-        CoverageAccessInfo currCoverageAccessInfo =
-                getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
+        CoverageAccessInfo currCoverageAccessInfo = getGeoServerApplication()
+                .getGeoServer()
+                .getGlobal()
+                .getCoverageAccess()
+                .clone();
         return new Model<>(currCoverageAccessInfo);
     }
 

@@ -25,111 +25,105 @@ import org.geowebcache.filter.parameters.FloatParameterFilter;
  *
  * @author Kevin Smith, OpenGeo
  */
-public class FloatParameterFilterSubform
-        extends AbstractParameterFilterSubform<FloatParameterFilter> {
+public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<FloatParameterFilter> {
 
     private static final long serialVersionUID = -1715100884515717529L;
 
-    private static final IConverter<Float> FLOAT =
-            new IConverter<>() {
+    private static final IConverter<Float> FLOAT = new IConverter<>() {
 
-                private static final long serialVersionUID = 5393727015187736272L;
+        private static final long serialVersionUID = 5393727015187736272L;
 
-                @Override
-                public Float convertToObject(String value, Locale locale) {
-                    if (value == null || value.isEmpty()) return null;
-                    try {
-                        return Float.parseFloat(value);
-                    } catch (NumberFormatException ex) {
-                        throw new ConversionException(ex)
-                                .setConverter(this)
-                                .setLocale(locale)
-                                .setTargetType(Float.class)
-                                .setSourceValue(value)
-                                .setResourceKey("notAValidNumber");
-                    }
+        @Override
+        public Float convertToObject(String value, Locale locale) {
+            if (value == null || value.isEmpty()) return null;
+            try {
+                return Float.parseFloat(value);
+            } catch (NumberFormatException ex) {
+                throw new ConversionException(ex)
+                        .setConverter(this)
+                        .setLocale(locale)
+                        .setTargetType(Float.class)
+                        .setSourceValue(value)
+                        .setResourceKey("notAValidNumber");
+            }
+        }
+
+        @Override
+        public String convertToString(Float value, Locale locale) {
+            return Float.toString(value);
+        }
+    };
+
+    private static final IConverter<List<Float>> CONVERT = new IConverter<>() {
+
+        private static final long serialVersionUID = 6972092160668131862L;
+
+        @Override
+        public List<Float> convertToObject(String value, Locale locale) {
+            if (value == null) {
+                return null;
+            } else {
+                String[] strings = StringUtils.split(value, "\r\n");
+                List<Float> floats = new ArrayList<>(strings.length);
+
+                for (String s : strings) {
+                    floats.add(FLOAT.convertToObject(s, locale));
                 }
+                return floats;
+            }
+        }
 
-                @Override
-                public String convertToString(Float value, Locale locale) {
-                    return Float.toString(value);
-                }
-            };
-
-    private static final IConverter<List<Float>> CONVERT =
-            new IConverter<>() {
-
-                private static final long serialVersionUID = 6972092160668131862L;
-
-                @Override
-                public List<Float> convertToObject(String value, Locale locale) {
-                    if (value == null) {
-                        return null;
-                    } else {
-                        String[] strings = StringUtils.split(value, "\r\n");
-                        List<Float> floats = new ArrayList<>(strings.length);
-
-                        for (String s : strings) {
-                            floats.add(FLOAT.convertToObject(s, locale));
-                        }
-                        return floats;
-                    }
-                }
-
-                @Override
-                public String convertToString(List<Float> value, Locale locale) {
-                    Iterator<Float> i = value.iterator();
-                    StringBuilder sb = new StringBuilder();
-                    if (i.hasNext()) {
-                        sb.append(FLOAT.convertToString(i.next(), locale));
-                    }
-                    while (i.hasNext()) {
-                        sb.append("\r\n");
-                        sb.append(FLOAT.convertToString(i.next(), locale));
-                    }
-                    return sb.toString();
-                }
-            };
+        @Override
+        public String convertToString(List<Float> value, Locale locale) {
+            Iterator<Float> i = value.iterator();
+            StringBuilder sb = new StringBuilder();
+            if (i.hasNext()) {
+                sb.append(FLOAT.convertToString(i.next(), locale));
+            }
+            while (i.hasNext()) {
+                sb.append("\r\n");
+                sb.append(FLOAT.convertToString(i.next(), locale));
+            }
+            return sb.toString();
+        }
+    };
 
     public FloatParameterFilterSubform(String id, IModel<FloatParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue =
-                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextArea<List<Float>> values =
-                new TextArea<>("values", new PropertyModel<>(model, "values")) {
-                    /** serialVersionUID */
-                    private static final long serialVersionUID = 1L;
+        final TextArea<List<Float>> values = new TextArea<>("values", new PropertyModel<>(model, "values")) {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public <S> IConverter<S> getConverter(Class<S> type) {
-                        if (List.class.isAssignableFrom(type)) {
-                            return (IConverter<S>) CONVERT;
-                        }
-                        return super.getConverter(type);
-                    }
-                };
+            @SuppressWarnings("unchecked")
+            @Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+                if (List.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) CONVERT;
+                }
+                return super.getConverter(type);
+            }
+        };
         values.setConvertEmptyInputStringToNull(false);
         add(values);
 
-        final Component threshold =
-                new TextField<Float>("threshold", new PropertyModel<>(model, "threshold")) {
-                    /** serialVersionUID */
-                    private static final long serialVersionUID = 1L;
+        final Component threshold = new TextField<Float>("threshold", new PropertyModel<>(model, "threshold")) {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                    // Want to use non-localized float parsing so we can handle exponential notation
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public <S> IConverter<S> getConverter(Class<S> type) {
-                        if (Float.class.isAssignableFrom(type)) {
-                            return (IConverter<S>) FLOAT;
-                        }
-                        return super.getConverter(type);
-                    }
-                };
+            // Want to use non-localized float parsing so we can handle exponential notation
+            @SuppressWarnings("unchecked")
+            @Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+                if (Float.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) FLOAT;
+                }
+                return super.getConverter(type);
+            }
+        };
         add(threshold);
     }
 }

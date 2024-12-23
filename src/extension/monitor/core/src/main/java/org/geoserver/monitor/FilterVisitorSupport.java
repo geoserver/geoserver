@@ -8,8 +8,8 @@ package org.geoserver.monitor;
 /**
  * Base class for filter visitors.
  *
- * <p>Subclasses should override the {@link #handleFilter(Filter)} and {@link
- * #handleComposite(CompositeFilter, String)} methods.
+ * <p>Subclasses should override the {@link #handleFilter(Filter)} and {@link #handleComposite(CompositeFilter, String)}
+ * methods.
  *
  * @author Justin Deoliveira, OpenGeo
  */

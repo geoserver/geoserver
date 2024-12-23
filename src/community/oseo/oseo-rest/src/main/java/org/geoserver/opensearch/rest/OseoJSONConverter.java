@@ -17,8 +17,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 
 /**
- * This one exists solely to have a converter that will care for the collection objects without
- * hitting GeoServer own xstream converter, which is generating an ugly output
+ * This one exists solely to have a converter that will care for the collection objects without hitting GeoServer own
+ * xstream converter, which is generating an ugly output
  *
  * @author Andrea Aime - GeoSolutions
  */

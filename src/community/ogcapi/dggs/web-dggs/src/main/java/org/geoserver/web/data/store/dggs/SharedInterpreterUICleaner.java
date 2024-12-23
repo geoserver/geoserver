@@ -39,8 +39,7 @@ public class SharedInterpreterUICleaner implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(
-            RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
+    public void onRequestTargetSet(RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
         // nothing to do
     }
 

@@ -35,19 +35,12 @@ public class FeatureDescriptionTemplateTest {
         // create some data
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureType featureType =
-                DataUtilities.createType(
-                        "testType", "string:String,int:Integer,double:Double,geom:Point");
+                DataUtilities.createType("testType", "string:String,int:Integer,double:Double,geom:Point");
 
-        SimpleFeature f =
-                SimpleFeatureBuilder.build(
-                        featureType,
-                        new Object[] {
-                            "three",
-                            Integer.valueOf(3),
-                            Double.valueOf(3.3),
-                            gf.createPoint(new Coordinate(3, 3))
-                        },
-                        "fid.3");
+        SimpleFeature f = SimpleFeatureBuilder.build(
+                featureType,
+                new Object[] {"three", Integer.valueOf(3), Double.valueOf(3.3), gf.createPoint(new Coordinate(3, 3))},
+                "fid.3");
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         template.process(f, new OutputStreamWriter(output));

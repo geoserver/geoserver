@@ -68,17 +68,14 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
         buildStyleToolar(bands, coverage);
 
         provider = new RowProvider(dataset, bands.get(0));
-        table =
-                new GeoServerTablePanel<>("rat", provider, true) {
+        table = new GeoServerTablePanel<>("rat", provider, true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<Row> itemModel,
-                            GeoServerDataProvider.Property<Row> property) {
-                        return null;
-                    }
-                };
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<Row> itemModel, GeoServerDataProvider.Property<Row> property) {
+                return null;
+            }
+        };
         table.setSelectable(false);
         table.setOutputMarkupId(true);
         add(table);
@@ -89,64 +86,53 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
         styleToolbar.setOutputMarkupId(true);
         add(styleToolbar);
 
-        Button create =
-                new AjaxButton("createStyles") {
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        createStyle();
-                        target.add(styleToolbar);
-                        Page page = getPage();
-                        if (page instanceof GeoServerBasePage)
-                            ((GeoServerBasePage) page).addFeedbackPanels(target);
-                        page.visitChildren(
-                                (c, v) -> {
-                                    if (c.getClass().getSimpleName().equals("WMSLayerConfig")) {
-                                        target.add(c);
-                                    }
-                                });
+        Button create = new AjaxButton("createStyles") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                createStyle();
+                target.add(styleToolbar);
+                Page page = getPage();
+                if (page instanceof GeoServerBasePage) ((GeoServerBasePage) page).addFeedbackPanels(target);
+                page.visitChildren((c, v) -> {
+                    if (c.getClass().getSimpleName().equals("WMSLayerConfig")) {
+                        target.add(c);
                     }
-                };
+                });
+            }
+        };
         styleToolbar.add(create);
         create.setEnabled(false);
 
-        bandsSelector =
-                new DropDownChoice<>("bands", new Model<>(bands.get(0)), bands, new BandRenderer());
-        bandsSelector.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Integer band = bandsSelector.getModelObject();
-                        provider.setBand(band);
-                        List<String> classifications =
-                                new ArrayList<>(
-                                        rats.getRasterAttributeTable(band).getClassifications());
-                        Collections.sort(classifications);
-                        classificationList.clear();
-                        classificationList.addAll(classifications);
+        bandsSelector = new DropDownChoice<>("bands", new Model<>(bands.get(0)), bands, new BandRenderer());
+        bandsSelector.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Integer band = bandsSelector.getModelObject();
+                provider.setBand(band);
+                List<String> classifications =
+                        new ArrayList<>(rats.getRasterAttributeTable(band).getClassifications());
+                Collections.sort(classifications);
+                classificationList.clear();
+                classificationList.addAll(classifications);
 
-                        target.add(styleToolbar);
-                    }
-                });
+                target.add(styleToolbar);
+            }
+        });
         styleToolbar.add(bandsSelector);
 
         this.classificationList =
                 new ArrayList<>(rats.getRasterAttributeTable(bands.get(0)).getClassifications());
         Collections.sort(classificationList);
-        this.classifications =
-                new DropDownChoice<>("classifications", new Model<>(), classificationList);
-        classifications.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        this.classifications = new DropDownChoice<>("classifications", new Model<>(), classificationList);
+        classifications.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        name =
-                                rats.getDefaultStyleName(
-                                        bandsSelector.getModelObject(),
-                                        classifications.getModelObject());
-                        create.setEnabled(true);
-                        ajaxRequestTarget.add(styleToolbar);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                name = rats.getDefaultStyleName(bandsSelector.getModelObject(), classifications.getModelObject());
+                create.setEnabled(true);
+                ajaxRequestTarget.add(styleToolbar);
+            }
+        });
         styleToolbar.add(classifications);
 
         this.styleName = new TextField<>("styleName", new PropertyModel<>(this, "name"));
@@ -180,13 +166,12 @@ public class RasterAttributeTableConfig extends PublishedConfigurationPanel<Laye
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Failed to save style " + name, e);
-                error(
-                        "Failed to save style for band "
-                                + band
-                                + " and classification "
-                                + classification
-                                + ": "
-                                + e.getMessage());
+                error("Failed to save style for band "
+                        + band
+                        + " and classification "
+                        + classification
+                        + ": "
+                        + e.getMessage());
             }
         }
     }

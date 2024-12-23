@@ -63,22 +63,15 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         String baseUrl = APIRequestInfo.get().getBaseURL();
 
         // zones links
-        Collection<MediaType> zoneFormats =
-                APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
+        Collection<MediaType> zoneFormats = APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : zoneFormats) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/dggs/collections/" + collectionId + "/zones",
-                            Collections.singletonMap("f", format.toString()),
-                            SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            "zones",
-                            format.toString(),
-                            collectionId + " items as " + format.toString(),
-                            "zones"));
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/dggs/collections/" + collectionId + "/zones",
+                    Collections.singletonMap("f", format.toString()),
+                    SERVICE);
+            addLink(new Link(
+                    apiUrl, "zones", format.toString(), collectionId + " items as " + format.toString(), "zones"));
         }
 
         // DAPA links, if time is available
@@ -87,36 +80,32 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             Collection<MediaType> dapaFormats =
                     APIRequestInfo.get().getProducibleMediaTypes(CollectionDAPA.class, true);
             for (MediaType format : dapaFormats) {
-                String dapaURL =
-                        ResponseUtils.buildURL(
-                                baseUrl,
-                                "ogc/dggs/collections/" + collectionId + "/processes",
-                                Collections.singletonMap("f", format.toString()),
-                                SERVICE);
-                addLink(
-                        new Link(
-                                dapaURL,
-                                "ogc-dapa-processes",
-                                format.toString(),
-                                "DAPA for " + collectionId + " as " + format.toString(),
-                                "ogc-dapa-processes"));
+                String dapaURL = ResponseUtils.buildURL(
+                        baseUrl,
+                        "ogc/dggs/collections/" + collectionId + "/processes",
+                        Collections.singletonMap("f", format.toString()),
+                        SERVICE);
+                addLink(new Link(
+                        dapaURL,
+                        "ogc-dapa-processes",
+                        format.toString(),
+                        "DAPA for " + collectionId + " as " + format.toString(),
+                        "ogc-dapa-processes"));
             }
             Collection<MediaType> variablesFormats =
                     APIRequestInfo.get().getProducibleMediaTypes(DAPAVariables.class, true);
             for (MediaType format : variablesFormats) {
-                String variablesURL =
-                        ResponseUtils.buildURL(
-                                baseUrl,
-                                "ogc/dggs/collections/" + collectionId + "/variables",
-                                Collections.singletonMap("f", format.toString()),
-                                SERVICE);
-                addLink(
-                        new Link(
-                                variablesURL,
-                                "ogc-dapa-variables",
-                                format.toString(),
-                                "DAPA variables for " + collectionId + " as " + format.toString(),
-                                "ogc-dapa-variables"));
+                String variablesURL = ResponseUtils.buildURL(
+                        baseUrl,
+                        "ogc/dggs/collections/" + collectionId + "/variables",
+                        Collections.singletonMap("f", format.toString()),
+                        SERVICE);
+                addLink(new Link(
+                        variablesURL,
+                        "ogc-dapa-variables",
+                        format.toString(),
+                        "DAPA variables for " + collectionId + " as " + format.toString(),
+                        "ogc-dapa-variables"));
             }
         }
 
@@ -136,11 +125,10 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     }
 
     private boolean isWMSAvailable(GeoServer geoServer) {
-        ServiceInfo si =
-                geoServer.getServices().stream()
-                        .filter(s -> "WMS".equals(s.getId()))
-                        .findFirst()
-                        .orElse(null);
+        ServiceInfo si = geoServer.getServices().stream()
+                .filter(s -> "WMS".equals(s.getId()))
+                .findFirst()
+                .orElse(null);
         return si != null;
     }
 

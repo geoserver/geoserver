@@ -14,10 +14,7 @@ public class DeveloperToolbarTest extends GeoServerWicketTestSupport {
         return RuntimeConfigurationType.DEVELOPMENT;
     }
 
-    /**
-     * Smoke test: the home page displays without error in development mode, the developer toolbar
-     * is visible
-     */
+    /** Smoke test: the home page displays without error in development mode, the developer toolbar is visible */
     @Test
     public void testHomePage() {
         tester.startPage(GeoServerHomePage.class);

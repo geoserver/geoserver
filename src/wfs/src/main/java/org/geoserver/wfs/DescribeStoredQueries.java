@@ -30,12 +30,10 @@ public class DescribeStoredQueries {
         this.storedQueryProvider = storedQueryProvider;
     }
 
-    public DescribeStoredQueriesResponseType run(DescribeStoredQueriesType request)
-            throws WFSException {
+    public DescribeStoredQueriesResponseType run(DescribeStoredQueriesType request) throws WFSException {
 
         Wfs20Factory factory = Wfs20Factory.eINSTANCE;
-        DescribeStoredQueriesResponseType response =
-                factory.createDescribeStoredQueriesResponseType();
+        DescribeStoredQueriesResponseType response = factory.createDescribeStoredQueriesResponseType();
 
         if (request.getStoredQueryId().isEmpty()) {
             for (StoredQuery query : storedQueryProvider.listStoredQueries()) {
@@ -45,11 +43,8 @@ public class DescribeStoredQueries {
             for (URI id : request.getStoredQueryId()) {
                 StoredQuery query = storedQueryProvider.getStoredQuery(id.toString());
                 if (query == null) {
-                    WFSException exception =
-                            new WFSException(
-                                    request,
-                                    "No such stored query: " + id,
-                                    ServiceException.INVALID_PARAMETER_VALUE);
+                    WFSException exception = new WFSException(
+                            request, "No such stored query: " + id, ServiceException.INVALID_PARAMETER_VALUE);
                     exception.setLocator("STOREDQUERY_ID");
                     throw exception;
                 }

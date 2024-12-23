@@ -190,17 +190,10 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // a plain group
         assertExpectedLayers(Arrays.asList(pondsLayer), ponds);
         // a EO group
-        assertExpectedLayers(
-                Arrays.asList(roadSegmentsLayer, lakesLayer, neatlineLayer), lakesNeatline);
+        assertExpectedLayers(Arrays.asList(roadSegmentsLayer, lakesLayer, neatlineLayer), lakesNeatline);
         // a nested one
         assertExpectedLayers(
-                Arrays.asList(
-                        forestLayer,
-                        roadSegmentsLayer,
-                        lakesLayer,
-                        neatlineLayer,
-                        buildingsLayer,
-                        pondsLayer),
+                Arrays.asList(forestLayer, roadSegmentsLayer, lakesLayer, neatlineLayer, buildingsLayer, pondsLayer),
                 nested);
         // a container group
         assertExpectedLayers(Arrays.asList(forestLayer), container);
@@ -257,9 +250,7 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         assertExpectedStyles(Arrays.asList(lineStyle, polygonStyle, pointStyle), lakesNeatline);
         // nested group
         assertExpectedStyles(
-                Arrays.asList(
-                        polygonStyle, lineStyle, polygonStyle, pointStyle, polygonStyle, null),
-                nested);
+                Arrays.asList(polygonStyle, lineStyle, polygonStyle, pointStyle, polygonStyle, null), nested);
         // a container group
         assertExpectedStyles(Arrays.asList(polygonStyle), container);
         // a nested container
@@ -278,8 +269,7 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // EO group
         assertExpectedRenderingStyles(Arrays.asList(lineStyle), lakesNeatline);
         // nested group
-        assertExpectedRenderingStyles(
-                Arrays.asList(polygonStyle, lineStyle, polygonStyle, null), nested);
+        assertExpectedRenderingStyles(Arrays.asList(polygonStyle, lineStyle, polygonStyle, null), nested);
 
         try {
             // a container group
@@ -303,20 +293,13 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         new LayerGroupHelper(ponds).calculateBounds();
         assertEquals(ponds.getBounds(), ponds.getBounds());
         // EO group
-        ReferencedEnvelope eoExpected =
-                aggregateEnvelopes(roadSegmentsLayer, lakesLayer, neatlineLayer);
+        ReferencedEnvelope eoExpected = aggregateEnvelopes(roadSegmentsLayer, lakesLayer, neatlineLayer);
         new LayerGroupHelper(lakesNeatline).calculateBounds();
         ReferencedEnvelope eoActual = lakesNeatline.getBounds();
         assertEquals(eoExpected, eoActual);
         // nested group
-        ReferencedEnvelope nestedExpected =
-                aggregateEnvelopes(
-                        forestLayer,
-                        roadSegmentsLayer,
-                        lakesLayer,
-                        neatlineLayer,
-                        buildingsLayer,
-                        pondsLayer);
+        ReferencedEnvelope nestedExpected = aggregateEnvelopes(
+                forestLayer, roadSegmentsLayer, lakesLayer, neatlineLayer, buildingsLayer, pondsLayer);
         new LayerGroupHelper(nested).calculateBounds();
         assertEquals(nestedExpected, nested.getBounds());
     }
@@ -324,14 +307,8 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     @Test
     public void testBoundsCRS() throws Exception {
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:32628", true);
-        ReferencedEnvelope nestedExpected =
-                aggregateEnvelopes(
-                        forestLayer,
-                        roadSegmentsLayer,
-                        lakesLayer,
-                        neatlineLayer,
-                        buildingsLayer,
-                        pondsLayer);
+        ReferencedEnvelope nestedExpected = aggregateEnvelopes(
+                forestLayer, roadSegmentsLayer, lakesLayer, neatlineLayer, buildingsLayer, pondsLayer);
         nestedExpected = nestedExpected.transform(targetCRS, true);
         new LayerGroupHelper(nested).calculateBounds(targetCRS);
         assertEquals(nestedExpected, nested.getBounds());
@@ -353,10 +330,9 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     }
 
     private ReferencedEnvelope aggregateEnvelopes(LayerInfo... layers) {
-        ReferencedEnvelope eoExpected =
-                new ReferencedEnvelope(
-                        layers[0].getResource().getNativeBoundingBox(),
-                        layers[0].getResource().getCRS());
+        ReferencedEnvelope eoExpected = new ReferencedEnvelope(
+                layers[0].getResource().getNativeBoundingBox(),
+                layers[0].getResource().getCRS());
         for (int i = 1; i < layers.length; i++) {
             eoExpected.expandToInclude(layers[i].getResource().getNativeBoundingBox());
         }

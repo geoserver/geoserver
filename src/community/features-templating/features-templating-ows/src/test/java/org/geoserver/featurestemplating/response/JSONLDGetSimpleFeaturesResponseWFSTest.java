@@ -30,11 +30,10 @@ public class JSONLDGetSimpleFeaturesResponseWFSTest extends JSONLDGetSimpleFeatu
     @Test
     public void testJsonLdQueryPointingToExpr() throws Exception {
         setUpSimple("NamedPlaces.json");
-        StringBuilder sb =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
-                        .append("application%2Fld%2Bjson")
-                        .append("&cql_filter= features.geometry.wkt IS NULL ");
+        StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0")
+                .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                .append("application%2Fld%2Bjson")
+                .append("&cql_filter= features.geometry.wkt IS NULL ");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);
@@ -45,11 +44,10 @@ public class JSONLDGetSimpleFeaturesResponseWFSTest extends JSONLDGetSimpleFeatu
     @Test
     public void testJsonLdResponseWithFilter() throws Exception {
         setUpSimple("NamedPlaces.json");
-        StringBuilder path =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=cite:NamedPlaces")
-                        .append("&outputFormat=application%2Fld%2Bjson")
-                        .append("&cql_filter= features.id = '118'");
+        StringBuilder path = new StringBuilder("wfs?request=GetFeature&version=2.0")
+                .append("&TYPENAME=cite:NamedPlaces")
+                .append("&outputFormat=application%2Fld%2Bjson")
+                .append("&cql_filter= features.id = '118'");
         JSONObject result = (JSONObject) getJsonLd(path.toString());
         JSONObject context = (JSONObject) result.get("@context");
         assertNotNull(context);

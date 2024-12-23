@@ -17,8 +17,8 @@ import org.geoserver.catalog.WorkspaceInfo;
  *
  * <h3>Note for singletons</h3>
  *
- * Singleton objects must take care not to maintain references to configuration entities. For
- * instance the following would an error:
+ * Singleton objects must take care not to maintain references to configuration entities. For instance the following
+ * would an error:
  *
  * <pre>
  * class MySingleton {
@@ -32,19 +32,16 @@ import org.geoserver.catalog.WorkspaceInfo;
  * }
  * </pre>
  *
- * The reason being that when changes occur to the configuration externally (be it through the web
- * ui or restconfig, etc...) any cached configuration objects become stale. So singleton objects
- * should look up configuration objects on demand.
+ * The reason being that when changes occur to the configuration externally (be it through the web ui or restconfig,
+ * etc...) any cached configuration objects become stale. So singleton objects should look up configuration objects on
+ * demand.
  *
  * @author Justin Deoliveira, The Open Planning Project
  *     <p>TODO: events
  */
 public interface GeoServer {
 
-    /**
-     * Single centralized lock to be used whenever saving, applying or loading the GeoServer
-     * configuration
-     */
+    /** Single centralized lock to be used whenever saving, applying or loading the GeoServer configuration */
     public static final Object CONFIGURATION_LOCK = new Object();
 
     /** The configuration data access facade object. */
@@ -64,16 +61,14 @@ public interface GeoServer {
     /**
      * Returns the global settings configuration.
      *
-     * <p>This method will return {@link GeoServerInfo#getSettings()} unless a local workspace is
-     * set. In that case the settings for that workspace will be checked via {@link
-     * #getSettings(WorkspaceInfo)}, and if one exists will be returned. If local workspace settings
-     * do not exist the global settings ({@link GeoServerInfo#getSettings()}) are returned.
+     * <p>This method will return {@link GeoServerInfo#getSettings()} unless a local workspace is set. In that case the
+     * settings for that workspace will be checked via {@link #getSettings(WorkspaceInfo)}, and if one exists will be
+     * returned. If local workspace settings do not exist the global settings ({@link GeoServerInfo#getSettings()}) are
+     * returned.
      */
     SettingsInfo getSettings();
 
-    /**
-     * The settings configuration for the specified workspoace, or <code>null</code> if non exists.
-     */
+    /** The settings configuration for the specified workspoace, or <code>null</code> if non exists. */
     SettingsInfo getSettings(WorkspaceInfo workspace);
 
     /** Adds a settings configuration for the specified workspace. */
@@ -116,8 +111,7 @@ public interface GeoServer {
      * GeoServer services in the local workspace, or global services if there's no local workspace.
      *
      * @uml.property name="services"
-     * @uml.associationEnd multiplicity="(0 -1)"
-     *     inverse="geoServer1:org.geoserver.config.ServiceInfo"
+     * @uml.associationEnd multiplicity="(0 -1)" inverse="geoServer1:org.geoserver.config.ServiceInfo"
      */
     Collection<? extends ServiceInfo> getServices();
 
@@ -129,8 +123,7 @@ public interface GeoServer {
     Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace);
 
     /**
-     * GeoServer services filtered by class. In the local workspace, or global services if there's
-     * no local workspace.
+     * GeoServer services filtered by class. In the local workspace, or global services if there's no local workspace.
      *
      * <p>
      *
@@ -151,8 +144,7 @@ public interface GeoServer {
      *
      * @param id The id of the service.
      * @param clazz The type of the service.
-     * @return The service with the specified id, or <code>null</code> if no such service coud be
-     *     found.
+     * @return The service with the specified id, or <code>null</code> if no such service coud be found.
      */
     <T extends ServiceInfo> T getService(String id, Class<T> clazz);
 
@@ -161,8 +153,7 @@ public interface GeoServer {
      *
      * @param name The name of the service.
      * @param clazz The type of the service.
-     * @return The service with the specified name or <code>null</code> if no such service could be
-     *     found.
+     * @return The service with the specified name or <code>null</code> if no such service could be found.
      */
     <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz);
 
@@ -172,11 +163,10 @@ public interface GeoServer {
      * @param workspace THe workspace.
      * @param name The name of the service.
      * @param clazz The type of the service.
-     * @return The service with the specified name or <code>null</code> if no such service could be
-     *     found within the workspace.
+     * @return The service with the specified name or <code>null</code> if no such service could be found within the
+     *     workspace.
      */
-    <T extends ServiceInfo> T getServiceByName(
-            WorkspaceInfo workspace, String name, Class<T> clazz);
+    <T extends ServiceInfo> T getServiceByName(WorkspaceInfo workspace, String name, Class<T> clazz);
 
     /**
      * The factory used to create configuration object.
@@ -210,57 +200,45 @@ public interface GeoServer {
     /**
      * Fires the event for the global configuration being modified.
      *
-     * <p>This method should not be called by client code. It is meant to be called internally by
-     * the configuration subsystem.
+     * <p>This method should not be called by client code. It is meant to be called internally by the configuration
+     * subsystem.
      */
     void fireGlobalModified(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Fires the event for a settings configuration being modified.
      *
-     * <p>This method should not be called by client code. It is meant to be called internally by
-     * the configuration subsystem.
+     * <p>This method should not be called by client code. It is meant to be called internally by the configuration
+     * subsystem.
      */
     void fireSettingsModified(
-            SettingsInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            SettingsInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Fires the event for the logging configuration being modified.
      *
-     * <p>This method should not be called by client code. It is meant to be called internally by
-     * the configuration subsystem.
+     * <p>This method should not be called by client code. It is meant to be called internally by the configuration
+     * subsystem.
      */
     void fireLoggingModified(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Fires the event for a service configuration being modified.
      *
-     * <p>This method should not be called by client code. It is meant to be called internally by
-     * the configuration subsystem.
+     * <p>This method should not be called by client code. It is meant to be called internally by the configuration
+     * subsystem.
      */
     void fireServiceModified(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /** Disposes the configuration. */
     void dispose();
 
     /**
-     * Clears up all of the caches inside GeoServer forcing reloading of all information besides the
-     * configuration itself
+     * Clears up all of the caches inside GeoServer forcing reloading of all information besides the configuration
+     * itself
      */
     void reset();
 
@@ -268,8 +246,8 @@ public interface GeoServer {
     void reload() throws Exception;
 
     /**
-     * Clears up all of the caches as well as the configuration information and substitutes the
-     * current catalog with the new one
+     * Clears up all of the caches as well as the configuration information and substitutes the current catalog with the
+     * new one
      */
     void reload(Catalog catalog) throws Exception;
 }

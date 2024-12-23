@@ -71,9 +71,7 @@ public class NotifierInitializer implements GeoServerInitializer {
                  * Copy and use the sample notifier
                  */
                 IOUtils.copy(
-                        getClass()
-                                .getClassLoader()
-                                .getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
+                        getClass().getClassLoader().getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
                         f.file());
             }
             nc = (NotificationConfiguration) xs.fromXML(f.in());

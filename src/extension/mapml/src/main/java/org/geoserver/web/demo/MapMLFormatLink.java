@@ -24,11 +24,8 @@ public class MapMLFormatLink extends CommonFormatLink {
     public ExternalLink getFormatLink(PreviewLayer layer) {
         String link = layer.getWmsLink(this::customizeRequest);
 
-        ExternalLink olLink =
-                new ExternalLink(
-                        this.getComponentId(),
-                        link,
-                        (new StringResourceModel(this.getTitleKey(), null, null)).getString());
+        ExternalLink olLink = new ExternalLink(
+                this.getComponentId(), link, (new StringResourceModel(this.getTitleKey(), null, null)).getString());
         olLink.setVisible(layer.hasServiceSupport("WMS"));
         return olLink;
     }
@@ -43,12 +40,10 @@ public class MapMLFormatLink extends CommonFormatLink {
         TiledCRSConstants.tiledCRSDefinitions.values().stream()
                 .filter(tcrs -> matches(request, tcrs))
                 .findFirst()
-                .ifPresentOrElse(
-                        tcrs -> params.put("srs", tcrs.getSRSName()),
-                        () -> {
-                            params.put("srs", "MapML:WGS84");
-                            params.put("bbox", getWGS84Bounds(request));
-                        });
+                .ifPresentOrElse(tcrs -> params.put("srs", tcrs.getSRSName()), () -> {
+                    params.put("srs", "MapML:WGS84");
+                    params.put("bbox", getWGS84Bounds(request));
+                });
     }
 
     /** Check if the request CRS matches the given TiledCRSParams */
@@ -64,8 +59,7 @@ public class MapMLFormatLink extends CommonFormatLink {
     private static String getWGS84Bounds(GetMapRequest request) {
         try {
             ReferencedEnvelope re =
-                    new ReferencedEnvelope(request.getBbox(), CRS.decode(request.getSRS()))
-                            .transform(WGS84, true);
+                    new ReferencedEnvelope(request.getBbox(), CRS.decode(request.getSRS())).transform(WGS84, true);
             return re.getMinX() + "," + re.getMinY() + "," + re.getMaxX() + "," + re.getMaxY();
         } catch (TransformException | FactoryException e) {
             throw new RuntimeException(e);

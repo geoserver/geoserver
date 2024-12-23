@@ -15,9 +15,9 @@ import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
 /**
- * Blocking queue based blocker, a request gets blocked if there are already <code>queueSize</code>
- * requests running. Unlike {@link SimpleThreadBlocker} here threads that got blocked due to full
- * queue will be awaken in priority order, highest to lowest
+ * Blocking queue based blocker, a request gets blocked if there are already <code>queueSize</code> requests running.
+ * Unlike {@link SimpleThreadBlocker} here threads that got blocked due to full queue will be awaken in priority order,
+ * highest to lowest
  */
 public class PriorityThreadBlocker implements ThreadBlocker {
 
@@ -54,9 +54,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         synchronized (this) {
             if (runningQueue.size() < maxRunningRequests) {
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.log(
-                            Level.FINER,
-                            "Running requests at " + runningQueue.size() + ", no block");
+                    LOGGER.log(Level.FINER, "Running requests at " + runningQueue.size() + ", no block");
                 }
                 result = true;
             } else {
@@ -94,9 +92,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
                         boolean removed = queue.remove(token);
                         if (!removed) {
                             if (LOGGER.isLoggable(Level.FINER)) {
-                                LOGGER.log(
-                                        Level.FINER,
-                                        "Request was not found in queue, releasing next");
+                                LOGGER.log(Level.FINER, "Request was not found in queue, releasing next");
                             }
                             // has already been removed by releaseNext, release the next one then
                             if (runningQueue.size() < maxRunningRequests) {
@@ -150,8 +146,8 @@ public class PriorityThreadBlocker implements ThreadBlocker {
     }
 
     /**
-     * Simple token for the priority queue, holds the priority, sorts on it higher to lower, and
-     * holds the latch blocking the thread
+     * Simple token for the priority queue, holds the priority, sorts on it higher to lower, and holds the latch
+     * blocking the thread
      */
     private static class WaitToken implements Comparable<WaitToken> {
         CountDownLatch latch = new CountDownLatch(1);

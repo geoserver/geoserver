@@ -54,13 +54,7 @@ public class GetExecutionStatusType {
 
     @Override
     public String toString() {
-        return "StatusType [service="
-                + service
-                + ", version="
-                + version
-                + ", executionId="
-                + executionId
-                + "]";
+        return "StatusType [service=" + service + ", version=" + version + ", executionId=" + executionId + "]";
     }
 
     @Override

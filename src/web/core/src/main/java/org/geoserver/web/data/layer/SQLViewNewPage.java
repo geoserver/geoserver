@@ -42,9 +42,7 @@ public class SQLViewNewPage extends SQLViewAbstractPage {
             setResponsePage(new ResourceConfigurationPage(layerInfo, true));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create feature type", e);
-            error(
-                    new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e))
-                            .getString());
+            error(new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e)).getString());
         }
     }
 

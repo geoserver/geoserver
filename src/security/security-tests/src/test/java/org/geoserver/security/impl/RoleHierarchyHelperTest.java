@@ -28,15 +28,13 @@ public class RoleHierarchyHelperTest {
 
     @Test
     public void testValidTree() throws Exception {
-        Map<String, String> map =
-                createFromArray(
-                        new String[][] {
-                            {"node1", null},
-                            {"node11", "node1"},
-                            {"node12", "node1"},
-                            {"node111", "node11"},
-                            {"node112", "node11"},
-                        });
+        Map<String, String> map = createFromArray(new String[][] {
+            {"node1", null},
+            {"node11", "node1"},
+            {"node12", "node1"},
+            {"node111", "node11"},
+            {"node112", "node11"},
+        });
         RoleHierarchyHelper helper = new RoleHierarchyHelper(map);
 
         assertFalse(helper.containsRole("abc"));
@@ -136,12 +134,10 @@ public class RoleHierarchyHelperTest {
 
     @Test
     public void testInValidTree2() throws Exception {
-        Map<String, String> map =
-                createFromArray(
-                        new String[][] {
-                            {"node1", "node2"},
-                            {"node2", "node1"}
-                        });
+        Map<String, String> map = createFromArray(new String[][] {
+            {"node1", "node2"},
+            {"node2", "node1"}
+        });
         RoleHierarchyHelper helper = new RoleHierarchyHelper(map);
 
         helper.getParent("node1"); // ok

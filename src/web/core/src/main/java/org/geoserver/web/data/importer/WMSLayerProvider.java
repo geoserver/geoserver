@@ -32,8 +32,7 @@ public class WMSLayerProvider extends GeoServerDataProvider<LayerResource> {
     public static final Property<LayerResource> NAME = new BeanProperty<>("name", "localName");
     public static final Property<LayerResource> ACTION = new PropertyPlaceholder<>("action");
 
-    public static final List<Property<LayerResource>> PROPERTIES =
-            Arrays.asList(NAME, ACTION, STATUS);
+    public static final List<Property<LayerResource>> PROPERTIES = Arrays.asList(NAME, ACTION, STATUS);
 
     String storeId;
     List<LayerResource> items;
@@ -53,7 +52,8 @@ public class WMSLayerProvider extends GeoServerDataProvider<LayerResource> {
 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
                 builder.setStore(store);
-                List<Layer> layers = wmsInfo.getWebMapServer(null).getCapabilities().getLayerList();
+                List<Layer> layers =
+                        wmsInfo.getWebMapServer(null).getCapabilities().getLayerList();
                 for (Layer l : layers) {
                     if (l.getName() == null) {
                         continue;
@@ -63,8 +63,7 @@ public class WMSLayerProvider extends GeoServerDataProvider<LayerResource> {
                 }
 
                 // lookup all configured layers, mark them as published in the resources
-                List<ResourceInfo> configuredTypes =
-                        getCatalog().getResourcesByStore(store, ResourceInfo.class);
+                List<ResourceInfo> configuredTypes = getCatalog().getResourcesByStore(store, ResourceInfo.class);
                 for (ResourceInfo type : configuredTypes) {
                     // compare with native name, which is what the DataStore provides through
                     // getNames()

@@ -27,16 +27,14 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 
 /**
- * Default implementation for selecting the default values for dimensions of coverage (raster)
- * resources using the nearest-domain-value-to-the-reference-value strategy.
+ * Default implementation for selecting the default values for dimensions of coverage (raster) resources using the
+ * nearest-domain-value-to-the-reference-value strategy.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class CoverageNearestValueSelectionStrategyImpl
-        extends AbstractDefaultValueSelectionStrategy {
+public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultValueSelectionStrategy {
 
-    private static final Logger LOGGER =
-            Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
+    private static final Logger LOGGER = Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
 
     private Object toMatch;
     private String fixedCapabilitiesValue;
@@ -52,13 +50,11 @@ public class CoverageNearestValueSelectionStrategyImpl
     }
 
     @Override
-    public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         Object retval = null;
         try {
             GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                    (GridCoverage2DReader) ((CoverageInfo) resource).getGridCoverageReader(null, null);
             ReaderDimensionsAccessor dimAccessor = new ReaderDimensionsAccessor(reader);
 
             if (dimensionName.equals(ResourceInfo.TIME)) {
@@ -89,12 +85,10 @@ public class CoverageNearestValueSelectionStrategyImpl
                                     + resource.getName());
                 }
             } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
-                retval =
-                        findNearestCustomDimensionValue(
-                                dimensionName.substring(
-                                        ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()),
-                                dimAccessor,
-                                this.toMatch.toString());
+                retval = findNearestCustomDimensionValue(
+                        dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()),
+                        dimAccessor,
+                        this.toMatch.toString());
             }
 
         } catch (IOException e) {
@@ -103,8 +97,7 @@ public class CoverageNearestValueSelectionStrategyImpl
         return Converters.convert(retval, clz);
     }
 
-    private Date findNearestTime(ReaderDimensionsAccessor dimAccessor, Date toMatch)
-            throws IOException {
+    private Date findNearestTime(ReaderDimensionsAccessor dimAccessor, Date toMatch) throws IOException {
         Date candidate = null;
         TreeSet<Object> timeDomain = dimAccessor.getTimeDomain();
         long shortestDistance = Long.MAX_VALUE;
@@ -159,8 +152,7 @@ public class CoverageNearestValueSelectionStrategyImpl
     }
 
     @SuppressWarnings("unchecked")
-    private Double findNearestElevation(ReaderDimensionsAccessor dimAccessor, Double toMatch)
-            throws IOException {
+    private Double findNearestElevation(ReaderDimensionsAccessor dimAccessor, Double toMatch) throws IOException {
         Double candidate = null;
         TreeSet<Object> elevDomain = dimAccessor.getElevationDomain();
         double shortestDistance = Double.MAX_VALUE;
@@ -222,8 +214,7 @@ public class CoverageNearestValueSelectionStrategyImpl
     }
 
     private String findNearestCustomDimensionValue(
-            String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch)
-            throws IOException {
+            String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch) throws IOException {
         String candidate = null;
         List<String> domain = dimAccessor.getDomain(dimensionName);
 

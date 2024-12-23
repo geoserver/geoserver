@@ -39,28 +39,21 @@ public class FileBlobStorePanel extends Panel {
 
         DirectoryParamPanel paramPanel;
         add(
-                paramPanel =
-                        new DirectoryParamPanel(
-                                "baseDirectory",
-                                new PropertyModel<>(getDefaultModel().getObject(), "baseDirectory"),
-                                new ParamResourceModel("baseDirectory", this),
-                                true));
+                paramPanel = new DirectoryParamPanel(
+                        "baseDirectory",
+                        new PropertyModel<>(getDefaultModel().getObject(), "baseDirectory"),
+                        new ParamResourceModel("baseDirectory", this),
+                        true));
         paramPanel.add(new AttributeModifier("title", new ResourceModel("baseDirectory.title")));
-        paramPanel
-                .getFormComponent()
-                .setModel((IModel<String>) paramPanel.getDefaultModel()); // disable filemodel
+        paramPanel.getFormComponent().setModel((IModel<String>) paramPanel.getDefaultModel()); // disable filemodel
         paramPanel.setFileFilter(new Model<>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
-        add(
-                new TextField<Integer>("fileSystemBlockSize")
-                        .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "title", new ResourceModel("fileSystemBlockSize.title"))));
-        DropDownChoice<FileBlobStoreInfo.PathGeneratorType> layouts =
-                new DropDownChoice<>(
-                        "fileSystemLayout",
-                        new PropertyModel<>(getDefaultModel(), "pathGeneratorType"),
-                        Arrays.asList(FileBlobStoreInfo.PathGeneratorType.values()));
+        add(new TextField<Integer>("fileSystemBlockSize")
+                .setRequired(true)
+                .add(new AttributeModifier("title", new ResourceModel("fileSystemBlockSize.title"))));
+        DropDownChoice<FileBlobStoreInfo.PathGeneratorType> layouts = new DropDownChoice<>(
+                "fileSystemLayout",
+                new PropertyModel<>(getDefaultModel(), "pathGeneratorType"),
+                Arrays.asList(FileBlobStoreInfo.PathGeneratorType.values()));
         layouts.setChoiceRenderer(new EnumChoiceRenderer(layouts));
         add(layouts);
     }

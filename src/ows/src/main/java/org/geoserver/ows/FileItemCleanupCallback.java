@@ -13,16 +13,15 @@ import org.apache.commons.fileupload.FileItem;
 import org.geotools.util.logging.Logging;
 
 /**
- * Dispatcher callback to ensure that all uploaded files are deleted at the end of a
- * multipart/form-data request instead of relying on the garbage collector to delete the files
- * through the {@link org.apache.commons.fileupload.disk.DiskFileItem#finalize()} method.
+ * Dispatcher callback to ensure that all uploaded files are deleted at the end of a multipart/form-data request instead
+ * of relying on the garbage collector to delete the files through the
+ * {@link org.apache.commons.fileupload.disk.DiskFileItem#finalize()} method.
  */
 public class FileItemCleanupCallback extends AbstractDispatcherCallback {
 
     private static final Logger LOGGER = Logging.getLogger(FileItemCleanupCallback.class);
 
-    private static final ThreadLocal<List<FileItem>> FILE_ITEMS =
-            ThreadLocal.withInitial(Collections::emptyList);
+    private static final ThreadLocal<List<FileItem>> FILE_ITEMS = ThreadLocal.withInitial(Collections::emptyList);
 
     public static void setFileItems(List<FileItem> fileItems) {
         FILE_ITEMS.set(fileItems);

@@ -7,9 +7,7 @@ package org.geoserver.wms.kvp;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.wms.WMS;
 
-/**
- * A {@link TimeKvpParser} picking the max number of values to be parsed from the WMS configuration
- */
+/** A {@link TimeKvpParser} picking the max number of values to be parsed from the WMS configuration */
 public class TimeKvpParser extends org.geoserver.ows.kvp.TimeKvpParser {
 
     private final WMS wms;

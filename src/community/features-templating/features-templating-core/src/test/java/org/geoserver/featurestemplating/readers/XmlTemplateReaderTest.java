@@ -37,11 +37,15 @@ public class XmlTemplateReaderTest {
     @Test
     public void testFlatInclusion() throws IOException {
         XMLRecursiveTemplateReader reader =
-                new GMLTemplateReader(
-                        store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
+                new GMLTemplateReader(store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
-        TemplateBuilder mappedFeatureBuilder =
-                rootBuilder.getChildren().get(0).getChildren().get(0).getChildren().get(0);
+        TemplateBuilder mappedFeatureBuilder = rootBuilder
+                .getChildren()
+                .get(0)
+                .getChildren()
+                .get(0)
+                .getChildren()
+                .get(0);
         TemplateBuilder specification = null;
         for (TemplateBuilder b : mappedFeatureBuilder.getChildren()) {
             if (((AbstractTemplateBuilder) b).getKey(null).equals("gsml:specification")) {
@@ -61,8 +65,7 @@ public class XmlTemplateReaderTest {
     @Test
     public void testInlineInclusion() throws IOException {
         XMLRecursiveTemplateReader reader =
-                new GMLTemplateReader(
-                        store.get("MappedFeatureInclude.xml"), new NamespaceSupport());
+                new GMLTemplateReader(store.get("MappedFeatureInclude.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
         TemplateBuilder mappedFeatureBuilder = rootBuilder.getChildren().get(0);
         TemplateBuilder specification = null;
@@ -88,16 +91,13 @@ public class XmlTemplateReaderTest {
     @Test
     public void testRecursiveInclusion() {
         RuntimeException ex = checkThrowingTemplate("ping.xml");
-        assertThat(
-                ex.getMessage(),
-                containsString("Went beyond maximum expansion depth (51), chain is: [ping.xml"));
+        assertThat(ex.getMessage(), containsString("Went beyond maximum expansion depth (51), chain is: [ping.xml"));
     }
 
     @Test
     public void testIncludedModificationAreDetected() throws IOException, InterruptedException {
         XMLRecursiveTemplateReader reader =
-                new GMLTemplateReader(
-                        store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
+                new GMLTemplateReader(store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
         assertFalse(rootBuilder.needsReload());
         File file = store.get("includedGeologicUnit.xml").file();
@@ -111,8 +111,7 @@ public class XmlTemplateReaderTest {
     }
 
     private RuntimeException checkThrowingTemplate(String s) {
-        return assertThrows(
-                RuntimeException.class,
-                () -> new GMLTemplateReader(store.get(s), new NamespaceSupport()).getRootBuilder());
+        return assertThrows(RuntimeException.class, () -> new GMLTemplateReader(store.get(s), new NamespaceSupport())
+                .getRootBuilder());
     }
 }

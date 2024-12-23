@@ -14,9 +14,8 @@ import java.util.Vector;
 import org.geotools.map.Layer;
 
 /**
- * RenderedImageTimeDecorator is a wrapper for objects of type RenderedImage which allows to track
- * rendering times of a raster render operation updating the rendering time whenever data is
- * computed
+ * RenderedImageTimeDecorator is a wrapper for objects of type RenderedImage which allows to track rendering times of a
+ * raster render operation updating the rendering time whenever data is computed
  */
 @SuppressWarnings("PMD.ReplaceVectorWithList")
 public class RenderedImageTimeDecorator implements RenderedImage {

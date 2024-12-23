@@ -44,8 +44,7 @@ public class TransformChainJSONMessageConverter extends BaseMessageConverter<Tra
     // Reading
     //
     @Override
-    protected TransformChain<?> readInternal(
-            Class<? extends TransformChain<?>> clazz, HttpInputMessage inputMessage)
+    protected TransformChain<?> readInternal(Class<? extends TransformChain<?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);

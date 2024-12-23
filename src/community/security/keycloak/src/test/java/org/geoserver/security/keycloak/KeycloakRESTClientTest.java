@@ -30,13 +30,8 @@ public class KeycloakRESTClientTest {
 
     @Before
     public void setUp() throws Exception {
-        client =
-                new KeycloakRESTClient(
-                        "http://localhost:8080",
-                        "realm",
-                        "clientID",
-                        "clientSecret",
-                        Collections.emptyList());
+        client = new KeycloakRESTClient(
+                "http://localhost:8080", "realm", "clientID", "clientSecret", Collections.emptyList());
     }
 
     @Test
@@ -88,9 +83,7 @@ public class KeycloakRESTClientTest {
         // Return only some of the data that would be returned by the server, for test
         // clarity/simplicity
         when(entity.getContent())
-                .thenReturn(
-                        new ByteArrayInputStream(
-                                ("{access_token: " + accessToken + "}").getBytes()));
+                .thenReturn(new ByteArrayInputStream(("{access_token: " + accessToken + "}").getBytes()));
 
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
         when(response.getStatusLine()).thenReturn(statusLine);

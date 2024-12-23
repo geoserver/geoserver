@@ -22,30 +22,23 @@ import java.util.regex.Pattern;
  */
 public class Dates {
 
-    static List<DatePattern> PATTERNS =
-            Arrays.asList(
-                    dp(
-                            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                            "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,2}\\.\\d{1,3}Z"),
-                    dp(
-                            "yyyy-MM-dd'T'HH:mm:sss'Z'",
-                            "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,3}Z"),
-                    dp(
-                            "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                            "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,2}Z"),
-                    dp("yyyy-MM-dd'T'HH:mm'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}Z"),
-                    dp("yyyy-MM-dd'T'HH'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}Z"),
-                    dp("yyyy-MM-dd", "\\d{4}-\\d{1,2}-\\d{1,2}"),
-                    dp("yyyy-MM", "\\d{4}-\\d{1,2}"),
-                    dp("yyyyMMdd", "\\d{6,8}", true, true),
-                    dp("yyyyMM", "\\d{5,6}", true, true),
-                    dp("yyyy", "\\d{4}"));
+    static List<DatePattern> PATTERNS = Arrays.asList(
+            dp("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,2}\\.\\d{1,3}Z"),
+            dp("yyyy-MM-dd'T'HH:mm:sss'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,3}Z"),
+            dp("yyyy-MM-dd'T'HH:mm:ss'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,2}Z"),
+            dp("yyyy-MM-dd'T'HH:mm'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}Z"),
+            dp("yyyy-MM-dd'T'HH'Z'", "\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}Z"),
+            dp("yyyy-MM-dd", "\\d{4}-\\d{1,2}-\\d{1,2}"),
+            dp("yyyy-MM", "\\d{4}-\\d{1,2}"),
+            dp("yyyyMMdd", "\\d{6,8}", true, true),
+            dp("yyyyMM", "\\d{5,6}", true, true),
+            dp("yyyy", "\\d{4}"));
 
     /**
      * Returns list of all patterns, optionally filtering out ones that require a strict match.
      *
-     * @param strict when <tt>false</tt> those patterns that require a strict match (ie. a pattern
-     *     match and a date parse) are filtered out.
+     * @param strict when <tt>false</tt> those patterns that require a strict match (ie. a pattern match and a date
+     *     parse) are filtered out.
      */
     public static Collection<DatePattern> patterns(boolean strict) {
         Collection<DatePattern> patterns = PATTERNS;

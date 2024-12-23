@@ -121,8 +121,7 @@ public class WMSRequestsTest extends WMSTestSupport {
     @Test
     public void testGetGetMapUrlWithLayerGroupAndLayers() {
         GetMapRequest request =
-                initGetMapRequest(
-                        MockData.LAKES, MockData.LAKES, MockData.FORESTS, MockData.TASMANIA_DEM);
+                initGetMapRequest(MockData.LAKES, MockData.LAKES, MockData.FORESTS, MockData.TASMANIA_DEM);
         request.getRawKvp()
                 .put(
                         "layers",
@@ -154,10 +153,7 @@ public class WMSRequestsTest extends WMSTestSupport {
     private GetMapRequest initGetMapRequest(QName... names) {
         GetMapRequest request = createGetMapRequest(names);
         request.setRawKvp(new KvpMap<>(request.getRawKvp()));
-        String layers =
-                request.getLayers().stream()
-                        .map(MapLayerInfo::getName)
-                        .collect(Collectors.joining(","));
+        String layers = request.getLayers().stream().map(MapLayerInfo::getName).collect(Collectors.joining(","));
         request.getRawKvp().put("layers", layers);
         request.setFormat(DefaultWebMapService.FORMAT);
         DefaultWebMapService.autoSetBoundsAndSize(request);

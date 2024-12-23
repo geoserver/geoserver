@@ -100,16 +100,13 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         File tempDir = new File(customTempDir);
         if (!tempDir.exists() || !tempDir.isDirectory()) {
             throw new IOException(
-                    "GeoPKG output: temp dir: '"
-                            + customTempDir
-                            + "' doesn't exist or isn't a directory");
+                    "GeoPKG output: temp dir: '" + customTempDir + "' doesn't exist or isn't a directory");
         }
         return File.createTempFile("geopkg", ".tmp.gpkg", tempDir);
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         // create the geopackage file and write the features into it.
         // geopackage is written to a temporary file, copied into the outputStream, then the temp
@@ -124,8 +121,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
                     FeatureEntry e = new FeatureEntry();
 
                     if (!(collection instanceof SimpleFeatureCollection)) {
-                        throw new ServiceException(
-                                "GeoPackage OutputFormat does not support Complex Features.");
+                        throw new ServiceException("GeoPackage OutputFormat does not support Complex Features.");
                     }
 
                     SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
@@ -163,10 +159,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             try {
                 java.nio.file.Files.delete(file.toPath());
             } catch (IOException ioException) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Unable to delete temporary GeoPackage file " + file.getName(),
-                        ioException);
+                LOGGER.log(Level.FINE, "Unable to delete temporary GeoPackage file " + file.getName(), ioException);
             }
         }
     }

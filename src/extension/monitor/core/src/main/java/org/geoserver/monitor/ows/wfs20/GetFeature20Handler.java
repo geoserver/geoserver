@@ -25,8 +25,7 @@ public class GetFeature20Handler extends WFSRequestObjectHandler {
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getLayers(Object request) {
-        List<Object> queries =
-                (List<Object>) EMFUtils.get((EObject) request, "abstractQueryExpression");
+        List<Object> queries = (List<Object>) EMFUtils.get((EObject) request, "abstractQueryExpression");
         if (queries == null) {
             return null;
         }

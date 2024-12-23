@@ -74,44 +74,40 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         form.add(new TextArea<>("frameAncestors", new PropertyModel<>(model, "frameAncestors")));
         form.add(new CSPPolicyPanel("policies", this.config));
         form.add(new TextArea<>("testUrl", new PropertyModel<>(this, "testUrl")));
-        form.add(
-                new AjaxSubmitLink("testLink") {
-                    private static final long serialVersionUID = 1700932575669734348L;
+        form.add(new AjaxSubmitLink("testLink") {
+            private static final long serialVersionUID = 1700932575669734348L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        testContentSecurityPolicy(target);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                testContentSecurityPolicy(target);
+            }
+        });
         this.testResultField = new TextArea<>("testResult", new Model<>(""));
         form.add(this.testResultField.setOutputMarkupId(true).setEnabled(false));
-        form.add(
-                new SubmitLink("save", form) {
-                    private static final long serialVersionUID = -8900006356449150190L;
+        form.add(new SubmitLink("save", form) {
+            private static final long serialVersionUID = -8900006356449150190L;
 
-                    @Override
-                    public void onSubmit() {
-                        saveConfiguration(true);
-                    }
-                });
-        form.add(
-                new Button("apply") {
-                    private static final long serialVersionUID = -3327108081898697618L;
+            @Override
+            public void onSubmit() {
+                saveConfiguration(true);
+            }
+        });
+        form.add(new Button("apply") {
+            private static final long serialVersionUID = -3327108081898697618L;
 
-                    @Override
-                    public void onSubmit() {
-                        saveConfiguration(false);
-                    }
-                });
-        form.add(
-                new Button("cancel") {
-                    private static final long serialVersionUID = 7567566240358171893L;
+            @Override
+            public void onSubmit() {
+                saveConfiguration(false);
+            }
+        });
+        form.add(new Button("cancel") {
+            private static final long serialVersionUID = 7567566240358171893L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        });
         add(form);
     }
 
@@ -172,10 +168,8 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         String pathInfo = path.startsWith(context) ? path.substring(context.length()) : path;
         Map<String, List<String>> listMap = new LinkedHashMap<>();
         URLEncodedUtils.parse(url.getQuery(), StandardCharsets.UTF_8, '&')
-                .forEach(
-                        p ->
-                                listMap.computeIfAbsent(p.getName(), x -> new ArrayList<>())
-                                        .add(p.getValue()));
+                .forEach(p -> listMap.computeIfAbsent(p.getName(), x -> new ArrayList<>())
+                        .add(p.getValue()));
         Map<String, String[]> parameterMap = new LinkedHashMap<>();
         listMap.forEach((k, v) -> parameterMap.put(k, v.toArray(new String[v.size()])));
         return new HttpServletRequest() {
@@ -216,8 +210,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
-            public AsyncContext startAsync(
-                    ServletRequest servletRequest, ServletResponse servletResponse) {
+            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
                 throw new UnsupportedOperationException();
             }
 
@@ -482,8 +475,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
-            public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass)
-                    throws IOException, ServletException {
+            public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass) throws IOException, ServletException {
                 throw new UnsupportedOperationException();
             }
 

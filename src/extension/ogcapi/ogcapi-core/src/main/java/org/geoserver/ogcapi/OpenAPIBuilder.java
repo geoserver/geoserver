@@ -30,8 +30,8 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.util.IOUtils;
 
 /**
- * Base builder for an OpenAPI specification whose template is read on creation, and can be
- * customized on the fly based on the server configuration, status, request context
+ * Base builder for an OpenAPI specification whose template is read on creation, and can be customized on the fly based
+ * on the server configuration, status, request context
  */
 public class OpenAPIBuilder<T extends ServiceInfo> {
 
@@ -39,12 +39,10 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     private final String defaultTitle;
     private final APIService serviceAnnotation;
 
-    public OpenAPIBuilder(
-            Class<?> clazz, String location, String defaultTitle, Class serviceClass) {
+    public OpenAPIBuilder(Class<?> clazz, String location, String defaultTitle, Class serviceClass) {
         try (InputStream is = clazz.getResourceAsStream(location)) {
             if (is == null) {
-                throw new RuntimeException(
-                        "Could not find API definition at " + location + " from class " + clazz);
+                throw new RuntimeException("Could not find API definition at " + location + " from class " + clazz);
             }
             apiSpecification = IOUtils.toString(is);
         } catch (IOException e) {
@@ -55,9 +53,8 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     }
 
     /**
-     * Build the document based on request, current service configuration, and list of available
-     * extensions. The default implementation adds the "Info" and "Servers" elements, subclasses can
-     * override
+     * Build the document based on request, current service configuration, and list of available extensions. The default
+     * implementation adds the "Info" and "Servers" elements, subclasses can override
      *
      * @param service The service configuration
      */
@@ -77,8 +74,8 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     }
 
     /**
-     * Returns the landing page document class. By default it returns {@link
-     * AbstractLandingPageDocument} in case a service has more representations than usual
+     * Returns the landing page document class. By default it returns {@link AbstractLandingPageDocument} in case a
+     * service has more representations than usual
      */
     protected Class<? extends AbstractLandingPageDocument> getLandingPageDocumentClass() {
         return AbstractLandingPageDocument.class;
@@ -86,35 +83,30 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
 
     public void addServers(OpenAPI api) {
         // the servers
-        String wfsUrl =
-                ResponseUtils.buildURL(
-                        APIRequestInfo.get().getBaseURL(),
-                        this.serviceAnnotation.landingPage(),
-                        null,
-                        URLMangler.URLType.SERVICE);
+        String wfsUrl = ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                this.serviceAnnotation.landingPage(),
+                null,
+                URLMangler.URLType.SERVICE);
         api.servers(Arrays.asList(new Server().description("This server").url(wfsUrl)));
     }
 
     public void addAPIInfo(T service, OpenAPI api) {
         // build "info"
-        ContactInfo contactInfo = service.getGeoServer().getGlobal().getSettings().getContact();
-        Contact contact =
-                new Contact()
-                        .email(contactInfo.getContactEmail())
-                        .name(
-                                Stream.of(
-                                                contactInfo.getContactPerson(),
-                                                contactInfo.getContactOrganization())
-                                        .filter(s -> s != null)
-                                        .collect(Collectors.joining(" - ")))
-                        .url(contactInfo.getOnlineResource());
+        ContactInfo contactInfo =
+                service.getGeoServer().getGlobal().getSettings().getContact();
+        Contact contact = new Contact()
+                .email(contactInfo.getContactEmail())
+                .name(Stream.of(contactInfo.getContactPerson(), contactInfo.getContactOrganization())
+                        .filter(s -> s != null)
+                        .collect(Collectors.joining(" - ")))
+                .url(contactInfo.getOnlineResource());
         String title = service.getTitle() == null ? defaultTitle : service.getTitle();
-        Info info =
-                new Info()
-                        .contact(contact)
-                        .title(title)
-                        .description(service.getAbstract())
-                        .version(this.serviceAnnotation.version());
+        Info info = new Info()
+                .contact(contact)
+                .title(title)
+                .description(service.getAbstract())
+                .version(this.serviceAnnotation.version());
         api.info(info);
     }
 
@@ -124,10 +116,9 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
         ApiResponse okResponse = get.getResponses().get("200");
         Content content = new Content();
         okResponse.setContent(content);
-        List<String> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(binding, true).stream()
-                        .map(mt -> mt.toString())
-                        .collect(Collectors.toList());
+        List<String> formats = APIRequestInfo.get().getProducibleMediaTypes(binding, true).stream()
+                .map(mt -> mt.toString())
+                .collect(Collectors.toList());
         for (String format : formats) {
             MediaType mediaType = new MediaType();
             if (format.contains("yaml") && content.get("application/json") != null) {
@@ -143,8 +134,7 @@ public class OpenAPIBuilder<T extends ServiceInfo> {
     }
 
     /**
-     * Reads the template to customize (each time, as the object tree is not thread safe nor
-     * cloneable not serializable)
+     * Reads the template to customize (each time, as the object tree is not thread safe nor cloneable not serializable)
      */
     protected GeoServerOpenAPI readTemplate() {
         try {

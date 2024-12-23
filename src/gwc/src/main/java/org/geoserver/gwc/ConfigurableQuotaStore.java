@@ -20,8 +20,8 @@ import org.geowebcache.diskquota.storage.TileSet;
 import org.geowebcache.diskquota.storage.TileSetVisitor;
 
 /**
- * A {@link QuotaStore} delegating to another instance of {@link QuotaStore}, and allowing the
- * delegate to be changed at runtime.
+ * A {@link QuotaStore} delegating to another instance of {@link QuotaStore}, and allowing the delegate to be changed at
+ * runtime.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -99,15 +99,13 @@ public class ConfigurableQuotaStore implements QuotaStore {
     }
 
     @Override
-    public void addToQuotaAndTileCounts(
-            TileSet tileSet, Quota quotaDiff, Collection<PageStatsPayload> tileCountDiffs)
+    public void addToQuotaAndTileCounts(TileSet tileSet, Quota quotaDiff, Collection<PageStatsPayload> tileCountDiffs)
             throws InterruptedException {
         delegate.addToQuotaAndTileCounts(tileSet, quotaDiff, tileCountDiffs);
     }
 
     @Override
-    public Future<List<PageStats>> addHitsAndSetAccesTime(
-            Collection<PageStatsPayload> statsUpdates) {
+    public Future<List<PageStats>> addHitsAndSetAccesTime(Collection<PageStatsPayload> statsUpdates) {
         return delegate.addHitsAndSetAccesTime(statsUpdates);
     }
 

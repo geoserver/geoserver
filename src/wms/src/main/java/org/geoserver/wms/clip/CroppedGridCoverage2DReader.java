@@ -28,12 +28,10 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
     /** Parameters used to control the {@link Crop} operation. */
     private static final ParameterValueGroup cropParams;
 
-    static final Logger LOGGER =
-            Logging.getLogger(CroppedGridCoverage2DReader.class.getCanonicalName());
+    static final Logger LOGGER = Logging.getLogger(CroppedGridCoverage2DReader.class.getCanonicalName());
 
     static {
-        final CoverageProcessor processor =
-                new CoverageProcessor(new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+        final CoverageProcessor processor = new CoverageProcessor(new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
         cropParams = processor.getOperation("CoverageCrop").getParameters();
     }
 
@@ -44,8 +42,7 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
     public CroppedGridCoverage2DReader(GridCoverage2DReader delegate, Geometry roiGeom) {
         super(delegate);
-        this.roiGeom =
-                ClippedFeatureSource.reproject(delegate.getCoordinateReferenceSystem(), roiGeom);
+        this.roiGeom = ClippedFeatureSource.reproject(delegate.getCoordinateReferenceSystem(), roiGeom);
     }
 
     @Override
@@ -59,8 +56,7 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters)
-            throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
 
         return getCroppedGrid(super.read(parameters), roiGeom);
     }
@@ -76,8 +72,7 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         GeneralBounds originalEnvelope = super.getOriginalEnvelope();
         try {
             // clip original envelope with ROI
-            Geometry envIntersection =
-                    roiGeom.intersection(JTS.toGeometry(originalEnvelope.toRectangle2D()));
+            Geometry envIntersection = roiGeom.intersection(JTS.toGeometry(originalEnvelope.toRectangle2D()));
             envIntersection.setUserData(originalEnvelope.getCoordinateReferenceSystem());
             return GeneralBounds.toGeneralEnvelope(JTS.toEnvelope(envIntersection));
         } catch (Exception e) {
@@ -86,8 +81,7 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         return originalEnvelope;
     }
 
-    private static synchronized GridCoverage2D getCroppedGrid(
-            GridCoverage2D grid, Geometry clipGeom) {
+    private static synchronized GridCoverage2D getCroppedGrid(GridCoverage2D grid, Geometry clipGeom) {
         final ParameterValueGroup param = cropParams.clone();
         param.parameter("source").setValue(grid);
         param.parameter("ROI").setValue(clipGeom);

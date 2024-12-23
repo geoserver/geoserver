@@ -252,12 +252,11 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         cb.setStore(cat.getCoverageStoreByName(MockData.WORLD.getLocalPart()));
         CoverageInfo cinfo = cb.buildCoverage();
         cinfo.setSRS(null);
-        String wkt =
-                "GEOGCS[\"ED50\",\n"
-                        + "  DATUM[\"European Datum 1950\",\n"
-                        + "  SPHEROID[\"International 1924\", 6378388.0, 297.0]],\n"
-                        + "PRIMEM[\"Greenwich\", 0.0],\n"
-                        + "UNIT[\"degree\", 0.017453292519943295]]";
+        String wkt = "GEOGCS[\"ED50\",\n"
+                + "  DATUM[\"European Datum 1950\",\n"
+                + "  SPHEROID[\"International 1924\", 6378388.0, 297.0]],\n"
+                + "PRIMEM[\"Greenwich\", 0.0],\n"
+                + "UNIT[\"degree\", 0.017453292519943295]]";
         CoordinateReferenceSystem testCRS = CRS.parseWKT(wkt);
         cinfo.setNativeCRS(testCRS);
         cb.initCoverage(cinfo, "srs lookup");
@@ -373,7 +372,8 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         Catalog cat = getCatalog();
         FeatureTypeInfo fti = cat.getFeatureTypeByName(toString(MockData.POINTS));
         assertEquals(
-                Point.class, fti.getFeatureType().getGeometryDescriptor().getType().getBinding());
+                Point.class,
+                fti.getFeatureType().getGeometryDescriptor().getType().getBinding());
         assertEquals(1, fti.getFeatureSource(null, null).getCount(Query.ALL));
 
         CatalogBuilder cb = new CatalogBuilder(cat);
@@ -474,8 +474,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         CatalogBuilder cb = new CatalogBuilder(cat);
         WMSStoreInfo wms = cb.buildWMSStore("demo");
         wms.setCapabilitiesURL(
-                RemoteOWSTestSupport.WMS_SERVER_URL
-                        + "service=WMS&request=GetCapabilities&version=1.1.0");
+                RemoteOWSTestSupport.WMS_SERVER_URL + "service=WMS&request=GetCapabilities&version=1.1.0");
 
         cb.setStore(wms);
         WMSLayerInfo wmsLayer = cb.buildWMSLayer("topp:states");
@@ -511,8 +510,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
         DataStoreInfo sf = cat.getDataStoreByName("sf");
 
-        FeatureSource fs =
-                sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
+        FeatureSource fs = sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
         FeatureTypeInfo ft = cat.getFactory().createFeatureType();
         ft.setNativeName("PrimitiveGeoFeature");
         assertNull(ft.getSRS());
@@ -531,8 +529,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
         DataStoreInfo sf = cat.getDataStoreByName("sf");
 
-        FeatureSource fs =
-                sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
+        FeatureSource fs = sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
         FeatureTypeInfo ft = cat.getFactory().createFeatureType();
         ft.setNativeName("PrimitiveGeoFeature");
         assertNull(ft.getNativeBoundingBox());
@@ -596,8 +593,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
     @Test
     public void testLatLonBounds() throws Exception {
-        ReferencedEnvelope nativeBounds =
-                new ReferencedEnvelope(700000, 800000, 4000000, 4100000, null);
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(700000, 800000, 4000000, 4100000, null);
         CoordinateReferenceSystem crs = CRS.decode("EPSG:32632", true);
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         ReferencedEnvelope re = cb.getLatLonBounds(nativeBounds, crs);
@@ -613,9 +609,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             String baseURL = TestHttpClientProvider.MOCKSERVER + "/wms11";
             MockHttpClient client = new MockHttpClient();
             URL capsURL = new URL(baseURL + "?service=WMS&request=GetCapabilities&version=1.1.0");
-            client.expectGet(
-                    capsURL,
-                    new MockHttpResponse(getClass().getResource("caps111.xml"), "text/xml"));
+            client.expectGet(capsURL, new MockHttpResponse(getClass().getResource("caps111.xml"), "text/xml"));
             TestHttpClientProvider.bind(client, capsURL);
 
             CatalogBuilder cb = new CatalogBuilder(getCatalog());
@@ -652,9 +646,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             String baseURL = TestHttpClientProvider.MOCKSERVER + "/wms13";
             MockHttpClient client = new MockHttpClient();
             URL capsURL = new URL(baseURL + "?service=WMS&request=GetCapabilities&version=1.3.0");
-            client.expectGet(
-                    capsURL,
-                    new MockHttpResponse(getClass().getResource("caps130.xml"), "text/xml"));
+            client.expectGet(capsURL, new MockHttpResponse(getClass().getResource("caps130.xml"), "text/xml"));
             TestHttpClientProvider.bind(client, capsURL);
 
             CatalogBuilder cb = new CatalogBuilder(getCatalog());
@@ -690,9 +682,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             String baseURL = TestHttpClientProvider.MOCKSERVER + "/wms13";
             MockHttpClient client = new MockHttpClient();
             URL capsURL = new URL(baseURL + "?service=WMS&request=GetCapabilities&version=1.3.0");
-            client.expectGet(
-                    capsURL,
-                    new MockHttpResponse(getClass().getResource("caps130_crs84.xml"), "text/xml"));
+            client.expectGet(capsURL, new MockHttpResponse(getClass().getResource("caps130_crs84.xml"), "text/xml"));
             TestHttpClientProvider.bind(client, capsURL);
 
             CatalogBuilder cb = new CatalogBuilder(getCatalog());
@@ -723,9 +713,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             String baseURL = TestHttpClientProvider.MOCKSERVER + "/wmts100";
             MockHttpClient client = new MockHttpClient();
             URL capsURL = new URL(baseURL + "?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
-            client.expectGet(
-                    capsURL,
-                    new MockHttpResponse(getClass().getResource("nasa.getcapa.xml"), "text/xml"));
+            client.expectGet(capsURL, new MockHttpResponse(getClass().getResource("nasa.getcapa.xml"), "text/xml"));
             TestHttpClientProvider.bind(client, capsURL);
 
             CatalogBuilder cb = new CatalogBuilder(getCatalog());
@@ -754,14 +742,10 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             MapProjection.SKIP_SANITY_CHECKS = true;
             CatalogBuilder cb = new CatalogBuilder(getCatalog());
             ReferencedEnvelope3D bounds =
-                    new ReferencedEnvelope3D(
-                            142892, 470783, 16, 142900, 470790, 20, CRS.decode("EPSG:7415"));
+                    new ReferencedEnvelope3D(142892, 470783, 16, 142900, 470790, 20, CRS.decode("EPSG:7415"));
             // used to throw an exception here
-            ReferencedEnvelope latLonBounds =
-                    cb.getLatLonBounds(bounds, bounds.getCoordinateReferenceSystem());
-            assertTrue(
-                    CRS.equalsIgnoreMetadata(
-                            CRS.decode("EPSG:4326"), latLonBounds.getCoordinateReferenceSystem()));
+            ReferencedEnvelope latLonBounds = cb.getLatLonBounds(bounds, bounds.getCoordinateReferenceSystem());
+            assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), latLonBounds.getCoordinateReferenceSystem()));
             // System.out.println(latLonBounds);
         } finally {
             MapProjection.SKIP_SANITY_CHECKS = false;
@@ -783,7 +767,9 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         AbstractGridCoverage2DReader reader = createMock(AbstractGridCoverage2DReader.class);
         AbstractGridFormat format = createMock(AbstractGridFormat.class);
 
-        expect(reader.getOriginalEnvelope()).andReturn(new GeneralBounds(envelope)).anyTimes();
+        expect(reader.getOriginalEnvelope())
+                .andReturn(new GeneralBounds(envelope))
+                .anyTimes();
         expect(reader.getCoordinateReferenceSystem())
                 .andReturn(envelope.getCoordinateReferenceSystem())
                 .anyTimes();
@@ -816,14 +802,12 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
         // setup a non cloning resource pool and catalog
         Catalog cat = new CatalogImpl();
-        ResourcePool rp =
-                new ResourcePool(cat) {
-                    @Override
-                    public CoverageStoreInfo clone(
-                            CoverageStoreInfo source, boolean allowEnvParametrization) {
-                        return source;
-                    }
-                };
+        ResourcePool rp = new ResourcePool(cat) {
+            @Override
+            public CoverageStoreInfo clone(CoverageStoreInfo source, boolean allowEnvParametrization) {
+                return source;
+            }
+        };
         cat.setResourcePool(rp);
 
         // make it build the coverage info without access to a grid coverage 2d
@@ -861,16 +845,15 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));
 
         // Sun CRS, without authority and code
-        String wkt =
-                "GEOGCS[\"Sun (2015) - Sphere / Ocentric\",\n"
-                        + "    DATUM[\"Sun (2015) - Sphere\",\n"
-                        + "        SPHEROID[\"Sun (2015) - Sphere\",695700000,0,\n"
-                        + "            AUTHORITY[\"IAU\",\"1000\"]],\n"
-                        + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
-                        + "    PRIMEM[\"Reference Meridian\",0,\n"
-                        + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
-                        + "    UNIT[\"degree\",0.0174532925199433,\n"
-                        + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
+        String wkt = "GEOGCS[\"Sun (2015) - Sphere / Ocentric\",\n"
+                + "    DATUM[\"Sun (2015) - Sphere\",\n"
+                + "        SPHEROID[\"Sun (2015) - Sphere\",695700000,0,\n"
+                + "            AUTHORITY[\"IAU\",\"1000\"]],\n"
+                + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
+                + "    PRIMEM[\"Reference Meridian\",0,\n"
+                + "        AUTHORITY[\"IAU\",\"1000\"]],\n"
+                + "    UNIT[\"degree\",0.0174532925199433,\n"
+                + "        AUTHORITY[\"EPSG\",\"9122\"]]]";
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         fti.setNativeCRS(crs);
 

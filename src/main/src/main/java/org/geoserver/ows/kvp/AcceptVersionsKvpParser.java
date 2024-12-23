@@ -12,9 +12,8 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geotools.xsd.EMFUtils;
 
 /**
- * Parses a kvp of the form "acceptVersions=version1,version2,...,versionN" into an instance of OWS
- * AcceptVersionsType. This class is version independent, the subclasses bind it to a specific OWS
- * version.
+ * Parses a kvp of the form "acceptVersions=version1,version2,...,versionN" into an instance of OWS AcceptVersionsType.
+ * This class is version independent, the subclasses bind it to a specific OWS version.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

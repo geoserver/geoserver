@@ -31,9 +31,7 @@ public class OGCLayerConfigTest extends AbstractLinksEditorTest {
     public void setupPage() {
         FeatureTypeInfo lakes = getLakes();
         ArrayList<LinkInfo> links = new ArrayList<>();
-        link =
-                new LinkInfoImpl(
-                        "enclosure", "application/zip", "http://www.geoserver.org/data/lakes.zip");
+        link = new LinkInfoImpl("enclosure", "application/zip", "http://www.geoserver.org/data/lakes.zip");
         link.setTitle("A few very simple lakes");
         link.setService("Features");
         links.add(link);

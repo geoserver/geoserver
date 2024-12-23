@@ -11,22 +11,18 @@ import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamCatalogListConverter;
 
 /**
- * A wrapper for all Collection type responses using the {@link XStreamCatalogListConverter} (XML
- * and JSON output). Also supports Collection type responses using the {@link
- * FreemarkerHTMLMessageConverter}, but is not required for such responses.
+ * A wrapper for all Collection type responses using the {@link XStreamCatalogListConverter} (XML and JSON output). Also
+ * supports Collection type responses using the {@link FreemarkerHTMLMessageConverter}, but is not required for such
+ * responses.
  *
- * <p>In the previous rest API this wasn't needed because in each individual rest request the
- * Collections were aliased to
+ * <p>In the previous rest API this wasn't needed because in each individual rest request the Collections were aliased
+ * to
  */
 public class RestListWrapper<T> extends RestWrapperAdapter<T> {
 
     String itemAttributeName = "name";
 
-    public RestListWrapper(
-            Collection<T> collection,
-            Class<T> clazz,
-            RestBaseController controller,
-            Template template) {
+    public RestListWrapper(Collection<T> collection, Class<T> clazz, RestBaseController controller, Template template) {
         super(collection, clazz, controller, template);
     }
 

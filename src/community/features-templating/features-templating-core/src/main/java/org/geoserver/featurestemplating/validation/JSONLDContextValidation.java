@@ -36,13 +36,12 @@ public class JSONLDContextValidation {
     Set<String> failedFields = new HashSet<>();
 
     /**
-     * Parse the json file where the features have been wrote and perform a validation against
-     * the @context. The validation process execute the expansion algorithm against the features
-     * followed by a compaction algorithm. The expansion algorithm expand each field name of a
-     * feature against the iri declared in the @contex, removing those for which is not found any
-     * reference. The compaction algorithm perform the original operation. The the result of the
-     * compaction process and the original json-ld document are compared. If any field name is
-     * missed a RuntimeException is thrown.
+     * Parse the json file where the features have been wrote and perform a validation against the @context. The
+     * validation process execute the expansion algorithm against the features followed by a compaction algorithm. The
+     * expansion algorithm expand each field name of a feature against the iri declared in the @contex, removing those
+     * for which is not found any reference. The compaction algorithm perform the original operation. The the result of
+     * the compaction process and the original json-ld document are compared. If any field name is missed a
+     * RuntimeException is thrown.
      *
      * @throws ServiceException
      */
@@ -56,9 +55,7 @@ public class JSONLDContextValidation {
             }
         } catch (JsonLdError jsonLdError) {
             throw new ServiceException(
-                    "Error while validating "
-                            + "the json-ld output. Message is: "
-                            + jsonLdError.getMessage());
+                    "Error while validating " + "the json-ld output. Message is: " + jsonLdError.getMessage());
         } catch (Exception e) {
             throw new ServiceException(e);
         } finally {
@@ -78,8 +75,7 @@ public class JSONLDContextValidation {
             // list is void it means that there is no reference for the
             // feature fields name inside the context.
             throw new RuntimeException(
-                    "Validation failed. Unable to resolve the field features "
-                            + " against the @context");
+                    "Validation failed. Unable to resolve the field features " + " against the @context");
         }
         // run the compaction
         Object compacted = JsonLdProcessor.compact(expanded, context, options);
@@ -93,10 +89,9 @@ public class JSONLDContextValidation {
                 if (it.hasNext()) sb.append(",");
             }
             sb.append(". ");
-            throw new ServiceException(
-                    "Validation failed. Unable to resolve the following fields"
-                            + " against the @context: "
-                            + sb.toString());
+            throw new ServiceException("Validation failed. Unable to resolve the following fields"
+                    + " against the @context: "
+                    + sb.toString());
         }
     }
 

@@ -24,10 +24,7 @@ import org.geoserver.gwc.wmts.dimensions.VectorElevationDimension;
 import org.geotools.api.filter.Filter;
 import org.junit.Test;
 
-/**
- * This class contains tests that check that elevation dimensions values are correctly extracted
- * from vector data.
- */
+/** This class contains tests that check that elevation dimensions values are correctly extracted from vector data. */
 public class VectorElevationDimensionTest extends TestsSupport {
 
     @Test
@@ -40,14 +37,18 @@ public class VectorElevationDimensionTest extends TestsSupport {
         getCatalog().save(vectorInfo);
         // check that we correctly retrieve the elevation dimension
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(1));
         // disable the elevation dimension
         dimensionInfo.setEnabled(false);
         vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
         getCatalog().save(vectorInfo);
         // no dimensions should be available
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(0));
     }
 
     @Test

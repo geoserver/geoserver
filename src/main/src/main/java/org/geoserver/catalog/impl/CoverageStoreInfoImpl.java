@@ -52,8 +52,7 @@ public class CoverageStoreInfoImpl extends StoreInfoImpl implements CoverageStor
     }
 
     @Override
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
-            throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException {
         return catalog.getResourcePool().getGridCoverageReader(this, null, hints);
     }
 }

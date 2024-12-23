@@ -80,12 +80,9 @@ public class WatermarkDecoration implements MapDecoration {
             Composite oldComposite = g2D.getComposite();
             g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
 
-            AffineTransform tx =
-                    AffineTransform.getTranslateInstance(paintArea.getX(), paintArea.getY());
+            AffineTransform tx = AffineTransform.getTranslateInstance(paintArea.getX(), paintArea.getY());
 
-            tx.scale(
-                    paintArea.getWidth() / logo.getWidth(),
-                    paintArea.getHeight() / logo.getHeight());
+            tx.scale(paintArea.getWidth() / logo.getWidth(), paintArea.getHeight() / logo.getHeight());
 
             g2D.drawImage(logo, tx, null);
 
@@ -104,10 +101,7 @@ public class WatermarkDecoration implements MapDecoration {
 
             if (url.getProtocol() == null || url.getProtocol().equals("file")) {
                 File file =
-                        Resources.find(
-                                Resources.fromURL(
-                                        Files.asResource(loader.getBaseDirectory()), imageURL),
-                                true);
+                        Resources.find(Resources.fromURL(Files.asResource(loader.getBaseDirectory()), imageURL), true);
                 if (file.exists()) {
                     url = URLs.fileToUrl(file);
                 }
@@ -148,8 +142,7 @@ public class WatermarkDecoration implements MapDecoration {
     }
 
     /**
-     * Contains an already loaded logo and the tools to check it's up to date compared to the file
-     * system
+     * Contains an already loaded logo and the tools to check it's up to date compared to the file system
      *
      * @author Andrea Aime - TOPP
      */

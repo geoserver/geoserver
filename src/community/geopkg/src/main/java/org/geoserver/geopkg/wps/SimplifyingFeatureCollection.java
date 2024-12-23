@@ -32,8 +32,7 @@ class SimplifyingFeatureCollection extends DecoratingSimpleFeatureCollection {
         Function<Geometry, Geometry> simplifier;
         if (Point.class.isAssignableFrom(binding) || MultiPoint.class.isAssignableFrom(binding)) {
             return fc;
-        } else if (LineString.class.isAssignableFrom(binding)
-                || MultiLineString.class.isAssignableFrom(binding)) {
+        } else if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
             simplifier = g -> DouglasPeuckerSimplifier.simplify(g, distance);
         } else {
             simplifier = g -> TopologyPreservingSimplifier.simplify(g, distance);
@@ -44,8 +43,7 @@ class SimplifyingFeatureCollection extends DecoratingSimpleFeatureCollection {
 
     Function<Geometry, Geometry> simplifier;
 
-    public SimplifyingFeatureCollection(
-            SimpleFeatureCollection fc, Function<Geometry, Geometry> simplifier) {
+    public SimplifyingFeatureCollection(SimpleFeatureCollection fc, Function<Geometry, Geometry> simplifier) {
         super(fc);
         this.simplifier = simplifier;
     }

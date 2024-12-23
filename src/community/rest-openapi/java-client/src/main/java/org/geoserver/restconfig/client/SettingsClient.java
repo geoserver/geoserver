@@ -52,8 +52,8 @@ public class SettingsClient {
     }
 
     /**
-     * Get the global contact information Displays a list of all global contact settings on the
-     * server. This is a subset of what is available at the /settings endpoint.
+     * Get the global contact information Displays a list of all global contact settings on the server. This is a subset
+     * of what is available at the /settings endpoint.
      */
     public ContactInfo getGlobalContactInfo() {
         return api().getGlobalContactInfo().getContact();

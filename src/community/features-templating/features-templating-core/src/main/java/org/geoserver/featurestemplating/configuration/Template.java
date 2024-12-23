@@ -14,9 +14,8 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 /**
- * This class handles the management of a single template file, giving access to the ${@link
- * RootBuilder} produced from it and issuing the reloading of the file when needed through ${@link
- * TemplateWatcher}
+ * This class handles the management of a single template file, giving access to the ${@link RootBuilder} produced from
+ * it and issuing the reloading of the file when needed through ${@link TemplateWatcher}
  */
 public class Template {
 
@@ -39,10 +38,7 @@ public class Template {
     /** Check if the template file has benn modified and eventually reload it. */
     public boolean checkTemplate() {
         if (needsReload()) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Reloading json-ld template for Feature Type {0}",
-                    templateFile.name());
+            LOGGER.log(Level.INFO, "Reloading json-ld template for Feature Type {0}", templateFile.name());
             synchronized (this) {
                 if (needsReload()) {
                     try {
@@ -59,8 +55,7 @@ public class Template {
     }
 
     private boolean needsReload() {
-        return watcher != null
-                && (watcher.isModified() || (builderTree != null && builderTree.needsReload()));
+        return watcher != null && (watcher.isModified() || (builderTree != null && builderTree.needsReload()));
     }
 
     public void reloadTemplate() {

@@ -34,8 +34,10 @@ public class CatalogProxiesTest extends GeoServerSystemTestSupport {
         try (InputStream is = resource.in()) {
             dom = dom(is);
         }
-        Element defaultStyle = (Element) dom.getElementsByTagName("defaultStyle").item(0);
-        Element defaultStyleId = (Element) defaultStyle.getElementsByTagName("id").item(0);
+        Element defaultStyle =
+                (Element) dom.getElementsByTagName("defaultStyle").item(0);
+        Element defaultStyleId =
+                (Element) defaultStyle.getElementsByTagName("id").item(0);
         defaultStyleId.setTextContent("danglingReference");
         try (OutputStream os = resource.out()) {
             print(dom, os);

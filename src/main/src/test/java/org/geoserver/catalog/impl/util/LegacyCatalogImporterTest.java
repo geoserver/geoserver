@@ -56,10 +56,7 @@ public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
         importer.imprt(mockData.getDataDirectoryRoot());
     }
 
-    /**
-     * As per GEOS-3513, make sure the old SRS codes are imported by adding the EPSG: prefix where
-     * needed
-     */
+    /** As per GEOS-3513, make sure the old SRS codes are imported by adding the EPSG: prefix where needed */
     @Test
     public void testCRSPrefix() throws Exception {
         MockData mockData = (MockData) getTestData();
@@ -71,8 +68,7 @@ public class LegacyCatalogImporterTest extends GeoServerAbstractTestSupport {
         File dataDirectoryRoot = mockData.getDataDirectoryRoot();
         importer.imprt(dataDirectoryRoot);
 
-        FeatureTypeInfo typeInfo =
-                catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+        FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
         assertEquals("EPSG:4326", typeInfo.getSRS());
     }
 }

@@ -11,9 +11,9 @@ import java.util.List;
 import org.geotools.data.simple.SimpleFeatureCollection;
 
 /**
- * Interface for a DXF Writer implementation. DXF exists in many different versions, so we can
- * expect many different implementations, each one supporting one or more of these versions.
- * Implementations are registered as SPI and can be found using DXFWriterFinder.
+ * Interface for a DXF Writer implementation. DXF exists in many different versions, so we can expect many different
+ * implementations, each one supporting one or more of these versions. Implementations are registered as SPI and can be
+ * found using DXFWriterFinder.
  *
  * @author Mauro Bartolomeoli, mbarto@infosia.it
  */

@@ -11,8 +11,8 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.SoftValueHashMap;
 
 /**
- * An abstract cache for resources that need to be loaded from files. Loads the resources
- * autonomously, making sure the returned items are fresh compared to the file system
+ * An abstract cache for resources that need to be loaded from files. Loads the resources autonomously, making sure the
+ * returned items are fresh compared to the file system
  *
  * @author Andrea Aime - GeoSolutions
  * @param <T>
@@ -56,9 +56,8 @@ abstract class FileItemCache<T> {
     }
 
     /**
-     * The key used in the item cache to represent this file. It uses the file name, assuming we are
-     * going to cache files originating from the same directory. Subclasses may override to get a
-     * different behavior
+     * The key used in the item cache to represent this file. It uses the file name, assuming we are going to cache
+     * files originating from the same directory. Subclasses may override to get a different behavior
      */
     protected String getFileKey(Resource file) {
         return file.name();

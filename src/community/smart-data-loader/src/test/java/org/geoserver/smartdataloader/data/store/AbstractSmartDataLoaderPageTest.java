@@ -38,8 +38,8 @@ import org.junit.Test;
 import org.postgresql.jdbc.SslMode;
 
 /**
- * Implementation of GeoServerWicketTestSupport for SmartAppSchema Postgis tests, including
- * Geoserver and Wicket support.
+ * Implementation of GeoServerWicketTestSupport for SmartAppSchema Postgis tests, including Geoserver and Wicket
+ * support.
  */
 public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTestSupport {
 
@@ -85,9 +85,7 @@ public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTes
     }
 
     protected Properties getFixture() {
-        File fixtureFile =
-                FixtureUtilities.getFixtureFile(
-                        getFixtureDirectory(), fixtureHelper.getFixtureId());
+        File fixtureFile = FixtureUtilities.getFixtureFile(getFixtureDirectory(), fixtureHelper.getFixtureId());
         if (fixtureFile.exists()) {
             return FixtureUtilities.loadProperties(fixtureFile);
         } else {
@@ -131,14 +129,11 @@ public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTes
 
     protected void setFormValues(FormTester ft, String datastoreName) {
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", datastoreName);
-        tester.executeAjaxEvent(
-                "dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", "change");
+        tester.executeAjaxEvent("dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", "change");
         ft.select("parametersPanel:postgisdatastore", 0);
         tester.executeAjaxEvent("dataStoreForm:parametersPanel:postgisdatastore", "click");
         ft.select("parametersPanel:rootentities:border:border_body:paramValue", 0);
-        tester.executeAjaxEvent(
-                "dataStoreForm:parametersPanel:rootentities:border:border_body:paramValue",
-                "change");
+        tester.executeAjaxEvent("dataStoreForm:parametersPanel:rootentities:border:border_body:paramValue", "change");
     }
 
     private void setupGeoServerTestData() {
@@ -168,19 +163,16 @@ public abstract class AbstractSmartDataLoaderPageTest extends GeoServerWicketTes
         tester.assertLabel("dataStoreForm:storeTypeDescription", dataStoreFactory.getDescription());
         tester.assertComponent("dataStoreForm:workspacePanel", WorkspacePanel.class);
         tester.assertLabel("dataStoreForm:dataStoreNamePanel:paramName", "Data Source Name *");
-        tester.assertComponent(
-                "dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", TextField.class);
+        tester.assertComponent("dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", TextField.class);
         String datastoreName = "smart-store";
         // set some form values to make all the elements rendered
         setFormValues(tester.newFormTester("dataStoreForm"), datastoreName);
         tester.assertLabel("dataStoreForm:parametersPanel:dataStoreName", "Data store name *");
-        tester.assertComponent(
-                "dataStoreForm:parametersPanel:postgisdatastore", DropDownChoice.class);
+        tester.assertComponent("dataStoreForm:parametersPanel:postgisdatastore", DropDownChoice.class);
         tester.assertLabel("dataStoreForm:parametersPanel:rootentities:paramName", "Root entity *");
         tester.debugComponentTrees();
         tester.assertComponent(
-                "dataStoreForm:parametersPanel:rootentities:border:border_body:paramValue",
-                DropDownChoice.class);
+                "dataStoreForm:parametersPanel:rootentities:border:border_body:paramValue", DropDownChoice.class);
         tester.assertComponent(
                 "dataStoreForm:parametersPanel:domainmodel:paramValue:subtree:branches:1:node:content:checkbox",
                 AjaxCheckBox.class);

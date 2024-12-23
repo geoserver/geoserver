@@ -69,15 +69,12 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     }
 
     @Override
-    public SimpleFeatureType apply(
-            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(ImportTask task, DataStore dataStore, SimpleFeatureType featureType)
+            throws Exception {
         // validate the target attribute is not already there
         if (featureType.getDescriptor(field) != null) {
             throw new InvalidParameterException(
-                    "The computed attribute "
-                            + field
-                            + " is already present in the "
-                            + "source feature type");
+                    "The computed attribute " + field + " is already present in the " + "source feature type");
         }
 
         // remap the type
@@ -89,8 +86,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         Object value = getExpression().evaluate(oldFeature);
         feature.setAttribute(field, value);

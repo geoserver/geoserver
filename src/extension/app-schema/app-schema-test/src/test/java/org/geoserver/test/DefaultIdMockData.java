@@ -15,11 +15,7 @@ public class DefaultIdMockData extends AbstractAppSchemaMockData {
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeatureNoId.xml",
-                "MappedFeatureNoId.properties");
+        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureNoId.xml", "MappedFeatureNoId.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",

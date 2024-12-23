@@ -74,31 +74,16 @@ public class GeoServerJ2eeRoleServiceTest extends AbstractSecurityServiceTest {
     protected void assertIsValid(String name) throws IOException, SAXException {
         // makes sure web.xml is XSD compliant (without requiring internet access in the process)
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema =
-                factory.newSchema(
-                        new Source[] {
-                            new StreamSource(
-                                    new File(
-                                            "src/test/resources/org/geoserver/security/xsd/xml.xsd")),
-                            new StreamSource(
-                                    new File(
-                                            "src/test/resources/org/geoserver/security/xsd/web-app_3_1.xsd")),
-                            new StreamSource(
-                                    new File(
-                                            "src/test/resources/org/geoserver/security/xsd/web-common_3_1.xsd")),
-                            new StreamSource(
-                                    new File(
-                                            "src/test/resources/org/geoserver/security/xsd/javaee_7.xsd")),
-                            new StreamSource(
-                                    new File(
-                                            "src/test/resources/org/geoserver/security/xsd/javaee_web_services_client_1_4.xsd")),
-                            new StreamSource(
-                                    new File(
-                                            "src/test/resources/org/geoserver/security/xsd/jsp_2_3.xsd"))
-                        });
+        Schema schema = factory.newSchema(new Source[] {
+            new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/xml.xsd")),
+            new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/web-app_3_1.xsd")),
+            new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/web-common_3_1.xsd")),
+            new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/javaee_7.xsd")),
+            new StreamSource(
+                    new File("src/test/resources/org/geoserver/security/xsd/javaee_web_services_client_1_4.xsd")),
+            new StreamSource(new File("src/test/resources/org/geoserver/security/xsd/jsp_2_3.xsd"))
+        });
         Validator validator = schema.newValidator();
-        validator.validate(
-                new StreamSource(
-                        new File("src/test/resources/org/geoserver/security/impl/" + name)));
+        validator.validate(new StreamSource(new File("src/test/resources/org/geoserver/security/impl/" + name)));
     }
 }

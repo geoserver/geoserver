@@ -14,12 +14,10 @@ public class DispatcherCallbackAdapter implements DispatcherCallback {
     public void init(HttpServletRequest request, HttpServletResponse response) {}
 
     @Override
-    public void dispatched(
-            HttpServletRequest request, HttpServletResponse response, Object handler) {}
+    public void dispatched(HttpServletRequest request, HttpServletResponse response, Object handler) {}
 
     @Override
-    public void exception(
-            HttpServletRequest request, HttpServletResponse response, Exception error) {}
+    public void exception(HttpServletRequest request, HttpServletResponse response, Exception error) {}
 
     @Override
     public void finished(HttpServletRequest request, HttpServletResponse response) {}

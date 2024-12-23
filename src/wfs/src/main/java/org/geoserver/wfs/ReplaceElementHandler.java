@@ -47,8 +47,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
     }
 
     @Override
-    public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
-            throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         Replace replace = (Replace) element;
 
         List<QName> typeNames = new ArrayList<>();
@@ -69,17 +68,14 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
     }
 
     @Override
-    public void checkValidity(TransactionElement element, Map featureTypeInfos)
-            throws WFSTransactionException {
+    public void checkValidity(TransactionElement element, Map featureTypeInfos) throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_REPLACE)) {
             throw new WFSException(element, "Transaction REPLACE support is not enabled");
         }
 
         if (featureTypeInfos.size() != 1) {
             throw new WFSException(
-                    element,
-                    "Transaction REPLACE must only specify features from a"
-                            + " single feature type");
+                    element, "Transaction REPLACE must only specify features from a" + " single feature type");
         }
     }
 
@@ -96,8 +92,8 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
 
         @SuppressWarnings("unchecked")
         List<SimpleFeature> newFeatures = replace.getFeatures();
-        SimpleFeatureStore featureStore =
-                DataUtilities.simple((FeatureStore) featureStores.values().iterator().next());
+        SimpleFeatureStore featureStore = DataUtilities.simple(
+                (FeatureStore) featureStores.values().iterator().next());
         if (featureStore == null) {
             throw new WFSException(element, "Could not obtain feature store");
         }
@@ -153,8 +149,7 @@ public class ReplaceElementHandler extends AbstractTransactionElementHandler {
                 replace(oldFeature, newFeature, featureStore, oldFeatures, replaced);
             }
         } catch (IOException e) {
-            throw exceptionFactory.newWFSTransactionException(
-                    "Replace error: " + e.getMessage(), e);
+            throw exceptionFactory.newWFSTransactionException("Replace error: " + e.getMessage(), e);
         }
 
         response.setTotalReplaced(BigInteger.valueOf(replaced.size()));

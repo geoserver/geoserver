@@ -42,8 +42,7 @@ public class Gsml30WfsTest extends AbstractAppSchemaTestSupport {
         // no import to gml since it is already imported inside the included schema
         assertXpathCount(0, "//xsd:import", doc);
         // gsml schemaLocation
-        assertXpathEvaluatesTo(
-                Gsml30MockData.GSML_SCHEMA_LOCATION, "//xsd:include/@schemaLocation", doc);
+        assertXpathEvaluatesTo(Gsml30MockData.GSML_SCHEMA_LOCATION, "//xsd:include/@schemaLocation", doc);
         // nothing else
         assertXpathCount(0, "//xsd:complexType", doc);
         assertXpathCount(0, "//xsd:element", doc);
@@ -113,8 +112,10 @@ public class Gsml30WfsTest extends AbstractAppSchemaTestSupport {
                             .getTextContent());
         }
         // test that no namespaces are present on the wfs:member elements
-        assertEquals(0, doc.getFirstChild().getChildNodes().item(0).getAttributes().getLength());
-        assertEquals(0, doc.getFirstChild().getChildNodes().item(1).getAttributes().getLength());
+        assertEquals(
+                0, doc.getFirstChild().getChildNodes().item(0).getAttributes().getLength());
+        assertEquals(
+                0, doc.getFirstChild().getChildNodes().item(1).getAttributes().getLength());
     }
 
     private Map<String, String> getRequiredNamespaces() {

@@ -17,8 +17,7 @@ import org.springframework.web.context.ServletContextAware;
  * @see GeoServerResourceLoader#lookupGeoServerDataDirectory(ServletContext)
  * @author Jody Garnett (Boundless)
  */
-public class DataDirectoryResourceStore extends FileSystemResourceStore
-        implements ServletContextAware, Serializable {
+public class DataDirectoryResourceStore extends FileSystemResourceStore implements ServletContextAware, Serializable {
 
     private static final long serialVersionUID = 5014766223630555410L;
 

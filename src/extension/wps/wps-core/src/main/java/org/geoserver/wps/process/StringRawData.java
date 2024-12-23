@@ -30,13 +30,7 @@ public class StringRawData extends AbstractRawData {
 
     @Override
     public String toString() {
-        return "StringRawData [data="
-                + data
-                + ", mimeType="
-                + mimeType
-                + ", extension="
-                + extension
-                + "]";
+        return "StringRawData [data=" + data + ", mimeType=" + mimeType + ", extension=" + extension + "]";
     }
 
     public String getData() {

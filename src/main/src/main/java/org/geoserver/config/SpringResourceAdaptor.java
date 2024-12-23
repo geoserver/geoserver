@@ -108,9 +108,9 @@ public class SpringResourceAdaptor implements org.springframework.core.io.Resour
     }
 
     /**
-     * {@link org.springframework.core.io.Resource#contentLength()} suggests to throw an IOException
-     * while {@link java.io.File#length()} suggests to return 0L instead, which is used here to
-     * kinder the client code. Directory resources also return 0L.
+     * {@link org.springframework.core.io.Resource#contentLength()} suggests to throw an IOException while
+     * {@link java.io.File#length()} suggests to return 0L instead, which is used here to kinder the client code.
+     * Directory resources also return 0L.
      *
      * @return the content length for this resource or 0L if it is not a file.
      */

@@ -42,12 +42,8 @@ public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettin
             final String resourceKey,
             final boolean required) {
 
-        final TextParamPanel textParamPanel =
-                new TextParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramTitle),
-                        new ResourceModel(resourceKey, paramName),
-                        required);
+        final TextParamPanel textParamPanel = new TextParamPanel(
+                paramName, new MapModel(paramsModel, paramTitle), new ResourceModel(resourceKey, paramName), required);
         textParamPanel.getFormComponent().setType(String.class);
 
         String defaultTitle = paramTitle;
@@ -62,16 +58,9 @@ public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettin
     }
 
     private FormComponent addPasswordPanel(
-            final IModel paramsModel,
-            final String paramName,
-            final String resourceKey,
-            final boolean required) {
-        final PasswordParamPanel pwdPanel =
-                new PasswordParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramName),
-                        new ResourceModel(resourceKey, paramName),
-                        required);
+            final IModel paramsModel, final String paramName, final String resourceKey, final boolean required) {
+        final PasswordParamPanel pwdPanel = new PasswordParamPanel(
+                paramName, new MapModel(paramsModel, paramName), new ResourceModel(resourceKey, paramName), required);
         String defaultTitle = paramName;
 
         ResourceModel titleModel = new ResourceModel(resourceKey, defaultTitle);

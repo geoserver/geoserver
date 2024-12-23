@@ -15,8 +15,7 @@ import org.vfny.geoserver.wcs.WcsException;
 /**
  * Parsing a BBOX for WCS.
  *
- * <p>Notice that we make sure tht the BBOX is 2D since we support elevation only as a band of the
- * range!
+ * <p>Notice that we make sure tht the BBOX is 2D since we support elevation only as a band of the range!
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
@@ -32,8 +31,7 @@ public class BBoxKvpParser extends Wcs10KvpParser {
         // check to make sure that the bounding box has 4 coordinates
         if (unparsed.size() != 4) {
             throw new WcsException(
-                    "Requested bounding box contains wrong number of coordinates: "
-                            + unparsed.size(),
+                    "Requested bounding box contains wrong number of coordinates: " + unparsed.size(),
                     InvalidParameterValue,
                     "bbox");
         }

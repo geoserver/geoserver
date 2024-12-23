@@ -32,12 +32,10 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(WFSAdminPage.class);
         tester.assertModelValue("form:maxFeatures", wfs.getMaxFeatures());
         tester.assertModelValue("form:csvDateFormat", wfs.getCsvDateFormat());
-        tester.assertModelValue(
-                "form:maxNumberOfFeaturesForPreview", wfs.getMaxNumberOfFeaturesForPreview());
+        tester.assertModelValue("form:maxNumberOfFeaturesForPreview", wfs.getMaxNumberOfFeaturesForPreview());
         tester.assertModelValue("form:keywords", wfs.getKeywords());
         tester.assertModelValue(
-                "form:getFeatureOutputTypes:outputTypeCheckingEnabled",
-                wfs.isGetFeatureOutputTypeCheckingEnabled());
+                "form:getFeatureOutputTypes:outputTypeCheckingEnabled", wfs.isGetFeatureOutputTypeCheckingEnabled());
     }
 
     @Test
@@ -75,18 +73,11 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(WFSAdminPage.class);
         ft = tester.newFormTester("form");
         ft.setValue("getFeatureOutputTypes:outputTypeCheckingEnabled", true);
-        ft.getForm()
-                .get("getFeatureOutputTypes:palette")
-                .setDefaultModelObject(Collections.singleton("KML"));
+        ft.getForm().get("getFeatureOutputTypes:palette").setDefaultModelObject(Collections.singleton("KML"));
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertTrue(
-                "getFeatureOutputTypeCheckingEnabled= true",
-                wfs.isGetFeatureOutputTypeCheckingEnabled());
-        assertEquals(
-                "getFeatureOutputTypes= KML",
-                Collections.singleton("KML"),
-                wfs.getGetFeatureOutputTypes());
+        assertTrue("getFeatureOutputTypeCheckingEnabled= true", wfs.isGetFeatureOutputTypeCheckingEnabled());
+        assertEquals("getFeatureOutputTypes= KML", Collections.singleton("KML"), wfs.getGetFeatureOutputTypes());
     }
 
     @Test
@@ -128,8 +119,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new WFSAdminPage());
         // check that GML MIME type overriding is disabled
         tester.assertComponent("form:gml32:forceGmlMimeType", CheckBox.class);
-        CheckBox checkbox =
-                (CheckBox) tester.getComponentFromLastRenderedPage("form:gml32:forceGmlMimeType");
+        CheckBox checkbox = (CheckBox) tester.getComponentFromLastRenderedPage("form:gml32:forceGmlMimeType");
         assertThat(checkbox.getModelObject(), is(false));
         // MIME type drop down choice should be invisible
         tester.assertInvisible("form:gml32:mimeTypeToForce");
@@ -182,38 +172,27 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new WFSAdminPage());
         FormTester form = tester.newFormTester("form");
         // enable i18n for title and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         // enable i18n for abstract and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         // figure out the locales used in the test (might not be stable across JVMs)
         @SuppressWarnings("unchecked")
-        DropDownChoice<Locale> select =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+        DropDownChoice<Locale> select = (DropDownChoice)
+                tester.getComponentFromLastRenderedPage(
+                        "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
         Locale l10 = select.getChoices().get(10);
         Locale l20 = select.getChoices().get(20);
 
@@ -277,8 +256,6 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("csvDateFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'");
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
-        assertEquals(
-                getGeoServer().getService(WFSInfo.class).getCsvDateFormat(),
-                "yyyy-MM-dd'T'HH:mm:ss'Z'");
+        assertEquals(getGeoServer().getService(WFSInfo.class).getCsvDateFormat(), "yyyy-MM-dd'T'HH:mm:ss'Z'");
     }
 }

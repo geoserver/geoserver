@@ -23,8 +23,7 @@ public class KvpUtilsTest {
 
     @Test
     public void testTrailingEmtpyStrings() {
-        Assert.assertEquals(
-                Arrays.asList(new String[] {"x", "", "x", "", ""}), KvpUtils.readFlat("x,,x,,"));
+        Assert.assertEquals(Arrays.asList(new String[] {"x", "", "x", "", ""}), KvpUtils.readFlat("x,,x,,"));
     }
 
     @Test
@@ -183,8 +182,7 @@ public class KvpUtilsTest {
     @Test
     public void testParseQueryString() {
         Map<String, Object> kvp =
-                KvpUtils.parseQueryString(
-                        "geoserver?request=WMS&version=1.0.0&CQL_FILTER=NAME='geoserver'");
+                KvpUtils.parseQueryString("geoserver?request=WMS&version=1.0.0&CQL_FILTER=NAME='geoserver'");
         Assert.assertEquals(3, kvp.size());
         Assert.assertEquals("WMS", kvp.get("request"));
         Assert.assertEquals("1.0.0", kvp.get("version"));
@@ -193,10 +191,8 @@ public class KvpUtilsTest {
 
     @Test
     public void testParseQueryStringRepeated() {
-        Map<String, Object> kvp =
-                KvpUtils.parseQueryString(
-                        "geoserver?request=WMS&version=1.0.0&version=2.0.0&CQL_FILTER=NAME"
-                                + "='geoserver'");
+        Map<String, Object> kvp = KvpUtils.parseQueryString(
+                "geoserver?request=WMS&version=1.0.0&version=2.0.0&CQL_FILTER=NAME" + "='geoserver'");
         Assert.assertEquals(3, kvp.size());
         Assert.assertEquals("WMS", kvp.get("request"));
         assertArrayEquals(new String[] {"1.0.0", "2.0.0"}, (String[]) kvp.get("version"));

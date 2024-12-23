@@ -29,8 +29,7 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         // add the checkbox to enable exposing a layer as a dataset
         MapModel<Boolean> datasetModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, "resource.metadata"), WCSEOMetadata.DATASET.key);
+                new MapModel<>(new PropertyModel<>(model, "resource.metadata"), WCSEOMetadata.DATASET.key);
         CheckBox dataset = new CheckBox("dataset", datasetModel);
         add(dataset);
     }
@@ -38,12 +37,10 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     private boolean isStructuredCoverage(IModel<LayerInfo> model) {
         try {
             CoverageInfo ci = (CoverageInfo) model.getObject().getResource();
-            boolean result =
-                    ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
+            boolean result = ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
             return result;
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Faied to load reader to determine if it's WCS EO Dataset worthy", e);
+            throw new RuntimeException("Faied to load reader to determine if it's WCS EO Dataset worthy", e);
         }
     }
 }

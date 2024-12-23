@@ -39,8 +39,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ExecuteKvpRequestReader extends EMFKvpRequestReader
-        implements ApplicationContextAware {
+public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
 
@@ -50,8 +49,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
 
     @Override
     @SuppressWarnings("unchecked") // EMF model without generics
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         ExecuteType execute = (ExecuteType) super.read(request, kvp, rawKvp);
         Wps10Factory factory = Wps10Factory.eINSTANCE;
 
@@ -63,23 +61,17 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         }
 
         // parse inputs
-        List<InputType> inputs =
-                parseDataInputs(
-                        pf.getParameterInfo(processName), (String) rawKvp.get("DataInputs"));
+        List<InputType> inputs = parseDataInputs(pf.getParameterInfo(processName), (String) rawKvp.get("DataInputs"));
         DataInputsType1 input1 = factory.createDataInputsType1();
         input1.getInput().addAll(inputs);
         execute.setDataInputs(input1);
 
         if (rawKvp.containsKey("responseDocument")) {
-            execute.setResponseForm(
-                    parseResponseDocument(
-                            pf.getResultInfo(processName, null),
-                            (String) rawKvp.get("responseDocument")));
+            execute.setResponseForm(parseResponseDocument(
+                    pf.getResultInfo(processName, null), (String) rawKvp.get("responseDocument")));
         } else if (rawKvp.containsKey("rawDataOutput")) {
             execute.setResponseForm(
-                    parseRawDataOutput(
-                            pf.getResultInfo(processName, null),
-                            (String) rawKvp.get("rawDataOutput")));
+                    parseRawDataOutput(pf.getResultInfo(processName, null), (String) rawKvp.get("rawDataOutput")));
         } else {
             ResponseFormType responseForm = factory.createResponseFormType();
             responseForm.setResponseDocument(factory.createResponseDocumentType());
@@ -90,8 +82,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
             if (execute.getResponseForm().getResponseDocument() == null) {
                 throw new WPSException(
                         "InvalidParameterValue",
-                        "Cannot store the response for raw data outputs, "
-                                + "please use response document instead");
+                        "Cannot store the response for raw data outputs, " + "please use response document instead");
             }
             execute.getResponseForm().getResponseDocument().setStoreExecuteResponse(true);
         }
@@ -184,7 +175,8 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
                 result.add(new IOParam(input, null, Collections.emptyMap()));
             } else {
                 String inputId = input.substring(0, idx);
-                String[] valueAttributes = input.substring(idx + 1, input.length()).split("@");
+                String[] valueAttributes =
+                        input.substring(idx + 1, input.length()).split("@");
 
                 String value = valueAttributes[0];
                 Map<String, String> attributes = parseAttributes(valueAttributes);
@@ -216,8 +208,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return result;
     }
 
-    private InputReferenceType parseReferenceType(
-            InputType it, Wps10Factory factory, IOParam param) {
+    private InputReferenceType parseReferenceType(InputType it, Wps10Factory factory, IOParam param) {
         InputReferenceType ref = factory.createInputReferenceType();
         if (param.attributes.containsKey("href")) {
             ref.setHref(param.attributes.get("href"));
@@ -245,8 +236,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     private BoundingBoxType parseBoundingBox(InputType it, Wps10Factory factory, IOParam param) {
         try {
             ReferencedEnvelope envelope =
-                    (ReferencedEnvelope)
-                            new org.geoserver.wfs.kvp.BBoxKvpParser().parse(param.value);
+                    (ReferencedEnvelope) new org.geoserver.wfs.kvp.BBoxKvpParser().parse(param.value);
             if (envelope != null) {
                 BoundingBoxType bbox = Ows11Factory.eINSTANCE.createBoundingBoxType();
                 if (envelope.getCoordinateReferenceSystem() != null) {
@@ -278,8 +268,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     }
 
     @SuppressWarnings("unchecked") // EMF model without generics
-    ResponseFormType parseResponseDocument(
-            Map<String, Parameter<?>> outputs, String responseDefinition) {
+    ResponseFormType parseResponseDocument(Map<String, Parameter<?>> outputs, String responseDefinition) {
         Wps10Factory factory = Wps10Factory.eINSTANCE;
         List<IOParam> ioParams = parseIOParameters(responseDefinition);
 
@@ -295,10 +284,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     }
 
     OutputDefinitionType parseOutputDefinitionType(
-            Map<String, Parameter<?>> outputs,
-            Wps10Factory factory,
-            IOParam ioParam,
-            boolean inDocument) {
+            Map<String, Parameter<?>> outputs, Wps10Factory factory, IOParam ioParam, boolean inDocument) {
         if (!outputs.containsKey(ioParam.id)) {
             throw new WPSException("Unknown output " + ioParam.id);
         }
@@ -333,8 +319,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
             throw new WPSException("There can be only one RawDataOutput");
         }
 
-        response.setRawDataOutput(
-                parseOutputDefinitionType(resultInfo, factory, ioParams.get(0), false));
+        response.setRawDataOutput(parseOutputDefinitionType(resultInfo, factory, ioParams.get(0), false));
 
         return response;
     }
@@ -356,8 +341,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         }
 
         public boolean isReference() {
-            return attributes.keySet().contains("href")
-                    || attributes.keySet().contains("xlink:href");
+            return attributes.keySet().contains("href") || attributes.keySet().contains("xlink:href");
         }
     }
 }

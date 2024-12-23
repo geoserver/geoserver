@@ -12,8 +12,7 @@ import org.geoserver.security.config.SecurityRoleServiceConfig;
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  */
-public class LDAPRoleServiceConfig extends LDAPBaseSecurityServiceConfig
-        implements SecurityRoleServiceConfig {
+public class LDAPRoleServiceConfig extends LDAPBaseSecurityServiceConfig implements SecurityRoleServiceConfig {
 
     private static final long serialVersionUID = -5731528105464984100L;
 

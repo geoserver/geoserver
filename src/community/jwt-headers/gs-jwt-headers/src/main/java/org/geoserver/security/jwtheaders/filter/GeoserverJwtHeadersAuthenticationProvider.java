@@ -16,14 +16,10 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * FilterProvider from JWT Headers filter. This sets up the infrastructure for the JWT Header
- * filters.
- */
+/** FilterProvider from JWT Headers filter. This sets up the infrastructure for the JWT Header filters. */
 public class GeoserverJwtHeadersAuthenticationProvider extends AbstractFilterProvider {
 
-    private static final Logger LOG =
-            Logging.getLogger(GeoserverJwtHeadersAuthenticationProvider.class);
+    private static final Logger LOG = Logging.getLogger(GeoserverJwtHeadersAuthenticationProvider.class);
 
     @Autowired
     public GeoserverJwtHeadersAuthenticationProvider() {}
@@ -48,11 +44,8 @@ public class GeoserverJwtHeadersAuthenticationProvider extends AbstractFilterPro
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
-        LOG.log(
-                Level.FINER,
-                "GeoserverJwtHeadersAuthenticationProvider.createConfigurationValidator ENTRY");
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
+        LOG.log(Level.FINER, "GeoserverJwtHeadersAuthenticationProvider.createConfigurationValidator ENTRY");
         return new GeoServerJwtHeadersFilterConfigValidator(securityManager);
     }
 }

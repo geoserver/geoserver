@@ -37,12 +37,10 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
         Coordinate[] ca1 = {new Coordinate(-75.705338D, 45.397785D)};
         Coordinate[] ca2 = {new Coordinate(-75.702082D, 45.397847D)};
         Point[] points = {
-            new Point(new CoordinateArraySequence(ca1), jtsf),
-            new Point(new CoordinateArraySequence(ca2), jtsf)
+            new Point(new CoordinateArraySequence(ca1), jtsf), new Point(new CoordinateArraySequence(ca2), jtsf)
         };
         MapMLGenerator featureBuilder = new MapMLGenerator();
-        org.locationtech.jts.geom.MultiPoint jtsMultiPoint =
-                new org.locationtech.jts.geom.MultiPoint(points, jtsf);
+        org.locationtech.jts.geom.MultiPoint jtsMultiPoint = new org.locationtech.jts.geom.MultiPoint(points, jtsf);
         JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
         try {
             GeometryContent g = featureBuilder.buildGeometry(jtsMultiPoint);
@@ -73,13 +71,11 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
         Coordinate[] ca1 = {new Coordinate(-75.705338D, 45.397785D)};
         Coordinate[] ca2 = {new Coordinate(-75.702082D, 45.397847D)};
         Point[] points = {
-            new Point(new CoordinateArraySequence(ca1), jtsf),
-            new Point(new CoordinateArraySequence(ca2), jtsf)
+            new Point(new CoordinateArraySequence(ca1), jtsf), new Point(new CoordinateArraySequence(ca2), jtsf)
         };
         MapMLGenerator featureBuilder = new MapMLGenerator();
         featureBuilder.setNumDecimals(5);
-        org.locationtech.jts.geom.MultiPoint jtsMultiPoint =
-                new org.locationtech.jts.geom.MultiPoint(points, jtsf);
+        org.locationtech.jts.geom.MultiPoint jtsMultiPoint = new org.locationtech.jts.geom.MultiPoint(points, jtsf);
         JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
         try {
             GeometryContent g = featureBuilder.buildGeometry(jtsMultiPoint);
@@ -110,14 +106,12 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
         Coordinate[] ca1 = {new Coordinate(-75.705338D, 45.3977853D)};
         Coordinate[] ca2 = {new Coordinate(-75.702082D, 45.3978472D)};
         Point[] points = {
-            new Point(new CoordinateArraySequence(ca1), jtsf),
-            new Point(new CoordinateArraySequence(ca2), jtsf)
+            new Point(new CoordinateArraySequence(ca1), jtsf), new Point(new CoordinateArraySequence(ca2), jtsf)
         };
         MapMLGenerator featureBuilder = new MapMLGenerator();
         featureBuilder.setPadWithZeros(true);
         featureBuilder.setNumDecimals(10);
-        org.locationtech.jts.geom.MultiPoint jtsMultiPoint =
-                new org.locationtech.jts.geom.MultiPoint(points, jtsf);
+        org.locationtech.jts.geom.MultiPoint jtsMultiPoint = new org.locationtech.jts.geom.MultiPoint(points, jtsf);
         JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
         try {
             GeometryContent g = featureBuilder.buildGeometry(jtsMultiPoint);
@@ -148,15 +142,13 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
         Coordinate[] ca1 = {new Coordinate(-1000000000.1D, 1000000000.2D)};
         Coordinate[] ca2 = {new Coordinate(-1000000001.3D, 1000000001.4D)};
         Point[] points = {
-            new Point(new CoordinateArraySequence(ca1), jtsf),
-            new Point(new CoordinateArraySequence(ca2), jtsf)
+            new Point(new CoordinateArraySequence(ca1), jtsf), new Point(new CoordinateArraySequence(ca2), jtsf)
         };
         MapMLGenerator featureBuilder = new MapMLGenerator();
         // when encoded in scientific notation, these parameters are ignored
         featureBuilder.setNumDecimals(3);
         featureBuilder.setPadWithZeros(true);
-        org.locationtech.jts.geom.MultiPoint jtsMultiPoint =
-                new org.locationtech.jts.geom.MultiPoint(points, jtsf);
+        org.locationtech.jts.geom.MultiPoint jtsMultiPoint = new org.locationtech.jts.geom.MultiPoint(points, jtsf);
         JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
         try {
             GeometryContent g = featureBuilder.buildGeometry(jtsMultiPoint);

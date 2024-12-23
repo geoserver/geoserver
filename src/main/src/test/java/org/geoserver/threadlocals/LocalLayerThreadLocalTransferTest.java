@@ -27,18 +27,17 @@ public class LocalLayerThreadLocalTransferTest extends AbstractThreadLocalTransf
         final LayerInfo layer = new LayerInfoImpl();
         LocalPublished.set(layer);
         // test it's transferred properly using the base class machinery
-        testThreadLocalTransfer(
-                new ThreadLocalTransferCallable(new LocalPublishedThreadLocalTransfer()) {
+        testThreadLocalTransfer(new ThreadLocalTransferCallable(new LocalPublishedThreadLocalTransfer()) {
 
-                    @Override
-                    void assertThreadLocalCleaned() {
-                        assertNull(LocalPublished.get());
-                    }
+            @Override
+            void assertThreadLocalCleaned() {
+                assertNull(LocalPublished.get());
+            }
 
-                    @Override
-                    void assertThreadLocalApplied() {
-                        assertSame(layer, LocalPublished.get());
-                    }
-                });
+            @Override
+            void assertThreadLocalApplied() {
+                assertSame(layer, LocalPublished.get());
+            }
+        });
     }
 }

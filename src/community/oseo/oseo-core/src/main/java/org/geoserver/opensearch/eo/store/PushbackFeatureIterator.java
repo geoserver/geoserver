@@ -43,9 +43,8 @@ class PushbackFeatureIterator<F extends Feature> implements FeatureIterator<F> {
     }
 
     /**
-     * Pushes back the last feature returned by next(). Will throw an {@link IllegalStateException}
-     * if there is no feature to push back. Only a single pushBack call can be performed between two
-     * calls to next()
+     * Pushes back the last feature returned by next(). Will throw an {@link IllegalStateException} if there is no
+     * feature to push back. Only a single pushBack call can be performed between two calls to next()
      */
     public void pushBack() {
         if (last != null) {

@@ -18,10 +18,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.DirectoryInput;
 
-/**
- * Edits the {@link org.geoserver.importer.Importer} configuration, {@link
- * org.geoserver.importer.ImporterInfo}.
- */
+/** Edits the {@link org.geoserver.importer.Importer} configuration, {@link org.geoserver.importer.ImporterInfo}. */
 public class ImporterConfigPage extends GeoServerSecuredPage {
 
     public ImporterConfigPage() {
@@ -50,51 +47,39 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
 
         RangeValidator<Integer> threadValidator = new RangeValidator<>(1, Integer.MAX_VALUE);
         TextField<Integer> maxSync =
-                new TextField<>(
-                        "maxSync",
-                        new PropertyModel<>(model, "maxSynchronousImports"),
-                        Integer.class);
+                new TextField<>("maxSync", new PropertyModel<>(model, "maxSynchronousImports"), Integer.class);
         maxSync.add(threadValidator);
         form.add(maxSync);
 
         TextField<Integer> maxAsync =
-                new TextField<>(
-                        "maxAsync",
-                        new PropertyModel<>(model, "maxAsynchronousImports"),
-                        Integer.class);
+                new TextField<>("maxAsync", new PropertyModel<>(model, "maxAsynchronousImports"), Integer.class);
         maxAsync.add(threadValidator);
         form.add(maxAsync);
 
         TextField<Double> expiration =
-                new TextField<>(
-                        "expiration",
-                        new PropertyModel<>(model, "contextExpiration"),
-                        Double.class);
+                new TextField<>("expiration", new PropertyModel<>(model, "contextExpiration"), Double.class);
         form.add(expiration);
 
-        SubmitLink submit =
-                new SubmitLink("submit", form) {
-                    @Override
-                    public void onSubmit() {
-                        try {
-                            Importer singleton =
-                                    getGeoServerApplication().getBeanOfType(Importer.class);
-                            singleton.setConfiguration(info);
-                            doReturn();
-                        } catch (Exception e) {
-                            error(e);
-                        }
-                    }
-                };
+        SubmitLink submit = new SubmitLink("submit", form) {
+            @Override
+            public void onSubmit() {
+                try {
+                    Importer singleton = getGeoServerApplication().getBeanOfType(Importer.class);
+                    singleton.setConfiguration(info);
+                    doReturn();
+                } catch (Exception e) {
+                    error(e);
+                }
+            }
+        };
         form.add(submit);
 
-        Button cancel =
-                new Button("cancel") {
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+        Button cancel = new Button("cancel") {
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
         cancel.setDefaultFormProcessing(false);
     }

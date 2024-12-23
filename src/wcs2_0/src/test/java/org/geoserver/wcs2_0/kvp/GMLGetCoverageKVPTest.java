@@ -29,10 +29,8 @@ public class GMLGetCoverageKVPTest extends WCSTestSupport {
 
     @Test
     public void gmlFormat() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
 
         assertEquals("application/gml+xml", response.getContentType());
         // checks it's xml....
@@ -66,11 +64,10 @@ public class GMLGetCoverageKVPTest extends WCSTestSupport {
         }
         catalog.save(c);
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
+        Document dom =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         String name = xpath.evaluate("//swe:field/@name", dom);
         assertEquals("Band1", name);
         String interval = xpath.evaluate("//swe:interval", dom);

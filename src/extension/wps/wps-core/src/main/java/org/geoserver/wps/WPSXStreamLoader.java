@@ -89,15 +89,10 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         xs.registerConverter(new NameConverter());
         ClassAliasingMapper mapper = new ClassAliasingMapper(xs.getMapper());
         mapper.addClassAlias("role", String.class);
-        xs.registerLocalConverter(
-                ProcessGroupInfoImpl.class, "roles", new CollectionConverter(mapper));
+        xs.registerLocalConverter(ProcessGroupInfoImpl.class, "roles", new CollectionConverter(mapper));
         xs.registerLocalConverter(ProcessInfoImpl.class, "roles", new CollectionConverter(mapper));
-        xs.registerLocalConverter(
-                ProcessInfoImpl.class,
-                "validators",
-                new XStreamPersister.MultimapConverter(mapper));
-        xs.registerLocalConverter(
-                WPSInfoImpl.class, "processGroups", new WPSCollectionConverter(mapper));
+        xs.registerLocalConverter(ProcessInfoImpl.class, "validators", new XStreamPersister.MultimapConverter(mapper));
+        xs.registerLocalConverter(WPSInfoImpl.class, "processGroups", new WPSCollectionConverter(mapper));
         xs.alias("maxSizeValidator", MaxSizeValidator.class);
         xs.alias("maxMultiplicityValidator", MultiplicityValidator.class);
         xs.alias("rangeValidator", NumberRangeValidator.class);
@@ -153,8 +148,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                             ((ProcessInfoImpl) pi).setRoles(new ArrayList<>());
                         }
                         if (pi.getValidators() == null) {
-                            Multimap<String, WPSInputValidator> validators =
-                                    ArrayListMultimap.create();
+                            Multimap<String, WPSInputValidator> validators = ArrayListMultimap.create();
                             ((ProcessInfoImpl) pi).setValidators(validators);
                         }
                         if (pi.getMetadata() == null) {
@@ -199,9 +193,8 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     }
 
     /**
-     * Manages unmarshalling of {@link ProcessGroupInfoImpl} taking into account previous wps.xml
-     * format in witch {@link ProcessGroupInfoImpl #getFilteredProcesses()} is a collection of
-     * {@link NameImpl}
+     * Manages unmarshalling of {@link ProcessGroupInfoImpl} taking into account previous wps.xml format in witch
+     * {@link ProcessGroupInfoImpl #getFilteredProcesses()} is a collection of {@link NameImpl}
      */
     public static class ProcessGroupConverter extends ReflectionConverter {
 
@@ -215,11 +208,9 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public Object doUnmarshal(
-                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+        public Object doUnmarshal(Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             try {
-                ProcessGroupInfo converted =
-                        (ProcessGroupInfo) super.doUnmarshal(result, reader, context);
+                ProcessGroupInfo converted = (ProcessGroupInfo) super.doUnmarshal(result, reader, context);
 
                 if (converted.getFilteredProcesses() != null) {
                     List<ProcessInfo> newFilteredProcesses = new ArrayList<>();
@@ -243,8 +234,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
                 return converted;
             } catch (ConversionException e) {
                 LOGGER.log(Level.WARNING, "Error unmarshaling WPS Process Group", e);
-                List<String> expectedHierarchy =
-                        Arrays.asList("wps", "processGroups", "processGroup");
+                List<String> expectedHierarchy = Arrays.asList("wps", "processGroups", "processGroup");
                 while (!expectedHierarchy.contains(reader.getNodeName())) {
                     // Abort parsing this process group, and reset the reader to a safe state
                     reader.moveUp();
@@ -266,8 +256,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public void marshal(
-                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             NumberRange<?> range = (NumberRange<?>) source;
             writer.startNode("minValue");
             writer.setValue(String.valueOf(range.getMinValue()));
@@ -301,8 +290,8 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     }
 
     /**
-     * {@link CollectionConverter} variant used with {@link ProcessGroupConverter} to handle errors
-     * thrown by unresolvable process handler classes.
+     * {@link CollectionConverter} variant used with {@link ProcessGroupConverter} to handle errors thrown by
+     * unresolvable process handler classes.
      */
     public static class WPSCollectionConverter extends CollectionConverter {
 

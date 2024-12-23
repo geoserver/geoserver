@@ -20,8 +20,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *
  * <p>The procedure will provide a new <b>Client ID</b> and <b>Client Secret</b>
  *
- * <p>Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer
- * instances <br>
+ * <p>Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer instances <br>
  * Example:
  *
  * <ul>
@@ -29,8 +28,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *   <li>http://localhost:8080/geoserver/
  * </ul>
  *
- * <p>The GeoNode OAuth2 Filter Endpoint will automatically redirect the users to an URL like the
- * following one at first login <br>
+ * <p>The GeoNode OAuth2 Filter Endpoint will automatically redirect the users to an URL like the following one at first
+ * login <br>
  *
  * <p>Tipically a correct configuration for the GeoNode OAuth2 Provider is like the following one:
  *

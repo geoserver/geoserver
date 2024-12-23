@@ -52,8 +52,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class GeoRSSTransformerBase extends TransformerBase {
     /** logger */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.georss");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.georss");
 
     static final Configuration GML_CONFIGURATION = new GMLConfiguration();
 
@@ -80,131 +79,127 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
          *
          * <p>ex: <georss:point>45.256 -71.92</georss:point>,<georss:line>...</georss:line>,...
          */
-        public static GeometryEncoding SIMPLE =
-                new GeometryEncoding() {
-                    @Override
-                    public String getPrefix() {
-                        return "georss";
+        public static GeometryEncoding SIMPLE = new GeometryEncoding() {
+            @Override
+            public String getPrefix() {
+                return "georss";
+            }
+
+            @Override
+            public String getNamespaceURI() {
+                return "http://www.georss.org/georss";
+            }
+
+            @Override
+            public void encode(Geometry g, GeoRSSTranslatorSupport t) {
+                if (g instanceof Point) {
+                    Point p = (Point) g;
+                    t.element("georss:point", p.getY() + " " + p.getX());
+                }
+
+                if (g instanceof LineString) {
+                    LineString l = (LineString) g;
+
+                    StringBuffer sb = new StringBuffer();
+
+                    for (int i = 0; i < l.getNumPoints(); i++) {
+                        Coordinate c = l.getCoordinateN(i);
+                        sb.append(c.y).append(" ").append(c.x).append(" ");
                     }
 
-                    @Override
-                    public String getNamespaceURI() {
-                        return "http://www.georss.org/georss";
+                    sb.setLength(sb.length() - 1);
+
+                    t.element("georss:line", sb.toString());
+                }
+
+                if (g instanceof Polygon) {
+                    Polygon p = (Polygon) g;
+                    LineString line = p.getExteriorRing();
+
+                    StringBuffer sb = new StringBuffer();
+
+                    for (int i = 0; i < line.getNumPoints(); i++) {
+                        Coordinate c = line.getCoordinateN(i);
+                        sb.append(c.y).append(" ").append(c.x).append(" ");
                     }
 
-                    @Override
-                    public void encode(Geometry g, GeoRSSTranslatorSupport t) {
-                        if (g instanceof Point) {
-                            Point p = (Point) g;
-                            t.element("georss:point", p.getY() + " " + p.getX());
-                        }
+                    sb.setLength(sb.length() - 1);
 
-                        if (g instanceof LineString) {
-                            LineString l = (LineString) g;
-
-                            StringBuffer sb = new StringBuffer();
-
-                            for (int i = 0; i < l.getNumPoints(); i++) {
-                                Coordinate c = l.getCoordinateN(i);
-                                sb.append(c.y).append(" ").append(c.x).append(" ");
-                            }
-
-                            sb.setLength(sb.length() - 1);
-
-                            t.element("georss:line", sb.toString());
-                        }
-
-                        if (g instanceof Polygon) {
-                            Polygon p = (Polygon) g;
-                            LineString line = p.getExteriorRing();
-
-                            StringBuffer sb = new StringBuffer();
-
-                            for (int i = 0; i < line.getNumPoints(); i++) {
-                                Coordinate c = line.getCoordinateN(i);
-                                sb.append(c.y).append(" ").append(c.x).append(" ");
-                            }
-
-                            sb.setLength(sb.length() - 1);
-
-                            t.element("georss:polygon", sb.toString());
-                        }
-                    }
-                };
+                    t.element("georss:polygon", sb.toString());
+                }
+            }
+        };
 
         /**
          * gml encoding:
          *
          * <p>ex: <gml:Point> <gml:pos>45.256 -71.92</gml:pos> </gml:Point>
          */
-        public static GeometryEncoding GML =
-                new GeometryEncoding() {
-                    @Override
-                    public String getPrefix() {
-                        return "gml";
+        public static GeometryEncoding GML = new GeometryEncoding() {
+            @Override
+            public String getPrefix() {
+                return "gml";
+            }
+
+            @Override
+            public String getNamespaceURI() {
+                return "http://www.opengis.net/gml";
+            }
+
+            @Override
+            public void encode(Geometry g, final GeoRSSTranslatorSupport translator) {
+                try {
+                    // get the proper element name
+                    QName elementName = null;
+                    if (g instanceof Point) {
+                        elementName = org.geotools.gml2.GML.Point;
+                    } else if (g instanceof LineString) {
+                        elementName = org.geotools.gml2.GML.LineString;
+                    } else if (g instanceof Polygon) {
+                        elementName = org.geotools.gml2.GML.Polygon;
+                    } else if (g instanceof MultiPoint) {
+                        elementName = org.geotools.gml2.GML.MultiPoint;
+                    } else if (g instanceof MultiLineString) {
+                        elementName = org.geotools.gml2.GML.MultiLineString;
+                    } else if (g instanceof MultiPolygon) {
+                        elementName = org.geotools.gml2.GML.MultiPolygon;
+                    } else {
+                        elementName = org.geotools.gml2.GML._Geometry;
                     }
 
-                    @Override
-                    public String getNamespaceURI() {
-                        return "http://www.opengis.net/gml";
-                    }
-
-                    @Override
-                    public void encode(Geometry g, final GeoRSSTranslatorSupport translator) {
-                        try {
-                            // get the proper element name
-                            QName elementName = null;
-                            if (g instanceof Point) {
-                                elementName = org.geotools.gml2.GML.Point;
-                            } else if (g instanceof LineString) {
-                                elementName = org.geotools.gml2.GML.LineString;
-                            } else if (g instanceof Polygon) {
-                                elementName = org.geotools.gml2.GML.Polygon;
-                            } else if (g instanceof MultiPoint) {
-                                elementName = org.geotools.gml2.GML.MultiPoint;
-                            } else if (g instanceof MultiLineString) {
-                                elementName = org.geotools.gml2.GML.MultiLineString;
-                            } else if (g instanceof MultiPolygon) {
-                                elementName = org.geotools.gml2.GML.MultiPolygon;
-                            } else {
-                                elementName = org.geotools.gml2.GML._Geometry;
-                            }
-
-                            // encode in GML3
-                            Encoder encoder = new Encoder(GML_CONFIGURATION);
-                            encoder.encode(g, elementName, translator);
-                        } catch (Exception e) {
-                            throw new RuntimeException(
-                                    "Cannot transform the specified geometry in GML", e);
-                        }
-                    }
-                };
+                    // encode in GML3
+                    Encoder encoder = new Encoder(GML_CONFIGURATION);
+                    encoder.encode(g, elementName, translator);
+                } catch (Exception e) {
+                    throw new RuntimeException("Cannot transform the specified geometry in GML", e);
+                }
+            }
+        };
 
         /**
          * lat/long encoding:
          *
          * <p>ex: <geo:lat>45.256</geo:lat> <geo:long>-71.92</geo:long>
          */
-        public static GeometryEncoding LATLONG =
-                new GeometryEncoding() {
-                    @Override
-                    public String getPrefix() {
-                        return "geo";
-                    }
+        public static GeometryEncoding LATLONG = new GeometryEncoding() {
+            @Override
+            public String getPrefix() {
+                return "geo";
+            }
 
-                    @Override
-                    public String getNamespaceURI() {
-                        return "http://www.w3.org/2003/01/geo/wgs84_pos#";
-                    }
+            @Override
+            public String getNamespaceURI() {
+                return "http://www.w3.org/2003/01/geo/wgs84_pos#";
+            }
 
-                    @Override
-                    public void encode(Geometry g, GeoRSSTranslatorSupport t) {
-                        // encode the centroid
-                        Point p = g.getCentroid();
-                        t.element("geo:lat", "" + p.getY());
-                        t.element("geo:long", "" + p.getX());
-                    }
-                };
+            @Override
+            public void encode(Geometry g, GeoRSSTranslatorSupport t) {
+                // encode the centroid
+                Point p = g.getCentroid();
+                t.element("geo:lat", "" + p.getY());
+                t.element("geo:long", "" + p.getX());
+            }
+        };
     }
 
     /** Geometry encoding to use. */
@@ -218,8 +213,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         public GeoRSSTranslatorSupport(ContentHandler contentHandler, String prefix, String nsURI) {
             super(contentHandler, prefix, nsURI);
 
-            nsSupport.declarePrefix(
-                    geometryEncoding.getPrefix(), geometryEncoding.getNamespaceURI());
+            nsSupport.declarePrefix(geometryEncoding.getPrefix(), geometryEncoding.getNamespaceURI());
         }
 
         /** Encodes the geometry of a feature. */
@@ -281,29 +275,21 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
                         ReferencedEnvelope env = new ReferencedEnvelope(mapArea);
                         CoordinateReferenceSystem sourceCRS = gd.getCoordinateReferenceSystem();
                         if (sourceCRS != null
-                                && !CRS.equalsIgnoreMetadata(
-                                        mapArea.getCoordinateReferenceSystem(), sourceCRS)) {
+                                && !CRS.equalsIgnoreMetadata(mapArea.getCoordinateReferenceSystem(), sourceCRS)) {
                             env = env.transform(sourceCRS, true);
                         }
 
                         // build the mixed query
                         Query mixed = new Query(query);
                         Filter original = query.getFilter();
-                        Filter bbox =
-                                ff.bbox(
-                                        gd.getLocalName(),
-                                        env.getMinX(),
-                                        env.getMinY(),
-                                        env.getMaxX(),
-                                        env.getMaxY(),
-                                        null);
+                        Filter bbox = ff.bbox(
+                                gd.getLocalName(), env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY(), null);
                         mixed.setFilter(ff.and(original, bbox));
 
                         // query and eventually reproject
                         features = source.getFeatures(mixed);
                         if (sourceCRS != null && !CRS.equalsIgnoreMetadata(wgs84, sourceCRS)) {
-                            ReprojectingFeatureCollection coll =
-                                    new ReprojectingFeatureCollection(features, wgs84);
+                            ReprojectingFeatureCollection coll = new ReprojectingFeatureCollection(features, wgs84);
                             coll.setDefaultSource(sourceCRS);
                             features = coll;
                         }
@@ -334,8 +320,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts)
-                throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
             start(qName, atts);
         }
 

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Component;
 
 /**
- * Retrieve real system information metrics defined in {@link MetricInfo} from a collector thread.
- * The collector thread is started and stopped according to the statistics status.
+ * Retrieve real system information metrics defined in {@link MetricInfo} from a collector thread. The collector thread
+ * is started and stopped according to the statistics status.
  *
  * <p>This class is located as a singleton bean by a &lt;context:component-scan
  * base-package="org.geoserver.system.status"/&lgt;

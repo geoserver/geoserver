@@ -61,8 +61,7 @@ public class XStreamPersisterIntegrationTest extends GeoServerSystemTestSupport 
         XMLAssert.assertXpathNotExists("/wmsStore[password = 'password']", dom);
         XMLAssert.assertXpathExists("/wmsStore[starts-with(password, 'crypt1:')]", dom);
 
-        WMSStoreInfo loaded =
-                persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
+        WMSStoreInfo loaded = persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
         assertEquals("password", loaded.getPassword());
     }
 
@@ -84,14 +83,12 @@ public class XStreamPersisterIntegrationTest extends GeoServerSystemTestSupport 
         // load back with a password encrypting persister, should fall back reading plain text
         // password
         persister.setEncryptPasswordFields(true);
-        WMSStoreInfo loaded =
-                persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
+        WMSStoreInfo loaded = persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
         assertEquals("password", loaded.getPassword());
 
         // just to be thorough test also loading with no password encryption
         persister.setEncryptPasswordFields(false);
-        WMSStoreInfo loaded2 =
-                persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
+        WMSStoreInfo loaded2 = persister.load(new ByteArrayInputStream(out.toByteArray()), WMSStoreInfo.class);
         assertEquals("password", loaded2.getPassword());
     }
 

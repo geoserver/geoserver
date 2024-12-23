@@ -37,7 +37,6 @@ public class HzSessionShareListener extends SessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
-        if (getCluster(httpSessionEvent).isSessionSharing())
-            super.sessionDestroyed(httpSessionEvent);
+        if (getCluster(httpSessionEvent).isSessionSharing()) super.sessionDestroyed(httpSessionEvent);
     }
 }

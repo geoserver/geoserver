@@ -42,10 +42,7 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
     private final JDBCDataStore store;
 
     public ClickhouseAggregatorCollection(
-            SimpleFeatureCollection delegate,
-            JDBCDataStore store,
-            Query query,
-            SimpleFeatureType featureType) {
+            SimpleFeatureCollection delegate, JDBCDataStore store, Query query, SimpleFeatureType featureType) {
         super(delegate);
         this.store = store;
         this.query = query;
@@ -165,14 +162,8 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
             }
             sql.setLength(sql.length() - 2);
 
-            visitor.setResults(
-                    new GroupedMatrixAggregate.IterableResult(
-                            () ->
-                                    new GroupedIterableResult(
-                                            store,
-                                            sql,
-                                            groupByExpressions.size(),
-                                            calculators.size())));
+            visitor.setResults(new GroupedMatrixAggregate.IterableResult(
+                    () -> new GroupedIterableResult(store, sql, groupByExpressions.size(), calculators.size())));
             return true;
         } catch (Exception e) {
             throw new IOException(e);
@@ -188,8 +179,7 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
         int groupSize;
         int resultSize;
 
-        public GroupedIterableResult(
-                JDBCDataStore store, StringBuffer sql, int groupSize, int resultSize) {
+        public GroupedIterableResult(JDBCDataStore store, StringBuffer sql, int groupSize, int resultSize) {
             try {
                 this.cx = store.getConnection(Transaction.AUTO_COMMIT);
                 this.st = cx.createStatement();
@@ -255,17 +245,15 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
     /**
      * Creates a new instance of a filter to sql encoder.
      *
-     * <p>The <tt>featureType</tt> may be null but it is not recommended. Such a case where this may
-     * neccessary is when a literal needs to be encoded in isolation.
+     * <p>The <tt>featureType</tt> may be null but it is not recommended. Such a case where this may neccessary is when
+     * a literal needs to be encoded in isolation.
      */
     public FilterToSQL createFilterToSQL(SimpleFeatureType featureType) {
-        return initializeFilterToSQL(
-                ((BasicSQLDialect) store.getSQLDialect()).createFilterToSQL(), featureType);
+        return initializeFilterToSQL(((BasicSQLDialect) store.getSQLDialect()).createFilterToSQL(), featureType);
     }
 
     /** Helper method to initialize a filter encoder instance. */
-    protected <F extends FilterToSQL> F initializeFilterToSQL(
-            F toSQL, final SimpleFeatureType featureType) {
+    protected <F extends FilterToSQL> F initializeFilterToSQL(F toSQL, final SimpleFeatureType featureType) {
         toSQL.setSqlNameEscape(store.getSQLDialect().getNameEscape());
 
         if (featureType != null) {
@@ -297,15 +285,14 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
         }
         if (function == null) {
             // this visitor don't match any aggregate function NULL will be returned
-            LOGGER.info(
-                    "Unable to find aggregate function matching visitor: " + visitor.getClass());
+            LOGGER.info("Unable to find aggregate function matching visitor: " + visitor.getClass());
         }
         return function;
     }
 
     /**
-     * Helper method for getting the expression from a visitor TODO: Remove this method when there
-     * is an interface for aggregate visitors. See GEOT-2325 for details.
+     * Helper method for getting the expression from a visitor TODO: Remove this method when there is an interface for
+     * aggregate visitors. See GEOT-2325 for details.
      */
     Expression getExpression(FeatureVisitor visitor) {
         if (visitor instanceof CountVisitor) {

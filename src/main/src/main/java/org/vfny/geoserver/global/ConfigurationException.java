@@ -6,8 +6,7 @@
 package org.vfny.geoserver.global;
 
 /**
- * Thrown when there is an error in configuration. Added a third constructor for ease of exception
- * type chaining.
+ * Thrown when there is an error in configuration. Added a third constructor for ease of exception type chaining.
  *
  * @author Chris Holmes
  * @author dzwiers

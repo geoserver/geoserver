@@ -27,11 +27,9 @@ public class ConformanceTest extends TilesTestSupport {
         assertEquals(TilesService.CC_TILESET, json.read("$.conformsTo[3]", String.class));
         assertEquals(TilesService.CC_MULTITILES, json.read("$.conformsTo[4]", String.class));
         assertEquals(TilesService.CC_INFO, json.read("$.conformsTo[5]", String.class));
-        assertEquals(
-                TilesService.CC_TILES_TILE_MATRIX_SET, json.read("$.conformsTo[6]", String.class));
+        assertEquals(TilesService.CC_TILES_TILE_MATRIX_SET, json.read("$.conformsTo[6]", String.class));
         assertEquals(TilesService.CC_TILE_MATRIX_SET, json.read("$.conformsTo[7]", String.class));
-        assertEquals(
-                TilesService.CC_TILE_MATRIX_SET_JSON, json.read("$.conformsTo[8]", String.class));
+        assertEquals(TilesService.CC_TILE_MATRIX_SET_JSON, json.read("$.conformsTo[8]", String.class));
         // check the others as they get implemented
     }
 
@@ -44,12 +42,18 @@ public class ConformanceTest extends TilesTestSupport {
     @Test
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/tiles/v1/conformance?f=text/html");
-        assertEquals("GeoServer OGC API Tiles Conformance", document.select("#title").text());
+        assertEquals(
+                "GeoServer OGC API Tiles Conformance", document.select("#title").text());
         assertEquals(ConformanceClass.CORE, document.select("#content li:eq(0)").text());
-        assertEquals(ConformanceClass.COLLECTIONS, document.select("#content li:eq(1)").text());
-        assertEquals(TilesService.CC_TILE_CORE, document.select("#content li:eq(2)").text());
-        assertEquals(TilesService.CC_TILESET, document.select("#content li:eq(3)").text());
-        assertEquals(TilesService.CC_MULTITILES, document.select("#content li:eq(4)").text());
+        assertEquals(
+                ConformanceClass.COLLECTIONS,
+                document.select("#content li:eq(1)").text());
+        assertEquals(
+                TilesService.CC_TILE_CORE, document.select("#content li:eq(2)").text());
+        assertEquals(
+                TilesService.CC_TILESET, document.select("#content li:eq(3)").text());
+        assertEquals(
+                TilesService.CC_MULTITILES, document.select("#content li:eq(4)").text());
         assertEquals(TilesService.CC_INFO, document.select("#content li:eq(5)").text());
     }
 }

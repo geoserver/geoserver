@@ -27,9 +27,7 @@ public class WCSEOAdminPanelTest extends GeoServerWicketTestSupport {
         wcs = getGeoServer().getService(WCSInfo.class);
         getGeoServer().save(wcs);
 
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder) id -> new WCSEOAdminPanel(id, new Model<>(wcs))));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new WCSEOAdminPanel(id, new Model<>(wcs))));
     }
 
     @Test

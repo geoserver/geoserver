@@ -29,8 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public abstract class AbstractBatchesPanelTest<T extends Page>
-        extends AbstractWicketTaskManagerTest {
+public abstract class AbstractBatchesPanelTest<T extends Page> extends AbstractWicketTaskManagerTest {
 
     protected TaskManagerFactory fac;
     protected TaskManagerDao dao;
@@ -75,8 +74,7 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
 
         tester.startPage(page);
 
-        tester.assertComponent(
-                prefix() + "batchesPanel:form:batchesPanel", GeoServerTablePanel.class);
+        tester.assertComponent(prefix() + "batchesPanel:form:batchesPanel", GeoServerTablePanel.class);
         tester.assertComponent(prefix() + "batchesPanel:dialog", GeoServerDialog.class);
 
         tester.assertComponent(prefix() + "batchesPanel:addNew", AjaxLink.class);
@@ -95,10 +93,8 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         tester.startPage(page);
 
         @SuppressWarnings("unchecked")
-        GeoServerTablePanel<Batch> table =
-                (GeoServerTablePanel<Batch>)
-                        tester.getComponentFromLastRenderedPage(
-                                prefix() + "batchesPanel:form:batchesPanel");
+        GeoServerTablePanel<Batch> table = (GeoServerTablePanel<Batch>)
+                tester.getComponentFromLastRenderedPage(prefix() + "batchesPanel:form:batchesPanel");
 
         assertEquals(batches.size(), table.getDataProvider().size());
         assertTrue(containsBatch(getBatchesFromTable(table), dummy1));
@@ -126,8 +122,7 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         tester.startPage(page);
 
         tester.clickLink(
-                prefix()
-                        + "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:1:component:link");
+                prefix() + "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:1:component:link");
 
         tester.assertRenderedPage(BatchPage.class);
 
@@ -146,28 +141,19 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
         tester.startPage(page);
 
         @SuppressWarnings("unchecked")
-        GeoServerTablePanel<Batch> table =
-                (GeoServerTablePanel<Batch>)
-                        tester.getComponentFromLastRenderedPage(
-                                prefix() + "batchesPanel:form:batchesPanel");
+        GeoServerTablePanel<Batch> table = (GeoServerTablePanel<Batch>)
+                tester.getComponentFromLastRenderedPage(prefix() + "batchesPanel:form:batchesPanel");
 
         assertTrue(containsBatch(getBatches(), dummy1));
         assertTrue(containsBatch(getBatches(), dummy2));
 
         // sort descending on name
-        tester.clickLink(
-                prefix()
-                        + "batchesPanel:form:batchesPanel:listContainer:sortableLinks:1:header:link");
-        tester.clickLink(
-                prefix()
-                        + "batchesPanel:form:batchesPanel:listContainer:sortableLinks:1:header:link");
+        tester.clickLink(prefix() + "batchesPanel:form:batchesPanel:listContainer:sortableLinks:1:header:link");
+        tester.clickLink(prefix() + "batchesPanel:form:batchesPanel:listContainer:sortableLinks:1:header:link");
 
         // select
-        CheckBox selector =
-                ((CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                prefix()
-                                        + "batchesPanel:form:batchesPanel:listContainer:items:5:selectItemContainer:selectItem"));
+        CheckBox selector = ((CheckBox) tester.getComponentFromLastRenderedPage(
+                prefix() + "batchesPanel:form:batchesPanel:listContainer:items:5:selectItemContainer:selectItem"));
         tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
 
@@ -176,16 +162,13 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
 
         // click delete
         GSModalWindow w =
-                (GSModalWindow)
-                        tester.getComponentFromLastRenderedPage(
-                                prefix() + "batchesPanel:dialog:dialog");
+                (GSModalWindow) tester.getComponentFromLastRenderedPage(prefix() + "batchesPanel:dialog:dialog");
         assertFalse(w.isShown());
         tester.clickLink(prefix() + "batchesPanel:removeSelected");
         assertTrue(w.isShown());
 
         // confirm
-        tester.executeAjaxEvent(
-                prefix() + "batchesPanel:dialog:dialog:content:form:submit", "click");
+        tester.executeAjaxEvent(prefix() + "batchesPanel:dialog:dialog:content:form:submit", "click");
 
         assertFalse(containsBatch(getBatches(), dummy1));
         assertTrue(containsBatch(getBatches(), dummy2));

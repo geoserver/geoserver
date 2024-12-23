@@ -30,10 +30,7 @@ public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSuppo
 
     @Test
     public void getFilteredMappedFeature() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html"
-                                + MF_HTML_PARAM);
+        Document doc = getAsDOM("ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html" + MF_HTML_PARAM);
 
         assertXpathCount(1, "//html/head/script", doc);
         assertXpathCount(1, "//html/head/style", doc);
@@ -64,14 +61,9 @@ public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSuppo
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'instance']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'New Group']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = '-Xy']", doc);
-        assertXpathCount(
-                1, "//html/body/ul/li/ul/li/ul/li/ul/li[./span = 'Composition Parts']", doc);
+        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li[./span = 'Composition Parts']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Part']", doc);
-        assertXpathCount(
-                1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Role']", doc);
-        assertXpathCount(
-                1,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']",
-                doc);
+        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Role']", doc);
+        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']", doc);
     }
 }

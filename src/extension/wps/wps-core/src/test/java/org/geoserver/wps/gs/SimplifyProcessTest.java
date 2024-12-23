@@ -24,45 +24,43 @@ public class SimplifyProcessTest extends WPSTestSupport {
 
     @Test
     public void testSimplify() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:Simplify</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>features</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData>"
-                        + readFileIntoString("illinois.xml")
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>distance</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:LiteralData>10</wps:LiteralData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>preserveTopology</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:LiteralData>true</wps:LiteralData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:RawDataOutput>"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:RawDataOutput>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:Simplify</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>features</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData>"
+                + readFileIntoString("illinois.xml")
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>distance</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>10</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>preserveTopology</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>true</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:RawDataOutput>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:RawDataOutput>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
 
         Parser p = new Parser(new WFSConfiguration_1_0());
-        FeatureCollectionType fct =
-                (FeatureCollectionType)
-                        p.parse(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        FeatureCollectionType fct = (FeatureCollectionType)
+                p.parse(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         FeatureCollection fc = (FeatureCollection) fct.getFeature().get(0);
 
         assertEquals(1, fc.size());

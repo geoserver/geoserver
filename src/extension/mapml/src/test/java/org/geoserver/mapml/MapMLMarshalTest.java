@@ -41,8 +41,7 @@ public class MapMLMarshalTest {
     @Test
     public void testMixedContent() throws ParseException, IOException {
         Polygon square =
-                (org.locationtech.jts.geom.Polygon)
-                        new WKTReader().read("POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))");
+                (org.locationtech.jts.geom.Polygon) new WKTReader().read("POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))");
         Envelope envelope = new Envelope(5, 15, 5, 15);
         MapMLGeometryClipper clipper = new MapMLGeometryClipper(square, envelope);
         Geometry clipped = clipper.clipAndTag();

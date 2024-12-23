@@ -59,8 +59,7 @@ public class WFSPPIOTest extends WPSTestSupport {
     /** Test method for {@link org.geoserver.wps.ppio.WFSPPIO#decode(java.io.InputStream)}. */
     @Test
     public void testDecodeInputStream() throws Exception {
-        SimpleFeatureCollection rawTarget =
-                (SimpleFeatureCollection) new WFSPPIO.WFS11().decode(is);
+        SimpleFeatureCollection rawTarget = (SimpleFeatureCollection) new WFSPPIO.WFS11().decode(is);
 
         for (AttributeDescriptor ad : rawTarget.getSchema().getAttributeDescriptors()) {
             final String name = ad.getLocalName();

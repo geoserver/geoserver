@@ -72,9 +72,9 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set the textContent for the builder to be created. Only Dynamic and Static builders can have
-     * a textContent. In the case of a DynamicBuilder it will be a PropertyName directive
-     * ${propertyName} or a cql expression directive $${cql}.
+     * Set the textContent for the builder to be created. Only Dynamic and Static builders can have a textContent. In
+     * the case of a DynamicBuilder it will be a PropertyName directive ${propertyName} or a cql expression directive
+     * $${cql}.
      *
      * @param textContent the textContent
      * @return this TemplateBuilderMaker
@@ -85,8 +85,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set the jsonNode for the builder to be created. Only StaticBuilders can have a jsonNode
-     * content.
+     * Set the jsonNode for the builder to be created. Only StaticBuilders can have a jsonNode content.
      *
      * @param jsonNode the textContent
      * @return this TemplateBuilderMaker
@@ -97,8 +96,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set the baseMergeNode for the builder to be created. Only DynamicMergeBuilder can have a
-     * baseMergeNode content.
+     * Set the baseMergeNode for the builder to be created. Only DynamicMergeBuilder can have a baseMergeNode content.
      *
      * @param baseMergeNode the dynamic merge content
      * @return this TemplateBuilderMaker
@@ -109,8 +107,8 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set the overlayMergeNode for the builder to be created. Only DynamicMergeBuilder can have a
-     * baseMergeNode content.
+     * Set the overlayMergeNode for the builder to be created. Only DynamicMergeBuilder can have a baseMergeNode
+     * content.
      *
      * @param overlayMergeNode the dynamic merge content
      * @return this TemplateBuilderMaker
@@ -121,8 +119,8 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set the content for the builder to be created can be a String or a JsonNode. Only Static and
-     * Dynamic builder can have a value content.
+     * Set the content for the builder to be created can be a String or a JsonNode. Only Static and Dynamic builder can
+     * have a value content.
      *
      * @param content the content
      * @return this TemplateBuilderMaker
@@ -159,8 +157,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Parse a string to extract a filter if present and the builder content. Can be used for Static
-     * or Dynamic builders
+     * Parse a string to extract a filter if present and the builder content. Can be used for Static or Dynamic builders
      *
      * @param contentAndFilter the string holding the builder content and eventually the filter.
      * @return this TemplateBuilderMaker.
@@ -184,8 +181,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set an xpath as a source for the builder being created (for Composite or Iterating builder
-     * only).
+     * Set an xpath as a source for the builder being created (for Composite or Iterating builder only).
      *
      * @param source the source of the builder being created.
      * @return this TemplateBuilderMaker.
@@ -196,8 +192,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * A flag to the TemplateBuilderMaker that the builder being created should be an
-     * IteratingBuilder.
+     * A flag to the TemplateBuilderMaker that the builder being created should be an IteratingBuilder.
      *
      * @param collection true if the builder being created should be an IteratingBuilder.
      * @return this TemplateBuilderMaker.
@@ -208,8 +203,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set a boolean that tells the TemplateBuilderMaker if the Builder tree needs to be created
-     * Flat builder types.
+     * Set a boolean that tells the TemplateBuilderMaker if the Builder tree needs to be created Flat builder types.
      *
      * @param flatOutput true if flat builders should be created.
      * @return this TemplateBuilderMaker.
@@ -220,12 +214,11 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set a boolean to tell the TemplateBuilderMaker if the IteratingBuilder being created should
-     * be considered as the first IteratingBuilder of the builder tree.
+     * Set a boolean to tell the TemplateBuilderMaker if the IteratingBuilder being created should be considered as the
+     * first IteratingBuilder of the builder tree.
      *
      * @param hasOwnOutput false if the Builder being created is mapping element that are wrote by
-     *     ${@link
-     *     org.geoserver.featurestemplating.writers.TemplateOutputWriter#startTemplateOutput(EncodingHints)}
+     *     ${@link org.geoserver.featurestemplating.writers.TemplateOutputWriter#startTemplateOutput(EncodingHints)}
      *     method
      * @return this TemplateBuilderMaker.
      */
@@ -269,8 +262,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set a boolean to the TemplateBuilderMaker if the builder being created should be of type
-     * RootBuilder.
+     * Set a boolean to the TemplateBuilderMaker if the builder being created should be of type RootBuilder.
      *
      * @param rootBuilder true if a Root builder is requested to be created.
      * @return this TemplateBuilderMaker.
@@ -281,9 +273,8 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Set to true if the builder is the top level feature builder: a top level builder is a
-     * SourceBuilder that is mapping the start of a Feature or of the root Feature in case of
-     * complex features
+     * Set to true if the builder is the top level feature builder: a top level builder is a SourceBuilder that is
+     * mapping the start of a Feature or of the root Feature in case of complex features
      *
      * @param topLevelFeature
      * @return
@@ -347,15 +338,12 @@ public class TemplateBuilderMaker {
 
     private IteratingBuilder buildIteratingBuilder() {
         IteratingBuilder iteratingBuilder;
-        if (flatOutput)
-            iteratingBuilder =
-                    new FlatIteratingBuilder(name, namespaces, separator, topLevelFeature);
+        if (flatOutput) iteratingBuilder = new FlatIteratingBuilder(name, namespaces, separator, topLevelFeature);
         else iteratingBuilder = new IteratingBuilder(name, namespaces, topLevelFeature);
         if (source != null) iteratingBuilder.setSource(source);
         if (filter != null) iteratingBuilder.setFilter(filter);
         if (!encondingHints.isEmpty()) iteratingBuilder.getEncodingHints().putAll(encondingHints);
-        if (name != null && rootCollectionName != null && rootCollectionName.equals(name))
-            ownOutput = false;
+        if (name != null && rootCollectionName != null && rootCollectionName.equals(name)) ownOutput = false;
         iteratingBuilder.setOwnOutput(ownOutput);
         iteratingBuilder.setTopLevelFeature(topLevelFeature);
         return iteratingBuilder;
@@ -363,9 +351,7 @@ public class TemplateBuilderMaker {
 
     private CompositeBuilder buildCompositeBuilder() {
         CompositeBuilder compositeBuilder;
-        if (flatOutput)
-            compositeBuilder =
-                    new FlatCompositeBuilder(name, namespaces, separator, topLevelFeature);
+        if (flatOutput) compositeBuilder = new FlatCompositeBuilder(name, namespaces, separator, topLevelFeature);
         else compositeBuilder = new CompositeBuilder(name, namespaces, topLevelFeature);
 
         if (source != null) compositeBuilder.setSource(source);
@@ -377,12 +363,10 @@ public class TemplateBuilderMaker {
 
     private DynamicValueBuilder buildDynamicBuilder() {
         DynamicValueBuilder dynamicValueBuilder;
-        if (flatOutput)
-            dynamicValueBuilder = new FlatDynamicBuilder(name, textContent, namespaces, separator);
+        if (flatOutput) dynamicValueBuilder = new FlatDynamicBuilder(name, textContent, namespaces, separator);
         else dynamicValueBuilder = new DynamicValueBuilder(name, textContent, namespaces);
         if (filter != null) dynamicValueBuilder.setFilter(filter);
-        if (!encondingHints.isEmpty())
-            dynamicValueBuilder.getEncodingHints().putAll(encondingHints);
+        if (!encondingHints.isEmpty()) dynamicValueBuilder.getEncodingHints().putAll(encondingHints);
         return dynamicValueBuilder;
     }
 
@@ -401,15 +385,13 @@ public class TemplateBuilderMaker {
         DynamicMergeBuilder dynamicMergeBuilder =
                 new DynamicMergeBuilder(name, expression, namespaces, node, overlayExpression);
         if (filter != null) dynamicMergeBuilder.setFilter(filter);
-        if (!encondingHints.isEmpty())
-            dynamicMergeBuilder.getEncodingHints().putAll(encondingHints);
+        if (!encondingHints.isEmpty()) dynamicMergeBuilder.getEncodingHints().putAll(encondingHints);
         return dynamicMergeBuilder;
     }
 
     private DynamicIncludeFlatBuilder buildDynamicIncludeFlatBuilder() {
         DynamicIncludeFlatBuilder dynamicIncludeFlatBuilder;
-        dynamicIncludeFlatBuilder =
-                new DynamicIncludeFlatBuilder(textContent, namespaces, baseNode);
+        dynamicIncludeFlatBuilder = new DynamicIncludeFlatBuilder(textContent, namespaces, baseNode);
         if (filter != null) dynamicIncludeFlatBuilder.setFilter(filter);
         if (!encondingHints.isEmpty())
             dynamicIncludeFlatBuilder.getEncodingHints().putAll(encondingHints);
@@ -430,13 +412,11 @@ public class TemplateBuilderMaker {
         boolean hasJsonNode = jsonNode != null;
         boolean hasFilter = filter != null;
         if (flatOutput) {
-            if (hasJsonNode && !hasFilter)
-                staticBuilder = new FlatStaticBuilder(name, jsonNode, namespaces, separator);
+            if (hasJsonNode && !hasFilter) staticBuilder = new FlatStaticBuilder(name, jsonNode, namespaces, separator);
             else staticBuilder = new FlatStaticBuilder(name, textContent, namespaces, separator);
         } else {
 
-            if (hasJsonNode && !hasFilter)
-                staticBuilder = new StaticBuilder(name, jsonNode, namespaces);
+            if (hasJsonNode && !hasFilter) staticBuilder = new StaticBuilder(name, jsonNode, namespaces);
             else staticBuilder = new StaticBuilder(name, textContent, namespaces);
         }
 
@@ -447,8 +427,7 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Create a builder according to the attributes that have been set. After having created it does
-     * a local reset.
+     * Create a builder according to the attributes that have been set. After having created it does a local reset.
      *
      * @return the templateBuilder.
      */
@@ -464,8 +443,7 @@ public class TemplateBuilderMaker {
             if (isCollection) result = buildIteratingBuilder();
             else result = buildCompositeBuilder();
         } else {
-            if (textContent != null && textContent.contains(TemplateReader.EXPRSTART))
-                result = buildDynamicBuilder();
+            if (textContent != null && textContent.contains(TemplateReader.EXPRSTART)) result = buildDynamicBuilder();
             else result = buildStaticBuilder();
         }
         localReset();

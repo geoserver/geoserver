@@ -64,7 +64,8 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     private static final String ANOTHER_LAYER_NAME = "AMSR2_Soil_Moisture_NPD_Day";
     private static final String ANOTHER_LOCAL_NAME = "this_is_the_local_name";
 
-    @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -74,8 +75,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMTSStoreInfo wmts = cb.buildWMTSStore("demo");
         wmts.setCapabilitiesURL(
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
         catalog.add(wmts);
 
         // and a wmts layer as well (cannot use the builder, would turn this test into an online one
@@ -85,8 +85,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @Before
     public void addWmtsLayer() throws Exception {
         String capabilities =
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         WMTSLayerInfo wml = catalog.getResourceByName("sf", LAYER_NAME, WMTSLayerInfo.class);
         if (wml == null) {
             wml = catalog.getFactory().createWMTSLayer();
@@ -106,8 +105,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
 
         MockHttpClient client = new MockHttpClient();
         client.expectGet(
-                new URL(capabilities),
-                new MockHttpResponse(getClass().getResource("nasa.getcapa.xml"), "text/xml"));
+                new URL(capabilities), new MockHttpResponse(getClass().getResource("nasa.getcapa.xml"), "text/xml"));
         clientMocker.bind(client, capabilities);
     }
 
@@ -142,13 +140,11 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllByWorkspace() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers.xml");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers.xml");
         assertThat(response, hasStatus(HttpStatus.OK));
         Document dom = dom(istream(response));
         assertEquals(
-                catalog.getResourcesByNamespace(
-                                catalog.getNamespaceByPrefix("sf"), WMTSLayerInfo.class)
+                catalog.getResourcesByNamespace(catalog.getNamespaceByPrefix("sf"), WMTSLayerInfo.class)
                         .size(),
                 dom.getElementsByTagName("wmtsLayer").getLength());
     }
@@ -156,8 +152,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllByWMTSStore() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers.xml");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers.xml");
         assertThat(response, hasStatus(HttpStatus.OK));
         Document dom = dom(istream(response));
 
@@ -168,11 +163,8 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllAvailable() throws Exception {
 
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers.xml?list=available",
-                        200);
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers.xml?list=available", 200);
         print(dom);
 
         // can't control the demo server enough to check the type names, but it should have
@@ -186,10 +178,8 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetAllAvailableJSON() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers.json?list=available");
+        MockHttpServletResponse response = getAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers.json?list=available");
         assertThat(response, hasStatus(HttpStatus.OK));
 
         JSON json = json(response);
@@ -203,8 +193,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         try {
             return json(response);
         } catch (JSONException ex) {
-            throw new AssertionFailedError(
-                    "Invalid JSON: \"" + response.getContentAsString() + "\"");
+            throw new AssertionFailedError("Invalid JSON: \"" + response.getContentAsString() + "\"");
         }
     }
 
@@ -212,9 +201,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     public void testPutAllUnauthorized() throws Exception {
         assertEquals(
                 405,
-                putAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/wmtsstores/demo/layers")
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers")
                         .getStatus());
     }
 
@@ -222,127 +209,97 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals(
                 405,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/wmtsstores/demo/layers")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers")
                         .getStatus());
     }
 
     @Test
     public void testPostAsXML() throws Exception {
 
-        assertThat(
-                catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class),
-                nullValue());
+        assertThat(catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class), nullValue());
 
-        String xml =
-                "<wmtsLayer>"
-                        + "<name>"
-                        + ANOTHER_LOCAL_NAME
-                        + "</name>"
-                        + "<nativeName>"
-                        + ANOTHER_LAYER_NAME
-                        + "</nativeName>"
-                        + "<srs>EPSG:4326</srs>"
-                        + "<nativeCRS>EPSG:4326</nativeCRS>"
-                        + "<store>demo</store>"
-                        + "</wmtsLayer>";
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers",
-                        xml,
-                        "text/xml");
+        String xml = "<wmtsLayer>"
+                + "<name>"
+                + ANOTHER_LOCAL_NAME
+                + "</name>"
+                + "<nativeName>"
+                + ANOTHER_LAYER_NAME
+                + "</nativeName>"
+                + "<srs>EPSG:4326</srs>"
+                + "<nativeCRS>EPSG:4326</nativeCRS>"
+                + "<store>demo</store>"
+                + "</wmtsLayer>";
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers", xml, "text/xml");
 
         assertThat(response, hasStatus(HttpStatus.CREATED));
 
         assertThat(
                 response,
                 hasHeader(
-                        "Location",
-                        Matchers.endsWith(
-                                "/workspaces/sf/wmtsstores/demo/layers/" + ANOTHER_LOCAL_NAME)));
+                        "Location", Matchers.endsWith("/workspaces/sf/wmtsstores/demo/layers/" + ANOTHER_LOCAL_NAME)));
 
-        WMTSLayerInfo layer =
-                catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class);
+        WMTSLayerInfo layer = catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class);
         assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
     }
 
     @Test
     public void testPostAsXMLNoWorkspace() throws Exception {
 
-        assertThat(
-                catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class),
-                nullValue());
+        assertThat(catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class), nullValue());
 
-        String xml =
-                "<wmtsLayer>"
-                        + "<name>"
-                        + ANOTHER_LOCAL_NAME
-                        + "</name>"
-                        + "<nativeName>"
-                        + ANOTHER_LAYER_NAME
-                        + "</nativeName>"
-                        + "<srs>EPSG:4326</srs>"
-                        + "<nativeCRS>EPSG:4326</nativeCRS>"
-                        + "<store>demo</store>"
-                        + "</wmtsLayer>";
+        String xml = "<wmtsLayer>"
+                + "<name>"
+                + ANOTHER_LOCAL_NAME
+                + "</name>"
+                + "<nativeName>"
+                + ANOTHER_LAYER_NAME
+                + "</nativeName>"
+                + "<srs>EPSG:4326</srs>"
+                + "<nativeCRS>EPSG:4326</nativeCRS>"
+                + "<store>demo</store>"
+                + "</wmtsLayer>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers",
-                        xml,
-                        "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers", xml, "text/xml");
 
         assertThat(response, hasStatus(HttpStatus.CREATED));
 
         assertThat(
-                response,
-                hasHeader(
-                        "Location",
-                        Matchers.endsWith("/workspaces/sf/wmtslayers/" + ANOTHER_LOCAL_NAME)));
+                response, hasHeader("Location", Matchers.endsWith("/workspaces/sf/wmtslayers/" + ANOTHER_LOCAL_NAME)));
 
-        WMTSLayerInfo layer =
-                catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class);
+        WMTSLayerInfo layer = catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class);
         assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
     }
 
     @Test
     public void testPostAsJSON() throws Exception {
 
-        assertThat(
-                catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class),
-                nullValue());
+        assertThat(catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class), nullValue());
 
-        String json =
-                "{"
-                        + "'wmtsLayer':{"
-                        + "'name':'"
-                        + ANOTHER_LOCAL_NAME
-                        + "',"
-                        + "'nativeName':'"
-                        + ANOTHER_LAYER_NAME
-                        + "',"
-                        + "'srs':'EPSG:4326',"
-                        + "'nativeCRS':'EPSG:4326',"
-                        + "'store':'demo'"
-                        + "}"
-                        + "}";
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers",
-                        json,
-                        "text/json");
+        String json = "{"
+                + "'wmtsLayer':{"
+                + "'name':'"
+                + ANOTHER_LOCAL_NAME
+                + "',"
+                + "'nativeName':'"
+                + ANOTHER_LAYER_NAME
+                + "',"
+                + "'srs':'EPSG:4326',"
+                + "'nativeCRS':'EPSG:4326',"
+                + "'store':'demo'"
+                + "}"
+                + "}";
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers", json, "text/json");
 
         assertThat(response, hasStatus(HttpStatus.CREATED));
 
         assertThat(
                 response,
                 hasHeader(
-                        "Location",
-                        Matchers.endsWith(
-                                "/workspaces/sf/wmtsstores/demo/layers/" + ANOTHER_LOCAL_NAME)));
+                        "Location", Matchers.endsWith("/workspaces/sf/wmtsstores/demo/layers/" + ANOTHER_LOCAL_NAME)));
 
-        WMTSLayerInfo layer =
-                catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class);
+        WMTSLayerInfo layer = catalog.getResourceByName("sf", ANOTHER_LOCAL_NAME, WMTSLayerInfo.class);
         assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
     }
 
@@ -350,24 +307,15 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     public void testPostToResource() throws Exception {
         String xml = "<wmtsLayer>" + "<name>og:restricted</name>" + "</wmtsLayer>";
 
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers/"
-                                + LAYER_NAME,
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/" + LAYER_NAME, xml, "text/xml");
         assertEquals(405, response.getStatus());
     }
 
     @Test
     public void testGetAsXML() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtslayers/"
-                                + LAYER_NAME
-                                + ".xml");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers/" + LAYER_NAME + ".xml");
         assertThat(response, hasStatus(HttpStatus.OK));
         Document dom = dom(istream(response));
 
@@ -387,12 +335,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json =
-                getAsJSON(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtslayers/"
-                                + LAYER_NAME
-                                + ".json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers/" + LAYER_NAME + ".json");
         JSONObject featureType = ((JSONObject) json).getJSONObject("wmtsLayer");
         assertNotNull(featureType);
 
@@ -403,12 +346,8 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtslayers/"
-                                + LAYER_NAME
-                                + ".html");
+        MockHttpServletResponse response = getAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtslayers/" + LAYER_NAME + ".html");
         assertThat(response, hasStatus(HttpStatus.OK));
     }
 
@@ -419,17 +358,9 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         String wmts = "demo";
         String wl = "statessssss";
         // Request path
-        String requestPath =
-                RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/wmtslayers/" + wl + ".html";
+        String requestPath = RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/wmtslayers/" + wl + ".html";
         String requestPath2 =
-                RestBaseController.ROOT_PATH
-                        + "/workspaces/"
-                        + ws
-                        + "/wmtsstores/"
-                        + wmts
-                        + "/layers/"
-                        + wl
-                        + ".html";
+                RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/wmtsstores/" + wmts + "/layers/" + wl + ".html";
         // Exception path
         String exception = "No such cascaded wmts: " + ws + "," + wl;
 
@@ -467,21 +398,12 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testPut() throws Exception {
         String xml = "<wmtsLayer>" + "<title>Lots of states here</title>" + "</wmtsLayer>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers/"
-                                + LAYER_NAME,
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/" + LAYER_NAME, xml, "text/xml");
         assertThat(response, hasStatus(HttpStatus.OK));
 
         Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers/"
-                                + LAYER_NAME
-                                + ".xml");
+                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/" + LAYER_NAME + ".xml");
         assertXpathEvaluatesTo("Lots of states here", "/wmtsLayer/title", dom);
 
         WMTSLayerInfo wli = catalog.getResourceByName("sf", LAYER_NAME, WMTSLayerInfo.class);
@@ -498,13 +420,8 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         boolean isAdvertised = wli.isAdvertised();
 
         String xml = "<wmtsLayer>" + "<title>Lots of states here</title>" + "</wmtsLayer>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers/"
-                                + LAYER_NAME,
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/" + LAYER_NAME, xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         wli = catalog.getResourceByName("sf", LAYER_NAME, WMTSLayerInfo.class);
@@ -515,12 +432,8 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutNonExistant() throws Exception {
         String xml = "<wmtsLayer>" + "<title>new title</title>" + "</wmtsLayer>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers/bugsites",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/bugsites", xml, "text/xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -529,9 +442,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getResourceByName("sf", LAYER_NAME, WMTSLayerInfo.class));
         assertThat(
                 deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/wmtsstores/demo/layers/"
-                                + LAYER_NAME),
+                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/" + LAYER_NAME),
                 hasStatus(HttpStatus.OK));
         assertNull(catalog.getResourceByName("sf", LAYER_NAME, WMTSLayerInfo.class));
     }
@@ -541,8 +452,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         assertEquals(
                 404,
                 deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/wmtsstores/demo/layers/NonExistent")
+                                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/NonExistent")
                         .getStatus());
     }
 
@@ -563,9 +473,7 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
         assertEquals(
                 403,
                 deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/wmtsstores/demo/layers/"
-                                        + LAYER_NAME)
+                                RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo/layers/" + LAYER_NAME)
                         .getStatus());
     }
 
@@ -578,11 +486,10 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
 
         assertEquals(
                 200,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/wmtsstores/demo/layers/"
-                                        + LAYER_NAME
-                                        + "?recurse=true")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH
+                                + "/workspaces/sf/wmtsstores/demo/layers/"
+                                + LAYER_NAME
+                                + "?recurse=true")
                         .getStatus());
 
         assertNull(catalog.getLayerByName("sf:" + LAYER_NAME));

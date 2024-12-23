@@ -39,7 +39,6 @@ public class JSONSchemaMessageConverter extends AbstractJackson2HttpMessageConve
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        return (mediaType == null || SCHEMA_TYPE.isCompatibleWith(mediaType))
-                && Schema.class.isAssignableFrom(clazz);
+        return (mediaType == null || SCHEMA_TYPE.isCompatibleWith(mediaType)) && Schema.class.isAssignableFrom(clazz);
     }
 }

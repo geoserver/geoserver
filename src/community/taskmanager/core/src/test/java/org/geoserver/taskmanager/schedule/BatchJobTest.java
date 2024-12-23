@@ -41,19 +41,26 @@ public class BatchJobTest extends AbstractTaskManagerTest {
 
     private static final String ATT_FAIL = "fail";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil util;
+    @Autowired
+    private TaskManagerDataUtil util;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private TestTaskTypeImpl testTaskType;
+    @Autowired
+    private TestTaskTypeImpl testTaskType;
 
-    @Autowired private TestReportServiceImpl testReportService;
+    @Autowired
+    private TestReportServiceImpl testReportService;
 
     private Configuration config;
 
@@ -115,8 +122,10 @@ public class BatchJobTest extends AbstractTaskManagerTest {
     @Test
     public void testSuccess() throws InterruptedException, SchedulerException {
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -126,30 +135,21 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         assertEquals(4, testTaskType.getStatus().get("my_batch:my_config/task3").intValue());
 
         assertEquals(
-                Run.Status.COMMITTED, dao.getLatestRun(batch.getElements().get(0)).getStatus());
+                Run.Status.COMMITTED,
+                dao.getLatestRun(batch.getElements().get(0)).getStatus());
         assertEquals(
-                Run.Status.COMMITTED, dao.getLatestRun(batch.getElements().get(1)).getStatus());
+                Run.Status.COMMITTED,
+                dao.getLatestRun(batch.getElements().get(1)).getStatus());
         assertEquals(
-                Run.Status.COMMITTED, dao.getLatestRun(batch.getElements().get(2)).getStatus());
+                Run.Status.COMMITTED,
+                dao.getLatestRun(batch.getElements().get(2)).getStatus());
 
         assertEquals(
                 "Report: Batch my_batch was successful",
                 testReportService.getLastReport().getTitle());
-        assertTrue(
-                testReportService
-                        .getLastReport()
-                        .getContent()
-                        .contains("my_config/task1, started"));
-        assertTrue(
-                testReportService
-                        .getLastReport()
-                        .getContent()
-                        .contains("my_config/task2, started"));
-        assertTrue(
-                testReportService
-                        .getLastReport()
-                        .getContent()
-                        .contains("my_config/task3, started"));
+        assertTrue(testReportService.getLastReport().getContent().contains("my_config/task1, started"));
+        assertTrue(testReportService.getLastReport().getContent().contains("my_config/task2, started"));
+        assertTrue(testReportService.getLastReport().getContent().contains("my_config/task3, started"));
         assertTrue(testReportService.getLastReport().getContent().contains(", ended"));
         assertTrue(testReportService.getLastReport().getContent().contains("status is COMMITTED"));
 
@@ -170,8 +170,10 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         util.setConfigurationAttribute(config, ATT_FAIL, "true");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -181,21 +183,23 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         assertEquals(2, testTaskType.getStatus().get("my_batch:my_config/task3").intValue());
 
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(0)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(0)).getStatus());
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(1)).getStatus());
-        assertEquals(Run.Status.FAILED, dao.getLatestRun(batch.getElements().get(2)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(1)).getStatus());
+        assertEquals(
+                Run.Status.FAILED, dao.getLatestRun(batch.getElements().get(2)).getStatus());
 
         assertEquals(
-                "Report: Batch my_batch has failed", testReportService.getLastReport().getTitle());
-        assertTrue(
-                testReportService.getLastReport().getContent().contains("status is ROLLED_BACK"));
+                "Report: Batch my_batch has failed",
+                testReportService.getLastReport().getTitle());
+        assertTrue(testReportService.getLastReport().getContent().contains("status is ROLLED_BACK"));
         assertTrue(testReportService.getLastReport().getContent().contains("status is FAILED"));
-        assertTrue(
-                testReportService
-                        .getLastReport()
-                        .getContent()
-                        .contains("message: purposely failed task (check logs for more details"));
+        assertTrue(testReportService
+                .getLastReport()
+                .getContent()
+                .contains("message: purposely failed task (check logs for more details"));
     }
 
     @Test
@@ -206,8 +210,10 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         util.setConfigurationAttribute(config, ATT_DELAY, "5000");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (testTaskType.getStatus().get("my_batch:my_config/task3") == null) {}
@@ -225,17 +231,19 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         assertEquals(0, testTaskType.getStatus().get("my_batch:my_config/task3").intValue());
 
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(0)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(0)).getStatus());
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(1)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(1)).getStatus());
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(2)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(2)).getStatus());
 
         assertEquals(
                 "Report: Batch my_batch was cancelled",
                 testReportService.getLastReport().getTitle());
-        assertTrue(
-                testReportService.getLastReport().getContent().contains("status is ROLLED_BACK"));
+        assertTrue(testReportService.getLastReport().getContent().contains("status is ROLLED_BACK"));
 
         // run with filter
         testReportService.clear();
@@ -254,8 +262,10 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         util.setConfigurationAttribute(config, ATT_DELAY, "bla");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -265,15 +275,18 @@ public class BatchJobTest extends AbstractTaskManagerTest {
         assertEquals(1, testTaskType.getStatus().get("my_batch:my_config/task3").intValue());
 
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(0)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(0)).getStatus());
         assertEquals(
-                Run.Status.ROLLED_BACK, dao.getLatestRun(batch.getElements().get(1)).getStatus());
-        assertEquals(Run.Status.FAILED, dao.getLatestRun(batch.getElements().get(2)).getStatus());
+                Run.Status.ROLLED_BACK,
+                dao.getLatestRun(batch.getElements().get(1)).getStatus());
+        assertEquals(
+                Run.Status.FAILED, dao.getLatestRun(batch.getElements().get(2)).getStatus());
 
         assertEquals(
-                "Report: Batch my_batch has failed", testReportService.getLastReport().getTitle());
-        assertTrue(
-                testReportService.getLastReport().getContent().contains("status is ROLLED_BACK"));
+                "Report: Batch my_batch has failed",
+                testReportService.getLastReport().getTitle());
+        assertTrue(testReportService.getLastReport().getContent().contains("status is ROLLED_BACK"));
         assertTrue(testReportService.getLastReport().getContent().contains("status is FAILED"));
         assertTrue(
                 testReportService

@@ -57,29 +57,22 @@ public final class ReprojectionAxisFlipTest extends AbstractAppSchemaTestSupport
     @Test
     public void testWfsGetFeatureWithBbox() throws Exception {
         if (isGeopkgTest()) return;
-        genericWfsGetFeatureWithBboxTest(
-                () ->
-                        getAsServletResponse(
-                                "wfs?service=WFS"
-                                        + "&version=2.0&request=GetFeature&typeName=st:Station&maxFeatures=1"
-                                        + "&outputFormat=gml32&srsName=urn:ogc:def:crs:EPSG::4052&bbox=3,-3,6,0"));
+        genericWfsGetFeatureWithBboxTest(() -> getAsServletResponse("wfs?service=WFS"
+                + "&version=2.0&request=GetFeature&typeName=st:Station&maxFeatures=1"
+                + "&outputFormat=gml32&srsName=urn:ogc:def:crs:EPSG::4052&bbox=3,-3,6,0"));
     }
 
     @Test
     public void testWfsGetFeatureWithBboxPost() throws Exception {
         if (isGeopkgTest()) return;
         // execute the WFS 2.0 request
-        genericWfsGetFeatureWithBboxTest(
-                () ->
-                        postAsServletResponse(
-                                "wfs",
-                                readResource(
-                                        "/test-data/stations/noDefaultGeometry/requests/wfs20_get_feature_1.xml")));
+        genericWfsGetFeatureWithBboxTest(() -> postAsServletResponse(
+                "wfs", readResource("/test-data/stations/noDefaultGeometry/requests/wfs20_get_feature_1.xml")));
     }
 
     /**
-     * Helper method holding the common code used to test a WFS GetFeature operation with a BBOX
-     * requiring axis flipping,
+     * Helper method holding the common code used to test a WFS GetFeature operation with a BBOX requiring axis
+     * flipping,
      */
     private void genericWfsGetFeatureWithBboxTest(Request request) throws Exception {
         // execute the WFS 2.0 request
@@ -98,8 +91,8 @@ public final class ReprojectionAxisFlipTest extends AbstractAppSchemaTestSupport
     }
 
     /**
-     * Helper method that sets the provided SRS as the declared SRS on feature type info
-     * corresponding to provided feature type name.
+     * Helper method that sets the provided SRS as the declared SRS on feature type info corresponding to provided
+     * feature type name.
      */
     private void setDeclaredCrs(String featureTypeName, String srs) {
         // get the feature type info

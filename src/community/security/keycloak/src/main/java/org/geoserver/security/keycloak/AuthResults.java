@@ -19,8 +19,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 /**
- * Wraps the result of an attempt to authenticate. This is either valid auth, or a challenge in
- * order to obtain them.
+ * Wraps the result of an attempt to authenticate. This is either valid auth, or a challenge in order to obtain them.
  */
 class AuthResults implements AuthenticationEntryPoint {
 
@@ -55,30 +54,27 @@ class AuthResults implements AuthenticationEntryPoint {
             details = (SimpleKeycloakAccount) authentication.getDetails();
 
             assert ((SimpleKeycloakAccount) details).getPrincipal() instanceof KeycloakPrincipal;
-            final KeycloakPrincipal principal =
-                    (KeycloakPrincipal) ((SimpleKeycloakAccount) details).getPrincipal();
+            final KeycloakPrincipal principal = (KeycloakPrincipal) ((SimpleKeycloakAccount) details).getPrincipal();
 
             username = principal.getName();
 
             if (principal.getKeycloakSecurityContext().getIdToken() != null) {
-                username =
-                        principal.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
+                username = principal.getKeycloakSecurityContext().getIdToken().getPreferredUsername();
             }
         } else {
             username = authentication.getPrincipal();
             details = authentication.getDetails();
         }
 
-        this.authentication =
-                new UsernamePasswordAuthenticationToken(
-                        username, authentication.getCredentials(), authentication.getAuthorities());
+        this.authentication = new UsernamePasswordAuthenticationToken(
+                username, authentication.getCredentials(), authentication.getAuthorities());
         ((UsernamePasswordAuthenticationToken) this.authentication).setDetails(details);
         this.challenge = null;
     }
 
     /**
-     * Execute the challenge to modify the response. The response should (upon success) contain
-     * instructions on how to obtain valid credentials.
+     * Execute the challenge to modify the response. The response should (upon success) contain instructions on how to
+     * obtain valid credentials.
      *
      * @param request incoming request
      * @param response response to modify
@@ -100,9 +96,7 @@ class AuthResults implements AuthenticationEntryPoint {
 
     @Override
     public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException)
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
         challenge(request, response);
     }

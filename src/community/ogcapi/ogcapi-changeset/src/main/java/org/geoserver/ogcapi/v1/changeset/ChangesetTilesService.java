@@ -110,10 +110,7 @@ public class ChangesetTilesService {
             @RequestParam(name = "scaleDenominator", required = false) String scaleDenominatorSpec,
             @RequestParam(name = "bbox", required = false) String bboxSpec,
             @RequestParam(name = "f-tile", required = false) String tileFormatSpec,
-            @RequestParam(
-                            name = "checkPoint",
-                            required = false,
-                            defaultValue = ChangesetIndexProvider.INITIAL_STATE)
+            @RequestParam(name = "checkPoint", required = false, defaultValue = ChangesetIndexProvider.INITIAL_STATE)
                     String checkpoint,
             @RequestParam(name = "changeSetType", required = false) String changeSetTypeName)
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException, FactoryException {
@@ -125,42 +122,33 @@ public class ChangesetTilesService {
         GridSubset layerGridSubset = TilesService.getGridSubset(tileLayer, tileMatrixSetId);
         List<MediaType> requestedTileFormats = Collections.emptyList();
         if (tileFormatSpec != null) {
-            requestedTileFormats =
-                    Collections.singletonList(MediaType.parseMediaType(tileFormatSpec));
+            requestedTileFormats = Collections.singletonList(MediaType.parseMediaType(tileFormatSpec));
         }
-        MimeType tileFormat =
-                TilesService.getRequestedFormat(tileLayer, true, requestedTileFormats);
+        MimeType tileFormat = TilesService.getRequestedFormat(tileLayer, true, requestedTileFormats);
 
         // get (and check) the style too
         StyleInfo style = getStyle(styleId);
-        NumberRange<Double> styleScaleRange =
-                CapabilityUtil.searchMinMaxScaleDenominator(Collections.singleton(style));
+        NumberRange<Double> styleScaleRange = CapabilityUtil.searchMinMaxScaleDenominator(Collections.singleton(style));
         NumberRange<Double> scaleRange = styleScaleRange;
 
         // now we can check the eventual scale denominators in the request
         if (scaleDenominatorSpec != null && !scaleDenominatorSpec.trim().isEmpty()) {
             NumberRange<Double> requestedScaleRange = parseScaleDenominator(scaleDenominatorSpec);
             @SuppressWarnings("unchecked")
-            NumberRange<Double> intersection =
-                    (NumberRange<Double>) styleScaleRange.intersect(requestedScaleRange);
+            NumberRange<Double> intersection = (NumberRange<Double>) styleScaleRange.intersect(requestedScaleRange);
             scaleRange = intersection;
         }
 
         // finally check with the tile matrix scale ranges, the result of the intersection
         // might not contain any zoom level
-        if (scaleRange == null
-                || scaleRange.isEmpty()
-                || !rangeHitsGridset(layerGridSubset, scaleRange)) {
-            throw new APIException(
-                    "NoChanges", "No changes occurred since checkpoint", HttpStatus.NOT_MODIFIED);
+        if (scaleRange == null || scaleRange.isEmpty() || !rangeHitsGridset(layerGridSubset, scaleRange)) {
+            throw new APIException("NoChanges", "No changes occurred since checkpoint", HttpStatus.NOT_MODIFIED);
         }
 
         // get the changed areas
-        SimpleFeatureCollection areas =
-                indexProvider.getModifiedAreas(ci, checkpoint, spatialFilter);
+        SimpleFeatureCollection areas = indexProvider.getModifiedAreas(ci, checkpoint, spatialFilter);
         if ((areas == null || areas.isEmpty())) {
-            throw new APIException(
-                    "NoChanges", "No changes occurred since checkpoint", HttpStatus.NOT_MODIFIED);
+            throw new APIException("NoChanges", "No changes occurred since checkpoint", HttpStatus.NOT_MODIFIED);
         }
 
         // compute the changed bboxes
@@ -168,11 +156,9 @@ public class ChangesetTilesService {
         try (SimpleFeatureIterator fi = areas.features()) {
             while (fi.hasNext()) {
                 // TODO: if they are multipolygons, would make sense to split them
-                Envelope envelope =
-                        ((Geometry) fi.next().getDefaultGeometry()).getEnvelopeInternal();
+                Envelope envelope = ((Geometry) fi.next().getDefaultGeometry()).getEnvelopeInternal();
                 ReferencedEnvelope re =
-                        new ReferencedEnvelope(
-                                envelope, areas.getSchema().getCoordinateReferenceSystem());
+                        new ReferencedEnvelope(envelope, areas.getSchema().getCoordinateReferenceSystem());
                 CoordinateReferenceSystem gridsetCRS =
                         CRS.decode("EPSG:" + layerGridSubset.getSRS().getNumber(), true);
                 try {
@@ -189,21 +175,19 @@ public class ChangesetTilesService {
             }
         }
 
-        ModifiedTiles modifiedTiles =
-                new ModifiedTiles(
-                        ci,
-                        tileLayer,
-                        tileLayer.getGridSubset(tileMatrixSetId),
-                        areas,
-                        APIBBoxParser.parse(bboxSpec),
-                        scaleRange);
-        ChangeSet changeSet =
-                new ChangeSet(
-                        checkpoint,
-                        extentOfChangedItems,
-                        modifiedTiles,
-                        tileFormat,
-                        Collections.singletonMap("styles", styleId));
+        ModifiedTiles modifiedTiles = new ModifiedTiles(
+                ci,
+                tileLayer,
+                tileLayer.getGridSubset(tileMatrixSetId),
+                areas,
+                APIBBoxParser.parse(bboxSpec),
+                scaleRange);
+        ChangeSet changeSet = new ChangeSet(
+                checkpoint,
+                extentOfChangedItems,
+                modifiedTiles,
+                tileFormat,
+                Collections.singletonMap("styles", styleId));
         changeSet.setScaleOfChangedItems(styleScaleRange);
         return changeSet;
     }
@@ -244,18 +228,15 @@ public class ChangesetTilesService {
     public StyleInfo getStyle(@PathVariable(name = "styleId") String styleId) {
         StyleInfo styleInfo = catalog.getStyleByName(styleId);
         if (styleInfo == null) {
-            throw new APIException(
-                    "NotFound", "Could not locate style " + styleId, HttpStatus.NOT_FOUND);
+            throw new APIException("NotFound", "Could not locate style " + styleId, HttpStatus.NOT_FOUND);
         }
         return styleInfo;
     }
 
-    CoverageInfo getStructuredCoverageInfo(String collectionId, boolean failIfNotFound)
-            throws IOException {
+    CoverageInfo getStructuredCoverageInfo(String collectionId, boolean failIfNotFound) throws IOException {
         org.geoserver.catalog.CoverageInfo coverageInfo = catalog.getCoverageByName(collectionId);
         if (coverageInfo != null
-                && coverageInfo.getGridCoverageReader(null, null)
-                        instanceof StructuredGridCoverage2DReader) {
+                && coverageInfo.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader) {
             return coverageInfo;
         }
 
@@ -270,8 +251,7 @@ public class ChangesetTilesService {
         try {
             return gwc.getTileLayerByName(collectionId);
         } catch (IllegalArgumentException e) {
-            throw new ResourceNotFoundException(
-                    "Tiled collection " + collectionId + " not found", e);
+            throw new ResourceNotFoundException("Tiled collection " + collectionId + " not found", e);
         }
     }
 }

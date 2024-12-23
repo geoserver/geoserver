@@ -26,10 +26,7 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
     private CatalogStore catalogStore;
 
     public CSWObjectEncodingResponse(
-            CatalogStore catalogStore,
-            Class<?> binding,
-            String elementName,
-            Class<?> xmlConfiguration) {
+            CatalogStore catalogStore, Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(binding, elementName, xmlConfiguration);
         this.catalogStore = catalogStore;
     }
@@ -37,15 +34,12 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
     @Override
     protected Map<String, String> getSchemaLocations() {
         Map<String, String> locations = new HashMap<>();
-        locations.put(
-                "http://www.opengis.net/cat/csw/2.0.2",
-                "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd");
+        locations.put("http://www.opengis.net/cat/csw/2.0.2", "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd");
         return locations;
     }
 
     @Override
-    protected void configureEncoder(
-            Encoder encoder, String elementName, Class<?> xmlConfiguration) {
+    protected void configureEncoder(Encoder encoder, String elementName, Class<?> xmlConfiguration) {
         encoder.setNamespaceAware(true);
         encoder.getNamespaces().declarePrefix("xlink", XLINK.NAMESPACE);
         try {

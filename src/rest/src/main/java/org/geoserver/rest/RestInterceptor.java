@@ -16,8 +16,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RestInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         RequestInfo.set(new RequestInfo(request));
 

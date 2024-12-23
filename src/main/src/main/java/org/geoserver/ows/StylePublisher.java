@@ -21,8 +21,8 @@ import org.springframework.web.context.support.ServletContextResourceLoader;
 /**
  * Controller which publishes styles through a web interface.
  *
- * <p>To use this controller, it should be mapped to a particular url in the url mapping of the
- * spring dispatcher servlet.
+ * <p>To use this controller, it should be mapped to a particular url in the url mapping of the spring dispatcher
+ * servlet.
  *
  * @author Alex Goudine, Boundless
  */
@@ -90,9 +90,7 @@ public class StylePublisher extends AbstractURLPublisher {
             switch (resource.getType()) {
                 case RESOURCE:
                     // don't allow access to the style .xml files
-                    return resource.name().endsWith(".xml")
-                            ? null
-                            : URLs.fileToUrl(resource.file());
+                    return resource.name().endsWith(".xml") ? null : URLs.fileToUrl(resource.file());
                 case DIRECTORY:
                 case UNDEFINED:
                 default:

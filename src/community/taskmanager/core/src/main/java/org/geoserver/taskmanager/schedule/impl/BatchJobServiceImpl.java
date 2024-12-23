@@ -47,11 +47,14 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
 
     private static final Logger LOGGER = Logging.getLogger(BatchJobServiceImpl.class);
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
     private boolean init = true;
 
@@ -62,8 +65,7 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
         // check for inactive tasks
         for (BatchElement be : batch.getElements()) {
             if (!be.getTask().isActive()) {
-                throw new IllegalArgumentException(
-                        "Cannot save & schedule a batch with inactive tasks!");
+                throw new IllegalArgumentException("Cannot save & schedule a batch with inactive tasks!");
             }
         }
 
@@ -80,11 +82,10 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
 
         } else {
             if (!exists) {
-                JobDetail jobDetail =
-                        JobBuilder.newJob(BatchJobImpl.class)
-                                .withIdentity(jobKey)
-                                .storeDurably()
-                                .build();
+                JobDetail jobDetail = JobBuilder.newJob(BatchJobImpl.class)
+                        .withIdentity(jobKey)
+                        .storeDurably()
+                        .build();
 
                 scheduler.addJob(jobDetail, true);
             }
@@ -97,13 +98,11 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
                     && !batch.getElements().isEmpty()
                     && (batch.getConfiguration() == null
                             || batch.getConfiguration().isValidated())) {
-                Trigger trigger =
-                        TriggerBuilder.newTrigger()
-                                .withIdentity(triggerKey)
-                                .forJob(jobKey)
-                                .withSchedule(
-                                        CronScheduleBuilder.cronSchedule(batch.getFrequency()))
-                                .build();
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(triggerKey)
+                        .forJob(jobKey)
+                        .withSchedule(CronScheduleBuilder.cronSchedule(batch.getFrequency()))
+                        .build();
 
                 scheduler.scheduleJob(trigger);
             }
@@ -192,10 +191,7 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
             try {
                 schedule(batch);
             } catch (SchedulerException | IllegalArgumentException e) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Failed to schedule batch " + batch.getName() + ", disabling. ",
-                        e);
+                LOGGER.log(Level.WARNING, "Failed to schedule batch " + batch.getName() + ", disabling. ", e);
                 batch.setEnabled(false);
                 dao.save(batch);
             }
@@ -243,8 +239,10 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
             return null;
         }
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         try {
             scheduler.scheduleJob(trigger);
         } catch (SchedulerException e) {
@@ -263,23 +261,18 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
     @Override
     @Transactional("tmTransactionManager")
     public void scheduleNow(
-            Collection<Batch> batches,
-            int waitInSeconds,
-            int intervalInSeconds,
-            Consumer<Batch> callback) {
+            Collection<Batch> batches, int waitInSeconds, int intervalInSeconds, Consumer<Batch> callback) {
         long time = System.currentTimeMillis() + waitInSeconds * 1000;
         for (Batch batch : batches) {
             batch = dao.reload(batch);
             if (batch.getElements().isEmpty()) {
-                LOGGER.log(
-                        Level.WARNING, "Ignoring manual empty batch run: " + batch.getFullName());
+                LOGGER.log(Level.WARNING, "Ignoring manual empty batch run: " + batch.getFullName());
             }
 
-            Trigger trigger =
-                    TriggerBuilder.newTrigger()
-                            .forJob(batch.getId().toString())
-                            .startAt(new Date(time))
-                            .build();
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .forJob(batch.getId().toString())
+                    .startAt(new Date(time))
+                    .build();
             if (callback != null) {
                 callbacks.put(trigger.getKey(), callback);
             }
@@ -308,8 +301,7 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
                     // the blocked check only works thanks to @DisallowConcurrentExecution
                     // otherwise it would go straight back to waiting and we wouldn't know
                     // when the job was finished.
-                    if ((lastFire && state == TriggerState.NONE)
-                            || (!lastFire && state != TriggerState.BLOCKED)) {
+                    if ((lastFire && state == TriggerState.NONE) || (!lastFire && state != TriggerState.BLOCKED)) {
                         dataUtil.closeBatchRun(batchRun, "manually closed due to inactivity");
                         return;
                     }
@@ -340,14 +332,12 @@ public class BatchJobServiceImpl implements BatchJobService, TriggerListener {
 
     @Override
     public void triggerComplete(
-            Trigger trigger,
-            JobExecutionContext context,
-            CompletedExecutionInstruction triggerInstructionCode) {
+            Trigger trigger, JobExecutionContext context, CompletedExecutionInstruction triggerInstructionCode) {
         Consumer<Batch> callback = callbacks.remove(trigger.getKey());
         if (callback != null) {
             try {
-                Integer batchId =
-                        Integer.parseInt((String) context.getJobDetail().getKey().getName());
+                Integer batchId = Integer.parseInt(
+                        (String) context.getJobDetail().getKey().getName());
                 callback.accept(dao.getBatch(batchId));
             } catch (NumberFormatException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);

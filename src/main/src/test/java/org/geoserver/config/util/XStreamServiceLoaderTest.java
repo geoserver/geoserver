@@ -22,25 +22,25 @@ import org.junit.rules.TemporaryFolder;
 
 public class XStreamServiceLoaderTest {
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testXstreamPersisterReusedIfCalledWithSameGeoServerInstance() throws Exception {
         GeoServerResourceLoader rl = new GeoServerResourceLoader(folder.getRoot());
 
-        XStreamServiceLoader<ServiceInfo> loader =
-                new XStreamServiceLoader<>(rl, "test") {
+        XStreamServiceLoader<ServiceInfo> loader = new XStreamServiceLoader<>(rl, "test") {
 
-                    @Override
-                    public Class<ServiceInfo> getServiceClass() {
-                        return ServiceInfo.class;
-                    }
+            @Override
+            public Class<ServiceInfo> getServiceClass() {
+                return ServiceInfo.class;
+            }
 
-                    @Override
-                    protected ServiceInfo createServiceFromScratch(GeoServer gs) {
-                        return new ServiceInfoImpl();
-                    }
-                };
+            @Override
+            protected ServiceInfo createServiceFromScratch(GeoServer gs) {
+                return new ServiceInfoImpl();
+            }
+        };
         loader = spy(loader);
 
         GeoServerImpl gs1 = new GeoServerImpl();

@@ -49,11 +49,9 @@ public class FloatParameterFilterSubformTest extends GeoServerWicketTestSupport 
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<List<Float>> values =
-                (AbstractTextComponent<List<Float>>)
-                        tester.getComponentFromLastRenderedPage("form:panel:values");
+                (AbstractTextComponent<List<Float>>) tester.getComponentFromLastRenderedPage("form:panel:values");
 
         assertThat(defaultValue.getValue(), equalTo(""));
         assertThat(values.getValue(), equalTo(""));
@@ -67,11 +65,9 @@ public class FloatParameterFilterSubformTest extends GeoServerWicketTestSupport 
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<List<Float>> values =
-                (AbstractTextComponent<List<Float>>)
-                        tester.getComponentFromLastRenderedPage("form:panel:values");
+                (AbstractTextComponent<List<Float>>) tester.getComponentFromLastRenderedPage("form:panel:values");
 
         assertThat(defaultValue.getValue(), equalTo("testDefault"));
         assertThat(values.getValue(), equalTo("1.5\r\n2.6"));
@@ -91,16 +87,14 @@ public class FloatParameterFilterSubformTest extends GeoServerWicketTestSupport 
     }
 
     private void startPage() {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            /** serialVersionUID */
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new FloatParameterFilterSubform(id, model);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new FloatParameterFilterSubform(id, model);
+            }
+        }));
     }
 }

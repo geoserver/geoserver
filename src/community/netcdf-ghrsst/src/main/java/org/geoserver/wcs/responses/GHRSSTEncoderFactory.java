@@ -21,15 +21,11 @@ public class GHRSSTEncoderFactory implements NetCDFEncoderFactory {
 
     @Override
     public NetCDFEncoder getEncoderFor(
-            GranuleStack granuleStack,
-            File file,
-            Map<String, String> encodingParameters,
-            String outputFormat)
+            GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String outputFormat)
             throws IOException {
         NetCDFLayerSettingsContainer settings = NetCDFEncoder.getSettings(encodingParameters);
         if (settings != null
-                && Boolean.TRUE.equals(
-                        settings.getMetadata().get(GHRSSTEncoder.SETTINGS_KEY, Boolean.class))) {
+                && Boolean.TRUE.equals(settings.getMetadata().get(GHRSSTEncoder.SETTINGS_KEY, Boolean.class))) {
             return new GHRSSTEncoder(granuleStack, file, encodingParameters, outputFormat);
         }
 
@@ -42,8 +38,7 @@ public class GHRSSTEncoderFactory implements NetCDFEncoderFactory {
         // is the layer configured to have a GHRSST format?
         NetCDFLayerSettingsContainer settings = NetCDFEncoder.getSettings(coverageId);
         MetadataMap metadata = settings.getMetadata();
-        if (settings == null
-                || !Boolean.TRUE.equals(metadata.get(GHRSSTEncoder.SETTINGS_KEY, Boolean.class))) {
+        if (settings == null || !Boolean.TRUE.equals(metadata.get(GHRSSTEncoder.SETTINGS_KEY, Boolean.class))) {
             // nope;
             return null;
         }
@@ -52,8 +47,7 @@ public class GHRSSTEncoderFactory implements NetCDFEncoderFactory {
         NetCDFDimensionsManager dimensionsManager = new NetCDFDimensionsManager();
         dimensionsManager.collectCoverageDimensions(granuleStack);
         Date referenceDate = null;
-        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension :
-                dimensionsManager.getDimensions()) {
+        for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             if ("time".equalsIgnoreCase(dimension.getName())) {
                 TreeSet<Object> values =
                         (TreeSet<Object>) dimension.getDimensionValues().getValues();
@@ -63,16 +57,14 @@ public class GHRSSTEncoderFactory implements NetCDFEncoderFactory {
                 } else if (first instanceof DateRange) {
                     referenceDate = ((DateRange) first).getMinValue();
                 } else {
-                    throw new IllegalArgumentException(
-                            "Unrecognized data type for reference date: " + first);
+                    throw new IllegalArgumentException("Unrecognized data type for reference date: " + first);
                 }
             }
         }
 
         if (referenceDate == null) {
-            throw new IllegalArgumentException(
-                    "Could not locate a reference date in the input data, a GHRSST file "
-                            + "should have a time dimension");
+            throw new IllegalArgumentException("Could not locate a reference date in the input data, a GHRSST file "
+                    + "should have a time dimension");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
@@ -93,8 +85,7 @@ public class GHRSSTEncoderFactory implements NetCDFEncoderFactory {
         sb.append("_GHRSST-");
         sb.append(getConfiguration(metadata, GHRSSTEncoder.SETTINGS_SST_TYPE, "SSTint"));
         sb.append("-");
-        sb.append(
-                getConfiguration(metadata, GHRSSTEncoder.SETTINGS_PRODUCT_STRING, "AVHRR_METOP_A"));
+        sb.append(getConfiguration(metadata, GHRSSTEncoder.SETTINGS_PRODUCT_STRING, "AVHRR_METOP_A"));
         // additional segregator is optional, not needed here
         sb.append("-v02.0"); // GHRSST specification version
         sb.append("-fv01.0.nc");

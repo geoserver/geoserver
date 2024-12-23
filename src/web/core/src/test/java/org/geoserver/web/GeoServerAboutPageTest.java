@@ -24,15 +24,12 @@ public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
         String responseTxt = tester.getLastResponse().getDocument();
         // System.out.println(responseTxt);
         TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals(
-                "http://localhost/context/j_spring_security_check",
-                tagTester.getAttribute("action"));
+        assertEquals("http://localhost/context/j_spring_security_check", tagTester.getAttribute("action"));
     }
 
     /**
-     * The About page should hide the sensitive information (like version info, etc...). This test:
-     * gets the page as a non-admin -> version info should NOT be there gets the page as ADMIN ->
-     * version info SHOULD be there
+     * The About page should hide the sensitive information (like version info, etc...). This test: gets the page as a
+     * non-admin -> version info should NOT be there gets the page as ADMIN -> version info SHOULD be there
      */
     @Test
     public void testHideSensitiveInfo() throws Exception {

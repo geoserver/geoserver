@@ -26,13 +26,12 @@ public class AggregateProcessPPIO extends XStreamPPIO {
 
     @Override
     protected SecureXStream buildXStream() {
-        SecureXStream xstream =
-                new SecureXStream() {
-                    @Override
-                    protected MapperWrapper wrapMapper(MapperWrapper next) {
-                        return new UppercaseTagMapper(next);
-                    }
-                };
+        SecureXStream xstream = new SecureXStream() {
+            @Override
+            protected MapperWrapper wrapMapper(MapperWrapper next) {
+                return new UppercaseTagMapper(next);
+            }
+        };
         xstream.allowTypes(new Class[] {AggregateProcess.Results.class});
         xstream.omitField(AggregateProcess.Results.class, "aggregateAttribute");
         xstream.omitField(AggregateProcess.Results.class, "functions");

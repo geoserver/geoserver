@@ -37,16 +37,14 @@ public class SrsNameTest extends WFSTestSupport {
         assertNotEquals(0, boxes.getLength());
         for (int i = 0; i < boxes.getLength(); i++) {
             Element box = (Element) boxes.item(i);
-            assertEquals(
-                    "http://www.opengis.net/gml/srs/epsg.xml#32615", box.getAttribute("srsName"));
+            assertEquals("http://www.opengis.net/gml/srs/epsg.xml#32615", box.getAttribute("srsName"));
         }
 
         NodeList points = d.getElementsByTagName("gml:Point");
         assertNotEquals(0, points.getLength());
         for (int i = 0; i < points.getLength(); i++) {
             Element point = (Element) points.item(i);
-            assertEquals(
-                    "http://www.opengis.net/gml/srs/epsg.xml#32615", point.getAttribute("srsName"));
+            assertEquals("http://www.opengis.net/gml/srs/epsg.xml#32615", point.getAttribute("srsName"));
         }
     }
 

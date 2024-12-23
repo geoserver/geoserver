@@ -13,9 +13,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
- * A simple bookmarkable link with a label inside. This is a utility component, avoid some
- * boilerplate code in case the link is really just pointing to a bookmarkable page without side
- * effects
+ * A simple bookmarkable link with a label inside. This is a utility component, avoid some boilerplate code in case the
+ * link is really just pointing to a bookmarkable page without side effects
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -31,8 +30,7 @@ public class SimpleBookmarkableLink extends Panel {
 
     private static PageParameters toPageParameters(String[] pageParams) {
         if (pageParams.length % 2 == 1)
-            throw new IllegalArgumentException(
-                    "The page parameters array should contain an even number of elements");
+            throw new IllegalArgumentException("The page parameters array should contain an even number of elements");
 
         PageParameters result = new PageParameters();
         for (int i = 0; i < pageParams.length; i += 2) {

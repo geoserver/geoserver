@@ -30,8 +30,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 
 /**
- * This class check whether or not the provided download request goes beyond the provided limits for
- * raster data or not.
+ * This class check whether or not the provided download request goes beyond the provided limits for raster data or not.
  *
  * @author Simone Giannecchini, GeoSolutions
  */
@@ -47,8 +46,7 @@ class RasterEstimator {
     /**
      * Constructor
      *
-     * @param limits the parent {@link DownloadEstimatorProcess} that contains the download limits
-     *     to be enforced.
+     * @param limits the parent {@link DownloadEstimatorProcess} that contains the download limits to be enforced.
      */
     public RasterEstimator(DownloadServiceConfiguration limits, Catalog catalog) {
         this.downloadServiceConfiguration = limits;
@@ -103,10 +101,8 @@ class RasterEstimator {
         // STEP 0 - Push ROI back to native CRS (if ROI is provided)
         //
         // get a reader for this CoverageInfo
-        final GridCoverage2DReader reader =
-                (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
-        CRSRequestHandler crsRequestHandler =
-                new CRSRequestHandler(reader, catalog, targetCRS, roi);
+        final GridCoverage2DReader reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+        CRSRequestHandler crsRequestHandler = new CRSRequestHandler(reader, catalog, targetCRS, roi);
         crsRequestHandler.setFilter(filter);
         crsRequestHandler.init();
 
@@ -120,17 +116,11 @@ class RasterEstimator {
             }
             final Geometry safeRoiInNativeCRS =
                     crsRequestHandler.getRoiManager().getSafeRoiInNativeCRS();
-            Geometry roiInNativeCRS_ =
-                    safeRoiInNativeCRS.intersection(
-                            FeatureUtilities.getPolygon(
-                                    reader.getOriginalEnvelope(),
-                                    new GeometryFactory(
-                                            new PrecisionModel(PrecisionModel.FLOATING))));
+            Geometry roiInNativeCRS_ = safeRoiInNativeCRS.intersection(FeatureUtilities.getPolygon(
+                    reader.getOriginalEnvelope(), new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING))));
             if (roiInNativeCRS_.isEmpty()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Empty intersection, so the result does not exceed the limits");
+                    LOGGER.log(Level.FINE, "Empty intersection, so the result does not exceed the limits");
                 }
                 return true; // EMPTY Intersection
             }
@@ -211,9 +201,8 @@ class RasterEstimator {
             for (int bandIndex : bandIndices) {
                 // Use valid indices
                 if (bandIndex >= 0 && bandIndex < bandsCount)
-                    accumulatedPixelSizeInBits +=
-                            TypeMap.getSize(
-                                    coverageDimensionInfoList.get(bandIndex).getDimensionType());
+                    accumulatedPixelSizeInBits += TypeMap.getSize(
+                            coverageDimensionInfoList.get(bandIndex).getDimensionType());
             }
         } else {
             for (int i = 0; i < bandsCount; i++) {
@@ -228,8 +217,7 @@ class RasterEstimator {
         final long writeLimits = downloadServiceConfiguration.getWriteLimits();
 
         // If size exceeds the write limits, false is returned
-        if (writeLimits > DownloadServiceConfiguration.NO_LIMIT
-                && rasterSizeInBytes > writeLimits) {
+        if (writeLimits > DownloadServiceConfiguration.NO_LIMIT && rasterSizeInBytes > writeLimits) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(
                         Level.FINE,
@@ -255,19 +243,15 @@ class RasterEstimator {
         return true;
     }
 
-    private List<CoverageDimensionInfo> getBandDimensionsFromCoverageInfo(CoverageInfo ci)
-            throws Exception {
+    private List<CoverageDimensionInfo> getBandDimensionsFromCoverageInfo(CoverageInfo ci) throws Exception {
         String nativeName = ci.getNativeCoverageName();
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setStore(ci.getStore());
         MetadataMap metadata = ci.getMetadata();
         CoverageInfo rebuilt;
         if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            catalog.getResourcePool()
-                                    .getGridCoverageReader(
-                                            ci, nativeName, GeoTools.getDefaultHints());
+            GridCoverage2DReader reader = (GridCoverage2DReader)
+                    catalog.getResourcePool().getGridCoverageReader(ci, nativeName, GeoTools.getDefaultHints());
             rebuilt = cb.buildCoverage(reader, nativeName, null);
         } else {
             rebuilt = cb.buildCoverage(nativeName);

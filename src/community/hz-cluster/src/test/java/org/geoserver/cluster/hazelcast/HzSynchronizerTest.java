@@ -80,11 +80,9 @@ public abstract class HzSynchronizerTest {
     public void setUp() throws Exception {
         hz = createMock(HazelcastInstance.class);
         // Create a "partial mock" of the HzCluster
-        cluster =
-                createMockBuilder(HzCluster.class)
-                        .addMockedMethods(
-                                "getHz", "isEnabled", "getRawCatalog", "getAckTimeoutMillis")
-                        .createMock();
+        cluster = createMockBuilder(HzCluster.class)
+                .addMockedMethods("getHz", "isEnabled", "getRawCatalog", "getAckTimeoutMillis")
+                .createMock();
         topic = createMock(ITopic.class);
         ackTopic = createMock(ITopic.class);
         configWatcher = createMock(ClusterConfigWatcher.class);
@@ -110,33 +108,27 @@ public abstract class HzSynchronizerTest {
         expect(this.cluster.getAckTimeoutMillis()).andStubReturn(100);
 
         expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
-        expect(topic.addMessageListener(capture(captureTopicListener)))
-                .andReturn(UUID.randomUUID());
+        expect(topic.addMessageListener(capture(captureTopicListener))).andReturn(UUID.randomUUID());
         expectLastCall().anyTimes();
 
         expect(hz.<UUID>getTopic(ACK_TOPIC_NAME)).andStubReturn(ackTopic);
-        expect(ackTopic.addMessageListener(capture(captureAckTopicListener)))
-                .andReturn(UUID.randomUUID());
+        expect(ackTopic.addMessageListener(capture(captureAckTopicListener))).andReturn(UUID.randomUUID());
         expectLastCall().anyTimes();
 
         ackTopic.publish(EasyMock.capture(captureAckTopicPublish));
-        EasyMock.expectLastCall()
-                .andStubAnswer(
-                        new IAnswer<Object>() {
+        EasyMock.expectLastCall().andStubAnswer(new IAnswer<Object>() {
 
-                            @Override
-                            public Object answer() throws Throwable {
-                                Message<UUID> message = createMock(Message.class);
-                                expect(message.getMessageObject())
-                                        .andStubReturn(captureAckTopicPublish.getValue());
-                                EasyMock.replay(message);
-                                for (MessageListener<UUID> listener :
-                                        captureAckTopicListener.getValues()) {
-                                    listener.onMessage(message);
-                                }
-                                return null;
-                            }
-                        });
+            @Override
+            public Object answer() throws Throwable {
+                Message<UUID> message = createMock(Message.class);
+                expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
+                EasyMock.replay(message);
+                for (MessageListener<UUID> listener : captureAckTopicListener.getValues()) {
+                    listener.onMessage(message);
+                }
+                return null;
+            }
+        });
 
         expect(cluster.getLocalMember()).andStubReturn(localMember);
         expect(localMember.getSocketAddress()).andStubReturn(localAddress);
@@ -201,16 +193,7 @@ public abstract class HzSynchronizerTest {
     protected Capture<UUID> captureAckTopicPublish;
 
     public List<Object> myMocks() {
-        return Arrays.asList(
-                topic,
-                ackTopic,
-                configWatcher,
-                clusterConfig,
-                geoServer,
-                catalog,
-                hz,
-                executor,
-                cluster);
+        return Arrays.asList(topic, ackTopic, configWatcher, clusterConfig, geoServer, catalog, hz, executor, cluster);
     }
 
     public HzSynchronizerTest() {
@@ -222,8 +205,8 @@ public abstract class HzSynchronizerTest {
     }
 
     /**
-     * Return the HzSynchronizer instance to be tested. Override {@link HzSyncronizer#getExecutor}
-     * to return {@link #getMockExecutor}. Provide it with {@link #hz} and {@link #geoServer}.
+     * Return the HzSynchronizer instance to be tested. Override {@link HzSyncronizer#getExecutor} to return
+     * {@link #getMockExecutor}. Provide it with {@link #hz} and {@link #geoServer}.
      */
     protected abstract HzSynchronizer getSynchronizer();
 

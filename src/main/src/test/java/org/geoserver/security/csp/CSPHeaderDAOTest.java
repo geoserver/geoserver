@@ -48,7 +48,8 @@ import org.vfny.geoserver.util.Requests;
 
 public class CSPHeaderDAOTest {
 
-    @ClassRule public static TemporaryFolder folder = new TemporaryFolder();
+    @ClassRule
+    public static TemporaryFolder folder = new TemporaryFolder();
 
     private static XStreamPersisterFactory xpf = null;
 
@@ -67,8 +68,7 @@ public class CSPHeaderDAOTest {
         settings.setUseHeadersProxyURL(false);
         when(geoServer.getSettings()).thenReturn(settings);
         dao = new CSPHeaderDAO(geoServer, dd, xpf);
-        GeoServerExtensionsHelper.singleton(
-                "proxyfier", new ProxifyingURLMangler(geoServer), URLMangler.class);
+        GeoServerExtensionsHelper.singleton("proxyfier", new ProxifyingURLMangler(geoServer), URLMangler.class);
     }
 
     @AfterClass
@@ -153,7 +153,8 @@ public class CSPHeaderDAOTest {
         long defaultLastModified = defaultFile().lastmodified();
         Thread.sleep(5);
         new CSPHeaderDAO(null, dd, xpf);
-        assertNotEquals("csp.xml was not updated", configLastModified, configFile().lastmodified());
+        assertNotEquals(
+                "csp.xml was not updated", configLastModified, configFile().lastmodified());
         assertNotEquals(
                 "csp_default.xml was not updated",
                 defaultLastModified,
@@ -203,7 +204,8 @@ public class CSPHeaderDAOTest {
         } finally {
             settings.setWorkspace(null);
             settings.setProxyBaseUrl(null);
-            Path file2 = dd.getSecurity(CSPHeaderDAO.DEFAULT_CONFIG_FILE_NAME).file().toPath();
+            Path file2 =
+                    dd.getSecurity(CSPHeaderDAO.DEFAULT_CONFIG_FILE_NAME).file().toPath();
             Files.copy(file2, file1, StandardCopyOption.REPLACE_EXISTING);
         }
     }
@@ -244,8 +246,7 @@ public class CSPHeaderDAOTest {
             settings.setWorkspace(new WorkspaceInfoImpl());
             settings.setProxyBaseUrl("http://foo");
             assertSame(request, dao.init(request));
-            assertEquals(
-                    "default-src: http://foo;", httpResponse.getHeader(CONTENT_SECURITY_POLICY));
+            assertEquals("default-src: http://foo;", httpResponse.getHeader(CONTENT_SECURITY_POLICY));
         } finally {
             settings.setWorkspace(null);
             settings.setProxyBaseUrl(null);
@@ -261,29 +262,20 @@ public class CSPHeaderDAOTest {
     public void testGetPropertyValueInvalidPropertyValue() throws Exception {
         CSPConfiguration config = new CSPConfiguration();
         System.setProperty(CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES, "~!@#$");
-        assertEquals(
-                "",
-                CSPHeaderDAO.getPropertyValue(
-                        null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
+        assertEquals("", CSPHeaderDAO.getPropertyValue(null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
     }
 
     @Test
     public void testGetPropertyValueInvalidFieldValue() throws Exception {
         CSPConfiguration config = new CSPConfiguration();
         config.setRemoteResources("~!@#$");
-        assertEquals(
-                "",
-                CSPHeaderDAO.getPropertyValue(
-                        null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
+        assertEquals("", CSPHeaderDAO.getPropertyValue(null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
     }
 
     @Test
     public void testGetPropertyValueMissingValue() throws Exception {
         CSPConfiguration config = new CSPConfiguration();
-        assertEquals(
-                "",
-                CSPHeaderDAO.getPropertyValue(
-                        null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
+        assertEquals("", CSPHeaderDAO.getPropertyValue(null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
     }
 
     @Test
@@ -291,10 +283,7 @@ public class CSPHeaderDAOTest {
         String expected = "http://geoserver.org";
         CSPConfiguration config = new CSPConfiguration();
         System.setProperty(CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES, expected);
-        assertEquals(
-                expected,
-                CSPHeaderDAO.getPropertyValue(
-                        null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
+        assertEquals(expected, CSPHeaderDAO.getPropertyValue(null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
     }
 
     @Test
@@ -302,10 +291,7 @@ public class CSPHeaderDAOTest {
         String expected = "http://geoserver.org";
         CSPConfiguration config = new CSPConfiguration();
         config.setRemoteResources(expected);
-        assertEquals(
-                expected,
-                CSPHeaderDAO.getPropertyValue(
-                        null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
+        assertEquals(expected, CSPHeaderDAO.getPropertyValue(null, config, CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES));
     }
 
     @Test

@@ -30,13 +30,9 @@ public final class GenericTaskletUtils {
         return context.isDryRun();
     }
 
-    /**
-     * Can be used in the context of a restore job to get the directory that contain the backup
-     * content.
-     */
+    /** Can be used in the context of a restore job to get the directory that contain the backup content. */
     public static Resource getInputDirectory(JobExecution jobExecution) {
-        String inputDirectoryUrl =
-                jobExecution.getJobParameters().getString(Backup.PARAM_INPUT_FILE_PATH);
+        String inputDirectoryUrl = jobExecution.getJobParameters().getString(Backup.PARAM_INPUT_FILE_PATH);
         if (inputDirectoryUrl == null) {
             // this happens if invoked for a backup job
             throw new RuntimeException("No input directory available for this job execution.");
@@ -45,12 +41,11 @@ public final class GenericTaskletUtils {
     }
 
     /**
-     * Can be used in the context of a backup job to get the directory that will contain the backup
-     * content, in the case of a dry run this directory will be removed after the job execution.
+     * Can be used in the context of a backup job to get the directory that will contain the backup content, in the case
+     * of a dry run this directory will be removed after the job execution.
      */
     public static Resource getOutputDirectory(JobExecution jobExecution) {
-        String outputDirectoryUrl =
-                jobExecution.getJobParameters().getString(Backup.PARAM_OUTPUT_FILE_PATH);
+        String outputDirectoryUrl = jobExecution.getJobParameters().getString(Backup.PARAM_OUTPUT_FILE_PATH);
         if (outputDirectoryUrl == null) {
             // this happens if invoked for a restore job
             throw new RuntimeException("No output directory available for this job execution.");

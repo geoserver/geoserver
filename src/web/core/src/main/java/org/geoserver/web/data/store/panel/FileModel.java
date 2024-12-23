@@ -19,9 +19,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geotools.util.logging.Logging;
 
 /**
- * Makes sure the file path for files do start with file:// otherwise stuff like /home/user/file.shp
- * won't be recognized as valid. Also, if a path is inside the data directory it will be turned into
- * a relative path
+ * Makes sure the file path for files do start with file:// otherwise stuff like /home/user/file.shp won't be recognized
+ * as valid. Also, if a path is inside the data directory it will be turned into a relative path
  *
  * @author Andrea Aime - GeoSolutions
  */

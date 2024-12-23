@@ -44,10 +44,8 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
         if (name == null) {
             return null;
         }
-        return (T)
-                GeoServerApplication.get()
-                        .getCatalog()
-                        .getStoreByName(
-                                (WorkspaceInfo) workspace.getObject(), name, StoreInfo.class);
+        return (T) GeoServerApplication.get()
+                .getCatalog()
+                .getStoreByName((WorkspaceInfo) workspace.getObject(), name, StoreInfo.class);
     }
 }

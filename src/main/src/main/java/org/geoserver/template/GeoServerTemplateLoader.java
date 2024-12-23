@@ -26,11 +26,9 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resources;
 
 /**
- * A freemarker template loader which can load templates from locations under a GeoServer data
- * directory.
+ * A freemarker template loader which can load templates from locations under a GeoServer data directory.
  *
- * <p>To use this template loader, use the {@link Configuration#setTemplateLoader(TemplateLoader)}
- * method:
+ * <p>To use this template loader, use the {@link Configuration#setTemplateLoader(TemplateLoader)} method:
  *
  * <pre>
  *         <code>
@@ -42,19 +40,19 @@ import org.geoserver.platform.resource.Resources;
  *         </code>
  * </pre>
  *
- * <p>In {@link #findTemplateSource(String)}, the following lookup heuristic is applied to locate a
- * file based on the given path.
+ * <p>In {@link #findTemplateSource(String)}, the following lookup heuristic is applied to locate a file based on the
+ * given path.
  *
  * <ol>
- *   <li>The path relative to '<data_dir>/featureTypes/[featureType]' given that a feature ( {@link
- *       #setFeatureType(String)} ) has been set
+ *   <li>The path relative to '<data_dir>/featureTypes/[featureType]' given that a feature (
+ *       {@link #setFeatureType(String)} ) has been set
  *   <li>The path relative to '<data_dir>/featureTypes'
  *   <li>The path relative to '<data_dir>/templates'
  *   <li>The path relative to the calling class with {@link Class#getResource(String)}.
  * </ol>
  *
- * <b>Note:</b> If method 5 succeeds, the resulting template will be copied to the 'templates'
- * directory of the data directory.
+ * <b>Note:</b> If method 5 succeeds, the resulting template will be copied to the 'templates' directory of the data
+ * directory.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -71,10 +69,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
     /** GeoServer data directory */
     GeoServerDataDirectory dd;
 
-    /**
-     * Feature type directory to load template against. Its presence is mutually exclusive with
-     * coverageName
-     */
+    /** Feature type directory to load template against. Its presence is mutually exclusive with coverageName */
     protected ResourceInfo resource;
 
     /** Allows for workspace specific lookups */
@@ -83,16 +78,15 @@ public class GeoServerTemplateLoader implements TemplateLoader {
     /**
      * Constructs the template loader.
      *
-     * @param caller The "calling" class, used to look up templates based with {@link
-     *     Class#getResource(String)}, may be <code>null</code>
+     * @param caller The "calling" class, used to look up templates based with {@link Class#getResource(String)}, may be
+     *     <code>null</code>
      * @param rl The geoserver resource loader
      */
     public GeoServerTemplateLoader(Class<?> caller, GeoServerResourceLoader rl) throws IOException {
         this(
                 caller,
                 rl == null
-                        ? new GeoServerDataDirectory(
-                                GeoServerExtensions.bean(GeoServerResourceLoader.class))
+                        ? new GeoServerDataDirectory(GeoServerExtensions.bean(GeoServerResourceLoader.class))
                         : new GeoServerDataDirectory(rl));
     }
 
@@ -191,8 +185,7 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         }
 
         // next, check the templates directory
-        template =
-                (File) fileTemplateLoader.findTemplateSource("templates" + File.separator + path);
+        template = (File) fileTemplateLoader.findTemplateSource("templates" + File.separator + path);
 
         if (template != null) {
             return template;
@@ -216,20 +209,14 @@ public class GeoServerTemplateLoader implements TemplateLoader {
 
         // first check relative to set feature type
         try {
-            template =
-                    (File)
-                            fileTemplateLoader.findTemplateSource(
-                                    "featureTypes" + File.separator + path);
+            template = (File) fileTemplateLoader.findTemplateSource("featureTypes" + File.separator + path);
 
             if (template != null) {
                 return template;
             }
 
             // next, try relative to featureTypes or coverages directory, as appropriate
-            template =
-                    (File)
-                            fileTemplateLoader.findTemplateSource(
-                                    "coverages" + File.separator + path);
+            template = (File) fileTemplateLoader.findTemplateSource("coverages" + File.separator + path);
 
             if (template != null) {
                 return template;

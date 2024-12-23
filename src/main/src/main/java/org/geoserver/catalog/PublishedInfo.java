@@ -105,10 +105,7 @@ public interface PublishedInfo extends CatalogInfo {
      */
     void setEnabled(boolean enabled);
 
-    /**
-     * Returns true if the layer existence should be advertised (true by default, unless otherwise
-     * set)
-     */
+    /** Returns true if the layer existence should be advertised (true by default, unless otherwise set) */
     boolean isAdvertised();
 
     /** Set to true if the layer should be advertised, false otherwise */

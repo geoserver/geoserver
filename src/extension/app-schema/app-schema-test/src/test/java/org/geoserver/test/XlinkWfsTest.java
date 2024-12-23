@@ -53,16 +53,14 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
     public void testGetFeatureContent() {
 
         Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf1,mf2,mf3,mf4");
+                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf1,mf2,mf3,mf4");
 
         LOGGER.info("WFS testGetFeatureContent response:\n" + prettyString(doc));
 
         assertXpathCount(4, "//gsml:MappedFeature", doc);
 
         // mf1
-        assertXpathEvaluatesTo(
-                "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
+        assertXpathEvaluatesTo("GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:x-ogc:def:crs:EPSG:4326",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape/gml:Polygon/@srsName",
@@ -77,8 +75,7 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         // mf2
-        assertXpathEvaluatesTo(
-                "MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
+        assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:x-ogc:def:crs:EPSG:4326",
                 "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName",
@@ -93,8 +90,7 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         // mf3
-        assertXpathEvaluatesTo(
-                "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
+        assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:x-ogc:def:crs:EPSG:4326",
                 "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape/gml:Polygon/@srsName",
@@ -109,8 +105,7 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         // mf4
-        assertXpathEvaluatesTo(
-                "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name", doc);
+        assertXpathEvaluatesTo("MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:x-ogc:def:crs:EPSG:4326",
                 "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape/gml:Polygon/@srsName",

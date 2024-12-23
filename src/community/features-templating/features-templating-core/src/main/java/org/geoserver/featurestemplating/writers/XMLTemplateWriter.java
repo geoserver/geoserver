@@ -37,13 +37,11 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeElementName(Object elementName, EncodingHints encodingHints)
-            throws IOException {
+    public void writeElementName(Object elementName, EncodingHints encodingHints) throws IOException {
         try {
             String elemName = elementName.toString();
             String[] elems = elemName.split(":");
-            if (elems.length > 1)
-                streamWriter.writeStartElement(elems[0], elems[1], namespaces.get(elems[0]));
+            if (elems.length > 1) streamWriter.writeStartElement(elems[0], elems[1], namespaces.get(elems[0]));
             else streamWriter.writeStartElement(elems[0]);
         } catch (XMLStreamException e) {
             throw new IOException(e);
@@ -51,8 +49,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeElementValue(Object elementValue, EncodingHints encodingHints)
-            throws IOException {
+    public void writeElementValue(Object elementValue, EncodingHints encodingHints) throws IOException {
 
         writeElementNameAndValue(null, elementValue, encodingHints);
     }
@@ -60,16 +57,13 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     protected abstract void writeGeometry(Geometry writeGeometry) throws XMLStreamException;
 
     @Override
-    public void writeStaticContent(String name, Object staticContent, EncodingHints encodingHints)
-            throws IOException {
+    public void writeStaticContent(String name, Object staticContent, EncodingHints encodingHints) throws IOException {
         try {
-            if (isEncodeAsAttribute(encodingHints))
-                writeAsAttribute(name, staticContent, encodingHints);
+            if (isEncodeAsAttribute(encodingHints)) writeAsAttribute(name, staticContent, encodingHints);
             else {
                 streamWriter.writeStartElement(name);
                 evaluateChildren(encodingHints);
-                streamWriter.writeCharacters(
-                        StringEscapeUtils.escapeHtml(staticContent.toString()));
+                streamWriter.writeCharacters(StringEscapeUtils.escapeHtml(staticContent.toString()));
                 streamWriter.writeEndElement();
             }
         } catch (XMLStreamException e) {
@@ -115,8 +109,8 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeElementNameAndValue(
-            String key, Object elementValue, EncodingHints encodingHints) throws IOException {
+    public void writeElementNameAndValue(String key, Object elementValue, EncodingHints encodingHints)
+            throws IOException {
         boolean encodeAsAttribute = isEncodeAsAttribute(encodingHints);
         boolean repeatName = elementValue instanceof List && ((List) elementValue).size() > 1;
         boolean canClose = false;
@@ -155,12 +149,10 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                 }
             } else if (elementValue instanceof ComplexAttribute) {
                 ComplexAttribute attr = (ComplexAttribute) elementValue;
-                writeElementNameAndValue(
-                        encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
+                writeElementNameAndValue(encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
             } else if (elementValue instanceof Attribute) {
                 Attribute attr = (Attribute) elementValue;
-                writeElementNameAndValue(
-                        encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
+                writeElementNameAndValue(encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
             } else if (elementValue instanceof List) {
                 List list = (List) elementValue;
                 if (!repeatName && !list.isEmpty()) {
@@ -195,14 +187,12 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         return StringEscapeUtils.escapeXml(value);
     }
 
-    private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints)
-            throws IOException {
+    private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints) throws IOException {
         try {
             String strVal = escape(elementValue.toString());
             if (key.indexOf(":") != -1 && !key.contains("xmlns")) {
                 String[] splitKey = key.split(":");
-                streamWriter.writeAttribute(
-                        splitKey[0], namespaces.get(splitKey[0]), splitKey[1], strVal);
+                streamWriter.writeAttribute(splitKey[0], namespaces.get(splitKey[0]), splitKey[1], strVal);
             } else {
                 if (key.contains("xmlns")) {
                     streamWriter.writeNamespace(key.split(":")[1], strVal);
@@ -226,17 +216,14 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
 
     private boolean isEncodeAsAttribute(EncodingHints encodingHints) {
         boolean result = false;
-        Boolean encodeAsAttribute =
-                getEncodingHintIfPresent(encodingHints, ENCODE_AS_ATTRIBUTE, Boolean.class);
+        Boolean encodeAsAttribute = getEncodingHintIfPresent(encodingHints, ENCODE_AS_ATTRIBUTE, Boolean.class);
         if (encodeAsAttribute != null) result = encodeAsAttribute.booleanValue();
         return result;
     }
 
     private void evaluateChildren(EncodingHints encodingHints) throws IOException {
         AbstractTemplateBuilder.ChildrenEvaluation eval =
-                encodingHints.get(
-                        EncodingHints.CHILDREN_EVALUATION,
-                        AbstractTemplateBuilder.ChildrenEvaluation.class);
+                encodingHints.get(EncodingHints.CHILDREN_EVALUATION, AbstractTemplateBuilder.ChildrenEvaluation.class);
         if (eval != null) {
             eval.evaluate();
         }

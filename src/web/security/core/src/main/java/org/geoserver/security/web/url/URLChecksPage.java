@@ -57,32 +57,28 @@ public class URLChecksPage extends GeoServerSecuredPage {
     public URLChecksPage() throws Exception {
         URLCheckDAO dao = getUrlCheckDAO();
         URLCheckProvider provider = new URLCheckProvider(dao.getChecks());
-        table =
-                new GeoServerTablePanel<>("table", provider, true) {
+        table = new GeoServerTablePanel<>("table", provider, true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<AbstractURLCheck> itemModel,
-                            Property<AbstractURLCheck> property) {
-                        // TODO Auto-generated method stub
-                        if (property == URLCheckProvider.NAME) {
-                            return urlEntryPageLink(id, itemModel);
-                        }
-                        if (property == URLCheckProvider.DESCRIPTION) {
-                            return new Label(id, itemModel.getObject().getDescription());
-                        }
-                        if (property == URLCheckProvider.ENABLED) {
-                            if (itemModel.getObject().isEnabled())
-                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                            else return new Label(id, "");
-                        }
-                        if (property == URLCheckProvider.CONFIGURATION) {
-                            return new Label(id, itemModel.getObject().getConfiguration());
-                        }
-                        return null;
-                    }
-                };
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<AbstractURLCheck> itemModel, Property<AbstractURLCheck> property) {
+                // TODO Auto-generated method stub
+                if (property == URLCheckProvider.NAME) {
+                    return urlEntryPageLink(id, itemModel);
+                }
+                if (property == URLCheckProvider.DESCRIPTION) {
+                    return new Label(id, itemModel.getObject().getDescription());
+                }
+                if (property == URLCheckProvider.ENABLED) {
+                    if (itemModel.getObject().isEnabled()) return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                    else return new Label(id, "");
+                }
+                if (property == URLCheckProvider.CONFIGURATION) {
+                    return new Label(id, itemModel.getObject().getConfiguration());
+                }
+                return null;
+            }
+        };
         table.setPageable(false);
         table.setSortable(false);
         table.setFilterable(false);
@@ -95,50 +91,48 @@ public class URLChecksPage extends GeoServerSecuredPage {
         final TextArea<String> testInput = new TextArea<>("testInput", new Model<>());
         testInput.setOutputMarkupId(true);
         form.add(testInput);
-        form.add(
-                new AjaxSubmitLink("testURL") {
+        form.add(new AjaxSubmitLink("testURL") {
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        try {
-                            testInput.processInput();
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                try {
+                    testInput.processInput();
 
-                            URLChecker check = getMatchingRule();
+                    URLChecker check = getMatchingRule();
 
-                            if (check != null) {
-                                String msg = getMessage("testSuccess", check.getName());
-                                info(msg);
-                            } else {
-                                String msg = getMessage("testFail");
-                                error(msg);
-                            }
-                        } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Test failed", e);
-                            error("Test failed: " + e.getMessage());
-                        }
-                        addFeedbackPanels(target);
+                    if (check != null) {
+                        String msg = getMessage("testSuccess", check.getName());
+                        info(msg);
+                    } else {
+                        String msg = getMessage("testFail");
+                        error(msg);
                     }
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Test failed", e);
+                    error("Test failed: " + e.getMessage());
+                }
+                addFeedbackPanels(target);
+            }
 
-                    private URLChecker getMatchingRule() throws IOException {
-                        String test = testInput.getInput();
-                        String normalize = URLCheckers.normalize(test);
+            private URLChecker getMatchingRule() throws IOException {
+                String test = testInput.getInput();
+                String normalize = URLCheckers.normalize(test);
 
-                        List<URLChecker> checks = new ArrayList<>();
-                        checks.addAll(getUrlCheckDAO().getChecks());
-                        checks.addAll(
-                                URLCheckers.getEnabledURLCheckers().stream()
-                                        .filter(item -> !(item instanceof GeoServerURLChecker))
-                                        .collect(Collectors.toList()));
+                List<URLChecker> checks = new ArrayList<>();
+                checks.addAll(getUrlCheckDAO().getChecks());
+                checks.addAll(URLCheckers.getEnabledURLCheckers().stream()
+                        .filter(item -> !(item instanceof GeoServerURLChecker))
+                        .collect(Collectors.toList()));
 
-                        for (URLChecker check : checks) {
-                            if (check.isEnabled()) {
-                                if (check.confirm(normalize)) return check;
-                            }
-                        }
-
-                        return null;
+                for (URLChecker check : checks) {
+                    if (check.isEnabled()) {
+                        if (check.confirm(normalize)) return check;
                     }
-                });
+                }
+
+                return null;
+            }
+        });
 
         // the add button
         add(new BookmarkablePageLink<>("addNew", RegexCheckPage.class));
@@ -180,57 +174,51 @@ public class URLChecksPage extends GeoServerSecuredPage {
                 dialog.setTitle(new ParamResourceModel("confirmDeleteTitle", URLChecksPage.this));
                 dialog.setDefaultModel(getDefaultModel());
 
-                dialog.showOkCancel(
-                        target,
-                        new GeoServerDialog.DialogDelegate() {
-                            private static final long serialVersionUID = 1L;
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                    private static final long serialVersionUID = 1L;
 
-                            @Override
-                            protected Component getContents(final String id) {
+                    @Override
+                    protected Component getContents(final String id) {
 
-                                Label confirmLabel =
-                                        new Label(
-                                                id,
-                                                new ParamResourceModel(
-                                                        "confirmDeleteMessage",
-                                                        URLChecksPage.this,
-                                                        table.getSelection().size()));
-                                confirmLabel.setEscapeModelStrings(
-                                        false); // allow some html inside, like
-                                // <b></b>, etc
-                                return confirmLabel;
-                            }
+                        Label confirmLabel = new Label(
+                                id,
+                                new ParamResourceModel(
+                                        "confirmDeleteMessage",
+                                        URLChecksPage.this,
+                                        table.getSelection().size()));
+                        confirmLabel.setEscapeModelStrings(false); // allow some html inside, like
+                        // <b></b>, etc
+                        return confirmLabel;
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    final AjaxRequestTarget target, final Component contents) {
-                                URLCheckDAO dao = getUrlCheckDAO();
+                    @Override
+                    protected boolean onSubmit(final AjaxRequestTarget target, final Component contents) {
+                        URLCheckDAO dao = getUrlCheckDAO();
 
-                                if (table.getSelection().isEmpty()) {
-                                    info("Nothing Selected");
-                                    return false;
-                                }
+                        if (table.getSelection().isEmpty()) {
+                            info("Nothing Selected");
+                            return false;
+                        }
 
-                                try {
-                                    List<AbstractURLCheck> selection = table.getSelection();
-                                    List<AbstractURLCheck> checks = dao.getChecks();
-                                    checks.removeAll(selection);
-                                    dao.saveChecks(checks);
-                                } catch (Exception e) {
-                                    error("An Error while deleting URL entries");
-                                    LOGGER.log(
-                                            Level.SEVERE, "An Error while deleting URL entries", e);
-                                }
-                                return true;
-                            }
+                        try {
+                            List<AbstractURLCheck> selection = table.getSelection();
+                            List<AbstractURLCheck> checks = dao.getChecks();
+                            checks.removeAll(selection);
+                            dao.saveChecks(checks);
+                        } catch (Exception e) {
+                            error("An Error while deleting URL entries");
+                            LOGGER.log(Level.SEVERE, "An Error while deleting URL entries", e);
+                        }
+                        return true;
+                    }
 
-                            @Override
-                            public void onClose(final AjaxRequestTarget target) {
-                                table.clearSelection();
-                                target.add(table);
-                                setResponsePage(getPage());
-                            }
-                        });
+                    @Override
+                    public void onClose(final AjaxRequestTarget target) {
+                        table.clearSelection();
+                        target.add(table);
+                        setResponsePage(getPage());
+                    }
+                });
             }
         };
     }
@@ -265,39 +253,35 @@ public class URLChecksPage extends GeoServerSecuredPage {
         dialog.setTitle(new ParamResourceModel(title, this));
         dialog.setDefaultModel(getDefaultModel());
 
-        dialog.showOkCancel(
-                target,
-                new GeoServerDialog.DialogDelegate() {
-                    private static final long serialVersionUID = 1L;
+        dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected Component getContents(final String id) {
+            @Override
+            protected Component getContents(final String id) {
 
-                        Label confirmLabel =
-                                new Label(id, new ParamResourceModel(message, URLChecksPage.this));
-                        confirmLabel.setEscapeModelStrings(false);
+                Label confirmLabel = new Label(id, new ParamResourceModel(message, URLChecksPage.this));
+                confirmLabel.setEscapeModelStrings(false);
 
-                        return confirmLabel;
-                    }
+                return confirmLabel;
+            }
 
-                    @Override
-                    protected boolean onSubmit(
-                            final AjaxRequestTarget target, final Component contents) {
-                        // toggle state and save
-                        try {
-                            getUrlCheckDAO().setEnabled(!enabled);
-                            // update status message
-                            statusLabel.setDefaultModelObject(
-                                    getServiceStatusMessage(getUrlCheckDAO().isEnabled()));
-                            target.add(statusLabel);
-                        } catch (Exception e) {
-                            error(e.getMessage());
-                            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                        }
+            @Override
+            protected boolean onSubmit(final AjaxRequestTarget target, final Component contents) {
+                // toggle state and save
+                try {
+                    getUrlCheckDAO().setEnabled(!enabled);
+                    // update status message
+                    statusLabel.setDefaultModelObject(
+                            getServiceStatusMessage(getUrlCheckDAO().isEnabled()));
+                    target.add(statusLabel);
+                } catch (Exception e) {
+                    error(e.getMessage());
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
 
-                        return true;
-                    }
-                });
+                return true;
+            }
+        });
     }
 
     private String getServiceStatusMessage(boolean isEnabled) {

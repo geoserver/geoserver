@@ -37,11 +37,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/urlchecks",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class UrlCheckController extends RestBaseController {
 
     private static final Logger LOGGER = Logging.getLogger(UrlCheckController.class);
@@ -60,8 +56,7 @@ public class UrlCheckController extends RestBaseController {
     }
 
     @GetMapping("/{urlCheckName}")
-    public RestWrapper<AbstractURLCheck> urlCheckGet(@PathVariable String urlCheckName)
-            throws IOException {
+    public RestWrapper<AbstractURLCheck> urlCheckGet(@PathVariable String urlCheckName) throws IOException {
 
         AbstractURLCheck check = urlCheckDao.getCheckByName(urlCheckName);
         if (check == null) {
@@ -79,14 +74,11 @@ public class UrlCheckController extends RestBaseController {
                 MediaType.APPLICATION_JSON_VALUE
             })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> urlCheckPost(
-            @RequestBody AbstractURLCheck urlCheck, UriComponentsBuilder builder) {
+    public ResponseEntity<String> urlCheckPost(@RequestBody AbstractURLCheck urlCheck, UriComponentsBuilder builder) {
         try {
 
             if (urlCheckDao.getCheckByName(urlCheck.getName()) != null) {
-                throw new RestException(
-                        "URL check '" + urlCheck.getName() + "' already exists",
-                        HttpStatus.CONFLICT);
+                throw new RestException("URL check '" + urlCheck.getName() + "' already exists", HttpStatus.CONFLICT);
             }
 
             verifyCheckName(urlCheck);
@@ -98,14 +90,10 @@ public class UrlCheckController extends RestBaseController {
 
             LOGGER.log(Level.FINEST, "Added urlCheck {0}", name);
 
-            return new ResponseEntity<>(
-                    name, composeCreatedResponseHeaders(builder, name), HttpStatus.CREATED);
+            return new ResponseEntity<>(name, composeCreatedResponseHeaders(builder, name), HttpStatus.CREATED);
 
         } catch (IOException ex) {
-            throw new RestException(
-                    "Error occurred in creating a new URL check",
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ex);
+            throw new RestException("Error occurred in creating a new URL check", HttpStatus.INTERNAL_SERVER_ERROR, ex);
         }
     }
 
@@ -116,11 +104,9 @@ public class UrlCheckController extends RestBaseController {
         }
     }
 
-    private HttpHeaders composeCreatedResponseHeaders(
-            UriComponentsBuilder builder, String checkIdentifier) {
+    private HttpHeaders composeCreatedResponseHeaders(UriComponentsBuilder builder, String checkIdentifier) {
         HttpHeaders headers = new HttpHeaders();
-        UriComponents uriComponents =
-                builder.path("/urlchecks/{id}").buildAndExpand(checkIdentifier);
+        UriComponents uriComponents = builder.path("/urlchecks/{id}").buildAndExpand(checkIdentifier);
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return headers;
@@ -135,14 +121,12 @@ public class UrlCheckController extends RestBaseController {
                 MediaType.APPLICATION_JSON_VALUE
             })
     @ResponseStatus(HttpStatus.OK)
-    public void urlCheckPut(
-            @RequestBody AbstractURLCheck providedCheck, @PathVariable String urlCheckName) {
+    public void urlCheckPut(@RequestBody AbstractURLCheck providedCheck, @PathVariable String urlCheckName) {
         try {
 
             AbstractURLCheck urlCheck = urlCheckDao.getCheckByName(urlCheckName);
             if (urlCheck == null) {
-                throw new ResourceNotFoundException(
-                        "Can't change a non existent URL check (" + urlCheckName + ")");
+                throw new ResourceNotFoundException("Can't change a non existent URL check (" + urlCheckName + ")");
             }
 
             verifyCheckType(providedCheck, urlCheck);
@@ -156,26 +140,21 @@ public class UrlCheckController extends RestBaseController {
             LOGGER.log(Level.FINEST, "Edited urlCheck {0}", urlCheckName);
 
         } catch (IOException ex) {
-            throw new RestException(
-                    "Error occurred in changing the URL check",
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ex);
+            throw new RestException("Error occurred in changing the URL check", HttpStatus.INTERNAL_SERVER_ERROR, ex);
         }
     }
 
     private static void verifyCheckType(AbstractURLCheck providedCheck, AbstractURLCheck urlCheck) {
         if (!providedCheck.getClass().equals(urlCheck.getClass())) {
             throw new RestException(
-                    "The existent URL check type differs from the provided one",
-                    HttpStatus.BAD_REQUEST);
+                    "The existent URL check type differs from the provided one", HttpStatus.BAD_REQUEST);
         }
     }
 
     private static void verifyCheckConfiguration(AbstractURLCheck urlCheck) {
         String checkConfiguration = urlCheck.getConfiguration();
         if (checkConfiguration == null || checkConfiguration.isEmpty()) {
-            throw new RestException(
-                    "The URL check configuration is required", HttpStatus.BAD_REQUEST);
+            throw new RestException("The URL check configuration is required", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -185,8 +164,7 @@ public class UrlCheckController extends RestBaseController {
 
             AbstractURLCheck check = urlCheckDao.getCheckByName(urlCheckName);
             if (check == null) {
-                throw new ResourceNotFoundException(
-                        "No such URL check found: '" + urlCheckName + "'");
+                throw new ResourceNotFoundException("No such URL check found: '" + urlCheckName + "'");
             }
 
             urlCheckDao.removeByName(urlCheckName);
@@ -194,10 +172,7 @@ public class UrlCheckController extends RestBaseController {
             LOGGER.log(Level.FINEST, "Deleted urlCheck {0}", urlCheckName);
 
         } catch (IOException ex) {
-            throw new RestException(
-                    "Error occurred in deleting the URL check",
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ex);
+            throw new RestException("Error occurred in deleting the URL check", HttpStatus.INTERNAL_SERVER_ERROR, ex);
         }
     }
 

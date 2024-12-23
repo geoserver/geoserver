@@ -65,10 +65,8 @@ public class CoveragesClientIT {
         this.coverageStores = support.client().coverageStores();
         this.coverages = support.client().coverages();
 
-        String wsname1 =
-                String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
-        String wsname2 =
-                String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname1 = String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname2 = String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
 
         this.workspaces.create(wsname1);
         this.workspaces.create(wsname2);
@@ -78,8 +76,7 @@ public class CoveragesClientIT {
         this.sfdemURI = support.getSFDemGeoTiff();
 
         this.sfdemStore =
-                this.coverageStores.create(
-                        wsname1, "sfdem", "Test geotiff", TypeEnum.GEOTIFF, sfdemURI.toString());
+                this.coverageStores.create(wsname1, "sfdem", "Test geotiff", TypeEnum.GEOTIFF, sfdemURI.toString());
     }
 
     public @After void after() {
@@ -97,8 +94,7 @@ public class CoveragesClientIT {
         }
     }
 
-    private void expect(
-            Runnable cmd, Class<? extends Exception> expectedException, String expectedMessage) {
+    private void expect(Runnable cmd, Class<? extends Exception> expectedException, String expectedMessage) {
         try {
             cmd.run();
             fail(String.format("Expected %s", expectedException.getName()));
@@ -146,9 +142,7 @@ public class CoveragesClientIT {
         // automatically set by geoserver...
         assertNotNull(created.getNativeBoundingBox());
         assertEquals("EPSG:26713", created.getSrs());
-        assertThat(
-                created.getNativeCRS(),
-                StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
+        assertThat(created.getNativeCRS(), StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
         assertEquals(ProjectionPolicy.REPROJECT_TO_DECLARED, created.getProjectionPolicy());
         assertEquals(Boolean.TRUE, created.getEnabled());
         assertEquals(Collections.singletonList("EPSG:26713"), created.getRequestSRS());
@@ -171,10 +165,9 @@ public class CoveragesClientIT {
     }
 
     public @Test void createMinimalInformation() {
-        CoverageInfo sfdem =
-                new CoverageInfo()
-                        .nativeCoverageName("sfdem")
-                        .store(new CoverageStoreInfo().name(sfdemStore.getName()));
+        CoverageInfo sfdem = new CoverageInfo()
+                .nativeCoverageName("sfdem")
+                .store(new CoverageStoreInfo().name(sfdemStore.getName()));
 
         CoverageInfo created = this.coverages.create(ws1.getName(), sfdem);
         assertNotNull(created);
@@ -197,9 +190,7 @@ public class CoveragesClientIT {
         // automatically set by geoserver...
         assertNotNull(created.getNativeBoundingBox());
         assertEquals("EPSG:26713", created.getSrs());
-        assertThat(
-                created.getNativeCRS(),
-                StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
+        assertThat(created.getNativeCRS(), StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
         assertEquals(ProjectionPolicy.REPROJECT_TO_DECLARED, created.getProjectionPolicy());
         assertEquals(Boolean.TRUE, created.getEnabled());
         assertEquals(Collections.singletonList("EPSG:26713"), created.getRequestSRS());
@@ -207,11 +198,10 @@ public class CoveragesClientIT {
     }
 
     public @Test void createMinimalInformationNativeAndPublishedName() {
-        CoverageInfo sfdem =
-                new CoverageInfo() //
-                        .nativeCoverageName("sfdem") //
-                        .name("PublishedName") //
-                        .store(new CoverageStoreInfo().name(sfdemStore.getName()));
+        CoverageInfo sfdem = new CoverageInfo() //
+                .nativeCoverageName("sfdem") //
+                .name("PublishedName") //
+                .store(new CoverageStoreInfo().name(sfdemStore.getName()));
 
         CoverageInfo created = this.coverages.create(ws1.getName(), sfdem);
         assertNotNull(created);
@@ -223,9 +213,7 @@ public class CoveragesClientIT {
         // automatically set by geoserver...
         assertNotNull(created.getNativeBoundingBox());
         assertEquals("EPSG:26713", created.getSrs());
-        assertThat(
-                created.getNativeCRS(),
-                StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
+        assertThat(created.getNativeCRS(), StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
         assertEquals(ProjectionPolicy.REPROJECT_TO_DECLARED, created.getProjectionPolicy());
         assertEquals(Boolean.TRUE, created.getEnabled());
         assertEquals(Collections.singletonList("EPSG:26713"), created.getRequestSRS());
@@ -233,19 +221,18 @@ public class CoveragesClientIT {
     }
 
     /**
-     * This is a bug in geoserver, providing anything other than a simple name makes it ignore the
-     * provided "published name" and not automatically compute other fields, but uses exactly what
-     * was provided (it does compute the bounds and native CRS though)
+     * This is a bug in geoserver, providing anything other than a simple name makes it ignore the provided "published
+     * name" and not automatically compute other fields, but uses exactly what was provided (it does compute the bounds
+     * and native CRS though)
      */
     public @Test void createWithTitleAndAbstractDoesNotAtuoComputeSomeFields() {
-        CoverageInfo sfdem =
-                new CoverageInfo()
-                        .nativeCoverageName("sfdem")
-                        .name("PublishedName")
-                        .title("title")
-                        ._abstract("abstract")
-                        .description("description")
-                        .store(new CoverageStoreInfo().name(sfdemStore.getName()));
+        CoverageInfo sfdem = new CoverageInfo()
+                .nativeCoverageName("sfdem")
+                .name("PublishedName")
+                .title("title")
+                ._abstract("abstract")
+                .description("description")
+                .store(new CoverageStoreInfo().name(sfdemStore.getName()));
         sfdem.setName(null);
         CoverageInfo created = this.coverages.create(ws1.getName(), sfdem);
         assertNotNull(created);
@@ -269,9 +256,7 @@ public class CoveragesClientIT {
         // automatically set by geoserver, bad defaults due to bug...
         assertNotNull(created.getNativeBoundingBox());
         assertEquals("EPSG:26713", created.getSrs());
-        assertThat(
-                created.getNativeCRS(),
-                StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
+        assertThat(created.getNativeCRS(), StringStartsWith.startsWith("PROJCS[\"NAD27 / UTM zone 13N\""));
         assertEquals(
                 "Should have been REPROJECT_TO_DECLARED",
                 ProjectionPolicy.FORCE_DECLARED,
@@ -290,9 +275,9 @@ public class CoveragesClientIT {
     }
 
     /**
-     * It should be possible to create two coverages with the same store and native coverage name on
-     * different workspaces. This currently fails, although it was fixed for FeatureTypes with
-     * geoserver >= 2.15.4,bug report: https://osgeo-org.atlassian.net/browse/GEOS-9190
+     * It should be possible to create two coverages with the same store and native coverage name on different
+     * workspaces. This currently fails, although it was fixed for FeatureTypes with geoserver >= 2.15.4,bug report:
+     * https://osgeo-org.atlassian.net/browse/GEOS-9190
      */
     @Ignore
     public @Test void createSameStoreNameDifferentWorkspace() {
@@ -303,9 +288,7 @@ public class CoveragesClientIT {
         final String workspace2 = this.ws2.getName();
 
         CoverageInfo requestBody =
-                new CoverageInfo()
-                        .nativeCoverageName(coverageName)
-                        .store(new CoverageStoreInfo().name(storeName));
+                new CoverageInfo().nativeCoverageName(coverageName).store(new CoverageStoreInfo().name(storeName));
         {
             CoverageInfo c1ws1 = this.coverages.create(workspace1, storeName, requestBody);
             assertEquals(coverageName, c1ws1.getName());
@@ -314,13 +297,8 @@ public class CoveragesClientIT {
             assertEquals(workspace1, c1ws1.getNamespace().getPrefix());
         }
         // create a store with the same name than store1
-        CoverageStoreResponse store2 =
-                this.coverageStores.create(
-                        workspace2,
-                        storeName,
-                        store1.getDescription(),
-                        TypeEnum.GEOTIFF,
-                        sfdemURI.toString());
+        CoverageStoreResponse store2 = this.coverageStores.create(
+                workspace2, storeName, store1.getDescription(), TypeEnum.GEOTIFF, sfdemURI.toString());
         assertNotNull(store2);
 
         {
@@ -350,10 +328,9 @@ public class CoveragesClientIT {
     }
 
     /**
-     * Due to a bug in some geoserver versions, can't create a coverage with a name that already
-     * exists in another workspace/coveragestore. Nonetheless, we'll make sure to provide unique
-     * coverage names, but creating coverages for the same geotiff file in different workspaces,
-     * re-using the each workspace coveragestore, should be possible
+     * Due to a bug in some geoserver versions, can't create a coverage with a name that already exists in another
+     * workspace/coveragestore. Nonetheless, we'll make sure to provide unique coverage names, but creating coverages
+     * for the same geotiff file in different workspaces, re-using the each workspace coveragestore, should be possible
      */
     @Ignore
     public @Test void createSameStoreNameDifferentWorkspaceUniqueCoverageName() {
@@ -365,25 +342,18 @@ public class CoveragesClientIT {
         final String workspace2 = this.ws2.getName();
 
         // create a store with the same name than store1
-        CoverageStoreResponse store2 =
-                this.coverageStores.create(
-                        workspace2,
-                        storeName2,
-                        store1.getDescription(),
-                        TypeEnum.GEOTIFF,
-                        sfdemURI.toString());
+        CoverageStoreResponse store2 = this.coverageStores.create(
+                workspace2, storeName2, store1.getDescription(), TypeEnum.GEOTIFF, sfdemURI.toString());
         assertNotNull(store2);
 
-        CoverageInfo requestBodyWs1 =
-                new CoverageInfo()
-                        .nativeCoverageName(nativeCoverageName) //
-                        .store(new CoverageStoreInfo().name(storeName1)) //
-                        .name("sfdem-ws1");
-        CoverageInfo requestBodyWs2 =
-                new CoverageInfo()
-                        .nativeCoverageName(nativeCoverageName) //
-                        .store(new CoverageStoreInfo().name(storeName1)) //
-                        .name("sfdem-ws2");
+        CoverageInfo requestBodyWs1 = new CoverageInfo()
+                .nativeCoverageName(nativeCoverageName) //
+                .store(new CoverageStoreInfo().name(storeName1)) //
+                .name("sfdem-ws1");
+        CoverageInfo requestBodyWs2 = new CoverageInfo()
+                .nativeCoverageName(nativeCoverageName) //
+                .store(new CoverageStoreInfo().name(storeName1)) //
+                .name("sfdem-ws2");
         {
             CoverageInfo c1ws1 = this.coverages.create(workspace1, storeName1, requestBodyWs1);
             assertEquals("sfdem-ws1", c1ws1.getName());
@@ -441,11 +411,10 @@ public class CoveragesClientIT {
     }
 
     public @Test void createCoverageAlsoCreatesLayer() {
-        CoverageInfo createBody =
-                new CoverageInfo() //
-                        .nativeCoverageName("sfdem") //
-                        .name("PublishedName") //
-                        .store(new CoverageStoreInfo().name(sfdemStore.getName()));
+        CoverageInfo createBody = new CoverageInfo() //
+                .nativeCoverageName("sfdem") //
+                .name("PublishedName") //
+                .store(new CoverageStoreInfo().name(sfdemStore.getName()));
 
         CoverageInfo created = this.coverages.create(ws1.getName(), createBody);
         assertNotNull(created);
@@ -464,23 +433,18 @@ public class CoveragesClientIT {
         final String workspace = this.ws1.getName();
         final String storeName = this.sfdemStore.getName();
 
-        CoverageInfo sfdem =
-                new CoverageInfo() //
-                        .nativeCoverageName("sfdem") //
-                        .store(new CoverageStoreInfo().name(storeName));
+        CoverageInfo sfdem = new CoverageInfo() //
+                .nativeCoverageName("sfdem") //
+                .store(new CoverageStoreInfo().name(storeName));
 
         CoverageInfo created = this.coverages.create(ws1.getName(), sfdem);
         assertNotNull(created);
         assertEquals("sfdem", created.getName());
 
         CoverageInfo updateRequestBody =
-                new CoverageInfo()
-                        .name("UpdatedName")
-                        .title("Updated Title")
-                        ._abstract("Updated Abstract");
+                new CoverageInfo().name("UpdatedName").title("Updated Title")._abstract("Updated Abstract");
 
-        CoverageInfo updated =
-                this.coverages.update(workspace, storeName, created.getName(), updateRequestBody);
+        CoverageInfo updated = this.coverages.update(workspace, storeName, created.getName(), updateRequestBody);
         assertEquals("UpdatedName", updated.getName());
         assertEquals("Updated Title", updated.getTitle());
         assertEquals("Updated Abstract", updated.getAbstract());
@@ -490,10 +454,9 @@ public class CoveragesClientIT {
         final String workspace = this.ws1.getName();
         final String storeName = this.sfdemStore.getName();
 
-        CoverageInfo sfdem =
-                new CoverageInfo() //
-                        .nativeCoverageName("sfdem") //
-                        .store(new CoverageStoreInfo().name(storeName));
+        CoverageInfo sfdem = new CoverageInfo() //
+                .nativeCoverageName("sfdem") //
+                .store(new CoverageStoreInfo().name(storeName));
 
         CoverageInfo created = this.coverages.create(ws1.getName(), sfdem);
         assertNotNull(created);

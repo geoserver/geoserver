@@ -65,22 +65,18 @@ public class GridPanel extends FormComponentPanel<GridEnvelope2D> {
     }
 
     public GridPanel setReadOnly(final boolean readOnly) {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    component.setEnabled(!readOnly);
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            component.setEnabled(!readOnly);
+        });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField) component).processInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField) component).processInput();
+        });
 
         // update the grid envelope
         if (minX != null && maxX != null && minY != null && maxX != null) {
@@ -97,10 +93,8 @@ public class GridPanel extends FormComponentPanel<GridEnvelope2D> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField) component).clearInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField) component).clearInput();
+        });
     }
 }

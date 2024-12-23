@@ -18,8 +18,7 @@ public class GeoServerNodeDataTest {
 
     @Before
     public void mockAddress() throws UnknownHostException {
-        InetAddress addr =
-                InetAddress.getByAddress("test.local", new byte[] {(byte) 192, 2, 0, 42});
+        InetAddress addr = InetAddress.getByAddress("test.local", new byte[] {(byte) 192, 2, 0, 42});
 
         GeoServerNodeData.setMockAddress(addr);
     }

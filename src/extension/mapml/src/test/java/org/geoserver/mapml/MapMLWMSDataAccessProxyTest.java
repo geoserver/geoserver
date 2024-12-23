@@ -35,11 +35,7 @@ public class MapMLWMSDataAccessProxyTest extends MapMLBaseProxyTest {
 
     @BeforeClass
     public static void beforeClass() {
-        initMockService(
-                "/mockgeoserver",
-                "/wms",
-                "REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS",
-                "wmscaps.xml");
+        initMockService("/mockgeoserver", "/wms", "REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS", "wmscaps.xml");
     }
 
     @Override
@@ -82,8 +78,7 @@ public class MapMLWMSDataAccessProxyTest extends MapMLBaseProxyTest {
         String password = "testPassword";
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
         User user = new User(username, password, Collections.singletonList(authority));
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
+        Authentication auth = new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         String wkt =
@@ -95,8 +90,7 @@ public class MapMLWMSDataAccessProxyTest extends MapMLBaseProxyTest {
         // Create a filter that performs a spatial intersection with the polygon
         FilterFactory FF = CommonFactoryFinder.getFilterFactory();
         Filter intersectsFilter = FF.intersects(FF.property("the_geom"), FF.literal(polygon));
-        tam.putLimits(
-                username, layer2, new DataAccessLimits(CatalogMode.CHALLENGE, intersectsFilter));
+        tam.putLimits(username, layer2, new DataAccessLimits(CatalogMode.CHALLENGE, intersectsFilter));
     }
 
     @Test

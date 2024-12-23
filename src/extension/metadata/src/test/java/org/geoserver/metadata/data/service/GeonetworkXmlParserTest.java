@@ -40,9 +40,11 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
 
     static final Logger LOGGER = Logging.getLogger(GeonetworkXmlParserTest.class);
 
-    @Autowired GeonetworkXmlParser xmlParser;
+    @Autowired
+    GeonetworkXmlParser xmlParser;
 
-    @Autowired private GeoServerDataDirectory dataDirectory;
+    @Autowired
+    private GeoServerDataDirectory dataDirectory;
 
     @After
     public void after() throws Exception {
@@ -58,8 +60,7 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
 
         ResourceInfo rInfo = new FeatureTypeInfoImpl(null);
 
-        Document fileAsResource =
-                getDocument("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml");
+        Document fileAsResource = getDocument("geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml");
 
         xmlParser.parseMetadata(fileAsResource, rInfo, complexMetadataMap);
 
@@ -79,8 +80,7 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
         assertEquals("Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
 
         // complex list
-        Serializable actualObjectCodeSpaceList =
-                metadataMap.get("referencesystem-object-list/code-space");
+        Serializable actualObjectCodeSpaceList = metadataMap.get("referencesystem-object-list/code-space");
         assertTrue(actualObjectCodeSpaceList instanceof List);
         assertEquals(6, ((List<?>) actualObjectCodeSpaceList).size());
         assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(0));
@@ -92,9 +92,7 @@ public class GeonetworkXmlParserTest extends AbstractMetadataTest {
         assertEquals(6, ((List<?>) actualObjectCodeList).size());
         assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualObjectCodeList).get(0));
         assertEquals("TAW", ((List<?>) actualObjectCodeList).get(1));
-        assertEquals(
-                "http://www.opengis.net/def/crs/EPSG/0/3043",
-                ((List<?>) actualObjectCodeList).get(2));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualObjectCodeList).get(2));
 
         // check equal sizes for complex repeatables
         List<?> names = (List<?>) metadataMap.get("contact/name");

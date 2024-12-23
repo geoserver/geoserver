@@ -17,13 +17,11 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 /**
  * Event carrying information about a change that happened/that is about to occur.
  *
- * <p>The feature collection may be an in-memory one, or may be based on a real data store with a
- * filter.
+ * <p>The feature collection may be an in-memory one, or may be based on a real data store with a filter.
  *
- * <p><b>Note</b> that care should be taken when relying on feature identifiers from a {@link
- * TransactionEventType#POST_INSERT} event. Depending on the type of store those identifiers may be
- * reliable. Essentially they can only be relied upon in the case of a spatial dbms (such as
- * PostGIS) is being used.
+ * <p><b>Note</b> that care should be taken when relying on feature identifiers from a
+ * {@link TransactionEventType#POST_INSERT} event. Depending on the type of store those identifiers may be reliable.
+ * Essentially they can only be relied upon in the case of a spatial dbms (such as PostGIS) is being used.
  */
 public class TransactionEvent {
     private TransactionEventType type;
@@ -59,9 +57,9 @@ public class TransactionEvent {
     }
 
     /**
-     * A collection of the features that are being manipulated. Accessible and usable only when the
-     * event is being thrown, if you store the event and try to access the collection later there is
-     * no guarantee it will still be usable.
+     * A collection of the features that are being manipulated. Accessible and usable only when the event is being
+     * thrown, if you store the event and try to access the collection later there is no guarantee it will still be
+     * usable.
      */
     public SimpleFeatureCollection getAffectedFeatures() {
         return affectedFeatures;
@@ -97,8 +95,8 @@ public class TransactionEvent {
     }
 
     /**
-     * Returns the current GeoTools Data {@link Transaction} associated with this event. May be
-     * {@code null} for post-commit events.
+     * Returns the current GeoTools Data {@link Transaction} associated with this event. May be {@code null} for
+     * post-commit events.
      */
     public Transaction getTransaction() {
         return request.getTransaction();

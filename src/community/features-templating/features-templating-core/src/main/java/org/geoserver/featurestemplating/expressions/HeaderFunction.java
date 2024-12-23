@@ -11,8 +11,7 @@ import org.geotools.util.Converters;
 public class HeaderFunction extends RequestFunction {
 
     public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "header", parameter("result", String.class), parameter("name", String.class));
+            new FunctionNameImpl("header", parameter("result", String.class), parameter("name", String.class));
 
     public HeaderFunction() {
         super(NAME);

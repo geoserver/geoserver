@@ -33,8 +33,7 @@ public class GetRepositoryItem {
             RepositoryItem item = store.getRepositoryItem(request.getId());
             if (item == null) {
                 // by spec we have to return a 404
-                throw new HttpErrorCodeException(
-                        404, "No repository item found for id " + request.getId());
+                throw new HttpErrorCodeException(404, "No repository item found for id " + request.getId());
             }
             return item;
         } catch (IOException e) {

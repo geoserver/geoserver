@@ -24,9 +24,7 @@ public class MetaDataResponse extends AbstractRecordsResponse {
 
     public MetaDataResponse(GeoServer gs) {
         super(
-                Sets.newHashSet(
-                        MetaDataDescriptor.METADATA_TYPE,
-                        FeatureCatalogueDescriptor.FEATURECATALOGUE_TYPE),
+                Sets.newHashSet(MetaDataDescriptor.METADATA_TYPE, FeatureCatalogueDescriptor.FEATURECATALOGUE_TYPE),
                 MetaDataDescriptor.NAMESPACE_GMD,
                 gs);
     }
@@ -34,8 +32,7 @@ public class MetaDataResponse extends AbstractRecordsResponse {
     @Override
     protected void transformResponse(
             OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
-        MetaDataTransformer transformer =
-                new MetaDataTransformer(request, csw.isCanonicalSchemaLocation());
+        MetaDataTransformer transformer = new MetaDataTransformer(request, csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);
         try {
             transformer.transform(result, output);

@@ -47,14 +47,14 @@ public class FileBasedSecurityServiceConfig extends BaseSecurityNamedServiceConf
     /**
      * Sets the time interval, in milliseconds, in which to check the underlying file for changes.
      *
-     * <p>This property is typically used in environments (such as a cluster) in which the
-     * underlying file may have been modified out of process.
+     * <p>This property is typically used in environments (such as a cluster) in which the underlying file may have been
+     * modified out of process.
      *
-     * <p>A value of > 0 causes {@link FileWatcher} object to be created. A value of <= 0 disables
-     * any checking of the underlying file.
+     * <p>A value of > 0 causes {@link FileWatcher} object to be created. A value of <= 0 disables any checking of the
+     * underlying file.
      *
-     * <p>Hint: the granularity of {@link File} last access time is often a second, values < 1000
-     * may not have the desired effect.
+     * <p>Hint: the granularity of {@link File} last access time is often a second, values < 1000 may not have the
+     * desired effect.
      *
      * @param checkInterval The time interval in ms.
      */

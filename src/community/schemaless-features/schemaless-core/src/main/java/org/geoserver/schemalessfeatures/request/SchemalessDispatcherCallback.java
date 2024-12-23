@@ -43,17 +43,12 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
         String service = request.getService();
         String outputFormat = request.getOutputFormat();
         if (outputFormat == null)
-            outputFormat =
-                    request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
+            outputFormat = request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
         boolean allowRequest = true;
-        if (outputFormat != null)
-            allowRequest = allowRequest(operation, outputFormat, service, request.getRequest());
+        if (outputFormat != null) allowRequest = allowRequest(operation, outputFormat, service, request.getRequest());
         if (!allowRequest)
             throw new UnsupportedOperationException(
-                    "Schemaless support for "
-                            + request.getRequest()
-                            + " is not available for "
-                            + outputFormat);
+                    "Schemaless support for " + request.getRequest() + " is not available for " + outputFormat);
 
         return super.operationDispatched(request, operation);
     }
@@ -72,8 +67,7 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
     private boolean isSchemalessTypeBeingRequested(Query q) {
         for (QName typeName : q.getTypeNames()) {
             FeatureTypeInfo featureTypeInfo =
-                    catalog.getFeatureTypeByName(
-                            new NameImpl(typeName.getPrefix(), typeName.getLocalPart()));
+                    catalog.getFeatureTypeByName(new NameImpl(typeName.getPrefix(), typeName.getLocalPart()));
             try {
                 if (featureTypeInfo.getFeatureType() instanceof DynamicFeatureType) return true;
             } catch (IOException e) {
@@ -89,8 +83,8 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
     }
 
     private boolean isOutputFormatSupported(String outputFormat) {
-        if (outputFormat.equalsIgnoreCase("application/json")
-                || outputFormat.equalsIgnoreCase("text/html")) return true;
+        if (outputFormat.equalsIgnoreCase("application/json") || outputFormat.equalsIgnoreCase("text/html"))
+            return true;
         return false;
     }
 
@@ -103,12 +97,9 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
         return isSchemaless;
     }
 
-    private boolean allowRequest(
-            Operation operation, String outputFormat, String service, String method) {
+    private boolean allowRequest(Operation operation, String outputFormat, String service, String method) {
         boolean hasParams =
-                operation != null
-                        && operation.getParameters() != null
-                        && operation.getParameters().length > 0;
+                operation != null && operation.getParameters() != null && operation.getParameters().length > 0;
         boolean allowRequest = true;
         boolean isSchemaless = false;
         if (hasParams) {

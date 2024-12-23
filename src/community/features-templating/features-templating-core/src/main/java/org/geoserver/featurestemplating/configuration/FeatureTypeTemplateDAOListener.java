@@ -10,10 +10,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.GeoServerExtensions;
 
-/**
- * A Template event listener that handle Template rules update when a TemplateInfo is deleted or
- * modified.
- */
+/** A Template event listener that handle Template rules update when a TemplateInfo is deleted or modified. */
 public class FeatureTypeTemplateDAOListener implements TemplateDAOListener {
 
     private FeatureTypeInfo fti;
@@ -30,10 +27,8 @@ public class FeatureTypeTemplateDAOListener implements TemplateDAOListener {
         if (layerConfig != null) {
             Set<TemplateRule> rules = layerConfig.getTemplateRules();
             if (!rules.isEmpty()) {
-                if (rules.removeIf(
-                        r ->
-                                r.getTemplateIdentifier()
-                                        .equals(deleteEvent.getSource().getIdentifier()))) {
+                if (rules.removeIf(r ->
+                        r.getTemplateIdentifier().equals(deleteEvent.getSource().getIdentifier()))) {
                     fti.getMetadata().put(TemplateLayerConfig.METADATA_KEY, layerConfig);
                     saveFeatureTypeInfo();
                     updateCache(ti);
@@ -50,14 +45,12 @@ public class FeatureTypeTemplateDAOListener implements TemplateDAOListener {
             Set<TemplateRule> rules = layerConfig.getTemplateRules();
             if (!rules.isEmpty()) {
                 TemplateInfo info = updateEvent.getSource();
-                Optional<TemplateRule> rule =
-                        rules.stream()
-                                .filter(r -> r.getTemplateIdentifier().equals(info.getIdentifier()))
-                                .findFirst();
+                Optional<TemplateRule> rule = rules.stream()
+                        .filter(r -> r.getTemplateIdentifier().equals(info.getIdentifier()))
+                        .findFirst();
                 if (rule.isPresent()) {
                     TemplateRule r = rule.get();
-                    if (!r.getTemplateName().equals(info.getFullName()))
-                        r.setTemplateName(info.getFullName());
+                    if (!r.getTemplateName().equals(info.getFullName())) r.setTemplateName(info.getFullName());
                     updateCache(info);
                     rules.removeIf(tr -> tr.getTemplateIdentifier().equals(info.getIdentifier()));
                     rules.add(r);

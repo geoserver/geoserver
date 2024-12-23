@@ -45,18 +45,15 @@ public class ServiceAccessRulePageTest extends AbstractListPageTest<ServiceAcces
     protected boolean checkEditForm(String objectString) {
         String[] array = objectString.split("\\.");
         return array[0].equals(
-                        tester.getComponentFromLastRenderedPage("form:service")
-                                .getDefaultModelObject())
+                        tester.getComponentFromLastRenderedPage("form:service").getDefaultModelObject())
                 && array[1].equals(
-                        tester.getComponentFromLastRenderedPage("form:method")
-                                .getDefaultModelObject());
+                        tester.getComponentFromLastRenderedPage("form:method").getDefaultModelObject());
     }
 
     @Override
     protected String getSearchString() throws Exception {
         for (ServiceAccessRule rule : ServiceAccessRuleDAO.get().getRules()) {
-            if ("wms".equals(rule.getService()) && "GetMap".equals(rule.getMethod()))
-                return rule.getKey();
+            if ("wms".equals(rule.getService()) && "GetMap".equals(rule.getMethod())) return rule.getKey();
         }
         return null;
     }
@@ -67,10 +64,7 @@ public class ServiceAccessRulePageTest extends AbstractListPageTest<ServiceAcces
         assertFalse(ServiceAccessRuleDAO.get().getRules().isEmpty());
 
         SelectionServiceRemovalLink link = (SelectionServiceRemovalLink) getRemoveLink();
-        Method m =
-                link.delegate
-                        .getClass()
-                        .getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
+        Method m = link.delegate.getClass().getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
         m.invoke(link.delegate, null, null);
 
         // TODO, GEOS-5353, Intermittent build failure in ServiceAccessRulePageTest

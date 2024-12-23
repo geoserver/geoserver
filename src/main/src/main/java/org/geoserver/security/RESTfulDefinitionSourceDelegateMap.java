@@ -31,18 +31,16 @@ public class RESTfulDefinitionSourceDelegateMap {
     private PathMatcher pathMatcher = new AntPathMatcher();
     private boolean convertUrlToLowercaseBeforeComparison = false;
 
-    public void addSecureUrl(
-            String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
+    public void addSecureUrl(String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
         requestMap.add(new EntryHolder(antPath, httpMethods, attrs));
 
         if (log.isLoggable(Level.FINE)) {
-            log.fine(
-                    "Added Ant path: "
-                            + antPath
-                            + "; attributes: "
-                            + attrs
-                            + ", httpMethods: "
-                            + Arrays.toString(httpMethods));
+            log.fine("Added Ant path: "
+                    + antPath
+                    + "; attributes: "
+                    + attrs
+                    + ", httpMethods: "
+                    + Arrays.toString(httpMethods));
         }
     }
 
@@ -61,8 +59,7 @@ public class RESTfulDefinitionSourceDelegateMap {
         return convertUrlToLowercaseBeforeComparison;
     }
 
-    public void setConvertUrlToLowercaseBeforeComparison(
-            boolean convertUrlToLowercaseBeforeComparison) {
+    public void setConvertUrlToLowercaseBeforeComparison(boolean convertUrlToLowercaseBeforeComparison) {
         this.convertUrlToLowercaseBeforeComparison = convertUrlToLowercaseBeforeComparison;
     }
 
@@ -78,13 +75,12 @@ public class RESTfulDefinitionSourceDelegateMap {
             url = url.toLowerCase();
 
             if (log.isLoggable(Level.FINE)) {
-                log.fine(
-                        "Converted URL to lowercase, from: '"
-                                + url
-                                + "'; to: '"
-                                + url
-                                + "'  and httpMethod= "
-                                + httpMethod);
+                log.fine("Converted URL to lowercase, from: '"
+                        + url
+                        + "'; to: '"
+                        + url
+                        + "'  and httpMethod= "
+                        + httpMethod);
             }
         }
 
@@ -95,11 +91,7 @@ public class RESTfulDefinitionSourceDelegateMap {
             String antPath = entryHolder.getAntPath();
             String[] methodList = entryHolder.getHttpMethodList();
             if (log.isLoggable(Level.FINE)) {
-                log.fine(
-                        "~~~~~~~~~~ antPath= "
-                                + antPath
-                                + " methodList= "
-                                + Arrays.toString(methodList));
+                log.fine("~~~~~~~~~~ antPath= " + antPath + " methodList= " + Arrays.toString(methodList));
             }
 
             boolean matchedPath = pathMatcher.match(antPath, url);
@@ -114,21 +106,18 @@ public class RESTfulDefinitionSourceDelegateMap {
                 }
             }
             if (log.isLoggable(Level.FINE))
-                log.fine(
-                        "Candidate is: '"
-                                + url
-                                + "'; antPath is "
-                                + antPath
-                                + "; matchedPath="
-                                + matchedPath
-                                + "; matchedMethods="
-                                + matchedMethods);
+                log.fine("Candidate is: '"
+                        + url
+                        + "'; antPath is "
+                        + antPath
+                        + "; matchedPath="
+                        + matchedPath
+                        + "; matchedMethods="
+                        + matchedMethods);
 
             if (matchedPath && matchedMethods) {
                 log.fine(
-                        "returning "
-                                + StringUtils.collectionToCommaDelimitedString(
-                                        entryHolder.getConfigAttributes()));
+                        "returning " + StringUtils.collectionToCommaDelimitedString(entryHolder.getConfigAttributes()));
                 return entryHolder.getConfigAttributes();
             }
         }
@@ -143,8 +132,7 @@ public class RESTfulDefinitionSourceDelegateMap {
         private String antPath;
         private String[] httpMethodList;
 
-        public EntryHolder(
-                String antPath, String[] httpMethodList, Collection<ConfigAttribute> attrs) {
+        public EntryHolder(String antPath, String[] httpMethodList, Collection<ConfigAttribute> attrs) {
             this.antPath = antPath;
             this.configAttributes = attrs;
             this.httpMethodList = httpMethodList;

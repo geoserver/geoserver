@@ -73,28 +73,21 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
     public static QName GRID = new QName(MockData.CITE_URI, "grid", MockData.CITE_PREFIX);
     public static QName REPEATED = new QName(MockData.CITE_URI, "repeated", MockData.CITE_PREFIX);
-    public static QName GIANT_POLYGON =
-            new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
-    public static QName GEOM_FUNCTION =
-            new QName(MockData.CITE_URI, "geom-function", MockData.CITE_PREFIX);
+    public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
+    public static QName GEOM_FUNCTION = new QName(MockData.CITE_URI, "geom-function", MockData.CITE_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         testData.addStyle("box-offset", "box-offset.sld", this.getClass(), getCatalog());
-        testData.addStyle(
-                "transparent-fill", "transparent-fill.sld", this.getClass(), getCatalog());
+        testData.addStyle("transparent-fill", "transparent-fill.sld", this.getClass(), getCatalog());
         File styles = new File(testData.getDataDirectoryRoot(), "styles");
         File symbol = new File("./src/test/resources/org/geoserver/wms/featureinfo/box-offset.png");
         FileUtils.copyFileToDirectory(symbol, styles);
 
         testData.addVectorLayer(
-                GRID,
-                Collections.emptyMap(),
-                "grid.properties",
-                RenderingBasedFeatureInfoTest.class,
-                getCatalog());
+                GRID, Collections.emptyMap(), "grid.properties", RenderingBasedFeatureInfoTest.class, getCatalog());
         testData.addVectorLayer(
                 REPEATED,
                 Collections.emptyMap(),
@@ -102,11 +95,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 RenderingBasedFeatureInfoTest.class,
                 getCatalog());
         testData.addVectorLayer(
-                GIANT_POLYGON,
-                Collections.emptyMap(),
-                "giantPolygon.properties",
-                SystemTestData.class,
-                getCatalog());
+                GIANT_POLYGON, Collections.emptyMap(), "giantPolygon.properties", SystemTestData.class, getCatalog());
         testData.addVectorLayer(
                 GEOM_FUNCTION,
                 Collections.emptyMap(),
@@ -185,10 +174,9 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     public void testRangedSize() throws Exception {
         // use a style that has a rule with a large symbolizer, but the point is
         // actually painted with a much smaller one
-        String url =
-                "wms?REQUEST=GetFeatureInfo&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704"
-                        + "&SERVICE=WMS&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50&Layers=cite%3ABridges"
-                        + "&WIDTH=100&HEIGHT=100&format=image%2Fpng&styles=ranged&srs=EPSG%3A4326&version=1.1.1&x=49&y=65&feature_count=50";
+        String url = "wms?REQUEST=GetFeatureInfo&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704"
+                + "&SERVICE=WMS&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50&Layers=cite%3ABridges"
+                + "&WIDTH=100&HEIGHT=100&format=image%2Fpng&styles=ranged&srs=EPSG%3A4326&version=1.1.1&x=49&y=65&feature_count=50";
 
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
         JSONObject result1 = (JSONObject) getAsJSON(url);
@@ -206,12 +194,11 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     public void testDynamicSize() throws Exception {
         // use a style that has a rule with a attribute dependent size, the old code
         // will fallback on the default size since the actual one is not known
-        String baseUrl =
-                "wms?REQUEST=GetFeatureInfo"
-                        + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
-                        + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
-                        + "&styles=dynamic&srs=EPSG%3A4326&version=1.1.1&feature_count=50";
+        String baseUrl = "wms?REQUEST=GetFeatureInfo"
+                + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
+                + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
+                + "&styles=dynamic&srs=EPSG%3A4326&version=1.1.1&feature_count=50";
 
         String url = baseUrl + "&x=49&y=60";
 
@@ -238,12 +225,11 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     public void testUom() throws Exception {
         // this results in a very large symbol (the map 8m wide and 100 pixels), but if you
         // don't handle uom, you don't get to know that
-        String url =
-                "wms?REQUEST=GetFeatureInfo"
-                        + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
-                        + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
-                        + "&styles=symbol-uom&srs=EPSG%3A4326&version=1.1.1&x=49&y=60&feature_count=50";
+        String url = "wms?REQUEST=GetFeatureInfo"
+                + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
+                + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
+                + "&styles=symbol-uom&srs=EPSG%3A4326&version=1.1.1&x=49&y=60&feature_count=50";
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
         JSONObject result = (JSONObject) getAsJSON(url);
         // print(result2);
@@ -253,15 +239,14 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testTwoRules() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=two-rules"
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format=application/json&feature_count=50";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=two-rules"
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format=application/json&feature_count=50";
 
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get two results when two rules matched the same feature
@@ -272,14 +257,13 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testTwoFeatureTypeStyles() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=two-fts"
-                        + "&width=20&height=20&x=10&y=10&info_format=application/json";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=two-fts"
+                + "&width=20&height=20&x=10&y=10&info_format=application/json";
 
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get two results when two rules matched the same feature
@@ -290,14 +274,13 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testFillStrokeDashArray() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=polydash"
-                        + "&width=20&height=20&x=10&y=10&info_format=application/json";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=polydash"
+                + "&width=20&height=20&x=10&y=10&info_format=application/json";
 
         // System.out.println("The response iTESTs: " + getAsString(request));
         JSONObject result = (JSONObject) getAsJSON(request);
@@ -309,14 +292,13 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testTransparentFill() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=transparent-fill"
-                        + "&width=20&height=20&x=10&y=10&info_format=application/json";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=transparent-fill"
+                + "&width=20&height=20&x=10&y=10&info_format=application/json";
 
         // System.out.println("The response iTESTs: " + getAsString(request));
         JSONObject result = (JSONObject) getAsJSON(request);
@@ -328,13 +310,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testGenericGeometry() throws Exception {
         String layer = getLayerId(MockData.GENERICENTITY);
-        String request =
-                "wms?REQUEST=GetFeatureInfo&BBOX=-2.73291%2C55.220703%2C8.510254%2C69.720703&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&QUERY_LAYERS="
-                        + layer
-                        + "&Layers="
-                        + layer
-                        + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=line&srs=EPSG%3A4326&version=1.1.1&x=284&y=269";
+        String request = "wms?REQUEST=GetFeatureInfo&BBOX=-2.73291%2C55.220703%2C8.510254%2C69.720703&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=line&srs=EPSG%3A4326&version=1.1.1&x=284&y=269";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results
         assertEquals(1, result.getJSONArray("features").size());
@@ -343,13 +324,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testDashed() throws Exception {
         String layer = getLayerId(MockData.GENERICENTITY);
-        String request =
-                "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&QUERY_LAYERS="
-                        + layer
-                        + "&Layers="
-                        + layer
-                        + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results
         assertEquals(1, result.getJSONArray("features").size());
@@ -358,13 +338,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testDashedWithExpressions() throws Exception {
         String layer = getLayerId(MockData.GENERICENTITY);
-        String request =
-                "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&QUERY_LAYERS="
-                        + layer
-                        + "&Layers="
-                        + layer
-                        + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed-exp&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed-exp&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
         JSONObject result = (JSONObject) getAsJSON(request);
         assertEquals(1, result.getJSONArray("features").size());
     }
@@ -372,13 +351,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testDoublePoly() throws Exception {
         String layer = getLayerId(GRID);
-        String request =
-                "wms?REQUEST=GetFeatureInfo&&BBOX=0,0,3,3&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&FEATURE_COUNT=50&QUERY_LAYERS="
-                        + layer
-                        + "&Layers="
-                        + layer
-                        + "&WIDTH=90&HEIGHT=90&format=image%2Fpng&styles=doublepoly&srs=EPSG%3A4326&version=1.1.1&x=36&y=36";
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0,0,3,3&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&FEATURE_COUNT=50&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=90&HEIGHT=90&format=image%2Fpng&styles=doublepoly&srs=EPSG%3A4326&version=1.1.1&x=36&y=36";
         JSONObject result = (JSONObject) getAsJSON(request);
         // print(result);
         // we used to get two results
@@ -388,13 +366,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testRepeatedLine() throws Exception {
         String layer = getLayerId(REPEATED);
-        String request =
-                "wms?REQUEST=GetFeatureInfo&&BBOX=499900,499900,500100,500100&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&FEATURE_COUNT=50&QUERY_LAYERS="
-                        + layer
-                        + "&Layers="
-                        + layer
-                        + "&WIDTH=11&HEIGHT=11&format=image%2Fpng&styles=line&srs=EPSG%3A32615&version=1.1.1&x=5&y=5";
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=499900,499900,500100,500100&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&FEATURE_COUNT=50&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=11&HEIGHT=11&format=image%2Fpng&styles=line&srs=EPSG%3A32615&version=1.1.1&x=5&y=5";
         JSONObject result = (JSONObject) getAsJSON(request);
         // print(result);
         // we used to get two results
@@ -404,13 +381,12 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testPureLabelGenericGeometry() throws Exception {
         String layer = getLayerId(MockData.GENERICENTITY);
-        String request =
-                "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
-                        + "&INFO_FORMAT=application/json&QUERY_LAYERS="
-                        + layer
-                        + "&Layers="
-                        + layer
-                        + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=pureLabel&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=pureLabel&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results
         assertEquals(1, result.getJSONArray("features").size());
@@ -419,14 +395,13 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testPureLabelPolygon() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=pureLabel"
-                        + "&width=20&height=20&x=10&y=10&info_format=application/json";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=pureLabel"
+                + "&width=20&height=20&x=10&y=10&info_format=application/json";
 
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get two results when two rules matched the same feature
@@ -445,14 +420,13 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
             gs.save(wms);
 
             String layer = getLayerId(GIANT_POLYGON);
-            String request =
-                    "wms?version=1.1.1&bbox=170,-10,190,10&format=image/png"
-                            + "&request=GetFeatureInfo&layers="
-                            + layer
-                            + "&query_layers="
-                            + layer
-                            + "&styles=polygon"
-                            + "&width=100&height=100&x=60&y=0&srs=EPSG:4326&info_format=application/json";
+            String request = "wms?version=1.1.1&bbox=170,-10,190,10&format=image/png"
+                    + "&request=GetFeatureInfo&layers="
+                    + layer
+                    + "&query_layers="
+                    + layer
+                    + "&styles=polygon"
+                    + "&width=100&height=100&x=60&y=0&srs=EPSG:4326&info_format=application/json";
 
             JSONObject result = (JSONObject) getAsJSON(request);
             // with wrapping enabled we should get the giant polygon on the other side too
@@ -489,76 +463,61 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     }
 
     /**
-     * Tests GEOS-7020: imprecise scale calculation in StreamingRenderer with
-     * VectorRenderingLayerIdentifier, due to 1 pixel missing in map size.
+     * Tests GEOS-7020: imprecise scale calculation in StreamingRenderer with VectorRenderingLayerIdentifier, due to 1
+     * pixel missing in map size.
      */
     @Test
     public void testCalculatedScale() throws Exception {
         int mapWidth = 1000;
         int mapHeight = 500;
         Envelope mapbbox = new Envelope(-2, 2, -1, 1);
-        ReferencedEnvelope mapEnvelope =
-                new ReferencedEnvelope(mapbbox, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope mapEnvelope = new ReferencedEnvelope(mapbbox, DefaultGeographicCRS.WGS84);
 
         final HashMap<String, String> hints = new HashMap<>();
 
-        double originalScale =
-                RendererUtilities.calculateScale(mapEnvelope, mapWidth, mapHeight, hints);
+        double originalScale = RendererUtilities.calculateScale(mapEnvelope, mapWidth, mapHeight, hints);
         double originalOGCScale = RendererUtilities.calculateOGCScale(mapEnvelope, mapWidth, hints);
 
         final MutableDouble calculatedScale = new MutableDouble(0.0);
         final MutableDouble calculatedOGCScale = new MutableDouble(0.0);
 
-        VectorRenderingLayerIdentifier vrli =
-                new VectorRenderingLayerIdentifier(getWMS(), null) {
+        VectorRenderingLayerIdentifier vrli = new VectorRenderingLayerIdentifier(getWMS(), null) {
+
+            @Override
+            protected GetMapOutputFormat createMapOutputFormat(
+                    BufferedImage image, FeatureInfoRenderListener featureInfoListener) {
+                return new AbstractMapOutputFormat("image/png", new String[] {"png"}) {
 
                     @Override
-                    protected GetMapOutputFormat createMapOutputFormat(
-                            BufferedImage image, FeatureInfoRenderListener featureInfoListener) {
-                        return new AbstractMapOutputFormat("image/png", new String[] {"png"}) {
+                    public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+                        // let's capture mapContent for identify purpose, so
+                        // that we can store the scale(s), to be verified later
+                        try {
+                            ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope(
+                                    mapContent.getViewport().getBounds(), DefaultGeographicCRS.WGS84);
+                            calculatedScale.setValue(RendererUtilities.calculateScale(
+                                    referencedEnvelope, mapContent.getMapWidth(), mapContent.getMapHeight(), hints));
+                            calculatedOGCScale.setValue(RendererUtilities.calculateOGCScale(
+                                    referencedEnvelope, mapContent.getMapWidth(), hints));
+                        } catch (TransformException | FactoryException e) {
+                            throw new ServiceException(e);
+                        }
+                        return null;
+                    }
 
-                            @Override
-                            public WebMap produceMap(WMSMapContent mapContent)
-                                    throws ServiceException, IOException {
-                                // let's capture mapContent for identify purpose, so
-                                // that we can store the scale(s), to be verified later
-                                try {
-                                    ReferencedEnvelope referencedEnvelope =
-                                            new ReferencedEnvelope(
-                                                    mapContent.getViewport().getBounds(),
-                                                    DefaultGeographicCRS.WGS84);
-                                    calculatedScale.setValue(
-                                            RendererUtilities.calculateScale(
-                                                    referencedEnvelope,
-                                                    mapContent.getMapWidth(),
-                                                    mapContent.getMapHeight(),
-                                                    hints));
-                                    calculatedOGCScale.setValue(
-                                            RendererUtilities.calculateOGCScale(
-                                                    referencedEnvelope,
-                                                    mapContent.getMapWidth(),
-                                                    hints));
-                                } catch (TransformException | FactoryException e) {
-                                    throw new ServiceException(e);
-                                }
-                                return null;
-                            }
-
-                            @Override
-                            public MapProducerCapabilities getCapabilities(String format) {
-                                return null;
-                            }
-                        };
+                    @Override
+                    public MapProducerCapabilities getCapabilities(String format) {
+                        return null;
                     }
                 };
+            }
+        };
 
         GetFeatureInfoRequest request = new GetFeatureInfoRequest();
         GetMapRequest getMapRequest = new GetMapRequest();
         List<MapLayerInfo> layers = new ArrayList<>();
 
-        layers.add(
-                new MapLayerInfo(
-                        getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart())));
+        layers.add(new MapLayerInfo(getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart())));
         getMapRequest.setLayers(layers);
         getMapRequest.setSRS("EPSG:4326");
         getMapRequest.setBbox(mapbbox);
@@ -578,15 +537,14 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     @Test
     public void testRenderingTransform() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=image/png"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=transform&transparent=true&srs=EPSG:4326"
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format=application/json&feature_count=50";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=image/png"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=transform&transparent=true&srs=EPSG:4326"
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format=application/json&feature_count=50";
 
         JSONObject result = (JSONObject) getAsJSON(request);
 
@@ -605,18 +563,16 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         Document result = getAsDOM(url);
         // check the response content, the features should have been reproject from EPSG:4326 to
         // EPSG:3857
-        String srs =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/@srsName",
-                        result);
+        String srs = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/@srsName",
+                result);
         assertThat(srs, notNullValue());
         assertThat(srs.contains("3857"), is(true));
-        String rawCoordinates =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/gml:pos/text()",
-                        result);
+        String rawCoordinates = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/gml:pos/text()",
+                result);
         checkCoordinates(rawCoordinates, 0.0001, 22.26389816, 77.92364356);
         // disable feature reprojection
         WMSInfo wms = getGeoServer().getService(WMSInfo.class);
@@ -625,18 +581,16 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         // execute the get feature info request
         result = getAsDOM(url);
         // check that features were not reprojected
-        srs =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/@srsName",
-                        result);
+        srs = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/@srsName",
+                result);
         assertThat(srs, notNullValue());
         assertThat(srs.contains("4326"), is(true));
-        rawCoordinates =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/gml:pos/text()",
-                        result);
+        rawCoordinates = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "cite:Bridges[@gml:id='Bridges.1107531599613']/cite:the_geom/gml:Point/gml:pos/text()",
+                result);
         checkCoordinates(rawCoordinates, 0.0001, 0.0002, 0.0007);
     }
 
@@ -650,19 +604,17 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         Document result = getAsDOM(url);
         // check the response content, the features should have been reproject from EPSG:4326 to
         // EPSG:3857
-        String srs =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/@srsName",
-                        result);
+        String srs = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/@srsName",
+                result);
         assertThat(srs, notNullValue());
         assertThat(srs.contains("3857"), is(true));
-        String exteriorLinearRing =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
-                                + "gml:exterior/gml:LinearRing/gml:posList/text()",
-                        result);
+        String exteriorLinearRing = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
+                        + "gml:exterior/gml:LinearRing/gml:posList/text()",
+                result);
         checkCoordinates(
                 exteriorLinearRing,
                 0.0001,
@@ -676,12 +628,11 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 8511908.69220489,
                 0,
                 8511908.69220489);
-        String interiorLinearRing =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
-                                + "gml:interior/gml:LinearRing/gml:posList/text()",
-                        result);
+        String interiorLinearRing = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
+                        + "gml:interior/gml:LinearRing/gml:posList/text()",
+                result);
         checkCoordinates(
                 interiorLinearRing,
                 0.0001,
@@ -700,41 +651,37 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         // execute the get feature info request
         result = getAsDOM(url);
         // check that features were not reprojected
-        srs =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/@srsName",
-                        result);
+        srs = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/@srsName",
+                result);
         assertThat(srs, notNullValue());
         assertThat(srs.contains("4326"), is(true));
-        exteriorLinearRing =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
-                                + "gml:exterior/gml:LinearRing/gml:posList/text()",
-                        result);
+        exteriorLinearRing = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
+                        + "gml:exterior/gml:LinearRing/gml:posList/text()",
+                result);
         checkCoordinates(exteriorLinearRing, 0.0001, 0, 60.5, 0, 64, 6.25, 64, 6.25, 60.5, 0, 60.5);
-        interiorLinearRing =
-                XPATH.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
-                                + "gml:interior/gml:LinearRing/gml:posList/text()",
-                        result);
+        interiorLinearRing = XPATH.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "sf:GenericEntity[@gml:id='GenericEntity.f004']/sf:attribut.geom/gml:Polygon/"
+                        + "gml:interior/gml:LinearRing/gml:posList/text()",
+                result);
         checkCoordinates(interiorLinearRing, 0.0001, 2, 61.5, 2, 62.5, 4, 62, 2, 61.5);
     }
 
     @Test
     public void testGeomFunction() throws Exception {
         String layer = getLayerId(GEOM_FUNCTION);
-        String request =
-                "wms?version=1.1.1&bbox=1.2,0.2,1.8,0.7&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=geom-function"
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format=application/json&feature_count=50";
+        String request = "wms?version=1.1.1&bbox=1.2,0.2,1.8,0.7&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=geom-function"
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format=application/json&feature_count=50";
 
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get a bad-wkt exception here
@@ -743,8 +690,8 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     }
 
     /**
-     * Helper method that checks if the string represented coordinates correspond to the expected
-     * ones. The provided precision will be used to compare the numeric values.
+     * Helper method that checks if the string represented coordinates correspond to the expected ones. The provided
+     * precision will be used to compare the numeric values.
      */
     private void checkCoordinates(String rawCoordinates, double precision, double... expected) {
         assertThat(rawCoordinates, notNullValue());

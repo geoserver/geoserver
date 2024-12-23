@@ -53,9 +53,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
     private void startPage(final ServiceInfo serviceInfo) {
 
         tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> new InspireAdminPanel(id, new Model<>(serviceInfo))));
+                new FormTestPage((ComponentBuilder) id -> new InspireAdminPanel(id, new Model<>(serviceInfo))));
     }
 
     @Test
@@ -74,8 +72,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         tester.assertModelValue("form:panel:createExtendedCapabilities", false);
 
         try {
-            tester.assertComponent(
-                    "form:panel:container:configs:language", LanguageDropDownChoice.class);
+            tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
             fail("Shouldn't have found section for INSPIRE extension configuration");
         } catch (AssertionError e) {
         }
@@ -166,23 +163,18 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         tester.assertModelValue("form:panel:createExtendedCapabilities", true);
 
         // check language
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
         print(tester.getLastRenderedPage(), true, true);
         // check metadata url
-        tester.assertComponent(
-                "form:panel:container:configs:border:border_body:metadataURL", TextField.class);
+        tester.assertComponent("form:panel:container:configs:border:border_body:metadataURL", TextField.class);
         tester.assertModelValue(
-                "form:panel:container:configs:border:border_body:metadataURL",
-                "http://foo.com?bar=baz");
+                "form:panel:container:configs:border:border_body:metadataURL", "http://foo.com?bar=baz");
 
         // check metadata url type
-        tester.assertComponent(
-                "form:panel:container:configs:metadataURLType", DropDownChoice.class);
-        tester.assertModelValue(
-                "form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
+        tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
 
         try {
             // the spatial identifiers editor
@@ -216,34 +208,27 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         tester.assertModelValue("form:panel:createExtendedCapabilities", true);
 
         // check language
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
         // check metadata url
-        tester.assertComponent(
-                "form:panel:container:configs:border:border_body:metadataURL", TextField.class);
+        tester.assertComponent("form:panel:container:configs:border:border_body:metadataURL", TextField.class);
         tester.assertModelValue(
-                "form:panel:container:configs:border:border_body:metadataURL",
-                "http://foo.com?bar=baz");
+                "form:panel:container:configs:border:border_body:metadataURL", "http://foo.com?bar=baz");
 
         // check metadata url type
-        tester.assertComponent(
-                "form:panel:container:configs:metadataURLType", DropDownChoice.class);
-        tester.assertModelValue(
-                "form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
+        tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
 
         // the spatial identifiers editor
         tester.assertComponent(
                 "form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers",
                 UniqueResourceIdentifiersEditor.class);
-        UniqueResourceIdentifiers expected =
-                Converters.convert(
-                        "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two",
-                        UniqueResourceIdentifiers.class);
+        UniqueResourceIdentifiers expected = Converters.convert(
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two",
+                UniqueResourceIdentifiers.class);
         tester.assertModelValue(
-                "form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers",
-                expected);
+                "form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers", expected);
     }
 
     @Test
@@ -268,34 +253,27 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         tester.assertModelValue("form:panel:createExtendedCapabilities", true);
 
         // check language
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
         // check metadata url
-        tester.assertComponent(
-                "form:panel:container:configs:border:border_body:metadataURL", TextField.class);
+        tester.assertComponent("form:panel:container:configs:border:border_body:metadataURL", TextField.class);
         tester.assertModelValue(
-                "form:panel:container:configs:border:border_body:metadataURL",
-                "http://foo.com?bar=baz");
+                "form:panel:container:configs:border:border_body:metadataURL", "http://foo.com?bar=baz");
 
         // check metadata url type
-        tester.assertComponent(
-                "form:panel:container:configs:metadataURLType", DropDownChoice.class);
-        tester.assertModelValue(
-                "form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
+        tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:metadataURLType", "application/vnd.iso.19139+xml");
 
         // the spatial identifiers editor
         tester.assertComponent(
                 "form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers",
                 UniqueResourceIdentifiersEditor.class);
-        UniqueResourceIdentifiers expected =
-                Converters.convert(
-                        "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two",
-                        UniqueResourceIdentifiers.class);
+        UniqueResourceIdentifiers expected = Converters.convert(
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two",
+                UniqueResourceIdentifiers.class);
         tester.assertModelValue(
-                "form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers",
-                expected);
+                "form:panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers", expected);
     }
 
     @Test
@@ -310,8 +288,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         startPage(serviceInfo);
 
         // check language defaults to "eng"
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "eng");
     }
 
@@ -327,8 +304,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         startPage(serviceInfo);
 
         // check no metadata url type selected
-        tester.assertComponent(
-                "form:panel:container:configs:metadataURLType", DropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:metadataURLType", DropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:metadataURLType", null);
     }
 
@@ -351,8 +327,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         // Just check there is some configuration won't repeat all checks as for when check box
         // explcitly set.
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
     }
 
@@ -395,8 +370,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         // Just check there is some configuration won't repeat all checks as for when check box
         // explcitly set.
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
     }
 
@@ -440,8 +414,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         // Just check there is some configuration won't repeat all checks as for when check box
         // explcitly set.
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
     }
 
@@ -482,19 +455,15 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:container:configs:language", 0);
-        ft.setValue(
-                "panel:container:configs:border:border_body:metadataURL",
-                "http://www.geoserver.org/test");
+        ft.setValue("panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         ft.select("panel:container:configs:metadataURLType", 0);
         ft.submit();
 
         tester.assertModelValue("form:panel:container:configs:language", "bul");
         tester.assertModelValue(
-                "form:panel:container:configs:border:border_body:metadataURL",
-                "http://www.geoserver.org/test");
+                "form:panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         tester.assertModelValue(
-                "form:panel:container:configs:metadataURLType",
-                "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+                "form:panel:container:configs:metadataURLType", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 
     @Test
@@ -514,19 +483,15 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:container:configs:language", 0);
-        ft.setValue(
-                "panel:container:configs:border:border_body:metadataURL",
-                "http://www.geoserver.org/test");
+        ft.setValue("panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         ft.select("panel:container:configs:metadataURLType", 0);
         ft.submit();
 
         tester.assertModelValue("form:panel:container:configs:language", "bul");
         tester.assertModelValue(
-                "form:panel:container:configs:border:border_body:metadataURL",
-                "http://www.geoserver.org/test");
+                "form:panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         tester.assertModelValue(
-                "form:panel:container:configs:metadataURLType",
-                "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+                "form:panel:container:configs:metadataURLType", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 
     @Test
@@ -553,8 +518,7 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
     @Test
     public void testSerializedModel() {
-        UniqueResourceIdentifier identifier =
-                new UniqueResourceIdentifier("one", "http://www.geoserver.org/one");
+        UniqueResourceIdentifier identifier = new UniqueResourceIdentifier("one", "http://www.geoserver.org/one");
         UniqueResourceIdentifiers identifiers = new UniqueResourceIdentifiers();
         identifiers.add(identifier);
         ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
@@ -567,35 +531,32 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         ServiceModel model = new ServiceModel(WFSInfo.class);
 
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5996984687607456244L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5996984687607456244L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                InspireAdminPanel adminPanel = new InspireAdminPanel(id, model);
-                                byte[] serialized;
-                                try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-                                    try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
-                                        oos.writeObject(adminPanel);
-                                    }
-                                    serialized = os.toByteArray();
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                InspireAdminPanel adminPanel2;
-                                try (ByteArrayInputStream is =
-                                        new ByteArrayInputStream(serialized)) {
-                                    try (ObjectInputStream ois = new ObjectInputStream(is)) {
-                                        adminPanel2 = (InspireAdminPanel) ois.readObject();
-                                    }
-                                } catch (IOException | ClassNotFoundException e) {
-                                    throw new RuntimeException(e);
-                                }
-                                return adminPanel2;
-                            }
-                        }));
+            @Override
+            public Component buildComponent(String id) {
+                InspireAdminPanel adminPanel = new InspireAdminPanel(id, model);
+                byte[] serialized;
+                try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                    try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
+                        oos.writeObject(adminPanel);
+                    }
+                    serialized = os.toByteArray();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                InspireAdminPanel adminPanel2;
+                try (ByteArrayInputStream is = new ByteArrayInputStream(serialized)) {
+                    try (ObjectInputStream ois = new ObjectInputStream(is)) {
+                        adminPanel2 = (InspireAdminPanel) ois.readObject();
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                return adminPanel2;
+            }
+        }));
         FormTester formTester = tester.newFormTester("form");
         formTester.setValue(
                 "panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers:container:"
@@ -605,17 +566,14 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         // test if it has been saved to the model of the page
 
-        ServiceModel pageModel =
-                (ServiceModel)
-                        tester.getComponentFromLastRenderedPage("form:panel").getDefaultModel();
+        ServiceModel pageModel = (ServiceModel)
+                tester.getComponentFromLastRenderedPage("form:panel").getDefaultModel();
 
         identifier = new UniqueResourceIdentifier("two", "http://www.geoserver.org/one");
         identifiers = new UniqueResourceIdentifiers();
         identifiers.add(identifier);
 
-        assertEquals(
-                identifiers,
-                pageModel.getObject().getMetadata().get(SPATIAL_DATASET_IDENTIFIER_TYPE.key));
+        assertEquals(identifiers, pageModel.getObject().getMetadata().get(SPATIAL_DATASET_IDENTIFIER_TYPE.key));
     }
 
     /** LoadableDetachable Service model like in real life */
@@ -669,15 +627,12 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         tester.assertModelValue("form:panel:createExtendedCapabilities", true);
 
         // check language
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
         // set spatial identifier
 
-        form.setValue(
-                "panel:container:configs:border:border_body:metadataURL",
-                "http://www.geoserver.org/test");
+        form.setValue("panel:container:configs:border:border_body:metadataURL", "http://www.geoserver.org/test");
         form.select("panel:container:configs:metadataURLType", 0);
         form.setValue(
                 "panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers:container:identifiers:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
@@ -688,12 +643,10 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
 
         // language editor
 
-        tester.assertComponent(
-                "form:panel:container:configs:otherLanguages:languages", ListMultipleChoice.class);
+        tester.assertComponent("form:panel:container:configs:otherLanguages:languages", ListMultipleChoice.class);
 
         tester.assertComponent(
-                "form:panel:container:configs:otherLanguages:selectLanguage",
-                LanguageDropDownChoice.class);
+                "form:panel:container:configs:otherLanguages:selectLanguage", LanguageDropDownChoice.class);
         form = tester.newFormTester("form");
 
         form.select("panel:container:configs:otherLanguages:selectLanguage", 1);
@@ -726,31 +679,24 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         tester.assertModelValue("form:panel:createExtendedCapabilities", true);
 
         // check language
-        tester.assertComponent(
-                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertComponent("form:panel:container:configs:language", LanguageDropDownChoice.class);
         tester.assertModelValue("form:panel:container:configs:language", "fre");
 
-        tester.assertComponent(
-                "form:panel:container:configs:otherLanguages:languages", ListMultipleChoice.class);
+        tester.assertComponent("form:panel:container:configs:otherLanguages:languages", ListMultipleChoice.class);
 
         tester.assertComponent(
-                "form:panel:container:configs:otherLanguages:selectLanguage",
-                LanguageDropDownChoice.class);
+                "form:panel:container:configs:otherLanguages:selectLanguage", LanguageDropDownChoice.class);
         @SuppressWarnings("unchecked")
-        ListMultipleChoice<String> choices =
-                (ListMultipleChoice<String>)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:container:configs:otherLanguages:languages");
+        ListMultipleChoice<String> choices = (ListMultipleChoice<String>)
+                tester.getComponentFromLastRenderedPage("form:panel:container:configs:otherLanguages:languages");
         assertTrue(choices.getChoices().contains("ita") && choices.getChoices().contains("eng"));
 
         form.selectMultiple("panel:container:configs:otherLanguages:languages", new int[] {0, 1});
-        tester.executeAjaxEvent(
-                "form:panel:container:configs:otherLanguages:removeLanguages", "click");
+        tester.executeAjaxEvent("form:panel:container:configs:otherLanguages:removeLanguages", "click");
         @SuppressWarnings("unchecked")
-        ListMultipleChoice<String> choices2 =
-                (ListMultipleChoice<String>)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:container:configs:otherLanguages:languages");
-        assertFalse(choices2.getChoices().contains("ita") || choices2.getChoices().contains("eng"));
+        ListMultipleChoice<String> choices2 = (ListMultipleChoice<String>)
+                tester.getComponentFromLastRenderedPage("form:panel:container:configs:otherLanguages:languages");
+        assertFalse(
+                choices2.getChoices().contains("ita") || choices2.getChoices().contains("eng"));
     }
 }

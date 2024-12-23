@@ -14,27 +14,26 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geotools.util.logging.Logging;
 
 /**
- * Base class for GetFeatureInfo delegates responsible of creating GetFeatureInfo responses in
- * different formats.
+ * Base class for GetFeatureInfo delegates responsible of creating GetFeatureInfo responses in different formats.
  *
- * <p>Subclasses should implement one or more output formats, wich will be returned in a list of
- * mime type strings in <code>getSupportedFormats</code>. For example, a subclass can be created to
- * write one of the following output formats:
+ * <p>Subclasses should implement one or more output formats, wich will be returned in a list of mime type strings in
+ * <code>getSupportedFormats</code>. For example, a subclass can be created to write one of the following output
+ * formats:
  *
  * <ul>
  *   <li>text/plain
  *   <li>text/html
  * </ul>
  *
- * <p>This abstract class takes care of executing the request in the sense of taking the
- * GetFeatureInfo request parameters such as query_layers, bbox, x, y, etc., create the gt2 query
- * objects for each featuretype and executing it. This process leads to a set of FeatureResults
- * objects and its metadata, wich will be given to the <code>execute(FeatureTypeInfo[] ,
- * FeatureResults[])</code> method, that a subclass should implement as a matter of setting up any
- * resource/state it needs to later encoding.
+ * <p>This abstract class takes care of executing the request in the sense of taking the GetFeatureInfo request
+ * parameters such as query_layers, bbox, x, y, etc., create the gt2 query objects for each featuretype and executing
+ * it. This process leads to a set of FeatureResults objects and its metadata, wich will be given to the <code>
+ * execute(FeatureTypeInfo[] ,
+ * FeatureResults[])</code> method, that a subclass should implement as a matter of setting up any resource/state it
+ * needs to later encoding.
  *
- * <p>So, it should be enough to a subclass to implement the following methods in order to produce
- * the requested output format:
+ * <p>So, it should be enough to a subclass to implement the following methods in order to produce the requested output
+ * format:
  *
  * <ul>
  *   <li>execute(FeatureTypeInfo[], FeatureResults[], int, int)
@@ -58,8 +57,7 @@ public abstract class GetFeatureInfoOutputFormat {
         this.contentType = contentType;
     }
 
-    public abstract void write(
-            FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+    public abstract void write(FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException;
 
     /**
@@ -79,9 +77,9 @@ public abstract class GetFeatureInfoOutputFormat {
 
     /**
      * Returns the charset for this outputFormat. The default implementation returns <code>null
-     * </code>, in this case no encoding should be set. Subclasses returning text documents
-     * (CSV,HTML,JSON) should override taking into account SettingsInfo.getCharset() as well as the
-     * specific encoding requirements of the returned format.
+     * </code>, in this case no encoding should be set. Subclasses returning text documents (CSV,HTML,JSON) should
+     * override taking into account SettingsInfo.getCharset() as well as the specific encoding requirements of the
+     * returned format.
      */
     public String getCharset() {
         return null;

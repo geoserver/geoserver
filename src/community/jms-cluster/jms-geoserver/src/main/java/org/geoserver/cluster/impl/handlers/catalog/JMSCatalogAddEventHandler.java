@@ -33,8 +33,7 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
     private final ToggleSwitch producer;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public JMSCatalogAddEventHandler(
-            Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
+    public JMSCatalogAddEventHandler(Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.catalog = catalog;
         this.producer = producer;
@@ -58,15 +57,13 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
                 JMSCatalogAddEventHandler.add(catalog, info);
             } else {
                 // incoming object not recognized
-                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe("Unrecognized event type");
+                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe("Unrecognized event type");
                 return false;
             }
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + event);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + event);
             throw e;
         } finally {
             // re enable the producer
@@ -80,8 +77,7 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
 
         if (info instanceof LayerGroupInfo) {
 
-            final LayerGroupInfo deserObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+            final LayerGroupInfo deserObject = CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(deserObject));
 
         } else if (info instanceof LayerInfo) {
@@ -96,8 +92,7 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof NamespaceInfo) {
 
-            final NamespaceInfo namespace =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+            final NamespaceInfo namespace = CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(namespace));
 
         } else if (info instanceof StoreInfo) {
@@ -107,20 +102,17 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof ResourceInfo) {
 
-            final ResourceInfo resource =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+            final ResourceInfo resource = CatalogUtils.localizeResource((ResourceInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(resource));
 
         } else if (info instanceof StyleInfo) {
 
-            final StyleInfo deserializedObject =
-                    CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+            final StyleInfo deserializedObject = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(deserializedObject));
 
         } else if (info instanceof WorkspaceInfo) {
 
-            final WorkspaceInfo workspace =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+            final WorkspaceInfo workspace = CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
             catalog.add(ModificationProxy.unwrap(workspace));
 
         } else if (info instanceof CatalogInfo) {

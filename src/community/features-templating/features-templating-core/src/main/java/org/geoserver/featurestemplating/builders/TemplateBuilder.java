@@ -16,8 +16,8 @@ import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 public interface TemplateBuilder {
 
     /**
-     * Writes a piece of json-ld output evaluating builder's corresponding portion of json-ld
-     * template against current object passed inside ${@link TemplateBuilderContext}
+     * Writes a piece of json-ld output evaluating builder's corresponding portion of json-ld template against current
+     * object passed inside ${@link TemplateBuilderContext}
      */
     void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException;
 

@@ -21,23 +21,19 @@ public class SystemPropertiesStatusTest {
     public void testSystemPropertiesStatus() {
         System.setProperty(KEY, VALUE);
 
-        SystemPropertyStatus status =
-                new SystemPropertyStatus() {
-                    @Override
-                    String getEnvironmentVariable(String envVar) {
-                        return "true";
-                    }
-                };
+        SystemPropertyStatus status = new SystemPropertyStatus() {
+            @Override
+            String getEnvironmentVariable(String envVar) {
+                return "true";
+            }
+        };
 
         assertTrue(status.getMessage().isPresent());
         assertTrue(status.getMessage().get().contains(KEY));
         assertTrue(status.getMessage().get().contains(VALUE));
     }
 
-    /**
-     * Tests the SystemPropertyStatusEnabledEnvironmentVar so it turns on/off the message (list of
-     * property vars).
-     */
+    /** Tests the SystemPropertyStatusEnabledEnvironmentVar so it turns on/off the message (list of property vars). */
     @Test
     public void testEnabled() {
         final var VALUE = new ArrayList<String>();
@@ -47,20 +43,18 @@ public class SystemPropertiesStatusTest {
         // VALUE empty -> null
         // otherwise its the first item in the VALUE
         // if the request is for a different environment var -> throw
-        SystemPropertyStatus status =
-                new SystemPropertyStatus() {
-                    @Override
-                    String getEnvironmentVariable(String envVar) {
-                        if (envVar.equals(
-                                SystemPropertyStatus.SystemPropertyStatusEnabledEnvironmentVar)) {
-                            if (VALUE.isEmpty()) {
-                                return null;
-                            }
-                            return VALUE.get(0);
-                        }
-                        throw new RuntimeException("bad var");
+        SystemPropertyStatus status = new SystemPropertyStatus() {
+            @Override
+            String getEnvironmentVariable(String envVar) {
+                if (envVar.equals(SystemPropertyStatus.SystemPropertyStatusEnabledEnvironmentVar)) {
+                    if (VALUE.isEmpty()) {
+                        return null;
                     }
-                };
+                    return VALUE.get(0);
+                }
+                throw new RuntimeException("bad var");
+            }
+        };
 
         VALUE.clear();
         VALUE.add("true");
@@ -75,34 +69,22 @@ public class SystemPropertiesStatusTest {
         VALUE.clear();
         VALUE.add("FALSE");
         assertFalse(status.isShow());
-        assertTrue(
-                status.getMessage()
-                        .get()
-                        .startsWith("Java system properties hidden for security reasons."));
+        assertTrue(status.getMessage().get().startsWith("Java system properties hidden for security reasons."));
 
         VALUE.clear();
         VALUE.add("false");
         assertFalse(status.isShow());
-        assertTrue(
-                status.getMessage()
-                        .get()
-                        .startsWith("Java system properties hidden for security reasons."));
+        assertTrue(status.getMessage().get().startsWith("Java system properties hidden for security reasons."));
 
         // default -> false
         VALUE.clear();
         assertFalse(status.isShow());
-        assertTrue(
-                status.getMessage()
-                        .get()
-                        .startsWith("Java system properties hidden for security reasons."));
+        assertTrue(status.getMessage().get().startsWith("Java system properties hidden for security reasons."));
 
         // bad value -> false
         VALUE.clear();
         VALUE.add("maybe");
         assertFalse(status.isShow());
-        assertTrue(
-                status.getMessage()
-                        .get()
-                        .startsWith("Java system properties hidden for security reasons."));
+        assertTrue(status.getMessage().get().startsWith("Java system properties hidden for security reasons."));
     }
 }

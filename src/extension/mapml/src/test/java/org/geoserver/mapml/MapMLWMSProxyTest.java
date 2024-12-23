@@ -17,11 +17,7 @@ public class MapMLWMSProxyTest extends MapMLBaseProxyTest {
 
     @BeforeClass
     public static void beforeClass() {
-        initMockService(
-                "/mockgeoserver",
-                "/wms",
-                "REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS",
-                "wmscaps.xml");
+        initMockService("/mockgeoserver", "/wms", "REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS", "wmscaps.xml");
     }
 
     @Override
@@ -101,10 +97,9 @@ public class MapMLWMSProxyTest extends MapMLBaseProxyTest {
         cat.save(layerMeta);
 
         // Setting up a WMS vendor options.
-        String path =
-                BASE_REQUEST
-                        + "&interpolations=bilinear"
-                        + "&clip=srid=3857;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))";
+        String path = BASE_REQUEST
+                + "&interpolations=bilinear"
+                + "&clip=srid=3857;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))";
 
         // Verify vendor option is not cascading
         checkCascading(path, false, MapMLConstants.REL_IMAGE, true);

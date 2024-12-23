@@ -33,18 +33,15 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
     @Test
     public void testExcel97OutputFormat() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel");
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel");
         try (InputStream in = getBinaryInputStream(resp)) {
 
             // check the mime type
             assertEquals("application/msexcel", resp.getContentType());
 
             // check the content disposition
-            assertEquals(
-                    "attachment; filename=PrimitiveGeoFeature.xls",
-                    resp.getHeader("Content-Disposition"));
+            assertEquals("attachment; filename=PrimitiveGeoFeature.xls", resp.getHeader("Content-Disposition"));
 
             try (HSSFWorkbook wb = new HSSFWorkbook(in)) {
                 testExcelOutputFormat(wb);
@@ -55,20 +52,15 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
     @Test
     public void testExcel2007OutputFormat() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel2007");
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel2007");
         try (InputStream in = getBinaryInputStream(resp)) {
 
             // check the mime type
-            assertEquals(
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    resp.getContentType());
+            assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", resp.getContentType());
 
             // check the content disposition
-            assertEquals(
-                    "attachment; filename=PrimitiveGeoFeature.xlsx",
-                    resp.getHeader("Content-Disposition"));
+            assertEquals("attachment; filename=PrimitiveGeoFeature.xlsx", resp.getHeader("Content-Disposition"));
 
             try (XSSFWorkbook wb = new XSSFWorkbook(in)) {
                 testExcelOutputFormat(wb);
@@ -107,7 +99,8 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         // ... a geom cell
         cell = sheet.getRow(1).getCell(4);
         assertEquals(CellType.STRING, cell.getCellType());
-        assertEquals(sf.getAttribute(3).toString(), cell.getRichStringCellValue().toString());
+        assertEquals(
+                sf.getAttribute(3).toString(), cell.getRichStringCellValue().toString());
         // ... a number cell
         cell = sheet.getRow(1).getCell(6);
         assertEquals(CellType.NUMERIC, cell.getCellType());
@@ -128,9 +121,8 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
     @Test
     public void testExcel97MultipleFeatureTypes() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel");
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel");
         try (InputStream in = getBinaryInputStream(resp);
                 Workbook wb = new HSSFWorkbook(in)) {
             testMultipleFeatureTypes(wb);
@@ -140,9 +132,8 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
     @Test
     public void testExcel2007MultipleFeatureTypes() throws Exception {
         // grab the real binary stream, avoiding mangling to due char conversion
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");
         try (InputStream in = getBinaryInputStream(resp);
                 Workbook wb = new XSSFWorkbook(in)) {
             testMultipleFeatureTypes(wb);

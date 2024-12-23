@@ -29,29 +29,26 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
 
         ServiceAccessRuleProvider provider = new ServiceAccessRuleProvider();
         add(
-                rules =
-                        new GeoServerTablePanel<>("table", provider, true) {
+                rules = new GeoServerTablePanel<>("table", provider, true) {
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<ServiceAccessRule> itemModel,
-                                    Property<ServiceAccessRule> property) {
-                                if (property == ServiceAccessRuleProvider.RULEKEY) {
-                                    return editRuleLink(id, itemModel, property);
-                                }
-                                if (property == ServiceAccessRuleProvider.ROLES) {
-                                    return new Label(id, property.getModel(itemModel));
-                                }
-                                throw new RuntimeException("Uknown property " + property);
-                            }
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<ServiceAccessRule> itemModel, Property<ServiceAccessRule> property) {
+                        if (property == ServiceAccessRuleProvider.RULEKEY) {
+                            return editRuleLink(id, itemModel, property);
+                        }
+                        if (property == ServiceAccessRuleProvider.ROLES) {
+                            return new Label(id, property.getModel(itemModel));
+                        }
+                        throw new RuntimeException("Uknown property " + property);
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(!rules.getSelection().isEmpty());
-                                target.add(removal);
-                            }
-                        });
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        removal.setEnabled(!rules.getSelection().isEmpty());
+                        target.add(removal);
+                    }
+                });
         rules.setOutputMarkupId(true);
 
         setHeaderPanel(headerPanel());
@@ -71,14 +68,12 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         return header;
     }
 
-    Component editRuleLink(
-            String id, IModel<ServiceAccessRule> itemModel, Property<ServiceAccessRule> property) {
+    Component editRuleLink(String id, IModel<ServiceAccessRule> itemModel, Property<ServiceAccessRule> property) {
         return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
-                setResponsePage(
-                        new EditServiceAccessRulePage((ServiceAccessRule) getDefaultModelObject()));
+                setResponsePage(new EditServiceAccessRulePage((ServiceAccessRule) getDefaultModelObject()));
             }
         };
     }

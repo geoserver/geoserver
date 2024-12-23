@@ -43,9 +43,7 @@ public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         final List identifiers = KvpUtils.readFlat(identifiersValue);
         if (identifiers == null || identifiers.isEmpty()) {
             throw new WcsException(
-                    "Required paramer, identifiers, missing",
-                    WcsExceptionCode.MissingParameterValue,
-                    "identifiers");
+                    "Required paramer, identifiers, missing", WcsExceptionCode.MissingParameterValue, "identifiers");
         }
 
         // all right, set into the model (note there is a mismatch between the kvp name and the
@@ -54,10 +52,7 @@ public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
 
         // if not specified, throw a resounding exception (by spec)
         if (!describeCoverage.isSetVersion())
-            throw new WcsException(
-                    "Version has not been specified",
-                    WcsExceptionCode.MissingParameterValue,
-                    "version");
+            throw new WcsException("Version has not been specified", WcsExceptionCode.MissingParameterValue, "version");
 
         return request;
     }

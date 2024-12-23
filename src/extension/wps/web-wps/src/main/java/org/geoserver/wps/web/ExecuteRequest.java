@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Simple bean holding the Execute request parameters, to be used by {@link WPSExecuteTransformer}
- * in order to generate the Execute XML
+ * Simple bean holding the Execute request parameters, to be used by {@link WPSExecuteTransformer} in order to generate
+ * the Execute XML
  */
 @SuppressWarnings("serial")
 class ExecuteRequest implements Serializable {
@@ -21,8 +21,7 @@ class ExecuteRequest implements Serializable {
 
     List<OutputParameter> outputs;
 
-    public ExecuteRequest(
-            String processName, List<InputParameterValues> inputs, List<OutputParameter> outputs) {
+    public ExecuteRequest(String processName, List<InputParameterValues> inputs, List<OutputParameter> outputs) {
         this.processName = processName;
         this.inputs = inputs;
         this.outputs = outputs;

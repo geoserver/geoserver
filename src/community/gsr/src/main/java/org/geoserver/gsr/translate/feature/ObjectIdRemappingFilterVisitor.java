@@ -22,8 +22,8 @@ import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
- * Remaps {@link PropertyIsEqualTo} filters of {@link AttributeExpressionImpl} that represent an
- * ESRI OBJECTID to {@link Id} filters where applicable.
+ * Remaps {@link PropertyIsEqualTo} filters of {@link AttributeExpressionImpl} that represent an ESRI OBJECTID to
+ * {@link Id} filters where applicable.
  *
  * <p>Also converts OBJECTID=OBJECTID into Filter.INCLUDE
  */
@@ -38,10 +38,10 @@ public class ObjectIdRemappingFilterVisitor extends DuplicatingFilterVisitor {
     }
 
     /**
-     * @param objectIdField The property name to be remapped to the id. Defaults to {@link
-     *     org.geoserver.gsr.translate.feature.FeatureEncoder#OBJECTID_FIELD_NAME}
-     * @param featureIdPrefix The prefix of the GeoTools FeatureId, including any delimiters.
-     *     Defaults to and empty string
+     * @param objectIdField The property name to be remapped to the id. Defaults to
+     *     {@link org.geoserver.gsr.translate.feature.FeatureEncoder#OBJECTID_FIELD_NAME}
+     * @param featureIdPrefix The prefix of the GeoTools FeatureId, including any delimiters. Defaults to and empty
+     *     string
      */
     public ObjectIdRemappingFilterVisitor(String objectIdField, String featureIdPrefix) {
         this.featureIdPrefix = featureIdPrefix;

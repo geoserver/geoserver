@@ -20,8 +20,7 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     public static String METADATA_KEY = "ogcapiFeatures";
 
     public static final APIConformance CORE =
-            new APIConformance(
-                    "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core", STANDARD);
+            new APIConformance("http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core", STANDARD);
 
     // required resource formats
     public static final APIConformance HTML =
@@ -44,18 +43,14 @@ public class FeatureConformance extends ConformanceInfo<WFSInfo> {
     // optional
     public static final APIConformance CRS_BY_REFERENCE =
             CORE.extend("http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs");
-    public static final APIConformance FEATURES_FILTER =
-            CORE.extend(ConformanceClass.FEATURES_FILTER);
+    public static final APIConformance FEATURES_FILTER = CORE.extend(ConformanceClass.FEATURES_FILTER);
     public static final APIConformance FILTER = CORE.extend(ConformanceClass.FILTER);
     public static final APIConformance QUERYABLES = CORE.extend(ConformanceClass.QUERYABLES);
 
     // draft
-    public static final APIConformance IDS =
-            new APIConformance(ConformanceClass.IDS, DRAFT_STANDARD);
-    public static final APIConformance SEARCH =
-            new APIConformance(ConformanceClass.SEARCH, DRAFT_STANDARD);
-    public static final APIConformance SORTBY =
-            new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD);
+    public static final APIConformance IDS = new APIConformance(ConformanceClass.IDS, DRAFT_STANDARD);
+    public static final APIConformance SEARCH = new APIConformance(ConformanceClass.SEARCH, DRAFT_STANDARD);
+    public static final APIConformance SORTBY = new APIConformance(ConformanceClass.SORTBY, DRAFT_STANDARD);
 
     private Boolean core = null;
     private Boolean gml321 = null;

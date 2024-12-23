@@ -26,10 +26,7 @@ public class FeatureTypeResponseSerializationTest extends SerializationTest {
 
     public @Test void testFeatureTypeResponse() throws IOException {
         FeatureTypeResponseWrapper rw =
-                decode(
-                        "FeatureTypeResponse.json",
-                        FeatureTypeInfo.class,
-                        FeatureTypeResponseWrapper.class);
+                decode("FeatureTypeResponse.json", FeatureTypeInfo.class, FeatureTypeResponseWrapper.class);
         FeatureTypeResponse r = rw.getFeatureType();
         assertNotNull(r);
         assertEquals("tasmania_roads", r.getName());
@@ -43,10 +40,7 @@ public class FeatureTypeResponseSerializationTest extends SerializationTest {
         assertEquals("Main Tasmania roads", r.getAbstract());
         assertEquals("Main Tasmania roads", r.getDescription());
         assertEquals(
-                Arrays.asList(
-                        "Roads",
-                        "Tasmania",
-                        "test keyword\\@language=es\\;\\@vocabulary=spanish\\;"),
+                Arrays.asList("Roads", "Tasmania", "test keyword\\@language=es\\;\\@vocabulary=spanish\\;"),
                 r.getKeywords().getString());
 
         //		ResourceResponseDataLinks dataLinks = r.getDataLinks();
@@ -59,13 +53,11 @@ public class FeatureTypeResponseSerializationTest extends SerializationTest {
 
         assertEquals("EPSG:4326", r.getSrs());
 
-        super.assertResponseBounds(
-                r.getNativeBoundingBox(), 145.19754, 148.27298000000002, -43.423512, -40.852802);
+        super.assertResponseBounds(r.getNativeBoundingBox(), 145.19754, 148.27298000000002, -43.423512, -40.852802);
         assertThat(r.getNativeBoundingBox().getCrs(), IsInstanceOf.instanceOf(String.class));
         assertEquals("EPSG:4326", r.getNativeBoundingBox().getCrs());
 
-        super.assertResponseBounds(
-                r.getLatLonBoundingBox(), 145.19754, 148.27298000000002, -43.423512, -40.852802);
+        super.assertResponseBounds(r.getLatLonBoundingBox(), 145.19754, 148.27298000000002, -43.423512, -40.852802);
         assertThat(r.getLatLonBoundingBox().getCrs(), IsInstanceOf.instanceOf(String.class));
         assertEquals("EPSG:4326", r.getLatLonBoundingBox().getCrs());
 
@@ -97,14 +89,7 @@ public class FeatureTypeResponseSerializationTest extends SerializationTest {
         List<AttributeTypeInfo> attributes = attributesResponse.getAttribute();
 
         assertEquals(2, attributes.size());
-        assertAttribue(
-                attributes.get(0),
-                "the_geom",
-                0,
-                1,
-                true,
-                "org.locationtech.jts.geom.MultiLineString",
-                null);
+        assertAttribue(attributes.get(0), "the_geom", 0, 1, true, "org.locationtech.jts.geom.MultiLineString", null);
         assertAttribue(attributes.get(1), "TYPE", 0, 1, true, "java.lang.String", 7);
     }
 

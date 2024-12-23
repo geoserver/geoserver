@@ -25,13 +25,12 @@ public class DateLabel extends Label {
      */
     public DateLabel(String id, IModel<Date> model, String format) {
         super(id, model);
-        this.converter =
-                new DateConverter() {
-                    @Override
-                    public DateFormat getDateFormat(Locale locale) {
-                        return new SimpleDateFormat(format);
-                    }
-                };
+        this.converter = new DateConverter() {
+            @Override
+            public DateFormat getDateFormat(Locale locale) {
+                return new SimpleDateFormat(format);
+            }
+        };
     }
 
     @Override

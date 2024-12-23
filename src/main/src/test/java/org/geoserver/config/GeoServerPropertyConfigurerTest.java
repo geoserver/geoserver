@@ -26,9 +26,7 @@ public class GeoServerPropertyConfigurerTest {
         File f = new File("target/foo.properties");
         if (f.exists()) f.delete();
 
-        ctx =
-                new ClassPathXmlApplicationContext(
-                        "GeoServerPropertyConfigurerTest-applicationContext.xml", getClass());
+        ctx = new ClassPathXmlApplicationContext("GeoServerPropertyConfigurerTest-applicationContext.xml", getClass());
         ctx.refresh();
     }
 

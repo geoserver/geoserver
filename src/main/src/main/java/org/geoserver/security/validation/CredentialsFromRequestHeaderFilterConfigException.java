@@ -15,8 +15,7 @@ public class CredentialsFromRequestHeaderFilterConfigException extends FilterCon
         super(errorId, args);
     }
 
-    public CredentialsFromRequestHeaderFilterConfigException(
-            String errorId, String message, Object... args) {
+    public CredentialsFromRequestHeaderFilterConfigException(String errorId, String message, Object... args) {
         super(errorId, message, args);
     }
 

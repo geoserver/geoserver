@@ -104,72 +104,64 @@ public class WCSRequestBuilderPanel extends Panel {
         add(feedback);
 
         // the version chooser
-        final DropDownChoice<Version> version =
-                new DropDownChoice<>(
-                        "version",
-                        new PropertyModel<>(getCoverage, "version"),
-                        Arrays.asList(Version.values()));
+        final DropDownChoice<Version> version = new DropDownChoice<>(
+                "version", new PropertyModel<>(getCoverage, "version"), Arrays.asList(Version.values()));
         add(version);
 
         // the action that will setup the form once the coverage has been chosen
-        version.add(
-                new AjaxFormSubmitBehavior("change") {
+        version.add(new AjaxFormSubmitBehavior("change") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        onSubmit(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                onSubmit(target);
+            }
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        if (version.getModelObject() == Version.v1_0_0) {
-                            sourceGridContainer.setVisible(true);
-                            targetlayoutContainer.setVisible(false);
-                            manualGrid.setModelObject(false);
-                            sourceGridRange.setVisible(false);
-                        } else {
-                            targetlayoutContainer.setVisible(true);
-                            sourceGridContainer.setVisible(false);
-                            targetLayoutChooser.setModelObject(TargetLayout.Automatic);
-                            g2w.setModelObject(null);
-                            g2w.setVisible(false);
-                        }
-                        target.add(WCSRequestBuilderPanel.this);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                if (version.getModelObject() == Version.v1_0_0) {
+                    sourceGridContainer.setVisible(true);
+                    targetlayoutContainer.setVisible(false);
+                    manualGrid.setModelObject(false);
+                    sourceGridRange.setVisible(false);
+                } else {
+                    targetlayoutContainer.setVisible(true);
+                    sourceGridContainer.setVisible(false);
+                    targetLayoutChooser.setModelObject(TargetLayout.Automatic);
+                    g2w.setModelObject(null);
+                    g2w.setVisible(false);
+                }
+                target.add(WCSRequestBuilderPanel.this);
+            }
+        });
 
         // the coverage id chooser
-        coverage =
-                new DropDownChoice<>(
-                        "coverage",
-                        new PropertyModel<>(getCoverage, "coverage"),
-                        new CoverageNamesModel());
+        coverage = new DropDownChoice<>(
+                "coverage", new PropertyModel<>(getCoverage, "coverage"), new CoverageNamesModel());
         add(coverage);
 
         // the action that will setup the form once the coverage has been chosen
-        coverage.add(
-                new AjaxFormSubmitBehavior("change") {
+        coverage.add(new AjaxFormSubmitBehavior("change") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        onSubmit(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                onSubmit(target);
+            }
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        details.setVisible(true);
-                        String coverageName = coverage.getModelObject();
-                        Catalog catalog = GeoServerApplication.get().getCatalog();
-                        CoverageInfo ci = catalog.getCoverageByName(coverageName);
-                        ReferencedEnvelope ri = ci.getNativeBoundingBox();
-                        final GetCoverageRequest gc = WCSRequestBuilderPanel.this.getCoverage;
-                        gc.bounds = ri;
-                        gc.targetCRS = ri.getCoordinateReferenceSystem();
-                        gc.sourceGridRange = null;
-                        describeLink.setEnabled(true);
-                        target.add(WCSRequestBuilderPanel.this);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                details.setVisible(true);
+                String coverageName = coverage.getModelObject();
+                Catalog catalog = GeoServerApplication.get().getCatalog();
+                CoverageInfo ci = catalog.getCoverageByName(coverageName);
+                ReferencedEnvelope ri = ci.getNativeBoundingBox();
+                final GetCoverageRequest gc = WCSRequestBuilderPanel.this.getCoverage;
+                gc.bounds = ri;
+                gc.targetCRS = ri.getCoordinateReferenceSystem();
+                gc.sourceGridRange = null;
+                describeLink.setEnabled(true);
+                target.add(WCSRequestBuilderPanel.this);
+            }
+        });
 
         // the details container
         details = new WebMarkupContainer("details");
@@ -188,13 +180,9 @@ public class WCSRequestBuilderPanel extends Panel {
 
         // the format chooser
         CoverageResponseDelegateFinder responseFactory =
-                (CoverageResponseDelegateFinder)
-                        GeoServerApplication.get().getBean("coverageResponseDelegateFactory");
-        formats =
-                new DropDownChoice<>(
-                        "format",
-                        new PropertyModel<>(getCoverage, "outputFormat"),
-                        responseFactory.getOutputFormats());
+                (CoverageResponseDelegateFinder) GeoServerApplication.get().getBean("coverageResponseDelegateFactory");
+        formats = new DropDownChoice<>(
+                "format", new PropertyModel<>(getCoverage, "outputFormat"), responseFactory.getOutputFormats());
         details.add(formats);
 
         // the target CRS
@@ -205,25 +193,23 @@ public class WCSRequestBuilderPanel extends Panel {
         buildAffinePanel();
 
         // the describe coverage link
-        describeLink =
-                new GeoServerAjaxFormLink("describeCoverage") {
+        describeLink = new GeoServerAjaxFormLink("describeCoverage") {
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        version.processInput();
-                        coverage.processInput();
-                        final String coverageName =
-                                WCSRequestBuilderPanel.this.getCoverage.coverage;
-                        if (coverageName != null) {
-                            var xmlText = getDescribeXML(coverageName);
-                            @SuppressWarnings("unchecked")
-                            var xml = (TextField<String>) form.get("xml");
-                            xml.setModelObject(xmlText);
-                            target.add(xml);
-                            target.appendJavaScript("getCoverage()");
-                        }
-                    }
-                };
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                version.processInput();
+                coverage.processInput();
+                final String coverageName = WCSRequestBuilderPanel.this.getCoverage.coverage;
+                if (coverageName != null) {
+                    var xmlText = getDescribeXML(coverageName);
+                    @SuppressWarnings("unchecked")
+                    var xml = (TextField<String>) form.get("xml");
+                    xml.setModelObject(xmlText);
+                    target.add(xml);
+                    target.appendJavaScript("getCoverage()");
+                }
+            }
+        };
         describeLink.setEnabled(false);
         describeLink.setOutputMarkupId(true);
         add(describeLink);
@@ -270,49 +256,44 @@ public class WCSRequestBuilderPanel extends Panel {
         details.add(targetlayoutContainer);
         targetlayoutContainer.setVisible(false);
 
-        targetLayoutChooser =
-                new DropDownChoice<>(
-                        "targetLayout",
-                        new Model<>(TargetLayout.Automatic),
-                        Arrays.asList(TargetLayout.values()),
-                        new TargetLayoutRenderer());
+        targetLayoutChooser = new DropDownChoice<>(
+                "targetLayout",
+                new Model<>(TargetLayout.Automatic),
+                Arrays.asList(TargetLayout.values()),
+                new TargetLayoutRenderer());
         targetlayoutContainer.add(targetLayoutChooser);
 
-        g2w =
-                new AffineTransformPanel(
-                        "targetGridToWorld", new PropertyModel<>(getCoverage, "targetGridToWorld"));
+        g2w = new AffineTransformPanel("targetGridToWorld", new PropertyModel<>(getCoverage, "targetGridToWorld"));
         targetlayoutContainer.add(g2w);
         g2w.setVisible(false);
         g2w.setOutputMarkupId(true);
 
-        targetLayoutChooser.add(
-                new AjaxFormSubmitBehavior("change") {
+        targetLayoutChooser.add(new AjaxFormSubmitBehavior("change") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        onSubmit(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                onSubmit(target);
+            }
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        if (targetLayoutChooser.getModelObject() == TargetLayout.Affine) {
-                            AffineTransform at = guessGridToWorld(false);
-                            g2w.setResolutionModeEnabled(false);
-                            g2w.setModelObject(at);
-                            g2w.setVisible(true);
-                        } else if (targetLayoutChooser.getModelObject()
-                                == TargetLayout.Resolution) {
-                            AffineTransform at = guessGridToWorld(true);
-                            g2w.setResolutionModeEnabled(true);
-                            g2w.setModelObject(at);
-                            g2w.setVisible(true);
-                        } else {
-                            g2w.setModelObject(null);
-                            g2w.setVisible(false);
-                        }
-                        target.add(WCSRequestBuilderPanel.this);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                if (targetLayoutChooser.getModelObject() == TargetLayout.Affine) {
+                    AffineTransform at = guessGridToWorld(false);
+                    g2w.setResolutionModeEnabled(false);
+                    g2w.setModelObject(at);
+                    g2w.setVisible(true);
+                } else if (targetLayoutChooser.getModelObject() == TargetLayout.Resolution) {
+                    AffineTransform at = guessGridToWorld(true);
+                    g2w.setResolutionModeEnabled(true);
+                    g2w.setModelObject(at);
+                    g2w.setVisible(true);
+                } else {
+                    g2w.setModelObject(null);
+                    g2w.setVisible(false);
+                }
+                target.add(WCSRequestBuilderPanel.this);
+            }
+        });
     }
 
     private void buildGridPanel() {
@@ -322,35 +303,33 @@ public class WCSRequestBuilderPanel extends Panel {
         manualGrid = new CheckBox("manualGrid", new Model<>(Boolean.FALSE));
         sourceGridContainer.add(manualGrid);
 
-        sourceGridRange =
-                new GridPanel("sourceGrid", new PropertyModel<>(getCoverage, "sourceGridRange"));
+        sourceGridRange = new GridPanel("sourceGrid", new PropertyModel<>(getCoverage, "sourceGridRange"));
         sourceGridContainer.add(sourceGridRange);
         sourceGridRange.setVisible(false);
         sourceGridRange.setOutputMarkupId(true);
 
         // the action that will setup the form once the coverage has been chosen
-        manualGrid.add(
-                new AjaxFormSubmitBehavior("change") {
+        manualGrid.add(new AjaxFormSubmitBehavior("change") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        onSubmit(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                onSubmit(target);
+            }
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        if (manualGrid.getModelObject() == Boolean.TRUE) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                if (manualGrid.getModelObject() == Boolean.TRUE) {
 
-                            GridEnvelope2D grid = guessGridLimits();
-                            sourceGridRange.setModelObject(grid);
-                            sourceGridRange.setVisible(true);
-                        } else {
-                            sourceGridRange.setModelObject(null);
-                            sourceGridRange.setVisible(false);
-                        }
-                        target.add(WCSRequestBuilderPanel.this);
-                    }
-                });
+                    GridEnvelope2D grid = guessGridLimits();
+                    sourceGridRange.setModelObject(grid);
+                    sourceGridRange.setVisible(true);
+                } else {
+                    sourceGridRange.setModelObject(null);
+                    sourceGridRange.setVisible(false);
+                }
+                target.add(WCSRequestBuilderPanel.this);
+            }
+        });
     }
 
     protected String getDescribeXML(String coverageId, Version version) {
@@ -392,9 +371,7 @@ public class WCSRequestBuilderPanel extends Panel {
             ReferencedEnvelope boundsNative = getCoverage.bounds.transform(ci.getCRS(), true);
             MathTransform w2g = ci.getGrid().getGridToCRS().inverse();
             Envelope ge = JTS.transform(boundsNative, w2g);
-            GridEnvelope2D grid =
-                    new GridEnvelope2D(
-                            new Rectangle(0, 0, (int) ge.getWidth(), (int) ge.getHeight()));
+            GridEnvelope2D grid = new GridEnvelope2D(new Rectangle(0, 0, (int) ge.getWidth(), (int) ge.getHeight()));
             return grid;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to guess native grid", e);
@@ -431,8 +408,7 @@ public class WCSRequestBuilderPanel extends Panel {
         @Override
         public Object getDisplayValue(TargetLayout object) {
             final String name = object.name();
-            return new StringResourceModel("tl." + name, WCSRequestBuilderPanel.this, null)
-                    .getString();
+            return new StringResourceModel("tl." + name, WCSRequestBuilderPanel.this, null).getString();
         }
 
         @Override

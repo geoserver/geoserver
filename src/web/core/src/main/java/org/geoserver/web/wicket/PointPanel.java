@@ -77,22 +77,18 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
 
     public PointPanel setReadOnly(final boolean readOnly) {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    component.setEnabled(!readOnly);
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            component.setEnabled(!readOnly);
+        });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField<?>) component).processInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField<?>) component).processInput();
+        });
 
         // update the point model
         if (x != null && y != null) {
@@ -107,11 +103,9 @@ public class PointPanel extends FormComponentPanel<Point> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField<?>) component).clearInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField<?>) component).clearInput();
+        });
     }
 
     /** Sets the max number of digits for the */

@@ -20,18 +20,15 @@ public class LegendUtilsTest {
         Assume.assumeTrue(FontCache.getDefaultInstance().getFont("Anarchist Mustache") == null);
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
-        req.setLegendOptions(
-                ImmutableMap.<String, String>builder()
-                        .put("fontName", "Anarchist Mustache")
-                        .build());
+        req.setLegendOptions(ImmutableMap.<String, String>builder()
+                .put("fontName", "Anarchist Mustache")
+                .build());
 
         Font f1 = LegendUtils.getLabelFont(req);
         assertEquals("Dialog", f1.getFamily());
 
-        Font f =
-                Font.createFont(
-                        Font.TRUETYPE_FONT,
-                        LegendUtilsTest.class.getResourceAsStream("Anarchist_Mustache.ttf"));
+        Font f = Font.createFont(
+                Font.TRUETYPE_FONT, LegendUtilsTest.class.getResourceAsStream("Anarchist_Mustache.ttf"));
         FontCache.getDefaultInstance().registerFont(f);
         Font f2 = LegendUtils.getLabelFont(req);
         assertEquals("Anarchist Mustache", f2.getName());

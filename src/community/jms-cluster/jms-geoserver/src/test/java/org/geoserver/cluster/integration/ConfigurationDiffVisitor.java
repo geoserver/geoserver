@@ -58,11 +58,10 @@ public final class ConfigurationDiffVisitor {
         Collection<ServiceInfo> servicesA = getAllServices(geoServerA);
         Collection<ServiceInfo> servicesB = getAllServices(geoServerB);
         // register the services that are only present in GeoServer B has differences
-        differences.addAll(
-                servicesB.stream()
-                        .filter(service -> search(service, servicesA) == null)
-                        .map(service -> new InfoDiff(null, service))
-                        .collect(Collectors.toList()));
+        differences.addAll(servicesB.stream()
+                .filter(service -> search(service, servicesA) == null)
+                .map(service -> new InfoDiff(null, service))
+                .collect(Collectors.toList()));
         // iterate over GeoServer A services and compare them with GeoServer B services
         for (ServiceInfo service : servicesA) {
             ServiceInfo otherService = search(service, servicesB);
@@ -98,11 +97,10 @@ public final class ConfigurationDiffVisitor {
         List<SettingsInfo> settingsA = getAllSettings(geoServerA);
         List<SettingsInfo> settingsB = getAllSettings(geoServerB);
         // register the settings that are only present in GeoServer B has differences
-        differences.addAll(
-                settingsB.stream()
-                        .filter(settings -> search(settings, settingsA) == null)
-                        .map(settings -> new InfoDiff(null, settings))
-                        .collect(Collectors.toList()));
+        differences.addAll(settingsB.stream()
+                .filter(settings -> search(settings, settingsA) == null)
+                .map(settings -> new InfoDiff(null, settings))
+                .collect(Collectors.toList()));
         // iterate over GeoServer A settings and compare them with GeoServer B services
         for (SettingsInfo settings : settingsA) {
             SettingsInfo otherSettings = search(settings, settingsB);
@@ -126,10 +124,7 @@ public final class ConfigurationDiffVisitor {
         return null;
     }
 
-    /**
-     * Get all services info objects of a GeoServer instance, including the global service and
-     * workspace services.
-     */
+    /** Get all services info objects of a GeoServer instance, including the global service and workspace services. */
     private static List<ServiceInfo> getAllServices(GeoServer geoServer) {
         List<ServiceInfo> allServices = new ArrayList<>();
         // get global services
@@ -144,8 +139,8 @@ public final class ConfigurationDiffVisitor {
     }
 
     /**
-     * Get all settings info objects of a GeoServer instance, this will not include global settings
-     * only per workspace settings will be included.
+     * Get all settings info objects of a GeoServer instance, this will not include global settings only per workspace
+     * settings will be included.
      */
     private static List<SettingsInfo> getAllSettings(GeoServer geoServer) {
         List<SettingsInfo> allSettings = new ArrayList<>();

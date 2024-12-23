@@ -20,8 +20,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
- * A UserGroupService wrapper able to resolve password that have been parametrized. The placeholder
- * can be encoded in plain txt or any reversible encoding.
+ * A UserGroupService wrapper able to resolve password that have been parametrized. The placeholder can be encoded in
+ * plain txt or any reversible encoding.
  */
 class EnvironmentUserDetailService implements UserDetailsService {
 
@@ -30,8 +30,7 @@ class EnvironmentUserDetailService implements UserDetailsService {
 
     private static Logger LOGGER = Logging.getLogger(EnvironmentUserDetailService.class);
 
-    EnvironmentUserDetailService(
-            GeoServerUserGroupService userDetailsService, GeoServerEnvironment environment) {
+    EnvironmentUserDetailService(GeoServerUserGroupService userDetailsService, GeoServerEnvironment environment) {
         this.delegate = userDetailsService;
         this.environment = environment;
     }
@@ -43,8 +42,7 @@ class EnvironmentUserDetailService implements UserDetailsService {
             GeoServerUser user = (GeoServerUser) userDetails;
             String password = user.getPassword();
             GeoServerSecurityManager manager = delegate.getSecurityManager();
-            List<GeoServerPasswordEncoder> encoders =
-                    manager.loadPasswordEncoders(null, true, null);
+            List<GeoServerPasswordEncoder> encoders = manager.loadPasswordEncoders(null, true, null);
             // first decode the pwd. The placeholder might have been encoded with a reversible
             // pwd encoder
             String decodedPwd = decode(password, encoders);

@@ -28,14 +28,12 @@ public class KeycloakSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return new KeycloakRoleService();
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new SecurityConfigValidator(securityManager);
     }
 }

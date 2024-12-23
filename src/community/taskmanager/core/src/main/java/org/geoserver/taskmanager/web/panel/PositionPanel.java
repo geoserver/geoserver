@@ -24,8 +24,7 @@ public class PositionPanel extends Panel {
     private ImageAjaxLink<Object> upLink;
     private ImageAjaxLink<Object> downLink;
 
-    public PositionPanel(
-            String id, IModel<BatchElement> model, GeoServerTablePanel<BatchElement> tablePanel) {
+    public PositionPanel(String id, IModel<BatchElement> model, GeoServerTablePanel<BatchElement> tablePanel) {
         super(id, model);
 
         BatchElement be = model.getObject();
@@ -33,9 +32,7 @@ public class PositionPanel extends Panel {
 
         upLink =
                 new ImageAjaxLink<Object>(
-                        "up",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                        "up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
                     private static final long serialVersionUID = -4165434301439054175L;
 
                     @Override
@@ -44,8 +41,7 @@ public class PositionPanel extends Panel {
                         batch.getElements().remove(index);
                         batch.getElements().add(index - 1, be);
                         tablePanel.clearSelection();
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                         target.add(tablePanel);
                     }
 
@@ -58,17 +54,13 @@ public class PositionPanel extends Panel {
                         }
                     }
                 };
-        upLink.getImage()
-                .add(
-                        new AttributeModifier(
-                                "alt", new ParamResourceModel("up", PositionPanel.this)));
+        upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("up", PositionPanel.this)));
         add(upLink);
 
         downLink =
                 new ImageAjaxLink<Object>(
                         "down",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                        new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
                     private static final long serialVersionUID = -8005026702401617344L;
 
                     @Override
@@ -77,24 +69,21 @@ public class PositionPanel extends Panel {
                         batch.getElements().remove(index);
                         batch.getElements().add(index + 1, be);
                         tablePanel.clearSelection();
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                         target.add(tablePanel);
                     }
 
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
-                        if (batch.getElements().indexOf(be) == batch.getElements().size() - 1) {
+                        if (batch.getElements().indexOf(be)
+                                == batch.getElements().size() - 1) {
                             tag.put("class", "visibility-hidden");
                         } else {
                             tag.put("class", "visibility-visible");
                         }
                     }
                 };
-        downLink.getImage()
-                .add(
-                        new AttributeModifier(
-                                "alt", new ParamResourceModel("down", PositionPanel.this)));
+        downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", PositionPanel.this)));
         add(downLink);
     }
 }

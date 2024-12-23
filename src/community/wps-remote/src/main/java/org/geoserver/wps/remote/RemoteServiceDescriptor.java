@@ -9,8 +9,8 @@ import org.geotools.api.data.Parameter;
 import org.geotools.api.feature.type.Name;
 
 /**
- * Just a utility class to store some info associated to the new WPS Processes created dynamically
- * by the {@link RemoteProcessFactory}
+ * Just a utility class to store some info associated to the new WPS Processes created dynamically by the
+ * {@link RemoteProcessFactory}
  *
  * @author Alessio Fabiani, GeoSolutions
  */

@@ -11,9 +11,8 @@ import org.springframework.security.core.Authentication;
 /**
  * Configuration for security context persistence
  *
- * <p>if {@link #allowSessionCreation} is <code>true</code>, creation of a {@link HttpSession}
- * object is allowed and an {@link Authentication} object can be stored to avoid re-authentication
- * fore each request
+ * <p>if {@link #allowSessionCreation} is <code>true</code>, creation of a {@link HttpSession} object is allowed and an
+ * {@link Authentication} object can be stored to avoid re-authentication fore each request
  *
  * <p>Should be <code>false</code> for stateless services
  *

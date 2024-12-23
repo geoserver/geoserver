@@ -26,9 +26,7 @@ public class LayerAccessDataRulePanel extends PublishedEditTabPanel<PublishedInf
     private IModel<? extends PublishedInfo> model;
 
     public LayerAccessDataRulePanel(
-            String id,
-            IModel<? extends PublishedInfo> model,
-            IModel<List<DataAccessRuleInfo>> ownModel) {
+            String id, IModel<? extends PublishedInfo> model, IModel<List<DataAccessRuleInfo>> ownModel) {
         super(id, model);
         this.model = model;
         this.ownModel = ownModel;
@@ -53,7 +51,6 @@ public class LayerAccessDataRulePanel extends PublishedEditTabPanel<PublishedInf
         AccessDataRuleInfoManager infoManager = new AccessDataRuleInfoManager();
         String wsName = group.getWorkspace() != null ? group.getWorkspace().getName() : null;
         Set<DataAccessRule> rules = infoManager.getResourceRule(wsName, group);
-        ownModel.setObject(
-                infoManager.mapTo(rules, infoManager.getAvailableRoles(), wsName, group.getName()));
+        ownModel.setObject(infoManager.mapTo(rules, infoManager.getAvailableRoles(), wsName, group.getName()));
     }
 }

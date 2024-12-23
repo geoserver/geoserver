@@ -33,7 +33,8 @@ import org.junit.rules.TemporaryFolder;
  */
 public class ResourceFileServiceDataTest extends AbstractTaskManagerTest {
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     public ResourceStore resourceStore;
 
@@ -118,7 +119,8 @@ public class ResourceFileServiceDataTest extends AbstractTaskManagerTest {
         Assert.assertTrue(folders.contains("foo"));
         Assert.assertTrue(folders.contains(Paths.get("foo", "bar").toString()));
         Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar").toString()));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar", "barfoo").toString()));
+        Assert.assertTrue(
+                folders.contains(Paths.get("foo", "bar", "foobar", "barfoo").toString()));
         Assert.assertTrue(folders.contains("hello"));
     }
 }

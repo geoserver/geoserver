@@ -31,19 +31,18 @@ import org.junit.Test;
 
 public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
 
-    protected static final String BASE_WMTS_REQUEST =
-            "wms?LAYERS=cascadedLayer"
-                    + "&STYLES=&FORMAT="
-                    + MapMLConstants.MAPML_MIME_TYPE
-                    + "&SERVICE=WMS&VERSION=1.1.0"
-                    + "&REQUEST=GetMap"
-                    + "&SRS=MapML:OSMTILE"
-                    + "&BBOX=-1.3885038382960921E7,2870337.130793682,-7455049.489182421,6338174.0557576185"
-                    + "&WIDTH=768"
-                    + "&HEIGHT=414"
-                    + "&format_options="
-                    + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                    + ":image/png";
+    protected static final String BASE_WMTS_REQUEST = "wms?LAYERS=cascadedLayer"
+            + "&STYLES=&FORMAT="
+            + MapMLConstants.MAPML_MIME_TYPE
+            + "&SERVICE=WMS&VERSION=1.1.0"
+            + "&REQUEST=GetMap"
+            + "&SRS=MapML:OSMTILE"
+            + "&BBOX=-1.3885038382960921E7,2870337.130793682,-7455049.489182421,6338174.0557576185"
+            + "&WIDTH=768"
+            + "&HEIGHT=414"
+            + "&format_options="
+            + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+            + ":image/png";
 
     @BeforeClass
     public static void beforeClass() {
@@ -90,8 +89,7 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
         GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
         GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
 
-        GeoServerTileLayer layerInfoTileLayer =
-                new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
         layerInfoTileLayer.addGridSubset(wgs84gridset);
         layerInfoTileLayer.addGridSubset(osmtilegridset);
         layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
@@ -132,17 +130,12 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
             WebMapTileServer wmts = new WebMapTileServer(new URL(getCapabilitiesURL()));
             WMTSCapabilities capabilities = wmts.getCapabilities();
             getResourceURL = capabilities.getRequest().getGetTile().getGet();
-            URL baseResourceURL =
-                    getResourceURL != null ? getResourceURL : new URL(getCapabilitiesURL());
-            URL base =
-                    new URL(
-                            baseResourceURL.getProtocol()
-                                    + "://"
-                                    + baseResourceURL.getHost()
-                                    + (baseResourceURL.getPort() == -1
-                                            ? ""
-                                            : ":" + baseResourceURL.getPort())
-                                    + "/");
+            URL baseResourceURL = getResourceURL != null ? getResourceURL : new URL(getCapabilitiesURL());
+            URL base = new URL(baseResourceURL.getProtocol()
+                    + "://"
+                    + baseResourceURL.getHost()
+                    + (baseResourceURL.getPort() == -1 ? "" : ":" + baseResourceURL.getPort())
+                    + "/");
             String path = baseResourceURL.getPath();
             assertTrue(url.startsWith((new URL(base, path)).toString()));
             // The remote capabilities defines a custom GridSet that matches

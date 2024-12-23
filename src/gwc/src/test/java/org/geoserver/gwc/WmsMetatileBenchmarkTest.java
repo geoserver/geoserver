@@ -45,13 +45,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 @Ignore
 public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
-    static final String LAYER_NAME =
-            BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+    static final String LAYER_NAME = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
 
     /**
-     * This isn't a real test. It's a function that is easy to run a profiler against. The JMH
-     * benchmark isn't appropriate to run a profiler against because of the way it forks benchmarks
-     * in a separate JVM.
+     * This isn't a real test. It's a function that is easy to run a profiler against. The JMH benchmark isn't
+     * appropriate to run a profiler against because of the way it forks benchmarks in a separate JVM.
      */
     @Test
     @Ignore
@@ -77,19 +75,17 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Runs the JMH benchmark. This isn't a really test so it includes the @Ignore annotation; by
-     * integrating JMH with Junit it just provides us an easy way to run the benchmark (typically
-     * through the IDE).
+     * Runs the JMH benchmark. This isn't a really test so it includes the @Ignore annotation; by integrating JMH with
+     * Junit it just provides us an easy way to run the benchmark (typically through the IDE).
      */
     @Test
     public void runBenchmark() throws Exception {
 
-        Options options =
-                new OptionsBuilder()
-                        .include(WmsMetatileBenchmark.class.getSimpleName() + ".*")
-                        .result("./target/benchmark-results.json")
-                        .resultFormat(ResultFormatType.JSON)
-                        .build();
+        Options options = new OptionsBuilder()
+                .include(WmsMetatileBenchmark.class.getSimpleName() + ".*")
+                .result("./target/benchmark-results.json")
+                .resultFormat(ResultFormatType.JSON)
+                .build();
         new Runner(options).run();
     }
 
@@ -114,8 +110,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
             AtomicInteger currentIndex = new AtomicInteger(0);
 
-            GeoServerBenchmarkSuppport geoServerSystemTestSupport =
-                    new GeoServerBenchmarkSuppport();
+            GeoServerBenchmarkSuppport geoServerSystemTestSupport = new GeoServerBenchmarkSuppport();
 
             // Track how many cache hits we get just to help validate correctness of our benchmark
             Map<String, Integer> cacheHitRate = new ConcurrentHashMap<>();
@@ -170,8 +165,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAndNoCacheHitsState
-                extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAndNoCacheHitsState extends AbstractGwcWithConcurrency {
 
             @Override
             public void setup() throws Exception {
@@ -181,8 +175,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAndNoCacheHitsState
-                extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAndNoCacheHitsState extends AbstractGwcWithoutConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -191,8 +184,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAnd50PercentCacheHitsState
-                extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAnd50PercentCacheHitsState extends AbstractGwcWithConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -201,8 +193,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAnd50PercentCacheHitsState
-                extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAnd50PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -211,8 +202,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAnd75PercentCacheHitsState
-                extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAnd75PercentCacheHitsState extends AbstractGwcWithConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -221,8 +211,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAnd75PercentCacheHitsState
-                extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAnd75PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -231,8 +220,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithConcurrencyAnd90PercentCacheHitsState
-                extends AbstractGwcWithConcurrency {
+        public static class GwcWithConcurrencyAnd90PercentCacheHitsState extends AbstractGwcWithConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -241,8 +229,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             }
         }
 
-        public static class GwcWithoutConcurrencyAnd90PercentCacheHitsState
-                extends AbstractGwcWithoutConcurrency {
+        public static class GwcWithoutConcurrencyAnd90PercentCacheHitsState extends AbstractGwcWithoutConcurrency {
             @Override
             public void setup() throws Exception {
                 super.setup();
@@ -261,8 +248,8 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         }
 
         @Benchmark
-        public ServletResponse runWithGwcWithConcurrencyAndNoCacheHits(
-                GwcWithConcurrencyAndNoCacheHitsState state) throws Exception {
+        public ServletResponse runWithGwcWithConcurrencyAndNoCacheHits(GwcWithConcurrencyAndNoCacheHitsState state)
+                throws Exception {
             return run(state);
         }
 
@@ -321,8 +308,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
 
             String request = buildGetMap(LAYER_NAME, metaTileIndex);
 
-            MockHttpServletResponse response =
-                    state.geoServerSystemTestSupport.getAsServletResponse(request);
+            MockHttpServletResponse response = state.geoServerSystemTestSupport.getAsServletResponse(request);
 
             String cacheResult = response.getHeader("geowebcache-cache-result");
             if (cacheResult == null) { // will be null if we aren't even using integrated GWC
@@ -338,11 +324,9 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
      *
      * <p>It will attempt to evenly distribute the tiles across the entire gridset coverage.
      *
-     * @param boundingBox Optional bounding box to constrain tiles to a particular geographical
-     *     area.
-     * @param tilesPerMetatile How many tiles from each metatile. By specifying "1" we can ensure
-     *     all requests will be cache MISSES, whereas anything greater than 1 will ensure some
-     *     degree of cache HITS.
+     * @param boundingBox Optional bounding box to constrain tiles to a particular geographical area.
+     * @param tilesPerMetatile How many tiles from each metatile. By specifying "1" we can ensure all requests will be
+     *     cache MISSES, whereas anything greater than 1 will ensure some degree of cache HITS.
      */
     private static long[][] getTileIndices(
             String layerName,
@@ -379,15 +363,11 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         long maxNumberOfNonOverlappingMetaTilesHorizontally = width / metaTileSize;
         long maxNumberOfNonOverlappingMetaTilesVertically = height / metaTileSize;
 
-        System.out.println(
-                "Max number of metatiles with coverage: "
-                        + maxNumberOfNonOverlappingMetaTilesHorizontally
-                                * maxNumberOfNonOverlappingMetaTilesVertically);
+        System.out.println("Max number of metatiles with coverage: "
+                + maxNumberOfNonOverlappingMetaTilesHorizontally * maxNumberOfNonOverlappingMetaTilesVertically);
 
-        long horizontalIncrementBetweenMetaTiles =
-                width / maxNumberOfNonOverlappingMetaTilesHorizontally;
-        long verticalIncrementBetweenMetaTiles =
-                height / maxNumberOfNonOverlappingMetaTilesVertically;
+        long horizontalIncrementBetweenMetaTiles = width / maxNumberOfNonOverlappingMetaTilesHorizontally;
+        long verticalIncrementBetweenMetaTiles = height / maxNumberOfNonOverlappingMetaTilesVertically;
 
         long numberOfMetaTiles = amount / tilesPerMetatile;
 
@@ -401,11 +381,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
             for (int tileIndex = 0; tileIndex < tilesPerMetatile; tileIndex++) {
 
                 indices[tileCount] =
-                        new long[] {
-                            currentX + currentXWithinMetaTile,
-                            currentY + currentYWithinMetaTile,
-                            zoomLevel
-                        };
+                        new long[] {currentX + currentXWithinMetaTile, currentY + currentYWithinMetaTile, zoomLevel};
                 tileCount++;
 
                 currentXWithinMetaTile += 1;
@@ -455,8 +431,7 @@ public class WmsMetatileBenchmarkTest extends GeoServerSystemTestSupport {
         return sb.toString();
     }
     /**
-     * Save the indicies to a CSV which can optionally be loaded into JMeter for alternative
-     * benchmarking.
+     * Save the indicies to a CSV which can optionally be loaded into JMeter for alternative benchmarking.
      *
      * @param location Location of the CSV
      * @param tileIndices The tile indices

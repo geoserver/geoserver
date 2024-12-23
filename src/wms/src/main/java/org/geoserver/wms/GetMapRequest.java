@@ -78,12 +78,10 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * DJB: spec says SRS is *required*, so if they dont specify one, we should throw an error
-     * instead we use "NONE" - which is no-projection. Previous behavior was to the WSG84 lat/long
-     * (4326)
+     * DJB: spec says SRS is *required*, so if they dont specify one, we should throw an error instead we use "NONE" -
+     * which is no-projection. Previous behavior was to the WSG84 lat/long (4326)
      *
-     * @return request CRS, or <code>null</code> if not set. TODO: make CRS manditory as for spec
-     *     conformance
+     * @return request CRS, or <code>null</code> if not set. TODO: make CRS manditory as for spec conformance
      */
     public CoordinateReferenceSystem getCrs() {
         return this.optionalParams.crs;
@@ -101,9 +99,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         return this.mandatoryParams.format;
     }
 
-    /**
-     * Map of String,Object which contains kvp's which are specific to a particular output format.
-     */
+    /** Map of String,Object which contains kvp's which are specific to a particular output format. */
     public Map<String, Object> getFormatOptions() {
         return formatOptions == null ? Collections.emptyMap() : formatOptions;
     }
@@ -194,9 +190,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Gets the String specified by the "STYLE_VERSION" parameter.
      *
-     * <p>This parameter is used to supply a version of the style language being specified. It only
-     * applies when the style is being supplied directly in the request with one of the "STYLE_URL",
-     * "STYLE_BODY" parameters.
+     * <p>This parameter is used to supply a version of the style language being specified. It only applies when the
+     * style is being supplied directly in the request with one of the "STYLE_URL", "STYLE_BODY" parameters.
      */
     public String getStyleVersion() {
         return this.optionalParams.styleVersion;
@@ -213,8 +208,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the
-     * "SLD_BODY" paramter is schema validated.
+     * Gets the value of the "VALIDATESCHEMA" parameter which controls wether the value of the "SLD_BODY" paramter is
+     * schema validated.
      */
     public Boolean getValidateSchema() {
         return this.optionalParams.validateSLD;
@@ -252,8 +247,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * <a href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C
-     * specification</a> tiling hint
+     * <a href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C specification</a> tiling hint
      */
     public boolean isTiled() {
         return this.optionalParams.tiled;
@@ -276,16 +270,16 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * @return The time request parameter. The list may contain {@link Date} or {@link DateRange}
-     *     objects, or null to indicate the default value
+     * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects, or null to
+     *     indicate the default value
      */
     public List<Object> getTime() {
         return this.optionalParams.time;
     }
 
     /**
-     * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange}
-     * objects, or null to indicate the default value
+     * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange} objects, or null to
+     * indicate the default value
      */
     public List<Object> getElevation() {
         return this.optionalParams.elevation;
@@ -327,8 +321,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     /**
-     * Sets the GetMap request value for the FORMAT parameter, which is the MIME type for the kind
-     * of image required.
+     * Sets the GetMap request value for the FORMAT parameter, which is the MIME type for the kind of image required.
      */
     public void setFormat(String format) {
         this.mandatoryParams.format = format;
@@ -367,21 +360,18 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     public void setStyles(List<Style> styles) {
-        this.mandatoryParams.styles =
-                styles == null ? Collections.emptyList() : new ArrayList<>(styles);
+        this.mandatoryParams.styles = styles == null ? Collections.emptyList() : new ArrayList<>(styles);
     }
 
     /** Sets interpolations methods for layers. */
     public void setInterpolations(List<Interpolation> interpolations) {
-        this.optionalParams.interpolationMethods =
-                interpolations == null ? Collections.emptyList() : interpolations;
+        this.optionalParams.interpolationMethods = interpolations == null ? Collections.emptyList() : interpolations;
     }
 
     /**
      * Style resource defined by the "SLD" parameter.
      *
-     * <p>The style resource can be provided by either {@link #setSld(URI)} or {@link
-     * #setStyleUrl(URI)}.
+     * <p>The style resource can be provided by either {@link #setSld(URI)} or {@link #setStyleUrl(URI)}.
      *
      * @param sld Style resource defined by "SLD" parameter.
      */
@@ -392,8 +382,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Style resource defined by the "STYLE_URL" parameter.
      *
-     * <p>The style resource can be provided by either {@link #setSld(URI)} or {@link
-     * #setStyleUrl(URI)}.
+     * <p>The style resource can be provided by either {@link #setSld(URI)} or {@link #setStyleUrl(URI)}.
      *
      * @param styleUri Style resource defined by "STYLE_URL" parameter.
      */
@@ -404,8 +393,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Style document defined by the "SLD_BODY" parameter.
      *
-     * <p>The sld document contents can be provided by either {@link #setSldBody(String)} or {@link
-     * #setStyleBody(String)}.
+     * <p>The sld document contents can be provided by either {@link #setSldBody(String)} or
+     * {@link #setStyleBody(String)}.
      *
      * @param sldBody Contents forming SLD document to use
      */
@@ -481,8 +470,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     }
 
     public void setTransparent(Boolean transparent) {
-        this.optionalParams.transparent =
-                (transparent != null) ? transparent.booleanValue() : false;
+        this.optionalParams.transparent = (transparent != null) ? transparent.booleanValue() : false;
     }
 
     public void setBuffer(int buffer) {
@@ -563,8 +551,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Sets the offset or start index at which to start returning features in the request.
      *
-     * <p>It is used in conjunction with {@link #getMaxFeatures()} to page through a feature set.
-     * This property only applies if the request is for a vector layer.
+     * <p>It is used in conjunction with {@link #getMaxFeatures()} to page through a feature set. This property only
+     * applies if the request is for a vector layer.
      */
     public void setStartIndex(Integer startIndex) {
         this.optionalParams.startIndex = startIndex;
@@ -674,14 +662,13 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         /**
          * Tiling hint, according to the <a
-         * href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C
-         * specification</a>
+         * href="http://wiki.osgeo.org/index.php/WMS_Tiling_Client_Recommendation">WMS-C specification</a>
          */
         boolean tiled;
 
         /**
-         * Temporary hack since finding a good tiling origin would require us to compute the bbox on
-         * the fly TODO: remove this once we cache the real bbox of vector layers
+         * Temporary hack since finding a good tiling origin would require us to compute the bbox on the fly TODO:
+         * remove this once we cache the real bbox of vector layers
          */
         public Point2D tilesOrigin;
 
@@ -693,15 +680,12 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         /**
          * time parameter, a list since many pattern setup can be possible, see for example
-         * http://mapserver.gis.umn.edu/docs/howto/wms_time_support/#time-patterns. Can contain
-         * {@link Date} or {@link DateRange} objects.
+         * http://mapserver.gis.umn.edu/docs/howto/wms_time_support/#time-patterns. Can contain {@link Date} or
+         * {@link DateRange} objects.
          */
         List<Object> time = Collections.emptyList();
 
-        /**
-         * elevation parameter, can also be a list, can contain {@link Double} or {@link
-         * NumberRange}
-         */
+        /** elevation parameter, can also be a list, can contain {@link Double} or {@link NumberRange} */
         List<Object> elevation = Collections.emptyList();
 
         /** URI provided by STYLE_URL parameter or (SLD_URL parameter). */
@@ -761,8 +745,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         StringBuffer returnString = new StringBuffer("\nGetMap Request");
         returnString.append("\n version: " + version);
         returnString.append("\n output format: " + mandatoryParams.format);
-        returnString.append(
-                "\n width height: " + mandatoryParams.width + "," + mandatoryParams.height);
+        returnString.append("\n width height: " + mandatoryParams.width + "," + mandatoryParams.height);
         returnString.append("\n bbox: " + mandatoryParams.bbox);
         returnString.append("\n layers: ");
 

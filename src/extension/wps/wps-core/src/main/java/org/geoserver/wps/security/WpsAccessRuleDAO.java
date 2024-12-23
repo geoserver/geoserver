@@ -78,8 +78,7 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
             }
             for (ProcessGroupInfo group : wps.getProcessGroups()) {
                 Set<String> prefixes = new HashSet<>();
-                ProcessFactory pf =
-                        GeoServerProcessors.getProcessFactory(group.getFactoryClass(), false);
+                ProcessFactory pf = GeoServerProcessors.getProcessFactory(group.getFactoryClass(), false);
                 if (pf != null) {
                     Set<Name> names = pf.getNames();
                     for (Name name : names) {
@@ -94,11 +93,10 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
                 }
                 for (ProcessInfo process : group.getFilteredProcesses()) {
                     if (process.getRoles() != null && !process.getRoles().isEmpty()) {
-                        result.add(
-                                new WpsAccessRule(
-                                        process.getName().getNamespaceURI(),
-                                        process.getName().getLocalPart(),
-                                        new HashSet<>(process.getRoles())));
+                        result.add(new WpsAccessRule(
+                                process.getName().getNamespaceURI(),
+                                process.getName().getLocalPart(),
+                                new HashSet<>(process.getRoles())));
                     }
                 }
             }
@@ -143,10 +141,7 @@ public class WpsAccessRuleDAO extends ConfigurationListenerAdapter {
 
             // actually set the rule, but don't complain for the default root contents
             if (node != root) {
-                LOGGER.warning(
-                        "Rule "
-                                + rule
-                                + " is overriding another rule targetting the same resource");
+                LOGGER.warning("Rule " + rule + " is overriding another rule targetting the same resource");
             }
             node.setAuthorizedRoles(AccessMode.READ, rule.getRoles());
             node.setAuthorizedRoles(AccessMode.WRITE, Collections.singleton("NO_ONE"));

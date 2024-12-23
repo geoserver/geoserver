@@ -105,6 +105,7 @@ prefix, that will be used to perform the close, for example:
 For closing delegates that use an instance object instead of a class static method, the variable
 name is included in the prefix, so some uninformity in variable names is required.
 
+
 Error Prone
 -----------
 
@@ -167,10 +168,12 @@ or if it's a general one that should be ignored, the `build/qa/spotbugs-exclude.
    :language: xml
 
 
+.. _spotless:
+
 Spotless
 --------
 
-Spotless is used as a fast way to check that the google-java-format is being applied to the codebase.
+Spotless is used as a fast way to check that the `palantir-java -format <https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format>`__ is being applied to the codebase.
 
 .. literalinclude:: /../../../../src/pom.xml
    :language: xml
@@ -205,6 +208,10 @@ Property ``spotless.apply.skip`` is used to skip spotless plugin when running ``
 
    mvn clean install -Dqa -Dspotless.apply.skip=true
 
+.. note::
+   
+   IDE Plugins are available for `IntelliJ <https://plugins.jetbrains.com/plugin/13180-palantir-java-format>`__ and `Eclipse <https://github.com/palantir/palantir-java-format/tree/develop/eclipse_plugin>`__ IDEs.
+   
 Sortpom
 -------
 
